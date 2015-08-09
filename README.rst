@@ -3,6 +3,20 @@ Batavia
 
 Tools to run Python bytecode in the browser.
 
+This is experimental code. If it breaks, you get to keep all the shiny pieces.
+
+What it does:
+
+* Unmarshals Base64 encoded bytecode into Code objects
+
+* Implements most of the common Python VM opcodes
+
+What it doesn't do:
+
+* Make a good distinction between integer and floating point math
+
+* Any attempt at unicode handling.
+
 Quickstart
 ----------
 
@@ -18,11 +32,11 @@ Community
 
 Batavia is part of the `BeeWare suite`_. You can talk to the community through:
 
- * `@pybeeware on Twitter`_
+* `@pybeeware on Twitter`_
 
- * The `BeeWare Users Mailing list`_, for questions about how to use the BeeWare suite.
+* The `BeeWare Users Mailing list`_, for questions about how to use the BeeWare suite.
 
- * The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
+* The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
 
 Contributing
 ------------
