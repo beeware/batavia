@@ -151,13 +151,46 @@ Ag8HDwMGAQYBBgEGAQ0BGgEGAQYCDzoMEAwLDAoMBwwHDBMMBQwNDAgMEQwFDAEMAQwEEwEMAREB
 DAEDABcBDQEdAgYB
 </script>
 
-    <script>
+    <!-- This is a simpler script::
 
-function run(tag) {
+        def do_stuff(count):
+            for i in range(0, count):
+                print("HELLO", count)
+
+
+        def main(argv):
+            print(do_stuff(int(argv[1])))
+            return 0
+
+
+        def target(*args):
+            return main, None
+
+
+        if __name__ == '__main__':
+            import sys
+            main(sys.argv)
+    -->
+    <script id="batavia-sample" type="application/python-bytecode">
+7gwNCv2vxlX9AAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAc1AAAABkAABkAQCEAABaAABkAgBkAwCE
+AABaAQBkBABkBQCEAABaAgBlAwBkBgBrAgByTABkBwBkCABsBABaBABlAQBlBABqBQCDAQABbgAA
+ZAgAUykJYwEAAAAAAAAAAgAAAAQAAABDAAAAcysAAAB4JAB0AABkAQB8AACDAgBEXRMAfQEAdAEA
+ZAIAfAAAgwIAAXEQAFdkAABTKQNO6QAAAABaBUhFTExPKQLaBXJhbmdl2gVwcmludCkC2gVjb3Vu
+dNoBaakAcgYAAAD6CXNhbXBsZS5wedoIZG9fc3R1ZmYCAAAAcwQAAAAAARYBcggAAABjAQAAAAAA
+AAABAAAABQAAAEMAAABzHgAAAHQAAHQBAHQCAHwAAGQBABmDAQCDAQCDAQABZAIAUykDTukBAAAA
+cgEAAAApA3IDAAAAcggAAADaA2ludCkB2gRhcmd2cgYAAAByBgAAAHIHAAAA2gRtYWluBwAAAHME
+AAAAAAEaAXIMAAAAYwAAAAAAAAAAAQAAAAIAAABHAAAAcwoAAAB0AABkAABmAgBTKQFOKQFyDAAA
+ACkB2gRhcmdzcgYAAAByBgAAAHIHAAAA2gZ0YXJnZXQMAAAAcwIAAAAAAXIOAAAA2ghfX21haW5f
+X3IBAAAATikGcggAAAByDAAAAHIOAAAA2ghfX25hbWVfX9oDc3lzcgsAAAByBgAAAHIGAAAAcgYA
+AAByBwAAANoIPG1vZHVsZT4CAAAAcwoAAAAMBQwFDAQMAQwB
+    </script>
+
+    <script>
+function run(module) {
     console.log('Create VM');
     var vm = new VirtualMachine();
     console.log('Run code...');
-    vm.run('test.pystone');
+    vm.run(module);
     console.log('done.');
 }
 
