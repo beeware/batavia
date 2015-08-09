@@ -1,0 +1,10 @@
+*.pyc
+*~
+.*.sw[op]
+*.egg-info
+dist
+build
+local
+_build
+distribute-*
+batavia.js
