@@ -3,11 +3,12 @@
  * Virtual Machine
  *************************************************************************/
 
-// from .pyobj import Frame, Block, Function, Generator
 var log = new Logger();
 
+batavia.VirtualMachine = function() {
+    // Initialize the bytecode module
+    batavia.modules.dis.init();
 
-function VirtualMachine() {
     // The call stack of frames.
     this.frames = [];
 
@@ -15,11 +16,11 @@ function VirtualMachine() {
     this.frame = null;
     this.return_value = null;
     this.last_exception = null;
-}
+};
 
-VirtualMachine.Py_Ellipsis = {};
+batavia.VirtualMachine.Py_Ellipsis = {};
 
-VirtualMachine.builtins = {
+batavia.builtins = {
     ArithmeticError: undefined,
     AssertionError: undefined,
     AttributeError: undefined,
@@ -197,20 +198,20 @@ VirtualMachine.builtins = {
  *
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
-VirtualMachine.prototype.run = function(tag) {
+batavia.VirtualMachine.prototype.run = function(tag) {
     var payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim();
     var bytecode = atob(payload);
-    var code = Marshal.load_pyc(this, bytecode);
+    var code = batavia.modules.marshal.load_pyc(this, bytecode);
     this.run_code({'code': code});
 };
 
 /*
  */
-VirtualMachine.prototype.PyErr_Occurred = function() {
+batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
     return this.last_exception !== null;
 };
 
-VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
+batavia.VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
     console.log("SET EXCEPTION", exc, message);
     this.last_exception = {
         'exception': exc,
@@ -221,7 +222,7 @@ VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
 /*
  * Return the value at the top of the stack, with no changes.
  */
-VirtualMachine.prototype.top = function() {
+batavia.VirtualMachine.prototype.top = function() {
     return this.frame.stack[this.frame.stack.length - 1];
 };
 
@@ -231,7 +232,7 @@ VirtualMachine.prototype.top = function() {
  * Default to the top of the stack, but `i` can be a count from the top
  * instead.
  */
-VirtualMachine.prototype.pop = function(i) {
+batavia.VirtualMachine.prototype.pop = function(i) {
     if (i === undefined) {
         i = 0;
     }
@@ -241,7 +242,7 @@ VirtualMachine.prototype.pop = function(i) {
 /*
  * Push value onto the value stack.
  */
-VirtualMachine.prototype.push = function(val) {
+batavia.VirtualMachine.prototype.push = function(val) {
     this.frame.stack.append(val);
 };
 
@@ -250,7 +251,7 @@ VirtualMachine.prototype.push = function(val) {
  *
  * A list of `n` values is returned, the deepest value first.
 */
-VirtualMachine.prototype.popn = function(n) {
+batavia.VirtualMachine.prototype.popn = function(n) {
     if (n) {
         return this.frame.stack.splice(this.frame.stack.length - n, n);
     } else {
@@ -261,7 +262,7 @@ VirtualMachine.prototype.popn = function(n) {
 /*
  * Get a value `n` entries down in the stack, without changing the stack.
  */
-VirtualMachine.prototype.peek = function(n) {
+batavia.VirtualMachine.prototype.peek = function(n) {
 
     return this.frame.stack[this.frame.stack.length - n - 1];
 };
@@ -269,22 +270,22 @@ VirtualMachine.prototype.peek = function(n) {
 /*
  * Move the bytecode pointer to `jump`, so it will execute next.
  */
-VirtualMachine.prototype.jump = function(jump) {
+batavia.VirtualMachine.prototype.jump = function(jump) {
     this.frame.f_lasti = jump;
 };
 
-VirtualMachine.prototype.push_block = function(type, handler, level) {
+batavia.VirtualMachine.prototype.push_block = function(type, handler, level) {
     if (level === null) {
         level = this.frame.stack.length;
     }
     this.frame.block_stack.append(new Block(type, handler, level));
 };
 
-VirtualMachine.prototype.pop_block = function() {
+batavia.VirtualMachine.prototype.pop_block = function() {
     return this.frame.block_stack.pop();
 };
 
-VirtualMachine.prototype.make_frame = function(kwargs) {
+batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
     var code = kwargs.code;
     var callargs = kwargs.callargs || {};
     var f_globals = kwargs.f_globals || null;
@@ -293,7 +294,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
     log.info("make_frame: code=" + code + ", callargs=" + callargs);
 
     if (f_globals !==  null) {
-        if (f_locals !== null) {
+        if (f_locals === null) {
             f_locals = f_globals;
         }
     } else if (this.frames.length > 0) {
@@ -301,7 +302,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
         f_locals = {};
     } else {
         f_globals = f_locals = {
-            '__builtins__': VirtualMachine.builtins,
+            '__builtins__': batavia.builtins,
             '__name__': '__main__',
             '__doc__': null,
             '__package__': null,
@@ -309,7 +310,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
     }
     f_locals.update(callargs);
 
-    frame = new Frame({
+    frame = new batavia.core.Frame({
         'f_code': code,
         'f_globals': f_globals,
         'f_locals': f_locals,
@@ -318,12 +319,12 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
     return frame;
 };
 
-VirtualMachine.prototype.push_frame = function(frame) {
+batavia.VirtualMachine.prototype.push_frame = function(frame) {
     this.frames.append(frame);
     this.frame = frame;
 };
 
-VirtualMachine.prototype.pop_frame = function() {
+batavia.VirtualMachine.prototype.pop_frame = function() {
     this.frames.pop();
     if (this.frames) {
         this.frame = this.frames[this.frames.length - 1];
@@ -332,7 +333,7 @@ VirtualMachine.prototype.pop_frame = function() {
     }
 };
 
-// VirtualMachine.prototype.print_frames = function {
+// batavia.VirtualMachine.prototype.print_frames = function {
 //         """Print the call stack, for debugging."""
 //         for f in this.frames:
 //             filename = f.f_code.co_filename
@@ -345,14 +346,14 @@ VirtualMachine.prototype.pop_frame = function() {
 //             if line:
 //                 print('    ' + line.strip())
 // }
-// VirtualMachine.prototype.resume_frame = function(frame) {
+// batavia.VirtualMachine.prototype.resume_frame = function(frame) {
 //         frame.f_back = this.frame
 //         val = this.run_frame(frame)
 //         frame.f_back = null
 //         return val
 // }
 
-VirtualMachine.prototype.run_code = function(kwargs) {
+batavia.VirtualMachine.prototype.run_code = function(kwargs) {
     var code = kwargs.code;
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
@@ -369,7 +370,7 @@ VirtualMachine.prototype.run_code = function(kwargs) {
     return val;
 };
 
-// VirtualMachine.prototype.unwind_block = function(block) {
+// batavia.VirtualMachine.prototype.unwind_block = function(block) {
 //         if block.type == 'except-handler':
 //             offset = 3
 //         else:
@@ -387,33 +388,33 @@ VirtualMachine.prototype.run_code = function(kwargs) {
  * Parse 1 - 3 bytes of bytecode into
  * an instruction and optionally arguments.
  */
-VirtualMachine.prototype.parse_byte_and_args = function() {
+batavia.VirtualMachine.prototype.parse_byte_and_args = function() {
     var operation = {
         'opoffset': this.frame.f_lasti,
         'opcode': this.frame.f_code.co_code[this.frame.f_lasti],
         'args': []
     };
     this.frame.f_lasti += 1;
-    if (operation.opcode >= dis.HAVE_ARGUMENT) {
+    if (operation.opcode >= batavia.modules.dis.HAVE_ARGUMENT) {
         var arg = this.frame.f_code.co_code.slice(this.frame.f_lasti, this.frame.f_lasti + 2);
         this.frame.f_lasti += 2;
         var intArg = arg[0] + (arg[1] << 8);
-        if (operation.opcode in dis.hasconst) {
+        if (operation.opcode in batavia.modules.dis.hasconst) {
             operation.args = [this.frame.f_code.co_consts[intArg]];
-        } else if (operation.opcode in dis.hasfree) {
+        } else if (operation.opcode in batavia.modules.dis.hasfree) {
             if (intArg < this.frame.f_code.co_cellvars.length) {
                 operation.args = [this.frame.f_code.co_cellvars[intArg]];
             } else {
                 var_idx = intArg - this.frame.f_code.co_cellvars.length;
                 operation.args = [this.frame.f_code.co_freevars[var_idx]];
             }
-        } else if (operation.opcode in dis.hasname) {
+        } else if (operation.opcode in batavia.modules.dis.hasname) {
             operation.args = [this.frame.f_code.co_names[intArg]];
-        } else if (operation.opcode in dis.hasjrel) {
+        } else if (operation.opcode in batavia.modules.dis.hasjrel) {
             operation.args = [this.frame.f_lasti + intArg];
-        } else if (operation.opcode in dis.hasjabs) {
+        } else if (operation.opcode in batavia.modules.dis.hasjabs) {
             operation.args = [intArg];
-        } else if (operation.opcode in dis.haslocal) {
+        } else if (operation.opcode in batavia.modules.dis.haslocal) {
             operation.args = [this.frame.f_code.co_varnames[intArg]];
         } else {
             operation.args = [intArg];
@@ -426,7 +427,7 @@ VirtualMachine.prototype.parse_byte_and_args = function() {
 /*
  * Log arguments, block stack, and data stack for each opcode.
  */
-VirtualMachine.prototype.log = function(opcode) {
+batavia.VirtualMachine.prototype.log = function(opcode) {
     var op = opcode.opoffset + ': ' + opcode.byteName;
     for (var arg in opcode.args) {
         op += ' ' + opcode.args[arg];
@@ -442,23 +443,23 @@ VirtualMachine.prototype.log = function(opcode) {
  * Dispatch by bytename to the corresponding methods.
  * Exceptions are caught and set on the virtual machine.
  */
-VirtualMachine.prototype.dispatch = function(opcode, args) {
+batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
     var why = null;
     try {
-        console.log('OPCODE: ', dis.opname[operation.opcode], args);
-        if (opcode in dis.unary_ops) {
-            this.unaryOperator(dis.opname[opcode].slice(6));
-        } else if (opcode in dis.binary_ops) {
-            this.binaryOperator(dis.opname[opcode].slice(7));
-        } else if (opcode in dis.inplace_ops) {
-            this.inplaceOperator(dis.opname[opcode].slice(8));
-        } else if (opcode in dis.slice_ops) {
-            this.sliceOperator(dis.opname[opcode]);
+        console.log('OPCODE: ', batavia.modules.dis.opname[operation.opcode], args);
+        if (opcode in batavia.modules.dis.unary_ops) {
+            this.unaryOperator(batavia.modules.dis.opname[opcode].slice(6));
+        } else if (opcode in batavia.modules.dis.binary_ops) {
+            this.binaryOperator(batavia.modules.dis.opname[opcode].slice(7));
+        } else if (opcode in batavia.modules.dis.inplace_ops) {
+            this.inplaceOperator(batavia.modules.dis.opname[opcode].slice(8));
+        } else if (opcode in batavia.modules.dis.slice_ops) {
+            this.sliceOperator(batavia.modules.dis.opname[opcode]);
         } else {
             // dispatch
-            var bytecode_fn = this['byte_' + dis.opname[opcode]];
+            var bytecode_fn = this['byte_' + batavia.modules.dis.opname[opcode]];
             if (!bytecode_fn) {
-                throw "unknown opcode " + opcode + " (" + dis.opname[opcode] + ")";
+                throw "unknown opcode " + opcode + " (" + batavia.modules.dis.opname[opcode] + ")";
             }
             why = bytecode_fn.apply(this, args);
         }
@@ -471,7 +472,7 @@ VirtualMachine.prototype.dispatch = function(opcode, args) {
     return why;
 };
 
-// VirtualMachine.prototype.manage_block_stack = function(why) {
+// batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
 //         """ Manage a frame's block stack.
 //         Manipulate the block stack and data stack for looping,
 //         exception handling, or returning."""
@@ -540,7 +541,7 @@ VirtualMachine.prototype.dispatch = function(opcode, args) {
  * Exceptions are raised, the return value is returned.
  *
  */
-VirtualMachine.prototype.run_frame = function(frame) {
+batavia.VirtualMachine.prototype.run_frame = function(frame) {
     var why;
 
     this.push_frame(frame);
@@ -582,19 +583,19 @@ VirtualMachine.prototype.run_frame = function(frame) {
     return this.return_value;
 };
 
-VirtualMachine.prototype.byte_LOAD_CONST = function(c) {
+batavia.VirtualMachine.prototype.byte_LOAD_CONST = function(c) {
     this.push(c);
 };
 
-VirtualMachine.prototype.byte_POP_TOP = function() {
+batavia.VirtualMachine.prototype.byte_POP_TOP = function() {
     this.pop();
 };
 
-VirtualMachine.prototype.byte_DUP_TOP = function() {
+batavia.VirtualMachine.prototype.byte_DUP_TOP = function() {
     this.push(this.top());
 };
 
-VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
+batavia.VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
     items = this.popn(count);
     for (var n = 0; n < 2; n++) {
         for (var i = 0; i < count; i++) {
@@ -603,7 +604,7 @@ VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
     }
 };
 
-VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
+batavia.VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
     items = this.popn(2);
     this.push(items[0]);
     this.push(items[1]);
@@ -611,20 +612,20 @@ VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
     this.push(items[1]);
 };
 
-VirtualMachine.prototype.byte_ROT_TWO = function() {
+batavia.VirtualMachine.prototype.byte_ROT_TWO = function() {
     items = this.popn(2);
     this.push(items[1]);
     this.push(items[0]);
 };
 
-VirtualMachine.prototype.byte_ROT_THREE = function() {
+batavia.VirtualMachine.prototype.byte_ROT_THREE = function() {
     items = this.popn(3);
     this.push(items[2]);
     this.push(items[0]);
     this.push(items[1]);
 };
 
-VirtualMachine.prototype.byte_ROT_FOUR = function() {
+batavia.VirtualMachine.prototype.byte_ROT_FOUR = function() {
     items = this.popn(4);
     this.push(items[3]);
     this.push(items[0]);
@@ -632,7 +633,7 @@ VirtualMachine.prototype.byte_ROT_FOUR = function() {
     this.push(items[2]);
 };
 
-VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
+batavia.VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
     frame = this.frame;
     if (name in frame.f_locals) {
         val = frame.f_locals[name];
@@ -646,15 +647,15 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
     this.push(val);
 };
 
-VirtualMachine.prototype.byte_STORE_NAME = function(name) {
+batavia.VirtualMachine.prototype.byte_STORE_NAME = function(name) {
     this.frame.f_locals[name] = this.pop();
 };
 
-VirtualMachine.prototype.byte_DELETE_NAME = function(name) {
+batavia.VirtualMachine.prototype.byte_DELETE_NAME = function(name) {
     delete this.frame.f_locals[name];
 };
 
-VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
+batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
@@ -663,19 +664,19 @@ VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     this.push(val);
 };
 
-VirtualMachine.prototype.byte_STORE_FAST = function(name) {
+batavia.VirtualMachine.prototype.byte_STORE_FAST = function(name) {
     this.frame.f_locals[name] = this.pop();
 };
 
-VirtualMachine.prototype.byte_DELETE_FAST = function(name) {
+batavia.VirtualMachine.prototype.byte_DELETE_FAST = function(name) {
     delete this.frame.f_locals[name];
 };
 
-VirtualMachine.prototype.byte_STORE_GLOBAL = function(name) {
+batavia.VirtualMachine.prototype.byte_STORE_GLOBAL = function(name) {
     this.frame.f_globals[name] = this.pop();
 };
 
-VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
+batavia.VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
     f = this.frame;
     if (name in f.f_globals) {
         val = f.f_globals[name];
@@ -687,19 +688,19 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
     this.push(val);
 };
 
-VirtualMachine.prototype.byte_LOAD_DEREF = function(name) {
+batavia.VirtualMachine.prototype.byte_LOAD_DEREF = function(name) {
     this.push(this.frame.cells[name].get());
 };
 
-VirtualMachine.prototype.byte_STORE_DEREF = function(name) {
+batavia.VirtualMachine.prototype.byte_STORE_DEREF = function(name) {
     this.frame.cells[name].set(this.pop());
 };
 
-VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
+batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
     this.push(this.frame.f_locals);
 };
 
-VirtualMachine.prototype.unaryOperator = function(op) {
+batavia.VirtualMachine.prototype.unaryOperator = function(op) {
     x = this.pop();
     this.push({
         'POSITIVE': +x,
@@ -710,7 +711,7 @@ VirtualMachine.prototype.unaryOperator = function(op) {
     }[op]);
 };
 
-VirtualMachine.prototype.binaryOperator = function(op) {
+batavia.VirtualMachine.prototype.binaryOperator = function(op) {
     items = this.popn(2);
     this.push({
         'POWER':    Math.pow(items[0], items[1]),
@@ -730,7 +731,7 @@ VirtualMachine.prototype.binaryOperator = function(op) {
     }[op]);
 };
 
-VirtualMachine.prototype.inplaceOperator = function(op) {
+batavia.VirtualMachine.prototype.inplaceOperator = function(op) {
     items = this.popn(2);
     if (op == 'POWER') {
         items[0] = Math.pow(items[0], items[1]);
@@ -762,7 +763,7 @@ VirtualMachine.prototype.inplaceOperator = function(op) {
     this.push(items[0]);
 };
 
-// VirtualMachine.prototype.sliceOperator = function(op) {
+// batavia.VirtualMachine.prototype.sliceOperator = function(op) {
 //     start = 0;
 //     end = null;          // we will take this to mean end
 //     // op, count = op[:-2], int(op[-1]);
@@ -784,64 +785,62 @@ VirtualMachine.prototype.inplaceOperator = function(op) {
 //         this.push(l[start:end])
 // };
 
-//     COMPARE_OPERATORS = [
-//         operator.lt,
-//         operator.le,
-//         operator.eq,
-//         operator.ne,
-//         operator.gt,
-//         operator.ge,
-//         lambda x, y: x in y,
-//         lambda x, y: x not in y,
-//         lambda x, y: x is y,
-//         lambda x, y: x is not y,
-//         lambda x, y: issubclass(x, Exception) and issubclass(x, y),
-//     ]
-// }
-// VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
-//         x, y = this.popn(2)
-//         this.push(this.COMPARE_OPERATORS[opnum](x, y))
+batavia.VirtualMachine.COMPARE_OPERATORS = [
+    function (x, y) { return x < y; },
+    function (x, y) { return x <= y; },
+    function (x, y) { return x == y; },
+    function (x, y) { return x != y; },
+    function (x, y) { return x > y; },
+    function (x, y) { return x >= y; },
+    function (x, y) { return x in y; },
+    function (x, y) { return !(x in y); },
+    function (x, y) { return x === y; },
+    function (x, y) { return x !== y; },
+    function (x, y) { return false; },
+];
 
-//     #// Attributes and indexing
-// }
+batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
+    var items = this.popn(2);
+    this.push(batavia.VirtualMachine.COMPARE_OPERATORS[opnum](items[0], items[1]));
+};
 
-VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
+batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val = obj[attr];
     this.push(val);
 };
 
-VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
+batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     items = this.popn(2);
     items[0][name] = val;
 };
 
-VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
+batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
     var obj = this.pop();
     delete obj[name];
 };
 
-VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
+batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     var items = this.popn(3);
     items[0][items[1]] = items[2];
 };
 
-VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
+batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
     delete items[0][items[1]];
 };
 
-VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
+batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
     var items = this.popn(count);
     this.push(items);
 };
 
-VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
+batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
     var items = this.popn(count);
     this.push(items);
 };
 
-VirtualMachine.prototype.byte_BUILD_SET = function(count) {
+batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     // TODO: Not documented in Py2 docs.
     var retval = new Set();
     for (var i = 0; i < count; i++) {
@@ -850,17 +849,17 @@ VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     this.push(retval);
 };
 
-VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
+batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
     this.push({});
 };
 
-VirtualMachine.prototype.byte_STORE_MAP = function() {
+batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
     var items = this.popn(3);
     items[0][items[1]] = items[2];
     this.push(items[0]);
 };
 
-VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
+batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     var seq = this.pop();
     seq.reverse();
     for (var i=0; i < seq.length; i++) {
@@ -868,7 +867,7 @@ VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     }
 };
 
-// VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
+// batavia.VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
 //         if count == 2:
 //             x, y = this.popn(2)
 //             this.push(slice(x, y))
@@ -878,85 +877,85 @@ VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
 //         else:           // pragma: no cover
 //             throw "Strange BUILD_SLICE count: %r" % count)
 // }
-VirtualMachine.prototype.byte_LIST_APPEND = function(count) {
+batavia.VirtualMachine.prototype.byte_LIST_APPEND = function(count) {
     var val = this.pop();
     var the_list = this.peek(count);
     the_list.append(val);
 };
 
-VirtualMachine.prototype.byte_SET_ADD = function(count) {
+batavia.VirtualMachine.prototype.byte_SET_ADD = function(count) {
     var val = this.pop();
     var the_set = this.peek(count);
     the_set.add(val);
 };
 
-VirtualMachine.prototype.byte_MAP_ADD = function(count) {
+batavia.VirtualMachine.prototype.byte_MAP_ADD = function(count) {
     var items = this.popn(2);
     var the_map = this.peek(count);
     the_map[items[1]] = items[0];
 };
 
-VirtualMachine.prototype.byte_PRINT_EXPR = function() {
+batavia.VirtualMachine.prototype.byte_PRINT_EXPR = function() {
     console.log(this.pop());
 };
 
-VirtualMachine.prototype.byte_PRINT_ITEM = function() {
+batavia.VirtualMachine.prototype.byte_PRINT_ITEM = function() {
     var item = this.pop();
     this.print_item(item);
 };
 
-VirtualMachine.prototype.byte_PRINT_ITEM_TO = function() {
+batavia.VirtualMachine.prototype.byte_PRINT_ITEM_TO = function() {
     var to = this.pop();  // FIXME - this is ignored.
     var item = this.pop();
     this.print_item(item);
 };
 
-VirtualMachine.prototype.byte_PRINT_NEWLINE = function() {
+batavia.VirtualMachine.prototype.byte_PRINT_NEWLINE = function() {
     this.print_newline();
 };
 
-VirtualMachine.prototype.byte_PRINT_NEWLINE_TO = function() {
+batavia.VirtualMachine.prototype.byte_PRINT_NEWLINE_TO = function() {
     var to = this.pop();  // FIXME - this is ignored.
     this.print_newline(to);
 };
 
-VirtualMachine.prototype.print_item = function(item, to) {
+batavia.VirtualMachine.prototype.print_item = function(item, to) {
     if (to === undefined) {
         // to = sys.stdout;  // FIXME - this is ignored.
     }
     console.log(item);
 };
 
-VirtualMachine.prototype.print_newline = function(to) {
+batavia.VirtualMachine.prototype.print_newline = function(to) {
     if (to === undefined) {
         // to = sys.stdout;  // FIXME - this is ignored.
     }
     console.log("");
 };
 
-VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
+batavia.VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
     this.jump(jump);
 };
 
-VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
+batavia.VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
     this.jump(jump);
 };
 
-VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
+batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
     if (val) {
         this.jump(jump);
     }
 };
 
-VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
+batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop();
     if (!val) {
         this.jump(jump);
     }
 };
 
-VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
+batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
     if (val) {
         this.jump(jump);
@@ -965,7 +964,7 @@ VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     }
 };
 
-VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
+batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top();
     if (!val) {
         this.jump(jump);
@@ -974,15 +973,15 @@ VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     }
 };
 
-VirtualMachine.prototype.byte_SETUP_LOOP = function(dest) {
+batavia.VirtualMachine.prototype.byte_SETUP_LOOP = function(dest) {
     this.push_block('loop', dest);
 };
 
-VirtualMachine.prototype.byte_GET_ITER = function() {
+batavia.VirtualMachine.prototype.byte_GET_ITER = function() {
     this.push(iter(this.pop()));
 };
 
-VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
+batavia.VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
     var iterobj = this.top();
     try {
         v = next(iterobj);
@@ -995,11 +994,11 @@ VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
     }
 };
 
-VirtualMachine.prototype.byte_BREAK_LOOP = function() {
+batavia.VirtualMachine.prototype.byte_BREAK_LOOP = function() {
     return 'break';
 };
 
-VirtualMachine.prototype.byte_CONTINUE_LOOP = function(dest) {
+batavia.VirtualMachine.prototype.byte_CONTINUE_LOOP = function(dest) {
     // This is a trick with the return value.
     // While unrolling blocks, continue and return both have to preserve
     // state as the finally blocks are executed.  For continue, it's
@@ -1010,15 +1009,15 @@ VirtualMachine.prototype.byte_CONTINUE_LOOP = function(dest) {
     return 'continue';
 };
 
-VirtualMachine.prototype.byte_SETUP_EXCEPT = function(dest) {
+batavia.VirtualMachine.prototype.byte_SETUP_EXCEPT = function(dest) {
     this.push_block('setup-except', dest);
 };
 
-VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
+batavia.VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
     this.push_block('finally', dest);
 };
 
-// VirtualMachine.prototype.byte_END_FINALLY = function() {
+// batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
 //     var v = this.pop();
 //     if isinstance(v, str):
 //         why = v
@@ -1042,11 +1041,11 @@ VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
 //     return why
 // }
 
-VirtualMachine.prototype.byte_POP_BLOCK = function() {
+batavia.VirtualMachine.prototype.byte_POP_BLOCK = function() {
     this.pop_block();
 };
 
-VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
+batavia.VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
     var cause, exc;
     if (argc == 2) {
         cause = this.pop();
@@ -1054,10 +1053,10 @@ VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
     } else if (argc == 1) {
         exc = this.pop();
     }
-    return this.do_raise(exc, cause)
+    return this.do_raise(exc, cause);
 };
 
-//     VirtualMachine.prototype.do_throw = function(exc, cause) {
+//     batavia.VirtualMachine.prototype.do_throw = function(exc, cause) {
 //             if exc is null:         // reraise
 //                 exc_type, val, tb = this.last_exception
 //                 if exc_type is null:
@@ -1090,13 +1089,13 @@ VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
 //             this.last_exception = exc_type, val, val.__traceback__
 //             return 'exception'
 // }
-// VirtualMachine.prototype.byte_POP_EXCEPT = function {
+// batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function {
 //         block = this.pop_block()
 //         if block.type != 'except-handler':
 //             throw Exception("popped block is not an except handler")
 //         this.unwind_block(block)
 // }
-// VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
+// batavia.VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
 //         ctxmgr = this.pop()
 //         this.push(ctxmgr.__exit__)
 //         ctxmgr_obj = ctxmgr.__enter__()
@@ -1106,7 +1105,7 @@ VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
 //             this.push_block('finally', dest)
 //         this.push(ctxmgr_obj)
 // }
-// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
+// batavia.VirtualMachine.prototype.byte_WITH_CLEANUP = function {
 //         // The code here does some weird stack manipulation: the exit function
 //         // is buried in the stack, and where depends on what's on top of it.
 //         // Pull out the exit function, and leave the rest in place.
@@ -1149,52 +1148,49 @@ VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
 
 //     #// Functions
 // }
-// VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
-//         if PY3:
-//             name = this.pop()
-//         else:
-//             name = null
-//         code = this.pop()
-//         defaults = this.popn(argc)
-//         globs = this.frame.f_globals
-//         fn = Function(name, code, globs, defaults, null, self)
-//         this.push(fn)
-// }
-// VirtualMachine.prototype.byte_LOAD_CLOSURE = function(name) {
-//         this.push(this.frame.cells[name])
-// }
-// VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
-//         if PY3:
-//             // TODO: the py3 docs don't mention this change.
-//             name = this.pop()
-//         else:
-//             name = null
-//         closure, code = this.popn(2)
-//         defaults = this.popn(argc)
-//         globs = this.frame.f_globals
-//         fn = Function(name, code, globs, defaults, closure, self)
-//         this.push(fn)
-// }
-VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {
+
+batavia.VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
+    var name = this.pop();
+    var code = this.pop();
+    var defaults = this.popn(argc);
+    var globs = this.frame.f_globals;
+    var fn = new batavia.core.Function(name, code, globs, defaults, null, this);
+    this.push(fn);
+};
+
+batavia.VirtualMachine.prototype.byte_LOAD_CLOSURE = function(name) {
+    this.push(this.frame.cells[name]);
+};
+
+batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
+    var name = this.pop();
+    var items = this.popn(2);
+    var defaults = this.popn(argc);
+    var globs = this.frame.f_globals;
+    var fn = Function(name, items[1], globs, defaults, items[0], this);
+    this.push(fn);
+};
+
+batavia.VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {
     return this.call_function(arg, [], {});
 };
 
-VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
+batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
     args = this.pop();
     return this.call_function(arg, args, {});
 };
 
-VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
+batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
     kwargs = this.pop();
     return this.call_function(arg, [], kwargs);
 };
 
-VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
+batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
     items = this.popn(2);
     return this.call_function(arg, items[0], items[1]);
 };
 
-VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
+batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
     var namedargs = {};
@@ -1220,23 +1216,25 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
                 'as first argument (got ' + type(posargs[0]).__name__ + ' instance instead)';
         }
         func = func.im_func;
-    }
+    } else if ('__call__' in func) {
+		func = func.__call__;
+	}
 
     var retval = func(posargs, namedargs);
     this.push(retval);
 };
 
-// VirtualMachine.prototype.byte_RETURN_VALUE = function {
+// batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function {
 //         this.return_value = this.pop()
 //         if this.frame.generator:
 //             this.frame.generator.finished = True
 //         return "return"
 // }
-// VirtualMachine.prototype.byte_YIELD_VALUE = function {
+// batavia.VirtualMachine.prototype.byte_YIELD_VALUE = function {
 //         this.return_value = this.pop()
 //         return "yield"
 // }
-// VirtualMachine.prototype.byte_YIELD_FROM = function {
+// batavia.VirtualMachine.prototype.byte_YIELD_FROM = function {
 //         u = this.pop()
 //         x = this.top()
 
@@ -1261,7 +1259,7 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 //     #// Importing
 // }
 
-VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
+batavia.VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     items = this.popn(2);
     frame = this.frame;
     this.push(
@@ -1269,7 +1267,7 @@ VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     );
 };
 
-VirtualMachine.prototype.byte_IMPORT_STAR = function() {
+batavia.VirtualMachine.prototype.byte_IMPORT_STAR = function() {
     // TODO: this doesn't use __all__ properly.
     mod = this.pop();
     for (var attr in mod) {
@@ -1279,34 +1277,32 @@ VirtualMachine.prototype.byte_IMPORT_STAR = function() {
     }
 };
 
-VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
+batavia.VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
     mod = this.top();
     this.push(mod[name]);
 };
 
-// VirtualMachine.prototype.byte_EXEC_STMT = function() {
+// batavia.VirtualMachine.prototype.byte_EXEC_STMT = function() {
 //     stmt, globs, locs = this.popn(3)
-//     six.exec_(stmt, globs, locs)
+//     six.exec_(stmt, globs, locs) f
 // };
 
-VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
+batavia.VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
     this.push(__build_class__);
 };
 
-VirtualMachine.prototype.byte_STORE_LOCALS = function() {
+batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {
     this.frame.f_locals = this.pop();
 };
 
-VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
+batavia.VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
     this.frame.f_lineno = lineno;
 };
 
-VirtualMachine.prototype.__import__ = function(name, globals, locals, fromlist, level) {
-    var module = {};
-    if (name === 'time') {
-        module.clock = function() {
-            return [0.1];
-        };
+batavia.VirtualMachine.prototype.__import__ = function(name, globals, locals, fromlist, level) {
+    var module;
+    if (batavia.modules.hasOwnProperty(name)) {
+        module = batavia.modules[name];
     } else {
 
     }

@@ -17,14 +17,14 @@
  *        actual value.
  */
 
-function Cell(value) {
+batavia.core.Cell = function(value) {
     this.contents = value;
-}
+};
 
-Cell.prototype.get = function() {
+batavia.core.Cell.prototype.get = function() {
     return this.contents;
 };
 
-Cell.prototype.set = function(value) {
+batavia.core.Cell.prototype.set = function(value) {
     this.contents = value;
 };

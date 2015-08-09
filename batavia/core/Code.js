@@ -1,5 +1,5 @@
 
-function Code(kwargs) {
+batavia.core.Code = function(kwargs) {
     this.co_argcount = kwargs.argcount || 0;
     this.co_cellvars = kwargs.cellvars || [];
     this.co_code = kwargs.code;
@@ -14,4 +14,4 @@ function Code(kwargs) {
     this.co_nlocals = kwargs.nlocals || 0;
     this.co_stacksize = kwargs.stacksize || 0;
     this.co_varnames = kwargs.varnames || [];
-}
+};

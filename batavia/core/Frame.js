@@ -1,5 +1,5 @@
 
-function Frame(kwargs) {
+batavia.core.Frame = function(kwargs) {
     var v;
 
     this.f_code = kwargs.f_code;
@@ -49,13 +49,13 @@ function Frame(kwargs) {
     this.block_stack = [];
     this.generator = null;
 
-}
+};
 
-Frame.prototype.__repr__ = function() {
+batavia.core.Frame.prototype.__repr__ = function() {
     return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename +' @ ' + this.f_lineno + '>';
 };
 
-Frame.prototype.line_number = function() {
+batavia.core.Frame.prototype.line_number = function() {
     // Get the current line number the frame is executing.
     // We don't keep f_lineno up to date, so calculate it based on the
     // instruction address and the line number table.

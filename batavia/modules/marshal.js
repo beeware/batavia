@@ -28,7 +28,7 @@
 
  *************************************************************************/
 
-var Marshal = {
+batavia.modules.marshal = {
 
     /* High water mark to determine when the marshalled object is dangerously deep
      * and risks coring the interpreter.  When the object stack gets this deep,
@@ -99,7 +99,7 @@ var Marshal = {
         //     res = p.ptr;
         //     var left = p.end - p.ptr;
         //     if (left < n) {
-        //         vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+        //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
         //                         "marshal data too short");
         //         return null;
         //     }
@@ -141,18 +141,18 @@ var Marshal = {
 
         //     res = _PyObject_CallMethodId(p.readable, PyId_readinto, "N", mview);
         //     if (res !== null) {
-        //         read = PyNumber_AsSsize_t(res, VirtualMachine.builtins.ValueError);
+        //         read = PyNumber_AsSsize_t(res, batavia.VirtualMachine.builtins.ValueError);
         //     }
         // }
         // if (read != n) {
         //     if (!vm.PyErr_Occurred()) {
         //         if (read > n)
-        //             vm.PyErr_Format(VirtualMachine.builtins.ValueError,
+        //             vm.PyErr_Format(batavia.VirtualMachine.builtins.ValueError,
         //                          "read() returned too much data: " +
         //                          "%zd bytes requested, %zd returned",
         //                          n, read);
         //         else
-        //             vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+        //             vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
         //                             "EOF read where not expected");
         //     }
         //     return null;
@@ -199,8 +199,8 @@ var Marshal = {
     //     if (n === 0) {
     //         return _PyLong_New(0);
     //     }
-    //     if (n < -Marshal.SIZE32_MAX || n > Marshal.SIZE32_MAX) {
-    //         vm.PyErr_SetString(VirtualMachine.builtins.ValueError,
+    //     if (n < -batavia.modules.marshal.SIZE32_MAX || n > batavia.modules.marshal.SIZE32_MAX) {
+    //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError,
     //                        "bad marshal data (long size out of range)");
     //         return null;
     //     }
@@ -238,7 +238,7 @@ var Marshal = {
     //             goto bad_digit;
     //         /* topmost marshal digit should be nonzero */
     //         if (md === 0 && j == shorts_in_top_digit - 1) {
-    //             vm.PyErr_SetString(VirtualMachine.builtins.ValueError,
+    //             vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError,
     //                 "bad marshal data (unnormalized long data)");
     //             return null;
     //         }
@@ -252,7 +252,7 @@ var Marshal = {
     //     ob.ob_digit[size-1] = d;
     //     return (var )ob;
     //   bad_digit:
-    //     vm.PyErr_SetString(VirtualMachine.builtins.ValueError,
+    //     vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError,
     //                     "bad marshal data (digit out of range in long)");
     //     return null;
     // },
@@ -262,7 +262,7 @@ var Marshal = {
         if (flag) { /* currently only FLAG_REF is defined */
             var idx = p.refs.length;
             if (idx >= 0x7ffffffe) {
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (index list too large)");
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (index list too large)");
                 return -1;
             }
             if (p.refs.append(null) < 0) {
@@ -295,7 +295,7 @@ var Marshal = {
      * after having loaded its sub-objects.,
      */
     r_ref: function(vm, o, flag, p) {
-        assert(flag & Marshal.FLAG_REF);
+        assert(flag & batavia.modules.marshal.FLAG_REF);
         if (o === null) {
             return null;
         }
@@ -312,88 +312,88 @@ var Marshal = {
         var idx = 0;
         var i, n;
         var ptr;
-        var type, code = Marshal.r_byte(vm, p);
+        var type, code = batavia.modules.marshal.r_byte(vm, p);
         var flag, is_interned = 0;
 
-        if (code === PYCFile.EOF) {
-            vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+        if (code === batavia.core.PYCFile.EOF) {
+            vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                             "EOF read where object expected");
             return null;
         }
 
         p.depth++;
 
-        if (p.depth > Marshal.MAX_MARSHAL_STACK_DEPTH) {
+        if (p.depth > batavia.modules.marshal.MAX_MARSHAL_STACK_DEPTH) {
             p.depth--;
-            vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "recursion limit exceeded");
+            vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "recursion limit exceeded");
             return null;
         }
 
-        flag = code & Marshal.FLAG_REF;
-        type = code & ~Marshal.FLAG_REF;
+        flag = code & batavia.modules.marshal.FLAG_REF;
+        type = code & ~batavia.modules.marshal.FLAG_REF;
 
         // log.info("R_OBJECT " + type + ' ' + flag);
         switch (type) {
 
-        case Marshal.TYPE_null:
+        case batavia.modules.marshal.TYPE_null:
             // log.info('TYPE_NULL ');
             break;
 
-        case Marshal.TYPE_NONE:
+        case batavia.modules.marshal.TYPE_NONE:
             retval = null;
             // log.info('TYPE_NONE ' + retval);
             break;
 
-        case Marshal.TYPE_STOPITER:
-            retval = VirtualMachine.builtins.StopIteration;
+        case batavia.modules.marshal.TYPE_STOPITER:
+            retval = batavia.VirtualMachine.builtins.StopIteration;
             // log.info('TYPE_STOPITER');
             break;
 
-        case Marshal.TYPE_ELLIPSIS:
-            retval = VirtualMachine.Py_Ellipsis;
+        case batavia.modules.marshal.TYPE_ELLIPSIS:
+            retval = batavia.VirtualMachine.Py_Ellipsis;
             // log.info('TYPE_ELLIPSIS');
             break;
 
-        case Marshal.TYPE_FALSE:
+        case batavia.modules.marshal.TYPE_FALSE:
             retval = false;
             // log.info('TYPE_FALSE');
             break;
 
-        case Marshal.TYPE_TRUE:
+        case batavia.modules.marshal.TYPE_TRUE:
             retval = true;
             // log.info('TYPE_TRUE');
             break;
 
-        case Marshal.TYPE_INT:
-            retval = Marshal.r_long(vm, p);
+        case batavia.modules.marshal.TYPE_INT:
+            retval = batavia.modules.marshal.r_long(vm, p);
             // log.info('TYPE_INT ' + retval);
             if (vm.PyErr_Occurred()) {
                 break;
             }
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_LONG:
-            retval = Marshal.r_PyLong(vm, p);
+        case batavia.modules.marshal.TYPE_LONG:
+            retval = batavia.modules.marshal.r_PyLong(vm, p);
             // log.info('TYPE_LONG ' + retval);
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_FLOAT:
-            n = Marshal.r_byte(vm, p);
-            buf = Marshal.r_string(vm, p, n);
+        case batavia.modules.marshal.TYPE_FLOAT:
+            n = batavia.modules.marshal.r_byte(vm, p);
+            buf = batavia.modules.marshal.r_string(vm, p, n);
             retval = parseFloat(buf);
             // log.info('TYPE_FLOAT ' + retval);
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_BINARY_FLOAT:
+        case batavia.modules.marshal.TYPE_BINARY_FLOAT:
             buf = p.fread(8);
 
             var sign;
@@ -450,18 +450,18 @@ var Marshal = {
             // log.info('TYPE_BINARY_FLOAT ' + retval);
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_COMPLEX:
+        case batavia.modules.marshal.TYPE_COMPLEX:
             // log.info('TYPE_COMPLEX ' + retval);
         //     {
         //     char buf[256], *ptr;
         //     Py_complex c;
-        //     n = Marshal.r_byte(vm, p);
+        //     n = batavia.modules.marshal.r_byte(vm, p);
         //     if (n == EOF) {
-        //         vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+        //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
         //             "EOF read where object expected");
         //         break;
         //     }
@@ -473,9 +473,9 @@ var Marshal = {
         //     c.real = PyOS_string_to_double(buf, null, null);
         //     if (c.real == -1.0 && vm.PyErr_Occurred())
         //         break;
-        //     n = Marshal.r_byte(vm, p);
+        //     n = batavia.modules.marshal.r_byte(vm, p);
         //     if (n == EOF) {
-        //         vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+        //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
         //             "EOF read where object expected");
         //         break;
         //     }
@@ -491,17 +491,17 @@ var Marshal = {
         //     Marsha.r_ref(vm, retval, flag, p);
             break;
 
-        case Marshal.TYPE_BINARY_COMPLEX:
+        case batavia.modules.marshal.TYPE_BINARY_COMPLEX:
             // log.info('TYPE_COMPLEX ' + retval);
         //         unsigned char *buf;
         //         Py_complex c;
-        //         buf = Marshal.r_string(vm, 8, p);
+        //         buf = batavia.modules.marshal.r_string(vm, 8, p);
         //         if (buf === null)
         //             break;
         //         c.real = _PyFloat_Unpack8(buf, 1);
         //         if (c.real == -1.0 && vm.PyErr_Occurred())
         //             break;
-        //         buf = Marshal.r_string(vm, 8, p);
+        //         buf = batavia.modules.marshal.r_string(vm, 8, p);
         //         if (buf === null)
         //             break;
         //         c.imag = _PyFloat_Unpack8(buf, 1);
@@ -511,73 +511,73 @@ var Marshal = {
         //         Marsha.r_ref(vm, retval, flag, p);
                 break;
 
-        case Marshal.TYPE_STRING:
-            n = Marshal.r_long(vm, p);
+        case batavia.modules.marshal.TYPE_STRING:
+            n = batavia.modules.marshal.r_long(vm, p);
             // log.info('TYPE_STRING ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            if (n < 0 || n > Marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (string size out of range)");
+            if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (string size out of range)");
                 break;
             }
-            retval = Marshal.r_string(vm, n, p);
+            retval = batavia.modules.marshal.r_string(vm, n, p);
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_ASCII_INTERNED:
-        case Marshal.TYPE_ASCII:
-            n = Marshal.r_long(vm, p);
+        case batavia.modules.marshal.TYPE_ASCII_INTERNED:
+        case batavia.modules.marshal.TYPE_ASCII:
+            n = batavia.modules.marshal.r_long(vm, p);
             // log.info('TYPE_ASCII ' + n);
-            if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+            if (n === batavia.core.PYCFile.EOF) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                     "EOF read where object expected");
                 break;
             }
-            retval = Marshal.r_string(vm, n, p);
+            retval = batavia.modules.marshal.r_string(vm, n, p);
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_SHORT_ASCII_INTERNED:
-        case Marshal.TYPE_SHORT_ASCII:
-            n = Marshal.r_byte(vm, p);
+        case batavia.modules.marshal.TYPE_SHORT_ASCII_INTERNED:
+        case batavia.modules.marshal.TYPE_SHORT_ASCII:
+            n = batavia.modules.marshal.r_byte(vm, p);
             // log.info('TYPE_SHORT_ASCII ' + n);
-            if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+            if (n === batavia.core.PYCFile.EOF) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                     "EOF read where object expected");
                 break;
             }
-            retval = Marshal.r_string(vm, n, p);
+            retval = batavia.modules.marshal.r_string(vm, n, p);
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_INTERNED:
-        case Marshal.TYPE_UNICODE:
-            n = Marshal.r_long(vm, p);
+        case batavia.modules.marshal.TYPE_INTERNED:
+        case batavia.modules.marshal.TYPE_UNICODE:
+            n = batavia.modules.marshal.r_long(vm, p);
             // log.info('TYPE_UNICODE ' + n);
-            if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(VirtualMachine.builtins.EOFError,
+            if (n === batavia.core.PYCFile.EOF) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                     "EOF read where object expected");
                 break;
             }
-            retval = Marshal.r_string(vm, n, p);
+            retval = batavia.modules.marshal.r_string(vm, n, p);
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_SMALL_TUPLE:
-            n = Marshal.r_byte(vm, p);
+        case batavia.modules.marshal.TYPE_SMALL_TUPLE:
+            n = batavia.modules.marshal.r_byte(vm, p);
             // log.info('TYPE_SMALL_TUPLE ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
@@ -585,56 +585,56 @@ var Marshal = {
             retval = new Array(n);
 
             for (i = 0; i < n; i++) {
-                retval[i] = Marshal.r_object(vm, p);
+                retval[i] = batavia.modules.marshal.r_object(vm, p);
             }
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_TUPLE:
+        case batavia.modules.marshal.TYPE_TUPLE:
             n = r_long(p);
             // log.info('TYPE_TUPLE ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            if (n < 0 || n > Marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (tuple size out of range)");
+            if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (tuple size out of range)");
                 break;
             }
             retval = new Array(n);
 
             for (i = 0; i < n; i++) {
-                retval[i] = Marshal.r_object(vm, p);
+                retval[i] = batavia.modules.marshal.r_object(vm, p);
             }
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_LIST:
+        case batavia.modules.marshal.TYPE_LIST:
             n = r_long(p);
             // log.info('TYPE_LIST ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            if (n < 0 || n > Marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (list size out of range)");
+            if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (list size out of range)");
                 break;
             }
             retval = new Array(n);
             for (i = 0; i < n; i++) {
-                retval[n] = Marshal.r_object(vm, p);
+                retval[n] = batavia.modules.marshal.r_object(vm, p);
             }
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_DICT:
+        case batavia.modules.marshal.TYPE_DICT:
             // log.info('TYPE_DICT ' + n);
             retval = {};
             for (;;) {
@@ -653,31 +653,31 @@ var Marshal = {
             }
 
             if (flag) {
-                Marshal.r_ref(vm, retval, flag, p);
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
             break;
 
-        case Marshal.TYPE_SET:
-        case Marshal.TYPE_FROZENSET:
+        case batavia.modules.marshal.TYPE_SET:
+        case batavia.modules.marshal.TYPE_FROZENSET:
             n = r_long(p);
             // log.info('TYPE_FROZENSET ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            if (n < 0 || n > Marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (set size out of range)");
+            if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (set size out of range)");
                 break;
             }
-            retval = (type == Marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
-            if (type == Marshal.TYPE_SET) {
+            retval = (type == batavia.modules.marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
+            if (type == batavia.modules.marshal.TYPE_SET) {
                 if (flag) {
-                   Marshal.r_ref(vm, retval, flag, p);
+                   batavia.modules.marshal.r_ref(vm, retval, flag, p);
                 }
             } else {
                 /* must use delayed registration of frozensets because they must
                  * be init with a refcount of 1
                  */
-                idx = Marshal.r_ref_reserve(flag, p);
+                idx = batavia.modules.marshal.r_ref_reserve(flag, p);
                 if (idx < 0) {
                     Py_CLEAR(v); /* signal error */
                 }
@@ -687,12 +687,12 @@ var Marshal = {
                 retval.add(r_object(p));
             }
 
-            if (type != Marshal.TYPE_SET) {
-                retval = Marshal.r_ref_insert(retval, idx, flag, p);
+            if (type != batavia.modules.marshal.TYPE_SET) {
+                retval = batavia.modules.marshal.r_ref_insert(retval, idx, flag, p);
             }
             break;
 
-        case Marshal.TYPE_CODE:
+        case batavia.modules.marshal.TYPE_CODE:
             var argcount;
             var kwonlyargcount;
             var nlocals;
@@ -708,34 +708,34 @@ var Marshal = {
             var firstlineno;
             var lnotab;
 
-            idx = Marshal.r_ref_reserve(vm, flag, p);
+            idx = batavia.modules.marshal.r_ref_reserve(vm, flag, p);
             if (idx < 0) {
                 break;
             }
 
             v = null;
 
-            argcount = Marshal.r_long(vm, p);
-            kwonlyargcount = Marshal.r_long(vm, p);
-            nlocals = Marshal.r_long(vm, p);
-            stacksize = Marshal.r_long(vm, p);
-            flags = Marshal.r_long(vm, p);
-            code = Marshal.r_object(vm, p);
-            consts = Marshal.r_object(vm, p);
-            names = Marshal.r_object(vm, p);
-            varnames = Marshal.r_object(vm, p);
-            freevars = Marshal.r_object(vm, p);
-            cellvars = Marshal.r_object(vm, p);
-            filename = Marshal.r_object(vm, p);
-            name = Marshal.r_object(vm, p);
-            firstlineno = Marshal.r_long(vm, p);
-            lnotab = Marshal.r_object(vm, p);
+            argcount = batavia.modules.marshal.r_long(vm, p);
+            kwonlyargcount = batavia.modules.marshal.r_long(vm, p);
+            nlocals = batavia.modules.marshal.r_long(vm, p);
+            stacksize = batavia.modules.marshal.r_long(vm, p);
+            flags = batavia.modules.marshal.r_long(vm, p);
+            code = batavia.modules.marshal.r_object(vm, p);
+            consts = batavia.modules.marshal.r_object(vm, p);
+            names = batavia.modules.marshal.r_object(vm, p);
+            varnames = batavia.modules.marshal.r_object(vm, p);
+            freevars = batavia.modules.marshal.r_object(vm, p);
+            cellvars = batavia.modules.marshal.r_object(vm, p);
+            filename = batavia.modules.marshal.r_object(vm, p);
+            name = batavia.modules.marshal.r_object(vm, p);
+            firstlineno = batavia.modules.marshal.r_long(vm, p);
+            lnotab = batavia.modules.marshal.r_object(vm, p);
 
             if (filename) {
                 p.current_filename = filename;
             }
 
-            v = new Code({
+            v = new batavia.core.Code({
                 argcount: argcount,
                 kwonlyargcount: kwonlyargcount,
                 nlocals: nlocals,
@@ -752,22 +752,22 @@ var Marshal = {
                 firstlineno: firstlineno,
                 lnotab: lnotab
             });
-            v = Marshal.r_ref_insert(vm, v, idx, flag, p);
+            v = batavia.modules.marshal.r_ref_insert(vm, v, idx, flag, p);
 
             retval = v;
             break;
 
-        case Marshal.TYPE_REF:
-            n = Marshal.r_long(vm, p);
+        case batavia.modules.marshal.TYPE_REF:
+            n = batavia.modules.marshal.r_long(vm, p);
             if (n < 0 || n >= p.refs.length) {
                 if (n == -1 && vm.PyErr_Occurred())
                     break;
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (invalid reference)");
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (invalid reference)");
                 break;
             }
             v = p.refs[n];
             if (v === null) {
-                vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (invalid reference)");
+                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (invalid reference)");
                 break;
             }
             retval = v;
@@ -776,7 +776,7 @@ var Marshal = {
         default:
             /* Bogus data got written, which isn't ideal.
                This will let you keep working and recover. */
-            vm.PyErr_SetString(VirtualMachine.builtins.ValueError, "bad marshal data (unknown type code '" + type + "')");
+            vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (unknown type code '" + type + "')");
             break;
 
         }
@@ -790,10 +790,10 @@ var Marshal = {
             log.error("readobject called with exception set\n");
             return null;
         }
-        v = Marshal.r_object(vm, p);
+        v = batavia.modules.marshal.r_object(vm, p);
 
         if (v === null && !vm.PyErr_Occurred()) {
-            vm.PyErr_SetString(VirtualMachine.builtins.TypeError, "null object in marshal data for object");
+            vm.PyErr_SetString(batavia.VirtualMachine.builtins.TypeError, "null object in marshal data for object");
         }
         return v;
     },
@@ -807,6 +807,6 @@ var Marshal = {
      */
 
     load_pyc: function(vm, pyc) {
-        return Marshal.read_object(vm, new PYCFile(pyc));
+        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(pyc));
     }
 };

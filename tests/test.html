@@ -2,13 +2,19 @@
 <head>
     <title>Batavia test</title>
 
+    <script src="../batavia/batavia.js"></script>
     <script src="../batavia/utils.js"></script>
-    <script src="../batavia/dis.js"></script>
-    <script src="../batavia/Marshal.js"></script>
-    <script src="../batavia/Cell.js"></script>
-    <script src="../batavia/Frame.js"></script>
-    <script src="../batavia/Block.js"></script>
-    <script src="../batavia/Code.js"></script>
+    <script src="../batavia/modules/dis.js"></script>
+    <script src="../batavia/modules/inspect.js"></script>
+    <script src="../batavia/modules/marshal.js"></script>
+    <script src="../batavia/modules/sys.js"></script>
+    <script src="../batavia/modules/time.js"></script>
+    <script src="../batavia/core/PYCFile.js"></script>
+    <script src="../batavia/core/Block.js"></script>
+    <script src="../batavia/core/Cell.js"></script>
+    <script src="../batavia/core/Code.js"></script>
+    <script src="../batavia/core/Frame.js"></script>
+    <script src="../batavia/core/Function.js"></script>
     <script src="../batavia/VirtualMachine.js"></script>
     <!--script src="../batavia.js"></script-->
 
@@ -188,7 +194,7 @@ AAByBwAAANoIPG1vZHVsZT4CAAAAcwoAAAAMBQwFDAQMAQwB
     <script>
 function run(module) {
     console.log('Create VM');
-    var vm = new VirtualMachine();
+    var vm = new batavia.VirtualMachine();
     console.log('Run code...');
     vm.run(module);
     console.log('done.');
