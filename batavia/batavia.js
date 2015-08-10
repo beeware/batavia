@@ -1,0 +1,5 @@
+
+var batavia = {
+    core: {},
+    modules: {}
+};
