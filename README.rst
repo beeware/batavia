@@ -22,10 +22,10 @@ Quickstart
 
 See the `tests/test.html` file for an example of usage.
 
-..Documentation
-..-------------
+Documentation
+-------------
 
-..Documentation for Batavia can be found on `Read The Docs`_.
+Documentation for Batavia can be found on `Read The Docs`_.
 
 Community
 ---------
