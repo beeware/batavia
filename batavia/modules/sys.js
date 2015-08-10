@@ -1,3 +1,4 @@
 
 batavia.modules.sys = {
+    'modules': {}
 };

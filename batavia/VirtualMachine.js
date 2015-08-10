@@ -77,7 +77,38 @@ batavia.builtins = {
 
     '__debug__': undefined,
     '__doc__': undefined,
-    '__import__': undefined,
+    '__import__': function(args, kwargs) {
+        // First, try native modules
+        var module = batavia.modules[args[0]];
+        // If there's no native module, try for a pre-loaded module.
+        if (module === undefined) {
+            module = batavia.modules.sys.modules[args[0]];
+        }
+        // If there still isn't a module, try loading one from the DOM.
+        if (module === undefined) {
+            // Load requested module
+            var payload = document.getElementById('batavia-' + args[0]).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+            var bytecode = atob(payload);
+            var code = batavia.modules.marshal.load_pyc(this, bytecode);
+
+            // Convert code object to module
+            var frame = this.make_frame({'code': code, 'f_globals': args[1], 'f_locals': null});
+            this.run_frame(frame);
+
+			// import <mod>
+			batavia.modules.sys.modules[args[0]] = frame.f_locals;
+			if (args[3] === null) {
+                module = batavia.modules.sys.modules[args[0]];
+			} else {
+                module = {};
+                for (var n in args[3]) {
+                    var name = args[3][n];
+                    module[name] = frame.f_locals[name];
+				}
+			}
+        }
+        return module;
+    },
     '__name__': undefined,
     '__package__': undefined,
 
@@ -1255,7 +1286,7 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 batavia.VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2);
     this.push(
-        this.__import__(name, this.frame.f_globals, this.frame.f_locals, items[1], items[0])
+        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, this.frame.f_locals, items[1], items[0]]])
     );
 };
 
@@ -1289,14 +1320,4 @@ batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {
 
 batavia.VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
     this.frame.f_lineno = lineno;
-};
-
-batavia.VirtualMachine.prototype.__import__ = function(name, globals, locals, fromlist, level) {
-    var module;
-    if (batavia.modules.hasOwnProperty(name)) {
-        module = batavia.modules[name];
-    } else {
-
-    }
-    return module;
 };
