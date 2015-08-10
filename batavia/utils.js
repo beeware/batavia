@@ -5,12 +5,6 @@ function assert(condition, message) {
     }
 }
 
-if (!atob) {
-    var atob = function (b64string) {
-        return new Buffer(b64string, 'base64').toString('binary');
-    };
-}
-
 /*************************************************************************
  * A Logger
  *************************************************************************/
