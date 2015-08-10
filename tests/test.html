@@ -2,6 +2,25 @@
 <head>
     <title>Batavia test</title>
 
+    <!--
+        To run this demo:
+
+        * Load this page in a browser
+        * Open a Javascript console
+        * Type::
+
+              run('sample')
+
+        'sample' is the dotted path to a module name whose PYC file has been
+        encoded in base64 and included in this file as the 'batavia-sample'
+        <script> tag.
+
+        You could also try running::
+
+              run('test.pystone')
+
+        but all the required opcodes aren't implemented (yet!).
+      -->
     <script src="../batavia/batavia.js"></script>
     <script src="../batavia/utils.js"></script>
     <script src="../batavia/modules/dis.js"></script>
@@ -157,11 +176,11 @@ Ag8HDwMGAQYBBgEGAQ0BGgEGAQYCDzoMEAwLDAoMBwwHDBMMBQwNDAgMEQwFDAEMAQwEEwEMAREB
 DAEDABcBDQEdAgYB
 </script>
 
-    <!-- This is a simpler script::
+    <!-- This is a simple test script::
 
         def do_stuff(count):
             for i in range(0, count):
-                print("HELLO", count)
+                print("HELLO", i)
 
 
         def main(argv):
@@ -178,17 +197,18 @@ DAEDABcBDQEdAgYB
             main(sys.argv)
     -->
     <script id="batavia-sample" type="application/python-bytecode">
-7gwNCv2vxlX9AAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAc1AAAABkAABkAQCEAABaAABkAgBkAwCE
+7gwNCpEQyFX5AAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAc1AAAABkAABkAQCEAABaAABkAgBkAwCE
 AABaAQBkBABkBQCEAABaAgBlAwBkBgBrAgByTABkBwBkCABsBABaBABlAQBlBABqBQCDAQABbgAA
 ZAgAUykJYwEAAAAAAAAAAgAAAAQAAABDAAAAcysAAAB4JAB0AABkAQB8AACDAgBEXRMAfQEAdAEA
-ZAIAfAAAgwIAAXEQAFdkAABTKQNO6QAAAABaBUhFTExPKQLaBXJhbmdl2gVwcmludCkC2gVjb3Vu
-dNoBaakAcgYAAAD6CXNhbXBsZS5wedoIZG9fc3R1ZmYCAAAAcwQAAAAAARYBcggAAABjAQAAAAAA
-AAABAAAABQAAAEMAAABzHgAAAHQAAHQBAHQCAHwAAGQBABmDAQCDAQCDAQABZAIAUykDTukBAAAA
-cgEAAAApA3IDAAAAcggAAADaA2ludCkB2gRhcmd2cgYAAAByBgAAAHIHAAAA2gRtYWluBwAAAHME
-AAAAAAEaAXIMAAAAYwAAAAAAAAAAAQAAAAIAAABHAAAAcwoAAAB0AABkAABmAgBTKQFOKQFyDAAA
-ACkB2gRhcmdzcgYAAAByBgAAAHIHAAAA2gZ0YXJnZXQMAAAAcwIAAAAAAXIOAAAA2ghfX21haW5f
-X3IBAAAATikGcggAAAByDAAAAHIOAAAA2ghfX25hbWVfX9oDc3lzcgsAAAByBgAAAHIGAAAAcgYA
-AAByBwAAANoIPG1vZHVsZT4CAAAAcwoAAAAMBQwFDAQMAQwB
+ZAIAfAEAgwIAAXEQAFdkAABTKQNO6QAAAABaBUhFTExPKQLaBXJhbmdl2gVwcmludCkC2gVjb3Vu
+dNoBaakAcgYAAAD6Pi9Vc2Vycy9ya20vcHJvamVjdHMvYmVld2FyZS9iYXRhdmlhL2phdmFzY3Jp
+cHQvdGVzdHMvc2FtcGxlLnB52ghkb19zdHVmZgIAAABzBAAAAAABFgFyCAAAAGMBAAAAAAAAAAEA
+AAAFAAAAQwAAAHMeAAAAdAAAdAEAdAIAfAAAZAEAGYMBAIMBAIMBAAFkAgBTKQNO6QEAAAByAQAA
+ACkDcgMAAAByCAAAANoDaW50KQHaBGFyZ3ZyBgAAAHIGAAAAcgcAAADaBG1haW4HAAAAcwQAAAAA
+ARoBcgwAAABjAAAAAAAAAAABAAAAAgAAAEcAAABzCgAAAHQAAGQAAGYCAFMpAU4pAXIMAAAAKQHa
+BGFyZ3NyBgAAAHIGAAAAcgcAAADaBnRhcmdldAwAAABzAgAAAAABcg4AAADaCF9fbWFpbl9fcgEA
+AABOKQZyCAAAAHIMAAAAcg4AAADaCF9fbmFtZV9f2gNzeXNyCwAAAHIGAAAAcgYAAAByBgAAAHIH
+AAAA2gg8bW9kdWxlPgIAAABzCgAAAAwFDAUMBAwBDAE=
     </script>
 
     <script>
@@ -196,7 +216,9 @@ function run(module) {
     console.log('Create VM');
     var vm = new batavia.VirtualMachine();
     console.log('Run code...');
-    vm.run(module);
+    // The first argument is the Python dotted-path of the module to run
+    // The second argument is the value for sys.argv
+    vm.run(module, [5]);
     console.log('done.');
 }
 

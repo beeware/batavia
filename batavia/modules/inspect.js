@@ -1,15 +1,14 @@
 
-batavia.FullArgSpec = function(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations) {
-    this.args = args;
-    this.varargs = varargs;
-    this.keywords = keywords;
-    this.defaults = defaults;
-    this.kwonlyargs = kwonlyargs;
-    this.kwonlydefaults = kwonlydefaults;
-    this.annotations = annotations;
-};
-
 batavia.modules.inspect = {
+    FullArgSpec: function(kwargs) {
+        this.args = kwargs.args || [];
+        this.varargs = kwargs.varargs || [];
+        this.varkw = kwargs.varkw || [];
+        this.defaults = kwargs.defaults || {};
+        this.kwonlyargs = kwargs.kwonlyargs || [];
+        this.kwonlydefaults = kwargs.kwonlydefaults || {};
+        this.annotations = kwargs.annotations || {};
+    },
 
     _signature_get_user_defined_method: function(cls, method_name) {
         // try:
@@ -114,7 +113,7 @@ batavia.modules.inspect = {
         // if isfunction(obj) or _signature_is_functionlike(obj):
         //     # If it's a pure Python function, or an object that is duck type
         //     # of a Python function (Cython functions, for instance), then:
-            return Signature.from_function(obj);
+            return batavia.modules.inspect.Signature.from_function(obj);
 
         // if _signature_is_builtin(obj):
         //     return batavia.modules.inspect._signature_from_builtin(Signature, obj,
@@ -231,7 +230,7 @@ batavia.modules.inspect = {
      */
     getfullargspec: function(func) {
         // try {
-            // Re: `skip_bound_arg=False`
+            // Re: `skip_bound_arg=false`
             //
             // There is a notable difference in behaviour between getfullargspec
             // and Signature: the former always returns 'self' parameter for bound
@@ -242,7 +241,7 @@ batavia.modules.inspect = {
             // batavia.modules.inspect.signature to always return their first parameter ("self",
             // usually)
 
-            // Re: `follow_wrapper_chains=False`
+            // Re: `follow_wrapper_chains=false`
             //
             // getfullargspec() historically ignored __wrapped__ attributes,
             // so we ensure that remains the case in 3.3+
@@ -257,7 +256,7 @@ batavia.modules.inspect = {
             var annotations = {};
             var kwdefaults = {};
 
-            if (sig.return_annotation !== sig.empty) {
+            if (sig.return_annotation.length > 0) {
                 annotations['return'] = sig.return_annotation;
             }
 
@@ -266,21 +265,21 @@ batavia.modules.inspect = {
                     var kind = sig.parameters[param].kind;
                     var name = sig.parameters[param].name;
 
-                    if (kind === dis._POSITIONAL_ONLY) {
+                    if (kind === batavia.modules.inspect.Parameter.POSITIONAL_ONLY) {
                         args.append(name);
-                    } else if (kind === dis._POSITIONAL_OR_KEYWORD) {
+                    } else if (kind === batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD) {
                         args.append(name);
                         if (param.default !== param.empty) {
                             defaults.push(param.default);
                         }
-                    } else if (kind === dis._VAR_POSITIONAL) {
+                    } else if (kind === batavia.modules.inspect.Parameter.VAR_POSITIONAL) {
                         varargs = name;
-                    } else if (kind === dis._KEYWORD_ONLY) {
+                    } else if (kind === batavia.modules.inspect.Parameter.KEYWORD_ONLY) {
                         kwonlyargs.append(name);
                         if (param.default !== param.empty) {
                             kwdefaults[name] = param.default;
                         }
-                    } else if (kind === dis._VAR_KEYWORD) {
+                    } else if (kind === batavia.modules.inspect.Parameter.VAR_KEYWORD) {
                         varkw = name;
                     }
 
@@ -300,7 +299,16 @@ batavia.modules.inspect = {
                 defaults = null;
             }
 
-            return new FullArgSpec(args, varargs, varkw, defaults, kwonlyargs, kwdefaults, annotations);
+            return new batavia.modules.inspect.FullArgSpec({
+                'args': args,
+                'varargs': varargs,
+                'varkw': varkw,
+                'defaults': defaults,
+                'kwonlyargs': kwonlyargs,
+                'kwdefaults': kwdefaults,
+                'annotations': annotations
+            });
+
         // } catch (ex) {
             // Most of the times 'signature' will raise ValueError.
             // But, it can also raise AttributeError, and, maybe something
@@ -359,12 +367,7 @@ batavia.modules.inspect = {
      * names of the * and ** arguments, if any), and values the respective bound
      * values from 'positional' and 'named'.
      */
-    getcallargs: function(func_and_positional, named) {
-        var func = func_and_positional[0];
-        var positional = func_and_positional.slice(1);
-        var spec = func.argspec;
-
-        // args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, ann = spec
+    getcallargs: function(func, positional, named) {
         var arg2value = {};
 
         // if ismethod(func) and func.__self__ is not None:
@@ -372,17 +375,19 @@ batavia.modules.inspect = {
         //     positional = (func.__self__,) + positional
         var num_pos = positional.length;
         var num_args = func.argspec.args.length;
-        num_defaults = func.argspec.defaults ? func.argspec.defaults.length : 0;
+        var num_defaults = func.argspec.defaults ? func.argspec.defaults.length : 0;
 
-        n = Math.min(num_pos, num_args);
+        var n = Math.min(num_pos, num_args);
         for (var i = 0; i < n; i++) {
-            arg2value[args[i]] = positional[i];
+            arg2value[func.argspec.args[i]] = positional[i];
         }
 
         if (func.argspec.varargs.length > 0) {
             arg2value[varargs] = positional.slice(n);
         }
-        var possible_kwargs = set(args + kwonlyargs);
+        var possible_kwargs = new Set();
+        possible_kwargs.update(func.argspec.args);
+        possible_kwargs.update(func.argspec.kwonlyargs);
 
         if (func.argspec.varkw.length > 0) {
             arg2value[varkw] = {};
@@ -429,7 +434,626 @@ batavia.modules.inspect = {
         //         else:
         //             missing += 1
         // if missing:
-        //     batavia.modules.inspect._missing_arguments(func.__name__, kwonlyargs, False, arg2value)
+        //     batavia.modules.inspect._missing_arguments(func.__name__, kwonlyargs, false, arg2value)
         return arg2value;
     }
 };
+
+batavia.modules.inspect.CO_OPTIMIZED = 0x1;
+batavia.modules.inspect.CO_NEWLOCALS = 0x2;
+batavia.modules.inspect.CO_VARARGS = 0x4;
+batavia.modules.inspect.CO_VARKEYWORDS = 0x8;
+batavia.modules.inspect.CO_NESTED = 0x10;
+batavia.modules.inspect.CO_GENERATOR = 0x20;
+batavia.modules.inspect.CO_NOFREE = 0x40;
+
+/*
+Represents a parameter in a function signature.
+
+Has the following public attributes:
+
+* name : str
+    The name of the parameter as a string.
+* default : object
+    The default value for the parameter if specified.  If the
+    parameter has no default value, this attribute is set to
+    `Parameter.empty`.
+* annotation
+    The annotation for the parameter if specified.  If the
+    parameter has no annotation, this attribute is set to
+    `Parameter.empty`.
+* kind : str
+    Describes how argument values are bound to the parameter.
+    Possible values: `Parameter.POSITIONAL_ONLY`,
+    `Parameter.POSITIONAL_OR_KEYWORD`, `Parameter.VAR_POSITIONAL`,
+    `Parameter.KEYWORD_ONLY`, `Parameter.VAR_KEYWORD`.
+*/
+batavia.modules.inspect.Parameter = function(kwargs) {
+    this.name = kwargs.name;
+    this.kind = kwargs.kind;
+    this.annotation = kwargs.annotation || null;
+    this.default = kwargs.default || {};
+
+    // if kind not in (POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD,
+    //                 _VAR_POSITIONAL, _KEYWORD_ONLY, _VAR_KEYWORD):
+    //     raise ValueError("invalid value for 'Parameter.kind' attribute")
+
+    // if def is not _empty:
+    //     if kind in (_VAR_POSITIONAL, _VAR_KEYWORD):
+    //         msg = '{} parameters cannot have def values'.format(kind)
+    //         raise ValueError(msg)
+
+    // if name is _empty:
+    //     raise ValueError('name is a required attribute for Parameter')
+
+    // if not isinstance(name, str):
+    //     raise TypeError("name must be a str, not a {!r}".format(name))
+
+    // if not name.isidentifier():
+    //     raise ValueError('{!r} is not a valid parameter name'.format(name))
+
+};
+
+batavia.modules.inspect.Parameter.POSITIONAL_ONLY = 0;
+batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD = 1;
+batavia.modules.inspect.Parameter.VAR_POSITIONAL = 2;
+batavia.modules.inspect.Parameter.KEYWORD_ONLY = 3;
+batavia.modules.inspect.Parameter.VAR_KEYWORD = 4;
+
+//    '''Creates a customized copy of the Parameter.'''
+batavia.modules.inspect.Parameter.prototype.replace = function(kwargs) {
+    var name = kwargs.name || this.name;
+    var kind = kwargs.kind || this.kind;
+    var annotation = kwargs.annotation || this.annotation;
+    var def = kwargs.default || this.default;
+
+    return new batavia.modules.inspect.Paramter(name, kind, def, annotation);
+};
+
+    // def __str__(self):
+    //     kind = self.kind
+    //     formatted = self._name
+
+    //     # Add annotation and default value
+    //     if self._annotation is not _empty:
+    //         formatted = '{}:{}'.format(formatted,
+    //                                    formatannotation(self._annotation))
+
+    //     if self._default is not _empty:
+    //         formatted = '{}={}'.format(formatted, repr(self._default))
+
+    //     if kind == _VAR_POSITIONAL:
+    //         formatted = '*' + formatted
+    //     elif kind == _VAR_KEYWORD:
+    //         formatted = '**' + formatted
+
+    //     return formatted
+
+    // def __repr__(self):
+    //     return '<{} at {:#x} {!r}>'.format(self.__class__.__name__,
+    //                                        id(self), self.name)
+
+    // def __eq__(self, other):
+    //     return (issubclass(other.__class__, Parameter) and
+    //             self._name == other._name and
+    //             self._kind == other._kind and
+    //             self._default == other._default and
+    //             self._annotation == other._annotation)
+
+    // def __ne__(self, other):
+    //     return not self.__eq__(other)
+
+// class BoundArguments:
+//     '''Result of `Signature.bind` call.  Holds the mapping of arguments
+//     to the function's parameters.
+
+//     Has the following public attributes:
+
+//     * arguments : OrderedDict
+//         An ordered mutable mapping of parameters' names to arguments' values.
+//         Does not contain arguments' default values.
+//     * signature : Signature
+//         The Signature object that created this instance.
+//     * args : tuple
+//         Tuple of positional arguments values.
+//     * kwargs : dict
+//         Dict of keyword arguments values.
+//     '''
+
+//     def __init__(self, signature, arguments):
+//         self.arguments = arguments
+//         self._signature = signature
+
+//     @property
+//     def signature(self):
+//         return self._signature
+
+//     @property
+//     def args(self):
+//         args = []
+//         for param_name, param in self._signature.parameters.items():
+//             if param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY):
+//                 break
+
+//             try:
+//                 arg = self.arguments[param_name]
+//             except KeyError:
+//                 # We're done here. Other arguments
+//                 # will be mapped in 'BoundArguments.kwargs'
+//                 break
+//             else:
+//                 if param.kind == _VAR_POSITIONAL:
+//                     # *args
+//                     args.extend(arg)
+//                 else:
+//                     # plain argument
+//                     args.append(arg)
+
+//         return tuple(args)
+
+//     @property
+//     def kwargs(self):
+//         kwargs = {}
+//         kwargs_started = False
+//         for param_name, param in self._signature.parameters.items():
+//             if not kwargs_started:
+//                 if param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY):
+//                     kwargs_started = True
+//                 else:
+//                     if param_name not in self.arguments:
+//                         kwargs_started = True
+//                         continue
+
+//             if not kwargs_started:
+//                 continue
+
+//             try:
+//                 arg = self.arguments[param_name]
+//             except KeyError:
+//                 pass
+//             else:
+//                 if param.kind == _VAR_KEYWORD:
+//                     # **kwargs
+//                     kwargs.update(arg)
+//                 else:
+//                     # plain keyword argument
+//                     kwargs[param_name] = arg
+
+//         return kwargs
+
+//     def __eq__(self, other):
+//         return (issubclass(other.__class__, BoundArguments) and
+//                 self.signature == other.signature and
+//                 self.arguments == other.arguments)
+
+//     def __ne__(self, other):
+//         return not self.__eq__(other)
+
+
+/*
+     * A Signature object represents the overall signature of a function.
+    It stores a Parameter object for each parameter accepted by the
+    function, as well as information specific to the function itself.
+
+    A Signature object has the following public attributes and methods:
+
+    * parameters : OrderedDict
+        An ordered mapping of parameters' names to the corresponding
+        Parameter objects (keyword-only arguments are in the same order
+        as listed in `code.co_varnames`).
+    * return_annotation : object
+        The annotation for the return type of the function if specified.
+        If the function has no annotation for its return type, this
+        attribute is set to `Signature.empty`.
+    * bind(*args, **kwargs) -> BoundArguments
+        Creates a mapping from positional and keyword arguments to
+        parameters.
+    * bind_partial(*args, **kwargs) -> BoundArguments
+        Creates a partial mapping from positional and keyword arguments
+        to parameters (simulating 'functools.partial' behavior.)
+    */
+/* Constructs Signature from the given list of Parameter
+ * objects and 'return_annotation'.  All arguments are optional.
+ */
+batavia.modules.inspect.Signature = function(parameters, return_annotation, __validate_parameters__) {
+    this.parameters = {};
+    if (parameters !== null) {
+        if (__validate_parameters__) {
+            // params = OrderedDict()
+            // top_kind = _POSITIONAL_ONLY
+            // kind_defaults = false
+
+            // for idx, param in enumerate(parameters):
+            //     kind = param.kind
+            //     name = param.name
+
+            //     if kind < top_kind:
+            //         msg = 'wrong parameter order: {!r} before {!r}'
+            //         msg = msg.format(top_kind, kind)
+            //         raise ValueError(msg)
+            //     elif kind > top_kind:
+            //         kind_defaults = false
+            //         top_kind = kind
+
+            //     if kind in (_POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD):
+            //         if param.default is _empty:
+            //             if kind_defaults:
+            //                 # No default for this parameter, but the
+            //                 # previous parameter of the same kind had
+            //                 # a default
+            //                 msg = 'non-default argument follows default ' \
+            //                       'argument'
+            //                 raise ValueError(msg)
+            //         else:
+            //             # There is a default for this parameter.
+            //             kind_defaults = True
+
+            //     if name in params:
+            //         msg = 'duplicate parameter name: {!r}'.format(name)
+            //         raise ValueError(msg)
+
+            //     params[name] = param
+        } else {
+            // params = OrderedDict(((param.name, param) for param in parameters));
+            for (var p in parameters) {
+                this.parameters[parameters[p].name] = parameters[p];
+            }
+        }
+    }
+
+    this.return_annotation = return_annotation;
+};
+
+// batavia.modules.inspect.Signature._parameter_cls = Parameter;
+// batavia.modules.inspect.Signature._bound_arguments_cls = BoundArguments;
+
+batavia.modules.inspect.Signature.empty = {};
+
+/*
+ * Constructs Signature for the given python function
+ */
+batavia.modules.inspect.Signature.from_function = function(func) {
+    var is_duck_function = false;
+    // if (!isfunction(func)) {
+    //     if (_signature_is_functionlike(func)) {
+    //         is_duck_function = true;
+    //     } else {
+    //         // If it's not a pure Python function, and not a duck type
+    //         // of pure function:
+    //         throw TypeError('{!r} is not a Python function'.format(func));
+    //     }
+    // }
+
+    // Parameter = cls._parameter_cls
+
+    // Parameter information.
+    var func_code = func.__code__;
+    var pos_count = func_code.co_argcount;
+    var arg_names = func_code.co_varnames;
+    var positional = arg_names.slice(0, pos_count);
+    var keyword_only_count = func_code.co_kwonlyargcount;
+    var keyword_only = arg_names.slice(pos_count, pos_count + keyword_only_count);
+    var annotations = func.__annotations__;
+    var defs = func.__defaults__;
+    var kwdefaults = func.__kwdefaults__;
+
+    var pos_default_count;
+    if (defs) {
+        pos_default_count = defs.length;
+    } else {
+        pos_default_count = 0;
+    }
+
+    var parameters = [];
+    var n, name, annotation, def;
+
+    // Non-keyword-only parameters w/o defaults.
+    var non_default_count = pos_count - pos_default_count;
+    for (n = 0; n < non_default_count; n++) {
+        name = positional[n];
+        annotation = annotations[name] || {};
+        parameters.append(new batavia.modules.inspect.Parameter({
+            'name': name,
+            'annotation': annotation,
+            'kind': batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD
+        }));
+    }
+
+    // ... w/ defaults.
+    for (n = non_default_count; n < positional.length; n++) {
+        name = positional[n];
+        annotation = annotations[name] || {};
+        parameters.append(new batavia.modules.inspect.Parameter({
+            'name': name,
+            'annotation': annotation,
+            'kind': batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD,
+            'default': defs[offset]
+        }));
+    }
+
+    // *args
+    if (func_code.co_flags & batavia.modules.inspect.CO_VARARGS) {
+        name = arg_names[pos_count + keyword_only_count];
+        annotation = annotations[name];
+        parameters.append(new batavia.modules.inspect.Parameter({
+            'name': name,
+            'annotation': annotation,
+            'kind': batavia.modules.inspect.Parameter.VAR_POSITIONAL
+        }));
+    }
+
+    // Keyword-only parameters.
+    for (n = 0; n < keyword_only.length; n++) {
+        def = null;
+        if (kwdefaults !== null) {
+            def = kwdefaults[name];
+        }
+
+        annotation = annotations[name] || {};
+        parameters.append(new batavia.modules.inspect.Parameter({
+            'name': name,
+            'annotation': annotation,
+            'kind': batavia.modules.inspect.Parameter.KEYWORD_ONLY,
+            'default': def
+        }));
+    }
+
+    // **kwargs
+    if (func_code.co_flags & batavia.modules.inspect.CO_VARKEYWORDS) {
+        var index = pos_count + keyword_only_count;
+        if (func_code.co_flags & batavia.modules.inspect.CO_VARARGS) {
+            index += 1;
+        }
+
+        name = arg_names[index];
+        annotation = annotations[name] || {};
+        parameters.append(new batavia.modules.inspect.Parameter({
+            'name': name,
+            'annotation': annotation,
+            'kind': batavia.modules.inspect.Parameter.VAR_KEYWORD
+        }));
+    }
+
+    // Is 'func' is a pure Python function - don't validate the
+    //parameters list (for correct order and defaults), it should be OK.
+    return new batavia.modules.inspect.Signature(parameters, annotations['return'] || {}, is_duck_function);
+};
+
+
+    // @classmethod
+    // def from_builtin(cls, func):
+    //     return _signature_from_builtin(cls, func)
+
+    // def replace(self, *, parameters=_void, return_annotation=_void):
+    //     '''Creates a customized copy of the Signature.
+    //     Pass 'parameters' and/or 'return_annotation' arguments
+    //     to override them in the new copy.
+    //     '''
+
+    //     if parameters is _void:
+    //         parameters = self.parameters.values()
+
+    //     if return_annotation is _void:
+    //         return_annotation = self._return_annotation
+
+    //     return type(self)(parameters,
+    //                       return_annotation=return_annotation)
+
+    // def __eq__(self, other):
+    //     if (not issubclass(type(other), Signature) or
+    //                 self.return_annotation != other.return_annotation or
+    //                 len(self.parameters) != len(other.parameters)):
+    //         return false
+
+    //     other_positions = {param: idx
+    //                        for idx, param in enumerate(other.parameters.keys())}
+
+    //     for idx, (param_name, param) in enumerate(self.parameters.items()):
+    //         if param.kind == _KEYWORD_ONLY:
+    //             try:
+    //                 other_param = other.parameters[param_name]
+    //             except KeyError:
+    //                 return false
+    //             else:
+    //                 if param != other_param:
+    //                     return false
+    //         else:
+    //             try:
+    //                 other_idx = other_positions[param_name]
+    //             except KeyError:
+    //                 return false
+    //             else:
+    //                 if (idx != other_idx or
+    //                                 param != other.parameters[param_name]):
+    //                     return false
+
+    //     return True
+
+    // def __ne__(self, other):
+    //     return not self.__eq__(other)
+
+    // def _bind(self, args, kwargs, *, partial=false):
+    //     '''Private method.  Don't use directly.'''
+
+    //     arguments = OrderedDict()
+
+    //     parameters = iter(self.parameters.values())
+    //     parameters_ex = ()
+    //     arg_vals = iter(args)
+
+    //     while True:
+    //         # Let's iterate through the positional arguments and corresponding
+    //         # parameters
+    //         try:
+    //             arg_val = next(arg_vals)
+    //         except StopIteration:
+    //             # No more positional arguments
+    //             try:
+    //                 param = next(parameters)
+    //             except StopIteration:
+    //                 # No more parameters. That's it. Just need to check that
+    //                 # we have no `kwargs` after this while loop
+    //                 break
+    //             else:
+    //                 if param.kind == _VAR_POSITIONAL:
+    //                     # That's OK, just empty *args.  Let's start parsing
+    //                     # kwargs
+    //                     break
+    //                 elif param.name in kwargs:
+    //                     if param.kind == _POSITIONAL_ONLY:
+    //                         msg = '{arg!r} parameter is positional only, ' \
+    //                               'but was passed as a keyword'
+    //                         msg = msg.format(arg=param.name)
+    //                         raise TypeError(msg) from None
+    //                     parameters_ex = (param,)
+    //                     break
+    //                 elif (param.kind == _VAR_KEYWORD or
+    //                                             param.default is not _empty):
+    //                     # That's fine too - we have a default value for this
+    //                     # parameter.  So, lets start parsing `kwargs`, starting
+    //                     # with the current parameter
+    //                     parameters_ex = (param,)
+    //                     break
+    //                 else:
+    //                     # No default, not VAR_KEYWORD, not VAR_POSITIONAL,
+    //                     # not in `kwargs`
+    //                     if partial:
+    //                         parameters_ex = (param,)
+    //                         break
+    //                     else:
+    //                         msg = '{arg!r} parameter lacking default value'
+    //                         msg = msg.format(arg=param.name)
+    //                         raise TypeError(msg) from None
+    //         else:
+    //             # We have a positional argument to process
+    //             try:
+    //                 param = next(parameters)
+    //             except StopIteration:
+    //                 raise TypeError('too many positional arguments') from None
+    //             else:
+    //                 if param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY):
+    //                     # Looks like we have no parameter for this positional
+    //                     # argument
+    //                     raise TypeError('too many positional arguments')
+
+    //                 if param.kind == _VAR_POSITIONAL:
+    //                     # We have an '*args'-like argument, let's fill it with
+    //                     # all positional arguments we have left and move on to
+    //                     # the next phase
+    //                     values = [arg_val]
+    //                     values.extend(arg_vals)
+    //                     arguments[param.name] = tuple(values)
+    //                     break
+
+    //                 if param.name in kwargs:
+    //                     raise TypeError('multiple values for argument '
+    //                                     '{arg!r}'.format(arg=param.name))
+
+    //                 arguments[param.name] = arg_val
+
+    //     # Now, we iterate through the remaining parameters to process
+    //     # keyword arguments
+    //     kwargs_param = None
+    //     for param in itertools.chain(parameters_ex, parameters):
+    //         if param.kind == _VAR_KEYWORD:
+    //             # Memorize that we have a '**kwargs'-like parameter
+    //             kwargs_param = param
+    //             continue
+
+    //         if param.kind == _VAR_POSITIONAL:
+    //             # Named arguments don't refer to '*args'-like parameters.
+    //             # We only arrive here if the positional arguments ended
+    //             # before reaching the last parameter before *args.
+    //             continue
+
+    //         param_name = param.name
+    //         try:
+    //             arg_val = kwargs.pop(param_name)
+    //         except KeyError:
+    //             # We have no value for this parameter.  It's fine though,
+    //             # if it has a default value, or it is an '*args'-like
+    //             # parameter, left alone by the processing of positional
+    //             # arguments.
+    //             if (not partial and param.kind != _VAR_POSITIONAL and
+    //                                                 param.default is _empty):
+    //                 raise TypeError('{arg!r} parameter lacking default value'. \
+    //                                 format(arg=param_name)) from None
+
+    //         else:
+    //             if param.kind == _POSITIONAL_ONLY:
+    //                 # This should never happen in case of a properly built
+    //                 # Signature object (but let's have this check here
+    //                 # to ensure correct behaviour just in case)
+    //                 raise TypeError('{arg!r} parameter is positional only, '
+    //                                 'but was passed as a keyword'. \
+    //                                 format(arg=param.name))
+
+    //             arguments[param_name] = arg_val
+
+    //     if kwargs:
+    //         if kwargs_param is not None:
+    //             // Process our '**kwargs'-like parameter
+    //             arguments[kwargs_param.name] = kwargs
+    //         else:
+    //             raise TypeError('too many keyword arguments')
+
+    //     return self._bound_arguments_cls(self, arguments)
+
+    // def bind(*args, **kwargs):
+    //     '''Get a BoundArguments object, that maps the passed `args`
+    //     and `kwargs` to the function's signature.  Raises `TypeError`
+    //     if the passed arguments can not be bound.
+    //     '''
+    //     return args[0]._bind(args[1:], kwargs)
+
+    // def bind_partial(*args, **kwargs):
+    //     '''Get a BoundArguments object, that partially maps the
+    //     passed `args` and `kwargs` to the function's signature.
+    //     Raises `TypeError` if the passed arguments can not be bound.
+    //     '''
+    //     return args[0]._bind(args[1:], kwargs, partial=True)
+
+    // def __str__(self):
+    //     result = []
+    //     render_pos_only_separator = false
+    //     render_kw_only_separator = True
+    //     for param in self.parameters.values():
+    //         formatted = str(param)
+
+    //         kind = param.kind
+
+    //         if kind == _POSITIONAL_ONLY:
+    //             render_pos_only_separator = True
+    //         elif render_pos_only_separator:
+    //             # It's not a positional-only parameter, and the flag
+    //             # is set to 'True' (there were pos-only params before.)
+    //             result.append('/')
+    //             render_pos_only_separator = false
+
+    //         if kind == _VAR_POSITIONAL:
+    //             # OK, we have an '*args'-like parameter, so we won't need
+    //             # a '*' to separate keyword-only arguments
+    //             render_kw_only_separator = false
+    //         elif kind == _KEYWORD_ONLY and render_kw_only_separator:
+    //             # We have a keyword-only parameter to render and we haven't
+    //             # rendered an '*args'-like parameter before, so add a '*'
+    //             # separator to the parameters list ("foo(arg1, *, arg2)" case)
+    //             result.append('*')
+    //             # This condition should be only triggered once, so
+    //             # reset the flag
+    //             render_kw_only_separator = false
+
+    //         result.append(formatted)
+
+    //     if render_pos_only_separator:
+    //         # There were only positional-only parameters, hence the
+    //         # flag was not reset to 'false'
+    //         result.append('/')
+
+    //     rendered = '({})'.format(', '.join(result))
+
+    //     if self.return_annotation is not _empty:
+    //         anno = formatannotation(self.return_annotation)
+    //         rendered += ' -> {}'.format(anno)
+
+    //     return rendered

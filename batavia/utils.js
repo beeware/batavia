@@ -45,7 +45,7 @@ String.prototype.startswith = function (str) {
 Object.prototype.update = function(values) {
     for (var key in values) {
         if (values.hasOwnProperty(key)) {
-            this['key'] = values[key];
+            this[key] = values[key];
         }
     }
 };
@@ -80,3 +80,67 @@ Set.prototype.add = function(v) {
 Set.prototype.remove = function(v) {
     delete this[v];
 };
+
+Set.prototype.update = function(values) {
+    this.add.apply(this, values);
+};
+
+/*************************************************************************
+ * An implementation of iter()
+ *************************************************************************/
+
+function iter(data) {
+    // if data is already iterable, just return it.
+    if (data.__next__) {
+        return data;
+    }
+    return new Iterable(data);
+}
+
+function Iterable(data) {
+    this.index = 0;
+    this.data = data;
+}
+
+Iterable.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
+        throw "StopIteration";
+    }
+    this.index++;
+    return retval;
+};
+
+function next(iterator) {
+    return iterator.__next__();
+}
+
+/*************************************************************************
+ * An implementation of range()
+ *************************************************************************/
+
+function _range(start, stop, step) {
+    this.start = start;
+    this.stop = stop;
+    this.step = step || 1;
+
+    if (this.stop === undefined) {
+        this.start = 0;
+        this.stop = start;
+    }
+
+    this.i = this.start;
+}
+
+_range.prototype.__next__ = function() {
+    var retval = this.i;
+    if (this.i < this.stop) {
+        this.i = this.i + this.step;
+        return retval;
+    }
+    throw "StopIteration";
+};
+
+function range(start, stop, step) {
+    return new _range(start, stop, step);
+}

@@ -21,12 +21,32 @@ batavia.modules.dis = {
     unary_ops: new Set(),
     binary_ops: new Set(),
     inplace_ops: new Set(),
-    slice_ops: new Set(),
+    // slice_ops: new Set(),
 
     def_op: function(name, op) {
         batavia.modules.dis.opname[op] = name;
         batavia.modules.dis.opmap[name] = op;
     },
+
+    def_unary_op: function(name, op) {
+        batavia.modules.dis.def_op(name, op);
+        batavia.modules.dis.unary_ops.add(op);
+    },
+
+    def_binary_op: function(name, op) {
+        batavia.modules.dis.def_op(name, op);
+        batavia.modules.dis.binary_ops.add(op);
+    },
+
+    def_inplace_op: function(name, op) {
+        batavia.modules.dis.def_op(name, op);
+        batavia.modules.dis.inplace_ops.add(op);
+    },
+
+    // def_slice_op: function(name, op) {
+    //     batavia.modules.dis.def_op(name, op);
+    //     batavia.modules.dis.slice_ops.add(op);
+    // },
 
     name_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
@@ -65,49 +85,49 @@ batavia.modules.dis = {
         batavia.modules.dis.def_op('DUP_TOP_TWO', 5);
 
         batavia.modules.dis.def_op('NOP', 9);
-        batavia.modules.dis.def_op('UNARY_POSITIVE', 10);
-        batavia.modules.dis.def_op('UNARY_NEGATIVE', 11);
-        batavia.modules.dis.def_op('UNARY_NOT', 12);
+        batavia.modules.dis.def_unary_op('UNARY_POSITIVE', 10);
+        batavia.modules.dis.def_unary_op('UNARY_NEGATIVE', 11);
+        batavia.modules.dis.def_unary_op('UNARY_NOT', 12);
 
-        batavia.modules.dis.def_op('UNARY_INVERT', 15);
+        batavia.modules.dis.def_unary_op('UNARY_INVERT', 15);
 
-        batavia.modules.dis.def_op('BINARY_POWER', 19);
-        batavia.modules.dis.def_op('BINARY_MULTIPLY', 20);
+        batavia.modules.dis.def_binary_op('BINARY_POWER', 19);
+        batavia.modules.dis.def_binary_op('BINARY_MULTIPLY', 20);
 
-        batavia.modules.dis.def_op('BINARY_MODULO', 22);
-        batavia.modules.dis.def_op('BINARY_ADD', 23);
-        batavia.modules.dis.def_op('BINARY_SUBTRACT', 24);
-        batavia.modules.dis.def_op('BINARY_SUBSCR', 25);
-        batavia.modules.dis.def_op('BINARY_FLOOR_DIVIDE', 26);
-        batavia.modules.dis.def_op('BINARY_TRUE_DIVIDE', 27);
-        batavia.modules.dis.def_op('INPLACE_FLOOR_DIVIDE', 28);
-        batavia.modules.dis.def_op('INPLACE_TRUE_DIVIDE', 29);
+        batavia.modules.dis.def_binary_op('BINARY_MODULO', 22);
+        batavia.modules.dis.def_binary_op('BINARY_ADD', 23);
+        batavia.modules.dis.def_binary_op('BINARY_SUBTRACT', 24);
+        batavia.modules.dis.def_binary_op('BINARY_SUBSCR', 25);
+        batavia.modules.dis.def_binary_op('BINARY_FLOOR_DIVIDE', 26);
+        batavia.modules.dis.def_binary_op('BINARY_TRUE_DIVIDE', 27);
+        batavia.modules.dis.def_inplace_op('INPLACE_FLOOR_DIVIDE', 28);
+        batavia.modules.dis.def_inplace_op('INPLACE_TRUE_DIVIDE', 29);
 
         batavia.modules.dis.def_op('STORE_MAP', 54);
-        batavia.modules.dis.def_op('INPLACE_ADD', 55);
-        batavia.modules.dis.def_op('INPLACE_SUBTRACT', 56);
-        batavia.modules.dis.def_op('INPLACE_MULTIPLY', 57);
+        batavia.modules.dis.def_inplace_op('INPLACE_ADD', 55);
+        batavia.modules.dis.def_inplace_op('INPLACE_SUBTRACT', 56);
+        batavia.modules.dis.def_inplace_op('INPLACE_MULTIPLY', 57);
 
-        batavia.modules.dis.def_op('INPLACE_MODULO', 59);
+        batavia.modules.dis.def_inplace_op('INPLACE_MODULO', 59);
         batavia.modules.dis.def_op('STORE_SUBSCR', 60);
         batavia.modules.dis.def_op('DELETE_SUBSCR', 61);
-        batavia.modules.dis.def_op('BINARY_LSHIFT', 62);
-        batavia.modules.dis.def_op('BINARY_RSHIFT', 63);
-        batavia.modules.dis.def_op('BINARY_AND', 64);
-        batavia.modules.dis.def_op('BINARY_XOR', 65);
-        batavia.modules.dis.def_op('BINARY_OR', 66);
-        batavia.modules.dis.def_op('INPLACE_POWER', 67);
+        batavia.modules.dis.def_binary_op('BINARY_LSHIFT', 62);
+        batavia.modules.dis.def_binary_op('BINARY_RSHIFT', 63);
+        batavia.modules.dis.def_binary_op('BINARY_AND', 64);
+        batavia.modules.dis.def_binary_op('BINARY_XOR', 65);
+        batavia.modules.dis.def_binary_op('BINARY_OR', 66);
+        batavia.modules.dis.def_inplace_op('INPLACE_POWER', 67);
         batavia.modules.dis.def_op('GET_ITER', 68);
 
         batavia.modules.dis.def_op('PRINT_EXPR', 70);
         batavia.modules.dis.def_op('LOAD_BUILD_CLASS', 71);
         batavia.modules.dis.def_op('YIELD_FROM', 72);
 
-        batavia.modules.dis.def_op('INPLACE_LSHIFT', 75);
-        batavia.modules.dis.def_op('INPLACE_RSHIFT', 76);
-        batavia.modules.dis.def_op('INPLACE_AND', 77);
-        batavia.modules.dis.def_op('INPLACE_XOR', 78);
-        batavia.modules.dis.def_op('INPLACE_OR', 79);
+        batavia.modules.dis.def_inplace_op('INPLACE_LSHIFT', 75);
+        batavia.modules.dis.def_inplace_op('INPLACE_RSHIFT', 76);
+        batavia.modules.dis.def_inplace_op('INPLACE_AND', 77);
+        batavia.modules.dis.def_inplace_op('INPLACE_XOR', 78);
+        batavia.modules.dis.def_inplace_op('INPLACE_OR', 79);
         batavia.modules.dis.def_op('BREAK_LOOP', 80);
         batavia.modules.dis.def_op('WITH_CLEANUP', 81);
 
