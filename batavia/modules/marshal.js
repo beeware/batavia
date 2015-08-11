@@ -332,41 +332,41 @@ batavia.modules.marshal = {
         flag = code & batavia.modules.marshal.FLAG_REF;
         type = code & ~batavia.modules.marshal.FLAG_REF;
 
-        // log.info("R_OBJECT " + type + ' ' + flag);
+        // console.log.info("R_OBJECT " + type + ' ' + flag);
         switch (type) {
 
         case batavia.modules.marshal.TYPE_null:
-            // log.info('TYPE_NULL ');
+            // console.log.info('TYPE_NULL ');
             break;
 
         case batavia.modules.marshal.TYPE_NONE:
             retval = null;
-            // log.info('TYPE_NONE ' + retval);
+            // console.log.info('TYPE_NONE ' + retval);
             break;
 
         case batavia.modules.marshal.TYPE_STOPITER:
             retval = batavia.VirtualMachine.builtins.StopIteration;
-            // log.info('TYPE_STOPITER');
+            // console.log.info('TYPE_STOPITER');
             break;
 
         case batavia.modules.marshal.TYPE_ELLIPSIS:
             retval = batavia.VirtualMachine.Py_Ellipsis;
-            // log.info('TYPE_ELLIPSIS');
+            // console.log.info('TYPE_ELLIPSIS');
             break;
 
         case batavia.modules.marshal.TYPE_FALSE:
             retval = false;
-            // log.info('TYPE_FALSE');
+            // console.log.info('TYPE_FALSE');
             break;
 
         case batavia.modules.marshal.TYPE_TRUE:
             retval = true;
-            // log.info('TYPE_TRUE');
+            // console.log.info('TYPE_TRUE');
             break;
 
         case batavia.modules.marshal.TYPE_INT:
             retval = batavia.modules.marshal.r_long(vm, p);
-            // log.info('TYPE_INT ' + retval);
+            // console.log.info('TYPE_INT ' + retval);
             if (vm.PyErr_Occurred()) {
                 break;
             }
@@ -377,7 +377,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_LONG:
             retval = batavia.modules.marshal.r_PyLong(vm, p);
-            // log.info('TYPE_LONG ' + retval);
+            // console.log.info('TYPE_LONG ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
@@ -387,7 +387,7 @@ batavia.modules.marshal = {
             n = batavia.modules.marshal.r_byte(vm, p);
             buf = batavia.modules.marshal.r_string(vm, p, n);
             retval = parseFloat(buf);
-            // log.info('TYPE_FLOAT ' + retval);
+            // console.log.info('TYPE_FLOAT ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
@@ -447,7 +447,7 @@ batavia.modules.marshal = {
             if (sign) {
                 retval = -retval;
             }
-            // log.info('TYPE_BINARY_FLOAT ' + retval);
+            // console.log.info('TYPE_BINARY_FLOAT ' + retval);
 
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -455,7 +455,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_COMPLEX:
-            // log.info('TYPE_COMPLEX ' + retval);
+            // console.log.info('TYPE_COMPLEX ' + retval);
         //     {
         //     char buf[256], *ptr;
         //     Py_complex c;
@@ -492,7 +492,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_BINARY_COMPLEX:
-            // log.info('TYPE_COMPLEX ' + retval);
+            // console.log.info('TYPE_COMPLEX ' + retval);
         //         unsigned char *buf;
         //         Py_complex c;
         //         buf = batavia.modules.marshal.r_string(vm, 8, p);
@@ -513,7 +513,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_STRING:
             n = batavia.modules.marshal.r_long(vm, p);
-            // log.info('TYPE_STRING ' + n);
+            // console.log.info('TYPE_STRING ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
@@ -531,7 +531,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_ASCII_INTERNED:
         case batavia.modules.marshal.TYPE_ASCII:
             n = batavia.modules.marshal.r_long(vm, p);
-            // log.info('TYPE_ASCII ' + n);
+            // console.log.info('TYPE_ASCII ' + n);
             if (n === batavia.core.PYCFile.EOF) {
                 vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                     "EOF read where object expected");
@@ -547,7 +547,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_SHORT_ASCII_INTERNED:
         case batavia.modules.marshal.TYPE_SHORT_ASCII:
             n = batavia.modules.marshal.r_byte(vm, p);
-            // log.info('TYPE_SHORT_ASCII ' + n);
+            // console.log.info('TYPE_SHORT_ASCII ' + n);
             if (n === batavia.core.PYCFile.EOF) {
                 vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                     "EOF read where object expected");
@@ -563,7 +563,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_INTERNED:
         case batavia.modules.marshal.TYPE_UNICODE:
             n = batavia.modules.marshal.r_long(vm, p);
-            // log.info('TYPE_UNICODE ' + n);
+            // console.log.info('TYPE_UNICODE ' + n);
             if (n === batavia.core.PYCFile.EOF) {
                 vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
                     "EOF read where object expected");
@@ -578,7 +578,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_SMALL_TUPLE:
             n = batavia.modules.marshal.r_byte(vm, p);
-            // log.info('TYPE_SMALL_TUPLE ' + n);
+            // console.log.info('TYPE_SMALL_TUPLE ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
@@ -595,7 +595,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_TUPLE:
             n = r_long(p);
-            // log.info('TYPE_TUPLE ' + n);
+            // console.log.info('TYPE_TUPLE ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
@@ -616,7 +616,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_LIST:
             n = r_long(p);
-            // log.info('TYPE_LIST ' + n);
+            // console.log.info('TYPE_LIST ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
@@ -635,7 +635,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_DICT:
-            // log.info('TYPE_DICT ' + n);
+            // console.log.info('TYPE_DICT ' + n);
             retval = {};
             for (;;) {
                 var key, val;
@@ -660,7 +660,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_SET:
         case batavia.modules.marshal.TYPE_FROZENSET:
             n = r_long(p);
-            // log.info('TYPE_FROZENSET ' + n);
+            // console.log.info('TYPE_FROZENSET ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
@@ -787,7 +787,7 @@ batavia.modules.marshal = {
     read_object: function(vm, p) {
         var v;
         if (vm.PyErr_Occurred()) {
-            log.error("readobject called with exception set\n");
+            console.log.error("readobject called with exception set\n");
             return null;
         }
         v = batavia.modules.marshal.r_object(vm, p);

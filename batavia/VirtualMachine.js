@@ -3,8 +3,6 @@
  * Virtual Machine
  *************************************************************************/
 
-var log = new Logger();
-
 batavia.VirtualMachine = function() {
     // Initialize the bytecode module
     batavia.modules.dis.init();
@@ -178,7 +176,7 @@ batavia.builtins = {
     'ord': function() { throw "builtin function 'ord' not implemented"; },
     'pow': function() { throw "builtin function 'pow' not implemented"; },
     'print': function(args, kwargs) {
-        console.log(args.join(' '));
+        batavia.stdout(args.join(' ') + '\n');
     },
     'property': function() { throw "builtin function 'property' not implemented"; },
     'quit': function() { throw "builtin function 'quit' not implemented"; },
@@ -313,7 +311,7 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
 
-    // log.info("make_frame: code=" + code + ", callargs=" + callargs);
+    // console.log("make_frame: code=" + code + ", callargs=" + callargs);
 
     if (f_globals !==  null) {
         if (f_locals === null) {
@@ -456,9 +454,9 @@ batavia.VirtualMachine.prototype.log = function(opcode) {
     }
     var indent = "    " * (this.frames.length - 1);
 
-    log.info("  " + indent + "data: " + this.frame.stack);
-    log.info("  " + indent + "blks: " + this.frame.block_stack);
-    log.info(indent + op);
+    console.log("  " + indent + "data: " + this.frame.stack);
+    console.log("  " + indent + "blks: " + this.frame.block_stack);
+    console.log(indent + op);
 };
 
 /*
@@ -468,7 +466,7 @@ batavia.VirtualMachine.prototype.log = function(opcode) {
 batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
     var why = null;
     try {
-        // console.log('OPCODE: ', batavia.modules.dis.opname[operation.opcode], args);
+        console.log('OPCODE: ', batavia.modules.dis.opname[operation.opcode], args);
         if (opcode in batavia.modules.dis.unary_ops) {
             this.unaryOperator(batavia.modules.dis.opname[opcode].slice(6));
         } else if (opcode in batavia.modules.dis.binary_ops) {
@@ -488,7 +486,7 @@ batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
     } catch(err) {
         // deal with exceptions encountered while executing the op.
         //FIXME this.last_exception = sys.exc_info()[:2] + (null,);
-        log.error("Caught exception during execution: " + err);
+        batavia.stdout("Caught exception during execution: " + err);
         why = 'exception';
     }
     return why;
@@ -883,9 +881,17 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
 
 batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     var seq = this.pop();
-    seq.reverse();
-    for (var i=0; i < seq.length; i++) {
-        this.push(seq[i]);
+    if (seq.__next__) {
+        try {
+            while (true) {
+                this.push(seq.__next__());
+            }
+        } catch (err) {}
+    } else {
+        seq.reverse();
+        for (var i=0; i < seq.length; i++) {
+            this.push(seq[i]);
+        }
     }
 };
 
@@ -918,7 +924,7 @@ batavia.VirtualMachine.prototype.byte_MAP_ADD = function(count) {
 };
 
 batavia.VirtualMachine.prototype.byte_PRINT_EXPR = function() {
-    console.log(this.pop());
+    batavia.stdout(this.pop());
 };
 
 batavia.VirtualMachine.prototype.byte_PRINT_ITEM = function() {
@@ -945,14 +951,14 @@ batavia.VirtualMachine.prototype.print_item = function(item, to) {
     if (to === undefined) {
         // to = sys.stdout;  // FIXME - this is ignored.
     }
-    console.log(item);
+    batavia.stdout(item);
 };
 
 batavia.VirtualMachine.prototype.print_newline = function(to) {
     if (to === undefined) {
         // to = sys.stdout;  // FIXME - this is ignored.
     }
-    console.log("");
+    batavia.stdout("");
 };
 
 batavia.VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
@@ -1311,7 +1317,17 @@ batavia.VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
 // };
 
 batavia.VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
-    this.push(__build_class__);
+    this.push(batavia.__build_class__);
+};
+
+batavia.__build_class__ = function(args, kwargs) {
+    var func = args[0];
+    var name = args[1];
+    var bases = kwargs.bases || args[2];
+    var metaclass = kwargs.metaclass || args[3];
+    var kwds = kwargs.kwds || args[4] || [];
+
+    return func.__call__([], []);
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {

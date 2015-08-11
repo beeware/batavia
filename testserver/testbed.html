@@ -234,7 +234,7 @@ cgYAAAByBwAAANoIPG1vZHVsZT4CAAAAcwAAAAA=
     <script>
 function sample() {
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine(stdout, stderr);
+    var vm = new batavia.VirtualMachine();
     console.log('Run code...');
     // The first argument is the Python dotted-path of the module to run
     // The second argument is the value for sys.argv
@@ -244,28 +244,27 @@ function sample() {
 
 function pystone() {
     console.log('Benchmarking...');
-    var vm = new batavia.VirtualMachine(stdout, stderr);
+    var vm = new batavia.VirtualMachine();
     vm.run('test.pystone', []);
     console.log('done.');
 }
 
 function servercode() {
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine(stdout, stderr);
+    var vm = new batavia.VirtualMachine();
     console.log('Run code...');
     vm.run('servercode', []);
     console.log('done.');
 }
 
+// Now define a stdout.
 function stdout(content) {
     var pre = document.getElementById('stdout');
     pre.innerHTML = pre.innerHTML + content;
 }
-var stderr = stderr;
 
-function testout() {
-    stdout('hello world\n');
-}
+batavia.stdout = stdout;
+batavia.stderr = stdout;
     </script>
 
 </head>

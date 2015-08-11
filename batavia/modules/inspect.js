@@ -745,7 +745,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     }
 
     var parameters = [];
-    var n, name, annotation, def;
+    var n, name, annotation, def, offset;
 
     // Non-keyword-only parameters w/o defaults.
     var non_default_count = pos_count - pos_default_count;
@@ -760,7 +760,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     }
 
     // ... w/ defaults.
-    for (n = non_default_count; n < positional.length; n++) {
+    for (offset=0, n = non_default_count; n < positional.length; offset++, n++) {
         name = positional[n];
         annotation = annotations[name] || {};
         parameters.append(new batavia.modules.inspect.Parameter({

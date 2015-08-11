@@ -69,7 +69,7 @@ batavia.modules.dis = {
             return;
         }
 
-        log.info('Initializing opcodes...');
+        console.log('Initializing opcodes...');
         batavia.modules.dis.opmap = {};
 
         // Prime the opname list with all possible opnames
