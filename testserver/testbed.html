@@ -176,59 +176,19 @@ Ag8HDwMGAQYBBgEGAQ0BGgEGAQYCDzoMEAwLDAoMBwwHDBMMBQwNDAgMEQwFDAEMAQwEEwEMAREB
 DAEDABcBDQEdAgYB
 </script>
 
-    <!-- This is a simple test script::
-        import other
-
-
-        def do_stuff(count):
-            for i in range(0, count):
-                print("HELLO", i)
-                other.wiggle(i)
-
-        def main(argv):
-            print(do_stuff(int(argv[1])))
-            return 0
-
-
-        def target(*args):
-            return main, None
-
-
-        if __name__ == '__main__':
-            import sys
-            main(sys.argv)
-    -->
+    <!-- This is a simple test script. The content comes from sample.py
+         in the testserver directory -->
     <script id="batavia-sample" type="application/python-bytecode">
-7gwNCucgyFUfAQAA4wAAAAAAAAAAAAAAAAIAAABAAAAAc1wAAABkAABkAQBsAABaAABkAgBkAwCE
-AABaAQBkBABkBQCEAABaAgBkBgBkBwCEAABaAwBlBABkCABrAgByWABkAABkAQBsBQBaBQBlAgBl
-BQBqBgCDAQABbgAAZAEAUykJ6QAAAABOYwEAAAAAAAAAAgAAAAQAAABDAAAAczgAAAB4MQB0AABk
-AQB8AACDAgBEXSAAfQEAdAEAZAIAfAEAgwIAAXQCAGoDAHwBAIMBAAFxEABXZAAAUykDTnIBAAAA
-WgVIRUxMTykE2gVyYW5nZdoFcHJpbnTaBW90aGVyWgZ3aWdnbGUpAtoFY291bnTaAWmpAHIHAAAA
-+glzYW1wbGUucHnaCGRvX3N0dWZmBAAAAHMGAAAAAAEWAQ0BcgkAAABjAQAAAAAAAAABAAAABQAA
-AEMAAABzHgAAAHQAAHQBAHQCAHwAAGQBABmDAQCDAQCDAQABZAIAUykDTukBAAAAcgEAAAApA3ID
-AAAAcgkAAADaA2ludCkB2gRhcmd2cgcAAAByBwAAAHIIAAAA2gRtYWluCgAAAHMEAAAAAAEaAXIN
-AAAAYwAAAAAAAAAAAQAAAAIAAABHAAAAcwoAAAB0AABkAABmAgBTKQFOKQFyDQAAACkB2gRhcmdz
-cgcAAAByBwAAAHIIAAAA2gZ0YXJnZXQPAAAAcwIAAAAAAXIPAAAA2ghfX21haW5fXykHcgQAAABy
-CQAAAHINAAAAcg8AAADaCF9fbmFtZV9f2gNzeXNyDAAAAHIHAAAAcgcAAAByBwAAAHIIAAAA2gg8
-bW9kdWxlPgEAAABzDAAAAAwDDAYMBQwEDAEMAQ==
+{{ samplecode }}
     </script>
 
-    <!-- This is a module that can be imported by the simple test script::
-
-        def wiggle(count):
-            for i in range(0, count):
-                print('wiggle ')
-    -->
+    <!-- This is a second module module that can be imported. The content
+         comes from other.py in the testserver directory -->
     <script id="batavia-other" type="application/python-bytecode">
-7gwNCtsgyFVLAAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAcxAAAABkAABkAQCEAABaAABkAgBTKQNj
-AQAAAAAAAAACAAAAAwAAAEMAAABzKAAAAHghAHQAAGQBAHwAAIMCAERdEAB9AQB0AQBkAgCDAQAB
-cRAAV2QAAFMpA07pAAAAAHoHd2lnZ2xlICkC2gVyYW5nZdoFcHJpbnQpAtoFY291bnTaAWmpAHIG
-AAAA+ghvdGhlci5wedoGd2lnZ2xlAgAAAHMEAAAAAAEWAXIIAAAATikBcggAAAByBgAAAHIGAAAA
-cgYAAAByBwAAANoIPG1vZHVsZT4CAAAAcwAAAAA=
+{{ othercode }}
     </script>
 
     <script id="batavia-servercode" type="application/python-bytecode">
-{{ servercode }}
     </script>
 
     <script>
@@ -249,14 +209,6 @@ function pystone() {
     console.log('done.');
 }
 
-function servercode() {
-    console.log('Create VM');
-    var vm = new batavia.VirtualMachine();
-    console.log('Run code...');
-    vm.run('servercode', []);
-    console.log('done.');
-}
-
 // Now define a stdout.
 function stdout(content) {
     var pre = document.getElementById('stdout');
@@ -271,8 +223,7 @@ batavia.stderr = stdout;
 <body>
     <h1>Batavia testbed</h1>
     <button onclick="pystone()">Run PyStone</button>
-    <button onclick="sample()">Run sample</button>
-    <button onclick="servercode()">Run server delivered code</button>
+    <button onclick="sample()">Run sample.py</button>
     <hr/>
     <pre id="stdout"></pre>
 </body>

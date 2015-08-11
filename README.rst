@@ -20,7 +20,30 @@ What it doesn't do:
 Quickstart
 ----------
 
-See the `tests/test.html` file for an example of usage.
+The `testserver` directory contains a minimal Django project that will serve
+Python bytecode to your browser and execute it. To run this project, install
+Django 1.8 into your virtual environment; then, at a shell prompt::
+
+    $ cd testserver
+    $ ./manage.py runserver
+
+You can then load http://127.0.0.1:8000 in your browser. When the page loads,
+you will see a set of buttons corresponding to Python modules that
+have been embedded in the page:
+
+* The PyStone performance benchmark. The Python bytecode is embedded as a
+  string in the HTML file.
+
+* `sample.py`, a simple Python example demonstrating basic VM features.
+   The PYC content that is dynamically generated on the server and served
+   to the client. This file imports a second file, `other.py`, to
+   demonstrate how imports work.
+
+Click one of the buttons, and the code will run; stdout/stderr has been
+redirected to the webpage, so if the script has any output, you'll see it.
+
+To start tinkering, make changes to `testserver/sample.py`, reload the page,
+and click the button.
 
 Documentation
 -------------

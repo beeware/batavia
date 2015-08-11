@@ -466,7 +466,7 @@ batavia.VirtualMachine.prototype.log = function(opcode) {
 batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
     var why = null;
     try {
-        console.log('OPCODE: ', batavia.modules.dis.opname[operation.opcode], args);
+        // console.log('OPCODE: ', batavia.modules.dis.opname[operation.opcode], args);
         if (opcode in batavia.modules.dis.unary_ops) {
             this.unaryOperator(batavia.modules.dis.opname[opcode].slice(6));
         } else if (opcode in batavia.modules.dis.binary_ops) {
