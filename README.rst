@@ -7,6 +7,9 @@ This is experimental code. If it breaks, you get to keep all the shiny pieces.
 
 What it does:
 
+* Implements a Python 3.4 Bytecode machine that can handle function calls
+  and basic class definitions.
+
 * Unmarshals Base64 encoded bytecode into Code objects
 
 * Implements most of the common Python VM opcodes
@@ -17,12 +20,22 @@ What it doesn't do:
 
 * Any attempt at unicode handling.
 
+* Raise errors (especially TypeErrors during math operations) in exactly
+  the same way as Python
+
+* Support all Python's builtin functions
+
+* Support the full Python standard library
+
+* Allow for class inheritance
+
 Quickstart
 ----------
 
 The `testserver` directory contains a minimal Django project that will serve
-Python bytecode to your browser and execute it. To run this project, install
-Django 1.8 into your virtual environment; then, at a shell prompt::
+Python bytecode to your browser and execute it. To run this project, you'll
+need to be running Python 3.4. Install Django 1.8 into your virtual
+environment; then, at a shell prompt::
 
     $ cd testserver
     $ ./manage.py runserver
