@@ -1,13 +1,13 @@
 
 batavia.make_callable = function(func) {
-    return function(args, kwargs) {
+    return function(args, kwargs, locals) {
         var callargs = batavia.modules.inspect.getcallargs(func, args, kwargs);
 
         var frame = func._vm.make_frame({
             'code': func.func_code,
             'callargs': callargs,
             'f_globals': func.func_globals,
-            'f_locals': {},
+            'f_locals': locals || {},
         });
 
         if (func.func_code.co_flags & batavia.modules.dis.CO_GENERATOR) {

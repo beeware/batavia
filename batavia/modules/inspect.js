@@ -371,8 +371,10 @@ batavia.modules.inspect = {
         var arg2value = {};
 
         // if ismethod(func) and func.__self__ is not None:
-        //     # implicit 'self' (or 'cls' for classmethods) argument
-        //     positional = (func.__self__,) + positional
+        if (func.__self__) {
+            // implicit 'self' (or 'cls' for classmethods) argument
+            positional = [func.__self__].concat(positional);
+        }
         var num_pos = positional.length;
         var num_args = func.argspec.args.length;
         var num_defaults = func.argspec.defaults ? func.argspec.defaults.length : 0;

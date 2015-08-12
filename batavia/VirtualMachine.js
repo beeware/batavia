@@ -832,7 +832,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    items[0][name] = items[1];
+    items[1][name] = items[0];
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
@@ -1317,7 +1317,7 @@ batavia.VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
 // };
 
 batavia.VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
-    this.push(batavia.__build_class__);
+    this.push(batavia.__build_class__.bind(this));
 };
 
 batavia.__build_class__ = function(args, kwargs) {
@@ -1327,7 +1327,35 @@ batavia.__build_class__ = function(args, kwargs) {
     var metaclass = kwargs.metaclass || args[3];
     var kwds = kwargs.kwds || args[4] || [];
 
-    return func.__call__([], []);
+    // Create a locals context, and run the class function in it.
+    var locals = {};
+    var retval = func.__call__([], [], locals);
+
+    // Now construct the class, based on the constructed local context.
+    var klass = function(args, kwargs) {
+        if (this.__init__) {
+            for (var attr in Object.getPrototypeOf(this)) {
+                if (this[attr].__call__) {
+                    this[attr].__self__ = this;
+                }
+            }
+            this.__init__.__call__(args, kwargs);
+        }
+    };
+
+    for (var attr in locals) {
+        if (locals.hasOwnProperty(attr)) {
+            klass.prototype[attr] = locals[attr];
+        }
+    }
+
+    var PyObject = function(klass) {
+        return function(args, kwargs) {
+            return new klass(args, kwargs);
+        };
+    }(klass);
+
+    return PyObject;
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {
