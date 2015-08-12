@@ -199,10 +199,10 @@ function sample() {
     console.log('done.');
 }
 
-function pystone() {
+function pystone(loops) {
     console.log('Benchmarking...');
     var vm = new batavia.VirtualMachine();
-    vm.run('test.pystone', [1]);
+    vm.run('test.pystone', [loops]);
     console.log('done.');
 }
 
@@ -219,8 +219,9 @@ batavia.stderr = stdout;
 </head>
 <body>
     <h1>Batavia testbed</h1>
-    <button onclick="pystone()">Run PyStone</button>
     <button onclick="sample()">Run sample.py</button>
+    <button onclick="pystone(5)">Run PyStone (5 loops)</button>
+    <button onclick="pystone(50000)">Run PyStone (50000 loops)</button>
     <hr/>
     <pre id="stdout"></pre>
 </body>

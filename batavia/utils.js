@@ -189,7 +189,17 @@ batavia.operators = {
         return a / b;
     },
     MODULO: function(a, b) {
-        return a % b;
+        if (typeof a === 'string') {
+            if (b instanceof Array) {
+                return batavia._substitute(a, b);
+            } else if (b instanceof Object) {
+                // TODO Handle %(key)s format.
+            } else {
+                return batavia._substitute(a, [b]);
+            }
+        } else {
+            return a % b;
+        }
     },
     ADD: function(a, b) {
         var result, i;
@@ -287,3 +297,71 @@ batavia.comparisons = [
     },
 ];
 
+
+/*************************************************************************
+ * sprintf() implementation
+ *************************************************************************/
+
+batavia._substitute = function(format, args) {
+    var results = [];
+
+    /* This is the general form regex for a sprintf-like string. */
+    var re = /\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/g;
+    var match;
+    var lastIndex = 0;
+    for (var i = 0; i < args.length; i++) {
+        var arg = args[i];
+
+        match = re.exec(format);
+        if (match) {
+            switch (match[8]) {
+                case "b":
+                    arg = arg.toString(2);
+                break;
+                case "c":
+                    arg = String.fromCharCode(arg);
+                break;
+                case "d":
+                case "i":
+                    arg = parseInt(arg, 10);
+                break;
+                case "j":
+                    arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6], 10) : 0);
+                break;
+                case "e":
+                    arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential();
+                break;
+                case "f":
+                    arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg);
+                break;
+                case "g":
+                    arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg);
+                break;
+                case "o":
+                    arg = arg.toString(8);
+                break;
+                case "s":
+                    arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg);
+                break;
+                case "u":
+                    arg = arg >>> 0;
+                break;
+                case "x":
+                    arg = arg.toString(16);
+                break;
+                case "X":
+                    arg = arg.toString(16).toUpperCase();
+                break;
+            }
+
+            results.push(format.slice(lastIndex, match.index));
+            lastIndex = re.lastIndex;
+            results.push(arg);
+        } else {
+            throw "Too many arguments for format string";
+        }
+    }
+    // Push the rest of the string.
+    results.push(format.slice(re.lastIndex));
+    return results.join('');
+};
