@@ -6,25 +6,6 @@ function assert(condition, message) {
 }
 
 /*************************************************************************
- * A Logger
- *************************************************************************/
-
-function Logger() {
-}
-
-Logger.prototype.info = function(message) {
-    console.log(message);
-};
-
-Logger.prototype.warning = function(message) {
-    console.log('WARNING: ', message);
-};
-
-Logger.prototype.error = function(message) {
-    console.log('ERROR: ', message);
-};
-
-/*************************************************************************
  * Modify String to behave like a Python String
  *************************************************************************/
 
@@ -53,7 +34,9 @@ Array.prototype.append = function(value) {
 };
 
 Array.prototype.extend = function(values) {
-    this.push.apply(this, values);
+    if (values.length > 0) {
+        this.push.apply(this, values);
+    }
 };
 
 /*************************************************************************
@@ -76,7 +59,11 @@ Set.prototype.remove = function(v) {
 };
 
 Set.prototype.update = function(values) {
-    this.add.apply(this, values);
+    for (var value in values) {
+        if (values.hasOwnProperty(value)) {
+            this[values[value]] = null;
+        }
+    }
 };
 
 /*************************************************************************
@@ -138,3 +125,165 @@ _range.prototype.__next__ = function() {
 function range(start, stop, step) {
     return new _range(start, stop, step);
 }
+
+
+/*************************************************************************
+ * Operator defintions that match Python-like behavior.
+ *************************************************************************/
+
+batavia.operators = {
+    // UNARY operators
+    POSITIVE: function(a) {
+        return +x;
+    },
+    NEGATIVE: function(a) {
+        return -x;
+    },
+    NOT: function(a) {
+        return !x;
+    },
+    CONVERT: function(a) {
+        throw 'NotImplemented';
+    },
+    INVERT: function(a) {
+        throw 'NotImplemented';
+    },
+
+    // BINARY/INPLACE operators
+    POWER: function(a, b) {
+        return Math.pow(a, b);
+    },
+    MULTIPLY: function(a, b) {
+        var result, i;
+        if (a instanceof Array) {
+            result = [];
+            if (b instanceof Array) {
+                throw "TypeError";
+            } else {
+                for (i = 0; i < b; i++) {
+                    result.extend(a);
+                }
+            }
+        } else if (b instanceof Array) {
+            result = [];
+            if (a instanceof Array) {
+                throw "TypeError";
+            } else {
+                for (i = 0; i < a; i++) {
+                    result.extend(b);
+                }
+            }
+        }
+        else {
+            result = a + b;
+        }
+        return result;
+    },
+    DIVIDE: function(a, b) {
+        return Math.floor(a / b);
+    },
+    FLOOR_DIVIDE: function(a, b) {
+        return Math.floor(a / b);
+    },
+    TRUE_DIVIDE: function(a, b) {
+        return a / b;
+    },
+    MODULO: function(a, b) {
+        return a % b;
+    },
+    ADD: function(a, b) {
+        var result, i;
+        if (a instanceof Array) {
+            if (b instanceof Array) {
+                result = [];
+                result.extend(a);
+                result.extend(b);
+            } else {
+                throw "TypeError";
+            }
+        } else if (b instanceof Array) {
+            throw "TypeError";
+        }
+        else {
+            result = a + b;
+        }
+        return result;
+    },
+    SUBTRACT: function(a, b) {
+        return a - b;
+    },
+    SUBSCR: function(a, b) {
+        if (b instanceof Object) {
+            var start, stop, step, result;
+            if (b.start === null) {
+                start = 0;
+            }
+            if (b.stop === null) {
+                stop = a.length;
+            }
+            if (b.step === 1) {
+                result = a.slice(start, stop);
+            } else {
+                result = [];
+                for (var i = start; i < stop; i += b.step) {
+                    result.push(a[i]);
+                }
+            }
+            return result;
+        } else {
+            return a[b];
+        }
+    },
+    LSHIFT: function(a, b) {
+        return a << b;
+    },
+    RSHIFT: function(a, b) {
+        return a >> b;
+    },
+    AND: function(a, b) {
+        return a & b;
+    },
+    XOR: function(a, b) {
+        return a ^ b;
+    },
+    OR: function(a, b) {
+        return a | b;
+    },
+};
+
+batavia.comparisons = [
+    function (x, y) {
+        return x < y;
+    },
+    function (x, y) {
+        return x <= y;
+    },
+    function (x, y) {
+        return x == y;
+    },
+    function (x, y) {
+        return x != y;
+    },
+    function (x, y) {
+        return x > y;
+    },
+    function (x, y) {
+        return x >= y;
+    },
+    function (x, y) {
+        return x in y;
+    },
+    function (x, y) {
+        return !(x in y);
+    },
+    function (x, y) {
+        return x === y;
+    },
+    function (x, y) {
+        return x !== y;
+    },
+    function (x, y) {
+        return false;
+    },
+];
+

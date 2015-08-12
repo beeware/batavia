@@ -202,7 +202,7 @@ function sample() {
 function pystone() {
     console.log('Benchmarking...');
     var vm = new batavia.VirtualMachine();
-    vm.run('test.pystone', []);
+    vm.run('test.pystone', [1]);
     console.log('done.');
 }
 

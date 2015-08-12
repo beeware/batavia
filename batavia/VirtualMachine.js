@@ -19,63 +19,61 @@ batavia.VirtualMachine = function() {
 batavia.VirtualMachine.Py_Ellipsis = {};
 
 batavia.builtins = {
-    'ArithmeticError': undefined,
-    'AssertionError': undefined,
-    'AttributeError': undefined,
-    'BaseException': undefined,
-    'BufferError': undefined,
-    'BytesWarning': undefined,
-    'DeprecationWarning': undefined,
-    'EOFError': undefined,
-    'Ellipsis': undefined,
-    'EnvironmentError': undefined,
-    'Exception': undefined,
-    'False': undefined,
-    'FloatingPointError': undefined,
-    'FutureWarning': undefined,
-    'GeneratorExit': undefined,
-    'IOError': undefined,
-    'ImportError': undefined,
-    'ImportWarning': undefined,
-    'IndentationError': undefined,
-    'IndexError': undefined,
-    'KeyError': undefined,
-    'KeyboardInterrupt': undefined,
-    'LookupError': undefined,
-    'MemoryError': undefined,
-    'NameError': undefined,
-    'None': undefined,
-    'NotImplemented': undefined,
-    'NotImplementedError': undefined,
-    'OSError': undefined,
-    'OverflowError': undefined,
-    'PendingDeprecationWarning': undefined,
-    'ReferenceError': undefined,
-    'RuntimeError': undefined,
-    'RuntimeWarning': undefined,
-    'StandardError': undefined,
-    'StopIteration': undefined,
-    'SyntaxError': undefined,
-    'SyntaxWarning': undefined,
-    'SystemError': undefined,
-    'SystemExit': undefined,
-    'TabError': undefined,
-    'True': undefined,
-    'TypeError': undefined,
-    'UnboundLocalError': undefined,
-    'UnicodeDecodeError': undefined,
-    'UnicodeEncodeError': undefined,
-    'UnicodeError': undefined,
-    'UnicodeTranslateError': undefined,
-    'UnicodeWarning': undefined,
-    'UserWarning': undefined,
-    'ValueError': undefined,
-    'Warning': undefined,
-    'ZeroDivisionError': undefined,
+    ArithmeticError: undefined,
+    AssertionError: undefined,
+    AttributeError: undefined,
+    BaseException: undefined,
+    BufferError: undefined,
+    BytesWarning: undefined,
+    DeprecationWarning: undefined,
+    EOFError: undefined,
+    Ellipsis: undefined,
+    EnvironmentError: undefined,
+    Exception: undefined,
+    False: undefined,
+    FloatingPointError: undefined,
+    FutureWarning: undefined,
+    GeneratorExit: undefined,
+    IOError: undefined,
+    ImportError: undefined,
+    ImportWarning: undefined,
+    IndentationError: undefined,
+    IndexError: undefined,
+    KeyError: undefined,
+    KeyboardInterrupt: undefined,
+    LookupError: undefined,
+    MemoryError: undefined,
+    NameError: undefined,
+    None: undefined,
+    NotImplemented: undefined,
+    NotImplementedError: undefined,
+    OSError: undefined,
+    OverflowError: undefined,
+    PendingDeprecationWarning: undefined,
+    ReferenceError: undefined,
+    RuntimeError: undefined,
+    RuntimeWarning: undefined,
+    StandardError: undefined,
+    StopIteration: undefined,
+    SyntaxError: undefined,
+    SyntaxWarning: undefined,
+    SystemError: undefined,
+    SystemExit: undefined,
+    TabError: undefined,
+    True: undefined,
+    TypeError: undefined,
+    UnboundLocalError: undefined,
+    UnicodeDecodeError: undefined,
+    UnicodeEncodeError: undefined,
+    UnicodeError: undefined,
+    UnicodeTranslateError: undefined,
+    UnicodeWarning: undefined,
+    UserWarning: undefined,
+    ValueError: undefined,
+    Warning: undefined,
+    ZeroDivisionError: undefined,
 
-    '__debug__': undefined,
-    '__doc__': undefined,
-    '__import__': function(args, kwargs) {
+    __import__: function(args, kwargs) {
         // First, try native modules
         var module = batavia.modules[args[0]];
         // If there's no native module, try for a pre-loaded module.
@@ -107,103 +105,119 @@ batavia.builtins = {
         }
         return module;
     },
-    '__name__': undefined,
-    '__package__': undefined,
 
-    'abs': function() { throw "builtin function 'abs' not implemented"; },
-    'all': function() { throw "builtin function 'all' not implemented"; },
-    'any': function() { throw "builtin function 'any' not implemented"; },
-    'apply': function() { throw "builtin function 'apply' not implemented"; },
-    'basestring': function() { throw "builtin function 'basestring' not implemented"; },
-    'bin': function() { throw "builtin function 'bin' not implemented"; },
-    'bool': function() { throw "builtin function 'bool' not implemented"; },
-    'buffer': function() { throw "builtin function 'buffer' not implemented"; },
-    'bytearray': function() { throw "builtin function 'bytearray' not implemented"; },
-    'bytes': function() { throw "builtin function 'bytes' not implemented"; },
-    'callable': function() { throw "builtin function 'callable' not implemented"; },
-    'chr': function() { throw "builtin function 'chr' not implemented"; },
-    'classmethod': function() { throw "builtin function 'classmethod' not implemented"; },
-    'cmp': function() { throw "builtin function 'cmp' not implemented"; },
-    'coerce': function() { throw "builtin function 'coerce' not implemented"; },
-    'compile': function() { throw "builtin function 'compile' not implemented"; },
-    'complex': function() { throw "builtin function 'complex' not implemented"; },
-    'copyright': function() { throw "builtin function 'copyright' not implemented"; },
-    'credits': function() { throw "builtin function 'credits' not implemented"; },
-    'delattr': function() { throw "builtin function 'delattr' not implemented"; },
-    'dict': function() { throw "builtin function 'dict' not implemented"; },
-    'dir': function() { throw "builtin function 'dir' not implemented"; },
-    'divmod': function() { throw "builtin function 'divmod' not implemented"; },
-    'enumerate': function() { throw "builtin function 'enumerate' not implemented"; },
-    'eval': function() { throw "builtin function 'eval' not implemented"; },
-    'execfile': function() { throw "builtin function 'execfile' not implemented"; },
-    'exit': function() { throw "builtin function 'exit' not implemented"; },
-    'file': function() { throw "builtin function 'file' not implemented"; },
-    'filter': function() { throw "builtin function 'filter' not implemented"; },
-    'float': function() { throw "builtin function 'float' not implemented"; },
-    'format': function() { throw "builtin function 'format' not implemented"; },
-    'frozenset': function() { throw "builtin function 'frozenset' not implemented"; },
-    'getattr': function() { throw "builtin function 'getattr' not implemented"; },
-    'globals': function() { throw "builtin function 'globals' not implemented"; },
-    'hasattr': function() { throw "builtin function 'hasattr' not implemented"; },
-    'hash': function() { throw "builtin function 'hash' not implemented"; },
-    'help': function() { throw "builtin function 'help' not implemented"; },
-    'hex': function() { throw "builtin function 'hex' not implemented"; },
-    'id': function() { throw "builtin function 'id' not implemented"; },
-    'input': function() { throw "builtin function 'input' not implemented"; },
-    'int': function(v) { return parseInt(v, 10); },
-    'intern': function() { throw "builtin function 'intern' not implemented"; },
-    'isinstance': function() { throw "builtin function 'isinstance' not implemented"; },
-    'issubclass': function() { throw "builtin function 'issubclass' not implemented"; },
-    'iter': function() { throw "builtin function 'iter' not implemented"; },
-    'len': function(args, kwargs) {
+    abs: function() { throw "builtin function 'abs' not implemented"; },
+    all: function() { throw "builtin function 'all' not implemented"; },
+    any: function() { throw "builtin function 'any' not implemented"; },
+    apply: function() { throw "builtin function 'apply' not implemented"; },
+    basestring: function() { throw "builtin function 'basestring' not implemented"; },
+    bin: function() { throw "builtin function 'bin' not implemented"; },
+    bool: function() { throw "builtin function 'bool' not implemented"; },
+    buffer: function() { throw "builtin function 'buffer' not implemented"; },
+    bytearray: function() { throw "builtin function 'bytearray' not implemented"; },
+    bytes: function() { throw "builtin function 'bytes' not implemented"; },
+    callable: function() { throw "builtin function 'callable' not implemented"; },
+    chr: function(args, kwargs) {
+        return String.fromCharCode(args[0]);
+    },
+    classmethod: function() { throw "builtin function 'classmethod' not implemented"; },
+    cmp: function() { throw "builtin function 'cmp' not implemented"; },
+    coerce: function() { throw "builtin function 'coerce' not implemented"; },
+    compile: function() { throw "builtin function 'compile' not implemented"; },
+    complex: function() { throw "builtin function 'complex' not implemented"; },
+    copyright: function() { throw "builtin function 'copyright' not implemented"; },
+    credits: function() { throw "builtin function 'credits' not implemented"; },
+    delattr: function() { throw "builtin function 'delattr' not implemented"; },
+    dict: function() { throw "builtin function 'dict' not implemented"; },
+    dir: function() { throw "builtin function 'dir' not implemented"; },
+    divmod: function() { throw "builtin function 'divmod' not implemented"; },
+    enumerate: function() { throw "builtin function 'enumerate' not implemented"; },
+    eval: function() { throw "builtin function 'eval' not implemented"; },
+    execfile: function() { throw "builtin function 'execfile' not implemented"; },
+    exit: function() { throw "builtin function 'exit' not implemented"; },
+    file: function() { throw "builtin function 'file' not implemented"; },
+    filter: function() { throw "builtin function 'filter' not implemented"; },
+    float: function() { throw "builtin function 'float' not implemented"; },
+    format: function() { throw "builtin function 'format' not implemented"; },
+    frozenset: function() { throw "builtin function 'frozenset' not implemented"; },
+    getattr: function() { throw "builtin function 'getattr' not implemented"; },
+    globals: function() { throw "builtin function 'globals' not implemented"; },
+    hasattr: function() { throw "builtin function 'hasattr' not implemented"; },
+    hash: function() { throw "builtin function 'hash' not implemented"; },
+    help: function() { throw "builtin function 'help' not implemented"; },
+    hex: function() { throw "builtin function 'hex' not implemented"; },
+    id: function() { throw "builtin function 'id' not implemented"; },
+    input: function() { throw "builtin function 'input' not implemented"; },
+    int: function(v) { return parseInt(v, 10); },
+    intern: function() { throw "builtin function 'intern' not implemented"; },
+    isinstance: function() { throw "builtin function 'isinstance' not implemented"; },
+    issubclass: function() { throw "builtin function 'issubclass' not implemented"; },
+    iter: function() { throw "builtin function 'iter' not implemented"; },
+    len: function(args, kwargs) {
         return args[0].length;
     },
-    'license': function() { throw "builtin function 'license' not implemented"; },
-    'list': function() { throw "builtin function 'list' not implemented"; },
-    'locals': function() { throw "builtin function 'locals' not implemented"; },
-    'long': function() { throw "builtin function 'long' not implemented"; },
-    'map': function(args, kwargs) {
+    license: function() { throw "builtin function 'license' not implemented"; },
+    list: function() { throw "builtin function 'list' not implemented"; },
+    locals: function() { throw "builtin function 'locals' not implemented"; },
+    long: function() { throw "builtin function 'long' not implemented"; },
+    map: function(args, kwargs) {
         // FIXME
         args[0].call(this, [args[1]], {});
     },
-    'max': function() { throw "builtin function 'max' not implemented"; },
-    'memoryview': function() { throw "builtin function 'memoryview' not implemented"; },
-    'min': function() { throw "builtin function 'min' not implemented"; },
-    'next': function() { throw "builtin function 'next' not implemented"; },
-    'object': function() { throw "builtin function 'object' not implemented"; },
-    'oct': function() { throw "builtin function 'oct' not implemented"; },
-    'open': function() { throw "builtin function 'open' not implemented"; },
-    'ord': function() { throw "builtin function 'ord' not implemented"; },
-    'pow': function() { throw "builtin function 'pow' not implemented"; },
-    'print': function(args, kwargs) {
+    max: function() { throw "builtin function 'max' not implemented"; },
+    memoryview: function() { throw "builtin function 'memoryview' not implemented"; },
+    min: function() { throw "builtin function 'min' not implemented"; },
+    next: function() { throw "builtin function 'next' not implemented"; },
+    object: function() { throw "builtin function 'object' not implemented"; },
+    oct: function() { throw "builtin function 'oct' not implemented"; },
+    open: function() { throw "builtin function 'open' not implemented"; },
+    ord: function(args, kwargs) {
+        return args[0].charCodeAt(0);
+    },
+    pow: function() { throw "builtin function 'pow' not implemented"; },
+    print: function(args, kwargs) {
         batavia.stdout(args.join(' ') + '\n');
     },
-    'property': function() { throw "builtin function 'property' not implemented"; },
-    'quit': function() { throw "builtin function 'quit' not implemented"; },
-    'range': function(args, kwargs){
+    property: function() { throw "builtin function 'property' not implemented"; },
+    quit: function() { throw "builtin function 'quit' not implemented"; },
+    range: function(args, kwargs){
         return range(args[0], args[1], args[2]);
     },
-    'raw_input': function() { throw "builtin function 'raw_input' not implemented"; },
-    'reduce': function() { throw "builtin function 'reduce' not implemented"; },
-    'reload': function() { throw "builtin function 'reload' not implemented"; },
-    'repr': function() { throw "builtin function 'repr' not implemented"; },
-    'reversed': function() { throw "builtin function 'reversed' not implemented"; },
-    'round': function() { throw "builtin function 'round' not implemented"; },
-    'set': function() { throw "builtin function 'set' not implemented"; },
-    'setattr': function() { throw "builtin function 'setattr' not implemented"; },
-    'slice': function() { throw "builtin function 'slice' not implemented"; },
-    'sorted': function() { throw "builtin function 'sorted' not implemented"; },
-    'staticmethod': function() { throw "builtin function 'staticmethod' not implemented"; },
-    'str': function() { throw "builtin function 'str' not implemented"; },
-    'sum': function() { throw "builtin function 'sum' not implemented"; },
-    'super': function() { throw "builtin function 'super' not implemented"; },
-    'tuple': function() { throw "builtin function 'tuple' not implemented"; },
-    'type': function() { throw "builtin function 'type' not implemented"; },
-    'unichr': function() { throw "builtin function 'unichr' not implemented"; },
-    'unicode': function() { throw "builtin function 'unicode' not implemented"; },
-    'vars': function() { throw "builtin function 'vars' not implemented"; },
-    'xrange': function() { throw "builtin function 'xrange' not implemented"; },
-    'zip': function() { throw "builtin function 'zip' not implemented"; },
+    raw_input: function() { throw "builtin function 'raw_input' not implemented"; },
+    reduce: function() { throw "builtin function 'reduce' not implemented"; },
+    reload: function() { throw "builtin function 'reload' not implemented"; },
+    repr: function() { throw "builtin function 'repr' not implemented"; },
+    reversed: function() { throw "builtin function 'reversed' not implemented"; },
+    round: function() { throw "builtin function 'round' not implemented"; },
+    set: function() { throw "builtin function 'set' not implemented"; },
+    setattr: function() { throw "builtin function 'setattr' not implemented"; },
+    slice: function(args, kwargs) {
+        if (args.length == 1) {
+            return {
+                start: 0,
+                stop: args[0],
+                step: 1
+            };
+        } else {
+            return {
+                start: args[0],
+                stop: args[1],
+                step: args[2] || 1
+            };
+        }
+    },
+    sorted: function() { throw "builtin function 'sorted' not implemented"; },
+    staticmethod: function() { throw "builtin function 'staticmethod' not implemented"; },
+    str: function() { throw "builtin function 'str' not implemented"; },
+    sum: function() { throw "builtin function 'sum' not implemented"; },
+    super: function() { throw "builtin function 'super' not implemented"; },
+    tuple: function() { throw "builtin function 'tuple' not implemented"; },
+    type: function() { throw "builtin function 'type' not implemented"; },
+    unichr: function() { throw "builtin function 'unichr' not implemented"; },
+    unicode: function() { throw "builtin function 'unicode' not implemented"; },
+    vars: function() { throw "builtin function 'vars' not implemented"; },
+    xrange: function() { throw "builtin function 'xrange' not implemented"; },
+    zip: function() { throw "builtin function 'zip' not implemented"; },
 };
 
 /*
@@ -283,8 +297,7 @@ batavia.VirtualMachine.prototype.popn = function(n) {
  * Get a value `n` entries down in the stack, without changing the stack.
  */
 batavia.VirtualMachine.prototype.peek = function(n) {
-
-    return this.frame.stack[this.frame.stack.length - n - 1];
+    return this.frame.stack[this.frame.stack.length - n];
 };
 
 /*
@@ -390,19 +403,26 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
     return val;
 };
 
-// batavia.VirtualMachine.prototype.unwind_block = function(block) {
-//         if block.type == 'except-handler':
-//             offset = 3
-//         else:
-//             offset = 0
+batavia.VirtualMachine.prototype.unwind_block = function(block) {
+    if (block.type === 'except-handler') {
+        offset = 3;
+    } else {
+        offset = 0;
+    }
 
-//         while len(this.frame.stack) > block.level + offset:
-//             this.pop()
+    while (this.frame.stack.length > block.level + offset) {
+        this.pop();
+    }
 
-//         if block.type == 'except-handler':
-//             tb, value, exctype = this.popn(3)
-//             this.last_exception = exctype, value, tb
-// }
+    if (block.type === 'except-handler') {
+        exc = this.popn(3);
+        this.last_exception = {
+            exctype: exc[2],
+            value: exc[1],
+            tb: exc[0]
+        };
+    }
+};
 
 /*
  * Parse 1 - 3 bytes of bytecode into
@@ -492,69 +512,57 @@ batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
     return why;
 };
 
-// batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
-//         """ Manage a frame's block stack.
-//         Manipulate the block stack and data stack for looping,
-//         exception handling, or returning."""
-//         assert why != 'yield'
+/*
+ * Manage a frame's block stack.
+ * Manipulate the block stack and data stack for looping,
+ * exception handling, or returning.
+ */
+batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
+    assert(why !== 'yield');
 
-//         block = this.frame.block_stack[-1]
-//         if block.type == 'loop' and why == 'continue':
-//             this.jump(this.return_value)
-//             why = null
-//             return why
+    var block = this.frame.block_stack[this.frame.block_stack.length - 1];
+    if (block.type === 'loop' && why === 'continue') {
+        this.jump(this.return_value);
+        why = null;
+        return why;
+    }
 
-//         this.pop_block()
-//         this.unwind_block(block)
+    this.pop_block();
+    this.unwind_block(block);
 
-//         if block.type == 'loop' and why == 'break':
-//             why = null
-//             this.jump(block.handler)
-//             return why
+    if (block.type === 'loop' && why === 'break') {
+        why = null;
+        this.jump(block.handler);
+        return why;
+    }
 
-//         if PY2:
-//             if (
-//                 block.type == 'finally' or
-//                 (block.type == 'setup-except' and why == 'exception') or
-//                 block.type == 'with'
-//             ):
-//                 if why == 'exception':
-//                     exctype, value, tb = this.last_exception
-//                     this.push(tb, value, exctype)
-//                 else:
-//                     if why in ('return', 'continue'):
-//                         this.push(this.return_value)
-//                     this.push(why)
+    if (why === 'exception' &&
+            (block.type === 'setup-except' || block.type === 'finally')) {
+        this.push_block('except-handler');
+        exc = this.last_exception;
+        this.push(exc[2]);
+        this.push(exc[1]);
+        this.push(exc[0]);
+        // PyErr_Normalize_Exception goes here
+        this.push(exc[2]);
+        this.push(exc[1]);
+        this.push(exc[0]);
+        why = null;
+        this.jump(block.handler);
+        return why;
+    } else if (block.type === 'finally') {
+        if (why === 'return' || why === 'continue') {
+            this.push(this.return_value);
+        }
+        this.push(why);
 
-//                 why = null
-//                 this.jump(block.handler)
-//                 return why
+        why = null;
+        this.jump(block.handler);
+        return why;
+    }
 
-//         elif PY3:
-//             if (
-//                 why == 'exception' and
-//                 block.type in ['setup-except', 'finally']
-//             ):
-//                 this.push_block('except-handler')
-//                 exctype, value, tb = this.last_exception
-//                 this.push(tb, value, exctype)
-//                 // PyErr_Normalize_Exception goes here
-//                 this.push(tb, value, exctype)
-//                 why = null
-//                 this.jump(block.handler)
-//                 return why
-
-//             elif block.type == 'finally':
-//                 if why in ('return', 'continue'):
-//                     this.push(this.return_value)
-//                 this.push(why)
-
-//                 why = null
-//                 this.jump(block.handler)
-//                 return why
-
-//         return why
-// }
+    return why;
+};
 /*
  * Run a frame until it returns (somehow).
  *
@@ -722,65 +730,17 @@ batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
 
 batavia.VirtualMachine.prototype.unaryOperator = function(op) {
     x = this.pop();
-    this.push({
-        'POSITIVE': +x,
-        'NEGATIVE': -x,
-        'NOT': !x,
-        // 'CONVERT': !x,
-        // 'INVERT': !x,
-    }[op]);
+    this.push(batavia.operators[op](x));
 };
 
 batavia.VirtualMachine.prototype.binaryOperator = function(op) {
-    items = this.popn(2);
-    this.push({
-        'POWER':    Math.pow(items[0], items[1]),
-        'MULTIPLY': items[0] * items[1],
-        'DIVIDE':   items[0] / items[1],
-        'FLOOR_DIVIDE': Math.floor(items[0] / items[1]),
-        'TRUE_DIVIDE':  items[0] / items[1],
-        'MODULO':   items[0] % items[1],
-        'ADD':      items[0] + items[1],
-        'SUBTRACT': items[0] - items[1],
-        'SUBSCR':   items[0][items[1]],
-        'LSHIFT':   items[0] << items[1],
-        'RSHIFT':   items[0] >> items[1],
-        'AND':      items[0] & items[1],
-        'XOR':      items[0] ^ items[1],
-        'OR':       items[0] | items[1],
-    }[op]);
+    var items = this.popn(2);
+    this.push(batavia.operators[op](items[0], items[1]));
 };
 
 batavia.VirtualMachine.prototype.inplaceOperator = function(op) {
     items = this.popn(2);
-    if (op == 'POWER') {
-        items[0] = Math.pow(items[0], items[1]);
-    } else if (op === 'MULTIPLY') {
-        items[0] *= items[1];
-    } else if (op === 'DIVIDE' || op === 'FLOOR_DIVIDE') {
-        items[0] /= items[1];
-    } else if (op == 'TRUE_DIVIDE') {
-        items[0] /= items[1];
-    } else if (op == 'MODULO') {
-        items[0] %= items[1];
-    } else if (op == 'ADD') {
-        items[0] += items[1];
-    } else if (op == 'SUBTRACT') {
-        items[0] -= items[1];
-    } else if (op == 'LSHIFT') {
-        items[0] <<= items[1];
-    } else if (op == 'RSHIFT') {
-        items[0] >>= items[1];
-    } else if (op == 'AND') {
-        items[0] &= items[1];
-    } else if (op == 'XOR') {
-        items[0] ^= items[1];
-    } else if (op == 'OR') {
-        items[0] |= items[1];
-    } else {
-        throw "Unknown in-place operator: " + op;
-    }
-    this.push(items[0]);
+    this.push(batavia.operators[op](items[0], items[1]));
 };
 
 // batavia.VirtualMachine.prototype.sliceOperator = function(op) {
@@ -805,23 +765,9 @@ batavia.VirtualMachine.prototype.inplaceOperator = function(op) {
 //         this.push(l[start:end])
 // };
 
-batavia.VirtualMachine.COMPARE_OPERATORS = [
-    function (x, y) { return x < y; },
-    function (x, y) { return x <= y; },
-    function (x, y) { return x == y; },
-    function (x, y) { return x != y; },
-    function (x, y) { return x > y; },
-    function (x, y) { return x >= y; },
-    function (x, y) { return x in y; },
-    function (x, y) { return !(x in y); },
-    function (x, y) { return x === y; },
-    function (x, y) { return x !== y; },
-    function (x, y) { return false; },
-];
-
 batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     var items = this.popn(2);
-    this.push(batavia.VirtualMachine.COMPARE_OPERATORS[opnum](items[0], items[1]));
+    this.push(batavia.comparisons[opnum](items[0], items[1]));
 };
 
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
@@ -842,12 +788,12 @@ batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
 
 batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     var items = this.popn(3);
-    items[0][items[1]] = items[2];
+    items[2][items[1]] = items[0];
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
-    delete items[0][items[1]];
+    delete items[1][items[0]];
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
@@ -895,16 +841,15 @@ batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     }
 };
 
-// batavia.VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
-//         if count == 2:
-//             x, y = this.popn(2)
-//             this.push(slice(x, y))
-//         elif count == 3:
-//             x, y, z = this.popn(3)
-//             this.push(slice(x, y, z))
-//         else:           // pragma: no cover
-//             throw "Strange BUILD_SLICE count: %r" % count)
-// }
+batavia.VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
+    if (count === 2 || count === 3) {
+        items = this.popn(count);
+        this.push(batavia.builtins.slice(items));
+    } else {
+        throw "Strange BUILD_SLICE count: " + count;
+    }
+};
+
 batavia.VirtualMachine.prototype.byte_LIST_APPEND = function(count) {
     var val = this.pop();
     var the_list = this.peek(count);
