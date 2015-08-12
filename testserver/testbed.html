@@ -5,21 +5,21 @@
     <!--
         To run this demo:
 
-        * Load this page in a browser
-        * Open a Javascript console
-        * Type::
+        * Add Django 1.8 to your virtual environment
+        * Start the testserver::
 
-              run('sample')
+            ./manage.py runserver
 
-        'sample' is the dotted path to a module name whose PYC file has been
-        encoded in base64 and included in this file as the 'batavia-sample'
-        <script> tag.
+        * Load http://127.0.0.1:8000 in your browser
+        * Click one of the two buttons.
 
-        You could also try running::
+        This will run the test code, and display stdout/stderr
+        on the visible page.
 
-              run('test.pystone')
-
-        but all the required opcodes aren't implemented (yet!).
+        The PyStone test will break becausebut all the required opcodes
+        aren't implemented (yet!). However, the sample code will
+        demonstrate some simple function calls, class instantiation,
+        and looping.
       -->
     <script src="/static/batavia/batavia.js"></script>
     <script src="/static/batavia/utils.js"></script>
@@ -188,9 +188,6 @@ DAEDABcBDQEdAgYB
 {{ othercode }}
     </script>
 
-    <script id="batavia-servercode" type="application/python-bytecode">
-    </script>
-
     <script>
 function sample() {
     console.log('Create VM');
@@ -209,7 +206,7 @@ function pystone() {
     console.log('done.');
 }
 
-// Now define a stdout.
+// Now define a stdout function that will output to the page.
 function stdout(content) {
     var pre = document.getElementById('stdout');
     pre.innerHTML = pre.innerHTML + content;
