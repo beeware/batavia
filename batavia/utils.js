@@ -25,6 +25,16 @@ Object.prototype.update = function(values) {
     }
 };
 
+Object.prototype.copy = function() {
+    var dup = {};
+    for (var key in this) {
+        if (this.hasOwnProperty(key)) {
+            dup[key] = this[key];
+        }
+    }
+    return dup;
+};
+
 /*************************************************************************
  * Modify Array to behave like a Python List
  *************************************************************************/

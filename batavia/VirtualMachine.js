@@ -91,11 +91,12 @@ batavia.builtins = {
             var frame = this.make_frame({'code': code, 'f_globals': args[1], 'f_locals': null});
             this.run_frame(frame);
 
-			// import <mod>
 			batavia.modules.sys.modules[args[0]] = frame.f_locals;
 			if (args[3] === null) {
+                // import <mod>
                 module = batavia.modules.sys.modules[args[0]];
 			} else {
+                // from <mod> import *
                 module = {};
                 for (var n in args[3]) {
                     var name = args[3][n];
@@ -328,7 +329,7 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
 
     if (f_globals !==  null) {
         if (f_locals === null) {
-            f_locals = f_globals;
+            f_locals = f_globals.copy();
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
@@ -570,7 +571,7 @@ batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
  *
  */
 batavia.VirtualMachine.prototype.run_frame = function(frame) {
-    var why;
+    var why, operation;
 
     this.push_frame(frame);
     while (true) {
@@ -1184,7 +1185,7 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         }
         // The first parameter must be the correct type.
         if (!isinstance(posargs[0], func.im_class)) {
-            throw 'unbound method ' + func.im_func.func_name + '()' +
+            throw 'unbound method ' + func.im_func.__name__ + '()' +
                 ' must be called with ' + func.im_class.__name__ + ' instance ' +
                 'as first argument (got ' + type(posargs[0]).__name__ + ' instance instead)';
         }
@@ -1193,7 +1194,7 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 		func = func.__call__;
 	}
 
-    var retval = func(posargs, namedargs);
+    var retval = func.apply(this, [posargs, namedargs]);
     this.push(retval);
 };
 
@@ -1274,17 +1275,17 @@ batavia.__build_class__ = function(args, kwargs) {
 
     // Create a locals context, and run the class function in it.
     var locals = {};
-    var retval = func.__call__([], [], locals);
+    var retval = func.__call__.apply(this, [[], [], locals]);
 
     // Now construct the class, based on the constructed local context.
-    var klass = function(args, kwargs) {
+    var klass = function(vm, args, kwargs) {
         if (this.__init__) {
             for (var attr in Object.getPrototypeOf(this)) {
                 if (this[attr].__call__) {
                     this[attr].__self__ = this;
                 }
             }
-            this.__init__.__call__(args, kwargs);
+            this.__init__.__call__.apply(vm, [args, kwargs]);
         }
     };
 
@@ -1294,11 +1295,11 @@ batavia.__build_class__ = function(args, kwargs) {
         }
     }
 
-    var PyObject = function(klass) {
+    var PyObject = function(vm, klass) {
         return function(args, kwargs) {
-            return new klass(args, kwargs);
+            return new klass(vm, args, kwargs);
         };
-    }(klass);
+    }(this, klass);
 
     return PyObject;
 };
