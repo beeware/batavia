@@ -10,6 +10,7 @@ ALL_FILES=\
     batavia/core/Block.js \
     batavia/core/Cell.js \
     batavia/core/Code.js \
+    batavia/core/Exception.js \
     batavia/core/Frame.js \
     batavia/core/Function.js \
     batavia/core/PYCFile.js \

@@ -96,7 +96,7 @@ function Iterable(data) {
 Iterable.prototype.__next__ = function() {
     var retval = this.data[this.index];
     if (retval === undefined) {
-        throw "StopIteration";
+        throw new batavia.builtins.StopIteration();
     }
     this.index++;
     return retval;
@@ -129,7 +129,7 @@ _range.prototype.__next__ = function() {
         this.i = this.i + this.step;
         return retval;
     }
-    throw "StopIteration";
+    throw new batavia.builtins.StopIteration();
 };
 
 function range(start, stop, step) {
