@@ -153,10 +153,10 @@ batavia.operators = {
         return !x;
     },
     CONVERT: function(a) {
-        throw 'NotImplemented';
+        throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
     },
     INVERT: function(a) {
-        throw 'NotImplemented';
+        throw new batavia.builtins.NotImplementedError('Unary invert not implemented');
     },
 
     // BINARY/INPLACE operators
@@ -168,7 +168,7 @@ batavia.operators = {
         if (a instanceof Array) {
             result = [];
             if (b instanceof Array) {
-                throw "TypeError";
+                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'list'");
             } else {
                 for (i = 0; i < b; i++) {
                     result.extend(a);
@@ -176,16 +176,12 @@ batavia.operators = {
             }
         } else if (b instanceof Array) {
             result = [];
-            if (a instanceof Array) {
-                throw "TypeError";
-            } else {
-                for (i = 0; i < a; i++) {
-                    result.extend(b);
-                }
+            for (i = 0; i < a; i++) {
+                result.extend(b);
             }
         }
         else {
-            result = a + b;
+            result = a * b;
         }
         return result;
     },
@@ -219,10 +215,10 @@ batavia.operators = {
                 result.extend(a);
                 result.extend(b);
             } else {
-                throw "TypeError";
+                throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
             }
         } else if (b instanceof Array) {
-            throw "TypeError";
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
         }
         else {
             result = a + b;
@@ -368,7 +364,7 @@ batavia._substitute = function(format, args) {
             lastIndex = re.lastIndex;
             results.push(arg);
         } else {
-            throw "Too many arguments for format string";
+            throw new batavia.builtins.TypeError('not all arguments converted during string formatting');
         }
     }
     // Push the rest of the string.
