@@ -14,6 +14,8 @@ What it does:
 
 * Implements most of the common Python VM opcodes
 
+* Allows access to the DOM using `import dom`,
+
 What it doesn't do:
 
 * Make a good distinction between integer and floating point math

@@ -1,3 +1,6 @@
+import dom
+
+
 import other
 
 
@@ -31,6 +34,15 @@ def main(argv):
     print('Distance with arg is', p.distance())
     p = Point(4, 5, z=6)
     print('Distance with kwarg is', p.distance())
+    print('Manipulate the DOM...')
+    print('Open a new web page...')
+    dom.window.open('http://pybee.org', '_blank')
+    print('Set the page title')
+    dom.document.title = 'Hello world'
+    print('Find an element on the page...')
+    div = dom.document.getElementById('stdout')
+    print('... and set of that element.')
+    div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
     return 0
 
 
