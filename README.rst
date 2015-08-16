@@ -68,15 +68,27 @@ Documentation for Batavia can be found on `Read The Docs`_.
 Why "Batavia?"
 --------------
 
-On 27 October, 1628, *Commandeur* Francisco Pelsaert took command of the *Batavia*, and with 340 passengers and crew, set sail from Texel. Their destination? The Spice Islands - or more specifically, island of Java in the Dutch East Indies (now part of Indonesia).
+On 27 October, 1628, *Commandeur* Francisco Pelsaert took command of the
+*Batavia*, and with 340 passengers and crew, set sail from Texel. Their
+destination? The Spice Islands - or more specifically, island of Java in the
+Dutch East Indies (now part of Indonesia).
 
 The Batavia was... a Java ship (rimshot!).
 
-Interestingly, during the voyage, Ariaen Jacobsz and *onderkoopman* Jeronimus Cornelisz incited a mutiny, because they didn't want to go to Java - they wanted to escape to start a new life somewhere else. As a result of the mutiny, on 4 June 1629, the Batavia ran aground on Morning Reef, part of the Houtman Abrolhos, about 450km North of Perth, Western Australia, where this project was conceived.
+Interestingly, during the voyage, Ariaen Jacobsz and *onderkoopman* Jeronimus
+Cornelisz incited a mutiny, because they didn't want to go to Java - they
+wanted to escape to start a new life somewhere else. As a result of the
+mutiny, on 4 June 1629, the Batavia ran aground on Morning Reef, part of the
+Houtman Abrolhos, about 450km North of Perth, Western Australia, where this
+project was conceived.
 
-The `full story of the Batavia`_ is known to most Western Australian schoolchildren, and is a harrowing tale of intrigue, savagery, and murder. It serves as a reminder of what can happen when you force people to go to Java :-)
+The `full story of the Batavia`_ is known to most Western Australian
+schoolchildren, and is a harrowing tale of intrigue, savagery, and murder. It
+serves as a reminder of what can happen when you force people to go to Java
+:-)
 
-The wreck of the Batavia was recovered in the 1970s, and now stands in the `shipwrecks gallery of the Western Australian Maritime Museum`_.
+The wreck of the Batavia was recovered in the 1970s, and now stands in the
+`shipwrecks gallery of the Western Australian Maritime Museum`_.
 
 .. _full story of the Batavia: https://en.wikipedia.org/wiki/Batavia_(ship)
 .. _shipwrecks gallery of the Western Australian Maritime Museum: http://museum.wa.gov.au/museums/shipwrecks
