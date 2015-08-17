@@ -152,7 +152,13 @@ batavia.builtins = {
     'hex': function() { throw "builtin function 'hex' not implemented"; },
     'id': function() { throw "builtin function 'id' not implemented"; },
     'input': function() { throw "builtin function 'input' not implemented"; },
-    'int': function(v) { return parseInt(v, 10); },
+    'int': function(args) {
+        var base = 10;
+        if (args.length > 1) {
+            base = args[1];
+        }
+        return parseInt(args[0], base);
+    },
     'intern': function() { throw "builtin function 'intern' not implemented"; },
     'isinstance': function() { throw "builtin function 'isinstance' not implemented"; },
     'issubclass': function() { throw "builtin function 'issubclass' not implemented"; },
@@ -196,7 +202,11 @@ batavia.builtins = {
     'slice': function() { throw "builtin function 'slice' not implemented"; },
     'sorted': function() { throw "builtin function 'sorted' not implemented"; },
     'staticmethod': function() { throw "builtin function 'staticmethod' not implemented"; },
-    'str': function() { throw "builtin function 'str' not implemented"; },
+    'str': function(args) {
+        console.log(typeof args[0]);
+        // FIXME: object's __str__ method should be used if available
+        return String(args[0]);
+    },
     'sum': function() { throw "builtin function 'sum' not implemented"; },
     'super': function() { throw "builtin function 'super' not implemented"; },
     'tuple': function() { throw "builtin function 'tuple' not implemented"; },
