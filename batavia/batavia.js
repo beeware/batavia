@@ -1,7 +1,12 @@
 
+fixedConsoleLog = function(msg) {
+    console.log.call(console, msg);
+}
+
 var batavia = {
-    stdout: console.log,
-    stderr: console.log,
+    stdout: fixedConsoleLog,
+    stderr: fixedConsoleLog,
     core: {},
     modules: {}
 };
+
