@@ -3,6 +3,7 @@ ALL_FILES=\
     batavia/batavia.js \
     batavia/utils.js \
     batavia/modules/dis.js \
+    batavia/modules/dom.js \
     batavia/modules/marshal.js \
     batavia/modules/inspect.js \
     batavia/modules/sys.js \
@@ -10,6 +11,7 @@ ALL_FILES=\
     batavia/core/Block.js \
     batavia/core/Cell.js \
     batavia/core/Code.js \
+    batavia/core/Exception.js \
     batavia/core/Frame.js \
     batavia/core/Function.js \
     batavia/core/PYCFile.js \

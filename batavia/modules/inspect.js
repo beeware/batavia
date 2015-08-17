@@ -2,8 +2,8 @@
 batavia.modules.inspect = {
     FullArgSpec: function(kwargs) {
         this.args = kwargs.args || [];
-        this.varargs = kwargs.varargs || [];
-        this.varkw = kwargs.varkw || [];
+        this.varargs = kwargs.varargs;
+        this.varkw = kwargs.varkw;
         this.defaults = kwargs.defaults || {};
         this.kwonlyargs = kwargs.kwonlyargs || [];
         this.kwonlydefaults = kwargs.kwonlydefaults || {};
@@ -32,7 +32,7 @@ batavia.modules.inspect = {
         var params = sig.parameters.values();
 
         if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-            throw ValueError('invalid method signature');
+            throw new batavia.builtins.ValueError('invalid method signature');
         }
 
         var kind = params[0].kind;
@@ -44,7 +44,7 @@ batavia.modules.inspect = {
             if (kind !== _VAR_POSITIONAL) {
                 // Unless we add a new parameter type we never
                 // get here
-                throw ValueError('invalid argument type');
+                throw new batavia.builtins.ValueError('invalid argument type');
             }
             // It's a var-positional parameter.
             // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
@@ -260,31 +260,30 @@ batavia.modules.inspect = {
                 annotations['return'] = sig.return_annotation;
             }
 
-            for (var param in sig.parameters) {
-                if (sig.parameters.hasOwnProperty(param)) {
-                    var kind = sig.parameters[param].kind;
-                    var name = sig.parameters[param].name;
+            for (var p in sig.parameters) {
+                if (sig.parameters.hasOwnProperty(p)) {
+                    var param = sig.parameters[p];
 
-                    if (kind === batavia.modules.inspect.Parameter.POSITIONAL_ONLY) {
-                        args.append(name);
-                    } else if (kind === batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD) {
-                        args.append(name);
-                        if (param.default !== param.empty) {
+                    if (param.kind === batavia.modules.inspect.Parameter.POSITIONAL_ONLY) {
+                        args.append(param.name);
+                    } else if (param.kind === batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD) {
+                        args.append(param.name);
+                        if (param.default !== undefined) {
                             defaults.push(param.default);
                         }
-                    } else if (kind === batavia.modules.inspect.Parameter.VAR_POSITIONAL) {
-                        varargs = name;
-                    } else if (kind === batavia.modules.inspect.Parameter.KEYWORD_ONLY) {
-                        kwonlyargs.append(name);
-                        if (param.default !== param.empty) {
-                            kwdefaults[name] = param.default;
+                    } else if (param.kind === batavia.modules.inspect.Parameter.VAR_POSITIONAL) {
+                        varargs = param.name;
+                    } else if (param.kind === batavia.modules.inspect.Parameter.KEYWORD_ONLY) {
+                        kwonlyargs.append(param.name);
+                        if (param.default !== undefined) {
+                            kwdefaults[param.name] = param.default;
                         }
-                    } else if (kind === batavia.modules.inspect.Parameter.VAR_KEYWORD) {
-                        varkw = name;
+                    } else if (param.kind === batavia.modules.inspect.Parameter.VAR_KEYWORD) {
+                        varkw = param.name;
                     }
 
-                    if (param.annotation !== param.empty) {
-                        annotations[name] = param.annotation;
+                    if (param.annotation !== undefined) {
+                        annotations[param.name] = param.annotation;
                     }
                 }
             }
@@ -320,17 +319,23 @@ batavia.modules.inspect = {
     },
 
     _missing_arguments: function(f_name, argnames, pos, values) {
-        throw "FIXME: Missing arguments";
-        // names = [repr(name) for name in argnames if name not in values]
-        // missing = len(names)
-        // if missing == 1:
-        //     s = names[0]
-        // elif missing == 2:
+        throw "Missing arguments";
+        // var names = [];
+        // for (var name in argnames) {
+        //     if (!name in values) {
+        //         names.append(name);
+        //     }
+        // }
+        // var missing = names.length;
+        // if (missing == 1) {
+        //     s = names[0];
+        // } else if (missing === 2) {
         //     s = "{} and {}".format(*names)
-        // else:
+        // } else {
         //     tail = ", {} and {}".format(*names[-2:])
         //     del names[-2:]
         //     s = ", ".join(names) + tail
+        // }
         // raise TypeError("%s() missing %i required %s argument%s: %s" %
         //                 (f_name, missing,
         //                   "positional" if pos else "keyword-only",
@@ -371,70 +376,84 @@ batavia.modules.inspect = {
         var arg2value = {};
 
         // if ismethod(func) and func.__self__ is not None:
-        //     # implicit 'self' (or 'cls' for classmethods) argument
-        //     positional = (func.__self__,) + positional
+        if (func.__self__) {
+            // implicit 'self' (or 'cls' for classmethods) argument
+            positional = [func.__self__].concat(positional);
+        }
         var num_pos = positional.length;
         var num_args = func.argspec.args.length;
         var num_defaults = func.argspec.defaults ? func.argspec.defaults.length : 0;
 
+        var i, arg;
         var n = Math.min(num_pos, num_args);
-        for (var i = 0; i < n; i++) {
+        for (i = 0; i < n; i++) {
             arg2value[func.argspec.args[i]] = positional[i];
         }
 
-        if (func.argspec.varargs.length > 0) {
+        if (func.argspec.varargs) {
             arg2value[varargs] = positional.slice(n);
         }
+
         var possible_kwargs = new Set();
         possible_kwargs.update(func.argspec.args);
         possible_kwargs.update(func.argspec.kwonlyargs);
 
-        if (func.argspec.varkw.length > 0) {
-            arg2value[varkw] = {};
+        if (func.argspec.varkw) {
+            arg2value[func.argspec.varkw] = {};
         }
 
         for (var kw in named) {
             if (named.hasOwnProperty(kw)) {
                 if (!(kw in possible_kwargs)) {
-                    if (!varkw) {
-                        throw TypeError("%s() got an unexpected keyword argument %r" %
+                    if (!func.argspec.varkw) {
+                        throw new batavia.builtins.TypeError("%s() got an unexpected keyword argument %r" %
                                     (func.__name__, kw));
                     }
-                    arg2value[varkw][kw] = value;
+                    arg2value[func.argspec.varkw][kw] = named[kw];
                     continue;
                 }
                 if (kw in arg2value) {
-                    throw TypeError("%s() got multiple values for argument %r" %
+                    throw new batavia.builtins.TypeError("%s() got multiple values for argument %r" %
                                     (func.__name__, kw));
                 }
-                arg2value[kw] = value;
+                arg2value[kw] = named[kw];
             }
         }
 
         if (num_pos > num_args && varargs.length === 0) {
-            batavia.modules.inspect._too_many(func.__name__, args, kwonlyargs, varargs, num_defaults, num_pos, arg2value);
+            batavia.modules.inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value);
         }
         if (num_pos < num_args) {
-            req = args.slice(0, num_args - num_defaults);
-            for (var arg in req) {
-                if (!(req[arg] in arg2value)) {
-                    batavia.modules.inspect._missing_arguments(func.__name__, req, True, arg2value);
+            var req = func.argspec.args.slice(0, num_args - num_defaults);
+            for (arg in req) {
+                if (req.hasOwnProperty(arg)) {
+                    if (!(req[arg] in arg2value)) {
+                        batavia.modules.inspect._missing_arguments(func.__name__, req, true, arg2value);
+                    }
                 }
             }
-            // for (var i in enumerate(args[num_args - num_defaults:]) {}
-            //     if arg not in arg2value:
-            //         arg2value[arg] = defaults[i]
-            // }
+            for (i = num_args - num_defaults; i < func.argspec.args.length; i++) {
+                arg = func.argspec.args[i];
+                if (!arg2value.hasOwnProperty(arg)) {
+                    arg2value[arg] = func.argspec.defaults[i - num_pos];
+                }
+            }
         }
-        // missing = 0
-        // for kwarg in kwonlyargs:
-        //     if kwarg not in arg2value:
-        //         if kwonlydefaults and kwarg in kwonlydefaults:
-        //             arg2value[kwarg] = kwonlydefaults[kwarg]
-        //         else:
-        //             missing += 1
-        // if missing:
-        //     batavia.modules.inspect._missing_arguments(func.__name__, kwonlyargs, false, arg2value)
+        var missing = 0;
+        for (var kwarg in func.argspec.kwonlyargs) {
+            if (func.argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
+                if (!arg2value.hasOwnProperty(kwarg)) {
+                    if (func.argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
+                        arg2value[kwarg] = func.argspec.kwonlydefaults[kwarg];
+                    } else {
+                        missing += 1;
+                    }
+                }
+            }
+        }
+        if (missing) {
+            batavia.modules.inspect._missing_arguments(func.__name__, func.argspec.kwonlyargs, false, arg2value);
+        }
         return arg2value;
     }
 };
@@ -471,8 +490,8 @@ Has the following public attributes:
 batavia.modules.inspect.Parameter = function(kwargs) {
     this.name = kwargs.name;
     this.kind = kwargs.kind;
-    this.annotation = kwargs.annotation || null;
-    this.default = kwargs.default || {};
+    this.annotation = kwargs.annotation;
+    this.default = kwargs.default;
 
     // if kind not in (POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD,
     //                 _VAR_POSITIONAL, _KEYWORD_ONLY, _VAR_KEYWORD):
@@ -696,7 +715,9 @@ batavia.modules.inspect.Signature = function(parameters, return_annotation, __va
         } else {
             // params = OrderedDict(((param.name, param) for param in parameters));
             for (var p in parameters) {
-                this.parameters[parameters[p].name] = parameters[p];
+                if (parameters.hasOwnProperty(p)) {
+                    this.parameters[parameters[p].name] = parameters[p];
+                }
             }
         }
     }
@@ -706,8 +727,6 @@ batavia.modules.inspect.Signature = function(parameters, return_annotation, __va
 
 // batavia.modules.inspect.Signature._parameter_cls = Parameter;
 // batavia.modules.inspect.Signature._bound_arguments_cls = BoundArguments;
-
-batavia.modules.inspect.Signature.empty = {};
 
 /*
  * Constructs Signature for the given python function
@@ -745,13 +764,13 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     }
 
     var parameters = [];
-    var n, name, annotation, def;
+    var n, name, annotation, def, offset;
 
     // Non-keyword-only parameters w/o defaults.
     var non_default_count = pos_count - pos_default_count;
     for (n = 0; n < non_default_count; n++) {
         name = positional[n];
-        annotation = annotations[name] || {};
+        annotation = annotations[name];
         parameters.append(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -760,9 +779,9 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     }
 
     // ... w/ defaults.
-    for (n = non_default_count; n < positional.length; n++) {
+    for (offset=0, n = non_default_count; n < positional.length; offset++, n++) {
         name = positional[n];
-        annotation = annotations[name] || {};
+        annotation = annotations[name];
         parameters.append(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -789,7 +808,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
             def = kwdefaults[name];
         }
 
-        annotation = annotations[name] || {};
+        annotation = annotations[name];
         parameters.append(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -806,7 +825,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
         }
 
         name = arg_names[index];
-        annotation = annotations[name] || {};
+        annotation = annotations[name];
         parameters.append(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
