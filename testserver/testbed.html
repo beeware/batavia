@@ -1,7 +1,16 @@
 <html>
 <head>
     <title>Batavia testbed</title>
+    <style>
+        .warning {
+            color: #bb0000;
+            width: 35em;
+        }
 
+        textarea {
+            font-family: monospace;
+        }
+    </style>
     <!--
         To run this demo:
 
@@ -246,8 +255,9 @@ batavia.stderr = stdout;
     </div>
     <div style="width: 40%; display: table-cell;">
         <form method="post">
-            <textarea cols="80" rows="8"  name="code">{{ customcode.code }}</textarea><br />
-            <input type="submit" value="Run code!" />
+            <textarea cols="80" rows="8" name="code">{{ customcode.code }}</textarea><br/>
+            <input type="submit" value="Run code!" /><p class="warning"><b>NOTE - This is not sandboxed!!</b> Anything you put in this box will be run on your server with the same permissions as the user running the server.</p>
+            <p class="warning"><b>You have been warned!</b></p>
         </form>
     </div>
     <hr/>
