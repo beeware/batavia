@@ -185,6 +185,22 @@ DAEDABcBDQEdAgYB
 {{ othercode }}
     </script>
 
+    {% if customcode %}
+    <script id="batavia-customcode" type="application/python-bytecode">
+{{ customcode.compiled }}
+    </script>
+
+    <script>
+function customcode() {
+    console.log('Create VM');
+    var vm = new batavia.VirtualMachine();
+    console.log('Run code...');
+    vm.run('customcode', []);
+    console.log('done.');
+}
+    </script>
+    {% endif %}
+
     <script>
 function sample() {
     console.log('Create VM');
@@ -214,11 +230,26 @@ batavia.stderr = stdout;
     </script>
 
 </head>
+{% if customcode %}
+<body onload="customcode();">
+{% else %}
 <body>
+{% endif %}
     <h1>Batavia testbed</h1>
-    <button onclick="sample()">Run sample.py</button>
-    <button onclick="pystone(5)">Run PyStone (5 loops)</button>
-    <button onclick="pystone(50000)">Run PyStone (50000 loops)</button>
+    <div style="width: 40%; display: table-cell; vertical-align: top;">
+        <button onclick="sample()">Run sample.py</button>
+        <button onclick="pystone(5)">Run PyStone (5 loops)</button>
+        <button onclick="pystone(50000)">Run PyStone (50000 loops)</button><br />
+    </div>
+    <div style="width: 10%; display: table-cell; vertical-align: top;">
+        - or -
+    </div>
+    <div style="width: 40%; display: table-cell;">
+        <form method="post">
+            <textarea cols="80" rows="8"  name="code">{{ customcode.code }}</textarea><br />
+            <input type="submit" value="Run code!" />
+        </form>
+    </div>
     <hr/>
     <pre id="stdout"></pre>
 </body>

@@ -153,7 +153,13 @@ batavia.builtins = {
     hex: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hex' not implemented"); },
     id: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented"); },
     input: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented"); },
-    int: function(v) { return parseInt(v, 10); },
+    'int': function(args) {
+        var base = 10;
+        if (args.length > 1) {
+            base = args[1];
+        }
+        return parseInt(args[0], base);
+    },
     intern: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'intern' not implemented"); },
     isinstance: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'isinstance' not implemented"); },
     issubclass: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented"); },
@@ -213,7 +219,11 @@ batavia.builtins = {
     },
     sorted: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented"); },
     staticmethod: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented"); },
-    str: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'str' not implemented"); },
+    'str': function(args) {
+        console.log(typeof args[0]);
+        // FIXME: object's __str__ method should be used if available
+        return String(args[0]);
+    },
     sum: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sum' not implemented"); },
     super: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented"); },
     tuple: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'tuple' not implemented"); },
