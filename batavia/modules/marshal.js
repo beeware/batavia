@@ -594,7 +594,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_TUPLE:
-            n = r_long(p);
+            n = batavia.modules.marshal.r_long(vm, p);
             // console.log.info('TYPE_TUPLE ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
@@ -615,7 +615,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_LIST:
-            n = r_long(p);
+            n = batavia.modules.marshal.r_long(vm, p);
             // console.log.info('TYPE_LIST ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
@@ -659,7 +659,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_SET:
         case batavia.modules.marshal.TYPE_FROZENSET:
-            n = r_long(p);
+            n = batavia.modules.marshal.r_long(vm, p);
             // console.log.info('TYPE_FROZENSET ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
