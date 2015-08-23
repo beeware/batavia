@@ -153,7 +153,7 @@ batavia.builtins = {
     hex: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hex' not implemented"); },
     id: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented"); },
     input: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented"); },
-    'int': function(args) {
+    int: function(args) {
         var base = 10;
         if (args.length > 1) {
             base = args[1];
@@ -219,7 +219,7 @@ batavia.builtins = {
     },
     sorted: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented"); },
     staticmethod: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented"); },
-    'str': function(args) {
+    str: function(args) {
         console.log(typeof args[0]);
         // FIXME: object's __str__ method should be used if available
         return String(args[0]);
