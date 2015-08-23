@@ -40,6 +40,7 @@ need to be running Python 3.4. Install Django 1.8 into your virtual
 environment; then, at a shell prompt::
 
     $ cd testserver
+    $ pip install -r requirements.txt
     $ ./manage.py runserver
 
 You can then load http://127.0.0.1:8000 in your browser. When the page loads,
