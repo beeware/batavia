@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Batavia: Tools to run Python bytecode in the browser. Part of the BeeWare suite.</title>
+
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Cutive">
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <style type="text/css">
+      h1 {
+        font-family: 'Cutive', serif;
+      }
+      header h1 {
+        font-family: 'Cutive', serif;
+        font-size: 64px;
+        padding-top: 12px;
+        text-align: center;
+      }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="static/images/batavia-144.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="static/images/batavia-114.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="static/images/batavia-72.png">
+    <link rel="apple-touch-icon-precomposed" href="static/images/batavia-57.png">
+    <link rel="shortcut icon" href="static/images/batavia-32.png">
+
+    <!-- Google analytics -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-2943925-15', 'pybee.org');
+      ga('send', 'pageview');
+
+    </script>
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <img src="static/images/batavia-270.png" alt="bugjar logo">
+        <h1>batavia</h1>
+        <p>Tools to run Python bytecode in the browser. Part of the <a href="http://pybee.org">BeeWare suite</a>.</p>
+
+        <p class="view"><a href="https://github.com/pybee/batavia">View the Project on GitHub <small>pybee/batavia</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/pybee/batavia/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/pybee/batavia/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/pybee/batavia">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="batavia" class="anchor" href="#batavia"><span class="octicon octicon-link"></span></a>batavia</h1>
+
+<p><strong>Part of the <a href="http://pybee.org"><img src="static/images/brutus-16.png" alt="BeeWare logo">BeeWare suite</a>.</strong></p>
+
+<p>Tools to run Python bytecode in the browser.</p>
+
+<p>This is experimental code. If it breaks, you get to keep all the shiny pieces.
+
+<p>What it does:
+  <ul>
+    <li>Implements a Python 3.4 Bytecode machine that can handle function calls
+    and basic class definitions.</li>
+
+    <li>Unmarshals Base64 encoded bytecode into Code objects</li>
+
+    <li>Implements most of the common Python VM opcodes</li>
+
+    <li>Allows access to the DOM using `import dom`,</li>
+  </ul>
+</p>
+<p>What it doesn't do:
+  <ul>
+    <li>Make a good distinction between integer and floating point math</li>
+
+    <li>Any attempt at unicode handling.</li>
+
+    <li>Raise errors (especially TypeErrors during math operations) in exactly
+    the same way as Python</li>
+
+    <li>Support all Python's builtin functions</li>
+
+    <li>Support the full Python standard library</li>
+
+    <li>Allow for class inheritance</li>
+  </ul>
+</p>
+<h2>
+<a name="quickstart" class="anchor" href="#quickstart"><span class="octicon octicon-link"></span></a>Quickstart</h2>
+
+<p>In your virtualenv, install Batavia, and then run it:</p>
+
+<pre><code>$ pip install batavia
+$ batavia
+</code></pre>
+
+<p>The <code>testserver</code> directory contains a minimal Django project that will serve
+Python bytecode to your browser and execute it. To run this project, you'll
+need to be running Python 3.4. Install Django 1.8 into your virtual
+environment; then, at a shell prompt::
+
+<pre><code>$ cd testserver
+$ pip install -r requirements.txt
+$ ./manage.py runserver
+</code></pre>
+
+<p>You can then load <a href="http://127.0.0.1:8000">http://127.0.0.1:8000</a> in your browser. When the page loads,
+you will see a set of buttons corresponding to Python modules that
+have been embedded in the page:
+<ul>
+  <li>The PyStone performance benchmark. The Python bytecode is embedded as a
+  string in the HTML file.</li>
+
+  <li><code>sample.py</code>, a simple Python example demonstrating basic VM features.
+   The PYC content that is dynamically generated on the server and served
+   to the client. This file imports a second file, <code>other.py</code>, to
+   demonstrate how imports work.</li>
+</ul>
+</p>
+<p>Click one of the buttons, and the code will run; stdout/stderr has been
+redirected to the webpage, so if the script has any output, you'll see it.</p>
+
+<p>To start tinkering, make changes to <code>testserver/sample.py</code>, reload the page,
+and click the button.</p>
+
+
+<h2>
+<a name="documentation" class="anchor" href="#documentation"><span class="octicon octicon-link"></span></a>Documentation</h2>
+
+<p>Documentation for Batavia can be found on <a href="http://batavia.readthedocs.org">Read The Docs</a>.</p>
+
+<h2>
+<a name="community" class="anchor" href="#community"><span class="octicon octicon-link"></span></a>Community</h2>
+
+<p>Batavia is part of the <a href="http://pybee.org">BeeWare suite</a>. You can talk to the community through:</p>
+<ul>
+<li><p><a href="https://twitter.com/pybeeware">Twitter</a></p></li>
+<li><p>The <a href="https://groups.google.com/forum/#!forum/beeware-users">BeeWare Users Mailing list</a>, for questions about how to use the BeeWare suite.</p></li>
+<li><p>The <a href="https://groups.google.com/forum/#!forum/beeware-developers">BeeWare Developers Mailing list</a>, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.</p></li>
+</ul>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>If you experience problems with Batavia, you can <a href="https://github.com/pybee/batavia/issues">log them on GitHub</a>. If you want to contribute code, please <a href="https://github.com/freakboy3742/batavia">fork the code</a> and <a href="https://github.com/pybee/batavia/pulls">submit a pull request</a>.</p>
+
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/pybee">pybee</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+
+  </body>
+</html>
