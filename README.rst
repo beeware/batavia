@@ -1,3 +1,6 @@
+.. image:: http://pybee.org/batavia/static/images/batavia-72.png
+    :target: https://pybee.org/batavia
+
 Batavia
 =======
 
