@@ -62,7 +62,7 @@ Click one of the buttons, and the code will run; stdout/stderr has been
 redirected to the webpage, so if the script has any output, you'll see it.
 
 To start tinkering, make changes to `testserver/sample.py`, reload the page,
-and click the button.
+and click the "Run sample.py" button.
 
 Documentation
 -------------

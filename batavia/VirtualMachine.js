@@ -111,7 +111,13 @@ batavia.builtins = {
         return module;
     },
 
-    abs: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'abs' not implemented"); },
+    abs: function(args) {
+        if (args.length !== 1)
+            throw new batavia.builtins.TypeError("abs() takes exactly one argument (" + args.length + " given)");
+        if (args[0] === null)
+            throw new batavia.builtins.TypeError("bad operand type for abs(): 'NoneType'");
+        return Math.abs(args[0]);
+    },
     all: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'all' not implemented"); },
     any: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'any' not implemented"); },
     apply: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'apply' not implemented"); },
