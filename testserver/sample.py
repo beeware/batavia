@@ -23,6 +23,8 @@ def do_stuff(count, size=3):
 def try_builtins():
     print('abs(-1)', abs(-1))
     print('abs(None)', abs(None))
+    print('min(1,2,3,4)', min(1,2,3,4))
+    print('max(1,2,3,4)', max(1,2,3,4))
 
 
 def main(argv):
