@@ -181,9 +181,13 @@ batavia.builtins = {
         // FIXME
         args[0].call(this, [args[1]], {});
     },
-    max: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'max' not implemented"); },
+    max: function(args, kwargs) {
+        return Math.max.apply(null, args);
+    },
     memoryview: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'memoryview' not implemented"); },
-    min: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'min' not implemented"); },
+    min: function(args, kwargs) {
+	return Math.min.apply(null, args);
+    },
     next: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented"); },
     object: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented"); },
     oct: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'oct' not implemented"); },
