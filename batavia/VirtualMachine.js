@@ -234,7 +234,12 @@ batavia.builtins = {
         // FIXME: object's __str__ method should be used if available
         return String(args[0]);
     },
-    sum: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sum' not implemented"); },
+    sum: function(args) {
+        var total = args.reduce(function(a, b) {
+            return a + b;
+        });
+        return total;
+    },
     super: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented"); },
     tuple: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'tuple' not implemented"); },
     type: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented"); },
