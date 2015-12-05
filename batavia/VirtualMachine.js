@@ -111,7 +111,13 @@ batavia.builtins = {
         return module;
     },
 
-    abs: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'abs' not implemented"); },
+    abs: function(args) {
+        if (args.length !== 1)
+            throw new batavia.builtins.TypeError("abs() takes exactly one argument (" + args.length + " given)");
+        if (args[0] === null)
+            throw new batavia.builtins.TypeError("bad operand type for abs(): 'NoneType'");
+        return Math.abs(args[0]);
+    },
     all: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'all' not implemented"); },
     any: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'any' not implemented"); },
     apply: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'apply' not implemented"); },
@@ -175,9 +181,13 @@ batavia.builtins = {
         // FIXME
         args[0].call(this, [args[1]], {});
     },
-    max: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'max' not implemented"); },
+    max: function(args, kwargs) {
+        return Math.max.apply(null, args);
+    },
     memoryview: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'memoryview' not implemented"); },
-    min: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'min' not implemented"); },
+    min: function(args, kwargs) {
+	return Math.min.apply(null, args);
+    },
     next: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented"); },
     object: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented"); },
     oct: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'oct' not implemented"); },
@@ -224,7 +234,12 @@ batavia.builtins = {
         // FIXME: object's __str__ method should be used if available
         return String(args[0]);
     },
-    sum: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sum' not implemented"); },
+    sum: function(args) {
+        var total = args.reduce(function(a, b) {
+            return a + b;
+        });
+        return total;
+    },
     super: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented"); },
     tuple: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'tuple' not implemented"); },
     type: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented"); },

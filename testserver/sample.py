@@ -20,6 +20,12 @@ def do_stuff(count, size=3):
         print("HELLO", i)
         other.wiggle(i)
 
+def try_builtins():
+    print('sum(0,1,2,3,4)', sum(0,1,2,3,4))
+    print('abs(-1)', abs(-1))
+    print('abs(None)', abs(None))
+    print('min(1,2,3,4)', min(1,2,3,4))
+    print('max(1,2,3,4)', max(1,2,3,4))
 
 def main(argv):
     print('Use default')
@@ -43,6 +49,8 @@ def main(argv):
     div = dom.document.getElementById('stdout')
     print('... and set of that element.')
     div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
+    print('Try some builtins...')
+    try_builtins()
     return 0
 
 
