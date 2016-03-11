@@ -146,7 +146,6 @@ batavia.builtins = {
             throw new batavia.builtins.TypeError("bool() takes exactly one argument (" + args.length + " given)");
 	return !!args[0];
     },
-    buffer: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'buffer' not implemented"); },
     bytearray: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytearray' not implemented"); },
     bytes: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytes' not implemented"); },
     callable: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'callable' not implemented"); },
@@ -154,8 +153,6 @@ batavia.builtins = {
         return String.fromCharCode(args[0]);
     },
     classmethod: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'classmethod' not implemented"); },
-    cmp: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'cmp' not implemented"); },
-    coerce: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'coerce' not implemented"); },
     compile: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'compile' not implemented"); },
     complex: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'complex' not implemented"); },
     copyright: function() {
@@ -178,7 +175,6 @@ batavia.builtins = {
     },
     enumerate: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'enumerate' not implemented"); },
     eval: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented"); },
-    execfile: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'execfile' not implemented"); },
     exit: function() { 
         // NOTE You can't actually exit a JavaScript session, so...
         console.log("Goodbye");
