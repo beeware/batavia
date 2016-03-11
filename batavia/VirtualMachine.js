@@ -136,7 +136,11 @@ batavia.builtins = {
     },
     apply: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'apply' not implemented"); },
     basestring: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'basestring' not implemented"); },
-    bin: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bin' not implemented"); },
+    bin: function(args) { 
+        if (args.length !== 1)
+            throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
+	    return "0b"+args[0].toString(2);
+    },
     bool: function(args) { 
         if (args.length !== 1)
             throw new batavia.builtins.TypeError("bool() takes exactly one argument (" + args.length + " given)");
@@ -154,16 +158,31 @@ batavia.builtins = {
     coerce: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'coerce' not implemented"); },
     compile: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'compile' not implemented"); },
     complex: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'complex' not implemented"); },
-    copyright: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'copyright' not implemented"); },
-    credits: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'credits' not implemented"); },
+    copyright: function() {
+        console.log("Batavia: Copyright (c) 2015 Russell Keith-Magee. (BSD-3 Licence)\n"+
+                    "byterun: Copyright (c) 2013, Ned Batchelder. (MIT Licence)");
+    },
+    credits: function() { 
+        console.log("Thanks to all contributors, including those in AUTHORS, for supporting Batavia development. See https://github.com/pybee/batavia for more information");
+    },
     delattr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'delattr' not implemented"); },
     dict: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dict' not implemented"); },
     dir: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dir' not implemented"); },
-    divmod: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'divmod' not implemented"); },
+    divmod: function(args) { 
+        if (args.length !== 2)
+            throw new batavia.builtins.TypeError("divmod() takes exactly one argument (" + args.length + " given)");
+        div = Math.floor(args[0]/args[1])
+        rem = args[0] % args[1]
+        // FIXME send this result back as a proper set 
+        return [div, rem]
+    },
     enumerate: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'enumerate' not implemented"); },
     eval: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented"); },
     execfile: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'execfile' not implemented"); },
-    exit: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exit' not implemented"); },
+    exit: function() { 
+        // NOTE You can't actually exit a JavaScript session, so...
+        console.log("Goodbye");
+    },
     file: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'file' not implemented"); },
     filter: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented"); },
     float: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'float' not implemented"); },

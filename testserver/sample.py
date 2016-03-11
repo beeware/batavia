@@ -31,6 +31,8 @@ def try_builtins():
     print('bool(false)', bool(False))
     print('hex(14)', hex(14))
     print('oct(14)', oct(14))
+    print('bin(14)', bin(14))
+    print('divmod(5,2)', divmod(5,2))
 
     print('abs(None)', abs(None)) #known failure
 def main(argv):
