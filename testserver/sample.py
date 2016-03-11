@@ -23,10 +23,16 @@ def do_stuff(count, size=3):
 def try_builtins():
     print('sum(0,1,2,3,4)', sum(0,1,2,3,4))
     print('abs(-1)', abs(-1))
-    print('abs(None)', abs(None))
     print('min(1,2,3,4)', min(1,2,3,4))
     print('max(1,2,3,4)', max(1,2,3,4))
+    print('all([True, True, False])', all([True, True, False]))
+    print('any([True, True, False])', any([True, True, False]))
+    print('bool("String")', bool("String"))
+    print('bool(false)', bool(False))
+    print('hex(14)', hex(14))
+    print('oct(14)', oct(14))
 
+    print('abs(None)', abs(None)) #known failure
 def main(argv):
     print('Use default')
     print(do_stuff(int(argv[1])))

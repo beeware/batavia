@@ -118,12 +118,30 @@ batavia.builtins = {
             throw new batavia.builtins.TypeError("bad operand type for abs(): 'NoneType'");
         return Math.abs(args[0]);
     },
-    all: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'all' not implemented"); },
-    any: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'any' not implemented"); },
+    all: function(args) {
+        for (var i in args[0]) {
+            if (!args[0][i]) {
+               return false;
+            } 
+        }
+        return true;
+    },
+    any: function(args) { 
+        for (var i in args[0]) {
+            if (args[0][i]) {
+               return true;
+            }
+        }
+        return false;
+    },
     apply: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'apply' not implemented"); },
     basestring: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'basestring' not implemented"); },
     bin: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bin' not implemented"); },
-    bool: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bool' not implemented"); },
+    bool: function(args) { 
+        if (args.length !== 1)
+            throw new batavia.builtins.TypeError("bool() takes exactly one argument (" + args.length + " given)");
+	return !!args[0];
+    },
     buffer: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'buffer' not implemented"); },
     bytearray: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytearray' not implemented"); },
     bytes: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytes' not implemented"); },
@@ -156,7 +174,11 @@ batavia.builtins = {
     hasattr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hasattr' not implemented"); },
     hash: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hash' not implemented"); },
     help: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'help' not implemented"); },
-    hex: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hex' not implemented"); },
+    hex: function(args) { 
+        if (args.length !== 1)
+            throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
+	return "0x"+args[0].toString(16);
+    },
     id: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented"); },
     input: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented"); },
     int: function(args) {
@@ -190,7 +212,11 @@ batavia.builtins = {
     },
     next: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented"); },
     object: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented"); },
-    oct: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'oct' not implemented"); },
+    oct: function(args) { 
+        if (args.length !== 1)
+            throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
+	return "0o"+args[0].toString(8);
+    },
     open: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'open' not implemented"); },
     ord: function(args, kwargs) {
         return args[0].charCodeAt(0);
