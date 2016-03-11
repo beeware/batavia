@@ -177,7 +177,7 @@ batavia.builtins = {
     hex: function(args) { 
         if (args.length !== 1)
             throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
-	return args[0].toString(16);
+	return "0x"+args[0].toString(16);
     },
     id: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented"); },
     input: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented"); },
@@ -215,7 +215,7 @@ batavia.builtins = {
     oct: function(args) { 
         if (args.length !== 1)
             throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
-	return args[0].toString(8);
+	return "0o"+args[0].toString(8);
     },
     open: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'open' not implemented"); },
     ord: function(args, kwargs) {
