@@ -19,277 +19,9 @@ batavia.VirtualMachine = function() {
 batavia.VirtualMachine.Py_Ellipsis = {};
 
 batavia.builtins = {
-    ArithmeticError: batavia.core.exception('ArithmeticError'),
-    AssertionError: batavia.core.exception('AssertionError'),
-    AttributeError: batavia.core.exception('AttributeError'),
-    BaseException: batavia.core.exception('BaseException'),
-    BufferError: batavia.core.exception('BufferError'),
-    BytesWarning: undefined,
-    DeprecationWarning: undefined,
-    EOFError: batavia.core.exception('EOFError'),
-    Ellipsis: undefined,
-    EnvironmentError: batavia.core.exception('EnvironmentError'),
-    Exception: batavia.core.exception('Exception'),
-    False: undefined,
-    FloatingPointError: batavia.core.exception('FloatingPointError'),
-    FutureWarning: undefined,
-    GeneratorExit: undefined,
-    IOError: batavia.core.exception('IOError'),
-    ImportError: batavia.core.exception('ImportError'),
-    ImportWarning: undefined,
-    IndentationError: batavia.core.exception('IndentationError'),
-    IndexError: batavia.core.exception('IndexError'),
-    KeyError: batavia.core.exception('KeyError'),
-    KeyboardInterrupt: undefined,
-    LookupError: batavia.core.exception('LookupError'),
-    MemoryError: batavia.core.exception('MemoryError'),
-    NameError: batavia.core.exception('NameError'),
-    None: undefined,
-    NotImplemented: undefined,
-    NotImplementedError: batavia.core.exception('NotImplementedError'),
-    OSError: batavia.core.exception('OSError'),
-    OverflowError: batavia.core.exception('OverflowError'),
-    PendingDeprecationWarning: undefined,
-    ReferenceError: batavia.core.exception('ReferenceError'),
-    RuntimeError: batavia.core.exception('RuntimeError'),
-    RuntimeWarning: undefined,
-    StandardError: batavia.core.exception('StandardError'),
-    StopIteration: batavia.core.exception('StopIteration'),
-    SyntaxError: batavia.core.exception('SyntaxError'),
-    SyntaxWarning: undefined,
-    SystemError: batavia.core.exception('SystemError'),
-    SystemExit: undefined,
-    TabError: batavia.core.exception('TabError'),
-    True: undefined,
-    TypeError: batavia.core.exception('TypeError'),
-    UnboundLocalError: batavia.core.exception('UnboundLocalError'),
-    UnicodeDecodeError: batavia.core.exception('UnicodeDecodeError'),
-    UnicodeEncodeError: batavia.core.exception('UnicodeEncodeError'),
-    UnicodeError: batavia.core.exception('UnicodeError'),
-    UnicodeTranslateError: batavia.core.exception('UnicodeTranslateError'),
-    UnicodeWarning: undefined,
-    UserWarning: undefined,
-    ValueError: batavia.core.exception('ValueError'),
-    Warning: undefined,
-    ZeroDivisionError: batavia.core.exception('ZeroDivisionError'),
 
-    __import__: function(args, kwargs) {
-        // First, try native modules
-        var module = batavia.modules[args[0]];
-        // If there's no native module, try for a pre-loaded module.
-        if (module === undefined) {
-            module = batavia.modules.sys.modules[args[0]];
-        }
-        // If there still isn't a module, try loading one from the DOM.
-        if (module === undefined) {
-            // Load requested module
-            try {
-                var payload = document.getElementById('batavia-' + args[0]).text.replace(/(\r\n|\n|\r)/gm, "").trim();
-                var bytecode = atob(payload);
-                var code = batavia.modules.marshal.load_pyc(this, bytecode);
-
-                // Convert code object to module
-                var frame = this.make_frame({'code': code, 'f_globals': args[1], 'f_locals': null});
-                this.run_frame(frame);
-
-                batavia.modules.sys.modules[args[0]] = frame.f_locals;
-                if (args[3] === null) {
-                    // import <mod>
-                    module = batavia.modules.sys.modules[args[0]];
-                } else {
-                    // from <mod> import *
-                    module = {};
-                    for (var n in args[3]) {
-                        var name = args[3][n];
-                        module[name] = frame.f_locals[name];
-                    }
-                }
-            } catch (err) {
-                throw new batavia.builtins.ImportError("No module named '" + args[0] + "'");
-            }
-        }
-        return module;
-    },
-
-    abs: function(args) {
-        if (args.length !== 1)
-            throw new batavia.builtins.TypeError("abs() takes exactly one argument (" + args.length + " given)");
-        if (args[0] === null)
-            throw new batavia.builtins.TypeError("bad operand type for abs(): 'NoneType'");
-        return Math.abs(args[0]);
-    },
-    all: function(args) {
-        for (var i in args[0]) {
-            if (!args[0][i]) {
-               return false;
-            } 
-        }
-        return true;
-    },
-    any: function(args) { 
-        for (var i in args[0]) {
-            if (args[0][i]) {
-               return true;
-            }
-        }
-        return false;
-    },
-    apply: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'apply' not implemented"); },
-    basestring: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'basestring' not implemented"); },
-    bin: function(args) { 
-        if (args.length !== 1)
-            throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
-	    return "0b"+args[0].toString(2);
-    },
-    bool: function(args) { 
-        if (args.length !== 1)
-            throw new batavia.builtins.TypeError("bool() takes exactly one argument (" + args.length + " given)");
-	return !!args[0];
-    },
-    bytearray: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytearray' not implemented"); },
-    bytes: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytes' not implemented"); },
-    callable: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'callable' not implemented"); },
-    chr: function(args, kwargs) {
-        return String.fromCharCode(args[0]);
-    },
-    classmethod: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'classmethod' not implemented"); },
-    compile: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'compile' not implemented"); },
-    complex: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'complex' not implemented"); },
-    copyright: function() {
-        console.log("Batavia: Copyright (c) 2015 Russell Keith-Magee. (BSD-3 Licence)\n"+
-                    "byterun: Copyright (c) 2013, Ned Batchelder. (MIT Licence)");
-    },
-    credits: function() { 
-        console.log("Thanks to all contributors, including those in AUTHORS, for supporting Batavia development. See https://github.com/pybee/batavia for more information");
-    },
-    delattr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'delattr' not implemented"); },
-    dict: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dict' not implemented"); },
-    dir: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dir' not implemented"); },
-    divmod: function(args) { 
-        if (args.length !== 2)
-            throw new batavia.builtins.TypeError("divmod() takes exactly one argument (" + args.length + " given)");
-        div = Math.floor(args[0]/args[1])
-        rem = args[0] % args[1]
-        // FIXME send this result back as a proper set 
-        return [div, rem]
-    },
-    enumerate: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'enumerate' not implemented"); },
-    eval: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented"); },
-    exit: function() { 
-        // NOTE You can't actually exit a JavaScript session, so...
-        console.log("Goodbye");
-    },
-    file: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'file' not implemented"); },
-    filter: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented"); },
-    float: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'float' not implemented"); },
-    format: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'format' not implemented"); },
-    frozenset: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'frozenset' not implemented"); },
-    getattr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'getattr' not implemented"); },
-    globals: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'globals' not implemented"); },
-    hasattr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hasattr' not implemented"); },
-    hash: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hash' not implemented"); },
-    help: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'help' not implemented"); },
-    hex: function(args) { 
-        if (args.length !== 1)
-            throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
-	return "0x"+args[0].toString(16);
-    },
-    id: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented"); },
-    input: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented"); },
-    int: function(args) {
-        var base = 10;
-        if (args.length > 1) {
-            base = args[1];
-        }
-        return parseInt(args[0], base);
-    },
-    intern: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'intern' not implemented"); },
-    isinstance: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'isinstance' not implemented"); },
-    issubclass: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented"); },
-    iter: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' not implemented"); },
-    len: function(args, kwargs) {
-        return args[0].length;
-    },
-    license: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented"); },
-    list: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'list' not implemented"); },
-    locals: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'locals' not implemented"); },
-    long: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'long' not implemented"); },
-    map: function(args, kwargs) {
-        // FIXME
-        args[0].call(this, [args[1]], {});
-    },
-    max: function(args, kwargs) {
-        return Math.max.apply(null, args);
-    },
-    memoryview: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'memoryview' not implemented"); },
-    min: function(args, kwargs) {
-	return Math.min.apply(null, args);
-    },
-    next: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented"); },
-    object: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented"); },
-    oct: function(args) { 
-        if (args.length !== 1)
-            throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
-	return "0o"+args[0].toString(8);
-    },
-    open: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'open' not implemented"); },
-    ord: function(args, kwargs) {
-        return args[0].charCodeAt(0);
-    },
-    pow: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'pow' not implemented"); },
-    print: function(args, kwargs) {
-        batavia.stdout(args.join(' ') + '\n');
-    },
-    property: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'property' not implemented"); },
-    quit: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'quit' not implemented"); },
-    range: function(args, kwargs){
-        return range(args[0], args[1], args[2]);
-    },
-    raw_input: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'raw_input' not implemented"); },
-    reduce: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reduce' not implemented"); },
-    reload: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reload' not implemented"); },
-    repr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'repr' not implemented"); },
-    reversed: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented"); },
-    round: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'round' not implemented"); },
-    set: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'set' not implemented"); },
-    setattr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'setattr' not implemented"); },
-    slice: function(args, kwargs) {
-        if (args.length == 1) {
-            return {
-                start: 0,
-                stop: args[0],
-                step: 1
-            };
-        } else {
-            return {
-                start: args[0],
-                stop: args[1],
-                step: args[2] || 1
-            };
-        }
-    },
-    sorted: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented"); },
-    staticmethod: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented"); },
-    str: function(args) {
-        console.log(typeof args[0]);
-        // FIXME: object's __str__ method should be used if available
-        return String(args[0]);
-    },
-    sum: function(args) {
-        var total = args.reduce(function(a, b) {
-            return a + b;
-        });
-        return total;
-    },
-    super: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented"); },
-    tuple: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'tuple' not implemented"); },
-    type: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented"); },
-    unichr: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unichr' not implemented"); },
-    unicode: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unicode' not implemented"); },
-    vars: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'vars' not implemented"); },
-    xrange: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'xrange' not implemented"); },
-    zip: function() { throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'zip' not implemented"); },
 };
+
 
 /*
  * The main entry point.
@@ -574,10 +306,12 @@ batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
             }
             why = bytecode_fn.apply(this, args);
         }
-    } catch(err) {
+    } catch (err) {
         // deal with exceptions encountered while executing the op.
-        //FIXME this.last_exception = sys.exc_info()[:2] + (null,);
-        batavia.stdout(err);
+        this.last_exception = {
+            'exception': err,
+            'message': err.toString()
+        };
         why = 'exception';
     }
     return why;
@@ -676,7 +410,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
     this.pop_frame();
 
     if (why === 'exception') {
-        throw this.last_exception;
+        throw this.last_exception.exception;
     }
 
     return this.return_value;

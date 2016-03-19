@@ -99,7 +99,7 @@ batavia.modules.marshal = {
         //     res = p.ptr;
         //     var left = p.end - p.ptr;
         //     if (left < n) {
-        //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+        //         vm.PyErr_SetString(batavia.builtins.EOFError,
         //                         "marshal data too short");
         //         return null;
         //     }
@@ -141,18 +141,18 @@ batavia.modules.marshal = {
 
         //     res = _PyObject_CallMethodId(p.readable, PyId_readinto, "N", mview);
         //     if (res !== null) {
-        //         read = PyNumber_AsSsize_t(res, batavia.VirtualMachine.builtins.ValueError);
+        //         read = PyNumber_AsSsize_t(res, batavia.builtins.ValueError);
         //     }
         // }
         // if (read != n) {
         //     if (!vm.PyErr_Occurred()) {
         //         if (read > n)
-        //             vm.PyErr_Format(batavia.VirtualMachine.builtins.ValueError,
+        //             vm.PyErr_Format(batavia.builtins.ValueError,
         //                          "read() returned too much data: " +
         //                          "%zd bytes requested, %zd returned",
         //                          n, read);
         //         else
-        //             vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+        //             vm.PyErr_SetString(batavia.builtins.EOFError,
         //                             "EOF read where not expected");
         //     }
         //     return null;
@@ -200,7 +200,7 @@ batavia.modules.marshal = {
     //         return _PyLong_New(0);
     //     }
     //     if (n < -batavia.modules.marshal.SIZE32_MAX || n > batavia.modules.marshal.SIZE32_MAX) {
-    //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError,
+    //         vm.PyErr_SetString(batavia.builtins.ValueError,
     //                        "bad marshal data (long size out of range)");
     //         return null;
     //     }
@@ -238,7 +238,7 @@ batavia.modules.marshal = {
     //             goto bad_digit;
     //         /* topmost marshal digit should be nonzero */
     //         if (md === 0 && j == shorts_in_top_digit - 1) {
-    //             vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError,
+    //             vm.PyErr_SetString(batavia.builtins.ValueError,
     //                 "bad marshal data (unnormalized long data)");
     //             return null;
     //         }
@@ -252,7 +252,7 @@ batavia.modules.marshal = {
     //     ob.ob_digit[size-1] = d;
     //     return (var )ob;
     //   bad_digit:
-    //     vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError,
+    //     vm.PyErr_SetString(batavia.builtins.ValueError,
     //                     "bad marshal data (digit out of range in long)");
     //     return null;
     // },
@@ -262,7 +262,7 @@ batavia.modules.marshal = {
         if (flag) { /* currently only FLAG_REF is defined */
             var idx = p.refs.length;
             if (idx >= 0x7ffffffe) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (index list too large)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (index list too large)");
                 return -1;
             }
             if (p.refs.append(null) < 0) {
@@ -316,7 +316,7 @@ batavia.modules.marshal = {
         var flag, is_interned = 0;
 
         if (code === batavia.core.PYCFile.EOF) {
-            vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+            vm.PyErr_SetString(batavia.builtins.EOFError,
                             "EOF read where object expected");
             return null;
         }
@@ -325,7 +325,7 @@ batavia.modules.marshal = {
 
         if (p.depth > batavia.modules.marshal.MAX_MARSHAL_STACK_DEPTH) {
             p.depth--;
-            vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "recursion limit exceeded");
+            vm.PyErr_SetString(batavia.builtins.ValueError, "recursion limit exceeded");
             return null;
         }
 
@@ -345,7 +345,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_STOPITER:
-            retval = batavia.VirtualMachine.builtins.StopIteration;
+            retval = batavia.builtins.StopIteration;
             // console.log.info('TYPE_STOPITER');
             break;
 
@@ -461,7 +461,7 @@ batavia.modules.marshal = {
         //     Py_complex c;
         //     n = batavia.modules.marshal.r_byte(vm, p);
         //     if (n == EOF) {
-        //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+        //         vm.PyErr_SetString(batavia.builtins.EOFError,
         //             "EOF read where object expected");
         //         break;
         //     }
@@ -475,7 +475,7 @@ batavia.modules.marshal = {
         //         break;
         //     n = batavia.modules.marshal.r_byte(vm, p);
         //     if (n == EOF) {
-        //         vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+        //         vm.PyErr_SetString(batavia.builtins.EOFError,
         //             "EOF read where object expected");
         //         break;
         //     }
@@ -518,7 +518,7 @@ batavia.modules.marshal = {
                 break;
             }
             if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (string size out of range)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (string size out of range)");
                 break;
             }
             retval = batavia.modules.marshal.r_string(vm, n, p);
@@ -533,7 +533,7 @@ batavia.modules.marshal = {
             n = batavia.modules.marshal.r_long(vm, p);
             // console.log.info('TYPE_ASCII ' + n);
             if (n === batavia.core.PYCFile.EOF) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+                vm.PyErr_SetString(batavia.builtins.EOFError,
                     "EOF read where object expected");
                 break;
             }
@@ -549,7 +549,7 @@ batavia.modules.marshal = {
             n = batavia.modules.marshal.r_byte(vm, p);
             // console.log.info('TYPE_SHORT_ASCII ' + n);
             if (n === batavia.core.PYCFile.EOF) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+                vm.PyErr_SetString(batavia.builtins.EOFError,
                     "EOF read where object expected");
                 break;
             }
@@ -565,7 +565,7 @@ batavia.modules.marshal = {
             n = batavia.modules.marshal.r_long(vm, p);
             // console.log.info('TYPE_UNICODE ' + n);
             if (n === batavia.core.PYCFile.EOF) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.EOFError,
+                vm.PyErr_SetString(batavia.builtins.EOFError,
                     "EOF read where object expected");
                 break;
             }
@@ -600,7 +600,7 @@ batavia.modules.marshal = {
                 break;
             }
             if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (tuple size out of range)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (tuple size out of range)");
                 break;
             }
             retval = new Array(n);
@@ -621,7 +621,7 @@ batavia.modules.marshal = {
                 break;
             }
             if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (list size out of range)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (list size out of range)");
                 break;
             }
             retval = new Array(n);
@@ -665,7 +665,7 @@ batavia.modules.marshal = {
                 break;
             }
             if (n < 0 || n > batavia.modules.marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (set size out of range)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (set size out of range)");
                 break;
             }
             retval = (type == batavia.modules.marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
@@ -762,12 +762,12 @@ batavia.modules.marshal = {
             if (n < 0 || n >= p.refs.length) {
                 if (n == -1 && vm.PyErr_Occurred())
                     break;
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (invalid reference)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (invalid reference)");
                 break;
             }
             v = p.refs[n];
             if (v === null) {
-                vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (invalid reference)");
+                vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (invalid reference)");
                 break;
             }
             retval = v;
@@ -776,7 +776,7 @@ batavia.modules.marshal = {
         default:
             /* Bogus data got written, which isn't ideal.
                This will let you keep working and recover. */
-            vm.PyErr_SetString(batavia.VirtualMachine.builtins.ValueError, "bad marshal data (unknown type code '" + type + "')");
+            vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (unknown type code '" + type + "')");
             break;
 
         }
@@ -787,13 +787,13 @@ batavia.modules.marshal = {
     read_object: function(vm, p) {
         var v;
         if (vm.PyErr_Occurred()) {
-            console.log.error("readobject called with exception set\n");
+            console.log("readobject called with exception set\n");
             return null;
         }
         v = batavia.modules.marshal.r_object(vm, p);
 
         if (v === null && !vm.PyErr_Occurred()) {
-            vm.PyErr_SetString(batavia.VirtualMachine.builtins.TypeError, "null object in marshal data for object");
+            vm.PyErr_SetString(batavia.builtins.TypeError, "null object in marshal data for object");
         }
         return v;
     },

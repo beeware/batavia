@@ -66,3 +66,6 @@ batavia.modules.dom.history = __proxy__('history', history);
 batavia.modules.dom.document = __proxy__('document', document);
 
 batavia.modules.dom.batavia = __proxy__('batavia', batavia);
+
+// Register the DOM module as a builtin.
+batavia.builtins.dom = batavia.modules.dom;

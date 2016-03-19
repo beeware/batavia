@@ -9,6 +9,7 @@ ALL_FILES=\
     batavia/modules/sys.js \
     batavia/modules/time.js \
     batavia/core/Block.js \
+    batavia/core/builtins.js \
     batavia/core/Cell.js \
     batavia/core/Code.js \
     batavia/core/Exception.js \
@@ -19,7 +20,10 @@ ALL_FILES=\
 
 .PHONY: all
 
-all: batavia.js
+all: batavia.js batavia.min.js
 
 batavia.js: $(ALL_FILES)
 	cat $(ALL_FILES) > batavia.js
+
+batavia.min.js: batavia.js
+	python -m jsmin batavia.js > batavia.min.js
