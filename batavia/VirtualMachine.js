@@ -18,11 +18,6 @@ batavia.VirtualMachine = function() {
 
 batavia.VirtualMachine.Py_Ellipsis = {};
 
-batavia.builtins = {
-
-};
-
-
 /*
  * The main entry point.
  *
