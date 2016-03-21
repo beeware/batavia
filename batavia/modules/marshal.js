@@ -265,7 +265,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (index list too large)");
                 return -1;
             }
-            if (p.refs.append(null) < 0) {
+            if (p.refs.push(null) < 0) {
                 return -1;
             }
             return idx;
@@ -299,7 +299,7 @@ batavia.modules.marshal = {
         if (o === null) {
             return null;
         }
-        if (p.refs.append(o) < 0) {
+        if (p.refs.push(o) < 0) {
             return null;
         }
         return o;

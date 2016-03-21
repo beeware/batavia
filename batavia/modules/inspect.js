@@ -265,16 +265,16 @@ batavia.modules.inspect = {
                     var param = sig.parameters[p];
 
                     if (param.kind === batavia.modules.inspect.Parameter.POSITIONAL_ONLY) {
-                        args.append(param.name);
+                        args.push(param.name);
                     } else if (param.kind === batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD) {
-                        args.append(param.name);
+                        args.push(param.name);
                         if (param.default !== undefined) {
                             defaults.push(param.default);
                         }
                     } else if (param.kind === batavia.modules.inspect.Parameter.VAR_POSITIONAL) {
                         varargs = param.name;
                     } else if (param.kind === batavia.modules.inspect.Parameter.KEYWORD_ONLY) {
-                        kwonlyargs.append(param.name);
+                        kwonlyargs.push(param.name);
                         if (param.default !== undefined) {
                             kwdefaults[param.name] = param.default;
                         }
@@ -323,7 +323,7 @@ batavia.modules.inspect = {
         // var names = [];
         // for (var name in argnames) {
         //     if (!name in values) {
-        //         names.append(name);
+        //         names.push(name);
         //     }
         // }
         // var missing = names.length;
@@ -394,7 +394,7 @@ batavia.modules.inspect = {
             arg2value[varargs] = positional.slice(n);
         }
 
-        var possible_kwargs = new Set();
+        var possible_kwargs = new batavia.core.Set();
         possible_kwargs.update(func.argspec.args);
         possible_kwargs.update(func.argspec.kwonlyargs);
 
@@ -606,7 +606,7 @@ batavia.modules.inspect.Parameter.prototype.replace = function(kwargs) {
 //                     args.extend(arg)
 //                 else:
 //                     # plain argument
-//                     args.append(arg)
+//                     args.push(arg)
 
 //         return tuple(args)
 
@@ -771,7 +771,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     for (n = 0; n < non_default_count; n++) {
         name = positional[n];
         annotation = annotations[name];
-        parameters.append(new batavia.modules.inspect.Parameter({
+        parameters.push(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD
@@ -782,7 +782,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     for (offset=0, n = non_default_count; n < positional.length; offset++, n++) {
         name = positional[n];
         annotation = annotations[name];
-        parameters.append(new batavia.modules.inspect.Parameter({
+        parameters.push(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': batavia.modules.inspect.Parameter.POSITIONAL_OR_KEYWORD,
@@ -794,7 +794,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     if (func_code.co_flags & batavia.modules.inspect.CO_VARARGS) {
         name = arg_names[pos_count + keyword_only_count];
         annotation = annotations[name];
-        parameters.append(new batavia.modules.inspect.Parameter({
+        parameters.push(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': batavia.modules.inspect.Parameter.VAR_POSITIONAL
@@ -809,7 +809,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
         }
 
         annotation = annotations[name];
-        parameters.append(new batavia.modules.inspect.Parameter({
+        parameters.push(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': batavia.modules.inspect.Parameter.KEYWORD_ONLY,
@@ -826,7 +826,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
 
         name = arg_names[index];
         annotation = annotations[name];
-        parameters.append(new batavia.modules.inspect.Parameter({
+        parameters.push(new batavia.modules.inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': batavia.modules.inspect.Parameter.VAR_KEYWORD
@@ -1046,7 +1046,7 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     //         elif render_pos_only_separator:
     //             # It's not a positional-only parameter, and the flag
     //             # is set to 'True' (there were pos-only params before.)
-    //             result.append('/')
+    //             result.push('/')
     //             render_pos_only_separator = false
 
     //         if kind == _VAR_POSITIONAL:
@@ -1057,17 +1057,17 @@ batavia.modules.inspect.Signature.from_function = function(func) {
     //             # We have a keyword-only parameter to render and we haven't
     //             # rendered an '*args'-like parameter before, so add a '*'
     //             # separator to the parameters list ("foo(arg1, *, arg2)" case)
-    //             result.append('*')
+    //             result.push('*')
     //             # This condition should be only triggered once, so
     //             # reset the flag
     //             render_kw_only_separator = false
 
-    //         result.append(formatted)
+    //         result.push(formatted)
 
     //     if render_pos_only_separator:
     //         # There were only positional-only parameters, hence the
     //         # flag was not reset to 'false'
-    //         result.append('/')
+    //         result.push('/')
 
     //     rendered = '({})'.format(', '.join(result))
 

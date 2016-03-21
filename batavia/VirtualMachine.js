@@ -75,7 +75,7 @@ batavia.VirtualMachine.prototype.pop = function(i) {
  * Push value onto the value stack.
  */
 batavia.VirtualMachine.prototype.push = function(val) {
-    this.frame.stack.append(val);
+    this.frame.stack.push(val);
 };
 
 /*
@@ -109,7 +109,7 @@ batavia.VirtualMachine.prototype.push_block = function(type, handler, level) {
     if (level === null) {
         level = this.frame.stack.length;
     }
-    this.frame.block_stack.append(new batavia.core.Block(type, handler, level));
+    this.frame.block_stack.push(new batavia.core.Block(type, handler, level));
 };
 
 batavia.VirtualMachine.prototype.pop_block = function() {
@@ -130,14 +130,14 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
-        f_locals = {};
+        f_locals = new batavia.core.Dict();
     } else {
-        f_globals = f_locals = {
+        f_globals = f_locals = new batavia.core.Dict({
             '__builtins__': batavia.builtins,
             '__name__': '__main__',
             '__doc__': null,
             '__package__': null,
-        };
+        });
     }
     f_locals.update(callargs);
 
@@ -151,7 +151,7 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
 };
 
 batavia.VirtualMachine.prototype.push_frame = function(frame) {
-    this.frames.append(frame);
+    this.frames.push(frame);
     this.frame = frame;
 };
 
@@ -608,10 +608,7 @@ batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
 
 batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     // TODO: Not documented in Py2 docs.
-    var retval = new Set();
-    for (var i = 0; i < count; i++) {
-        retval.add(this.pop());
-    }
+    var retval = new batavia.core.Set(this.popn(count));
     this.push(retval);
 };
 
@@ -653,7 +650,7 @@ batavia.VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
 batavia.VirtualMachine.prototype.byte_LIST_APPEND = function(count) {
     var val = this.pop();
     var the_list = this.peek(count);
-    the_list.append(val);
+    the_list.push(val);
 };
 
 batavia.VirtualMachine.prototype.byte_SET_ADD = function(count) {
@@ -945,12 +942,12 @@ batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {
-    return this.call_function(arg, [], {});
+    return this.call_function(arg, [], new batavia.core.Dict());
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
     var args = this.pop();
-    return this.call_function(arg, args, {});
+    return this.call_function(arg, args, new batavia.core.Dict());
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
@@ -966,14 +963,14 @@ batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
-    var namedargs = {};
+    var namedargs = new batavia.core.Dict();
     for (var i = 0; i < lenKw; i++) {
         var items = this.popn(2);
         namedargs[items[0]] = items[1];
     }
     namedargs.update(kwargs);
     var posargs = this.popn(lenPos);
-    posargs.extend(args);
+    posargs = posargs.concat(args);
 
     var func = this.pop();
     // frame = this.frame
@@ -1073,7 +1070,7 @@ batavia.__build_class__ = function(args, kwargs) {
     var kwds = kwargs.kwds || args[4] || [];
 
     // Create a locals context, and run the class function in it.
-    var locals = {};
+    var locals = new batavia.core.Dict();
     var retval = func.__call__.apply(this, [[], [], locals]);
 
     // Now construct the class, based on the constructed local context.

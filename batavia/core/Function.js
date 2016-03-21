@@ -7,7 +7,7 @@ batavia.make_callable = function(func) {
             'code': func.__code__,
             'callargs': callargs,
             'f_globals': func.__globals__,
-            'f_locals': locals || {},
+            'f_locals': locals || new batavia.core.Dict(),
         });
 
         if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {
@@ -34,8 +34,8 @@ batavia.core.Function = function(name, code, globals, defaults, closure, vm) {
         this.__doc__ = null;
     }
     this.__name__ = name || code.co_name;
-    this.__dict__ = {};
-    this.__annotations__ = {};
+    this.__dict__ = new batavia.core.Dict();
+    this.__annotations__ = new batavia.core.Dict();
     this.__qualname__ = this.__name__;
 
     // var kw = {

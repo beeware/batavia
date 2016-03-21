@@ -17,7 +17,16 @@ String.prototype.startswith = function (str) {
  * Modify Object to behave like a Python Dictionary
  *************************************************************************/
 
-Object.prototype.update = function(values) {
+batavia.core.Dict = function(args) {
+    Object.call(this);
+    if (args) {
+        this.update(args);
+    }
+};
+
+batavia.core.Dict.prototype = Object.create(Object.prototype);
+
+batavia.core.Dict.prototype.update = function(values) {
     for (var key in values) {
         if (values.hasOwnProperty(key)) {
             this[key] = values[key];
@@ -25,14 +34,8 @@ Object.prototype.update = function(values) {
     }
 };
 
-Object.prototype.copy = function() {
-    var dup = {};
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            dup[key] = this[key];
-        }
-    }
-    return dup;
+batavia.core.Dict.prototype.copy = function() {
+    return new batavia.core.Dict(this);
 };
 
 /*************************************************************************
@@ -53,22 +56,24 @@ Array.prototype.extend = function(values) {
  * Subclass Object to provide a Set object
  *************************************************************************/
 
-function Set(v) {
-    Object.call(this, v);
-}
+batavia.core.Set = function(args) {
+    Object.call(this);
+    if (args) {
+        this.update(args);
+    }
+};
 
-Set.prototype = Object.create(Object.prototype);
-Set.prototype.constructor = Set;
+batavia.core.Set.prototype = Object.create(Object.prototype);
 
-Set.prototype.add = function(v) {
+batavia.core.Set.prototype.add = function(v) {
     this[v] = null;
 };
 
-Set.prototype.remove = function(v) {
+batavia.core.Set.prototype.remove = function(v) {
     delete this[v];
 };
 
-Set.prototype.update = function(values) {
+batavia.core.Set.prototype.update = function(values) {
     for (var value in values) {
         if (values.hasOwnProperty(value)) {
             this[values[value]] = null;
