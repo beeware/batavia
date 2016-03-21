@@ -38,6 +38,30 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
 };
 
 /*
+ * An entry point for invoking functions.
+ *
+ * Accepts a DOM id for an element containing base64 encoded bytecode.
+ */
+batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs) {
+    kwargs = kwargs || new batavia.core.Dict();
+    args = args || [];
+    var payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+    var bytecode = atob(payload);
+    var code = batavia.modules.marshal.load_pyc(this, bytecode);
+
+    callargs = new batavia.core.Dict();
+    for (var i = 0; i < args.length; i++) {
+        callargs[code.co_varnames[i]] = args[i];
+    }
+    callargs.update(kwargs);
+
+    // Run the code
+    this.run_code({
+        'code': code,
+        'callargs': callargs
+    });
+};
+/*
  */
 batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
     return this.last_exception !== null;
@@ -188,7 +212,13 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
     var code = kwargs.code;
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
-    var frame = this.make_frame({'code': code, 'f_globals': f_globals, 'f_locals': f_locals});
+    var callargs = kwargs.callargs || null;
+    var frame = this.make_frame({
+        'code': code,
+        'f_globals': f_globals,
+        'f_locals': f_locals,
+        'callargs': callargs
+    });
     var val = this.run_frame(frame);
 
     // Check some invariants
