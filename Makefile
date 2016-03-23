@@ -18,9 +18,12 @@ ALL_FILES=\
     batavia/core/PYCFile.js \
     batavia/VirtualMachine.js \
 
-.PHONY: all
+.PHONY: all clean
 
 all: batavia.js batavia.min.js
+
+clean:
+	rm batavia.js batavia.min.js
 
 batavia.js: $(ALL_FILES)
 	cat $(ALL_FILES) > batavia.js
