@@ -38,6 +38,17 @@ batavia.core.Dict.prototype.copy = function() {
     return new batavia.core.Dict(this);
 };
 
+batavia.core.Dict.prototype.items = function() {
+    var result = [];
+    for (var key in this) {
+        if (this.hasOwnProperty(key)) {
+            result.push([key, this[key]]);
+        }
+    }
+    return result;
+};
+
+
 /*************************************************************************
  * Modify Array to behave like a Python List
  *************************************************************************/
@@ -375,4 +386,75 @@ batavia._substitute = function(format, args) {
     // Push the rest of the string.
     results.push(format.slice(re.lastIndex));
     return results.join('');
+};
+
+/*************************************************************************
+ * Class construction
+ *************************************************************************/
+batavia.make_class = function(args, kwargs) {
+    var func = args[0];
+    var name = args[1];
+    var bases = kwargs.bases || args[2];
+    var metaclass = kwargs.metaclass || args[3];
+    var kwds = kwargs.kwds || args[4] || [];
+
+    // Create a locals context, and run the class function in it.
+    var locals = new batavia.core.Dict();
+    var retval = func.__call__.apply(this, [[], [], locals]);
+
+    // Now construct the class, based on the constructed local context.
+    var klass = function(vm, args, kwargs) {
+        if (this.__init__) {
+            for (var attr in Object.getPrototypeOf(this)) {
+                if (this[attr].__call__) {
+                    this[attr].__self__ = this;
+                }
+            }
+            this.__init__.__call__.apply(vm, [args, kwargs]);
+        }
+    };
+
+    for (var attr in locals) {
+        if (locals.hasOwnProperty(attr)) {
+            klass.prototype[attr] = locals[attr];
+        }
+    }
+
+    var PyObject = function(vm, klass) {
+        var constructor = function(args, kwargs) {
+            return new klass(vm, args, kwargs);
+        };
+        constructor.__python__ = true;
+        return constructor;
+    }(this, klass);
+
+    return PyObject;
+};
+
+/*************************************************************************
+ * callable construction
+ *************************************************************************/
+
+batavia.make_callable = function(func) {
+    var fn = function(args, kwargs, locals) {
+        var callargs = batavia.modules.inspect.getcallargs(func, args, kwargs);
+
+        var frame = this.make_frame({
+            'code': func.__code__,
+            'callargs': callargs,
+            'f_globals': func.__globals__,
+            'f_locals': locals || new batavia.core.Dict(),
+        });
+
+        if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {
+            gen = new batavia.core.Generator(frame, this);
+            frame.generator = gen;
+            retval = gen;
+        } else {
+            retval = this.run_frame(frame);
+        }
+        return retval;
+    };
+    fn.__python__ = true;
+    return fn;
 };

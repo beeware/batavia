@@ -34,7 +34,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
     batavia.modules.sys.argv.extend(args);
 
     // Run the code
-    this.run_code({'code': code});
+    return this.run_code({'code': code});
 };
 
 /*
@@ -42,7 +42,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
  *
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
-batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs) {
+batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
     kwargs = kwargs || new batavia.core.Dict();
     args = args || [];
     var payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim();
@@ -56,11 +56,14 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs) {
     callargs.update(kwargs);
 
     // Run the code
-    this.run_code({
+    return this.run_code({
         'code': code,
-        'callargs': callargs
+        'callargs': callargs,
+        'f_locals': f_locals,
+        'f_globals': f_globals
     });
 };
+
 /*
  */
 batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
@@ -148,9 +151,9 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
 
     // console.log("make_frame: code=" + code + ", callargs=" + callargs);
 
-    if (f_globals !==  null) {
+    if (f_globals !== null) {
         if (f_locals === null) {
-            f_locals = f_globals.copy();
+            f_locals = f_globals;
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
@@ -603,6 +606,11 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val = obj[attr];
+    if (typeof val === 'function') {
+        val = val.bind(obj);
+        val.__python__ == val.__python__;
+        val.__self__ = obj;
+    }
     this.push(val);
 };
 
@@ -618,7 +626,7 @@ batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
 
 batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     var items = this.popn(3);
-    items[2][items[1]] = items[0];
+    items[1][items[2]] = items[0];
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
@@ -643,12 +651,12 @@ batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    this.push({});
+    this.push(new batavia.core.Dict());
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
     var items = this.popn(3);
-    items[0][items[1]] = items[2];
+    items[0][items[2]] = items[1];
     this.push(items[0]);
 };
 
@@ -967,7 +975,7 @@ batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
     var name = this.pop();
     var items = this.popn(2);
     var defaults = this.popn(argc);
-    var fn = Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
+    var fn = new batavia.core.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
     this.push(fn);
 };
 
@@ -1004,10 +1012,10 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 
     var func = this.pop();
     // frame = this.frame
-    if ('im_func' in func) {
+    if ('__self__' in func && '__python__' in func) {
         // Methods get self as an implicit first parameter.
-        if (func.im_self) {
-            posargs.insert(0, func.im_self);
+        if (func.__self__) {
+            posargs.unshift(func.__self__);
         }
         // The first parameter must be the correct type.
         if (!isinstance(posargs[0], func.im_class)) {
@@ -1020,7 +1028,14 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         func = func.__call__;
     }
 
-    var retval = func.apply(this, [posargs, namedargs]);
+    var retval;
+    // If it's a python method, use the Python calling conventions
+    // Otherwise, use the Javascript convention.
+    if (func.__python__) {
+        retval = func.apply(this, [posargs, namedargs]);
+    } else {
+        retval = func.apply(this, posargs);
+    }
     this.push(retval);
 };
 
@@ -1089,45 +1104,9 @@ batavia.VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
 // };
 
 batavia.VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
-    this.push(batavia.__build_class__.bind(this));
-};
-
-batavia.__build_class__ = function(args, kwargs) {
-    var func = args[0];
-    var name = args[1];
-    var bases = kwargs.bases || args[2];
-    var metaclass = kwargs.metaclass || args[3];
-    var kwds = kwargs.kwds || args[4] || [];
-
-    // Create a locals context, and run the class function in it.
-    var locals = new batavia.core.Dict();
-    var retval = func.__call__.apply(this, [[], [], locals]);
-
-    // Now construct the class, based on the constructed local context.
-    var klass = function(vm, args, kwargs) {
-        if (this.__init__) {
-            for (var attr in Object.getPrototypeOf(this)) {
-                if (this[attr].__call__) {
-                    this[attr].__self__ = this;
-                }
-            }
-            this.__init__.__call__.apply(vm, [args, kwargs]);
-        }
-    };
-
-    for (var attr in locals) {
-        if (locals.hasOwnProperty(attr)) {
-            klass.prototype[attr] = locals[attr];
-        }
-    }
-
-    var PyObject = function(vm, klass) {
-        return function(args, kwargs) {
-            return new klass(vm, args, kwargs);
-        };
-    }(this, klass);
-
-    return PyObject;
+    var make_class = batavia.make_class.bind(this);
+    make_class.__python__ = true;
+    this.push(make_class);
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {

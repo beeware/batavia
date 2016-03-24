@@ -131,8 +131,11 @@ batavia.builtins.dict = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dict' not implemented");
 };
 
-batavia.builtins.dir = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dir' not implemented");
+batavia.builtins.dir = function(args) {
+    if (args.length !== 1) {
+        throw new batavia.builtins.TypeError("dir() takes exactly one argument (" + args.length + " given)");
+    }
+    return Object.keys(args[0]);
 };
 
 batavia.builtins.divmod = function(args) {
@@ -178,8 +181,24 @@ batavia.builtins.frozenset = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'frozenset' not implemented");
 };
 
-batavia.builtins.getattr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'getattr' not implemented");
+batavia.builtins.getattr = function(args) {
+    try {
+        return args[0][args[1]];
+    } catch (err) {
+        if (args) {
+            if (args.length === 3) {
+                return args[2];
+            } else if (args.length === 2) {
+                throw new batavia.builtins.AttributeError("'" + args[0] + "' object has no attribute '" + args[1] + "'");
+            } else if (args.length < 2) {
+                throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got " + args.length);
+            } else {
+                throw new batavia.builtins.TypeError("getattr expected at most 3 arguments, got " + args.length);
+            }
+        } else {
+            throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got 0");
+        }
+    }
 };
 
 batavia.builtins.globals = function() {
@@ -250,7 +269,7 @@ batavia.builtins.list = function() {
 };
 
 batavia.builtins.locals = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'locals' not implemented");
+    return this.frame.f_locals;
 };
 
 batavia.builtins.long = function() {
@@ -344,8 +363,12 @@ batavia.builtins.set = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'set' not implemented");
 };
 
-batavia.builtins.setattr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'setattr' not implemented");
+batavia.builtins.setattr = function(args) {
+    if (args.length !== 3) {
+        throw new batavia.builtins.TypeError("setattr expected exactly 3 arguments, got " + args.length);
+    }
+
+    args[0][args[1]] = args[2];
 };
 
 batavia.builtins.slice = function(args, kwargs) {
@@ -416,3 +439,8 @@ batavia.builtins.xrange = function() {
 batavia.builtins.zip = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'zip' not implemented");
 };
+
+// Mark all builtins as Python methods.
+for (var fn in batavia.builtins) {
+    batavia.builtins[fn].__python__ = true;
+}

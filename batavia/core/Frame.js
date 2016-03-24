@@ -1,6 +1,6 @@
 
 batavia.core.Frame = function(kwargs) {
-    var v;
+    var v, i;
 
     this.f_code = kwargs.f_code;
     this.f_globals = kwargs.f_globals;
@@ -25,11 +25,12 @@ batavia.core.Frame = function(kwargs) {
         if (this.f_back && !this.f_back.cells) {
             this.f_back.cells = {};
         }
-        for (v in this.f_code.co_cellvars) {
+        for (i = 0; i < this.f_code.co_cellvars.length; i++) {
             // Make a cell for the variable in our locals, or null.
-            cell = new Cell(this.f_locals[v]);
+            v = this.f_code.co_cellvars[i];
+            this.cells[v] = new batavia.core.Cell(this.f_locals[v]);
             if (this.f_back) {
-                this.f_back.cells[v] = this.cells[v] = cell;
+                this.f_back.cells[v] = this.cells[v];
             }
         }
     } else {
@@ -40,7 +41,8 @@ batavia.core.Frame = function(kwargs) {
         if (!this.cells) {
             this.cells = {};
         }
-        for (v in this.f_code.co_freevars) {
+        for (i = 0; i < this.f_code.co_freevars.length; i++) {
+            v = this.f_code.co_freevars[i];
             assert(this.cells !== null);
             assert(this.f_back.cells, "f_back.cells: " + this.f_back.cells);
             this.cells[v] = this.f_back.cells[v];

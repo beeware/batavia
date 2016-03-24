@@ -1,26 +1,4 @@
 
-batavia.make_callable = function(func) {
-    return function(args, kwargs, locals) {
-        var callargs = batavia.modules.inspect.getcallargs(func, args, kwargs);
-
-        var frame = this.make_frame({
-            'code': func.__code__,
-            'callargs': callargs,
-            'f_globals': func.__globals__,
-            'f_locals': locals || new batavia.core.Dict(),
-        });
-
-        if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {
-            gen = new batavia.core.Generator(frame, this);
-            frame.generator = gen;
-            retval = gen;
-        } else {
-            retval = this.run_frame(frame);
-        }
-        return retval;
-    };
-};
-
 batavia.core.Function = function(name, code, globals, defaults, closure, vm) {
     // this._vm = vm;
     this.__code__ = code;
