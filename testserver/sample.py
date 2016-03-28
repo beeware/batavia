@@ -42,6 +42,7 @@ def main(argv):
     print(do_stuff(1, int(argv[1])))
     print('Use kwarg')
     print(do_stuff(1, size=int(argv[1])))
+    print('Make point')
     p = Point(2, 3)
     print('Distance with default is', p.distance())
     p = Point(3, 4, 5)

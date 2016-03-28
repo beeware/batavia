@@ -49,7 +49,7 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
     var bytecode = atob(payload);
     var code = batavia.modules.marshal.load_pyc(this, bytecode);
 
-    callargs = new batavia.core.Dict();
+    var callargs = new batavia.core.Dict();
     for (var i = 0; i < args.length; i++) {
         callargs[code.co_varnames[i]] = args[i];
     }
@@ -457,7 +457,7 @@ batavia.VirtualMachine.prototype.byte_DUP_TOP = function() {
 };
 
 batavia.VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
-    items = this.popn(count);
+    var items = this.popn(count);
     for (var n = 0; n < 2; n++) {
         for (var i = 0; i < count; i++) {
             this.push(items[i]);
@@ -466,7 +466,7 @@ batavia.VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
 };
 
 batavia.VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
-    items = this.popn(2);
+    var items = this.popn(2);
     this.push(items[0]);
     this.push(items[1]);
     this.push(items[0]);
@@ -474,20 +474,20 @@ batavia.VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
 };
 
 batavia.VirtualMachine.prototype.byte_ROT_TWO = function() {
-    items = this.popn(2);
+    var items = this.popn(2);
     this.push(items[1]);
     this.push(items[0]);
 };
 
 batavia.VirtualMachine.prototype.byte_ROT_THREE = function() {
-    items = this.popn(3);
+    var items = this.popn(3);
     this.push(items[2]);
     this.push(items[0]);
     this.push(items[1]);
 };
 
 batavia.VirtualMachine.prototype.byte_ROT_FOUR = function() {
-    items = this.popn(4);
+    var items = this.popn(4);
     this.push(items[3]);
     this.push(items[0]);
     this.push(items[1]);
@@ -495,7 +495,8 @@ batavia.VirtualMachine.prototype.byte_ROT_FOUR = function() {
 };
 
 batavia.VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
-    frame = this.frame;
+    var frame = this.frame;
+    var val;
     if (name in frame.f_locals) {
         val = frame.f_locals[name];
     } else if (name in frame.f_globals) {
@@ -517,6 +518,7 @@ batavia.VirtualMachine.prototype.byte_DELETE_NAME = function(name) {
 };
 
 batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
+    var val;
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
@@ -562,7 +564,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
 };
 
 batavia.VirtualMachine.prototype.unaryOperator = function(op) {
-    x = this.pop();
+    var x = this.pop();
     this.push(batavia.operators[op](x));
 };
 
@@ -572,7 +574,7 @@ batavia.VirtualMachine.prototype.binaryOperator = function(op) {
 };
 
 batavia.VirtualMachine.prototype.inplaceOperator = function(op) {
-    items = this.popn(2);
+    var items = this.popn(2);
     this.push(batavia.operators[op](items[0], items[1]));
 };
 
@@ -606,10 +608,16 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val = obj[attr];
-    if (typeof val === 'function') {
-        val = val.bind(obj);
-        val.__python__ == val.__python__;
-        val.__self__ = obj;
+    if (val instanceof batavia.core.Function) {
+        if (!(obj instanceof batavia.core.Module)) {
+            val = new batavia.core.Method(obj, val);
+        }
+    } else if (val instanceof Function) {
+        val = function(fn) {
+            return function(args, kwargs) {
+                return fn.apply(obj, args);
+            };
+        }(val);
     }
     this.push(val);
 };
@@ -1017,25 +1025,20 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         if (func.__self__) {
             posargs.unshift(func.__self__);
         }
+        // FIXME: Work out how to do the class check.
         // The first parameter must be the correct type.
-        if (!isinstance(posargs[0], func.im_class)) {
-            throw 'unbound method ' + func.im_func.__name__ + '()' +
-                ' must be called with ' + func.im_class.__name__ + ' instance ' +
-                'as first argument (got ' + type(posargs[0]).__name__ + ' instance instead)';
-        }
-        func = func.im_func;
+        // if (posargs[0] instanceof func.__class__) {
+        //     throw 'unbound method ' + func.__func__.__name__ + '()' +
+        //         ' must be called with ' + func.__class__.__name__ + ' instance ' +
+        //         'as first argument (got ' + posargs[0].__proto__ + ' instance instead)';
+        // }
+        func = func.__func__.__call__;
     } else if ('__call__' in func) {
         func = func.__call__;
     }
 
-    var retval;
-    // If it's a python method, use the Python calling conventions
-    // Otherwise, use the Javascript convention.
-    if (func.__python__) {
-        retval = func.apply(this, [posargs, namedargs]);
-    } else {
-        retval = func.apply(this, posargs);
-    }
+    var retval = func.apply(this, [posargs, namedargs]);
+
     this.push(retval);
 };
 

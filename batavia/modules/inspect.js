@@ -2,7 +2,7 @@
 batavia.modules.inspect = {
     FullArgSpec: function(kwargs) {
         this.args = kwargs.args || [];
-        this.varargs = kwargs.varargs;
+        this.varargs = kwargs.getcallargs;
         this.varkw = kwargs.varkw;
         this.defaults = kwargs.defaults || {};
         this.kwonlyargs = kwargs.kwonlyargs || [];
@@ -420,7 +420,7 @@ batavia.modules.inspect = {
             }
         }
 
-        if (num_pos > num_args && varargs.length === 0) {
+        if (num_pos > num_args && (func.argspec.varargs === undefined || func.argspec.varargs.length === 0)) {
             batavia.modules.inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value);
         }
         if (num_pos < num_args) {

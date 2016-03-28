@@ -1,6 +1,7 @@
 
 batavia.core.Function = function(name, code, globals, defaults, closure, vm) {
-    // this._vm = vm;
+    this.__python__ = true;
+    this._vm = vm;
     this.__code__ = code;
     this.__globals__ = globals;
     this.__defaults__ = defaults;
@@ -26,4 +27,23 @@ batavia.core.Function = function(name, code, globals, defaults, closure, vm) {
     this.__call__ = batavia.make_callable(this);
 
     this.argspec = batavia.modules.inspect.getfullargspec(this);
+};
+
+
+batavia.core.Method = function(instance, func) {
+    batavia.core.Function.call(this, func.__name__, func.__code__, func.__globals__, func.__closure__, func._vm);
+    this.__self__ = instance;
+    this.__func__ = func;
+    this.__class__ = instance.__proto__;
+};
+
+batavia.core.Method.prototype = Object.create(Function.prototype);
+
+
+batavia.core.Module = function(locals) {
+    for (var key in locals) {
+        if (locals.hasOwnProperty(key)) {
+            this[key] = locals[key];
+        }
+    }
 };

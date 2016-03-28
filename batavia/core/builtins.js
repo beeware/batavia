@@ -17,13 +17,13 @@ batavia.builtins.__import__ = function(args, kwargs) {
             var frame = this.make_frame({'code': code, 'f_globals': args[1], 'f_locals': null});
             this.run_frame(frame);
 
-            batavia.modules.sys.modules[args[0]] = frame.f_locals;
+            batavia.modules.sys.modules[args[0]] = new batavia.core.Module(frame.f_locals);
             if (args[3] === null) {
                 // import <mod>
                 module = batavia.modules.sys.modules[args[0]];
             } else {
                 // from <mod> import *
-                module = {};
+                module = new batavia.core.Module();
                 for (var n in args[3]) {
                     var name = args[3][n];
                     module[name] = frame.f_locals[name];

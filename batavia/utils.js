@@ -17,7 +17,7 @@ String.prototype.startswith = function (str) {
  * Modify Object to behave like a Python Dictionary
  *************************************************************************/
 
-batavia.core.Dict = function(args) {
+batavia.core.Dict = function(args, kwargs) {
     Object.call(this);
     if (args) {
         this.update(args);
@@ -67,7 +67,7 @@ Array.prototype.extend = function(values) {
  * Subclass Object to provide a Set object
  *************************************************************************/
 
-batavia.core.Set = function(args) {
+batavia.core.Set = function(args, kwargs) {
     Object.call(this);
     if (args) {
         this.update(args);
@@ -405,11 +405,7 @@ batavia.make_class = function(args, kwargs) {
     // Now construct the class, based on the constructed local context.
     var klass = function(vm, args, kwargs) {
         if (this.__init__) {
-            for (var attr in Object.getPrototypeOf(this)) {
-                if (this[attr].__call__) {
-                    this[attr].__self__ = this;
-                }
-            }
+            this.__init__.__self__ = this;
             this.__init__.__call__.apply(vm, [args, kwargs]);
         }
     };
