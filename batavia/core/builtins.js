@@ -337,7 +337,16 @@ batavia.builtins.pow = function(args) {
 };
 
 batavia.builtins.print = function(args, kwargs) {
-    batavia.stdout(args.join(' ') + '\n');
+    var elements = [], print_value;
+    args.map(function(elm) {
+        elements.push(elm.__str__ ? elm.__str__() : elm.toString());
+    });
+    // Python prints (obj, obj, obj) when more than one object is being printed
+    print_value = elements.join(', ');
+    if (elements.length > 1) {
+        print_value = "(" + print_value + ")";
+    }
+    batavia.stdout(print_value + "\n");
 };
 
 batavia.builtins.property = function() {
