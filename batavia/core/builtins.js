@@ -378,7 +378,7 @@ batavia.builtins.round = function(args) {
         p = args[1]
     }
     var base = Math.pow(10, p)
-    return Math.round( args[0] * base ) / base;
+    return Math.round(args[0] * base) / base;
 };
 
 batavia.builtins.set = function() {
