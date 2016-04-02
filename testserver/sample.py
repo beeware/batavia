@@ -33,6 +33,8 @@ def try_builtins():
     print('oct(14)', oct(14))
     print('bin(14)', bin(14))
     print('divmod(5,2)', divmod(5,2))
+    print('pow(2, 3)', pow(2, 3))
+    print('pow(2, 3, 3)', pow(2, 3, 3))
 
     print('abs(None)', abs(None)) #known failure
 def main(argv):
