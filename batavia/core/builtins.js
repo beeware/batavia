@@ -188,10 +188,11 @@ batavia.builtins.frozenset = function() {
 };
 
 batavia.builtins.getattr = function(args) {
-    try {
-        return args[0][args[1]];
-    } catch (err) {
-        if (args) {
+    if (args) {
+        var attr = args[0][args[1]];
+        if (attr !== undefined) {
+            return attr
+        } else {
             if (args.length === 3) {
                 return args[2];
             } else if (args.length === 2) {
@@ -201,9 +202,9 @@ batavia.builtins.getattr = function(args) {
             } else {
                 throw new batavia.builtins.TypeError("getattr expected at most 3 arguments, got " + args.length);
             }
-        } else {
-            throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got 0");
         }
+    } else {
+        throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got 0");
     }
 };
 
@@ -211,8 +212,23 @@ batavia.builtins.globals = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'globals' not implemented");
 };
 
-batavia.builtins.hasattr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hasattr' not implemented");
+batavia.builtins.hasattr = function(args) {
+    if (args) {
+        try {
+            if (batavia.builtins.getattr(args)) {
+                return true;
+            }
+        } catch (err) {
+            if (err instanceof batavia.builtins.AttributeError) {
+                return false;
+            }
+            if (err instanceof batavia.builtins.TypeError) {
+                throw new batavia.builtins.TypeError("hasattr expected 2 arguments, got " + args.length);
+            }
+        }
+    } else {
+        throw new batavia.builtins.TypeError("hasattr expected 2 arguments, got 0");
+    }
 };
 
 batavia.builtins.hash = function() {
