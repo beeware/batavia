@@ -48,6 +48,21 @@ batavia.core.Dict.prototype.items = function() {
     return result;
 };
 
+batavia.core.Dict.prototype.toString = function () {
+    return this.__str__();
+};
+
+batavia.core.Dict.prototype.__str__ = function () {
+    var result = "{", values = [];
+    for (var key in this) {
+        if (this.hasOwnProperty(key)) {
+            values.push(key + ": " + this[key]);
+        }
+    }
+    result += values.join(', ');
+    result += "}";
+    return result;
+};
 
 /*************************************************************************
  * Modify Array to behave like a Python List
