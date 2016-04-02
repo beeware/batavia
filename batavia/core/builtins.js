@@ -148,8 +148,13 @@ batavia.builtins.divmod = function(args) {
     return [div, rem];
 };
 
-batavia.builtins.enumerate = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'enumerate' not implemented");
+batavia.builtins.enumerate = function(args) {
+    var result = [];
+    var values = args[0];
+    for (i = 0; i < values.length; i++) {
+        result.push([i, values[i]])    
+    }
+    return result;
 };
 
 batavia.builtins.eval = function() {
