@@ -449,10 +449,6 @@ batavia.builtins.vars = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'vars' not implemented");
 };
 
-batavia.builtins.xrange = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'xrange' not implemented");
-};
-
 batavia.builtins.zip = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'zip' not implemented");
 };
