@@ -7,6 +7,9 @@ batavia.VirtualMachine = function() {
     // Initialize the bytecode module
     batavia.modules.dis.init();
 
+    // Build a table mapping opcodes to method calls
+    this.build_dispatch_table();
+
     // The call stack of frames.
     this.frames = [];
 
@@ -17,6 +20,52 @@ batavia.VirtualMachine = function() {
 };
 
 batavia.VirtualMachine.Py_Ellipsis = {};
+
+/*
+ * Build a table mapping opcodes to a method to be called whenever we encounter that opcode.
+ *
+ * Each such method will be invoked with apply(this, args).
+ */
+batavia.VirtualMachine.prototype.build_dispatch_table = function() {
+    var vm = this;
+
+    this.dispatch_table = batavia.modules.dis.opname.map(function(opname, opcode) {
+        var operator_name, operator;
+
+        if (opcode in batavia.modules.dis.unary_ops) {
+            operator_name = opname.slice(6);
+            operator = batavia.operators[operator_name];
+            return function() {
+                var x = this.pop();
+                this.push(operator(x));
+            };
+        } else if (opcode in batavia.modules.dis.binary_ops) {
+            operator_name = opname.slice(7);
+            operator = batavia.operators[operator_name];
+            return function() {
+                var items = this.popn(2);
+                this.push(operator(items[0], items[1]));
+            };
+        } else if (opcode in batavia.modules.dis.inplace_ops) {
+            operator_name = opname.slice(8);
+            operator = batavia.operators[operator_name];
+            return function() {
+                var items = this.popn(2);
+                this.push(operator(items[0], items[1]));
+            };
+        } else {
+            // dispatch
+            var bytecode_fn = vm['byte_' + opname];
+            if (bytecode_fn) {
+                return bytecode_fn;
+            } else {
+                return function() {
+                    throw new batavia.core.BataviaError("Unknown opcode " + opcode + " (" + opname + ")");
+                };
+            }
+        }
+    });
+};
 
 /*
  * The main entry point.
@@ -317,23 +366,7 @@ batavia.VirtualMachine.prototype.log = function(opcode) {
 batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
     var why = null;
     try {
-        // console.log('OPCODE: ', batavia.modules.dis.opname[opcode];, args);
-        if (opcode in batavia.modules.dis.unary_ops) {
-            this.unaryOperator(batavia.modules.dis.opname[opcode].slice(6));
-        } else if (opcode in batavia.modules.dis.binary_ops) {
-            this.binaryOperator(batavia.modules.dis.opname[opcode].slice(7));
-        } else if (opcode in batavia.modules.dis.inplace_ops) {
-            this.inplaceOperator(batavia.modules.dis.opname[opcode].slice(8));
-        // } else if (opcode in batavia.modules.dis.slice_ops) {
-        //     this.sliceOperator(batavia.modules.dis.opname[opcode]);
-        } else {
-            // dispatch
-            var bytecode_fn = this['byte_' + batavia.modules.dis.opname[opcode]];
-            if (!bytecode_fn) {
-                throw new BataviaError("Unknown opcode " + opcode + " (" + batavia.modules.dis.opname[opcode] + ")");
-            }
-            why = bytecode_fn.apply(this, args);
-        }
+        why = this.dispatch_table[opcode].apply(this, args);
     } catch (err) {
         // deal with exceptions encountered while executing the op.
         this.last_exception = {
@@ -561,21 +594,6 @@ batavia.VirtualMachine.prototype.byte_STORE_DEREF = function(name) {
 
 batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
     this.push(this.frame.f_locals);
-};
-
-batavia.VirtualMachine.prototype.unaryOperator = function(op) {
-    var x = this.pop();
-    this.push(batavia.operators[op](x));
-};
-
-batavia.VirtualMachine.prototype.binaryOperator = function(op) {
-    var items = this.popn(2);
-    this.push(batavia.operators[op](items[0], items[1]));
-};
-
-batavia.VirtualMachine.prototype.inplaceOperator = function(op) {
-    var items = this.popn(2);
-    this.push(batavia.operators[op](items[0], items[1]));
 };
 
 // batavia.VirtualMachine.prototype.sliceOperator = function(op) {
