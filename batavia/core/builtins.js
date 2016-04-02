@@ -372,8 +372,13 @@ batavia.builtins.reversed = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented");
 };
 
-batavia.builtins.round = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'round' not implemented");
+batavia.builtins.round = function(args) {
+    var p = 0; // Precision
+    if (args.length == 2) { 
+        p = args[1]
+    }
+    var base = Math.pow(10, p)
+    return Math.round(args[0] * base) / base;
 };
 
 batavia.builtins.set = function() {
