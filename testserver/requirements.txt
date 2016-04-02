@@ -1,1 +1,2 @@
-django
+django==1.9
+django-bower==5.1.0
