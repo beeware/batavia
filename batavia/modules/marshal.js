@@ -402,36 +402,36 @@ batavia.modules.marshal = {
             var incr = 1;
 
             /* First byte */
-            sign = (buf[7] >> 7) & 1;
-            e = (buf[7] & 0x7F) << 4;
+            sign = (buf.charCodeAt(7) >> 7) & 1;
+            e = (buf.charCodeAt(7) & 0x7F) << 4;
 
             /* Second byte */
-            e |= (buf[6] >> 4) & 0xF;
-            fhi = (buf[6] & 0xF) << 24;
+            e |= (buf.charCodeAt(6) >> 4) & 0xF;
+            fhi = (buf.charCodeAt(6) & 0xF) << 24;
 
             if (e == 2047) {
                 throw "can't unpack IEEE 754 special value on non-IEEE platform";
             }
 
             /* Third byte */
-            fhi |= buf[5] << 16;
+            fhi |= buf.charCodeAt(5) << 16;
 
             /* Fourth byte */
-            fhi |= buf[4]  << 8;
+            fhi |= buf.charCodeAt(4)  << 8;
 
             /* Fifth byte */
-            fhi |= buf[3];
+            fhi |= buf.charCodeAt(3);
 
             /* Sixth byte */
-            flo = buf[2] << 16;
+            flo = buf.charCodeAt(2) << 16;
             p += incr;
 
             /* Seventh byte */
-            flo |= buf[1] << 8;
+            flo |= buf.charCodeAt(1) << 8;
             p += incr;
 
             /* Eighth byte */
-            flo |= buf[0];
+            flo |= buf.charCodeAt(0);
 
             retval = fhi + flo / 16777216.0; /* 2**24 */
             retval /= 268435456.0; /* 2**28 */
