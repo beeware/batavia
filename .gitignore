@@ -9,3 +9,4 @@ _build
 distribute-*
 /batavia.js
 /batavia.min.js
+bower_components
