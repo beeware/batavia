@@ -160,13 +160,13 @@ function range(start, stop, step) {
 batavia.operators = {
     // UNARY operators
     POSITIVE: function(a) {
-        return +x;
+        return +a;
     },
     NEGATIVE: function(a) {
-        return -x;
+        return -a;
     },
     NOT: function(a) {
-        return !x;
+        return !a;
     },
     CONVERT: function(a) {
         throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
