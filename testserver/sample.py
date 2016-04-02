@@ -51,6 +51,8 @@ def main(argv):
     print('Distance with arg is', p.distance())
     p = Point(4, 5, z=6)
     print('Distance with kwarg is', p.distance())
+    print('hasattr(p, "x")', hasattr(p, "x")) # expect true
+    print('hasattr(p, "a")', hasattr(p, "a")) # expect false
     print('Manipulate the DOM...')
     print('Open a new web page...')
     dom.window.open('http://pybee.org', '_blank')
