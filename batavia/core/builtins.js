@@ -315,8 +315,19 @@ batavia.builtins.ord = function(args, kwargs) {
     return args[0].charCodeAt(0);
 };
 
-batavia.builtins.pow = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'pow' not implemented");
+batavia.builtins.pow = function(args) {
+    if (args.length === 2) {
+        var x = args[0]
+        var y = args[1]
+        return Math.pow(x, y);
+    } else if (args.length === 3) {
+        var x = args[0]
+        var y = args[1]
+        var z = args[2]
+        return Math.pow(x, y) % z;
+    } else {
+        throw new batavia.builtins.TypeError("pow() takes two or three arguments (" + args.length + " given)");
+    }
 };
 
 batavia.builtins.print = function(args, kwargs) {
