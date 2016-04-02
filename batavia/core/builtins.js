@@ -154,6 +154,7 @@ batavia.builtins.enumerate = function(args) {
     for (i = 0; i < values.length; i++) {
         result.push([i, values[i]])    
     }
+    // FIXME this should return a generator, not list
     return result;
 };
 
