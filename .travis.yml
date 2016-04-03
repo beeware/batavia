@@ -2,6 +2,6 @@ language: python
 python:
   - "3.4"
 before_install:
-  - wget https://raw.githubusercontent.com/jonkemp/qunit-phantomjs-runner/master/runner.js
+  - bower install qunit
 script:
   - phantomjs runner.js testserver/tests.html
