@@ -3,9 +3,17 @@
  * Virtual Machine
  *************************************************************************/
 
-batavia.VirtualMachine = function() {
+batavia.VirtualMachine = function(loader) {
     // Initialize the bytecode module
     batavia.modules.dis.init();
+
+    if (loader === undefined) {
+        this.loader = function(name) {
+            return document.getElementById('batavia-' + name).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+        };
+    } else {
+        this.loader = loader;
+    }
 
     // Build a table mapping opcodes to method calls
     this.build_dispatch_table();
@@ -74,7 +82,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
  */
 batavia.VirtualMachine.prototype.run = function(tag, args) {
     args = args || [];
-    var payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+    var payload = this.loader(tag);
     var bytecode = atob(payload);
     var code = batavia.modules.marshal.load_pyc(this, bytecode);
 
@@ -94,7 +102,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
 batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
     kwargs = kwargs || new batavia.core.Dict();
     args = args || [];
-    var payload = document.getElementById('batavia-' + tag).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+    var payload = this.loader(tag);
     var bytecode = atob(payload);
     var code = batavia.modules.marshal.load_pyc(this, bytecode);
 
