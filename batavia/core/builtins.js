@@ -404,8 +404,53 @@ batavia.builtins.slice = function(args, kwargs) {
     }
 };
 
-batavia.builtins.sorted = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented");
+batavia.builtins.sorted = function(iterable, keyFunction, reversed, undefined) {
+    var bigger = 1;
+    var smaller = -1;
+
+    if (reversed !== undefined && reversed === true) {
+        bigger = -1;
+        smaller = 1;
+    }
+
+	var preparingFunction;
+    if (keyFunction === undefined) {
+        preparingFunction = function (value) {
+            return {
+                "key": value,
+                "value": value
+            };
+        };
+    } else {
+        preparingFunction = function (value) {
+            return {
+                "key": keyFunction(value),
+                "value": value
+            };
+        }
+    }
+
+    if (batavia.utils.isType(batavia.utils.TYPES.ARRAY, iterable)) {
+        iterable = iterable.map(preparingFunction);
+        iterable.sort(function (a, b) {
+            if (a["key"] > b["key"]) {
+                return bigger;
+            }
+
+            if (a["key"] < b["key"]) {
+                return smaller;
+            }
+            return 0;
+        });
+
+        return iterable.map(function (element) {
+            return element["value"];
+        });
+    }
+
+    if (batavia.utils.isType(batavia.utils.TYPES.OBJECT, iterable)) {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
+    }
 };
 
 batavia.builtins.staticmethod = function() {
