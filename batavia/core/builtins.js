@@ -454,12 +454,14 @@ batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
 
 
         if (kwargs["key"] !== undefined) {
-            preparingFunction = function (value) {
-                return {
-                    "key": kwargs["key"](value),
-                    "value": value
-                };
-            }
+            //TODO: Fix context of python functions calling with proper vm
+            throw new batavia.builtins.NotImplementedError('Builtin Batavia sorted function "key" function is not implemented.');
+            //preparingFunction = function (value) {
+            //    return {
+            //        "key": kwargs["key"].__call__.apply(kwargs["key"]._vm, [value], null),
+            //        "value": value
+            //    };
+            //}
         }
     }
 
