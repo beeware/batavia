@@ -3,6 +3,5 @@ python:
   - "3.4"
 install:
   - "pip install ."
-  - "ant java"
 script:
   - "python setup.py test"
