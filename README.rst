@@ -1,6 +1,9 @@
 .. image:: http://pybee.org/batavia/static/images/batavia-72.png
     :target: https://pybee.org/batavia
 
+.. image:: https://travis-ci.org/pybee/batavia.svg?branch=master
+    :target: https://travis-ci.org/pybee/batavia
+
 Batavia
 =======
 
