@@ -2,6 +2,7 @@ language: python
 python:
   - "3.4"
 before_install:
+  - npm install -g bower
   - bower install qunit
 script:
   - phantomjs runner.js testserver/tests.html
