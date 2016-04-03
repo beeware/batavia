@@ -87,7 +87,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
     var code = batavia.modules.marshal.load_pyc(this, bytecode);
 
     // Set up sys.argv
-    batavia.modules.sys.argv = ['batavia'];
+    batavia.modules.sys.argv = new batavia.core.List(['batavia']);
     batavia.modules.sys.argv.extend(args);
 
     // Run the code

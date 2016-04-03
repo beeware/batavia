@@ -14,7 +14,7 @@ String.prototype.startswith = function (str) {
 };
 
 /*************************************************************************
- * Modify Object to behave like a Python Dictionary
+ * A Python dictionary type
  *************************************************************************/
 
 batavia.core.Dict = function(args, kwargs) {
@@ -65,21 +65,48 @@ batavia.core.Dict.prototype.__str__ = function () {
 };
 
 /*************************************************************************
- * Modify Array to behave like a Python List
+ * A Python List type
  *************************************************************************/
 
-Array.prototype.append = function(value) {
-    this.push(value);
-};
-
-Array.prototype.extend = function(values) {
-    if (values.length > 0) {
-        this.push.apply(this, values);
+batavia.core.List = function() {
+    function List(args, kwargs) {
+        if (args) {
+            this.push.apply(this, args);
+        }
     }
-};
+
+    function Array() {
+    }
+
+    Array.prototype = [];
+
+    List.prototype = [];
+    List.prototype.length = 0;
+    List.prototype.toString = function() {
+        return this.slice(0).toString();
+    };
+
+    List.prototype.__len__ = function () {
+        return this.length;
+    };
+
+    List.prototype.append = function(value) {
+        this.push(value);
+    };
+
+    List.prototype.extend = function(values) {
+        if (values.length > 0) {
+            this.push.apply(this, values);
+        }
+    };
+
+    List.prototype.constructor = List;
+    return List;
+}();
+
 
 /*************************************************************************
- * Subclass Object to provide a Set object
+ * A Python Set type
  *************************************************************************/
 
 batavia.core.Set = function(args, kwargs) {
@@ -107,30 +134,37 @@ batavia.core.Set.prototype.update = function(values) {
     }
 };
 
-/*************************************************************************
- * Python Tuple
- *************************************************************************/
-batavia.core.Tuple = function (args, undefined) {
-    Object.call(this);
-    if (args !== undefined || args[0].length !== 0) {
-        var iterable = args[0];
 
-        this.length = iterable.length;
-        for(var i = 0; i < this.length; i++) {
-            this[i] = iterable[i];
+/*************************************************************************
+ * A Python Tuple type
+ *************************************************************************/
+
+batavia.core.Tuple = function() {
+    function Tuple(args, kwargs) {
+        if (args) {
+            this.push.apply(this, args);
         }
-    } else {
-        this.length = 0;
     }
 
-    return Object.freeze(this);
-};
+    function Array() {
+    }
 
-batavia.core.Tuple.prototype = Object.create(Object.prototype);
+    Array.prototype = [];
 
-batavia.core.Tuple.prototype.__len__ = function () {
-    return this.length;
-};
+    Tuple.prototype = [];
+    Tuple.prototype.length = 0;
+    Tuple.prototype.toString = function() {
+        return this.slice(0).toString();
+    };
+
+    Tuple.prototype.__len__ = function () {
+        return this.length;
+    };
+
+    Tuple.prototype.constructor = Tuple;
+    return Tuple;
+}();
+
 
 /*************************************************************************
  * An implementation of iter()
@@ -222,7 +256,7 @@ batavia.operators = {
     MULTIPLY: function(a, b) {
         var result, i;
         if (a instanceof Array) {
-            result = [];
+            result = new batavia.core.List();
             if (b instanceof Array) {
                 throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'list'");
             } else {
@@ -473,6 +507,7 @@ batavia.make_class = function(args, kwargs) {
 
 batavia.make_callable = function(func) {
     var fn = function(args, kwargs, locals) {
+        var retval;
         var callargs = batavia.modules.inspect.getcallargs(func, args, kwargs);
 
         var frame = this.make_frame({

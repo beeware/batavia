@@ -348,14 +348,15 @@ batavia.builtins.ord = function(args, kwargs) {
 };
 
 batavia.builtins.pow = function(args) {
+    var x, y, z;
     if (args.length === 2) {
-        var x = args[0]
-        var y = args[1]
+        x = args[0];
+        y = args[1];
         return Math.pow(x, y);
     } else if (args.length === 3) {
-        var x = args[0]
-        var y = args[1]
-        var z = args[2]
+        x = args[0];
+        y = args[1];
+        z = args[2];
         return Math.pow(x, y) % z;
     } else {
         throw new batavia.builtins.TypeError("pow() takes two or three arguments (" + args.length + " given)");
@@ -366,7 +367,7 @@ batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
     args.map(function(elm) {
         if (elm === null) {
-            elements.push("None")
+            elements.push("None");
         } else {
             elements.push(elm.__str__ ? elm.__str__() : elm.toString());
         }
@@ -409,9 +410,9 @@ batavia.builtins.reversed = function() {
 batavia.builtins.round = function(args) {
     var p = 0; // Precision
     if (args.length == 2) {
-        p = args[1]
+        p = args[1];
     }
-    var base = Math.pow(10, p)
+    var base = Math.pow(10, p);
     return Math.round(args[0] * base) / base;
 };
 
