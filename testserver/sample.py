@@ -23,6 +23,7 @@ def do_stuff(count, size=3):
 def try_builtins():
     print('sum(0,1,2,3,4)', sum(0,1,2,3,4))
     print('abs(-1)', abs(-1))
+    print(bool.__doc__)
     print('min(1,2,3,4)', min(1,2,3,4))
     print('max(1,2,3,4)', max(1,2,3,4))
     print('all([True, True, False])', all([True, True, False]))

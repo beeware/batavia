@@ -36,26 +36,88 @@ batavia.builtins.__import__ = function(args, kwargs) {
     return module;
 };
 
+/* 
+
+General builtin format: 
+
+batavia.builtins.<fn> = function(<args>) { 
+    // length checks - is it expected that there's only a specific number of arguments?
+    if (args.length !== <length>) {
+        throw new batavia.builtins.TypeError(
+            "<fn>() takes exactly <length> argument(s) (" + args.length + " given)");
+    }
+
+    // if the function only works with a specific object type, add a test
+    var variable = args[0]
+
+    if (typeof(variable) !== "<type>") { 
+        throw new batavia.builtins.TypeError(
+            "<fn>() expects a <type> (" + typeof(variable) + " given)");
+    }
+
+    // actual code goes here
+    Javascript.Function.Stuf() 
+} 
+batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
+
+*/
+
+
 batavia.builtins.abs = function(args) {
-    if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("abs() takes exactly one argument (" + args.length + " given)");
-    }
     if (args[0] === null) {
-        throw new batavia.builtins.TypeError("bad operand type for abs(): 'NoneType'");
+        throw new batavia.builtins.TypeError(
+            "bad operand type for abs(): 'NoneType'");
     }
-    return Math.abs(args[0]);
+
+    if (args.length !== 1) {
+        throw new batavia.builtins.TypeError(
+            "abs() takes exactly one argument (" + args.length + " given)");
+    }
+
+    var variable = args[0]
+
+    if (typeof(variable) !== "number") { 
+        throw new batavia.builtins.TypeError(
+            "bin() expects a number (" + typeof(variable) + " given)");
+    }
+
+    return Math.abs(variable);
 };
+batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.'
 
 batavia.builtins.all = function(args) {
+    if (args.length === 0) { 
+        return true;
+    }
+
+    if (args.length > 1) {
+        throw new batavia.builtins.TypeError(
+            "all() takes exactly zero or one arguments (" + args.length + " given)");
+    }
+
     for (var i in args[0]) {
         if (!args[0][i]) {
            return false;
         }
     }
+
     return true;
 };
+batavia.builtins.all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.'
 
 batavia.builtins.any = function(args) {
+    // any(iterable) -> bool
+    // Return True if bool(x) is True for any x in the iterable.
+    // If the iterable is empty, return False.
+    if (args.length === 0) { 
+        return false;
+    }
+
+    if (args.length > 1) {
+        throw new batavia.builtins.TypeError(
+            "any() takes exactly zero or one arguments (" + args.length + " given)");
+    }
+    
     for (var i in args[0]) {
         if (args[0][i]) {
            return true;
@@ -63,32 +125,50 @@ batavia.builtins.any = function(args) {
     }
     return false;
 };
-
-batavia.builtins.apply = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'apply' not implemented");
-};
-
-batavia.builtins.basestring = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'basestring' not implemented");
-};
+batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.'
 
 batavia.builtins.bin = function(args) {
+    // bin(number) -> string
+    // Return the binary representation of an integer.
+
     if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
+        throw new batavia.builtins.TypeError(
+            "bin() takes exactly one argument (" + args.length + " given)");
     }
-    return "0b" + args[0].toString(2);
+
+    var variable = args[0]
+
+    if (typeof(variable) !== "number") { 
+        throw new batavia.builtins.TypeError(
+            "bin() expects a number (" + typeof(variable) + " given)");
+    }
+
+    return "0b" + variable.toString(2);
 };
+batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   >>> bin(2796202)\n   '0b1010101010101010101010'\n"
 
 batavia.builtins.bool = function(args) {
     if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("bool() takes exactly one argument (" + args.length + " given)");
+        throw new batavia.builtins.TypeError(
+            "bool() takes exactly one argument (" + args.length + " given)");
     }
+
     return !!args[0];
 };
+batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.'
 
 batavia.builtins.bytearray = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytearray' not implemented");
+    // class bytearray(object)
+    //   bytearray(iterable_of_ints) -> bytearray
+    //   bytearray(string, encoding[, errors]) -> bytearray
+    //   bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+    //   bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
+    //   bytearray() -> empty bytes array
+
+    throw new batavia.builtins.NotImplementedError(
+        "Builtin Batavia function 'bytearray' not implemented");
 };
+batavia.builtins.bytearray.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer'
 
 batavia.builtins.bytes = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'bytes' not implemented");
