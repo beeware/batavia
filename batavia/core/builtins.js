@@ -322,7 +322,7 @@ batavia.builtins.memoryview = function() {
 };
 
 batavia.builtins.min = function(args, kwargs) {
-return Math.min.apply(null, args);
+    return Math.min.apply(null, args);
 };
 
 batavia.builtins.next = function() {
@@ -365,9 +365,9 @@ batavia.builtins.pow = function(args) {
 batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
     args.map(function(elm) {
-        if (elm === null) { 
+        if (elm === null) {
             elements.push("None")
-        } else { 
+        } else {
             elements.push(elm.__str__ ? elm.__str__() : elm.toString());
         }
     });
@@ -557,8 +557,31 @@ batavia.builtins.vars = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'vars' not implemented");
 };
 
-batavia.builtins.zip = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'zip' not implemented");
+batavia.builtins.zip = function(args, undefined) {
+    if (args === undefined) {
+        return [];
+    }
+
+    var minLen = Math.min.apply(null, args.map(function (element) {
+        return element.length;
+    }));
+
+
+    if (minLen === 0) {
+        return [];
+    }
+
+    var result = [];
+    for(var i = 0; i < minLen; i++) {
+        var sequence = [];
+        for(var iterableObj = 0; iterableObj < args.length; iterableObj++) {
+            sequence.push(args[iterableObj][i]);
+        }
+
+        result.push(new batavia.core.Tuple([sequence]));
+    }
+
+    return result;
 };
 
 // Mark all builtins as Python methods.
