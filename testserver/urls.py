@@ -39,11 +39,6 @@ def home(request):
     return render(request, 'testbed.html', ctx)
 
 
-def tests(request):
-    return render(request, 'tests.html')
-
-
 urlpatterns = [
     url(r'^$', home),
-    url(r'^tests/$', tests),
 ]

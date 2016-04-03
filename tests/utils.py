@@ -190,13 +190,13 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                     %s
                     };
 
-                    console.log('Create VM...');
-                    var vm = batavia.VirtualMachine(function(name) {
+                    // console.log('Create VM...');
+                    var vm = new batavia.VirtualMachine(function(name) {
                         return modules['testcase'];
                     });
-                    console.log('Run module...');
-                    vm.run_code('testcase');
-                    console.log('Done.');
+                    // console.log('Run module...');
+                    vm.run('testcase', []);
+                    // console.log('Done.');
                 });
 
                 phantom.exit(0);
@@ -208,7 +208,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
             )
 
     proc = subprocess.Popen(
-        ["phantomjs", "tests/temp/test.js"] + args,
+        ["phantomjs", "test.js"] + args,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -216,7 +216,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
     )
     out = proc.communicate()
 
-    return out[0].decode('utf8')
+    return out[0].decode('utf8').replace('\n\n', '\n')
 
 
 def compileJava(js_dir, js):
