@@ -206,6 +206,10 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
 
+    if (!code.co_unpacked_code) {
+        this.unpack_code(code);
+    }
+
     // console.log("make_frame: code=" + code + ", callargs=" + callargs);
 
     if (f_globals !== null) {
@@ -267,6 +271,61 @@ batavia.VirtualMachine.prototype.pop_frame = function() {
 //         frame.f_back = null
 //         return val
 // }
+
+/*
+ * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
+ * unpacked into operations with their respective args
+ */
+batavia.VirtualMachine.prototype.unpack_code = function(code) {
+    var pos = 0;
+    var unpacked_code = [];
+    var args;
+
+    while (pos < code.co_code.length) {
+        var opcode_start_pos = pos;
+
+        var opcode = code.co_code[pos++];
+
+        if (opcode < batavia.modules.dis.HAVE_ARGUMENT) {
+            args = [];
+        } else {
+            var lo = code.co_code[pos++];
+            var hi = code.co_code[pos++];
+            var intArg = lo + (hi << 8);
+
+            if (opcode in batavia.modules.dis.hasconst) {
+                args = [code.co_consts[intArg]];
+            } else if (opcode in batavia.modules.dis.hasfree) {
+                if (intArg < code.co_cellvars.length) {
+                    args = [code.co_cellvars[intArg]];
+                } else {
+                    var_idx = intArg - code.co_cellvars.length;
+                    args = [code.co_freevars[var_idx]];
+                }
+            } else if (opcode in batavia.modules.dis.hasname) {
+                args = [code.co_names[intArg]];
+            } else if (opcode in batavia.modules.dis.hasjrel) {
+                args = [pos + intArg];
+            } else if (opcode in batavia.modules.dis.hasjabs) {
+                args = [intArg];
+            } else if (opcode in batavia.modules.dis.haslocal) {
+                args = [code.co_varnames[intArg]];
+            } else {
+                args = [intArg];
+            }
+        }
+
+        unpacked_code[opcode_start_pos] = {
+            'opoffset': opcode_start_pos,
+            'opcode': opcode,
+            'op_method': this.dispatch_table[opcode],
+            'args': args,
+            'next_pos': pos
+        };
+    }
+
+    code.co_unpacked_code = unpacked_code;
+};
 
 batavia.VirtualMachine.prototype.run_code = function(kwargs) {
     var code = kwargs.code;
@@ -369,25 +428,6 @@ batavia.VirtualMachine.prototype.log = function(opcode) {
 };
 
 /*
- * Dispatch by bytename to the corresponding methods.
- * Exceptions are caught and set on the virtual machine.
- */
-batavia.VirtualMachine.prototype.dispatch = function(opcode, args) {
-    var why = null;
-    try {
-        why = this.dispatch_table[opcode].apply(this, args);
-    } catch (err) {
-        // deal with exceptions encountered while executing the op.
-        this.last_exception = {
-            'exception': err,
-            'message': err.toString()
-        };
-        why = 'exception';
-    }
-    return why;
-};
-
-/*
  * Manage a frame's block stack.
  * Manipulate the block stack and data stack for looping,
  * exception handling, or returning.
@@ -449,12 +489,27 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
 
     this.push_frame(frame);
     while (true) {
-        operation = this.parse_byte_and_args();
+        operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
+
+        // advance f_lasti to next operation. If the operation is a jump, then this
+        // pointer will be overwritten during the operation's execution.
+        this.frame.f_lasti = operation.next_pos;
+
         // this.log(operation);
 
         // When unwinding the block stack, we need to keep track of why we
         // are doing it.
-        why = this.dispatch(operation.opcode, operation.args);
+        try {
+            why = operation.op_method.apply(this, operation.args);
+        } catch (err) {
+            // deal with exceptions encountered while executing the op.
+            this.last_exception = {
+                'exception': err,
+                'message': err.toString()
+            };
+            why = 'exception';
+        }
+
         if (why === 'exception')  {
             // TODO: ceval calls PyTraceBack_Here, not sure what that does.
         }
