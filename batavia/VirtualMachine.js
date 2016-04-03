@@ -107,7 +107,7 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
     var code = batavia.modules.marshal.load_pyc(this, bytecode);
 
     var callargs = new batavia.core.Dict();
-    for (var i = 0; i < args.length; i++) {
+    for (var i = 0, l = args.length; i < l; i++) {
         callargs[code.co_varnames[i]] = args[i];
     }
     callargs.update(kwargs);
@@ -322,27 +322,28 @@ batavia.VirtualMachine.prototype.parse_byte_and_args = function() {
         'opcode': this.frame.f_code.co_code[this.frame.f_lasti],
         'args': []
     };
+    var dis = batavia.modules.dis;
     this.frame.f_lasti += 1;
-    if (operation.opcode >= batavia.modules.dis.HAVE_ARGUMENT) {
+    if (operation.opcode >= dis.HAVE_ARGUMENT) {
         var arg = this.frame.f_code.co_code.slice(this.frame.f_lasti, this.frame.f_lasti + 2);
         this.frame.f_lasti += 2;
         var intArg = arg[0] + (arg[1] << 8);
-        if (operation.opcode in batavia.modules.dis.hasconst) {
+        if (operation.opcode in dis.hasconst) {
             operation.args = [this.frame.f_code.co_consts[intArg]];
-        } else if (operation.opcode in batavia.modules.dis.hasfree) {
+        } else if (operation.opcode in dis.hasfree) {
             if (intArg < this.frame.f_code.co_cellvars.length) {
                 operation.args = [this.frame.f_code.co_cellvars[intArg]];
             } else {
                 var_idx = intArg - this.frame.f_code.co_cellvars.length;
                 operation.args = [this.frame.f_code.co_freevars[var_idx]];
             }
-        } else if (operation.opcode in batavia.modules.dis.hasname) {
+        } else if (operation.opcode in dis.hasname) {
             operation.args = [this.frame.f_code.co_names[intArg]];
-        } else if (operation.opcode in batavia.modules.dis.hasjrel) {
+        } else if (operation.opcode in dis.hasjrel) {
             operation.args = [this.frame.f_lasti + intArg];
-        } else if (operation.opcode in batavia.modules.dis.hasjabs) {
+        } else if (operation.opcode in dis.hasjabs) {
             operation.args = [intArg];
-        } else if (operation.opcode in batavia.modules.dis.haslocal) {
+        } else if (operation.opcode in dis.haslocal) {
             operation.args = [this.frame.f_code.co_varnames[intArg]];
         } else {
             operation.args = [intArg];
@@ -703,8 +704,7 @@ batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
             }
         } catch (err) {}
     } else {
-        seq.reverse();
-        for (var i=0; i < seq.length; i++) {
+        for (var i = seq.length; i-- ; ) {
             this.push(seq[i]);
         }
     }
