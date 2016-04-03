@@ -279,6 +279,16 @@ batavia.builtins.iter = function() {
 };
 
 batavia.builtins.len = function(args, kwargs) {
+    if (args === undefined || args[0] === undefined) {
+        throw new batavia.builtins.TypeError("len() takes exactly one argument (0 given)");
+    }
+
+    //if (args[0].hasOwnProperty("__len__")) {
+        //TODO: Fix context of python functions calling with proper vm
+        //throw new batavia.builtins.NotImplementedError('Builtin Batavia len function is not supporting __len__ implemented.');
+        //return args[0].__len__.apply(vm);
+    //}
+
     return args[0].length;
 };
 
@@ -527,8 +537,8 @@ batavia.builtins.super = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented");
 };
 
-batavia.builtins.tuple = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'tuple' not implemented");
+batavia.builtins.tuple = function(args) {
+    return new batavia.core.Tuple(args);
 };
 
 batavia.builtins.type = function() {

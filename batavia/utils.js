@@ -108,6 +108,31 @@ batavia.core.Set.prototype.update = function(values) {
 };
 
 /*************************************************************************
+ * Python Tuple
+ *************************************************************************/
+batavia.core.Tuple = function (args, undefined) {
+    Object.call(this);
+    if (args !== undefined || args[0].length !== 0) {
+        var iterable = args[0];
+
+        this.length = iterable.length;
+        for(var i = 0; i < this.length; i++) {
+            this[i] = iterable[i];
+        }
+    } else {
+        this.length = 0;
+    }
+
+    return Object.freeze(this);
+};
+
+batavia.core.Tuple.prototype = Object.create(Object.prototype);
+
+batavia.core.Tuple.prototype.__len__ = function () {
+    return this.length;
+};
+
+/*************************************************************************
  * An implementation of iter()
  *************************************************************************/
 
@@ -295,7 +320,7 @@ batavia.operators = {
     },
     OR: function(a, b) {
         return a | b;
-    },
+    }
 };
 
 batavia.comparisons = [
@@ -454,7 +479,7 @@ batavia.make_callable = function(func) {
             'code': func.__code__,
             'callargs': callargs,
             'f_globals': func.__globals__,
-            'f_locals': locals || new batavia.core.Dict(),
+            'f_locals': locals || new batavia.core.Dict()
         });
 
         if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {
