@@ -1,3 +1,5 @@
+// From https://github.com/jonkemp/qunit-phantomjs-runner
+
 /*global phantom:false, require:false, console:false, window:false, QUnit:false */
 
 (function () {
