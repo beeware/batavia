@@ -152,7 +152,7 @@ batavia.builtins.enumerate = function(args) {
     var result = [];
     var values = args[0];
     for (i = 0; i < values.length; i++) {
-        result.push([i, values[i]])    
+        result.push([i, values[i]])
     }
     // FIXME this should return a generator, not list
     return result;
@@ -357,12 +357,7 @@ batavia.builtins.print = function(args, kwargs) {
     args.map(function(elm) {
         elements.push(elm.__str__ ? elm.__str__() : elm.toString());
     });
-    // Python prints (obj, obj, obj) when more than one object is being printed
-    print_value = elements.join(', ');
-    if (elements.length > 1) {
-        print_value = "(" + print_value + ")";
-    }
-    batavia.stdout(print_value + "\n");
+    batavia.stdout(elements.join(' ') + "\n");
 };
 
 batavia.builtins.property = function() {
@@ -399,7 +394,7 @@ batavia.builtins.reversed = function() {
 
 batavia.builtins.round = function(args) {
     var p = 0; // Precision
-    if (args.length == 2) { 
+    if (args.length == 2) {
         p = args[1]
     }
     var base = Math.pow(10, p)
