@@ -404,41 +404,19 @@ batavia.builtins.slice = function(args, kwargs) {
     }
 };
 
-batavia.builtins.sorted = function(iterable, keyFunction, reversed, undefined) {
-    var bigger = 1;
-    var smaller = -1;
-
-    if (reversed !== undefined && reversed === true) {
-        bigger = -1;
-        smaller = 1;
-    }
-
-	var preparingFunction;
-    if (keyFunction === undefined) {
-        preparingFunction = function (value) {
-            return {
-                "key": value,
-                "value": value
-            };
-        };
-    } else {
-        preparingFunction = function (value) {
-            return {
-                "key": keyFunction(value),
-                "value": value
-            };
-        }
-    }
+batavia.builtins.sorted = function(args, kwargs) {
+    var validatedInput = batavia.builtins.sorted._validateInput(args, kwargs);
+    var iterable = validatedInput["iterable"];
 
     if (batavia.utils.isType(batavia.utils.TYPES.ARRAY, iterable)) {
-        iterable = iterable.map(preparingFunction);
+        iterable = iterable.map(validatedInput["preparingFunction"]);
         iterable.sort(function (a, b) {
             if (a["key"] > b["key"]) {
-                return bigger;
+                return validatedInput["bigger"];
             }
 
             if (a["key"] < b["key"]) {
-                return smaller;
+                return validatedInput["smaller"];
             }
             return 0;
         });
@@ -451,6 +429,50 @@ batavia.builtins.sorted = function(iterable, keyFunction, reversed, undefined) {
     if (batavia.utils.isType(batavia.utils.TYPES.OBJECT, iterable)) {
         throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
     }
+};
+
+batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
+    var bigger = 1;
+    var smaller = -1;
+    var preparingFunction = function (value) {
+        return {
+            "key": value,
+            "value": value
+        };
+    };
+
+
+    if (kwargs !== undefined) {
+        if (kwargs['iterable'] !== undefined) {
+            throw new batavia.builtins.TypeError("'iterable' is an invalid keyword argument for this function");
+        }
+
+        if (kwargs["reverse"] !== undefined && kwargs["reverse"] === true) {
+            bigger = -1;
+            smaller = 1;
+        }
+
+
+        if (kwargs["key"] !== undefined) {
+            preparingFunction = function (value) {
+                return {
+                    "key": kwargs["key"](value),
+                    "value": value
+                };
+            }
+        }
+    }
+
+    if (args === undefined || args.length == 0) {
+        throw new batavia.builtins.TypeError("Required argument 'iterable' (pos 1) not found");
+    }
+
+    return {
+        iterable: args[0],
+        bigger: bigger,
+        smaller: smaller,
+        preparingFunction: preparingFunction
+    };
 };
 
 batavia.builtins.staticmethod = function() {
