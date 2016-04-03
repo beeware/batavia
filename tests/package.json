@@ -1,0 +1,25 @@
+{
+  "name": "batavia",
+  "version": "0.0.0",
+  "description": "Tools to run Python bytecode in the browser.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "phantomjs tests/runner.js tests/runner.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pybee/batavia.git"
+  },
+  "author": "Russell Keith-Magee",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/pybee/batavia/issues"
+  },
+  "homepage": "https://github.com/pybee/batavia#readme",
+  "devDependencies": {
+    "qunitjs": "^1.23.0"
+  }
+}
