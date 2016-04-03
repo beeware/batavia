@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = (
     'django.contrib.staticfiles',
-    'djangobower',
 )
 
 MIDDLEWARE_CLASSES = ()
@@ -93,11 +92,4 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'djangobower.finders.BowerFinder'
-]
-
-BOWER_COMPONENTS_ROOT = os.path.dirname(BASE_DIR)
-
-BOWER_INSTALLED_APPS = [
-    'qunit'
 ]

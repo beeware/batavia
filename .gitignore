@@ -9,4 +9,4 @@ _build
 distribute-*
 /batavia.js
 /batavia.min.js
-/tests/node_modules
+/tests/temp
