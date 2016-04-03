@@ -1,7 +1,8 @@
 language: python
 python:
   - "3.4"
-before_install:
-  - npm install --prefix tests --save-dev qunitjs
+install:
+  - "pip install ."
+  - "ant java"
 script:
-  - phantomjs tests/runner.js tests/runner.html
+  - "python setup.py test"
