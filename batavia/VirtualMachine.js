@@ -685,13 +685,14 @@ batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    this.push(new batavia.core.Dict());
-};
+    var items = this.popn(size*2);
+    var obj = {};
 
-batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
-    var items = this.popn(3);
-    items[0][items[2]] = items[1];
-    this.push(items[0]);
+    for(var i=0; i<items.length; i+=2) {
+        obj[items[i]] = items[i+1];
+    }
+
+    this.push(new batavia.core.Dict(obj));
 };
 
 batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
