@@ -355,7 +355,11 @@ batavia.builtins.pow = function(args) {
 batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
     args.map(function(elm) {
-        elements.push(elm.__str__ ? elm.__str__() : elm.toString());
+        if (elm === null) { 
+            elements.push("None")
+        } else { 
+            elements.push(elm.__str__ ? elm.__str__() : elm.toString());
+        }
     });
     batavia.stdout(elements.join(' ') + "\n");
 };
