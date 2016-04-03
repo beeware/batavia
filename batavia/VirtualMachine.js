@@ -644,7 +644,7 @@ batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
     var items = this.popn(count);
-    this.push(items);
+    this.push(new batavia.core.Tuple(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
