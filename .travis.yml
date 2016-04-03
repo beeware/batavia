@@ -1,0 +1,7 @@
+language: node_js
+node_js:
+  - "5"
+before_install:
+  - wget https://raw.githubusercontent.com/jonkemp/qunit-phantomjs-runner/master/runner.js
+script:
+  - phantomjs runner.js testserver/tests.html
