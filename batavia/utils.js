@@ -200,7 +200,7 @@ function next(iterator) {
  * An implementation of range()
  *************************************************************************/
 
-function _range(start, stop, step) {
+function range(start, stop, step) {
     this.start = start;
     this.stop = stop;
     this.step = step || 1;
@@ -213,7 +213,7 @@ function _range(start, stop, step) {
     this.i = this.start;
 }
 
-_range.prototype.__next__ = function() {
+range.prototype.__next__ = function() {
     var retval = this.i;
     if (this.i < this.stop) {
         this.i = this.i + this.step;
@@ -221,10 +221,6 @@ _range.prototype.__next__ = function() {
     }
     throw new batavia.builtins.StopIteration();
 };
-
-function range(start, stop, step) {
-    return new _range(start, stop, step);
-}
 
 
 /*************************************************************************
