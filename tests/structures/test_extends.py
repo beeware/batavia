@@ -3,7 +3,7 @@ from ..utils import TranspileTestCase
 
 class ExtendsTests(TranspileTestCase):
     def test_extends(self):
-        self.assertJavaExecution(
+        self.assertJavaScriptExecution(
             """
             from java.util import HashMap
 

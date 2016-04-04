@@ -7,7 +7,7 @@ class ImportTests(TranspileTestCase):
 
     def test_import_java_module_static_method(self):
         "You can invoke a static method from a native Java namespace"
-        self.assertJavaExecution(
+        self.assertJavaScriptExecution(
             """
             from java import lang
 
@@ -23,7 +23,7 @@ class ImportTests(TranspileTestCase):
 
     def test_import_java_class_static_method(self):
         "You can invoke a static method from a native Java class"
-        self.assertJavaExecution(
+        self.assertJavaScriptExecution(
             """
             from java.lang import System
 
@@ -39,7 +39,7 @@ class ImportTests(TranspileTestCase):
 
     def test_import_java_module(self):
         "You can import a native Java namespace as a Python module"
-        self.assertJavaExecution(
+        self.assertJavaScriptExecution(
             """
             from java import lang
 
@@ -57,7 +57,7 @@ class ImportTests(TranspileTestCase):
 
     def test_import_java_class(self):
         "You can import a native Java class as a Python module"
-        self.assertJavaExecution(
+        self.assertJavaScriptExecution(
             """
             from java.lang import StringBuilder
 

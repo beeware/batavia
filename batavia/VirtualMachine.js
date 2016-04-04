@@ -81,14 +81,15 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
 batavia.VirtualMachine.prototype.run = function(tag, args) {
-    args = args || [];
     var payload = this.loader(tag);
     var bytecode = atob(payload);
     var code = batavia.modules.marshal.load_pyc(this, bytecode);
 
     // Set up sys.argv
     batavia.modules.sys.argv = new batavia.core.List(['batavia']);
-    batavia.modules.sys.argv.extend(args);
+    if (args) {
+        batavia.modules.sys.argv.extend(args);
+    }
 
     // Run the code
     return this.run_code({'code': code});
@@ -100,8 +101,6 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
 batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
-    kwargs = kwargs || new batavia.core.Dict();
-    args = args || [];
     var payload = this.loader(tag);
     var bytecode = atob(payload);
     var code = batavia.modules.marshal.load_pyc(this, bytecode);

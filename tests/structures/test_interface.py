@@ -4,8 +4,8 @@ from ..utils import TranspileTestCase
 class InterfaceTests(TranspileTestCase):
 
     def test_implement_interface(self):
-        "You can implement (and use) a native Java interface"
-        self.assertJavaExecution(
+        "You can implement (and use) a native JavaScript interface"
+        self.assertJavaScriptExecution(
             """
             from java.lang import StringBuilder
 
@@ -42,7 +42,7 @@ class InterfaceTests(TranspileTestCase):
 
     def test_implement_inner_interface(self):
         "You can implement (and use) a native Java interface defined as an inner class"
-        self.assertJavaExecution(
+        self.assertJavaScriptExecution(
             """
             from com.example import View
 
