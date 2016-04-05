@@ -123,8 +123,26 @@ batavia.builtins.credits = function() {
     console.log("Thanks to all contributors, including those in AUTHORS, for supporting Batavia development. See https://github.com/pybee/batavia for more information");
 };
 
-batavia.builtins.delattr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'delattr' not implemented");
+batavia.builtins.delattr = function(args) {
+    if (args) {
+        try {
+            if (batavia.builtins.getattr(args)) {
+                delete args[0][args[1]]
+                // False returned by bool(delattr(...)) in the success case
+                return false
+            }
+        } catch (err) {
+            // This is maybe unecessary, but matches the error thrown by python 3.5.1 in this case
+            if (err instanceof batavia.builtins.AttributeError) {
+                throw new batavia.builtins.AttributeError(args[1])
+            }
+            if (err instanceof batavia.builtins.TypeError) {
+                throw new batavia.builtins.TypeError("delattr expected 2 arguments, got " + args.length)
+            }
+        }
+    } else {
+        throw new batavia.builtins.TypeError("delattr expected 2 arguments, got 0")
+    }
 };
 
 batavia.builtins.dict = function() {
