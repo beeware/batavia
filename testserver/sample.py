@@ -20,6 +20,7 @@ def do_stuff(count, size=3):
         print("HELLO", i)
         other.wiggle(i)
 
+
 def try_builtins():
     print('sum(0,1,2,3,4)', sum(0,1,2,3,4))
     print('abs(-1)', abs(-1))
@@ -38,6 +39,8 @@ def try_builtins():
     print('pow(2, 3, 3)', pow(2, 3, 3))
 
     print('abs(None)', abs(None)) #known failure
+
+
 def main(argv):
     print('Use default')
     print(do_stuff(int(argv[1])))
@@ -54,6 +57,8 @@ def main(argv):
     print('Distance with kwarg is', p.distance())
     print('hasattr(p, "x")', hasattr(p, "x")) # expect true
     print('hasattr(p, "a")', hasattr(p, "a")) # expect false
+    print('delattr(p, "x")', delattr(p, "x"))
+    print('hasattr(p, "x")', hasattr(p, "x")) # now expect false
     print('Manipulate the DOM...')
     print('Open a new web page...')
     dom.window.open('http://pybee.org', '_blank')

@@ -145,7 +145,7 @@ batavia.builtins.bin = function(args) {
 
     return "0b" + variable.toString(2);
 };
-batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   >>> bin(2796202)\n   '0b1010101010101010101010'\n"
+batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   "
 
 batavia.builtins.bool = function(args) {
     if (args.length !== 1) {
@@ -225,10 +225,26 @@ batavia.builtins.credits = function() {
 };
 batavia.builtins.credits.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.'
 
-batavia.builtins.delattr = function() {
-    // TODO - would this change the object itself, or return a new?
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'delattr' not implemented");
+batavia.builtins.delattr = function(args) {
+    if (args) {
+        try {
+            if (batavia.builtins.getattr(args)) {
+                delete args[0][args[1]]
+                // False returned by bool(delattr(...)) in the success case
+                return false
+            }
+        } catch (err) {
+            // This is maybe unecessary, but matches the error thrown by python 3.5.1 in this case
+            if (err instanceof batavia.builtins.AttributeError) {
+                throw new batavia.builtins.AttributeError(args[1])
+            }
+            if (err instanceof batavia.builtins.TypeError) {
+                throw new batavia.builtins.TypeError("delattr expected 2 arguments, got " + args.length)
+            }
+        }
+    } else {
+        throw new batavia.builtins.TypeError("delattr expected 2 arguments, got 0")
+    }
 };
 batavia.builtins.delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''."
 
