@@ -12,6 +12,9 @@ batavia.builtins.BaseException.prototype.toString = function() {
     }
 };
 
+batavia.builtins.ArgumentsError = function(msg) {
+    batavia.builtins.BaseException.call(this, 'ArgumentsError', msg);
+};
 batavia.builtins.ArithmeticError = function(msg) {
     batavia.builtins.BaseException.call(this, 'ArithmeticError', msg);
 };
