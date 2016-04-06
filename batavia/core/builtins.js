@@ -384,7 +384,7 @@ batavia.builtins.quit = function() {
 };
 
 batavia.builtins.range = function(args, kwargs){
-    return range(args[0], args[1], args[2]);
+    return new batavia.core.range(args[0], args[1], args[2]);
 };
 
 batavia.builtins.raw_input = function() {
@@ -539,7 +539,7 @@ batavia.builtins.super = function() {
 };
 
 batavia.builtins.tuple = function(args) {
-    return new batavia.core.Tuple(args);
+    return new batavia.core.Tuple(args[0]);
 };
 
 batavia.builtins.type = function() {
@@ -579,7 +579,7 @@ batavia.builtins.zip = function(args, undefined) {
             sequence.push(args[iterableObj][i]);
         }
 
-        result.push(new batavia.core.Tuple([sequence]));
+        result.push(new batavia.core.Tuple(sequence));
     }
 
     return result;

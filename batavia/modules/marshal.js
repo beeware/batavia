@@ -582,7 +582,7 @@ batavia.modules.marshal = {
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            retval = new Array(n);
+            retval = new batavia.core.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -603,7 +603,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (tuple size out of range)");
                 break;
             }
-            retval = new Array(n);
+            retval = new batavia.core.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -624,7 +624,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (list size out of range)");
                 break;
             }
-            retval = new Array(n);
+            retval = new batavia.core.List(new Array(n));
             for (i = 0; i < n; i++) {
                 retval[n] = batavia.modules.marshal.r_object(vm, p);
             }
@@ -636,7 +636,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_DICT:
             // console.log.info('TYPE_DICT ' + n);
-            retval = {};
+            retval = batavia.core.Dict();
             for (;;) {
                 var key, val;
                 key = r_object(p);
@@ -668,12 +668,13 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (set size out of range)");
                 break;
             }
-            retval = (type == batavia.modules.marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
             if (type == batavia.modules.marshal.TYPE_SET) {
+                retval = batavia.core.Set(null);
                 if (flag) {
                    batavia.modules.marshal.r_ref(vm, retval, flag, p);
                 }
             } else {
+                retval = batavia.core.FrozenSet(null);
                 /* must use delayed registration of frozensets because they must
                  * be init with a refcount of 1
                  */

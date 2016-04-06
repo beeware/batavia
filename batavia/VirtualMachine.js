@@ -730,13 +730,12 @@ batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
 
 batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
     var items = this.popn(count);
-    this.push(items);
+    this.push(new batavia.core.List(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
-    // TODO: Not documented in Py2 docs.
-    var retval = new batavia.core.Set(this.popn(count));
-    this.push(retval);
+    var items = this.popn(count);
+    this.push(new batavia.core.Set(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
@@ -1068,17 +1067,17 @@ batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {
-    return this.call_function(arg, [], new batavia.core.Dict());
+    return this.call_function(arg, null, null);
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
     var args = this.pop();
-    return this.call_function(arg, args, new batavia.core.Dict());
+    return this.call_function(arg, args, null);
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
     var kwargs = this.pop();
-    return this.call_function(arg, [], kwargs);
+    return this.call_function(arg, null, kwargs);
 };
 
 batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
@@ -1094,9 +1093,13 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         var items = this.popn(2);
         namedargs[items[0]] = items[1];
     }
-    namedargs.update(kwargs);
+    if (kwargs) {
+        namedargs.update(kwargs);
+    }
     var posargs = this.popn(lenPos);
-    posargs = posargs.concat(args);
+    if (args) {
+        posargs = posargs.concat(args);
+    }
 
     var func = this.pop();
     // frame = this.frame

@@ -69,9 +69,13 @@ batavia.core.Dict.prototype.__str__ = function () {
  *************************************************************************/
 
 batavia.core.List = function() {
-    function List(args, kwargs) {
-        if (args) {
-            this.push.apply(this, args);
+    function List() {
+        if (arguments.length === 0) {
+            this.push.apply(this);
+        } else if (arguments.length === 1) {
+            this.push.apply(this, arguments[0]);
+        } else {
+            throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
         }
     }
 
@@ -80,11 +84,8 @@ batavia.core.List = function() {
 
     Array.prototype = [];
 
-    List.prototype = [];
+    List.prototype = new Array;
     List.prototype.length = 0;
-    List.prototype.toString = function() {
-        return this.slice(0).toString();
-    };
 
     List.prototype.__len__ = function () {
         return this.length;
@@ -98,6 +99,14 @@ batavia.core.List = function() {
         if (values.length > 0) {
             this.push.apply(this, values);
         }
+    };
+
+    List.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    List.prototype.__str__ = function() {
+        return '[' + this.join(', ') + ']';
     };
 
     List.prototype.constructor = List;
@@ -135,15 +144,46 @@ batavia.core.Set.prototype.update = function(values) {
 };
 
 
+batavia.core.Set.prototype.toString = function() {
+    return this.__str__();
+};
+
+batavia.core.Set.prototype.__str__ = function() {
+    var result = "{", values = [];
+    for (var key in this) {
+        if (this.hasOwnProperty(key)) {
+            values.push(key);
+        }
+    }
+    result += values.join(', ');
+    result += "}";
+    return result;
+};
+
+/*************************************************************************
+ * A Python FrozenSet type
+ *************************************************************************/
+
+batavia.core.FrozenSet = function(args, kwargs) {
+    Set.call(this, args, kwargs);
+};
+
+batavia.core.FrozenSet.prototype = Object.create(Set.prototype);
+
 /*************************************************************************
  * A Python Tuple type
  *************************************************************************/
 
 batavia.core.Tuple = function() {
-    function Tuple(args, kwargs) {
-        if (args) {
-            this.push.apply(this, args);
+    function Tuple(length){
+        if (arguments.length === 0) {
+            this.push.apply(this);
+        } else if (arguments.length === 1) {
+            this.push.apply(this, arguments[0]);
+        } else {
+            throw new batavia.builtins.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
         }
+
     }
 
     function Array() {
@@ -151,20 +191,24 @@ batavia.core.Tuple = function() {
 
     Array.prototype = [];
 
-    Tuple.prototype = [];
+    Tuple.prototype = new Array;
     Tuple.prototype.length = 0;
-    Tuple.prototype.toString = function() {
-        return this.slice(0).toString();
-    };
 
     Tuple.prototype.__len__ = function () {
         return this.length;
     };
 
+    Tuple.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    Tuple.prototype.__str__ = function() {
+        return '(' + this.join(', ') + ')';
+    };
+
     Tuple.prototype.constructor = Tuple;
     return Tuple;
 }();
-
 
 /*************************************************************************
  * An implementation of iter()
@@ -200,7 +244,7 @@ function next(iterator) {
  * An implementation of range()
  *************************************************************************/
 
-function range(start, stop, step) {
+batavia.core.range = function(start, stop, step) {
     this.start = start;
     this.stop = stop;
     this.step = step || 1;
@@ -211,9 +255,9 @@ function range(start, stop, step) {
     }
 
     this.i = this.start;
-}
+};
 
-range.prototype.__next__ = function() {
+batavia.core.range.prototype.__next__ = function() {
     var retval = this.i;
     if (this.i < this.stop) {
         this.i = this.i + this.step;
@@ -222,6 +266,17 @@ range.prototype.__next__ = function() {
     throw new batavia.builtins.StopIteration();
 };
 
+batavia.core.range.prototype.toString = function() {
+    return this.__str__();
+};
+
+batavia.core.range.prototype.__str__ = function() {
+    if (this.step) {
+        return '(' + this.start + ', ' + this.stop + ', ' + this.step + ')';
+    } else {
+        return '(' + this.start + ', ' + this.stop + ')';
+    }
+}
 
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
