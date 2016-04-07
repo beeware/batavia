@@ -600,7 +600,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
     } else if (name in frame.f_builtins) {
         val = frame.f_builtins[name];
     } else {
-        throw new batavia.builtins.NameError("name '" + name + "' is not defined");
+        throw new batavia.exceptions.NameError("name '" + name + "' is not defined");
     }
     this.push(val);
 };
@@ -618,7 +618,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
-        throw new batavia.builtins.NameError("local variable '" + name + "' referenced before assignment");
+        throw new batavia.exceptions.NameError("local variable '" + name + "' referenced before assignment");
     }
     this.push(val);
 };
@@ -642,7 +642,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
     } else if (name in this.frame.f_builtins) {
         val = this.frame.f_builtins[name];
     } else {
-        throw new batavia.builtins.NameError("Global name '" + name + "' is not defined");
+        throw new batavia.exceptions.NameError("Global name '" + name + "' is not defined");
     }
     this.push(val);
 };
@@ -882,7 +882,7 @@ batavia.VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
         var v = next(iterobj);
         this.push(v);
     } catch (err) {
-        if (err instanceof batavia.builtins.StopIteration) {
+        if (err instanceof batavia.exceptions.StopIteration) {
             this.pop();
             this.jump(jump);
         } else {
@@ -953,39 +953,40 @@ batavia.VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
     return this.do_raise(exc, cause);
 };
 
-//     batavia.VirtualMachine.prototype.do_throw = function(exc, cause) {
-//             if exc is null:         // reraise
-//                 exc_type, val, tb = this.last_exception
-//                 if exc_type is null:
-//                     return 'exception'      // error
-//                 else:
-//                     return 'reraise'
+batavia.VirtualMachine.prototype.do_raise = function(exc, cause) {
+    if (exc === undefined) {  // reraise
+        if (this.last_exception.exc_type === undefined) {
+            return 'exception';      // error
+        } else {
+            return 'reraise';
+        }
+    } else if (exc instanceof batavia.exceptions.BaseException) {
+        // As in `throw ValueError('foo')`
+        // exc_type = type(exc);
+        exc_type = exc;
+        val = exc;
+    } else {
+        return 'exception'      // error
+    }
 
-//             elif type(exc) == type:
-//                 // As in `throw ValueError`
-//                 exc_type = exc
-//                 val = exc()             // Make an instance.
-//             elif isinstance(exc, BaseException):
-//                 // As in `throw ValueError('foo')`
-//                 exc_type = type(exc)
-//                 val = exc
-//             else:
-//                 return 'exception'      // error
+    // If you reach this point, you're guaranteed that
+    // val is a valid exception instance and exc_type is its class.
+    // Now do a similar thing for the cause, if present.
+    if (cause) {
+        // if not isinstance(cause, BaseException):
+        //     return 'exception'  // error
 
-//             // If you reach this point, you're guaranteed that
-//             // val is a valid exception instance and exc_type is its class.
-//             // Now do a similar thing for the cause, if present.
-//             if cause:
-//                 if type(cause) == type:
-//                     cause = cause()
-//                 elif not isinstance(cause, BaseException):
-//                     return 'exception'  // error
+        val.__cause__ = cause;
+    }
 
-//                 val.__cause__ = cause
-
-//             this.last_exception = exc_type, val, val.__traceback__
-//             return 'exception'
-// }
+    this.last_exception = {
+        'exception': exc,
+        'exc_type': exc_type,
+        'val': val,
+        'traceback': val.__traceback__,
+    };
+    return 'exception';
+}
 // batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function {
 //         block = this.pop_block()
 //         if block.type != 'except-handler':

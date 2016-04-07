@@ -30,75 +30,75 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 }
             }
         } catch (err) {
-            throw new batavia.builtins.ImportError("No module named '" + args[0] + "'");
+            throw new batavia.exceptions.ImportError("No module named '" + args[0] + "'");
         }
     }
     return module;
 };
 
-/* 
+/*
 
-General builtin format: 
+General builtin format:
 
 
 // Example: a function that accepts exactly one argument, and no keyword arguments
-batavia.builtins.<fn> = function(<args>, <kwargs>) { 
+batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError("Batavia calling convention not used.")
+        throw new batavia.exceptions.RuntimeError("Batavia calling convention not used.")
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("<fn>() doesn't accept keyword arguments.")
+        throw new batavia.exceptions.TypeError("<fn>() doesn't accept keyword arguments.")
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError("<fn>() expected exactly 1 argument (" + args.length + " given)")
+        throw new batavia.exceptions.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)")
     }
 
     // if the function only works with a specific object type, add a test
     var variable = args[0]
 
-    if (typeof(variable) !== "<type>") { 
-        throw new batavia.builtins.TypeError(
+    if (typeof(variable) !== "<type>") {
+        throw new batavia.exceptions.TypeError(
             "<fn>() expects a <type> (" + typeof(variable) + " given)");
     }
 
     // actual code goes here
-    Javascript.Function.Stuf() 
-} 
+    Javascript.Function.Stuf()
+}
 batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
 
 */
 
 batavia.builtins.abs = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("abs() doesn't accept keyword arguments")
+        throw new batavia.exceptions.TypeError("abs() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('abs() expected exactly 1 argument (' + args.length + ' given)')
+        throw new batavia.exceptions.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
     }
     if (args[0] === null) {
-        throw new batavia.builtins.TypeError(
+        throw new batavia.exceptions.TypeError(
             "bad operand type for abs(): 'NoneType'");
     }
 
     return Math.abs(args[0]);
 };
-batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.'
+batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
 batavia.builtins.all = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("all() doesn't accept keyword arguments")
+        throw new batavia.exceptions.TypeError("all() doesn't accept keyword arguments");
     }
-    if (args.length === 0) { 
+    if (args.length === 0) {
         return true;
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('all() expected exactly 0 or 1 argument (' + args.length + ' given)')
+        throw new batavia.exceptions.TypeError('all() expected exactly 0 or 1 argument (' + args.length + ' given)');
     }
 
     for (var i in args[0]) {
@@ -109,22 +109,22 @@ batavia.builtins.all = function(args, kwargs) {
 
     return true;
 };
-batavia.builtins.all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.'
+batavia.builtins.all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.';
 
 batavia.builtins.any = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("any() doesn't accept keyword arguments")
+        throw new batavia.exceptions.TypeError("any() doesn't accept keyword arguments");
     }
-    if (args.length === 0) { 
+    if (args.length === 0) {
         return false;
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('any() expected exactly 0 or 1 arguments (' + args.length + ' given)')
+        throw new batavia.exceptions.TypeError('any() expected exactly 0 or 1 arguments (' + args.length + ' given)');
     }
-    
+
     for (var i in args[0]) {
         if (args[0][i]) {
            return true;
@@ -132,146 +132,146 @@ batavia.builtins.any = function(args, kwargs) {
     }
     return false;
 };
-batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.'
+batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
 batavia.builtins.bin = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("bin() doesn't accept keyword arguments")
+        throw new batavia.exceptions.TypeError("bin() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('any() expected exactly 1 argument (' + args.length + ' given)')
+        throw new batavia.exceptions.TypeError('any() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    var variable = args[0]
+    var variable = args[0];
 
-    if (typeof(variable) !== "number") { 
-        throw new batavia.builtins.TypeError(
+    if (typeof(variable) !== "number") {
+        throw new batavia.exceptions.TypeError(
             "bin() expects a number (" + typeof(variable) + " given)");
     }
 
     return "0b" + variable.toString(2);
 };
-batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   "
+batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   ";
 
 batavia.builtins.bool = function(args) {
     if (args.length !== 1) {
-        throw new batavia.builtins.TypeError(
+        throw new batavia.exceptions.TypeError(
             "bool() takes exactly one argument (" + args.length + " given)");
     }
 
     return !!args[0];
 };
-batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.'
+batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
 
 batavia.builtins.bytearray = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
+    throw new batavia.exceptions.NotImplementedError(
         "Builtin Batavia function 'bytearray' not implemented");
 };
-batavia.builtins.bytearray.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer'
+batavia.builtins.bytearray.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer';
 
 batavia.builtins.bytes = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
+    throw new batavia.exceptions.NotImplementedError(
         "Builtin Batavia function 'bytes' not implemented");
 };
-batavia.builtins.bytes.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer'
+batavia.builtins.bytes.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer';
 
 batavia.builtins.callable = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("callable() doesn't accept keyword arguments")
+        throw new batavia.exceptions.TypeError("callable() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('callable() expected exactly 1 argument (' + args.length + ' given)')
+        throw new batavia.exceptions.TypeError('callable() expected exactly 1 argument (' + args.length + ' given)');
     }
-    if (typeof(args[0]) === "function") { 
-        return true
-    } else { 
-        return false
-    }  
+    if (typeof(args[0]) === "function") {
+        return true;
+    } else {
+        return false;
+    }
 };
-batavia.builtins.callable.__doc__ = 'callable(object) -> bool\n\nReturn whether the object is callable (i.e., some kind of function).\nNote that classes are callable, as are instances of classes with a\n__call__() method.'
+batavia.builtins.callable.__doc__ = 'callable(object) -> bool\n\nReturn whether the object is callable (i.e., some kind of function).\nNote that classes are callable, as are instances of classes with a\n__call__() method.';
 
 batavia.builtins.chr = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("char() doesn't accept keyword arguments")
+        throw new batavia.exceptions.TypeError("char() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('char() expected exactly 1 argument (' + args.length + ' given)')
+        throw new batavia.exceptions.TypeError('char() expected exactly 1 argument (' + args.length + ' given)');
     }
     return String.fromCharCode(args[0]);
 };
-batavia.builtins.chr.__doc__ = 'chr(i) -> Unicode character\n\nReturn a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.'
+batavia.builtins.chr.__doc__ = 'chr(i) -> Unicode character\n\nReturn a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.';
 
 batavia.builtins.classmethod = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
+    throw new batavia.exceptions.NotImplementedError(
         "Builtin Batavia function 'classmethod' not implemented");
 };
-batavia.builtins.classmethod.__doc__ = 'classmethod(function) -> method\n\nConvert a function to be a class method.\n\nA class method receives the class as implicit first argument,\njust like an instance method receives the instance.\nTo declare a class method, use this idiom:\n\n  class C:\n      def f(cls, arg1, arg2, ...): ...\n      f = classmethod(f)\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()).  The instance is ignored except for its class.\nIf a class method is called for a derived class, the derived class\nobject is passed as the implied first argument.\n\nClass methods are different than C++ or Java static methods.\nIf you want those, see the staticmethod builtin.'
+batavia.builtins.classmethod.__doc__ = 'classmethod(function) -> method\n\nConvert a function to be a class method.\n\nA class method receives the class as implicit first argument,\njust like an instance method receives the instance.\nTo declare a class method, use this idiom:\n\n  class C:\n      def f(cls, arg1, arg2, ...): ...\n      f = classmethod(f)\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()).  The instance is ignored except for its class.\nIf a class method is called for a derived class, the derived class\nobject is passed as the implied first argument.\n\nClass methods are different than C++ or Java static methods.\nIf you want those, see the staticmethod builtin.';
 
 
 batavia.builtins.compile = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
+    throw new batavia.exceptions.NotImplementedError(
         "Builtin Batavia function 'compile' not implemented");
 };
-batavia.builtins.compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified."
+batavia.builtins.compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified.";
 
 batavia.builtins.complex = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
+    throw new batavia.exceptions.NotImplementedError(
         "Builtin Batavia function 'complex' not implemented");
 };
-batavia.builtins.complex.__doc__ = 'complex(real[, imag]) -> complex number\n\nCreate a complex number from a real part and an optional imaginary part.\nThis is equivalent to (real + imag*1j) where imag defaults to 0.'
+batavia.builtins.complex.__doc__ = 'complex(real[, imag]) -> complex number\n\nCreate a complex number from a real part and an optional imaginary part.\nThis is equivalent to (real + imag*1j) where imag defaults to 0.';
 
 batavia.builtins.copyright = function(args, kwargs) {
     console.log("Batavia: Copyright (c) 2015 Russell Keith-Magee. (BSD-3 Licence)\n"+
                 "byterun: Copyright (c) 2013, Ned Batchelder. (MIT Licence)");
 };
-batavia.builtins.copyright.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.'
+batavia.builtins.copyright.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.';
 
 batavia.builtins.credits = function(args, kwargs) {
     console.log("Thanks to all contributors, including those in AUTHORS, for supporting Batavia development. See https://github.com/pybee/batavia for more information");
 };
-batavia.builtins.credits.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.'
+batavia.builtins.credits.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.';
 
 batavia.builtins.delattr = function(args, kwargs) {
     if (args) {
         try {
             if (batavia.builtins.getattr(args)) {
-                delete args[0][args[1]]
+                delete args[0][args[1]];
                 // False returned by bool(delattr(...)) in the success case
-                return false
+                return false;
             }
         } catch (err) {
             // This is maybe unecessary, but matches the error thrown by python 3.5.1 in this case
-            if (err instanceof batavia.builtins.AttributeError) {
-                throw new batavia.builtins.AttributeError(args[1])
+            if (err instanceof batavia.exceptions.AttributeError) {
+                throw new batavia.exceptions.AttributeError(args[1]);
             }
-            if (err instanceof batavia.builtins.TypeError) {
-                throw new batavia.builtins.TypeError("delattr expected 2 arguments, got " + args.length)
+            if (err instanceof batavia.exceptions.TypeError) {
+                throw new batavia.exceptions.TypeError("delattr expected 2 arguments, got " + args.length);
             }
         }
     } else {
-        throw new batavia.builtins.TypeError("delattr expected 2 arguments, got 0")
+        throw new batavia.exceptions.TypeError("delattr expected 2 arguments, got 0");
     }
 };
-batavia.builtins.delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''."
+batavia.builtins.delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''.";
 
 batavia.builtins.dict = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
+    throw new batavia.exceptions.NotImplementedError(
         "Builtin Batavia function 'dict' not implemented");
 };
-batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)"
+batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
 batavia.builtins.dir = function(args) {
     if (args.length !== 1) {
-        throw new batavia.builtins.TypeError(
+        throw new batavia.exceptions.TypeError(
             "dir() takes exactly one argument (" + args.length + " given)");
     }
     return Object.keys(args[0]);
@@ -279,7 +279,7 @@ batavia.builtins.dir = function(args) {
 
 batavia.builtins.divmod = function(args) {
     if (args.length !== 2) {
-        throw new batavia.builtins.TypeError("divmod() takes exactly one argument (" + args.length + " given)");
+        throw new batavia.exceptions.TypeError("divmod() takes exactly one argument (" + args.length + " given)");
     }
     div = Math.floor(args[0]/args[1]);
     rem = args[0] % args[1];
@@ -291,14 +291,14 @@ batavia.builtins.enumerate = function(args) {
     var result = [];
     var values = args[0];
     for (i = 0; i < values.length; i++) {
-        result.push([i, values[i]])
+        result.push([i, values[i]]);
     }
     // FIXME this should return a generator, not list
     return result;
 };
 
 batavia.builtins.eval = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'eval' not implemented");
 };
 
 batavia.builtins.exit = function() {
@@ -307,48 +307,48 @@ batavia.builtins.exit = function() {
 };
 
 batavia.builtins.file = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'file' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'file' not implemented");
 };
 
 batavia.builtins.filter = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'filter' not implemented");
 };
 
 batavia.builtins.float = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'float' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'float' not implemented");
 };
 
 batavia.builtins.format = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'format' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'format' not implemented");
 };
 
 batavia.builtins.frozenset = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'frozenset' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'frozenset' not implemented");
 };
 
 batavia.builtins.getattr = function(args) {
     if (args) {
         var attr = args[0][args[1]];
         if (attr !== undefined) {
-            return attr
+            return attr;
         } else {
             if (args.length === 3) {
                 return args[2];
             } else if (args.length === 2) {
-                throw new batavia.builtins.AttributeError("'" + args[0] + "' object has no attribute '" + args[1] + "'");
+                throw new batavia.exceptions.AttributeError("'" + args[0] + "' object has no attribute '" + args[1] + "'");
             } else if (args.length < 2) {
-                throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got " + args.length);
+                throw new batavia.exceptions.TypeError("getattr expected at least 2 arguments, got " + args.length);
             } else {
-                throw new batavia.builtins.TypeError("getattr expected at most 3 arguments, got " + args.length);
+                throw new batavia.exceptions.TypeError("getattr expected at most 3 arguments, got " + args.length);
             }
         }
     } else {
-        throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got 0");
+        throw new batavia.exceptions.TypeError("getattr expected at least 2 arguments, got 0");
     }
 };
 
 batavia.builtins.globals = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'globals' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'globals' not implemented");
 };
 
 batavia.builtins.hasattr = function(args) {
@@ -358,39 +358,39 @@ batavia.builtins.hasattr = function(args) {
                 return true;
             }
         } catch (err) {
-            if (err instanceof batavia.builtins.AttributeError) {
+            if (err instanceof batavia.exceptions.AttributeError) {
                 return false;
             }
-            if (err instanceof batavia.builtins.TypeError) {
-                throw new batavia.builtins.TypeError("hasattr expected 2 arguments, got " + args.length);
+            if (err instanceof batavia.exceptions.TypeError) {
+                throw new batavia.exceptions.TypeError("hasattr expected 2 arguments, got " + args.length);
             }
         }
     } else {
-        throw new batavia.builtins.TypeError("hasattr expected 2 arguments, got 0");
+        throw new batavia.exceptions.TypeError("hasattr expected 2 arguments, got 0");
     }
 };
 
 batavia.builtins.hash = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hash' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'hash' not implemented");
 };
 
 batavia.builtins.help = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'help' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'help' not implemented");
 };
 
 batavia.builtins.hex = function(args) {
     if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
+        throw new batavia.exceptions.TypeError("hex() takes exactly one argument (" + args.length + " given)");
     }
     return "0x" + args[0].toString(16);
 };
 
 batavia.builtins.id = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'id' not implemented");
 };
 
 batavia.builtins.input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'input' not implemented");
 };
 
 batavia.builtins.int = function(args) {
@@ -402,29 +402,29 @@ batavia.builtins.int = function(args) {
 };
 
 batavia.builtins.intern = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'intern' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'intern' not implemented");
 };
 
 batavia.builtins.isinstance = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'isinstance' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'isinstance' not implemented");
 };
 
 batavia.builtins.issubclass = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
 };
 
 batavia.builtins.iter = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'iter' not implemented");
 };
 
 batavia.builtins.len = function(args, kwargs) {
     if (args === undefined || args[0] === undefined) {
-        throw new batavia.builtins.TypeError("len() takes exactly one argument (0 given)");
+        throw new batavia.exceptions.TypeError("len() takes exactly one argument (0 given)");
     }
 
     //if (args[0].hasOwnProperty("__len__")) {
         //TODO: Fix context of python functions calling with proper vm
-        //throw new batavia.builtins.NotImplementedError('Builtin Batavia len function is not supporting __len__ implemented.');
+        //throw new batavia.exceptions.NotImplementedError('Builtin Batavia len function is not supporting __len__ implemented.');
         //return args[0].__len__.apply(vm);
     //}
 
@@ -432,11 +432,11 @@ batavia.builtins.len = function(args, kwargs) {
 };
 
 batavia.builtins.license = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'license' not implemented");
 };
 
 batavia.builtins.list = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'list' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'list' not implemented");
 };
 
 batavia.builtins.locals = function() {
@@ -444,7 +444,7 @@ batavia.builtins.locals = function() {
 };
 
 batavia.builtins.long = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'long' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'long' not implemented");
 };
 
 batavia.builtins.map = function(args, kwargs) {
@@ -457,7 +457,7 @@ batavia.builtins.max = function(args, kwargs) {
 };
 
 batavia.builtins.memoryview = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'memoryview' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'memoryview' not implemented");
 };
 
 batavia.builtins.min = function(args, kwargs) {
@@ -465,21 +465,21 @@ batavia.builtins.min = function(args, kwargs) {
 };
 
 batavia.builtins.next = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 
 batavia.builtins.object = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'object' not implemented");
 };
 
 batavia.builtins.oct = function(args) {
     if (args.length !== 1)
-        throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
+        throw new batavia.exceptions.TypeError("oct() takes exactly one argument (" + args.length + " given)");
 return "0o"+args[0].toString(8);
 };
 
 batavia.builtins.open = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'open' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'open' not implemented");
 };
 
 batavia.builtins.ord = function(args, kwargs) {
@@ -498,7 +498,7 @@ batavia.builtins.pow = function(args) {
         z = args[2];
         return Math.pow(x, y) % z;
     } else {
-        throw new batavia.builtins.TypeError("pow() takes two or three arguments (" + args.length + " given)");
+        throw new batavia.exceptions.TypeError("pow() takes two or three arguments (" + args.length + " given)");
     }
 };
 
@@ -515,11 +515,11 @@ batavia.builtins.print = function(args, kwargs) {
 };
 
 batavia.builtins.property = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'property' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'property' not implemented");
 };
 
 batavia.builtins.quit = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'quit' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'quit' not implemented");
 };
 
 batavia.builtins.range = function(args, kwargs){
@@ -527,23 +527,23 @@ batavia.builtins.range = function(args, kwargs){
 };
 
 batavia.builtins.raw_input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'raw_input' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'raw_input' not implemented");
 };
 
 batavia.builtins.reduce = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reduce' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'reduce' not implemented");
 };
 
 batavia.builtins.reload = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reload' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'reload' not implemented");
 };
 
 batavia.builtins.repr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'repr' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'repr' not implemented");
 };
 
 batavia.builtins.reversed = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'reversed' not implemented");
 };
 
 batavia.builtins.round = function(args) {
@@ -556,12 +556,12 @@ batavia.builtins.round = function(args) {
 };
 
 batavia.builtins.set = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'set' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'set' not implemented");
 };
 
 batavia.builtins.setattr = function(args) {
     if (args.length !== 3) {
-        throw new batavia.builtins.TypeError("setattr expected exactly 3 arguments, got " + args.length);
+        throw new batavia.exceptions.TypeError("setattr expected exactly 3 arguments, got " + args.length);
     }
 
     args[0][args[1]] = args[2];
@@ -606,7 +606,7 @@ batavia.builtins.sorted = function(args, kwargs) {
     }
 
     if (batavia.utils.isType(batavia.utils.TYPES.OBJECT, iterable)) {
-        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
+        throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
     }
 };
 
@@ -623,7 +623,7 @@ batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
 
     if (kwargs !== undefined) {
         if (kwargs['iterable'] !== undefined) {
-            throw new batavia.builtins.TypeError("'iterable' is an invalid keyword argument for this function");
+            throw new batavia.exceptions.TypeError("'iterable' is an invalid keyword argument for this function");
         }
 
         if (kwargs["reverse"] !== undefined && kwargs["reverse"] === true) {
@@ -634,7 +634,7 @@ batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
 
         if (kwargs["key"] !== undefined) {
             //TODO: Fix context of python functions calling with proper vm
-            throw new batavia.builtins.NotImplementedError('Builtin Batavia sorted function "key" function is not implemented.');
+            throw new batavia.exceptions.NotImplementedError('Builtin Batavia sorted function "key" function is not implemented.');
             //preparingFunction = function (value) {
             //    return {
             //        "key": kwargs["key"].__call__.apply(kwargs["key"]._vm, [value], null),
@@ -644,8 +644,8 @@ batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
         }
     }
 
-    if (args === undefined || args.length == 0) {
-        throw new batavia.builtins.TypeError("Required argument 'iterable' (pos 1) not found");
+    if (args === undefined || args.length === 0) {
+        throw new batavia.exceptions.TypeError("Required argument 'iterable' (pos 1) not found");
     }
 
     return {
@@ -657,7 +657,7 @@ batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
 };
 
 batavia.builtins.staticmethod = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented");
 };
 
 batavia.builtins.str = function(args) {
@@ -674,7 +674,7 @@ batavia.builtins.sum = function(args) {
 };
 
 batavia.builtins.super = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'super' not implemented");
 };
 
 batavia.builtins.tuple = function(args) {
@@ -682,19 +682,19 @@ batavia.builtins.tuple = function(args) {
 };
 
 batavia.builtins.type = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'type' not implemented");
 };
 
 batavia.builtins.unichr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unichr' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'unichr' not implemented");
 };
 
 batavia.builtins.unicode = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unicode' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'unicode' not implemented");
 };
 
 batavia.builtins.vars = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'vars' not implemented");
+    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'vars' not implemented");
 };
 
 batavia.builtins.zip = function(args, undefined) {

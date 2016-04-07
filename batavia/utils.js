@@ -75,7 +75,7 @@ batavia.core.List = function() {
         } else if (arguments.length === 1) {
             this.push.apply(this, arguments[0]);
         } else {
-            throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
+            throw new batavia.exceptions.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
         }
     }
 
@@ -165,10 +165,10 @@ batavia.core.Set.prototype.__str__ = function() {
  *************************************************************************/
 
 batavia.core.FrozenSet = function(args, kwargs) {
-    Set.call(this, args, kwargs);
+    batavia.core.Set.call(this, args, kwargs);
 };
 
-batavia.core.FrozenSet.prototype = Object.create(Set.prototype);
+batavia.core.FrozenSet.prototype = Object.create(batavia.core.Set.prototype);
 
 /*************************************************************************
  * A Python Tuple type
@@ -181,7 +181,7 @@ batavia.core.Tuple = function() {
         } else if (arguments.length === 1) {
             this.push.apply(this, arguments[0]);
         } else {
-            throw new batavia.builtins.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
+            throw new batavia.exceptions.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
         }
 
     }
@@ -230,7 +230,7 @@ function Iterable(data) {
 Iterable.prototype.__next__ = function() {
     var retval = this.data[this.index];
     if (retval === undefined) {
-        throw new batavia.builtins.StopIteration();
+        throw new batavia.exceptions.StopIteration();
     }
     this.index++;
     return retval;
@@ -263,7 +263,7 @@ batavia.core.range.prototype.__next__ = function() {
         this.i = this.i + this.step;
         return retval;
     }
-    throw new batavia.builtins.StopIteration();
+    throw new batavia.exceptions.StopIteration();
 };
 
 batavia.core.range.prototype.toString = function() {
@@ -294,10 +294,10 @@ batavia.operators = {
         return !a;
     },
     CONVERT: function(a) {
-        throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
+        throw new batavia.exceptions.NotImplementedError('Unary convert not implemented');
     },
     INVERT: function(a) {
-        throw new batavia.builtins.NotImplementedError('Unary invert not implemented');
+        throw new batavia.exceptions.NotImplementedError('Unary invert not implemented');
     },
 
     // BINARY/INPLACE operators
@@ -309,7 +309,7 @@ batavia.operators = {
         if (a instanceof Array) {
             result = new batavia.core.List();
             if (b instanceof Array) {
-                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'list'");
+                throw new batavia.exceptions.TypeError("can't multiply sequence by non-int of type 'list'");
             } else {
                 for (i = 0; i < b; i++) {
                     result.extend(a);
@@ -356,10 +356,10 @@ batavia.operators = {
                 result.extend(a);
                 result.extend(b);
             } else {
-                throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
+                throw new batavia.exceptions.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
             }
         } else if (b instanceof Array) {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
+            throw new batavia.exceptions.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
         }
         else {
             result = a + b;
@@ -505,7 +505,7 @@ batavia._substitute = function(format, args) {
             lastIndex = re.lastIndex;
             results.push(arg);
         } else {
-            throw new batavia.builtins.TypeError('not all arguments converted during string formatting');
+            throw new batavia.exceptions.TypeError('not all arguments converted during string formatting');
         }
     }
     // Push the rest of the string.
