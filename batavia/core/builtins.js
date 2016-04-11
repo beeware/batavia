@@ -44,7 +44,7 @@ General builtin format:
 // Example: a function that accepts exactly one argument, and no keyword arguments
 batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
-        throw new batavia.exceptions.RuntimeError("Batavia calling convention not used.")
+        throw new batavia.core.BataviaError("Batavia calling convention not used.")
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.exceptions.TypeError("<fn>() doesn't accept keyword arguments.")
@@ -157,20 +157,14 @@ batavia.builtins.bin = function(args, kwargs) {
 batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   ";
 
 batavia.builtins.bool = function(args) {
-<<<<<<< HEAD
-    if (args.length !== 1) {
-        throw new batavia.exceptions.TypeError(
-            "bool() takes exactly one argument (" + args.length + " given)");
-=======
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("bool() doesn't accept keyword arguments")
+        throw new batavia.builtins.ArgumentsError("bool() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('bool) expected exactly 1 argument (' + args.length + ' given)')
->>>>>>> 5541d800bfcdd920def63bc7956ab712b140debc
+        throw new batavia.builtins.ArgumentsError('bool) expected exactly 1 argument (' + args.length + ' given)');
     }
 
     return !!args[0];
@@ -280,55 +274,43 @@ batavia.builtins.dict = function(args, kwargs) {
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
-batavia.builtins.dir = function(args) {
-<<<<<<< HEAD
-    if (args.length !== 1) {
-        throw new batavia.exceptions.TypeError(
-            "dir() takes exactly one argument (" + args.length + " given)");
-=======
+batavia.builtins.dir = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("dir() doesn't accept keyword arguments")
+        throw new batavia.builtins.ArgumentsError("dir() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('dir() expected exactly 1 argument (' + args.length + ' given)')
->>>>>>> 5541d800bfcdd920def63bc7956ab712b140debc
+        throw new batavia.builtins.ArgumentsError('dir() expected exactly 1 argument (' + args.length + ' given)');
     }
     return Object.keys(args[0]);
 };
-batavia.builtins.dir.__doc__ = "dir([object]) -> list of strings\n\nIf called without an argument, return the names in the current scope.\nElse, return an alphabetized list of names comprising (some of) the attributes\nof the given object, and of attributes reachable from it.\nIf the object supplies a method named __dir__, it will be used; otherwise\nthe default dir() logic is used and returns:\n  for a module object: the module's attributes.\n  for a class object:  its attributes, and recursively the attributes\n    of its bases.\n  for any other object: its attributes, its class's attributes, and\n    recursively the attributes of its class's base classes."
+batavia.builtins.dir.__doc__ = "dir([object]) -> list of strings\n\nIf called without an argument, return the names in the current scope.\nElse, return an alphabetized list of names comprising (some of) the attributes\nof the given object, and of attributes reachable from it.\nIf the object supplies a method named __dir__, it will be used; otherwise\nthe default dir() logic is used and returns:\n  for a module object: the module's attributes.\n  for a class object:  its attributes, and recursively the attributes\n    of its bases.\n  for any other object: its attributes, its class's attributes, and\n    recursively the attributes of its class's base classes.";
 
-<<<<<<< HEAD
-batavia.builtins.divmod = function(args) {
-    if (args.length !== 2) {
-        throw new batavia.exceptions.TypeError("divmod() takes exactly one argument (" + args.length + " given)");
-=======
 batavia.builtins.divmod = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("divmod() doesn't accept keyword arguments")
+        throw new batavia.builtins.ArgumentsError("divmod() doesn't accept keyword arguments");
     }
     if (!args || args.length != 2) {
-        throw new batavia.builtins.ArgumentsError('divmod() expected exactly 2 argument (' + args.length + ' given)')
->>>>>>> 5541d800bfcdd920def63bc7956ab712b140debc
+        throw new batavia.builtins.ArgumentsError('divmod() expected exactly 2 argument (' + args.length + ' given)');
     }
 
     div = Math.floor(args[0]/args[1]);
     rem = args[0] % args[1];
-    return new batavia.core.Tuple([div, rem])
+    return new batavia.core.Tuple([div, rem]);
 };
-batavia.builtins.divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.'
+batavia.builtins.divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.';
 
 batavia.builtins.enumerate = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.RuntimeError('Batavia calling convention not used.')
+        throw new batavia.core.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("enumerate() doesn't accept keyword arguments")
+        throw new batavia.builtins.ArgumentsError("enumerate() doesn't accept keyword arguments");
     }
     var result = [];
     var values = args[0];
@@ -338,15 +320,10 @@ batavia.builtins.enumerate = function(args, kwargs) {
     // FIXME this should return a generator, not list
     return result;
 };
-batavia.builtins.enumerate.__doc__ = 'enumerate(iterable[, start]) -> iterator for index, value of iterable\n\nReturn an enumerate object.  iterable must be another object that supports\niteration.  The enumerate object yields pairs containing a count (from\nstart, which defaults to zero) and a value yielded by the iterable argument.\nenumerate is useful for obtaining an indexed list:\n    (0, seq[0]), (1, seq[1]), (2, seq[2]), ...'
+batavia.builtins.enumerate.__doc__ = 'enumerate(iterable[, start]) -> iterator for index, value of iterable\n\nReturn an enumerate object.  iterable must be another object that supports\niteration.  The enumerate object yields pairs containing a count (from\nstart, which defaults to zero) and a value yielded by the iterable argument.\nenumerate is useful for obtaining an indexed list:\n    (0, seq[0]), (1, seq[1]), (2, seq[2]), ...';
 
-<<<<<<< HEAD
-batavia.builtins.eval = function() {
-    throw new batavia.exceptions.NotImplementedError("Builtin Batavia function 'eval' not implemented");
-=======
 batavia.builtins.eval = function(args, kwargs) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
->>>>>>> 5541d800bfcdd920def63bc7956ab712b140debc
 };
 
 batavia.builtins.exit = function(args, kwargs) {
