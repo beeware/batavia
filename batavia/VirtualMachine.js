@@ -1164,7 +1164,7 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         if (posargs[0] instanceof func.constructor) {
             throw 'unbound method ' + func.__func__.__name__ + '()' +
                 ' must be called with ' + func.__class__.__name__ + ' instance ' +
-                'as first argument (got ' + posargs[0].__proto__ + ' instance instead)';
+                'as first argument (got ' + posargs[0].prototype + ' instance instead)';
         }
         func = func.__func__.__call__;
     } else if ('__call__' in func) {

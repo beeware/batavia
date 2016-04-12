@@ -556,11 +556,11 @@ batavia.make_class = function(args, kwargs) {
     }
 
     var PyObject = function(vm, klass) {
-        var constructor = function(args, kwargs) {
+        var __new__ = function(args, kwargs) {
             return new klass(vm, args, kwargs);
         };
-        constructor.__python__ = true;
-        return constructor;
+        __new__.__python__ = true;
+        return __new__;
     }(this, klass);
 
     return PyObject;
