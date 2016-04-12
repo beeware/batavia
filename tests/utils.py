@@ -1,6 +1,7 @@
 import base64
 import contextlib
 from io import StringIO, BytesIO
+import importlib
 import os
 import py_compile
 import re
@@ -132,12 +133,12 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
 
     modules = {}
 
-    py_compile.compile(py_filename)
-    with open(os.path.join(
-                os.path.dirname(py_filename),
-                '__pycache__/%s.cpython-34.pyc' % os.path.splitext(os.path.basename(py_filename))[0]
-            ), 'rb') as compiled:
+    # Temporarily move into the test directory.
+    cwd = os.getcwd()
+    os.chdir(test_dir)
 
+    py_compile.compile('test.py')
+    with open(importlib.util.cache_from_source('test.py'), 'rb') as compiled:
         modules['testcase'] = base64.encodebytes(compiled.read())
 
     if extra_code:
@@ -150,16 +151,16 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 except FileExistsError:
                     pass
 
-            py_filename = os.path.join(test_dir, *path)
+            py_filename = os.path.join(*path)
             with open(py_filename, 'w') as py_source:
                 py_source.write(adjust(code))
 
             py_compile.compile(py_filename)
-            with open(os.path.join(
-                        os.path.dirname(py_filename),
-                        '__pycache__/%s.cpython-34.pyc' % os.path.splitext(os.path.basename(py_filename))[0]
-                    ), 'rb') as compiled:
+            with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
                 modules[name] = base64.encodebytes(compiled.read())
+
+    # Move back to the old current working directory.
+    os.chdir(cwd)
 
     if args is None:
         args = []
@@ -260,17 +261,10 @@ def compileJava(js_dir, js):
     return out[0].decode('utf8')
 
 
-JAVA_EXCEPTION = re.compile(
-    '(((Exception in thread "[\w-]+" )?org\.python\.exceptions\.(?P<exception1>[\w]+): (?P<message1>[^\r?\n]+))|' +
-    '([^\r\n]*?\r?\n((    |\t)at[^\r\n]*?\r?\n)*' +
-    'Caused by: org\.python\.exceptions\.(?P<exception2>[\w]+): (?P<message2>[^\r?\n]+)))\r?\n' +
-    '(?P<trace>(\s+at .+\((((.*)(:(\d+))?)|(Native Method))\)\r?\n)+)(.*\r?\n)*' +
-    '(Exception in thread "\w+" )?'
-)
-JAVA_STACK = re.compile('\s+at (?P<module>.+)\((((?P<file>.*?)(:(?P<line>\d+))?)|(Native Method))\)')
-JAVA_FLOAT = re.compile('(\d+)E(-)?(\d+)')
+JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
+JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
+JS_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 
-# PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\n(  File ".*", line \d+, in .*\n)(    .*\n  File "(?P<file>.*)", line (?P<line>\d+), in .*\n)+(?P<exception>.*): (?P<message>.*\n)')
 PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
@@ -279,24 +273,27 @@ MEMORY_REFERENCE = re.compile('0x[\dabcdef]{4,8}')
 
 
 def cleanse_javascript(input):
-    try:
-        out = JAVA_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception2>: \\g<message2>{linesep}\\g<trace>'.format(linesep=os.linesep), input)
-    except:
-        out = JAVA_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception1>: \\g<message1>{linesep}\\g<trace>'.format(linesep=os.linesep), input)
+    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+    stack = JS_STACK.findall(input)
 
-    stack = JAVA_STACK.findall(out)
-    out = JAVA_STACK.sub('', out)
+    stacklines = []
+    test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
+    for filename, line in stack:
+        if filename.startswith(test_dir):
+            filename = filename[len(test_dir)+1:]
+        stacklines.append(
+            "    %s:%s" % (
+                filename, line
+            )
+        )
+
     out = '%s%s%s' % (
         out,
-        os.linesep.join([
-            "    %s:%s" % (s[3], s[5])
-            for s in stack[::-1]
-            if s[0].startswith('python.') and not s[0].endswith('.<init>')
-        ]),
+        os.linesep.join(stacklines),
         os.linesep if stack else ''
     )
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
-    out = JAVA_FLOAT.sub('\\1e\\2\\3', out).replace("'python.test.__init__'", '***EXECUTABLE***').replace("'python.testdaemon.TestDaemon'", '***EXECUTABLE***')
+    out = JS_FLOAT.sub('\\1e\\2\\3', out).replace("'test.py'", '***EXECUTABLE***')
     out = out.replace('\r\n', '\n')
     return out
 
@@ -428,7 +425,7 @@ class TranspileTestCase(TestCase):
                 context = 'Function context'
             self.assertEqual(js_out, py_out, context)
 
-    def assertJavaExecution(self, code, out, extra_code=None, js=None, run_in_global=True, run_in_function=True, args=None):
+    def assertJavaScriptExecution(self, code, out, extra_code=None, js=None, run_in_global=True, run_in_function=True, args=None):
         "Run code under Java and check the output is as expected"
         self.maxDiff = None
         try:
@@ -442,12 +439,6 @@ class TranspileTestCase(TestCase):
                 os.mkdir(js_dir)
             except FileExistsError:
                 pass
-
-            # Compile the js support code
-            js_compile_out = compileJava(js_dir, js)
-
-            if js_compile_out:
-                self.fail(js_compile_out)
 
             # Cleanse the Python output, producing a simple
             # normalized format for exceptions, floats etc.

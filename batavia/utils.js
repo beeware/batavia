@@ -13,6 +13,10 @@ String.prototype.startswith = function (str) {
     return this.slice(0, str.length) === str;
 };
 
+String.prototype.__repr__ = function(args, kwargs) {
+    return "'" + this.toString() + "'";
+};
+
 /*************************************************************************
  * A Python dictionary type
  *************************************************************************/
@@ -75,7 +79,7 @@ batavia.core.List = function() {
         } else if (arguments.length === 1) {
             this.push.apply(this, arguments[0]);
         } else {
-            throw new batavia.exceptions.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
+            throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
         }
     }
 
@@ -181,7 +185,7 @@ batavia.core.Tuple = function() {
         } else if (arguments.length === 1) {
             this.push.apply(this, arguments[0]);
         } else {
-            throw new batavia.exceptions.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
+            throw new batavia.builtins.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
         }
 
     }
@@ -230,7 +234,7 @@ function Iterable(data) {
 Iterable.prototype.__next__ = function() {
     var retval = this.data[this.index];
     if (retval === undefined) {
-        throw new batavia.exceptions.StopIteration();
+        throw new batavia.builtins.StopIteration();
     }
     this.index++;
     return retval;
@@ -263,7 +267,7 @@ batavia.core.range.prototype.__next__ = function() {
         this.i = this.i + this.step;
         return retval;
     }
-    throw new batavia.exceptions.StopIteration();
+    throw new batavia.builtins.StopIteration();
 };
 
 batavia.core.range.prototype.toString = function() {
@@ -276,7 +280,7 @@ batavia.core.range.prototype.__str__ = function() {
     } else {
         return '(' + this.start + ', ' + this.stop + ')';
     }
-}
+};
 
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
@@ -294,10 +298,10 @@ batavia.operators = {
         return !a;
     },
     CONVERT: function(a) {
-        throw new batavia.exceptions.NotImplementedError('Unary convert not implemented');
+        throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
     },
     INVERT: function(a) {
-        throw new batavia.exceptions.NotImplementedError('Unary invert not implemented');
+        throw new batavia.builtins.NotImplementedError('Unary invert not implemented');
     },
 
     // BINARY/INPLACE operators
@@ -309,7 +313,7 @@ batavia.operators = {
         if (a instanceof Array) {
             result = new batavia.core.List();
             if (b instanceof Array) {
-                throw new batavia.exceptions.TypeError("can't multiply sequence by non-int of type 'list'");
+                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'list'");
             } else {
                 for (i = 0; i < b; i++) {
                     result.extend(a);
@@ -356,10 +360,10 @@ batavia.operators = {
                 result.extend(a);
                 result.extend(b);
             } else {
-                throw new batavia.exceptions.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
+                throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
             }
         } else if (b instanceof Array) {
-            throw new batavia.exceptions.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
         }
         else {
             result = a + b;
@@ -408,39 +412,49 @@ batavia.operators = {
     }
 };
 
+
 batavia.comparisons = [
-    function (x, y) {
+    function (x, y) {  // <
         return x < y;
     },
-    function (x, y) {
+    function (x, y) {  // <=
         return x <= y;
     },
-    function (x, y) {
+    function (x, y) {  // ==
         return x == y;
     },
-    function (x, y) {
+    function (x, y) {  // !=
         return x != y;
     },
-    function (x, y) {
+    function (x, y) {  // >
         return x > y;
     },
-    function (x, y) {
+    function (x, y) {  // >=
         return x >= y;
     },
-    function (x, y) {
+    function (x, y) {  // in
         return x in y;
     },
-    function (x, y) {
+    function (x, y) {  // not in
         return !(x in y);
     },
-    function (x, y) {
+    function (x, y) {  // is
         return x === y;
     },
-    function (x, y) {
+    function (x, y) {  // is not
         return x !== y;
     },
-    function (x, y) {
-        return false;
+    function (x, y) {  // exception match
+        if (y instanceof Array) {
+            for (var i in y) {
+                if (x === y[i]) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return x === y;
+        }
     },
 ];
 
@@ -505,7 +519,7 @@ batavia._substitute = function(format, args) {
             lastIndex = re.lastIndex;
             results.push(arg);
         } else {
-            throw new batavia.exceptions.TypeError('not all arguments converted during string formatting');
+            throw new batavia.builtins.TypeError('not all arguments converted during string formatting');
         }
     }
     // Push the rest of the string.

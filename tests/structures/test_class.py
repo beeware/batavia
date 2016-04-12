@@ -1,5 +1,7 @@
 from ..utils import TranspileTestCase
 
+import unittest
+
 
 class ClassTests(TranspileTestCase):
     def test_minimal(self):
@@ -29,6 +31,7 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
+    @unittest.skip('Not implemented (yet!)')
     def test_method_override(self):
         self.assertCodeExecution("""
             class MyObject:
@@ -44,6 +47,7 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
+    @unittest.skip('Not implemented (yet!)')
     def test_subclass(self):
         self.assertCodeExecution("""
             class MyBase:

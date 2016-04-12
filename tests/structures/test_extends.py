@@ -1,6 +1,9 @@
 from ..utils import TranspileTestCase
 
+import unittest
 
+
+@unittest.skip('Not implemented (yet!)')
 class ExtendsTests(TranspileTestCase):
     def test_extends(self):
         self.assertJavaScriptExecution(

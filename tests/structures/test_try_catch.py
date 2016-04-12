@@ -267,7 +267,7 @@ class TryExceptTests(TranspileTestCase):
                 print("Got a NameError")
             except AttributeError as e:
                 print("Got an AttributeError")
-            print('Done.')
+            print('Done 1.')
             """)
 
         # Caught first exception, first handler
@@ -279,7 +279,7 @@ class TryExceptTests(TranspileTestCase):
                 print("Got a NameError")
             except AttributeError as e:
                 print("Got an AttributeError")
-            print('Done.')
+            print('Done 2.')
             """)
 
         # Caught second exception, first handler
@@ -291,7 +291,7 @@ class TryExceptTests(TranspileTestCase):
                 print("Got a NameError")
             except AttributeError as e:
                 print("Got an AttributeError")
-            print('Done.')
+            print('Done 3.')
             """)
 
         # Caught first exception, second handler
@@ -303,7 +303,7 @@ class TryExceptTests(TranspileTestCase):
                 print("Got an AttributeError")
             except (NameError, TypeError) as e:
                 print("Got a NameError")
-            print('Done.')
+            print('Done 4.')
             """)
 
         # Caught second exception, second handler
@@ -315,7 +315,7 @@ class TryExceptTests(TranspileTestCase):
                 print("Got an AttributeError")
             except (TypeError, NameError) as e:
                 print("Got a NameError")
-            print('Done.')
+            print('Done 5.')
             """)
 
         # Uncaught exception
@@ -327,7 +327,7 @@ class TryExceptTests(TranspileTestCase):
                 print("Got a TypeError")
             except AttributeError as e:
                 print("Got an AttributeError")
-            print('Done.')
+            print('Done 6.')
             """)
 
     def test_try_multiple_except_mixed1(self):

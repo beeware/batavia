@@ -1,6 +1,9 @@
 from ..utils import TranspileTestCase
 
+import unittest
 
+
+@unittest.skip('Not implemented (yet!)')
 class GeneratorTests(TranspileTestCase):
     def test_simple_generator(self):
         self.assertCodeExecution("""

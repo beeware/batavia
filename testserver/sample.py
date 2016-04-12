@@ -22,11 +22,11 @@ def do_stuff(count, size=3):
 
 
 def try_builtins():
-    print('sum(0,1,2,3,4)', sum(0,1,2,3,4))
+    print('sum(0,1,2,3,4)', sum([0, 1, 2, 3, 4]))
     print('abs(-1)', abs(-1))
     print(bool.__doc__)
-    print('min(1,2,3,4)', min(1,2,3,4))
-    print('max(1,2,3,4)', max(1,2,3,4))
+    print('min(1,2,3,4)', min([1, 2, 3, 4]))
+    print('max(1,2,3,4)', max([1, 2, 3, 4]))
     print('all([True, True, False])', all([True, True, False]))
     print('any([True, True, False])', any([True, True, False]))
     print('bool("String")', bool("String"))
@@ -34,11 +34,11 @@ def try_builtins():
     print('hex(14)', hex(14))
     print('oct(14)', oct(14))
     print('bin(14)', bin(14))
-    print('divmod(5,2)', divmod(5,2))
+    print('divmod(5,2)', divmod(5, 2))
     print('pow(2, 3)', pow(2, 3))
     print('pow(2, 3, 3)', pow(2, 3, 3))
 
-    print('abs(None)', abs(None)) #known failure
+    print('abs(None)', abs(None))  # known failure
 
 
 def main(argv):
@@ -55,10 +55,10 @@ def main(argv):
     print('Distance with arg is', p.distance())
     p = Point(4, 5, z=6)
     print('Distance with kwarg is', p.distance())
-    print('hasattr(p, "x")', hasattr(p, "x")) # expect true
-    print('hasattr(p, "a")', hasattr(p, "a")) # expect false
+    print('hasattr(p, "x")', hasattr(p, "x"))  # expect true
+    print('hasattr(p, "a")', hasattr(p, "a"))  # expect false
     print('delattr(p, "x")', delattr(p, "x"))
-    print('hasattr(p, "x")', hasattr(p, "x")) # now expect false
+    print('hasattr(p, "x")', hasattr(p, "x"))  # now expect false
     print('Manipulate the DOM...')
     print('Open a new web page...')
     dom.window.open('http://pybee.org', '_blank')

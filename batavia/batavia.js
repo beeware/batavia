@@ -8,7 +8,6 @@ var batavia = {
     stderr: fixedConsoleLog,
     core: {},
     modules: {},
-    builtins: {},
-    exceptions: {}
+    builtins: {}
 };
 

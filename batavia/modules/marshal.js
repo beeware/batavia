@@ -807,7 +807,12 @@ batavia.modules.marshal = {
      * ignored."
      */
 
-    load_pyc: function(vm, pyc) {
-        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(pyc));
+    load_pyc: function(vm, payload) {
+        if (payload === null || payload.length === 0) {
+            throw new batavia.builtins.BataviaError('Empty PYC payload');
+        } else if (payload.startswith('ERROR:')) {
+            throw new batavia.builtins.BataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'));
+        }
+        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(atob(payload)));
     }
 };

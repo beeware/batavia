@@ -1,6 +1,9 @@
 from ..utils import TranspileTestCase
 
+import unittest
 
+
+@unittest.skip('Not implemented (yet!)')
 class DictComprehensionTests(TranspileTestCase):
     def test_syntax(self):
         self.assertCodeExecution("""

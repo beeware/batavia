@@ -2,7 +2,10 @@ import os
 
 from ..utils import TranspileTestCase
 
+import unittest
 
+
+@unittest.skip('Not implemented (yet!)')
 class ImportTests(TranspileTestCase):
 
     def test_import_java_module_static_method(self):

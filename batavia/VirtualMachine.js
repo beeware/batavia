@@ -68,7 +68,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                 return bytecode_fn;
             } else {
                 return function() {
-                    throw new batavia.core.BataviaError("Unknown opcode " + opcode + " (" + opname + ")");
+                    throw new batavia.builtins.BataviaError("Unknown opcode " + opcode + " (" + opname + ")");
                 };
             }
         }
@@ -81,18 +81,26 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
 batavia.VirtualMachine.prototype.run = function(tag, args) {
-    var payload = this.loader(tag);
-    var bytecode = atob(payload);
-    var code = batavia.modules.marshal.load_pyc(this, bytecode);
+    try {
+        var payload = this.loader(tag);
+        var code = batavia.modules.marshal.load_pyc(this, payload);
 
-    // Set up sys.argv
-    batavia.modules.sys.argv = new batavia.core.List(['batavia']);
-    if (args) {
-        batavia.modules.sys.argv.extend(args);
+        // Set up sys.argv
+        batavia.modules.sys.argv = new batavia.core.List(['batavia']);
+        if (args) {
+            batavia.modules.sys.argv.extend(args);
+        }
+
+        // Run the code
+        return this.run_code({'code': code});
+
+    } catch (e) {
+        if (e instanceof batavia.builtins.BataviaError) {
+            console.log(e.msg);
+        } else {
+            throw e;
+        }
     }
-
-    // Run the code
-    return this.run_code({'code': code});
 };
 
 /*
@@ -101,23 +109,31 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
 batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
-    var payload = this.loader(tag);
-    var bytecode = atob(payload);
-    var code = batavia.modules.marshal.load_pyc(this, bytecode);
+    try {
+        var payload = this.loader(tag);
+        var code = batavia.modules.marshal.load_pyc(this, payload);
 
-    var callargs = new batavia.core.Dict();
-    for (var i = 0, l = args.length; i < l; i++) {
-        callargs[code.co_varnames[i]] = args[i];
+        var callargs = new batavia.core.Dict();
+        for (var i = 0, l = args.length; i < l; i++) {
+            callargs[code.co_varnames[i]] = args[i];
+        }
+        callargs.update(kwargs);
+
+        // Run the code
+        return this.run_code({
+            'code': code,
+            'callargs': callargs,
+            'f_locals': f_locals,
+            'f_globals': f_globals
+        });
+
+    } catch (e) {
+        if (e instanceof batavia.builtins.BataviaError) {
+            console.log(e.msg);
+        } else {
+            throw e;
+        }
     }
-    callargs.update(kwargs);
-
-    // Run the code
-    return this.run_code({
-        'code': code,
-        'callargs': callargs,
-        'f_locals': f_locals,
-        'f_globals': f_globals
-    });
 };
 
 /*
@@ -127,10 +143,11 @@ batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
 };
 
 batavia.VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
-    console.log("SET EXCEPTION", exc, message);
+    exception = exc(message);
     this.last_exception = {
-        'exception': exc,
-        'message': message
+        'exc_type': exception.constructor,
+        'value': exception,
+        'traceback': this.create_traceback()
     };
 };
 
@@ -251,25 +268,37 @@ batavia.VirtualMachine.prototype.pop_frame = function() {
     }
 };
 
-// batavia.VirtualMachine.prototype.print_frames = function {
-//         """Print the call stack, for debugging."""
-//         for f in this.frames:
-//             filename = f.f_code.co_filename
-//             lineno = f.line_number()
-//             print('  File "%s", line %d, in %s' % (
-//                 filename, lineno, f.f_code.co_name
-//             ))
-//             linecache.checkcache(filename)
-//             line = linecache.getline(filename, lineno, f.f_globals)
-//             if line:
-//                 print('    ' + line.strip())
-// }
-// batavia.VirtualMachine.prototype.resume_frame = function(frame) {
-//         frame.f_back = this.frame
-//         val = this.run_frame(frame)
-//         frame.f_back = null
-//         return val
-// }
+batavia.VirtualMachine.prototype.create_traceback = function() {
+    var tb = [];
+    var frame;
+
+    for (var f in this.frames) {
+        frame = this.frames[f];
+
+        // Work out the current source line by taking the
+        // f_lineno (the line for the start of the method)
+        // and adding the line offsets from the line
+        // number table.
+        var lnotab = frame.f_code.co_lnotab;
+        var byte_num = 0;
+        var line_num = frame.f_code.co_firstlineno;
+
+        var byte_incr, line_incr;
+        for (var idx = 1; idx < lnotab.length, byte_num < frame.f_lasti; idx += 2) {
+            byte_num += lnotab.charCodeAt(idx - 1);
+            if (byte_num < frame.f_lasti) {
+                line_num += lnotab.charCodeAt(idx);
+            }
+        }
+
+        tb.push({
+            'module': frame.f_code.co_name,
+            'filename': frame.f_code.co_filename,
+            'line': line_num
+        });
+    }
+    return tb;
+};
 
 /*
  * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
@@ -337,16 +366,32 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
         'f_locals': f_locals,
         'callargs': callargs
     });
-    var val = this.run_frame(frame);
+    try {
+        var val = this.run_frame(frame);
 
-    // Check some invariants
-    if (this.frames.length > 0) {
-        throw new batavia.core.BataviaError("Frames left over!");
+        // Check some invariants
+        if (this.frames.length > 0) {
+            throw new batavia.builtins.BataviaError("Frames left over!");
+        }
+        if (this.frame && this.frame.stack.length > 0) {
+            throw new batavia.builtins.BataviaError("Data left on stack! " + this.frame.stack);
+        }
+        return val;
+    } catch (e) {
+        if (this.last_exception) {
+            trace = ['Traceback (most recent call last):'];
+            var frame;
+            for (var t in this.last_exception.traceback) {
+                frame = this.last_exception.traceback[t];
+                trace.push('  File "' + frame.filename + '", line ' + frame.line + ', in ' + frame.module);
+            }
+            trace.push(this.last_exception.value.toString());
+            console.log(trace.join('\n'));
+            this.last_exception = null;
+        } else {
+            throw e;
+        }
     }
-    if (this.frame && this.frame.stack.length > 0) {
-        throw new batavia.core.BataviaError("Data left on stack! " + this.frame.stack);
-    }
-    return val;
 };
 
 batavia.VirtualMachine.prototype.unwind_block = function(block) {
@@ -363,9 +408,9 @@ batavia.VirtualMachine.prototype.unwind_block = function(block) {
     if (block.type === 'except-handler') {
         exc = this.popn(3);
         this.last_exception = {
-            exctype: exc[2],
-            value: exc[1],
-            tb: exc[0]
+            'exc_type': exc[2],
+            'value': exc[1],
+            'traceback': exc[0]
         };
     }
 };
@@ -453,14 +498,14 @@ batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
     if (why === 'exception' &&
             (block.type === 'setup-except' || block.type === 'finally')) {
         this.push_block('except-handler');
-        exc = this.last_exception;
-        this.push(exc[2]);
-        this.push(exc[1]);
-        this.push(exc[0]);
+        var exc = this.last_exception;
+        this.push(exc.traceback);
+        this.push(exc.value);
+        this.push(exc.exc_type);
         // PyErr_Normalize_Exception goes here
-        this.push(exc[2]);
-        this.push(exc[1]);
-        this.push(exc[0]);
+        this.push(exc.traceback);
+        this.push(exc.value);
+        this.push(exc.exc_type);
         why = null;
         this.jump(block.handler);
         return why;
@@ -489,6 +534,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
     this.push_frame(frame);
     while (true) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
+        var opname = batavia.modules.dis.opname[operation.opcode];
 
         // advance f_lasti to next operation. If the operation is a jump, then this
         // pointer will be overwritten during the operation's execution.
@@ -502,10 +548,17 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
             why = operation.op_method.apply(this, operation.args);
         } catch (err) {
             // deal with exceptions encountered while executing the op.
-            this.last_exception = {
-                'exception': err,
-                'message': err.toString()
-            };
+            if (err instanceof batavia.builtins.BataviaError) {
+                // Batavia errors are a major problem; ABORT HARD
+                this.last_exception = null;
+                throw err;
+            } else if (this.last_exception === null) {
+                this.last_exception = {
+                    'exc_type': err.constructor,
+                    'value': err,
+                    'traceback': this.create_traceback()
+                };
+            }
             why = 'exception';
         }
 
@@ -534,7 +587,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
     this.pop_frame();
 
     if (why === 'exception') {
-        throw this.last_exception.exception;
+        throw this.last_exception;
     }
 
     return this.return_value;
@@ -600,7 +653,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
     } else if (name in frame.f_builtins) {
         val = frame.f_builtins[name];
     } else {
-        throw new batavia.exceptions.NameError("name '" + name + "' is not defined");
+        throw new batavia.builtins.NameError("name '" + name + "' is not defined");
     }
     this.push(val);
 };
@@ -618,7 +671,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
-        throw new batavia.exceptions.NameError("local variable '" + name + "' referenced before assignment");
+        throw new batavia.builtins.NameError("local variable '" + name + "' referenced before assignment");
     }
     this.push(val);
 };
@@ -642,7 +695,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
     } else if (name in this.frame.f_builtins) {
         val = this.frame.f_builtins[name];
     } else {
-        throw new batavia.exceptions.NameError("Global name '" + name + "' is not defined");
+        throw new batavia.builtins.NameError("name '" + name + "' is not defined");
     }
     this.push(val);
 };
@@ -768,7 +821,7 @@ batavia.VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
         items = this.popn(count);
         this.push(batavia.builtins.slice(items));
     } else {
-        throw new batavia.core.BataviaError("Strange BUILD_SLICE count: " + count);
+        throw new batavia.builtins.BataviaError("Strange BUILD_SLICE count: " + count);
     }
 };
 
@@ -882,7 +935,7 @@ batavia.VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
         var v = next(iterobj);
         this.push(v);
     } catch (err) {
-        if (err instanceof batavia.exceptions.StopIteration) {
+        if (err instanceof batavia.builtins.StopIteration) {
             this.pop();
             this.jump(jump);
         } else {
@@ -914,29 +967,26 @@ batavia.VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
     this.push_block('finally', dest);
 };
 
-// batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
-//     var v = this.pop();
-//     if isinstance(v, str):
-//         why = v
-//         if why in ('return', 'continue'):
-//             this.return_value = this.pop()
-//         if why == 'silenced':       // PY3
-//             block = this.pop_block()
-//             assert block.type == 'except-handler'
-//             this.unwind_block(block)
-//             why = null
-//     elif v is null:
-//         why = null
-//     elif issubclass(v, BaseException):
-//         exctype = v
-//         val = this.pop()
-//         tb = this.pop()
-//         this.last_exception = (exctype, val, tb)
-//         why = 'reraise'
-//     else:       // pragma: no cover
-//         throw "Confused END_FINALLY")
-//     return why
-// }
+batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
+    var exc_type = this.pop();
+    if (exc_type === null) {
+        why = null;
+    } else {
+        value = this.pop();
+        if (value instanceof batavia.builtins.BaseException) {
+            traceback = this.pop();
+            this.last_exception = {
+                'exc_type': exc_type,
+                'value': value,
+                'traceback': traceback
+            };
+            why = 'reraise';
+        } else {
+            throw new batavia.builtins.BataviaError("Confused END_FINALLY");
+        }
+    }
+    return why;
+};
 
 batavia.VirtualMachine.prototype.byte_POP_BLOCK = function() {
     this.pop_block();
@@ -960,13 +1010,12 @@ batavia.VirtualMachine.prototype.do_raise = function(exc, cause) {
         } else {
             return 'reraise';
         }
-    } else if (exc instanceof batavia.exceptions.BaseException) {
+    } else if (exc instanceof batavia.builtins.BaseException) {
         // As in `throw ValueError('foo')`
-        // exc_type = type(exc);
-        exc_type = exc;
+        exc_type = exc.constructor;
         val = exc;
     } else {
-        return 'exception'      // error
+        return 'exception';  // error
     }
 
     // If you reach this point, you're guaranteed that
@@ -980,19 +1029,21 @@ batavia.VirtualMachine.prototype.do_raise = function(exc, cause) {
     }
 
     this.last_exception = {
-        'exception': exc,
         'exc_type': exc_type,
-        'val': val,
-        'traceback': val.__traceback__,
+        'value': val,
+        'traceback': this.create_traceback()
     };
     return 'exception';
-}
-// batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function {
-//         block = this.pop_block()
-//         if block.type != 'except-handler':
-//             throw Exception("popped block is not an except handler")
-//         this.unwind_block(block)
-// }
+};
+
+batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function() {
+    var block = this.pop_block();
+    if (block.type !== 'except-handler') {
+        throw new batavia.exception.BataviaError("popped block is not an except handler");
+    }
+    this.unwind_block(block);
+};
+
 // batavia.VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
 //         ctxmgr = this.pop()
 //         this.push(ctxmgr.__exit__)
@@ -1109,16 +1160,17 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         if (func.__self__) {
             posargs.unshift(func.__self__);
         }
-        // FIXME: Work out how to do the class check.
         // The first parameter must be the correct type.
-        // if (posargs[0] instanceof func.__class__) {
-        //     throw 'unbound method ' + func.__func__.__name__ + '()' +
-        //         ' must be called with ' + func.__class__.__name__ + ' instance ' +
-        //         'as first argument (got ' + posargs[0].__proto__ + ' instance instead)';
-        // }
+        if (posargs[0] instanceof func.constructor) {
+            throw 'unbound method ' + func.__func__.__name__ + '()' +
+                ' must be called with ' + func.__class__.__name__ + ' instance ' +
+                'as first argument (got ' + posargs[0].__proto__ + ' instance instead)';
+        }
         func = func.__func__.__call__;
     } else if ('__call__' in func) {
         func = func.__call__;
+    } else if (func.prototype && '__call__' in func.prototype) {
+        func = func.prototype.__call__.bind(func);
     }
 
     var retval = func.apply(this, [posargs, namedargs]);

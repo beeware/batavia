@@ -1,6 +1,9 @@
 from ..utils import TranspileTestCase
 
+import unittest
 
+
+@unittest.skip('Not implemented (yet!)')
 class InterfaceTests(TranspileTestCase):
 
     def test_implement_interface(self):
