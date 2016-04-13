@@ -124,10 +124,6 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
 
     return out[0].decode('utf8')
 
-# Cache load the contents of the batavia.js file.
-with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'batavia.min.js')) as batavia_js:
-    BATAVIA = batavia_js.read()
-
 
 def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     # Output source code into test directory
@@ -168,6 +164,10 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
 
     if args is None:
         args = []
+
+    # Cache load the contents of the batavia.js file.
+    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'batavia.min.js')) as batavia_js:
+        BATAVIA = batavia_js.read()
 
     with open(os.path.join(test_dir, 'test.js'), 'w') as js_file:
             # js_file.write(batavia_js.read())
