@@ -124,6 +124,10 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
 
     return out[0].decode('utf8')
 
+# Cache load the contents of the batavia.js file.
+with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'batavia.min.js')) as batavia_js:
+    BATAVIA = batavia_js.read()
+
 
 def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     # Output source code into test directory
@@ -166,7 +170,6 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
         args = []
 
     with open(os.path.join(test_dir, 'test.js'), 'w') as js_file:
-        with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'batavia.js')) as batavia_js:
             # js_file.write(batavia_js.read())
 
             payload = []
@@ -228,7 +231,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 phantom.exit(0);
 
                 """) % (
-                    batavia_js.read(),
+                    BATAVIA,
                     ',\n'.join(payload)
                 )
             )
@@ -288,6 +291,8 @@ def compileJava(js_dir, js):
 
 JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
+JS_BOOL_TRUE = re.compile('true')
+JS_BOOL_FALSE = re.compile('false')
 JS_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 
 PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
@@ -318,6 +323,8 @@ def cleanse_javascript(input):
         os.linesep if stack else ''
     )
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
+    out = JS_BOOL_TRUE.sub("True", out)
+    out = JS_BOOL_FALSE.sub("False", out)
     out = JS_FLOAT.sub('\\1e\\2\\3', out).replace("'test.py'", '***EXECUTABLE***')
     out = out.replace('\r\n', '\n')
     return out
@@ -668,3 +675,34 @@ class InplaceOperationTestCase:
         vars()['test_and_%s' % datatype] = _inplace_test('test_and_%s' % datatype, 'x &= y', examples)
         vars()['test_xor_%s' % datatype] = _inplace_test('test_xor_%s' % datatype, 'x ^= y', examples)
         vars()['test_or_%s' % datatype] = _inplace_test('test_or_%s' % datatype, 'x |= y', examples)
+
+
+def _builtin_test(test_name, operation, examples):
+    def func(self):
+        for function in self.functions:
+            for example in examples:
+                self.assertBuiltinFunction(x=example, f=function, operation=operation, format=self.format)
+    return func
+
+
+class BuiltinFunctionTestCase:
+    format = ''
+
+    def run(self, result=None):
+        # Override the run method to inject the "expectingFailure" marker
+        # when the test case runs.
+        for test_name in dir(self):
+            if test_name.startswith('test_'):
+                getattr(self, test_name).__dict__['__unittest_expecting_failure__'] = test_name in self.not_implemented
+        return super().run(result=result)
+
+    def assertBuiltinFunction(self, **kwargs):
+        self.assertCodeExecution("""
+            f = %(f)s
+            x = %(x)s
+            print(%(format)s%(operation)s)
+            """ % kwargs, "Error running %(operation)s with x=%(x)s" % kwargs)
+
+    for datatype, examples in SAMPLE_DATA:
+        if datatype != 'set' and datatype != 'frozenset' and datatype != 'dict':
+            vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)

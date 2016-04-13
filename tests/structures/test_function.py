@@ -72,7 +72,7 @@ class FunctionTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.skip('Not implemented (yet!)')
+    @unittest.expectedFailure
     def test_override_some_default_args(self):
         self.assertCodeExecution("""
             def myfunc(x, y=1, z=2):

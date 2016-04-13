@@ -1,3 +1,35 @@
+/*
+
+General builtin format:
+
+
+// Example: a function that accepts exactly one argument, and no keyword arguments
+batavia.builtins.<fn> = function(<args>, <kwargs>) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError("Batavia calling convention not used.")
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("<fn>() doesn't accept keyword arguments.")
+    }
+    if (!args || args.length != 1) {
+        throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)")
+    }
+
+    // if the function only works with a specific object type, add a test
+    var variable = args[0]
+
+    if (typeof(variable) !== "<type>") {
+        throw new batavia.builtins.TypeError(
+            "<fn>() expects a <type> (" + typeof(variable) + " given)");
+    }
+
+    // actual code goes here
+    Javascript.Function.Stuf()
+}
+batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
+
+*/
+
 batavia.builtins.__import__ = function(args, kwargs) {
     // First, try native modules
     var module = batavia.modules[args[0]];
@@ -34,38 +66,6 @@ batavia.builtins.__import__ = function(args, kwargs) {
     }
     return module;
 };
-
-/*
-
-General builtin format:
-
-
-// Example: a function that accepts exactly one argument, and no keyword arguments
-batavia.builtins.<fn> = function(<args>, <kwargs>) {
-    if (arguments.length != 2) {
-        throw new batavia.builtins.BataviaError("Batavia calling convention not used.")
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.TypeError("<fn>() doesn't accept keyword arguments.")
-    }
-    if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)")
-    }
-
-    // if the function only works with a specific object type, add a test
-    var variable = args[0]
-
-    if (typeof(variable) !== "<type>") {
-        throw new batavia.builtins.TypeError(
-            "<fn>() expects a <type> (" + typeof(variable) + " given)");
-    }
-
-    // actual code goes here
-    Javascript.Function.Stuf()
-}
-batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
-
-*/
 
 batavia.builtins.abs = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -160,10 +160,12 @@ batavia.builtins.bool = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("bool() doesn't accept keyword arguments");
+        throw new batavia.builtins.TypeError("bool() doesn't accept keyword arguments");
     }
-    if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('bool) expected exactly 1 argument (' + args.length + ' given)');
+    if (!args || args.length === 0) {
+        return false;
+    } else if (args.length != 1) {
+        throw new batavia.builtins.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
     return !!args[0];
@@ -278,10 +280,10 @@ batavia.builtins.dir = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("dir() doesn't accept keyword arguments");
+        throw new batavia.builtins.TypeError("dir() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.ArgumentsError('dir() expected exactly 1 argument (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('dir() expected exactly 1 argument (' + args.length + ' given)');
     }
     return Object.keys(args[0]);
 };
@@ -292,10 +294,10 @@ batavia.builtins.divmod = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("divmod() doesn't accept keyword arguments");
+        throw new batavia.builtins.TypeError("divmod() doesn't accept keyword arguments");
     }
     if (!args || args.length != 2) {
-        throw new batavia.builtins.ArgumentsError('divmod() expected exactly 2 argument (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('divmod() expected exactly 2 argument (' + args.length + ' given)');
     }
 
     div = Math.floor(args[0]/args[1]);
@@ -309,7 +311,7 @@ batavia.builtins.enumerate = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.ArgumentsError("enumerate() doesn't accept keyword arguments");
+        throw new batavia.builtins.TypeError("enumerate() doesn't accept keyword arguments");
     }
     var result = [];
     var values = args[0];

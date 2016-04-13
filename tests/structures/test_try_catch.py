@@ -2,7 +2,6 @@ from ..utils import TranspileTestCase
 
 
 class TryExceptTests(TranspileTestCase):
-
     def test_try_except(self):
         # No exception
         self.assertCodeExecution("""

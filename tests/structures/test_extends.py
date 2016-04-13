@@ -3,8 +3,8 @@ from ..utils import TranspileTestCase
 import unittest
 
 
-@unittest.skip('Not implemented (yet!)')
 class ExtendsTests(TranspileTestCase):
+    @unittest.expectedFailure
     def test_extends(self):
         self.assertJavaScriptExecution(
             """

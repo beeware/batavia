@@ -4,7 +4,7 @@ import unittest
 
 
 class ForLoopTests(TranspileTestCase):
-    @unittest.skip('Not implemented (yet!)')
+    @unittest.expectedFailure
     def test_for_over_range(self):
         # Normal range
         self.assertCodeExecution("""

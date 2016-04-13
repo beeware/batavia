@@ -3,9 +3,8 @@ from ..utils import TranspileTestCase
 import unittest
 
 
-@unittest.skip('Not implemented (yet!)')
 class InterfaceTests(TranspileTestCase):
-
+    @unittest.expectedFailure
     def test_implement_interface(self):
         "You can implement (and use) a native JavaScript interface"
         self.assertJavaScriptExecution(
@@ -43,6 +42,7 @@ class InterfaceTests(TranspileTestCase):
             Done.
             """, run_in_function=False)
 
+    @unittest.expectedFailure
     def test_implement_inner_interface(self):
         "You can implement (and use) a native Java interface defined as an inner class"
         self.assertJavaScriptExecution(

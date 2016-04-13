@@ -5,77 +5,8 @@ from ..utils import TranspileTestCase
 import unittest
 
 
-@unittest.skip('Not implemented (yet!)')
 class ImportTests(TranspileTestCase):
-
-    def test_import_java_module_static_method(self):
-        "You can invoke a static method from a native Java namespace"
-        self.assertJavaScriptExecution(
-            """
-            from java import lang
-
-            props = lang.System.getProperties()
-            print(props.get("file.separator"))
-
-            print("Done.")
-            """,
-            """
-            %s
-            Done.
-            """ % os.path.sep)
-
-    def test_import_java_class_static_method(self):
-        "You can invoke a static method from a native Java class"
-        self.assertJavaScriptExecution(
-            """
-            from java.lang import System
-
-            props = System.getProperties()
-            print(props.get("file.separator"))
-
-            print("Done.")
-            """,
-            """
-            %s
-            Done.
-            """ % os.path.sep)
-
-    def test_import_java_module(self):
-        "You can import a native Java namespace as a Python module"
-        self.assertJavaScriptExecution(
-            """
-            from java import lang
-
-            buf = lang.StringBuilder()
-            buf.append('Hello, ')
-            buf.append('World')
-            print(buf.toString())
-
-            print("Done.")
-            """,
-            """
-            Hello, World
-            Done.
-            """)
-
-    def test_import_java_class(self):
-        "You can import a native Java class as a Python module"
-        self.assertJavaScriptExecution(
-            """
-            from java.lang import StringBuilder
-
-            buf = StringBuilder()
-            buf.append('Hello, ')
-            buf.append('World')
-            print(buf.toString())
-
-            print("Done.")
-            """,
-            """
-            Hello, World
-            Done.
-            """)
-
+    @unittest.expectedFailure
     def test_import_stdlib_module(self):
         "You can import a Python module implemented in Java (a native stdlib shim)"
         self.assertCodeExecution(
@@ -87,6 +18,7 @@ class ImportTests(TranspileTestCase):
             print("Done.")
             """)
 
+    @unittest.expectedFailure
     def test_import_module(self):
         "You can import a Python module implemented in Python"
         self.assertCodeExecution(
@@ -107,6 +39,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_multiple_module_import(self):
         "You can import a multiple Python modules implemented in Python"
         self.assertCodeExecution(
@@ -136,6 +69,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_full_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -159,6 +93,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_module_from_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -182,6 +117,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_symbol_from_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -205,6 +141,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_full_deep_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -243,6 +180,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_module_from_deep_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -281,6 +219,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_symbol_from_deep_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -319,6 +258,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_symbol_import(self):
         self.assertCodeExecution(
             """
@@ -338,6 +278,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_multiple_symbol_import(self):
         self.assertCodeExecution(
             """
@@ -374,6 +315,7 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
+    @unittest.expectedFailure
     def test_import_star(self):
         self.assertCodeExecution(
             """
@@ -407,6 +349,7 @@ class ImportTests(TranspileTestCase):
                     """
             }, run_in_function=False)
 
+    @unittest.expectedFailure
     def test_import_star_with_all(self):
         self.assertCodeExecution(
             """

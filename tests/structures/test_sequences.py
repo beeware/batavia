@@ -13,7 +13,7 @@ class SequenceTests(TranspileTestCase):
             print(c)
             """)
 
-    @unittest.skip('Feature not yet implemented')
+    @unittest.expectedFailure
     def test_unpack_sequence_overflow(self):
         self.assertCodeExecution("""
             x = [1, 2, 3]
@@ -22,7 +22,7 @@ class SequenceTests(TranspileTestCase):
             print(b)
             """)
 
-    @unittest.skip('Feature not yet implemented')
+    @unittest.expectedFailure
     def test_unpack_sequence_underflow(self):
         self.assertCodeExecution("""
             x = [1, 2]

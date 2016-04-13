@@ -31,7 +31,7 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.skip('Not implemented (yet!)')
+    @unittest.expectedFailure
     def test_method_override(self):
         self.assertCodeExecution("""
             class MyObject:
@@ -47,7 +47,7 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.skip('Not implemented (yet!)')
+    @unittest.expectedFailure
     def test_subclass(self):
         self.assertCodeExecution("""
             class MyBase:

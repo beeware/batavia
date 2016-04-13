@@ -3,7 +3,6 @@ from ..utils import TranspileTestCase
 import unittest
 
 
-@unittest.skip('Not implemented (yet!)')
 class ListComprehensionTests(TranspileTestCase):
     def test_syntax(self):
         self.assertCodeExecution("""
@@ -12,6 +11,7 @@ class ListComprehensionTests(TranspileTestCase):
             print('Done.')
             """)
 
+    @unittest.expectedFailure
     def test_method(self):
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]

@@ -13,7 +13,7 @@ class ScopeTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.skip('Not implemented (yet!)')
+    @unittest.expectedFailure
     def test_local_scope(self):
         self.assertCodeExecution("""
             x = 1
@@ -47,7 +47,7 @@ class ScopeTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.skip('Not implemented (yet!)')
+    @unittest.expectedFailure
     def test_class_scope(self):
         self.assertCodeExecution("""
             x = 1

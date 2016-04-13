@@ -3,8 +3,8 @@ from ..utils import TranspileTestCase
 import unittest
 
 
-@unittest.skip('Not implemented (yet!)')
 class GeneratorTests(TranspileTestCase):
+    @unittest.expectedFailure
     def test_simple_generator(self):
         self.assertCodeExecution("""
             def multiplier(first, second):
@@ -20,6 +20,7 @@ class GeneratorTests(TranspileTestCase):
             print(list(multiplier(1, 20)))
             """)
 
+    @unittest.expectedFailure
     def test_loop_generator(self):
         self.assertCodeExecution("""
             def fizz_buzz(start, stop):

@@ -90,6 +90,10 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """
         )
 
+    def test_bool(self):
+        self.assertNormalized('true', 'True')
+        self.assertNormalized('false', 'False')
+
     def test_float(self):
         self.assertNormalized('7.950899459780156e-06', '7.950899459780156e-6')
 
@@ -201,7 +205,7 @@ class PythonNormalizationTests(unittest.TestCase):
         )
 
 
-@unittest.skip('Not implemented (yet!)')
+@unittest.expectedFailure
 class JavaScriptBootstrapTests(TranspileTestCase):
     def test_js_code(self):
         "You can supply JavaScript code and use it from within Python"

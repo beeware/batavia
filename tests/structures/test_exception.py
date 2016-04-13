@@ -2,7 +2,6 @@ from ..utils import TranspileTestCase
 
 
 class ExceptionTests(TranspileTestCase):
-
     def test_raise(self):
         # Caught exception
         self.assertCodeExecution("""
