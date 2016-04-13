@@ -205,8 +205,8 @@ class PythonNormalizationTests(unittest.TestCase):
         )
 
 
-@unittest.expectedFailure
 class JavaScriptBootstrapTests(TranspileTestCase):
+    @unittest.expectedFailure
     def test_js_code(self):
         "You can supply JavaScript code and use it from within Python"
         self.assertJavaScriptExecution(
