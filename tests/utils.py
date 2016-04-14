@@ -153,7 +153,7 @@ def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
         out.pop()
         # Get the response line
         response = out.pop()
-        print("COMMAND EXECUTED: " % response)
+        print("COMMAND EXECUTED: ", response)
         if success:
             if isinstance(success, (list, tuple)):
                 if response not in success:
