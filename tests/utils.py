@@ -129,7 +129,7 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
 def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
     if payload:
         cmd = adjust(payload).replace('\n', '')
-        # print("<<<", cmd)
+        print("<<<", cmd)
 
         _phantomjs.stdin.write(cmd.encode('utf-8'))
         _phantomjs.stdin.write('\n'.encode('utf-8'))
@@ -141,7 +141,7 @@ def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
         try:
             ch = _phantomjs.stdout.read(1).decode("utf-8")
             if ch == '\n':
-                # print(">>>", out[-1])
+                print(">>>", out[-1])
                 out.append("")
             else:
                 out[-1] += ch
@@ -153,7 +153,7 @@ def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
         out.pop()
         # Get the response line
         response = out.pop()
-        # print("COMMAND EXECUTED >%r<" % out[-2])
+        print("COMMAND EXECUTED: " % response)
         if success:
             if isinstance(success, (list, tuple)):
                 if response not in success:
