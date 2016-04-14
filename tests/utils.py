@@ -307,7 +307,9 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 });
                 """)
         except PhantomJSCrash:
-            print("PhantomJS Crash - retry")
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
             _phantomjs = None
 
     return out
