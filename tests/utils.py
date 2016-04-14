@@ -126,10 +126,14 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     return out[0].decode('utf8')
 
 
+class PhantomJSCrash(RuntimeError):
+    pass
+
+
 def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
     if payload:
         cmd = adjust(payload).replace('\n', '')
-        print("<<<", cmd)
+        # print("<<<", cmd)
 
         _phantomjs.stdin.write(cmd.encode('utf-8'))
         _phantomjs.stdin.write('\n'.encode('utf-8'))
@@ -137,23 +141,26 @@ def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
 
     # print("WAIT FOR PROMPT...")
     out = [""]
-    while out[-1] != "phantomjs> ":
+    while out[-1] != "phantomjs> " and out[-1] != 'PhantomJS has crashed. ':
         try:
             ch = _phantomjs.stdout.read(1).decode("utf-8")
             if ch == '\n':
-                print(">>>", out[-1])
+                # print(">>>", out[-1])
                 out.append("")
             else:
                 out[-1] += ch
         except IOError:
             continue
 
+    if out[-1] == 'PhantomJS has crashed. ':
+        raise PhantomJSCrash()
+
     if payload:
         # Drop the prompt line
         out.pop()
         # Get the response line
         response = out.pop()
-        print("COMMAND EXECUTED: ", response)
+        # print("COMMAND EXECUTED: ", response)
         if success:
             if isinstance(success, (list, tuple)):
                 if response not in success:
@@ -236,66 +243,72 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
         )
 
     global _phantomjs
-    if _phantomjs is None:
-        build_batavia()
+    out = None
+    while out is None:
+        try:
+            if _phantomjs is None:
+                build_batavia()
 
-        if _phantomjs is None:
-            # Make sure Batavia is compiled
+                if _phantomjs is None:
+                    # Make sure Batavia is compiled
 
-            # Start the phantomjs environment.
-            _phantomjs = subprocess.Popen(
-                ["phantomjs"],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                cwd=os.path.dirname(__file__),
+                    # Start the phantomjs environment.
+                    _phantomjs = subprocess.Popen(
+                        ["phantomjs"],
+                        stdin=subprocess.PIPE,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        cwd=os.path.dirname(__file__),
+                    )
+                    sendPhantomCommand(_phantomjs)
+
+            sendPhantomCommand(
+                _phantomjs,
+                "var page = require('webpage').create()",
+                success='undefined',
+                on_fail="Unable to create webpage."
             )
-            sendPhantomCommand(_phantomjs)
+            sendPhantomCommand(
+                _phantomjs,
+                """
+                page.onConsoleMessage = function (msg) {
+                    console.log(msg);
+                }
+                """,
+                success=['undefined', '{}'],
+                on_fail="Unable to create console redirection"
+            )
 
-    out = sendPhantomCommand(
-        _phantomjs,
-        "var page = require('webpage').create()",
-        success='undefined',
-        on_fail="Unable to create webpage."
-    )
-    out = sendPhantomCommand(
-        _phantomjs,
-        """
-        page.onConsoleMessage = function (msg) {
-            console.log(msg);
-        }
-        """,
-        success=['undefined', '{}'],
-        on_fail="Unable to create console redirection"
-    )
+            sendPhantomCommand(
+                _phantomjs,
+                "page.injectJs('polyfill.js')",
+                success=['true', '{}'],
+                on_fail="Unable to inject polyfill"
+            )
+            sendPhantomCommand(
+                _phantomjs,
+                "page.injectJs('../batavia.min.js')",
+                success=['true', '{}'],
+                on_fail="Unable to inject Batavia"
+            )
+            sendPhantomCommand(
+                _phantomjs,
+                "page.injectJs('%s')" % os.path.join('temp', 'modules.js'),
+                success=['true', '{}'],
+                on_fail="Unable to inject modules"
+            )
 
-    out = sendPhantomCommand(
-        _phantomjs,
-        "page.injectJs('polyfill.js')",
-        success=['true', '{}'],
-        on_fail="Unable to inject polyfill"
-    )
-    out = sendPhantomCommand(
-        _phantomjs,
-        "page.injectJs('../batavia.min.js')",
-        success=['true', '{}'],
-        on_fail="Unable to inject Batavia"
-    )
-    out = sendPhantomCommand(
-        _phantomjs,
-        "page.injectJs('%s')" % os.path.join('temp', 'modules.js'),
-        success=['true', '{}'],
-        on_fail="Unable to inject modules"
-    )
-
-    out = sendPhantomCommand(_phantomjs, """
-        page.evaluate(function() {
-            var vm = new batavia.VirtualMachine(function(name) {
-                return modules[name];
-            });
-            vm.run('testcase', []);
-        });
-        """)
+            out = sendPhantomCommand(_phantomjs, """
+                page.evaluate(function() {
+                    var vm = new batavia.VirtualMachine(function(name) {
+                        return modules[name];
+                    });
+                    vm.run('testcase', []);
+                });
+                """)
+        except PhantomJSCrash:
+            print("PhantomJS Crash - retry")
+            _phantomjs = None
 
     return out
 
