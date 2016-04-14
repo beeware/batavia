@@ -1,6 +1,6 @@
 import base64
 import contextlib
-from io import StringIO, BytesIO
+from io import StringIO
 import importlib
 import os
 import py_compile
@@ -13,16 +13,17 @@ from unittest import TestCase
 
 
 # A state variable to determine if the test environment has been configured.
-_suite_configured = False
+_batavia_built = False
+_phantomjs = None
 
 
-def setUpSuite():
-    """Configure the entire test suite.
+def build_batavia():
+    """Build the Batavia library
 
     This only needs to be run once, prior to the first test.
     """
-    global _suite_configured
-    if _suite_configured:
+    global _batavia_built
+    if _batavia_built:
         return
 
     proc = subprocess.Popen(
@@ -43,7 +44,7 @@ def setUpSuite():
     if proc.returncode != 0:
         raise Exception("Error compiling batavia sources: " + out.decode('ascii'))
 
-    _suite_configured = True
+    _batavia_built = True
 
 
 @contextlib.contextmanager
@@ -125,6 +126,58 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     return out[0].decode('utf8')
 
 
+def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
+    if payload:
+        cmd = adjust(payload).replace('\n', '')
+        # print("<<<", cmd)
+
+        _phantomjs.stdin.write(cmd.encode('utf-8'))
+        _phantomjs.stdin.write('\n'.encode('utf-8'))
+        _phantomjs.stdin.flush()
+
+    # print("WAIT FOR PROMPT...")
+    out = [""]
+    while out[-1] != "phantomjs> ":
+        try:
+            ch = _phantomjs.stdout.read(1).decode("utf-8")
+            if ch == '\n':
+                # print(">>>", out[-1])
+                out.append("")
+            else:
+                out[-1] += ch
+        except IOError:
+            continue
+
+    if payload:
+        # Drop the prompt line
+        out.pop()
+        # Get the response line
+        response = out.pop()
+        # print("COMMAND EXECUTED >%r<" % out[-2])
+        if success:
+            if isinstance(success, (list, tuple)):
+                if response not in success:
+                    if on_fail:
+                        raise Exception(on_fail + ": %s" % response)
+                    else:
+                        raise Exception("Didn't receive an expected response: %s" % response)
+            else:
+                if response != success:
+                    if on_fail:
+                        raise Exception(on_fail + ": %s" % response)
+                    else:
+                        raise Exception("Didn't receive the expected response: %s" % response)
+
+        # Drop a trailing blank line, if one exists.
+        if len(out) > 1 and out[-1] == '':
+            out.pop()
+
+        return '\n'.join(out).replace('\n\n', '\n') + '\n'
+    else:
+        # print("PHANTOMJS READY")
+        return None
+
+
 def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     # Output source code into test directory
     py_filename = os.path.join(test_dir, 'test.py')
@@ -165,128 +218,86 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
     if args is None:
         args = []
 
-    # Cache load the contents of the batavia.js file.
-    with open(os.path.join(os.path.dirname(os.path.dirname(__file__)), 'batavia.min.js')) as batavia_js:
-        BATAVIA = batavia_js.read()
+    # Convert the dictionary of modules into a payload
+    payload = []
+    for name, code in modules.items():
+        lines = code.decode('utf-8').split('\n')
+        output = '"%s"' % '" +\n        "'.join(line for line in lines if line)
+        payload.append('"%s": %s' % (name, output))
 
-    with open(os.path.join(test_dir, 'test.js'), 'w') as js_file:
-            # js_file.write(batavia_js.read())
-
-            payload = []
-            for name, code in modules.items():
-                lines = code.decode('utf-8').split('\n')
-                output = '"%s"' % '" +\n        "'.join(line for line in lines if line)
-                payload.append('"%s": %s' % (name, output))
-
-            js_file.write(adjust("""
-                var page;
-
-                page = require('webpage').create();
-
-                page.onConsoleMessage = function (msg) {
-                    console.log(msg);
-                };
-
-                page.evaluate(function () {
-                    %s
-
-                    // Function.bind polyfill
-                    if (!Function.prototype.bind) {
-                      Function.prototype.bind = function (oThis) {
-                        if (typeof this !== "function") {
-                          // closest thing possible to the ECMAScript 5 internal IsCallable function
-                          throw new TypeError("Function.prototype.bind - what is trying to be bound is not callable");
-                        }
-
-                        var aArgs = Array.prototype.slice.call(arguments, 1),
-                            fToBind = this,
-                            fNOP = function () {},
-                            fBound = function () {
-                              return fToBind.apply(this instanceof fNOP && oThis
-                                                     ? this
-                                                     : oThis,
-                                                   aArgs.concat(Array.prototype.slice.call(arguments)));
-                            };
-
-                        fNOP.prototype = this.prototype;
-                        fBound.prototype = new fNOP();
-
-                        return fBound;
-                      };
-                    }
-
-                    var modules = {
-                    %s
-                    };
-
-                    // console.log('Create VM...');
-                    var vm = new batavia.VirtualMachine(function(name) {
-                        return modules['testcase'];
-                    });
-                    // console.log('Run module...');
-                    vm.run('testcase', []);
-                    // console.log('Done.');
-                });
-
-                phantom.exit(0);
-
-                """) % (
-                    BATAVIA,
-                    ',\n'.join(payload)
-                )
+    with open(os.path.join(test_dir, 'modules.js'), 'w') as js_file:
+        js_file.write(adjust("""
+            var modules = {
+                %s
+            };
+            """) % (
+                ',\n'.join(payload)
             )
+        )
 
-    proc = subprocess.Popen(
-        ["phantomjs", "test.js"] + args,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        cwd=test_dir,
+    global _phantomjs
+    if _phantomjs is None:
+        build_batavia()
+
+        if _phantomjs is None:
+            # Make sure Batavia is compiled
+
+            # Start the phantomjs environment.
+            _phantomjs = subprocess.Popen(
+                ["phantomjs"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                cwd=os.path.dirname(__file__),
+            )
+            sendPhantomCommand(_phantomjs)
+
+    out = sendPhantomCommand(
+        _phantomjs,
+        "var page = require('webpage').create()",
+        success='undefined',
+        on_fail="Unable to create webpage."
     )
-    out = proc.communicate()
-
-    return out[0].decode('utf8').replace('\n\n', '\n')
-
-
-def compileJava(js_dir, js):
-    if not js:
-        return None
-
-    sources = []
-    with capture_output():
-        for descriptor, code in js.items():
-            parts = descriptor.split('/')
-
-            class_dir = os.path.sep.join(parts[:-1])
-            class_file = os.path.join(class_dir, "%s.js" % parts[-1])
-
-            full_dir = os.path.join(js_dir, class_dir)
-            full_path = os.path.join(js_dir, class_file)
-
-            try:
-                os.makedirs(full_dir)
-            except FileExistsError:
-                pass
-
-            with open(full_path, 'w') as js_source:
-                js_source.write(adjust(code))
-
-            sources.append(class_file)
-
-    classpath = os.pathsep.join([
-        os.path.join('..', '..', 'dist', 'python-js.jar'),
-        os.curdir,
-    ])
-    proc = subprocess.Popen(
-        ["jsc", "-classpath", classpath] + sources,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        cwd=js_dir,
+    out = sendPhantomCommand(
+        _phantomjs,
+        """
+        page.onConsoleMessage = function (msg) {
+            console.log(msg);
+        }
+        """,
+        success=['undefined', '{}'],
+        on_fail="Unable to create console redirection"
     )
-    out = proc.communicate()
 
-    return out[0].decode('utf8')
+    out = sendPhantomCommand(
+        _phantomjs,
+        "page.injectJs('polyfill.js')",
+        success=['true', '{}'],
+        on_fail="Unable to inject polyfill"
+    )
+    out = sendPhantomCommand(
+        _phantomjs,
+        "page.injectJs('../batavia.min.js')",
+        success=['true', '{}'],
+        on_fail="Unable to inject Batavia"
+    )
+    out = sendPhantomCommand(
+        _phantomjs,
+        "page.injectJs('%s')" % os.path.join('temp', 'modules.js'),
+        success=['true', '{}'],
+        on_fail="Unable to inject modules"
+    )
+
+    out = sendPhantomCommand(_phantomjs, """
+        page.evaluate(function() {
+            var vm = new batavia.VirtualMachine(function(name) {
+                return modules[name];
+            });
+            vm.run('testcase', []);
+        });
+        """)
+
+    return out
 
 
 JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
@@ -350,42 +361,6 @@ def cleanse_python(input):
 
 
 class TranspileTestCase(TestCase):
-    def setUp(self):
-        setUpSuite()
-
-    def assertBlock(self, python, js):
-        self.maxDiff = None
-        dump = False
-
-        py_block = PyBlock(parent=PyModule('test', 'test.py'))
-        if python:
-            python = adjust(python)
-            code = compile(python, '<test>', 'exec')
-            py_block.extract(code, debug=dump)
-
-        js_code = py_block.transpile()
-
-        out = BytesIO()
-        constant_pool = ConstantPool()
-        js_code.resolve(constant_pool)
-
-        constant_pool.add(Utf8('test'))
-        constant_pool.add(Utf8('Code'))
-        constant_pool.add(Utf8('LineNumberTable'))
-
-        writer = ClassFileWriter(out, constant_pool)
-        js_code.write(writer)
-
-        debug = StringIO()
-        reader = ClassFileReader(BytesIO(out.getbuffer()), constant_pool, debug=debug)
-        JavaCode.read(reader, dump=0)
-
-        if dump:
-            print(debug.getvalue())
-
-        js = adjust(js)
-        self.assertEqual(debug.getvalue(), js[1:])
-
     def assertCodeExecution(self, code, message=None, extra_code=None, run_in_global=True, run_in_function=True, args=None):
         "Run code as native python, and under Java and check the output is identical"
         self.maxDiff = None
