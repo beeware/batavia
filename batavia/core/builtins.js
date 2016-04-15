@@ -270,8 +270,26 @@ batavia.builtins.delattr = function(args, kwargs) {
 batavia.builtins.delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''.";
 
 batavia.builtins.dict = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'dict' not implemented");
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (args.length > 1) {
+        throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got" + args.length);
+    }
+    if (Number(args[0]) === parseInt(args[0])) {
+        throw new batavia.builtins.TypeError("'int' object is not iterable");
+    }
+    // error handling for iterables
+    if (args[0].length === 1 && Array.isArray(args[0]))  {
+        //
+        // single number in an iterable throws different error
+        if (args[0][0].length === 1 && (Number(args[0][0]) === parseInt(args[0][0]))) {
+            throw new batavia.builtins.TypeError(cannot convert dictionary update sequence element #0 to a sequence);    
+        }
+        else if (args[0][0].length === 1 || args[0][0].length !== 2) {
+            throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length " + args[0][0].length + "; 2 is required")
+        }
+    }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
