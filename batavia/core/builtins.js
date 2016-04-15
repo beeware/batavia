@@ -281,14 +281,15 @@ batavia.builtins.dict = function(args, kwargs) {
     }
     // error handling for iterables
     if (args[0].length === 1 && Array.isArray(args[0]))  {
-        //
-        // single number in an iterable throws different error
-        if (args[0][0].length === 1 && (Number(args[0][0]) === parseInt(args[0][0]))) {
-            throw new batavia.builtins.TypeError(cannot convert dictionary update sequence element #0 to a sequence);    
-        }
-        else if (args[0][0].length === 1 || args[0][0].length !== 2) {
-            throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length " + args[0][0].length + "; 2 is required")
-        }
+        // iterate through array to find any errors
+        for (i = 0; i < args[0].length; i++) {
+            // single number in an iterable throws different error
+            if (args[0][i].length === 1 && (Number(args[0][i]) === parseInt(args[0][i]))) {
+                throw new batavia.builtins.TypeError(cannot convert dictionary update sequence element #" + i + " to a sequence);    
+            }
+            else if (args[0][i].length === 1 || args[0][i].length !== 2) {
+                throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required")
+            }
     }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
