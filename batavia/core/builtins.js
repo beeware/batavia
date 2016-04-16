@@ -284,10 +284,10 @@ batavia.builtins.dict = function(args, kwargs) {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             // single number in an iterable throws different error
-            if (args[0][i].length === 1 && (typeof(args[0][i]) === "number")) {
+            if (typeof(args[0][i]) === "number") {
                 throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");    
             }
-            else if (args[0][i].length === 1 || args[0][i].length !== 2) {
+            else if (args[0][i].length !== 2) {
                 throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required");
             }
         }
