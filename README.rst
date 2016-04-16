@@ -67,6 +67,72 @@ redirected to the webpage, so if the script has any output, you'll see it.
 To start tinkering, make changes to `testserver/sample.py`, reload the page,
 and click the "Run sample.py" button.
 
+Testing
+-------
+
+To run the Batavia test suite, you'll need to install one more tool into
+your virtual environment::
+
+    $ pip install jsmin
+
+You'll also need to install `PhantomJS`_.
+
+Once you've installed those tools, you can `cd` into the root Batavia
+directory (the one containing `setup.py`) and run::
+
+    $ python setup.py test
+
+This will result in lots of output to your console::
+
+    running test
+    running egg_info
+    writing top-level names to batavia.egg-info/top_level.txt
+    writing dependency_links to batavia.egg-info/dependency_links.txt
+    writing batavia.egg-info/PKG-INFO
+    writing requirements to batavia.egg-info/requires.txt
+    reading manifest file 'batavia.egg-info/SOURCES.txt'
+    reading manifest template 'MANIFEST.in'
+    warning: no files found matching 'requirements*.txt'
+    writing manifest file 'batavia.egg-info/SOURCES.txt'
+    running build_ext
+    test_abs_not_implemented (tests.builtins.test_abs.AbsTests) ... expected failure
+    test_bool (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... ok
+    test_bytes (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... expected failure
+    test_float (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... expected failure
+    test_int (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... ok
+    test_list (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... expected failure
+    test_str (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... expected failure
+    test_tuple (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... expected failure
+    test_bool (tests.builtins.test_all.BuiltinAllFunctionTests) ... expected failure
+    test_bytes (tests.builtins.test_all.BuiltinAllFunctionTests) ... ok
+
+Don't worry if you don't see *exactly* this output - new tests are added all the time,
+and different tests may be passing or expected failures at any given point in time.
+
+The test suite will take about 5 minutes to run, and generate around 3700
+lines of output. When it finishes, you should get a message like::
+
+    test_multi_frame_exception (tests.test_utils.PythonNormalizationTests) ... ok
+    test_no_exception (tests.test_utils.PythonNormalizationTests) ... ok
+    ----------------------------------------------------------------------
+    Ran 3718 tests in 249.156s
+    OK (expected failures=3368)
+
+This tells you that the test suite ran successfully - there were 3368 failures
+found, but they were expected (the exact count will vary over time as the test
+suite grows over time). If you get any failures, errors, or unexpected
+successes reported, then you’ll see `FAIL`, `ERROR`, and `unexpected success`
+at the end of the individual test lines; and at the end of the test run,
+you’ll also see a summary of the cause of the errors.
+
+However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
+make sure the test suite is always in a passing state. If you *do* get any
+failures, errors, or unexpected successes, please get in touch, because you
+may have found a problem.
+
+.. _PhantomJS: http://phantomjs.org
+.. _continuous integration: https://travis-ci.org/pybee/batavia
+
 Documentation
 -------------
 
