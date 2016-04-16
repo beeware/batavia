@@ -274,17 +274,17 @@ batavia.builtins.dict = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (args.length > 1) {
-        throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got" + args.length);
+        throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
-    if (Number(args[0]) === parseInt(args[0])) {
+    if (typeof(args[0]) === "number") {
         throw new batavia.builtins.TypeError("'int' object is not iterable");
     }
     // error handling for iterables
-    if (args[0].length === 1 && Array.isArray(args[0]))  {
+    if (args.length === 1 && args.constructor === Array) {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             // single number in an iterable throws different error
-            if (args[0][i].length === 1 && (Number(args[0][i]) === parseInt(args[0][i]))) {
+            if (args[0][i].length === 1 && (typeof(args[0][i]) === "number")) {
                 throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");    
             }
             else if (args[0][i].length === 1 || args[0][i].length !== 2) {
