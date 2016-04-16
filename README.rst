@@ -42,8 +42,8 @@ Quickstart
 
 The `testserver` directory contains a minimal Django project that will serve
 Python bytecode to your browser and execute it. To run this project, you'll
-need to be running Python 3.4. Install Django 1.8 into your virtual
-environment; then, at a shell prompt::
+need to be running Python 3.4. Create a new virtual environment; then, at a
+shell prompt, run the following::
 
     $ cd testserver
     $ pip install -r requirements.txt
