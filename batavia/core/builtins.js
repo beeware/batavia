@@ -466,12 +466,37 @@ batavia.builtins.issubclass = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
 };
 
-batavia.builtins.iter = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' not implemented");
+batavia.builtins.iter = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("len() doesn't accept keyword arguments");
+    }
+    if (!args || args.length === 0) {
+        throw new batavia.builtins.TypeError("len() expected at least 1 arguments, got 0");
+    }
+    if (args.length == 2) {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' with callable/sentinet not implemented");
+    }
+    if (args.length > 2) {
+        throw new batavia.builtins.TypeError("len() expected at most 2 arguments, got 3");
+    }
+
+    if (args[0].__iter__) {
+        return args[0].__iter__();
+    } else if (args[0] instanceof Array) {
+        return new batavia.core.list_iterator(args[0]);
+    } else if (args[0] instanceof String || typeof args[0] === "string") {
+        return new batavia.core.str_iterator(args[0]);
+    } else {
+        throw new batavia.builtins.TypeError("'" + (typeof args[0]) + "' object is not iterable");
+    }
 };
+batavia.builtins.iter.__doc__ = 'iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.';
 
 batavia.builtins.len = function(args, kwargs) {
-    if (args === undefined || args[0] === undefined) {
+    if (!args || args.length !== 1 || args[0] === undefined) {
         throw new batavia.builtins.TypeError("len() takes exactly one argument (0 given)");
     }
 
@@ -483,6 +508,7 @@ batavia.builtins.len = function(args, kwargs) {
 
     return args[0].length;
 };
+batavia.builtins.len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.';
 
 batavia.builtins.license = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented");
@@ -598,8 +624,22 @@ batavia.builtins.quit = function() {
 };
 
 batavia.builtins.range = function(args, kwargs){
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("range() doesn't accept keyword arguments");
+    }
+    if (!args || args.length === 0) {
+        throw new batavia.builtins.TypeError('range() expected 1 arguments, got ' + args.length);
+    }
+    if (args.length > 3) {
+     throw new batavia.builtins.TypeError('range() expected at most 3 arguments, got ' + args.length);
+    }
+
     return new batavia.core.range(args[0], args[1], args[2]);
 };
+batavia.builtins.range.__doc__ = 'range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn a virtual sequence of numbers from start to stop by step.';
 
 batavia.builtins.raw_input = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'raw_input' not implemented");

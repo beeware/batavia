@@ -325,7 +325,7 @@ PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File 
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 
-MEMORY_REFERENCE = re.compile('0x[\dabcdef]{4,8}')
+MEMORY_REFERENCE = re.compile('0x[\dabcdef]{4,9}')
 
 
 def cleanse_javascript(input):

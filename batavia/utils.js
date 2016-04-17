@@ -17,6 +17,31 @@ String.prototype.__repr__ = function(args, kwargs) {
     return "'" + this.toString() + "'";
 };
 
+
+String.prototype.__iter__ = function() {
+    return new batavia.core.str_iterator(this);
+};
+
+batavia.core.str_iterator = function (data) {
+    Object.call(this);
+    this.index = 0;
+    this.data = data;
+};
+
+batavia.core.str_iterator.prototype = Object.create(Object.prototype);
+
+batavia.core.str_iterator.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
+        throw new batavia.builtins.StopIteration();
+    }
+    this.index++;
+    return retval;
+};
+
+batavia.core.str_iterator.prototype.__str__ = function() {
+    return "<str_iterator object at 0x99999999>";
+};
 /*************************************************************************
  * A Python dictionary type
  *************************************************************************/
@@ -109,14 +134,43 @@ batavia.core.List = function() {
         return this.__str__();
     };
 
+    List.prototype.__repr__ = function() {
+        return this.__str__();
+    };
+
     List.prototype.__str__ = function() {
         return '[' + this.join(', ') + ']';
+    };
+
+    List.prototype.__iter__ = function() {
+        return new batavia.core.list_iterator(this);
     };
 
     List.prototype.constructor = List;
     return List;
 }();
 
+
+batavia.core.list_iterator = function (data) {
+    Object.call(this);
+    this.index = 0;
+    this.data = data;
+};
+
+batavia.core.list_iterator.prototype = Object.create(Object.prototype);
+
+batavia.core.list_iterator.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
+        throw new batavia.builtins.StopIteration();
+    }
+    this.index++;
+    return retval;
+};
+
+batavia.core.list_iterator.prototype.__str__ = function() {
+    return "<list_iterator object at 0x99999999>";
+};
 
 /*************************************************************************
  * A Python Set type
@@ -162,6 +216,31 @@ batavia.core.Set.prototype.__str__ = function() {
     result += values.join(', ');
     result += "}";
     return result;
+};
+
+batavia.core.Set.prototype.__iter__ = function() {
+    return new batavia.core.set_iterator(this);
+};
+
+batavia.core.set_iterator = function (data) {
+    Object.call(this);
+    this.index = 0;
+    this.data = data;
+};
+
+batavia.core.set_iterator.prototype = Object.create(Object.prototype);
+
+batavia.core.set_iterator.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
+        throw new batavia.builtins.StopIteration();
+    }
+    this.index++;
+    return retval;
+};
+
+batavia.core.set_iterator.prototype.__str__ = function() {
+    return "<set_iterator object at 0x99999999>";
 };
 
 /*************************************************************************
@@ -210,28 +289,24 @@ batavia.core.Tuple = function() {
         return '(' + this.join(', ') + ')';
     };
 
+    Tuple.prototype.__iter__ = function() {
+        return new batavia.core.tuple_iterator(this);
+    };
+
     Tuple.prototype.constructor = Tuple;
     return Tuple;
 }();
 
-/*************************************************************************
- * An implementation of iter()
- *************************************************************************/
 
-function iter(data) {
-    // if data is already iterable, just return it.
-    if (data.__next__) {
-        return data;
-    }
-    return new Iterable(data);
-}
-
-function Iterable(data) {
+batavia.core.tuple_iterator = function (data) {
+    Object.call(this);
     this.index = 0;
     this.data = data;
-}
+};
 
-Iterable.prototype.__next__ = function() {
+batavia.core.tuple_iterator.prototype = Object.create(Object.prototype);
+
+batavia.core.tuple_iterator.prototype.__next__ = function() {
     var retval = this.data[this.index];
     if (retval === undefined) {
         throw new batavia.builtins.StopIteration();
@@ -240,9 +315,9 @@ Iterable.prototype.__next__ = function() {
     return retval;
 };
 
-function next(iterator) {
-    return iterator.__next__();
-}
+batavia.core.tuple_iterator.prototype.__str__ = function() {
+    return "<tuple_iterator object at 0x99999999>";
+};
 
 /*************************************************************************
  * An implementation of range()
@@ -257,17 +332,6 @@ batavia.core.range = function(start, stop, step) {
         this.start = 0;
         this.stop = start;
     }
-
-    this.i = this.start;
-};
-
-batavia.core.range.prototype.__next__ = function() {
-    var retval = this.i;
-    if (this.i < this.stop) {
-        this.i = this.i + this.step;
-        return retval;
-    }
-    throw new batavia.builtins.StopIteration();
 };
 
 batavia.core.range.prototype.toString = function() {
@@ -282,6 +346,32 @@ batavia.core.range.prototype.__str__ = function() {
     }
 };
 
+
+batavia.core.range.prototype.__iter__ = function() {
+    return new batavia.core.range_iterator(this);
+};
+
+
+batavia.core.range_iterator = function (data) {
+    Object.call(this);
+    this.data = data;
+    this.index = this.data.start;
+};
+
+batavia.core.range_iterator.prototype = Object.create(Object.prototype);
+
+batavia.core.range_iterator.prototype.__next__ = function() {
+    var retval = this.index;
+    if (this.index < this.data.stop) {
+        this.index = this.index + this.data.step;
+        return retval;
+    }
+    throw new batavia.builtins.StopIteration();
+};
+
+batavia.core.range_iterator.prototype.__str__ = function() {
+    return "<range_iterator object at 0x99999999>";
+};
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
  *************************************************************************/
@@ -593,29 +683,4 @@ batavia.make_callable = function(func) {
     };
     fn.__python__ = true;
     return fn;
-};
-
-/*************************************************************************
- * utils
- *************************************************************************/
-
-batavia.utils = batavia.utils || {};
-batavia.utils.isType = function isType(type, obj) {
-    var clas = Object.prototype.toString.call(obj).slice(8, -1);
-    return obj !== undefined && obj !== null && clas === type;
-};
-
-batavia.utils.TYPES = {
-    ARRAY: 'Array',
-    ARGUMENTS: 'Arguments',
-    BOOLEAN: 'Boolean',
-    DATE: 'Date',
-    ERROR: 'Error',
-    FUNCTION: 'Function',
-    JSON: 'JSON',
-    MATH: 'Math',
-    NUMBER: 'Number',
-    OBJECT: 'Object',
-    REGEXP: 'RegExp',
-    STRING: 'String'
 };

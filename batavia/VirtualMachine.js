@@ -926,13 +926,13 @@ batavia.VirtualMachine.prototype.byte_SETUP_LOOP = function(dest) {
 };
 
 batavia.VirtualMachine.prototype.byte_GET_ITER = function() {
-    this.push(iter(this.pop()));
+    this.push(batavia.builtins.iter([this.pop()], null));
 };
 
 batavia.VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
     var iterobj = this.top();
     try {
-        var v = next(iterobj);
+        var v = iterobj.__next__();
         this.push(v);
     } catch (err) {
         if (err instanceof batavia.builtins.StopIteration) {
