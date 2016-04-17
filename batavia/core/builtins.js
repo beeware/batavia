@@ -294,6 +294,16 @@ batavia.builtins.dict = function(args, kwargs) {
             }
         }
     }
+    
+    // handling keyword arguments and no arguments
+    if (args.length === 0) {
+        if (kwargs) {
+            return kwargs;
+        }
+        else {
+            return {};
+        }
+    }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
