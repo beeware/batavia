@@ -1,5 +1,5 @@
 // A polyfill for the lack of Function.bind on PhantomJS 1.8
-
+// which is the default PhantomJS on Ubuntu 12.04 and 14.04
 if (!Function.prototype.bind) {
   Function.prototype.bind = function (oThis) {
     if (typeof this !== "function") {

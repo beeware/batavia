@@ -279,12 +279,12 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 on_fail="Unable to create console redirection"
             )
 
-            # sendPhantomCommand(
-            #     _phantomjs,
-            #     "page.injectJs('polyfill.js')",
-            #     success=['true', '{}'],
-            #     on_fail="Unable to inject polyfill"
-            # )
+            sendPhantomCommand(
+                _phantomjs,
+                "page.injectJs('polyfill.js')",
+                success=['true', '{}'],
+                on_fail="Unable to inject polyfill"
+            )
             sendPhantomCommand(
                 _phantomjs,
                 "page.injectJs('../batavia.min.js')",
@@ -325,7 +325,7 @@ PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File 
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 
-MEMORY_REFERENCE = re.compile('0x[\dabcdef]{4,9}')
+MEMORY_REFERENCE = re.compile('0x[\dabcdef]{4,12}')
 
 
 def cleanse_javascript(input):
