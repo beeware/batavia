@@ -56,9 +56,16 @@ Alternatively, you can download the PhantomJS tarball, and put the
 Ubuntu
 ~~~~~~
 
-Installation on Ubuntu 14.04 is relatively simple::
+Unfortunately, Ubuntu 14.04 ships with PhantomJS 1.8, which is quite old, and
+has a number of significant bugs. You need to have PhantomJS >= 2.0 to run the
+Batavia test suite.
 
-    $ sudo apt-get install phantomjs
+A version of PhantomJS 2.0, precompiled for Ubuntu 14.04 can be `downloaded
+here`_. This is the same binary that is used to run the `Batavia CI server`_,
+so it should be reliable.
+
+.. _downloaded here: https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
+.. _Batavia CI server: https://travis-ci.org/pybee/batavia
 
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
