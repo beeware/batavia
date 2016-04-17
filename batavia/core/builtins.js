@@ -296,7 +296,7 @@ batavia.builtins.dict = function(args, kwargs) {
     }
     
     // handling keyword arguments and no arguments
-    if (args.length === 0) {
+    if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {
             return kwargs;
         }
