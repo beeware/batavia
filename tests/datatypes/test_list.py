@@ -218,7 +218,7 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-        'test_multiply_bool',
+       'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
@@ -427,7 +427,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-        'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
@@ -435,7 +434,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_dict',
         'test_multiply_float',
         'test_multiply_frozenset',
-        'test_multiply_int',
         'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',

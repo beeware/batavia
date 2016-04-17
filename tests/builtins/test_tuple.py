@@ -18,7 +18,6 @@ class BuiltinTupleFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_float',
         'test_frozenset',
         'test_int',
-        'test_list',
         'test_none',
         'test_set',
         'test_str',
