@@ -41,7 +41,7 @@ It's alive!
 -----------
 
 On the right hand side of the screen is a text box. This is where you can put your
-sample Python code. Into this text box, type::
+sample Python code. Into this text box, type:
 
 .. code-block:: python
 
@@ -51,13 +51,11 @@ Then click on the "Run code" button. The page will reload, and below the line
 on the page after the "Console output" label, you'll see the output you'd
 expect from this Python program::
 
-.. code-block:: bash
-
     Hello, World
 
 Congratulations! You've just run your first Python program under Javascript
 using Batavia! Let's get a little more adventurous, and add a loop. Replace
-the code in the text box with the following::
+the code in the text box with the following:
 
 .. code-block:: python
 
@@ -94,7 +92,9 @@ ran ``python test.py``.
 Having compiled the source code into bytecode form, it then encoded the
 contents of the pyc file into base64, and inserted that base64 string into the
 returned HTML response. If you inspect the source code for the page, you
-should see a block in the document ``<head>`` that look something like::
+should see a block in the document ``<head>`` that look something like:
+
+.. code-block:: html
 
     <script id="batavia-customcode" type="application/python-bytecode">
         7gwNCkIUE1cWAAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAcw4AAABlAABkAACDAQABZAEAUykCegtI
@@ -122,7 +122,9 @@ section of the screen.
 
 If you want to see you can `inspect the source code`_. However, one part of
 ``sample.py`` that is of particular interest is the part that opens the new
-browser window::
+browser window:
+
+.. code-block:: python
 
     import dom
 
