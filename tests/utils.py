@@ -279,12 +279,12 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 on_fail="Unable to create console redirection"
             )
 
-            sendPhantomCommand(
-                _phantomjs,
-                "page.injectJs('polyfill.js')",
-                success=['true', '{}'],
-                on_fail="Unable to inject polyfill"
-            )
+            # sendPhantomCommand(
+            #     _phantomjs,
+            #     "page.injectJs('polyfill.js')",
+            #     success=['true', '{}'],
+            #     on_fail="Unable to inject polyfill"
+            # )
             sendPhantomCommand(
                 _phantomjs,
                 "page.injectJs('../batavia.min.js')",
