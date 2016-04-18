@@ -361,7 +361,7 @@ batavia.builtins.dict = function(args, kwargs) {
         throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length 1; 2 is required");
     }
     // error handling for iterables
-    if (args.length === 1 && args[0].constructor === Array) {
+    if (args.length === 1 && args.constructor === Array) {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
@@ -375,7 +375,6 @@ batavia.builtins.dict = function(args, kwargs) {
             }
         }
     }
-    
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {
@@ -384,6 +383,22 @@ batavia.builtins.dict = function(args, kwargs) {
         else {
             return {};
         }
+    }    
+    // passing a dictionary as argument
+    if (args[0].constructor === Object) {
+        return args;
+    }
+    // passing a list as argument
+    if (args.length === 1) {
+        var dict = {};
+        for (i = 0; i < args[0].length; i++) {
+            var sub_array = args[0][i];
+            if (sub_array.length === 2) {
+                dict[sub_array[0]] = sub_array[1];
+            }
+        }
+        return dict;
+    }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
