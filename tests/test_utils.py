@@ -210,11 +210,7 @@ class JavaScriptBootstrapTests(TranspileTestCase):
         "You can supply JavaScript code and use it from within Python"
         self.assertJavaScriptExecution(
             """
-            from example import MyClass, myfunc
-
-            # FIXME: This should also handle class instantiation.
-            # obj = MyClass()
-            # obj.doStuff()
+            from example import myfunc
 
             myfunc()
 
@@ -223,12 +219,6 @@ class JavaScriptBootstrapTests(TranspileTestCase):
             js={
                 'example': """
                 example = function(mod) {
-                    mod.MyClass = function() {
-                    };
-
-                    mod.MyClass.prototype.doStuff = function() {
-                        console.log("Hello from JavaScript class.");
-                    };
 
                     mod.myfunc = function() {
                         console.log("Hello from JavaScript function.");

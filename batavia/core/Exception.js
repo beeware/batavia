@@ -11,9 +11,6 @@ batavia.builtins.BaseException.prototype.toString = function() {
         return this.name;
     }
 };
-batavia.builtins.BaseException.prototype.__call__ = function(args, kwargs) {
-    return new this.prototype.constructor(args[0]);
-};
 
 function BataviaError(msg) {
     batavia.builtins.BaseException.call(this, 'BataviaError', msg);

@@ -27,7 +27,6 @@ batavia.builtins.<fn> = function(<args>, <kwargs>) {
     Javascript.Function.Stuf()
 }
 batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
-
 */
 
 batavia.builtins.__import__ = function(args, kwargs) {
@@ -40,40 +39,105 @@ batavia.builtins.__import__ = function(args, kwargs) {
     // If there still isn't a module, try loading one from the DOM.
     if (module === undefined) {
         // Load requested module
+        var name_parts = args[0].split('.');
+        var name = name_parts[0];
         try {
-            var payload = document.getElementById('batavia-' + args[0]).text.replace(/(\r\n|\n|\r)/gm, "").trim();
-            var code = batavia.modules.marshal.load_pyc(this, payload);
+            var root_module = batavia.modules.sys.modules[name];
+            var payload, code, frame;
+            if (root_module === undefined) {
+                payload = this.loader(name);
+                code = batavia.modules.marshal.load_pyc(this, payload);
 
-            // Convert code object to module
-            var frame = this.make_frame({'code': code, 'f_globals': args[1], 'f_locals': null});
-            this.run_frame(frame);
+                // Convert code object to module
+                frame = this.make_frame({
+                    'code': code,
+                    'f_globals': args[1],
+                    'f_locals': new batavia.core.Dict(),
+                });
+                this.run_frame(frame);
 
-            batavia.modules.sys.modules[args[0]] = new batavia.core.Module(frame.f_locals);
+                root_module = new batavia.core.Module(name, frame.f_locals);
+                batavia.modules.sys.modules[name] = root_module;
+            }
+
+            var sub_module = root_module;
+            for (var n = 1; n < name_parts.length; n++) {
+                name = name_parts.slice(0, n + 1).join('.');
+
+                var new_sub = batavia.modules.sys.modules[name];
+                if (new_sub === undefined) {
+                    payload = this.loader(name);
+                    code = batavia.modules.marshal.load_pyc(this, payload);
+
+                    // Convert code object to module
+                    frame = this.make_frame({
+                        'code': code,
+                        'f_globals': args[1],
+                        'f_locals': new batavia.core.Dict(),
+                    });
+                    this.run_frame(frame);
+
+                    new_sub = new batavia.core.Module(name, frame.f_locals);
+                    sub_module[name_parts[n]] = new_sub;
+                    sub_module = new_sub;
+                    batavia.modules.sys.modules[name] = sub_module;
+                } else {
+                    sub_module = new_sub;
+                }
+            }
+
             if (args[3] === null) {
                 // import <mod>
-                module = batavia.modules.sys.modules[args[0]];
-            } else {
+                module = root_module;
+            } else if (args[3][0] === "*") {
                 // from <mod> import *
-                module = new batavia.core.Module();
-                for (var n in args[3]) {
-                    var name = args[3][n];
-                    module[name] = frame.f_locals[name];
+                module = new batavia.core.Module(sub_module.__name__);
+                for (name in sub_module) {
+                    if (sub_module.hasOwnProperty(name)) {
+                        module[name] = sub_module[name];
+                    }
+                }
+            } else {
+                // from <mod> import <name>, <name>
+                module = new batavia.core.Module(sub_module.__name__);
+                for (var sn = 0; sn < args[3].length; sn++) {
+                    name = args[3][sn];
+                    if (sub_module[name] === undefined) {
+                        batavia.builtins.__import__.apply(this, [[sub_module.__name__ + '.' + name, this.frame.f_globals, null, null, null]]);
+                    }
+                    module[name] = sub_module[name];
                 }
             }
         } catch (err) {
             // Native module. Look for a name in the global
             // (window) namespace.
-            var js_module = window[args[0]];
+            var root_module = window[name];
+            batavia.modules.sys.modules[name] = root_module;
+
+            var sub_module = root_module;
+            for (var n = 1; n < name_parts.length; n++) {
+                name = name_parts.slice(0, n + 1).join('.');
+                sub_module = sub_module[name_parts[n]];
+                batavia.modules.sys.modules[name] = sub_module;
+            }
+
             if (args[3] === null) {
                 // import <mod>
-                batavia.modules.sys.modules[args[0]] = js_module;
-                module = js_module;
-            } else {
+                module = root_module;
+            } else if (args[3][0] === "*") {
                 // from <mod> import *
-                module = new batavia.core.Module();
-                for (var n in args[3]) {
-                    var name = args[3][n];
-                    module[name] = js_module[name];
+                module = {};
+                for (name in sub_module) {
+                    if (sub_module.hasOwnProperty(name)) {
+                        module[name] = sub_module[name];
+                    }
+                }
+            } else {
+                // from <mod> import <name>, <name>
+                module = {};
+                for (var nn = 0; nn < args[3].length; nn++) {
+                    name = args[3][nn];
+                    module[name] = sub_module[name];
                 }
             }
         }

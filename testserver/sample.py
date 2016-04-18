@@ -72,6 +72,8 @@ def main(argv):
     print('Import a native module...')
     import native
     native.waggle(5)
+    obj = native.MyClass(7)
+    obj.doStuff(10)
 
     print('Try some builtins...')
     try_builtins()

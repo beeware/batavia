@@ -28,7 +28,7 @@ def bytecode(sourcefile):
 def home(request):
     ctx = {
         'samplecode': bytecode('sample.py'),
-        'othercode': bytecode('other.py')
+        'othercode': bytecode('other.py'),
     }
     if request.method.lower() == 'post' and request.POST['code']:
         tempfd, tempname = tempfile.mkstemp()

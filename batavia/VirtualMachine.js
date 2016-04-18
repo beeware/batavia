@@ -743,10 +743,15 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val = obj[attr];
     if (val instanceof batavia.core.Function) {
+        // If this is a Python function, we need to know the current
+        // context - if it's an attribute of an object (rather than
+        // a module) we need to upgrade the Function to a Method.
         if (!(obj instanceof batavia.core.Module)) {
             val = new batavia.core.Method(obj, val);
         }
     } else if (val instanceof Function) {
+        // If this is a native Javascript function, wrap the function
+        // so that the Python calling convention is used.
         val = function(fn) {
             return function(args, kwargs) {
                 return fn.apply(obj, args);
@@ -1156,7 +1161,8 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     var func = this.pop();
     // frame = this.frame
     if ('__self__' in func && '__python__' in func) {
-        // Methods get self as an implicit first parameter.
+        // A python-style method
+        // Methods calls get self as an implicit first parameter.
         if (func.__self__) {
             posargs.unshift(func.__self__);
         }
@@ -1168,9 +1174,25 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         }
         func = func.__func__.__call__;
     } else if ('__call__' in func) {
+        // A Python callable
         func = func.__call__;
-    } else if (func.prototype && '__call__' in func.prototype) {
-        func = func.prototype.__call__.bind(func);
+    } else if (func.prototype) {
+        var is_class = false;
+        for (var attr in func.prototype) {
+            if (func.prototype.hasOwnProperty(attr)) {
+                is_class = true;
+                break;
+            }
+        }
+        if (is_class) {
+            func = function(fn) {
+                return function(args, kwargs) {
+                    var obj = Object.create(fn.prototype);
+                    fn.apply(obj, args);
+                    return obj;
+                };
+            }(func);
+        }
     }
 
     var retval = func.apply(this, [posargs, namedargs]);
@@ -1218,22 +1240,29 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 batavia.VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2);
     this.push(
-        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, this.frame.f_locals, items[1], items[0]]])
+        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]]])
     );
 };
 
 batavia.VirtualMachine.prototype.byte_IMPORT_STAR = function() {
     // TODO: this doesn't use __all__ properly.
     var mod = this.pop();
-    for (var attr in mod) {
-        if (attr[0] !== '_') {
-            this.frame.f_locals[attr] = mod[attr];
+    if ('__all__' in mod) {
+        for (var n = 0; n < mod.__all__.length; n++) {
+            var name = mod.__all__[n];
+            this.frame.f_locals[name] = mod[name];
+        }
+    } else {
+        for (var attr in mod) {
+            if (attr[0] !== '_') {
+                this.frame.f_locals[attr] = mod[attr];
+            }
         }
     }
 };
 
 batavia.VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
-    mod = this.top();
+    var mod = this.top();
     this.push(mod[name]);
 };
 

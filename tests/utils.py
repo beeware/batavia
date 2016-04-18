@@ -130,7 +130,7 @@ class PhantomJSCrash(RuntimeError):
     pass
 
 
-def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
+def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fail=None):
     if payload:
         cmd = adjust(payload).replace('\n', '')
         # print("<<<", cmd)
@@ -140,7 +140,11 @@ def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
         _phantomjs.stdin.flush()
 
     # print("WAIT FOR PROMPT...")
-    out = [""]
+    if output is not None:
+        out = output
+    else:
+        out = []
+    out.append("")
     while out[-1] != "phantomjs> " and out[-1] != 'PhantomJS has crashed. ':
         try:
             ch = _phantomjs.stdout.read(1).decode("utf-8")
@@ -230,12 +234,14 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
     for name, code in modules.items():
         lines = code.decode('utf-8').split('\n')
         output = '"%s"' % '" +\n        "'.join(line for line in lines if line)
-        payload.append('"%s": %s' % (name, output))
+        if name.endswith('.__init__'):
+            name = name.rsplit('.', 1)[0]
+        payload.append('    "%s": %s' % (name, output))
 
     with open(os.path.join(test_dir, 'modules.js'), 'w') as js_file:
         js_file.write(adjust("""
             var modules = {
-                %s
+            %s
             };
             """) % (
                 ',\n'.join(payload)
@@ -299,23 +305,29 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
                 on_fail="Unable to inject modules"
             )
 
+            output = []
             if js is not None:
-                for mod, payload in js.items():
+                for mod, payload in sorted(js.items()):
                     sendPhantomCommand(
                         _phantomjs,
                         "page.injectJs('%s.js')" % os.path.join('temp', mod),
+                        output=output,
                         success=['true', '{}'],
                         on_fail="Unable to inject native module %s" % mod
                     )
 
-            out = sendPhantomCommand(_phantomjs, """
+            out = sendPhantomCommand(
+                _phantomjs,
+                """
                 page.evaluate(function() {
                     var vm = new batavia.VirtualMachine(function(name) {
                         return modules[name];
                     });
                     vm.run('testcase', []);
                 });
-                """)
+                """,
+                output=output
+            )
         except PhantomJSCrash:
             _phantomjs.kill()
             _phantomjs.stdin.close()

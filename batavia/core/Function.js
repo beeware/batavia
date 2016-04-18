@@ -40,7 +40,8 @@ batavia.core.Method = function(instance, func) {
 batavia.core.Method.prototype = Object.create(Function.prototype);
 
 
-batavia.core.Module = function(locals) {
+batavia.core.Module = function(name, locals) {
+    this.__name__ = name;
     for (var key in locals) {
         if (locals.hasOwnProperty(key)) {
             this[key] = locals[key];

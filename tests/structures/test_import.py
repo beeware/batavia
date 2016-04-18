@@ -1,5 +1,3 @@
-import os
-
 from ..utils import TranspileTestCase
 
 import unittest
@@ -18,7 +16,6 @@ class ImportTests(TranspileTestCase):
             print("Done.")
             """)
 
-    @unittest.expectedFailure
     def test_import_module(self):
         "You can import a Python module implemented in Python"
         self.assertCodeExecution(
@@ -39,7 +36,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_multiple_module_import(self):
         "You can import a multiple Python modules implemented in Python"
         self.assertCodeExecution(
@@ -69,7 +65,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_full_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -93,7 +88,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_module_from_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -117,7 +111,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_symbol_from_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -141,7 +134,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_full_deep_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -180,7 +172,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_module_from_deep_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -219,7 +210,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_symbol_from_deep_dotted_path(self):
         self.assertCodeExecution(
             """
@@ -258,7 +248,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_symbol_import(self):
         self.assertCodeExecution(
             """
@@ -278,7 +267,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_multiple_symbol_import(self):
         self.assertCodeExecution(
             """
@@ -315,7 +303,6 @@ class ImportTests(TranspileTestCase):
                     """
             })
 
-    @unittest.expectedFailure
     def test_import_star(self):
         self.assertCodeExecution(
             """
@@ -349,7 +336,6 @@ class ImportTests(TranspileTestCase):
                     """
             }, run_in_function=False)
 
-    @unittest.expectedFailure
     def test_import_star_with_all(self):
         self.assertCodeExecution(
             """
@@ -387,3 +373,508 @@ class ImportTests(TranspileTestCase):
 
                     """
             }, run_in_function=False)
+
+
+class NativeImportTests(TranspileTestCase):
+    def test_import_module(self):
+        "You can import a module implemented in Javascript"
+        self.assertJavaScriptExecution(
+            """
+            import example
+
+            example.some_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a module method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're calling a module method
+            Done.
+            """)
+
+    def test_multiple_module_import(self):
+        "You can import a multiple Python modules implemented in Python"
+        self.assertJavaScriptExecution(
+            """
+            import example, other
+
+            example.some_method()
+
+            other.other_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a module method");
+                        }
+                        return mod;
+                    }({});
+                    """,
+                'other':
+                    """
+                    other = function(mod) {
+                        console.log("Now we're in the other module");
+
+                        mod.other_method = function() {
+                            console.log("Now we're calling another module method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in the other module
+            Now we're calling a module method
+            Now we're calling another module method
+            Done.
+            """)
+
+    def test_full_dotted_path(self):
+        self.assertJavaScriptExecution(
+            """
+            import example.submodule
+
+            example.submodule.some_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule':
+                    """
+                    example.submodule = function(mod) {
+                        console.log("Now we're in example.submodule");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a submodule method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in example.submodule
+            Now we're calling a submodule method
+            Done.
+            """)
+
+    def test_module_from_dotted_path(self):
+        self.assertJavaScriptExecution(
+            """
+            from example import submodule
+
+            submodule.some_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule':
+                    """
+                    example.submodule = function(mod) {
+                        console.log("Now we're in example.submodule");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a submodule method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in example.submodule
+            Now we're calling a submodule method
+            Done.
+            """)
+
+    def test_symbol_from_dotted_path(self):
+        self.assertJavaScriptExecution(
+            """
+            from example.submodule import some_method
+
+            some_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule':
+                    """
+                    example.submodule = function(mod) {
+                        console.log("Now we're in example.submodule");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a submodule method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in example.submodule
+            Now we're calling a submodule method
+            Done.
+            """)
+
+    def test_full_deep_dotted_path(self):
+        self.assertJavaScriptExecution(
+            """
+            import example.submodule.subsubmodule.another
+
+            example.submodule.subsubmodule.another.another_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule':
+                    """
+                    example.submodule = function(mod) {
+                        console.log("Now we're in example.submodule");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.other':
+                    """
+                    example.submodule.other = function(mod) {
+                        console.log("Now we're in example.submodule.other");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a submodule method");
+                        }
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.subsubmodule':
+                    """
+                    example.submodule.subsubmodule = function(mod) {
+                        console.log("Now we're in example.submodule.subsubmodule");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.subsubmodule.another':
+                    """
+                    example.submodule.subsubmodule.another = function(mod) {
+                        console.log("Now we're in example.submodule.subsubmodule.another");
+
+                        mod.another_method = function() {
+                            console.log("Now we're calling a subsubmodule method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in example.submodule
+            Now we're in example.submodule.other
+            Now we're in example.submodule.subsubmodule
+            Now we're in example.submodule.subsubmodule.another
+            Now we're calling a subsubmodule method
+            Done.
+            """)
+
+    def test_module_from_deep_dotted_path(self):
+        self.assertJavaScriptExecution(
+            """
+            from example.submodule.subsubmodule import another
+
+            another.another_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule':
+                    """
+                    example.submodule = function(mod) {
+                        console.log("Now we're in example.submodule");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.other':
+                    """
+                    example.submodule.other = function(mod) {
+                        console.log("Now we're in example.submodule.other");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a submodule method");
+                        }
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.subsubmodule':
+                    """
+                    example.submodule.subsubmodule = function(mod) {
+                        console.log("Now we're in example.submodule.subsubmodule");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.subsubmodule.another':
+                    """
+                    example.submodule.subsubmodule.another = function(mod) {
+                        console.log("Now we're in example.submodule.subsubmodule.another");
+
+                        mod.another_method = function() {
+                            console.log("Now we're calling a subsubmodule method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in example.submodule
+            Now we're in example.submodule.other
+            Now we're in example.submodule.subsubmodule
+            Now we're in example.submodule.subsubmodule.another
+            Now we're calling a subsubmodule method
+            Done.
+            """)
+
+    def test_symbol_from_deep_dotted_path(self):
+        self.assertJavaScriptExecution(
+            """
+            from example.submodule.subsubmodule.another import another_method
+
+            another_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule':
+                    """
+                    example.submodule = function(mod) {
+                        console.log("Now we're in example.submodule");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.other':
+                    """
+                    example.submodule.other = function(mod) {
+                        console.log("Now we're in example.submodule.other");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a submodule method");
+                        }
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.subsubmodule':
+                    """
+                    example.submodule.subsubmodule = function(mod) {
+                        console.log("Now we're in example.submodule.subsubmodule");
+                        return mod;
+                    }({});
+                    """,
+                'example.submodule.subsubmodule.another':
+                    """
+                    example.submodule.subsubmodule.another = function(mod) {
+                        console.log("Now we're in example.submodule.subsubmodule.another");
+
+                        mod.another_method = function() {
+                            console.log("Now we're calling a subsubmodule method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in example.submodule
+            Now we're in example.submodule.other
+            Now we're in example.submodule.subsubmodule
+            Now we're in example.submodule.subsubmodule.another
+            Now we're calling a subsubmodule method
+            Done.
+            """)
+
+    def test_symbol_import(self):
+        self.assertJavaScriptExecution(
+            """
+            from example import some_method
+
+            some_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a module method");
+                        }
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're calling a module method
+            Done.
+            """)
+
+    def test_multiple_symbol_import(self):
+        self.assertJavaScriptExecution(
+            """
+            from example import some_method, other_method
+
+            print("Call some method...")
+            some_method()
+
+            print("Call another method...")
+            other_method()
+
+            try:
+                print("But this will fail...")
+                third_method()
+            except NameError:
+                print("Which it does.")
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a module method");
+                        }
+
+                        mod.other_method = function() {
+                            console.log("Now we're calling another method");
+                        }
+
+                        mod.third_method = function() {
+                            console.log("Now we're calling a third method");
+                        }
+
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Call some method...
+            Now we're calling a module method
+            Call another method...
+            Now we're calling another method
+            But this will fail...
+            Which it does.
+            Done.
+            """)
+
+    def test_import_star(self):
+        self.assertJavaScriptExecution(
+            """
+            from example import *
+
+            print("Call some method...")
+            some_method()
+
+            print("Call another method...")
+            other_method()
+
+            print("Call a third method...")
+            third_method()
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.some_method = function() {
+                            console.log("Now we're calling a module method");
+                        }
+
+                        mod.other_method = function() {
+                            console.log("Now we're calling another method");
+                        }
+
+                        mod.third_method = function() {
+                            console.log("Now we're calling a third method");
+                        }
+
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Call some method...
+            Now we're calling a module method
+            Call another method...
+            Now we're calling another method
+            Call a third method...
+            Now we're calling a third method
+            Done.
+            """,
+            run_in_function=False)
