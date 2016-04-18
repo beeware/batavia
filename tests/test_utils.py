@@ -206,33 +206,30 @@ class PythonNormalizationTests(unittest.TestCase):
 
 
 class JavaScriptBootstrapTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_js_code(self):
         "You can supply JavaScript code and use it from within Python"
         self.assertJavaScriptExecution(
             """
-            from example import MyClass
+            from example import myfunc
 
-            obj = MyClass()
-
-            obj.doStuff()
+            myfunc()
 
             print("Done.")
             """,
             js={
                 'example': """
+                example = function(mod) {
 
-                function MyClass() {
-                }
+                    mod.myfunc = function() {
+                        console.log("Hello from JavaScript function.");
+                    };
 
-                MyClass.prototype.doStuff = function() {
-                    console.log("Hello from JavaScript.");
-                };
-
+                    return mod;
+                }({});
                 """
             },
             out="""
-            Hello from JavaScript.
+            Hello from JavaScript function.
             Done.
             """,
         )

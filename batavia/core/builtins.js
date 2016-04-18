@@ -27,7 +27,6 @@ batavia.builtins.<fn> = function(<args>, <kwargs>) {
     Javascript.Function.Stuf()
 }
 batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
-
 */
 
 batavia.builtins.__import__ = function(args, kwargs) {
@@ -40,28 +39,107 @@ batavia.builtins.__import__ = function(args, kwargs) {
     // If there still isn't a module, try loading one from the DOM.
     if (module === undefined) {
         // Load requested module
+        var name_parts = args[0].split('.');
+        var name = name_parts[0];
         try {
-            var payload = document.getElementById('batavia-' + args[0]).text.replace(/(\r\n|\n|\r)/gm, "").trim();
-            var code = batavia.modules.marshal.load_pyc(this, payload);
+            var root_module = batavia.modules.sys.modules[name];
+            var payload, code, frame;
+            if (root_module === undefined) {
+                payload = this.loader(name);
+                code = batavia.modules.marshal.load_pyc(this, payload);
 
-            // Convert code object to module
-            var frame = this.make_frame({'code': code, 'f_globals': args[1], 'f_locals': null});
-            this.run_frame(frame);
+                // Convert code object to module
+                frame = this.make_frame({
+                    'code': code,
+                    'f_globals': args[1],
+                    'f_locals': new batavia.core.Dict(),
+                });
+                this.run_frame(frame);
 
-            batavia.modules.sys.modules[args[0]] = new batavia.core.Module(frame.f_locals);
+                root_module = new batavia.core.Module(name, frame.f_locals);
+                batavia.modules.sys.modules[name] = root_module;
+            }
+
+            var sub_module = root_module;
+            for (var n = 1; n < name_parts.length; n++) {
+                name = name_parts.slice(0, n + 1).join('.');
+
+                var new_sub = batavia.modules.sys.modules[name];
+                if (new_sub === undefined) {
+                    payload = this.loader(name);
+                    code = batavia.modules.marshal.load_pyc(this, payload);
+
+                    // Convert code object to module
+                    frame = this.make_frame({
+                        'code': code,
+                        'f_globals': args[1],
+                        'f_locals': new batavia.core.Dict(),
+                    });
+                    this.run_frame(frame);
+
+                    new_sub = new batavia.core.Module(name, frame.f_locals);
+                    sub_module[name_parts[n]] = new_sub;
+                    sub_module = new_sub;
+                    batavia.modules.sys.modules[name] = sub_module;
+                } else {
+                    sub_module = new_sub;
+                }
+            }
+
             if (args[3] === null) {
                 // import <mod>
-                module = batavia.modules.sys.modules[args[0]];
-            } else {
+                module = root_module;
+            } else if (args[3][0] === "*") {
                 // from <mod> import *
-                module = new batavia.core.Module();
-                for (var n in args[3]) {
-                    var name = args[3][n];
-                    module[name] = frame.f_locals[name];
+                module = new batavia.core.Module(sub_module.__name__);
+                for (name in sub_module) {
+                    if (sub_module.hasOwnProperty(name)) {
+                        module[name] = sub_module[name];
+                    }
+                }
+            } else {
+                // from <mod> import <name>, <name>
+                module = new batavia.core.Module(sub_module.__name__);
+                for (var sn = 0; sn < args[3].length; sn++) {
+                    name = args[3][sn];
+                    if (sub_module[name] === undefined) {
+                        batavia.builtins.__import__.apply(this, [[sub_module.__name__ + '.' + name, this.frame.f_globals, null, null, null]]);
+                    }
+                    module[name] = sub_module[name];
                 }
             }
         } catch (err) {
-            throw new batavia.builtins.ImportError("No module named '" + args[0] + "'");
+            // Native module. Look for a name in the global
+            // (window) namespace.
+            var root_module = window[name];
+            batavia.modules.sys.modules[name] = root_module;
+
+            var sub_module = root_module;
+            for (var n = 1; n < name_parts.length; n++) {
+                name = name_parts.slice(0, n + 1).join('.');
+                sub_module = sub_module[name_parts[n]];
+                batavia.modules.sys.modules[name] = sub_module;
+            }
+
+            if (args[3] === null) {
+                // import <mod>
+                module = root_module;
+            } else if (args[3][0] === "*") {
+                // from <mod> import *
+                module = {};
+                for (name in sub_module) {
+                    if (sub_module.hasOwnProperty(name)) {
+                        module[name] = sub_module[name];
+                    }
+                }
+            } else {
+                // from <mod> import <name>, <name>
+                module = {};
+                for (var nn = 0; nn < args[3].length; nn++) {
+                    name = args[3][nn];
+                    module[name] = sub_module[name];
+                }
+            }
         }
     }
     return module;
@@ -498,12 +576,37 @@ batavia.builtins.issubclass = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
 };
 
-batavia.builtins.iter = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' not implemented");
+batavia.builtins.iter = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("len() doesn't accept keyword arguments");
+    }
+    if (!args || args.length === 0) {
+        throw new batavia.builtins.TypeError("len() expected at least 1 arguments, got 0");
+    }
+    if (args.length == 2) {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' with callable/sentinet not implemented");
+    }
+    if (args.length > 2) {
+        throw new batavia.builtins.TypeError("len() expected at most 2 arguments, got 3");
+    }
+
+    if (args[0].__iter__) {
+        return args[0].__iter__();
+    } else if (args[0] instanceof Array) {
+        return new batavia.core.list_iterator(args[0]);
+    } else if (args[0] instanceof String || typeof args[0] === "string") {
+        return new batavia.core.str_iterator(args[0]);
+    } else {
+        throw new batavia.builtins.TypeError("'" + (typeof args[0]) + "' object is not iterable");
+    }
 };
+batavia.builtins.iter.__doc__ = 'iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.';
 
 batavia.builtins.len = function(args, kwargs) {
-    if (args === undefined || args[0] === undefined) {
+    if (!args || args.length !== 1 || args[0] === undefined) {
         throw new batavia.builtins.TypeError("len() takes exactly one argument (0 given)");
     }
 
@@ -515,6 +618,7 @@ batavia.builtins.len = function(args, kwargs) {
 
     return args[0].length;
 };
+batavia.builtins.len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.';
 
 batavia.builtins.license = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented");
@@ -630,8 +734,22 @@ batavia.builtins.quit = function() {
 };
 
 batavia.builtins.range = function(args, kwargs){
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("range() doesn't accept keyword arguments");
+    }
+    if (!args || args.length === 0) {
+        throw new batavia.builtins.TypeError('range() expected 1 arguments, got ' + args.length);
+    }
+    if (args.length > 3) {
+     throw new batavia.builtins.TypeError('range() expected at most 3 arguments, got ' + args.length);
+    }
+
     return new batavia.core.range(args[0], args[1], args[2]);
 };
+batavia.builtins.range.__doc__ = 'range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn a virtual sequence of numbers from start to stop by step.';
 
 batavia.builtins.raw_input = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'raw_input' not implemented");

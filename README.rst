@@ -7,65 +7,26 @@
 Batavia
 =======
 
-Tools to run Python bytecode in the browser.
+**Batavia is an early alpha project. If it breaks, you get to keep all the shiny pieces.**
 
-This is experimental code. If it breaks, you get to keep all the shiny pieces.
+Batavia is an implementation of the Python virtual machine, written in
+Javascript. It enables you to run Python bytecode in the browser.
 
-What it does:
+It honors Python 3.4 syntax and conventions, but also provides the ability to
+reference objects and classes defined natively in JavaScript.
 
-* Implements a Python 3.4 Bytecode machine that can handle function calls
-  and basic class definitions.
+Tutorial
+--------
 
-* Unmarshals Base64 encoded bytecode into Code objects
+To take Batavia for a spin, run through the `Getting Started guide`_, then start
+with `the first tutorial`_.
 
-* Implements most of the common Python VM opcodes
+If you'd like to contribute to Batavia development, we have a `guide for first time contributors`_.
 
-* Allows access to the DOM using `import dom`,
+.. _Getting Started guide: http://batavia.readthedocs.org/en/latest/intro/getting-started.html
+.. _the first tutorial: http://batavia.readthedocs.org/en/latest/tutorials/tutorial-0.html
 
-What it doesn't do:
-
-* Make a good distinction between integer and floating point math
-
-* Any attempt at unicode handling.
-
-* Raise errors (especially TypeErrors during math operations) in exactly
-  the same way as Python
-
-* Support all Python's builtin functions
-
-* Support the full Python standard library
-
-* Allow for class inheritance
-
-Quickstart
-----------
-
-The `testserver` directory contains a minimal Django project that will serve
-Python bytecode to your browser and execute it. To run this project, you'll
-need to be running Python 3.4. Install Django 1.8 into your virtual
-environment; then, at a shell prompt::
-
-    $ cd testserver
-    $ pip install -r requirements.txt
-    $ ./manage.py runserver
-
-You can then load http://127.0.0.1:8000 in your browser. When the page loads,
-you will see a set of buttons corresponding to Python modules that
-have been embedded in the page:
-
-* The PyStone performance benchmark. The Python bytecode is embedded as a
-  string in the HTML file.
-
-* `sample.py`, a simple Python example demonstrating basic VM features.
-   The PYC content that is dynamically generated on the server and served
-   to the client. This file imports a second file, `other.py`, to
-   demonstrate how imports work.
-
-Click one of the buttons, and the code will run; stdout/stderr has been
-redirected to the webpage, so if the script has any output, you'll see it.
-
-To start tinkering, make changes to `testserver/sample.py`, reload the page,
-and click the "Run sample.py" button.
+.. _guide for first time contributors: https://github.com/pybee/batavia/wiki/Your-first-Batavia-contribution
 
 Documentation
 -------------
