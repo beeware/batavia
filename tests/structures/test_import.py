@@ -878,3 +878,87 @@ class NativeImportTests(TranspileTestCase):
             Done.
             """,
             run_in_function=False)
+
+    def test_symbol_import_class(self):
+        self.assertJavaScriptExecution(
+            """
+            from example import MyClass
+
+            obj = MyClass(1, 2, 3)
+            obj.doStuff(4, 5, 6)
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.MyClass = function(x, y, z) {
+                            console.log("Now we're in the constructor " + x + ' ' + y + ' ' + z);
+                            this.x = x;
+                            this.y = y;
+                            this.z = z;
+                        };
+
+                        mod.MyClass.prototype.doStuff = function(a, b, c) {
+                            console.log("first: " + a + ' ' + this.x + ' ' + (a + this.x));
+                            console.log("second: " + b + ' ' + this.y + ' ' + (b + this.y));
+                            console.log("third: " + c + ' ' + this.z + ' ' + (c + this.z));
+                        };
+
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in the constructor 1 2 3
+            first: 4 1 5
+            second: 5 2 7
+            third: 6 3 9
+            Done.
+            """)
+
+    def test_module_import_class(self):
+        self.assertJavaScriptExecution(
+            """
+            import example
+
+            obj = example.MyClass(1, 2, 3)
+            obj.doStuff(4, 5, 6)
+
+            print("Done.")
+            """,
+            js={
+                'example':
+                    """
+                    example = function(mod) {
+                        console.log("Now we're in the example module");
+
+                        mod.MyClass = function(x, y, z) {
+                            console.log("Now we're in the constructor " + x + ' ' + y + ' ' + z);
+                            this.x = x;
+                            this.y = y;
+                            this.z = z;
+                        };
+
+                        mod.MyClass.prototype.doStuff = function(a, b, c) {
+                            console.log("first: " + a + ' ' + this.x + ' ' + (a + this.x));
+                            console.log("second: " + b + ' ' + this.y + ' ' + (b + this.y));
+                            console.log("third: " + c + ' ' + this.z + ' ' + (c + this.z));
+                        };
+
+                        return mod;
+                    }({});
+                    """
+            },
+            out="""
+            Now we're in the example module
+            Now we're in the constructor 1 2 3
+            first: 4 1 5
+            second: 5 2 7
+            third: 6 3 9
+            Done.
+            """)

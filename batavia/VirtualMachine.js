@@ -752,11 +752,28 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     } else if (val instanceof Function) {
         // If this is a native Javascript function, wrap the function
         // so that the Python calling convention is used.
-        val = function(fn) {
-            return function(args, kwargs) {
-                return fn.apply(obj, args);
-            };
-        }(val);
+        var is_class = false;
+        for (var a in val.prototype) {
+            if (val.prototype.hasOwnProperty(a)) {
+                is_class = true;
+                break;
+            }
+        }
+        if (is_class) {
+            val = function(fn) {
+                return function(args, kwargs) {
+                    var obj = Object.create(fn.prototype);
+                    fn.apply(obj, args);
+                    return obj;
+                };
+            }(val);
+        } else {
+            val = function(fn) {
+                return function(args, kwargs) {
+                    return fn.apply(obj, args);
+                };
+            }(val);
+        }
     }
     this.push(val);
 };
