@@ -61,7 +61,21 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 }
             }
         } catch (err) {
-            throw new batavia.builtins.ImportError("No module named '" + args[0] + "'");
+            // Native module. Look for a name in the global
+            // (window) namespace.
+            var js_module = window[args[0]];
+            if (args[3] === null) {
+                // import <mod>
+                batavia.modules.sys.modules[args[0]] = js_module;
+                module = js_module;
+            } else {
+                // from <mod> import *
+                module = new batavia.core.Module();
+                for (var n in args[3]) {
+                    var name = args[3][n];
+                    module[name] = js_module[name];
+                }
+            }
         }
     }
     return module;

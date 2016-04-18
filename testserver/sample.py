@@ -46,6 +46,7 @@ def main(argv):
     print(do_stuff(1, int(argv[1])))
     print('Use kwarg')
     print(do_stuff(1, size=int(argv[1])))
+
     print('Make point')
     p = Point(2, 3)
     print('Distance with default is', p.distance())
@@ -57,6 +58,7 @@ def main(argv):
     print('hasattr(p, "a")', hasattr(p, "a"))  # expect false
     print('delattr(p, "x")', delattr(p, "x"))
     print('hasattr(p, "x")', hasattr(p, "x"))  # now expect false
+
     print('Manipulate the DOM...')
     print('Open a new web page...')
     dom.window.open('http://pybee.org', '_blank')
@@ -66,6 +68,11 @@ def main(argv):
     div = dom.document.getElementById('stdout')
     print('... and set of that element.')
     div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
+
+    print('Import a native module...')
+    import native
+    native.waggle(5)
+
     print('Try some builtins...')
     try_builtins()
     return 0

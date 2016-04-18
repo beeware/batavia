@@ -185,7 +185,7 @@ def sendPhantomCommand(phantomjs, payload=None, success=None, on_fail=None):
         return None
 
 
-def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
+def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None):
     # Output source code into test directory
     py_filename = os.path.join(test_dir, 'test.py')
     with open(py_filename, 'w') as py_source:
@@ -268,6 +268,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 success='undefined',
                 on_fail="Unable to create webpage."
             )
+
             sendPhantomCommand(
                 _phantomjs,
                 """
@@ -297,6 +298,15 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, run_in_function=False,
                 success=['true', '{}'],
                 on_fail="Unable to inject modules"
             )
+
+            if js is not None:
+                for mod, payload in js.items():
+                    sendPhantomCommand(
+                        _phantomjs,
+                        "page.injectJs('%s.js')" % os.path.join('temp', mod),
+                        success=['true', '{}'],
+                        on_fail="Unable to inject native module %s" % mod
+                    )
 
             out = sendPhantomCommand(_phantomjs, """
                 page.evaluate(function() {
@@ -377,7 +387,7 @@ def cleanse_python(input):
 
 class TranspileTestCase(TestCase):
     def assertCodeExecution(self, code, message=None, extra_code=None, run_in_global=True, run_in_function=True, args=None):
-        "Run code as native python, and under Java and check the output is identical"
+        "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
         #==================================================
         # Pass 1 - run the code in the global context
@@ -392,8 +402,20 @@ class TranspileTestCase(TestCase):
                     pass
 
                 # Run the code as Python and as Java.
-                py_out = runAsPython(test_dir, code, extra_code, False, args=args)
-                js_out = runAsJavaScript(test_dir, code, extra_code, False, args=args)
+                py_out = runAsPython(
+                    test_dir,
+                    code,
+                    extra_code=extra_code,
+                    run_in_function=False,
+                    args=args
+                )
+                js_out = runAsJavaScript(
+                    test_dir,
+                    code,
+                    extra_code=extra_code,
+                    run_in_function=False,
+                    args=args
+                )
             except Exception as e:
                 self.fail(e)
             finally:
@@ -426,8 +448,20 @@ class TranspileTestCase(TestCase):
                     pass
 
                 # Run the code as Python and as Java.
-                py_out = runAsPython(test_dir, code, extra_code, True, args=args)
-                js_out = runAsJavaScript(test_dir, code, extra_code, True, args=args)
+                py_out = runAsPython(
+                    test_dir,
+                    code,
+                    extra_code=extra_code,
+                    run_in_function=True,
+                    args=args
+                )
+                js_out = runAsJavaScript(
+                    test_dir,
+                    code,
+                    extra_code=extra_code,
+                    run_in_function=True,
+                    args=args
+                )
             except Exception as e:
                 self.fail(e)
             finally:
@@ -448,83 +482,92 @@ class TranspileTestCase(TestCase):
             self.assertEqual(js_out, py_out, context)
 
     def assertJavaScriptExecution(self, code, out, extra_code=None, js=None, run_in_global=True, run_in_function=True, args=None):
-        "Run code under Java and check the output is as expected"
+        "Run code under JavaScript and check the output is as expected"
         self.maxDiff = None
-        try:
-            #==================================================
-            # Prep - compile any required Java sources
-            #==================================================
-            # Create the temp directory into which code will be placed
-            js_dir = os.path.join(os.path.dirname(__file__), 'js')
+        #==================================================
+        # Prep - compile any required Java sources
+        #==================================================
+        # Cleanse the Python output, producing a simple
+        # normalized format for exceptions, floats etc.
+        py_out = adjust(out)
 
+        #==================================================
+        # Pass 1 - run the code in the global context
+        #==================================================
+        if run_in_global:
             try:
-                os.mkdir(js_dir)
-            except FileExistsError:
-                pass
+                # Create the temp directory into which code will be placed
+                test_dir = os.path.join(os.path.dirname(__file__), 'temp')
+                try:
+                    os.mkdir(test_dir)
+                except FileExistsError:
+                    pass
 
-            # Cleanse the Python output, producing a simple
+                for mod, payload in js.items():
+                    with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
+                        jsfile.write(adjust(payload))
+
+                # Run the code as Javascript.
+                js_out = runAsJavaScript(
+                    test_dir,
+                    code,
+                    extra_code=extra_code,
+                    js=js,
+                    run_in_function=False,
+                    args=args
+                )
+            except Exception as e:
+                self.fail(e)
+            finally:
+                # Clean up the test directory where the class file was written.
+                shutil.rmtree(test_dir)
+                # print(js_out)
+
+            # Cleanse the Java output, producing a simple
             # normalized format for exceptions, floats etc.
-            py_out = adjust(out)
+            js_out = cleanse_javascript(js_out)
 
-            #==================================================
-            # Pass 1 - run the code in the global context
-            #==================================================
-            if run_in_global:
+            # Confirm that the output of the Java code is the same as the Python code.
+            self.assertEqual(js_out, py_out, 'Global context')
+
+        #==================================================
+        # Pass 2 - run the code in a function's context
+        #==================================================
+        if run_in_function:
+            try:
+                # Create the temp directory into which code will be placed
+                test_dir = os.path.join(os.path.dirname(__file__), 'temp')
                 try:
-                    # Create the temp directory into which code will be placed
-                    test_dir = os.path.join(os.path.dirname(__file__), 'temp')
-                    try:
-                        os.mkdir(test_dir)
-                    except FileExistsError:
-                        pass
+                    os.mkdir(test_dir)
+                except FileExistsError:
+                    pass
 
-                    # Run the code as Java.
-                    js_out = runAsJavaScript(test_dir, code, extra_code, False, args=args)
-                except Exception as e:
-                    self.fail(e)
-                finally:
-                    # Clean up the test directory where the class file was written.
-                    shutil.rmtree(test_dir)
-                    # print(js_out)
+                for mod, payload in js.items():
+                    with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
+                        jsfile.write(adjust(payload))
 
-                # Cleanse the Java output, producing a simple
-                # normalized format for exceptions, floats etc.
-                js_out = cleanse_javascript(js_out)
+                # Run the code as JavaScript.
+                js_out = runAsJavaScript(
+                    test_dir,
+                    code,
+                    extra_code=extra_code,
+                    js=js,
+                    run_in_function=True,
+                    args=args
+                )
+            except Exception as e:
+                self.fail(e)
+            finally:
+                # Clean up the test directory where the class file was written.
+                shutil.rmtree(test_dir)
+                # print(js_out)
 
-                # Confirm that the output of the Java code is the same as the Python code.
-                self.assertEqual(js_out, py_out, 'Global context')
+            # Cleanse the Java output, producing a simple
+            # normalized format for exceptions, floats etc.
+            js_out = cleanse_javascript(js_out)
 
-            #==================================================
-            # Pass 2 - run the code in a function's context
-            #==================================================
-            if run_in_function:
-                try:
-                    # Create the temp directory into which code will be placed
-                    test_dir = os.path.join(os.path.dirname(__file__), 'temp')
-                    try:
-                        os.mkdir(test_dir)
-                    except FileExistsError:
-                        pass
-
-                    # Run the code as JavaScript.
-                    js_out = runAsJavaScript(test_dir, code, extra_code, True, args=args)
-                except Exception as e:
-                    self.fail(e)
-                finally:
-                    # Clean up the test directory where the class file was written.
-                    shutil.rmtree(test_dir)
-                    # print(js_out)
-
-                # Cleanse the Java output, producing a simple
-                # normalized format for exceptions, floats etc.
-                js_out = cleanse_javascript(js_out)
-
-                # Confirm that the output of the JavaScript code is the same as the Python code.
-                self.assertEqual(js_out, py_out, 'Function context')
-
-        finally:
-            # Clean up the js directory where the class file was written.
-            shutil.rmtree(js_dir)
+            # Confirm that the output of the JavaScript code is the same as the Python code.
+            self.assertEqual(js_out, py_out, 'Function context')
 
 
 def _unary_test(test_name, operation):
