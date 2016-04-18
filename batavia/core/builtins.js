@@ -354,11 +354,14 @@ batavia.builtins.dict = function(args, kwargs) {
     if (args.length > 1) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
-    if (typeof(args[0]) === "number") {
+    if (typeof args[0] === "number") {
         throw new batavia.builtins.TypeError("'int' object is not iterable");
     }
+    if (typeof args[0] === "string" || args[0] instanceof String) {
+        throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length 1; 2 is required");
+    }
     // error handling for iterables
-    if (args.length === 1 && args.constructor === Array) {
+    if (args.length === 1 && args[0].constructor === Array) {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
@@ -381,7 +384,6 @@ batavia.builtins.dict = function(args, kwargs) {
         else {
             return {};
         }
-    }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
