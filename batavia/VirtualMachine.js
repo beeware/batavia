@@ -751,15 +751,11 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         }
     } else if (val instanceof Function) {
         // If this is a native Javascript function, wrap the function
-        // so that the Python calling convention is used.
-        var is_class = false;
-        for (var a in val.prototype) {
-            if (val.prototype.hasOwnProperty(a)) {
-                is_class = true;
-                break;
-            }
-        }
-        if (is_class) {
+        // so that the Python calling convention is used. If it's a
+        // class, wrap it in a method that uses the Python calling
+        // convention, but instantiates the object rather than just
+        // proxying the call.
+        if (Object.keys(val.prototype).length > 0) {
             val = function(fn) {
                 return function(args, kwargs) {
                     var obj = Object.create(fn.prototype);
@@ -1194,14 +1190,10 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         // A Python callable
         func = func.__call__;
     } else if (func.prototype) {
-        var is_class = false;
-        for (var attr in func.prototype) {
-            if (func.prototype.hasOwnProperty(attr)) {
-                is_class = true;
-                break;
-            }
-        }
-        if (is_class) {
+        // If this is a native Javascript class constructor, wrap it
+        // in a method that uses the Python calling convention, but
+        // instantiates the object.
+        if (Object.keys(func.prototype).length > 0) {
             func = function(fn) {
                 return function(args, kwargs) {
                     var obj = Object.create(fn.prototype);
