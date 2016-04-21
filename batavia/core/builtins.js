@@ -355,6 +355,9 @@ batavia.builtins.dict = function(args, kwargs) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
     if (typeof args[0] === "number") {
+        if (args[0] % 1 !== 0) {
+            throw new batavia.builtins.TypeError("'float' object is not iterable");
+        }
         throw new batavia.builtins.TypeError("'int' object is not iterable");
     }
     if (typeof args[0] === "string" || args[0] instanceof String) {
