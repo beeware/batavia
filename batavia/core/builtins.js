@@ -389,7 +389,7 @@ batavia.builtins.dict = function(args, kwargs) {
     }    
     // passing a dictionary as argument
     if (args[0].constructor === Object) {
-        return args;
+        return args[0];
     }
     // passing a list as argument
     if (args.length === 1) {
