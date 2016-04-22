@@ -355,7 +355,10 @@ batavia.builtins.dict = function(args, kwargs) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
     if (typeof args[0] === "number") {
-        if (args[0] % 1 !== 0) {
+        // floats and integers are all number types in js
+        // this approximates float checking, but still thinks that 
+        // 1.00000000000000000001 is an integer
+        if (args[0].toString().indexOf('.') > 0) {
             throw new batavia.builtins.TypeError("'float' object is not iterable");
         }
         throw new batavia.builtins.TypeError("'int' object is not iterable");
