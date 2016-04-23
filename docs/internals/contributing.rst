@@ -81,6 +81,7 @@ Raspbian for Raspberry Pi 1 does not come with python 3.4.  To install python 3.
 Get the source:
 
 .. code-block:: bash
+
 	$ cd /tmp
 	$ wget https://www.python.org/ftp/python/3.4.1/Python-3.4.1.tgz
 	$ tar xvzf Python-3.4.1.tgz
@@ -89,6 +90,7 @@ Get the source:
 Configure and Install
 
 .. code-block:: bash
+
 	$ ./configure --prefix=/opt/python3.4
 	$ make
 	$ sudo make install
