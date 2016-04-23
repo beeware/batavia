@@ -37,7 +37,6 @@ class TupleTests(TranspileTestCase):
             print(x)
             """)
 
-    @unittest.expectedFailure
     def test_const_creation_multitype(self):
         self.assertCodeExecution("""
             x = (1, 2.5, "3", True, 5)
@@ -77,7 +76,6 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_unary_positive',
         'test_unary_negative',
-        'test_unary_not',
         'test_unary_invert',
     ]
 
@@ -116,20 +114,12 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bool',
         'test_eq_bytearray',
-        'test_eq_bytes',
         'test_eq_class',
         'test_eq_complex',
-        'test_eq_dict',
-        'test_eq_float',
         'test_eq_frozenset',
-        'test_eq_int',
-        'test_eq_list',
         'test_eq_none',
         'test_eq_set',
-        'test_eq_str',
-        'test_eq_tuple',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -245,26 +235,17 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_list',
         'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_bool',
         'test_ne_bytearray',
-        'test_ne_bytes',
         'test_ne_class',
         'test_ne_complex',
-        'test_ne_dict',
-        'test_ne_float',
         'test_ne_frozenset',
-        'test_ne_int',
-        'test_ne_list',
         'test_ne_none',
         'test_ne_set',
-        'test_ne_str',
-        'test_ne_tuple',
 
         'test_or_bool',
         'test_or_bytearray',
@@ -461,7 +442,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_list',
         'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',

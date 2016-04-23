@@ -85,7 +85,7 @@ batavia.core.Dict.prototype.__str__ = function () {
     var result = "{", values = [];
     for (var key in this) {
         if (this.hasOwnProperty(key)) {
-            values.push(key + ": " + this[key]);
+            values.push(batavia.builtins.repr([key], null) + ": " + batavia.builtins.repr([this[key]], null));
         }
     }
     result += values.join(', ');
@@ -139,7 +139,9 @@ batavia.core.List = function() {
     };
 
     List.prototype.__str__ = function() {
-        return '[' + this.join(', ') + ']';
+        return '[' + this.map(function(obj) {
+                return batavia.builtins.repr([obj], null);
+            }).join(', ') + ']';
     };
 
     List.prototype.__iter__ = function() {
@@ -210,7 +212,7 @@ batavia.core.Set.prototype.__str__ = function() {
     var result = "{", values = [];
     for (var key in this) {
         if (this.hasOwnProperty(key)) {
-            values.push(key);
+            values.push(batavia.builtins.repr(key));
         }
     }
     result += values.join(', ');
@@ -286,7 +288,9 @@ batavia.core.Tuple = function() {
     };
 
     Tuple.prototype.__str__ = function() {
-        return '(' + this.join(', ') + ')';
+        return '(' + this.map(function(obj) {
+                return batavia.builtins.repr([obj], null);
+            }).join(', ') + ')';
     };
 
     Tuple.prototype.__iter__ = function() {
