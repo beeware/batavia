@@ -789,7 +789,7 @@ batavia.builtins.sorted = function(args, kwargs) {
     var validatedInput = batavia.builtins.sorted._validateInput(args, kwargs);
     var iterable = validatedInput["iterable"];
 
-    if (batavia.utils.isType(batavia.utils.TYPES.ARRAY, iterable)) {
+    if (iterable instanceof Array) {
         iterable = iterable.map(validatedInput["preparingFunction"]);
         iterable.sort(function (a, b) {
             if (a["key"] > b["key"]) {
@@ -802,14 +802,12 @@ batavia.builtins.sorted = function(args, kwargs) {
             return 0;
         });
 
-        return iterable.map(function (element) {
+        return new batavia.core.List(iterable.map(function (element) {
             return element["value"];
-        });
+        }));
     }
 
-    if (batavia.utils.isType(batavia.utils.TYPES.OBJECT, iterable)) {
-        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
-    }
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
 };
 
 batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
