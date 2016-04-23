@@ -73,13 +73,14 @@ Raspbian/Raspberry Pi
 This has been successfully tested on Raspbian GNU/Linux 7 (wheezy)
 
 Python 3.4
-Source: `Procrastinative Ninja`_
+
+Sourced from: `Procrastinative Ninja`_
 
 .. _Procrastinative Ninja: https://procrastinative.ninja/2014/07/20/install-python34-on-raspberry-pi
 
 Raspbian for Raspberry Pi 1 does not come with python 3.4.  To install python 3.4, you would need to first get the source and then build it:
 
-Get the source:
+To get the source run:
 
 .. code-block:: bash
 
@@ -88,7 +89,7 @@ Get the source:
 	$ tar xvzf Python-3.4.1.tgz
 	$ cd Python-3.4.1/
 
-Configure and Install
+To configure and Install, run:
 
 .. code-block:: bash
 
@@ -98,11 +99,12 @@ Configure and Install
 
 
 Installing Phantomjs
-Source: `aeberhardo`_
+
+Sourced from: `aeberhardo`_
 
 .. _aeberhardo: https://github.com/aeberhardo/phantomjs-linux-armv6l
 
-To install phantomjs:
+To install phantomjs, run the following:
 
 .. code-block:: bash
 
@@ -112,7 +114,7 @@ To install phantomjs:
     $ bunzip2 *.bz2 && tar xf *.tar
     $ ./phantomjs-1.9.0-linux-armv6l/bin/phantomjs --version
 
-Copy phantomjs to /usr/local/bin:
+Lastly, copy phantomjs to /usr/local/bin:
 
 .. code-block:: bash
 
