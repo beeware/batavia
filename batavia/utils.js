@@ -688,3 +688,28 @@ batavia.make_callable = function(func) {
     fn.__python__ = true;
     return fn;
 };
+
+/*************************************************************************
+ * utils
+ *************************************************************************/
+
+batavia.utils = batavia.utils || {};
+batavia.utils.isType = function isType(type, obj) {
+    var clas = Object.prototype.toString.call(obj).slice(8, -1);
+    return obj !== undefined && obj !== null && clas === type;
+};
+
+batavia.utils.TYPES = {
+    ARRAY: 'Array',
+    ARGUMENTS: 'Arguments',
+    BOOLEAN: 'Boolean',
+    DATE: 'Date',
+    ERROR: 'Error',
+    FUNCTION: 'Function',
+    JSON: 'JSON',
+    MATH: 'Math',
+    NUMBER: 'Number',
+    OBJECT: 'Object',
+    REGEXP: 'RegExp',
+    STRING: 'String'
+};

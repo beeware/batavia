@@ -348,8 +348,42 @@ batavia.builtins.delattr = function(args, kwargs) {
 batavia.builtins.delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''.";
 
 batavia.builtins.dict = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'dict' not implemented");
+    if (args.length > 1) {
+        var errorMsg = "dict expected at most 1 arguments, got " + args.length;
+        throw new batavia.builtins.TypeError(errorMsg);
+    }
+
+    var result;
+    if (args[0] !== undefined) {
+        result = {};
+        args[0].forEach(function (element, index) {
+            if (!element instanceof batavia.core.Tuple) {
+                throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'dict' implemented only for list of Tuples");
+            }
+
+            if (element.length !== 2) {
+                throw new batavia.builtins.ValueError("ValueError: dictionary update sequence element #" + index + " has length " + element.length + "; 2 is required")
+            }
+
+            this[element[0]] = element[1];
+        }, result);
+    }
+
+    if (kwargs !== undefined) {
+        for (var key in kwargs) {
+            if (kwargs.hasOwnProperty(key)) {
+                result[key] = kwargs[key];
+            }
+        }
+    }
+
+    if (result !== undefined) {
+        return new batavia.core.Dict(result);
+    }
+
+    if (kwargs == undefined && args == undefined) {
+        return new batavia.core.Dict();
+    }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
