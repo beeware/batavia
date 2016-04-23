@@ -111,7 +111,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_list',
         'test_eq_none',
         'test_eq_set',
-        'test_eq_tuple',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -218,7 +217,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-       'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
@@ -226,7 +224,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_dict',
         'test_multiply_float',
         'test_multiply_frozenset',
-        'test_multiply_int',
         'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',
@@ -239,7 +236,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_list',
         'test_ne_none',
         'test_ne_set',
-        'test_ne_tuple',
 
         'test_or_bool',
         'test_or_bytearray',

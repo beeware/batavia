@@ -75,7 +75,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_none',
         'test_eq_set',
         'test_eq_str',
-        'test_eq_tuple',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -203,7 +202,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_none',
         'test_ne_set',
         'test_ne_str',
-        'test_ne_tuple',
 
         'test_or_bool',
         'test_or_bytearray',

@@ -520,13 +520,7 @@ batavia.builtins.int = function(args, kwargs) {
 
     var result = parseInt(value, base);
     if (isNaN(result)) {
-        var repr;
-        if (value['__repr__']) {
-            repr = value.__repr__();
-        } else {
-            repr = value.toString();
-        }
-        throw new batavia.builtins.ValueError("invalid literal for int() with base 10: " + repr);
+        throw new batavia.builtins.ValueError("invalid literal for int() with base 10: " + batavia.builtins.repr([value], null));
     }
     return result;
 };
@@ -731,9 +725,24 @@ batavia.builtins.reload = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reload' not implemented");
 };
 
-batavia.builtins.repr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'repr' not implemented");
+batavia.builtins.repr = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("repr() doesn't accept keyword arguments");
+    }
+    if (!args || args.length !== 1) {
+        throw new batavia.builtins.TypeError('repr() takes exactly 1 argument (' + args.length + ' given)');
+    }
+
+    if (args[0]['__repr__']) {
+        return args[0].__repr__();
+    } else {
+        return args[0].toString();
+    }
 };
+batavia.builtins.repr.__doc__ = 'repr(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) == object.';
 
 batavia.builtins.reversed = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented");
@@ -853,11 +862,24 @@ batavia.builtins.staticmethod = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented");
 };
 
-batavia.builtins.str = function(args) {
-    console.log(typeof args[0]);
-    // FIXME: object's __str__ method should be used if available
-    return String(args[0]);
+batavia.builtins.str = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("str() doesn't accept keyword arguments");
+    }
+    if (!args || args.length !== 1) {
+        throw new batavia.builtins.TypeError('str() takes exactly 1 argument (' + args.length + ' given)');
+    }
+
+    if (args[0]['__str__']) {
+        return args[0].__str__();
+    } else {
+        return args[0].toString();
+    }
 };
+batavia.builtins.str.__doc__ = 'str(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) == object.';
 
 batavia.builtins.sum = function(args, kwargs) {
     if (arguments.length != 2) {

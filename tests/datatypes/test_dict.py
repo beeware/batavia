@@ -20,7 +20,6 @@ class DictTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_creation(self):
         # Empty dict
         self.assertCodeExecution("""
@@ -172,7 +171,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_frozenset',
         'test_eq_none',
         'test_eq_set',
-        'test_eq_tuple',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -301,7 +299,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_frozenset',
         'test_ne_none',
         'test_ne_set',
-        'test_ne_tuple',
 
         'test_or_bool',
         'test_or_bytearray',

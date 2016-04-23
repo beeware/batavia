@@ -336,6 +336,7 @@ batavia.modules.marshal = {
         switch (type) {
 
         case batavia.modules.marshal.TYPE_null:
+            retval = null;
             // console.log.info('TYPE_NULL ');
             break;
 
@@ -424,11 +425,9 @@ batavia.modules.marshal = {
 
             /* Sixth byte */
             flo = buf.charCodeAt(2) << 16;
-            p += incr;
 
             /* Seventh byte */
             flo |= buf.charCodeAt(1) << 8;
-            p += incr;
 
             /* Eighth byte */
             flo |= buf.charCodeAt(0);

@@ -16,5 +16,4 @@ class BuiltinDelattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_frozenset',
         'test_none',
         'test_set',
-        'test_tuple',
     ]

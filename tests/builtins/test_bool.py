@@ -62,5 +62,4 @@ class BuiltinBoolFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_list',
         'test_none',
         'test_set',
-        'test_tuple',
     ]

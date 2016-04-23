@@ -22,7 +22,7 @@ batavia.core.PYCFile.prototype.getc = function() {
     if (this.ptr < this.end) {
         return this.data[this.ptr++].charCodeAt();
     }
-    throw batavia.core.PYCFile.EOF;
+    return batavia.core.PYCFile.EOF;
 };
 
 batavia.core.PYCFile.prototype.fread = function(n) {
@@ -31,5 +31,5 @@ batavia.core.PYCFile.prototype.fread = function(n) {
         this.ptr += n;
         return retval;
     }
-    throw PYCFile.EOF;
+    return batavia.core.PYCFile.EOF;
 };

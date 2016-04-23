@@ -143,7 +143,7 @@ batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
 };
 
 batavia.VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
-    exception = exc(message);
+    var exception = new exc(message);
     this.last_exception = {
         'exc_type': exception.constructor,
         'value': exception,

@@ -20,5 +20,4 @@ class BuiltinIterFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_int',
         'test_none',
         'test_set',
-        'test_tuple',
     ]
