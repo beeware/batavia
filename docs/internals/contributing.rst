@@ -95,11 +95,6 @@ Configure and Install
 	$ make
 	$ sudo make install
 
-.. code-block:: bash
-
-    $ cd batavia
-    $ python setup.py test
-
 
 Installing Phantomjs
 Source: `https://github.com/aeberhardo/phantomjs-linux-armv6l`_
@@ -108,16 +103,17 @@ Source: `https://github.com/aeberhardo/phantomjs-linux-armv6l`_
 To install phantomjs:
 
 .. code-block:: bash
-	wget https://github.com/aeberhardo/phantomjs-linux-armv6l/archive/master.zip #downloads phantomjs source
-	unzip master.zip
-	cd phantomjs-linux-armv6l-master
-	bunzip2 *.bz2 && tar xf *.tar
-	./phantomjs-1.9.0-linux-armv6l/bin/phantomjs --version
+
+    $ wget https://github.com/aeberhardo/phantomjs-linux-armv6l/archive/master.zip #downloads phantomjs source
+    $ unzip master.zip
+    $ cd phantomjs-linux-armv6l-master
+    $ bunzip2 *.bz2 && tar xf *.tar
+    $ ./phantomjs-1.9.0-linux-armv6l/bin/phantomjs --version
 
 Copy phantomjs to /usr/local/bin:
 
 .. code-block:: bash
-	cp phantomjs /usr/local/bin/
+    $ cp phantomjs /usr/local/bin/
 
 Running the test suite
 ----------------------
