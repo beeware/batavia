@@ -95,6 +95,11 @@ Configure and Install
 	$ make
 	$ sudo make install
 
+.. code-block:: bash
+
+    $ cd batavia
+    $ python setup.py test
+
 
 Installing Phantomjs
 Source: `https://github.com/aeberhardo/phantomjs-linux-armv6l`_
