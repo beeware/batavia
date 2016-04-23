@@ -113,6 +113,7 @@ To install phantomjs:
 Copy phantomjs to /usr/local/bin:
 
 .. code-block:: bash
+
     $ cp phantomjs /usr/local/bin/
 
 Running the test suite
