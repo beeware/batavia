@@ -348,8 +348,63 @@ batavia.builtins.delattr = function(args, kwargs) {
 batavia.builtins.delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''.";
 
 batavia.builtins.dict = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'dict' not implemented");
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (args.length > 1) {
+        throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
+    }
+    if (typeof args[0] === "number") {
+        // floats and integers are all number types in js
+        // this approximates float checking, but still thinks that 
+        // 1.00000000000000000001 is an integer
+        if (args[0].toString().indexOf('.') > 0) {
+            throw new batavia.builtins.TypeError("'float' object is not iterable");
+        }
+        throw new batavia.builtins.TypeError("'int' object is not iterable");
+    }
+    if (typeof args[0] === "string" || args[0] instanceof String) {
+        throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length 1; 2 is required");
+    }
+    // error handling for iterables
+    if (args.length === 1 && args.constructor === Array) {
+        // iterate through array to find any errors
+        for (i = 0; i < args[0].length; i++) {
+            if (args[0][i].length !== 2) {
+                // single number in an iterable throws different error
+                if (typeof(args[0][i]) === "number") {
+                    throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");    
+                }
+                else {
+                    throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required");
+                }
+            }
+        }
+    }
+    // handling keyword arguments and no arguments
+    if (args.length === 0 || args[0].length === 0) {
+        if (kwargs) {
+            return kwargs;
+        }
+        else {
+            return {};
+        }
+    }    
+    // passing a dictionary as argument
+    if (args[0].constructor === Object) {
+        return args[0];
+    }
+    // passing a list as argument
+    if (args.length === 1) {
+        var dict = {};
+        for (i = 0; i < args[0].length; i++) {
+            var sub_array = args[0][i];
+            if (sub_array.length === 2) {
+                dict[sub_array[0]] = sub_array[1];
+            }
+        }
+        return dict;
+    }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
