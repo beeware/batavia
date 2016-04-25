@@ -66,6 +66,8 @@ A version of PhantomJS 2.0, precompiled for Ubuntu 14.04 can be `downloaded
 here`_. This is the same binary that is used to run the `Batavia CI server`_,
 so it should be reliable.
 
+(Ubuntu 16.04, the new LTS, ships with PhantomJS 2.1.1 and Python 3.5.1.)
+
 .. _downloaded here: https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
 .. _Batavia CI server: https://travis-ci.org/pybee/batavia
 
@@ -75,7 +77,8 @@ Raspbian/Raspberry Pi
 This has been successfully tested on Raspbian GNU/Linux 7 (wheezy), based on
 instructions from `Procrastinative Ninja`_ and `aeberhardo`_.
 
-Raspbian for Raspberry Pi 1 does not come with Python 3.4.  To install Python
+Raspbian for Raspberry Pi 1 does not come with Python 3.4.  (Ubuntu 16.04 for Raspberry
+Pi is now available, and has new enough packages as described above.) To install Python
 3.4, download the source code and then build it:
 
 .. code-block:: bash
