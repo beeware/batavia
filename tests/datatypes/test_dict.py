@@ -71,7 +71,6 @@ class DictTests(TranspileTestCase):
             print(x)
             """)
 
-    @unittest.expectedFailure
     def test_builtin_constructor(self):
         # Construct a dictionary using the dict builtin
         self.assertCodeExecution("""
@@ -104,7 +103,6 @@ class DictTests(TranspileTestCase):
             print('c' in x)
         """)
 
-    @unittest.expectedFailure
     def test_builtin_non_2_tuples(self):
         # One of the elements isn't a 2-tuple
         self.assertCodeExecution("""
