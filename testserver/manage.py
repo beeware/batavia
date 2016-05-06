@@ -6,7 +6,7 @@ if __name__ == "__main__":
     
     if 'python3' not in sys.executable:  # might be better to check version also.
     # if sys.hexversion < 0x03000000:
-        import distutils
+        import distutils.spawn
         python3_path = distutils.spawn.find_executable('python3')
         if python3_path is not None:
             os.execvp(sys.executable + '3', [sys.executable + '3'] + sys.argv)
