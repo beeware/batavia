@@ -10,3 +10,4 @@ distribute-*
 /batavia.js
 /batavia.min.js
 /tests/temp
+env
