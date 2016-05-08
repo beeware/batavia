@@ -484,7 +484,7 @@ batavia.builtins.float = function(args) {
 
     var toConvert = args[0];
 
-    if(typeof(toConvert)) === "string"){
+    if(typeof(toConvert) === "string"){
         if(toConvert.search(/[^0-9.]/g) === -1){
             return parseFloat(toConvert);
         }else{
