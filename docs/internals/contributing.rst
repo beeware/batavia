@@ -70,76 +70,27 @@ so it should be reliable.
 
 .. _downloaded here: https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
 .. _Batavia CI server: https://travis-ci.org/pybee/batavia
-.. _PhantomJS: http://phantomjs.org
+
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
 
-<<<<<<< HEAD
-This has been successfully tested on Raspbian GNU/Linux 7 (wheezy)
-
-Python 3.4
-
-Sourced from: `Procrastinative Ninja`_
-
-.. _Procrastinative Ninja: https://procrastinative.ninja/2014/07/20/install-python34-on-raspberry-pi
-
-Raspbian for Raspberry Pi 1 does not come with python 3.4.  To install python 3.4, you would need to first get the source and then build it:
-
-To get the source run:
-=======
 This has been successfully tested on Raspbian GNU/Linux 7 (wheezy), based on
 instructions from `Procrastinative Ninja`_ and `aeberhardo`_.
 
 Raspbian for Raspberry Pi 1 does not come with Python 3.4.  (Ubuntu 16.04 for Raspberry
 Pi is now available, and has new enough packages as described above.) To install Python
 3.4, download the source code and then build it:
->>>>>>> upstream/master
 
 .. code-block:: bash
 
 	$ cd /tmp
-<<<<<<< HEAD
-	$ wget https://www.python.org/ftp/python/3.4.1/Python-3.4.1.tgz
-	$ tar xvzf Python-3.4.1.tgz
-	$ cd Python-3.4.1/
-
-To configure and Install, run:
-
-.. code-block:: bash
-
-=======
 	$ wget https://www.python.org/ftp/python/3.4.4/Python-3.4.4.tgz
 	$ tar xvzf Python-3.4.4.tgz
 	$ cd Python-3.4.4/
->>>>>>> upstream/master
 	$ ./configure --prefix=/opt/python3.4
 	$ make
 	$ sudo make install
 
-<<<<<<< HEAD
-
-Installing Phantomjs
-
-Sourced from: `aeberhardo`_
-
-.. _aeberhardo: https://github.com/aeberhardo/phantomjs-linux-armv6l
-
-To install phantomjs, run the following:
-
-.. code-block:: bash
-
-    $ wget https://github.com/aeberhardo/phantomjs-linux-armv6l/archive/master.zip #downloads phantomjs source
-    $ unzip master.zip
-    $ cd phantomjs-linux-armv6l-master
-    $ bunzip2 *.bz2 && tar xf *.tar
-    $ ./phantomjs-1.9.0-linux-armv6l/bin/phantomjs --version
-
-Lastly, copy phantomjs to /usr/local/bin:
-
-.. code-block:: bash
-
-    $ cp phantomjs /usr/local/bin/
-=======
 Once you have Python 3.4 installed, you can installing PhantomJS by
 downloading and installing a version precompiled for Raspberry Pi:
 
@@ -160,7 +111,6 @@ To check that PhantomJS is working, run the following:
 
 .. _Procrastinative Ninja: https://procrastinative.ninja/2014/07/20/install-python34-on-raspberry-pi
 .. _aeberhardo: https://github.com/aeberhardo/phantomjs-linux-armv6l
->>>>>>> upstream/master
 
 Running the test suite
 ----------------------
@@ -215,4 +165,3 @@ Or, to run all the datatypes tests:
 .. code-block:: bash
 
     $ python setup.py test -s tests.datatypes
-
