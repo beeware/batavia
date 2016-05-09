@@ -1,6 +1,5 @@
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
-
 class FloatTests(TranspileTestCase):
     pass
 
@@ -17,7 +16,6 @@ class BuiltinFloatFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_dict',
         'test_float',
         'test_frozenset',
-        'test_int',
         'test_list',
         'test_none',
         'test_set',

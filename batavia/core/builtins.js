@@ -474,9 +474,35 @@ batavia.builtins.filter = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented");
 };
 
-batavia.builtins.float = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'float' not implemented");
+batavia.builtins.float = function(args) {
+    if (args.length > 1) {
+        throw new batavia.builtins.TypeError("float() takes at most 1 argument (" + args.length + " given)");
+    }
+    if (args.length === 0) {
+        return 0.0;
+    }
+
+    var toConvert = args[0];
+
+    if (typeof(toConvert) === "string") {
+        if (toConvert.search(/[^0-9.]/g) === -1) {
+            return parseFloat(toConvert);
+        } else {
+            if (toConvert === "nan" || toConvert === "+nan" || toConvert === "-nan") {
+                return NaN;
+            } else if(toConvert === "inf" || toConvert === "+inf") {
+                return Infinity;
+            } else if(toConvert === "-inf") {
+                return -Infinity;
+            }
+            throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
+        }
+    } else if(typeof(args[0]) === "number") {
+        return args[0].toFixed(1);
+    }
 };
+
+batavia.builtins.float.__doc__ = 'float([x]) -> Convert a string or a number to floating point.';
 
 batavia.builtins.format = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'format' not implemented");
