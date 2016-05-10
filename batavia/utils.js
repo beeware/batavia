@@ -458,8 +458,9 @@ batavia.operators = {
             }
         } else if (b instanceof Array) {
             throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-        }
-        else {
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
+        }else {
             result = a + b;
         }
         return result;
