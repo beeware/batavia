@@ -457,7 +457,7 @@ batavia.operators = {
                 throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
             }
         } else if (b instanceof Array) {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
+            throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
         }
         else {
             result = a + b;
