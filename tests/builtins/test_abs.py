@@ -26,7 +26,6 @@ class BuiltinAbsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_float',
         'test_frozenset',
         'test_list',
-        'test_none',
         'test_set',
         'test_str',
         'test_tuple',

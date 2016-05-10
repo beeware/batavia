@@ -20,6 +20,7 @@ class StrTests(TranspileTestCase):
             print('Done.')
             """)
 
+
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
@@ -70,7 +71,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_float',
         'test_eq_frozenset',
         'test_eq_int',
-        'test_eq_none',
         'test_eq_set',
 
         'test_floor_divide_bool',
@@ -166,7 +166,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_dict',
         'test_modulo_frozenset',
         'test_modulo_list',
-        'test_modulo_none',
         'test_modulo_set',
 
         'test_multiply_bool',
@@ -192,7 +191,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_float',
         'test_ne_frozenset',
         'test_ne_int',
-        'test_ne_none',
         'test_ne_set',
 
         'test_or_bool',
@@ -371,7 +369,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_dict',
         'test_modulo_frozenset',
         'test_modulo_list',
-        'test_modulo_none',
         'test_modulo_set',
 
         'test_multiply_bool',

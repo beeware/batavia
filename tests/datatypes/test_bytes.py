@@ -72,7 +72,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_float',
         'test_eq_frozenset',
         'test_eq_int',
-        'test_eq_none',
         'test_eq_set',
         'test_eq_str',
 
@@ -199,7 +198,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_float',
         'test_ne_frozenset',
         'test_ne_int',
-        'test_ne_none',
         'test_ne_set',
         'test_ne_str',
 

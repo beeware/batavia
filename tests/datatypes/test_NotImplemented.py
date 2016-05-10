@@ -57,7 +57,6 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
-        'test_eq_none',
         'test_eq_set',
 
         'test_floor_divide_bool',
@@ -184,7 +183,6 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
-        'test_ne_none',
         'test_ne_set',
 
         'test_or_bool',
