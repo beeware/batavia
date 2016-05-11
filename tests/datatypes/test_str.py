@@ -44,7 +44,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_float',
         'test_add_frozenset',
         'test_add_int',
-        'test_add_none',
         'test_add_set',
         'test_add_tuple',
 
@@ -178,7 +177,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_frozenset',
         'test_multiply_int',
         'test_multiply_list',
-        'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',
         'test_multiply_tuple',
@@ -313,7 +311,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_float',
         'test_add_frozenset',
         'test_add_int',
-        'test_add_none',
         'test_add_set',
         'test_add_tuple',
 
@@ -381,7 +378,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_frozenset',
         'test_multiply_int',
         'test_multiply_list',
-        'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',
         'test_multiply_tuple',
