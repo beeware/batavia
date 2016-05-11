@@ -25,7 +25,6 @@ class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
-        'test_unary_negative',
         'test_unary_invert',
     ]
 

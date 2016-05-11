@@ -390,7 +390,11 @@ batavia.operators = {
         }
     },
     NEGATIVE: function(a) {
-        return -a;
+        if (typeof a === 'string') {
+            throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
+        } else {
+            return -a;
+        }
     },
     NOT: function(a) {
         return !a;
