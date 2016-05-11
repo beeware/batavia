@@ -413,6 +413,8 @@ batavia.operators = {
                     result.extend(a);
                 }
             }
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
         } else if (b instanceof Array) {
             result = [];
             for (i = 0; i < a; i++) {
