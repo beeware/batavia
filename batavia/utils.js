@@ -413,6 +413,8 @@ batavia.operators = {
                     result.extend(a);
                 }
             }
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
         } else if (b instanceof Array) {
             result = [];
             for (i = 0; i < a; i++) {
@@ -458,8 +460,9 @@ batavia.operators = {
             }
         } else if (b instanceof Array) {
             throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-        }
-        else {
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
+        }else {
             result = a + b;
         }
         return result;
