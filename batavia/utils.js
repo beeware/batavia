@@ -383,10 +383,18 @@ batavia.core.range_iterator.prototype.__str__ = function() {
 batavia.operators = {
     // UNARY operators
     POSITIVE: function(a) {
-        return +a;
+        if (typeof a === 'string') {
+            throw new batavia.builtins.TypeError("bad operand type for unary +: 'str'");
+        } else {
+            return +a;
+        }
     },
     NEGATIVE: function(a) {
-        return -a;
+        if (typeof a === 'string') {
+            throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
+        } else {
+            return -a;
+        }
     },
     NOT: function(a) {
         return !a;
