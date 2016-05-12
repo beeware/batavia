@@ -383,10 +383,18 @@ batavia.core.range_iterator.prototype.__str__ = function() {
 batavia.operators = {
     // UNARY operators
     POSITIVE: function(a) {
-        return +a;
+        if (typeof a === 'string') {
+            throw new batavia.builtins.TypeError("bad operand type for unary +: 'str'");
+        } else {
+            return +a;
+        }
     },
     NEGATIVE: function(a) {
-        return -a;
+        if (typeof a === 'string') {
+            throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
+        } else {
+            return -a;
+        }
     },
     NOT: function(a) {
         return !a;
@@ -413,6 +421,8 @@ batavia.operators = {
                     result.extend(a);
                 }
             }
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
         } else if (b instanceof Array) {
             result = [];
             for (i = 0; i < a; i++) {
@@ -457,9 +467,10 @@ batavia.operators = {
                 throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
             }
         } else if (b instanceof Array) {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
-        }
-        else {
+            throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
+        }else {
             result = a + b;
         }
         return result;
