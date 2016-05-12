@@ -574,9 +574,17 @@ batavia.builtins.id = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented");
 };
 
-batavia.builtins.input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
+batavia.builtins.input = function(args) {
+    if (args.length > 1) {
+      throw new batavia.builtins.TypeError("input expected at most 1 arguments, got " + args.length);
+    }
+    if (args.length === 1) {
+      console.log(String(args[0]) + "\t");
+    }
+    return readline();
 };
+
+batavia.builtins.input.__doc__ = "input([prompt]) -> Retrieves input from user in console. Prompt argument is optional. ";
 
 batavia.builtins.int = function(args, kwargs) {
     if (arguments.length != 2) {
