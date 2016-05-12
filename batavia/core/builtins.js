@@ -579,7 +579,7 @@ batavia.builtins.input = function(args) {
       throw new batavia.builtins.TypeError("input expected at most 1 arguments, got " + args.length);
     }
     if (args.length === 1) {
-      console.log(String(args[0]) + "\t");
+      batavia.stdout(String(args[0]) + "\t");
     }
     return readline();
 };
@@ -614,7 +614,7 @@ batavia.builtins.int = function(args, kwargs) {
 };
 batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4";
 
-batavia.builtins.intern = function() {
+batavia.builtins.intern = function(args) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'intern' not implemented");
 };
 
