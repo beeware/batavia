@@ -356,7 +356,7 @@ batavia.builtins.dict = function(args, kwargs) {
     }
     if (typeof args[0] === "number") {
         // floats and integers are all number types in js
-        // this approximates float checking, but still thinks that 
+        // this approximates float checking, but still thinks that
         // 1.00000000000000000001 is an integer
         if (args[0].toString().indexOf('.') > 0) {
             throw new batavia.builtins.TypeError("'float' object is not iterable");
@@ -373,7 +373,7 @@ batavia.builtins.dict = function(args, kwargs) {
             if (args[0][i].length !== 2) {
                 // single number in an iterable throws different error
                 if (typeof(args[0][i]) === "number") {
-                    throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");    
+                    throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");
                 }
                 else {
                     throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required");
@@ -389,7 +389,7 @@ batavia.builtins.dict = function(args, kwargs) {
         else {
             return {};
         }
-    }    
+    }
     // passing a dictionary as argument
     if (args[0].constructor === Object) {
         return args[0];
@@ -481,7 +481,6 @@ batavia.builtins.float = function(args) {
     if (args.length === 0) {
         return 0.0;
     }
-
     var toConvert = args[0];
 
     if (typeof(toConvert) === "string") {
@@ -497,7 +496,7 @@ batavia.builtins.float = function(args) {
             }
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
-    } else if(typeof(args[0]) === "number") {
+    } else if (typeof(args[0]) === "number") {
         return args[0].toFixed(1);
     }
 };
