@@ -20,12 +20,11 @@ class StrTests(TranspileTestCase):
             print('Done.')
             """)
 
+
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
-        'test_unary_positive',
-        'test_unary_negative',
         'test_unary_invert',
     ]
 
@@ -43,8 +42,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_float',
         'test_add_frozenset',
         'test_add_int',
-        'test_add_list',
-        'test_add_none',
         'test_add_set',
         'test_add_tuple',
 
@@ -71,7 +68,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_float',
         'test_eq_frozenset',
         'test_eq_int',
-        'test_eq_none',
         'test_eq_set',
 
         'test_floor_divide_bool',
@@ -167,7 +163,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_dict',
         'test_modulo_frozenset',
         'test_modulo_list',
-        'test_modulo_none',
         'test_modulo_set',
 
         'test_multiply_bool',
@@ -180,7 +175,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_frozenset',
         'test_multiply_int',
         'test_multiply_list',
-        'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',
         'test_multiply_tuple',
@@ -193,7 +187,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_float',
         'test_ne_frozenset',
         'test_ne_int',
-        'test_ne_none',
         'test_ne_set',
 
         'test_or_bool',
@@ -316,8 +309,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_float',
         'test_add_frozenset',
         'test_add_int',
-        'test_add_list',
-        'test_add_none',
         'test_add_set',
         'test_add_tuple',
 
@@ -373,7 +364,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_dict',
         'test_modulo_frozenset',
         'test_modulo_list',
-        'test_modulo_none',
         'test_modulo_set',
 
         'test_multiply_bool',
@@ -386,7 +376,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_frozenset',
         'test_multiply_int',
         'test_multiply_list',
-        'test_multiply_none',
         'test_multiply_set',
         'test_multiply_str',
         'test_multiply_tuple',

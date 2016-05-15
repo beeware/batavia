@@ -626,6 +626,7 @@ SAMPLE_DATA = [
     ('set', ["set()", "{1, 2.3456, 'another'}"]),
     ('str', ['""', '"This is another string"']),
     ('tuple', ["(1, 2.3456, 'another')"]),
+    ('none', ['None']),
 ]
 
 
