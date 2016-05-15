@@ -473,7 +473,7 @@ batavia.operators = {
             return a % b;
         }
     },
-    ADD: function(a, b) {
+     ADD: function(a, b) {
         var atype = datatype(a);
 		var btype = datatype(b);
         var result, i;
@@ -486,10 +486,11 @@ batavia.operators = {
                 throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
             }
         } else if (b instanceof Array) {
-<<<<<<< HEAD
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
+            throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
+        } else if (b === null){
+            throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
         }
-    	else if (typeof(a) == 'string') {
+        else if (typeof(a) == 'string') {
 			if (typeof(b) != 'string') {
 				throw new batavia.builtins.TypeError("Can't convert '" + btype + "' object to str implicitly");	//a is str, b not str
 			}
@@ -501,12 +502,6 @@ batavia.operators = {
 			throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + atype + "' and 'str'"); //a is str, b not str
 		}
         else {
-=======
-            throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-        } else if (b === null){
-            throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
-        }else {
->>>>>>> upstream/master
             result = a + b;
         }
         return result;
