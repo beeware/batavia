@@ -379,22 +379,29 @@ batavia.core.range_iterator.prototype.__str__ = function() {
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
  *************************************************************************/
+function isinstance(data, type) {
+    if (typeof(data) === type) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 function datatype(data) {
-	var type;
-	switch(typeof(data)) {
-		case "number":
-			type = "int";
-			return type;
-			break;
-		case "boolean":
-			type = "bool";
-			return type;
-			break;
-		case "string":
-			return "string"
-	}
-	return type;
+    var type;
+    switch(typeof(data)) {
+        case "number":
+            type = "int";
+            return type;
+            break;
+        case "boolean":
+            type = "bool";
+            return type;
+            break;
+        case "string":
+            return "string"
+    }
+    return type;
 }
 
 batavia.operators = {
@@ -490,14 +497,14 @@ batavia.operators = {
         } else if (b === null) {
             throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
         }
-        else if (typeof(a) == 'string') {
-            if (typeof(b) != 'string') {
+        else if (isinstance(a, 'string') == true) {
+            if (isinstance(b, 'string') == false) {
                 throw new batavia.builtins.TypeError("Can't convert '" + btype + "' object to str implicitly");	//a is str, b not str
             } else {
                 result = a + b  //a and b is string
             }
         }
-        else if (typeof(b) == 'string') {
+        else if (isinstance(b,'string') == true) {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + atype + "' and 'str'"); //a is str, b not str
         }
         else {
