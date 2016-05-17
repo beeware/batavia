@@ -487,33 +487,26 @@ batavia.operators = {
             }
         } else if (b instanceof Array) {
             throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-        } else if (b === null){
+        } else if (b === null) {
             throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
         }
         else if (typeof(a) == 'string') {
-			if (typeof(b) != 'string') {
-				throw new batavia.builtins.TypeError("Can't convert '" + btype + "' object to str implicitly");	//a is str, b not str
-			}
-			else {
-				result = a + b  //a and b is string
-			}
-		}
-		else if (typeof(b) == 'string') {
-			throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + atype + "' and 'str'"); //a is str, b not str
-		}
+            if (typeof(b) != 'string') {
+                throw new batavia.builtins.TypeError("Can't convert '" + btype + "' object to str implicitly");	//a is str, b not str
+            } else {
+                result = a + b  //a and b is string
+            }
+        }
+        else if (typeof(b) == 'string') {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + atype + "' and 'str'"); //a is str, b not str
+        }
         else {
             result = a + b;
         }
         return result;
     },
     SUBTRACT: function(a, b) {
-        if (typeof a === 'string') {
-            if (typeof b === 'string') {
-                throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and 'str'");
-            }
-        } else {
-             return a - b;
-        }
+        return a - b;
     },
     SUBSCR: function(a, b) {
         if (b instanceof Object) {
