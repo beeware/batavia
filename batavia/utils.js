@@ -507,7 +507,13 @@ batavia.operators = {
         return result;
     },
     SUBTRACT: function(a, b) {
-        return a - b;
+        if (typeof a === 'string') {
+            if (typeof b === 'string') {
+                throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and 'str'");
+            }
+        } else {
+             return a - b;
+        }
     },
     SUBSCR: function(a, b) {
         if (b instanceof Object) {
