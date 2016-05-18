@@ -155,12 +155,19 @@ batavia.builtins.abs = function(args, kwargs) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
     }
-    if (args[0] === null) {
+
+    var type = batavia.builtins.type(args);
+    var typeName = type.split("'")[1];
+    if (typeName != 'int' && typeName != 'float' && typeName != 'bool') {
         throw new batavia.builtins.TypeError(
-            "bad operand type for abs(): 'NoneType'");
+            "bad operand type for abs(): '" + typeName + "'");
     }
 
-    return Math.abs(args[0]);
+    if (typeName == 'float') {
+        return new batavia.core.Float(Math.abs(args[0].val));
+    } else {
+        return Math.abs(args[0]);
+    }  
 };
 batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
@@ -759,7 +766,7 @@ batavia.builtins.pow = function(args) {
 batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
     args.map(function(elm) {
-        if (elm === null) {
+        if (elm === null || elm == undefined) {
             elements.push("None");
         } else {
             elements.push(elm.__str__ ? elm.__str__() : elm.toString());
@@ -995,8 +1002,26 @@ batavia.builtins.tuple = function(args) {
     return new batavia.core.Tuple(args[0]);
 };
 
-batavia.builtins.type = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented");
+batavia.builtins.type = function(args) {
+    var type = 'NoneType'
+
+    switch (typeof args[0]) {
+        case 'boolean':
+            type = 'bool';
+            break;
+        case 'number':
+            type = 'int';
+            break;
+        case 'string':
+            type = 'str';
+            break;
+        case 'object':
+            if (args[0] instanceof batavia.core.List) type = 'list'
+            else if (args[0] instanceof batavia.core.Tuple) type = 'tuple'
+            else if (args[0] instanceof batavia.core.Float) type = 'float'
+    }
+
+    return "<class '" + type+ "'>";
 };
 
 batavia.builtins.unichr = function() {
