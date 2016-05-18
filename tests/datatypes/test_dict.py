@@ -20,7 +20,6 @@ class DictTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_creation(self):
         # Empty dict
         self.assertCodeExecution("""
