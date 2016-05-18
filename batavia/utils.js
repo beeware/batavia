@@ -324,6 +324,37 @@ batavia.core.tuple_iterator.prototype.__str__ = function() {
 };
 
 /*************************************************************************
+ * A Python Float type
+ *************************************************************************/
+
+batavia.core.Float = function() {
+    function Float(val) {
+        this.val = val
+    }
+    
+    Float.prototype = Object.create(Object.prototype);
+    
+    Float.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    Float.prototype.__str__ = function() {
+        if (this.val == Math.round(this. val)) return this.val + '.0';
+        else return this.val.toString();
+    };
+    
+    Float.prototype.valueOf = function() {
+        return this.val;
+    }
+    
+    return Float;
+}();
+
+batavia.core.tuple_iterator.prototype.__str__ = function() {
+    return "<tuple_iterator object at 0x99999999>";
+};
+
+/*************************************************************************
  * An implementation of range()
  *************************************************************************/
 
@@ -397,7 +428,7 @@ batavia.operators = {
         }
     },
     NOT: function(a) {
-        return !a;
+        return a == null ? true : !a.valueOf();
     },
     CONVERT: function(a) {
         throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
@@ -447,7 +478,8 @@ batavia.operators = {
         if (typeof a === 'string') {
             if (b instanceof Array) {
                 return batavia._substitute(a, b);
-            } else if (b instanceof Object) {
+            } else if (b instanceof Object
+                && !(b instanceof batavia.core.Float)) {
                 // TODO Handle %(key)s format.
             } else {
                 return batavia._substitute(a, [b]);

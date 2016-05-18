@@ -246,7 +246,7 @@ batavia.builtins.bool = function(args, kwargs) {
         throw new batavia.builtins.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    return !!args[0];
+    return args[0] == null ? false : !!(args[0].valueOf());
 };
 batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
 

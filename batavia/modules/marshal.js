@@ -387,7 +387,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_FLOAT:
             n = batavia.modules.marshal.r_byte(vm, p);
             buf = batavia.modules.marshal.r_string(vm, p, n);
-            retval = parseFloat(buf);
+            retval = new batavia.core.Float(parseFloat(buf));
             // console.log.info('TYPE_FLOAT ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -451,6 +451,7 @@ batavia.modules.marshal = {
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
+            retval = new batavia.core.Float(retval);
             break;
 
         case batavia.modules.marshal.TYPE_COMPLEX:
