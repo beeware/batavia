@@ -755,7 +755,8 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         // class, wrap it in a method that uses the Python calling
         // convention, but instantiates the object rather than just
         // proxying the call.
-        if (Object.keys(val.prototype).length > 0) {
+        if (val.prototype && Object.keys(val.prototype).length > 0) {
+            // Python class
             val = function(fn) {
                 return function(args, kwargs) {
                     var obj = Object.create(fn.prototype);
@@ -764,6 +765,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
                 };
             }(val);
         } else {
+            // Native java method
             val = function(fn) {
                 return function(args, kwargs) {
                     return fn.apply(obj, args);
