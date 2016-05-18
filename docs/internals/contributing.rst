@@ -34,6 +34,7 @@ Then create a virtual environment and install Batavia into it:
 
     $ virtualenv -p $(which python3) env
     $ . env/bin/activate
+    $ cd batavia
     $ pip install -e .
 
 Lastly, you'll need to obtain and install `PhantomJS`_. PhantomJS is a
