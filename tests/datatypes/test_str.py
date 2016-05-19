@@ -33,6 +33,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
+#        'test_add_bool',
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_class',
@@ -40,6 +41,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_dict',
         'test_add_float',
         'test_add_frozenset',
+#        'test_add_int',
         'test_add_set',
         'test_add_tuple',
 
@@ -259,7 +261,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_list',
         'test_subtract_none',
         'test_subtract_set',
-        'test_subtract_str',
         'test_subtract_tuple',
 
         'test_true_divide_bool',
@@ -298,6 +299,7 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
+#        'test_add_bool',
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_class',
@@ -305,6 +307,7 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_dict',
         'test_add_float',
         'test_add_frozenset',
+#        'test_add_int',
         'test_add_set',
         'test_add_tuple',
 

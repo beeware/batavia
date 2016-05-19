@@ -398,13 +398,6 @@ def cleanse_python(input):
 
 
 class TranspileTestCase(TestCase):
-    def tearDown(self):
-        global _phantomjs
-        _phantomjs.kill()
-        _phantomjs.stdin.close()
-        _phantomjs.stdout.close()
-        _phantomjs = None
-
     def assertCodeExecution(self, code, message=None, extra_code=None, run_in_global=True, run_in_function=True, args=None):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
