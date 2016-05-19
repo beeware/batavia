@@ -475,7 +475,7 @@ batavia.operators = {
     },
      ADD: function(a, b) {
         var atype = datatype(a);
-        var btype = datatype(b);
+		var btype = datatype(b);
         var result, i;
         if (a instanceof Array) {
             if (b instanceof Array) {
