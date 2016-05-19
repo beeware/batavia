@@ -43,7 +43,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_list',
         'test_add_none',
         'test_add_set',
-        'test_add_str',
         'test_add_tuple',
 
         'test_and_bytearray',
@@ -293,7 +292,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_list',
         'test_add_none',
         'test_add_set',
-        'test_add_str',
         'test_add_tuple',
 
         'test_and_bytearray',
