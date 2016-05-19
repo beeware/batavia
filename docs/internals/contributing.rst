@@ -166,4 +166,3 @@ Or, to run all the datatypes tests:
 .. code-block:: bash
 
     $ python setup.py test -s tests.datatypes
-
