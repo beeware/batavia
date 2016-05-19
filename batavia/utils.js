@@ -379,6 +379,30 @@ batavia.core.range_iterator.prototype.__str__ = function() {
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
  *************************************************************************/
+function isinstance(data, type) {
+    if (typeof(data) === type) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function datatype(data) {
+    var type;
+    switch(typeof(data)) {
+        case "number":
+            type = "int";
+            return type;
+            break;
+        case "boolean":
+            type = "bool";
+            return type;
+            break;
+        case "string":
+            return "string"
+    }
+    return type;
+}
 
 batavia.operators = {
     // UNARY operators
@@ -456,7 +480,9 @@ batavia.operators = {
             return a % b;
         }
     },
-    ADD: function(a, b) {
+     ADD: function(a, b) {
+        var atype = datatype(a);
+        var btype = datatype(b);
         var result, i;
         if (a instanceof Array) {
             if (b instanceof Array) {
@@ -468,21 +494,26 @@ batavia.operators = {
             }
         } else if (b instanceof Array) {
             throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-        } else if (b === null){
+        } else if (b === null) {
             throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
-        }else {
+        }
+        else if (isinstance(a, 'string') == true) {
+            if (isinstance(b, 'string') == false) {
+                throw new batavia.builtins.TypeError("Can't convert '" + btype + "' object to str implicitly");	//a is str, b not str
+            } else {
+                result = a + b  //a and b is string
+            }
+        }
+        else if (isinstance(b,'string') == true) {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + atype + "' and 'str'"); //a is str, b not str
+        }
+        else {
             result = a + b;
         }
         return result;
     },
     SUBTRACT: function(a, b) {
-        if (typeof a === 'string') {
-            if (typeof b === 'string') {
-                throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and 'str'");
-            }
-        } else {
-             return a - b;
-        }
+        return a - b;
     },
     SUBSCR: function(a, b) {
         if (b instanceof Object) {
