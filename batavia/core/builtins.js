@@ -156,15 +156,14 @@ batavia.builtins.abs = function(args, kwargs) {
         throw new batavia.builtins.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    var type = batavia.builtins.type(args);
-    var typeName = type.split("'")[1];
-    if (typeName != 'int' && typeName != 'float' && typeName != 'bool') {
+    var type = batavia.get_type(args[0]);
+    if (type != 'int' && type != 'float' && type != 'bool') {
         throw new batavia.builtins.TypeError(
-            "bad operand type for abs(): '" + typeName + "'");
+            "bad operand type for abs(): '" + type + "'");
     }
 
-    if (typeName == 'float') {
-        return new batavia.core.Float(Math.abs(args[0].val));
+    if (type == 'float') {
+        return new batavia.core.Float(Math.abs(args[0].valueOf()));
     } else {
         return Math.abs(args[0]);
     }  
@@ -1002,26 +1001,24 @@ batavia.builtins.tuple = function(args) {
     return new batavia.core.Tuple(args[0]);
 };
 
-batavia.builtins.type = function(args) {
-    var type = 'NoneType'
-
-    switch (typeof args[0]) {
-        case 'boolean':
-            type = 'bool';
-            break;
-        case 'number':
-            type = 'int';
-            break;
-        case 'string':
-            type = 'str';
-            break;
-        case 'object':
-            if (args[0] instanceof batavia.core.List) type = 'list'
-            else if (args[0] instanceof batavia.core.Tuple) type = 'tuple'
-            else if (args[0] instanceof batavia.core.Float) type = 'float'
+batavia.builtins.type = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("type() doesn't accept keyword arguments");
+    }
+    if (!args || (args.length != 1 && args.length != 3)) {
+        throw new batavia.builtins.TypeError('type() takes 1 or 3 arguments');
+    }
+    
+    if (args.length = 1) {
+        var type = batavia.get_type(args[0]);
 
-    return "<class '" + type+ "'>";
+        return "<class '" + type + "'>";
+    } else {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented for 3 arguments");
+    }
 };
 
 batavia.builtins.unichr = function() {
