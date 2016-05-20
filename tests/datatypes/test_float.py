@@ -65,7 +65,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_set',
         'test_eq_str',
 
-        'test_floor_divide_bool',
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
         'test_floor_divide_class',
@@ -74,11 +73,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_float',
         'test_floor_divide_frozenset',
         'test_floor_divide_int',
-        'test_floor_divide_list',
-        'test_floor_divide_none',
         'test_floor_divide_set',
-        'test_floor_divide_str',
-        'test_floor_divide_tuple',
 
         'test_ge_bytearray',
         'test_ge_bytes',
@@ -244,7 +239,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_frozenset',
         'test_subtract_set',
 
-        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
         'test_true_divide_class',
@@ -253,11 +247,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_float',
         'test_true_divide_frozenset',
         'test_true_divide_int',
-        'test_true_divide_list',
-        'test_true_divide_none',
         'test_true_divide_set',
-        'test_true_divide_str',
-        'test_true_divide_tuple',
 
         'test_xor_bool',
         'test_xor_bytearray',
@@ -307,7 +297,6 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_floor_divide_bool',
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
         'test_floor_divide_class',
@@ -420,7 +409,6 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_str',
         'test_subtract_tuple',
 
-        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
         'test_true_divide_class',

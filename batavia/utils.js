@@ -481,9 +481,32 @@ batavia.operators = {
         return result;
     },
     DIVIDE: function(a, b) {
+        return batavia.operators.TRUE_DIVIDE(a,b);
+    },
+    FLOOR_DIVIDE: function(a, b) {
+        try {
+            return new batavia.core.Float(Math.floor(batavia.operators.TRUE_DIVIDE(a, b).valueOf()));
+        } catch (err) {
+            if (err instanceof batavia.builtins.TypeError) {
+                err.msg = err.msg.replace("/", "//");
+            } else if (err instanceof batavia.builtins.ZeroDivisionError) {
+                err.msg = err.msg.replace("division by zero", "divmod()");
+            }
+            throw err;
+        }
+    },
+    TRUE_DIVIDE: function(a, b) {
+        var result;
+        
         if (a != null && b != null 
             && ((typeof a.valueOf() == 'number' | typeof a == 'boolean')
                 && (typeof b.valueOf() == 'number' || typeof b == 'boolean'))) {
+
+            if (b.valueOf() === 0 || b === false) {
+                var aType = batavia.get_type(a);
+                throw new batavia.builtins.ZeroDivisionError(aType + " division by zero")
+            }
+            
             if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
                 result = new batavia.core.Float(a/b);
             } else {
@@ -492,15 +515,9 @@ batavia.operators = {
         } else {
             var aType = batavia.get_type(a);
             var bType = batavia.get_type(b);
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: '" + aType + "' and '" + bType + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for /: '" + aType + "' and '" + bType + "'");
         }
         return result;
-    },
-    FLOOR_DIVIDE: function(a, b) {
-        return Math.floor(a / b);
-    },
-    TRUE_DIVIDE: function(a, b) {
-        return a / b;
     },
     MODULO: function(a, b) {
         if (typeof a === 'string') {
