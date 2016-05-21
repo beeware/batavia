@@ -259,7 +259,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_list',
         'test_subtract_none',
         'test_subtract_set',
-        'test_subtract_str',
         'test_subtract_tuple',
 
         'test_true_divide_bool',
