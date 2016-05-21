@@ -155,12 +155,18 @@ batavia.builtins.abs = function(args, kwargs) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
     }
-    if (args[0] === null) {
+
+    var type = batavia.get_type(args[0]);
+    if (type != 'int' && type != 'float' && type != 'bool') {
         throw new batavia.builtins.TypeError(
-            "bad operand type for abs(): 'NoneType'");
+            "bad operand type for abs(): '" + type + "'");
     }
 
-    return Math.abs(args[0]);
+    if (type == 'float') {
+        return new batavia.core.Float(Math.abs(args[0].valueOf()));
+    } else {
+        return Math.abs(args[0]);
+    }  
 };
 batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
@@ -246,7 +252,7 @@ batavia.builtins.bool = function(args, kwargs) {
         throw new batavia.builtins.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    return !!args[0];
+    return args[0] == null ? false : !!(args[0].valueOf());
 };
 batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
 
@@ -759,7 +765,7 @@ batavia.builtins.pow = function(args) {
 batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
     args.map(function(elm) {
-        if (elm === null) {
+        if (elm === null || elm == undefined) {
             elements.push("None");
         } else {
             elements.push(elm.__str__ ? elm.__str__() : elm.toString());
@@ -995,8 +1001,24 @@ batavia.builtins.tuple = function(args) {
     return new batavia.core.Tuple(args[0]);
 };
 
-batavia.builtins.type = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented");
+batavia.builtins.type = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("type() doesn't accept keyword arguments");
+    }
+    if (!args || (args.length != 1 && args.length != 3)) {
+        throw new batavia.builtins.TypeError('type() takes 1 or 3 arguments');
+    }
+    
+    if (args.length = 1) {
+        var type = batavia.get_type(args[0]);
+
+        return "<class '" + type + "'>";
+    } else {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented for 3 arguments");
+    }
 };
 
 batavia.builtins.unichr = function() {

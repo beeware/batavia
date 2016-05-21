@@ -324,6 +324,33 @@ batavia.core.tuple_iterator.prototype.__str__ = function() {
 };
 
 /*************************************************************************
+ * A Python Float type
+ *************************************************************************/
+
+batavia.core.Float = function() {
+    function Float(val) {
+        this.val = val
+    }
+    
+    Float.prototype = Object.create(Object.prototype);
+    
+    Float.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    Float.prototype.__str__ = function() {
+        if (this.val == Math.round(this. val)) return this.val + '.0';
+        else return this.val.toString();
+    };
+    
+    Float.prototype.valueOf = function() {
+        return this.val;
+    }
+    
+    return Float;
+}();
+
+/*************************************************************************
  * An implementation of range()
  *************************************************************************/
 
@@ -385,6 +412,8 @@ batavia.operators = {
     POSITIVE: function(a) {
         if (typeof a === 'string') {
             throw new batavia.builtins.TypeError("bad operand type for unary +: 'str'");
+        } else if (a instanceof batavia.core.Float) {
+            return new batavia.core.Float(+a.valueOf());
         } else {
             return +a;
         }
@@ -392,12 +421,14 @@ batavia.operators = {
     NEGATIVE: function(a) {
         if (typeof a === 'string') {
             throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
+        } else if (a instanceof batavia.core.Float) {
+            return new batavia.core.Float(-a.valueOf());
         } else {
             return -a;
         }
     },
     NOT: function(a) {
-        return !a;
+        return a == null ? true : !a.valueOf();
     },
     CONVERT: function(a) {
         throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
@@ -412,42 +443,88 @@ batavia.operators = {
     },
     MULTIPLY: function(a, b) {
         var result, i;
-        if (a instanceof Array) {
+        
+        // If one of the two objects is a list, move it into the first position.
+        if ((b instanceof Array || typeof b == 'string') && !(a instanceof Array || typeof a == 'string')) {
+            var c = b;
+            b = a;
+            a = c;
+        }
+        
+        if (a instanceof Array || typeof a == 'string') {
+            if (b === null){
+                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
+            }
             result = new batavia.core.List();
-            if (b instanceof Array) {
-                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'list'");
-            } else {
+            if (typeof b == 'number' || typeof b == 'boolean') {
                 for (i = 0; i < b; i++) {
                     result.extend(a);
                 }
+            } else {
+                var bType = batavia.get_type(b);
+                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + bType + "'");
             }
-        } else if (b === null){
-            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
-        } else if (b instanceof Array) {
-            result = [];
-            for (i = 0; i < a; i++) {
-                result.extend(b);
+        } 
+        else if (a != null && b != null 
+            && ((typeof a.valueOf() == 'number' || typeof a == 'boolean')
+                && (typeof b.valueOf() == 'number' || typeof b == 'boolean'))) {
+            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
+                result = new batavia.core.Float(a*b);
+            } else {
+                result = a * b;
             }
-        }
-        else {
-            result = a * b;
+        } else {
+            var aType = batavia.get_type(a);
+            var bType = batavia.get_type(b);
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: '" + aType + "' and '" + bType + "'");
         }
         return result;
     },
     DIVIDE: function(a, b) {
-        return Math.floor(a / b);
+        return batavia.operators.TRUE_DIVIDE(a,b);
     },
     FLOOR_DIVIDE: function(a, b) {
-        return Math.floor(a / b);
+        try {
+            return new batavia.core.Float(Math.floor(batavia.operators.TRUE_DIVIDE(a, b).valueOf()));
+        } catch (err) {
+            if (err instanceof batavia.builtins.TypeError) {
+                err.msg = err.msg.replace("/", "//");
+            } else if (err instanceof batavia.builtins.ZeroDivisionError) {
+                err.msg = err.msg.replace("division by zero", "divmod()");
+            }
+            throw err;
+        }
     },
     TRUE_DIVIDE: function(a, b) {
-        return a / b;
+        var result;
+        
+        if (a != null && b != null 
+            && ((typeof a.valueOf() == 'number' | typeof a == 'boolean')
+                && (typeof b.valueOf() == 'number' || typeof b == 'boolean'))) {
+
+            if (b.valueOf() === 0 || b === false) {
+                var aType = batavia.get_type(a);
+                throw new batavia.builtins.ZeroDivisionError(aType + " division by zero")
+            }
+            
+            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
+                result = new batavia.core.Float(a/b);
+            } else {
+                result = a / b;
+            }
+        } else {
+            var aType = batavia.get_type(a);
+            var bType = batavia.get_type(b);
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for /: '" + aType + "' and '" + bType + "'");
+        }
+        return result;
     },
     MODULO: function(a, b) {
         if (typeof a === 'string') {
             if (b instanceof Array) {
                 return batavia._substitute(a, b);
-            } else if (b instanceof Object) {
+            } else if (b instanceof Object
+                && !(b instanceof batavia.core.Float)) {
                 // TODO Handle %(key)s format.
             } else {
                 return batavia._substitute(a, [b]);
@@ -464,25 +541,47 @@ batavia.operators = {
                 result.extend(a);
                 result.extend(b);
             } else {
-                throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
+                var bType = batavia.get_type(b);
+                throw new batavia.builtins.TypeError('can only concatenate list (not "' + bType + '") to list');
             }
-        } else if (b instanceof Array) {
-            throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-        } else if (b === null){
-            throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
-        }else {
-            result = a + b;
+        } else if (typeof a == 'string') {
+            if (b instanceof Array) {
+                throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
+            } else if (b === null){
+                throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
+            } else if (typeof b == 'string') {
+                return a + b;
+            }
+        } else if (a != null && b != null 
+            && ((typeof a.valueOf() == 'number' | typeof a == 'boolean')
+                && (typeof b.valueOf() == 'number' || typeof b == 'boolean'))) {
+            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
+                result = new batavia.core.Float(a+b);
+            } else {
+                result = a + b;
+            }
+        } else {
+            var aType = batavia.get_type(a);
+            var bType = batavia.get_type(b);
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + aType + "' and '" + bType + "'");
         }
         return result;
     },
     SUBTRACT: function(a, b) {
-        if (typeof a === 'string') {
-            if (typeof b === 'string') {
-                throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and 'str'");
+        if (a != null && b != null 
+            && ((typeof a.valueOf() == 'number' | typeof a == 'boolean')
+                && (typeof b.valueOf() == 'number' || typeof b == 'boolean'))) {
+            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
+                result = new batavia.core.Float(a-b);
+            } else {
+                result = a - b;
             }
         } else {
-             return a - b;
+            var aType = batavia.get_type(a);
+            var bType = batavia.get_type(b);
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for -: '" + aType + "' and '" + bType + "'");
         }
+        return result;
     },
     SUBSCR: function(a, b) {
         if (b instanceof Object) {
@@ -705,3 +804,29 @@ batavia.make_callable = function(func) {
     fn.__python__ = true;
     return fn;
 };
+
+/*************************************************************************
+ * get the argument type as a string
+ *************************************************************************/
+ 
+ batavia.get_type = function(arg) {
+     var type = 'NoneType'
+
+    switch (typeof arg) {
+        case 'boolean':
+            type = 'bool';
+            break;
+        case 'number':
+            type = 'int';
+            break;
+        case 'string':
+            type = 'str';
+            break;
+        case 'object':
+            if (arg instanceof batavia.core.List) type = 'list'
+            else if (arg instanceof batavia.core.Tuple) type = 'tuple'
+            else if (arg instanceof batavia.core.Float) type = 'float'
+    }
+
+    return type;
+ }
