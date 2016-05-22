@@ -403,9 +403,18 @@ batavia.core.range_iterator.prototype.__next__ = function() {
 batavia.core.range_iterator.prototype.__str__ = function() {
     return "<range_iterator object at 0x99999999>";
 };
+
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
  *************************************************************************/
+
+function isinstance(data, type) {
+    if (typeof(data) === type) {
+        return true;
+    } else {
+        return false;
+    }
+}
 
 batavia.operators = {
     // UNARY operators
@@ -442,7 +451,7 @@ batavia.operators = {
         return Math.pow(a, b);
     },
     MULTIPLY: function(a, b) {
-        var result, i, atype, btype;
+        var result, i, aType, bType;
 
         // If one of the two objects is a list, move it into the first position.
         if ((b instanceof Array || typeof b == 'string') && !(a instanceof Array || typeof a == 'string')) {
@@ -545,14 +554,21 @@ batavia.operators = {
                 bType = batavia.get_type_name(b);
                 throw new batavia.builtins.TypeError('can only concatenate list (not "' + bType + '") to list');
             }
-        } else if (typeof a == 'string') {
+        } else if (isinstance(a, 'string') === true) {
             if (b instanceof Array) {
                 throw new batavia.builtins.TypeError("Can't convert 'list' object to str implicitly");
-            } else if (b === null){
+            } else if (b === null) {
                 throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
             } else if (typeof b == 'string') {
                 return a + b;
+            } else {
+                bType = batavia.get_type_name(b);
+                throw new batavia.builtins.TypeError("Can't convert '" + bType + "' object to str implicitly");
+                result = a + b;  // a and b is string
             }
+        } else if (isinstance(b, 'string') === true) {
+            aType = batavia.get_type_name(a);
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + aType + "' and 'str'");
         } else if (a !== null && b !== null && (
                     (typeof a.valueOf() == 'number' | typeof a == 'boolean') &&
                     (typeof b.valueOf() == 'number' || typeof b == 'boolean')
