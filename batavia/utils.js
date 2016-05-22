@@ -570,11 +570,11 @@ batavia.operators = {
             aType = batavia.get_type_name(a);
             throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + aType + "' and 'str'");
         } else if (a !== null && b !== null && (
-                    (typeof a.valueOf() == 'number' | typeof a == 'boolean') &&
+                    (typeof a.valueOf() == 'number' || typeof a == 'boolean') &&
                     (typeof b.valueOf() == 'number' || typeof b == 'boolean')
                 )) {
             if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
-                result = new batavia.core.Float(a+b);
+                result = new batavia.core.Float(a + b);
             } else {
                 result = a + b;
             }
@@ -588,11 +588,11 @@ batavia.operators = {
     SUBTRACT: function(a, b) {
         var aType, bType;
         if (a !== null && b !== null && (
-                    (typeof a.valueOf() == 'number' | typeof a == 'boolean') &&
+                    (typeof a.valueOf() == 'number' || typeof a == 'boolean') &&
                     (typeof b.valueOf() == 'number' || typeof b == 'boolean')
                 )) {
             if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
-                result = new batavia.core.Float(a-b);
+                result = new batavia.core.Float(a - b);
             } else {
                 result = a - b;
             }
