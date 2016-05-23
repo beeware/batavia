@@ -27,7 +27,6 @@ batavia.VirtualMachine = function(loader) {
     this.last_exception = null;
 };
 
-batavia.VirtualMachine.Py_Ellipsis = {};
 
 /*
  * Build a table mapping opcodes to a method to be called whenever we encounter that opcode.
@@ -86,7 +85,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
         var code = batavia.modules.marshal.load_pyc(this, payload);
 
         // Set up sys.argv
-        batavia.modules.sys.argv = new batavia.core.List(['batavia']);
+        batavia.modules.sys.argv = new batavia.types.List(['batavia']);
         if (args) {
             batavia.modules.sys.argv.extend(args);
         }
@@ -113,7 +112,7 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
         var payload = this.loader(tag);
         var code = batavia.modules.marshal.load_pyc(this, payload);
 
-        var callargs = new batavia.core.Dict();
+        var callargs = new batavia.types.Dict();
         for (var i = 0, l = args.length; i < l; i++) {
             callargs[code.co_varnames[i]] = args[i];
         }
@@ -234,9 +233,9 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
-        f_locals = new batavia.core.Dict();
+        f_locals = new batavia.types.Dict();
     } else {
-        f_globals = f_locals = new batavia.core.Dict({
+        f_globals = f_locals = new batavia.types.Dict({
             '__builtins__': batavia.builtins,
             '__name__': '__main__',
             '__doc__': null,
@@ -742,12 +741,12 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val = obj[attr];
-    if (val instanceof batavia.core.Function) {
+    if (val instanceof batavia.types.Function) {
         // If this is a Python function, we need to know the current
         // context - if it's an attribute of an object (rather than
         // a module) we need to upgrade the Function to a Method.
-        if (!(obj instanceof batavia.core.Module)) {
-            val = new batavia.core.Method(obj, val);
+        if (!(obj instanceof batavia.types.Module)) {
+            val = new batavia.types.Method(obj, val);
         }
     } else if (val instanceof Function) {
         // If this is a native Javascript function, wrap the function
@@ -798,21 +797,21 @@ batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.core.Tuple(items));
+    this.push(new batavia.types.Tuple(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.core.List(items));
+    this.push(new batavia.types.List(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.core.Set(items));
+    this.push(new batavia.types.Set(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    this.push(new batavia.core.Dict());
+    this.push(new batavia.types.Dict());
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
@@ -1122,7 +1121,7 @@ batavia.VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
     var name = this.pop();
     var code = this.pop();
     var defaults = this.popn(argc);
-    var fn = new batavia.core.Function(name, code, this.frame.f_globals, defaults, null, this);
+    var fn = new batavia.types.Function(name, code, this.frame.f_globals, defaults, null, this);
     this.push(fn);
 };
 
@@ -1134,7 +1133,7 @@ batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
     var name = this.pop();
     var items = this.popn(2);
     var defaults = this.popn(argc);
-    var fn = new batavia.core.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
+    var fn = new batavia.types.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
     this.push(fn);
 };
 
@@ -1160,7 +1159,7 @@ batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
-    var namedargs = new batavia.core.Dict();
+    var namedargs = new batavia.types.Dict();
     for (var i = 0; i < lenKw; i++) {
         var items = this.popn(2);
         namedargs[items[0]] = items[1];

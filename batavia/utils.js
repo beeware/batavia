@@ -5,404 +5,6 @@ function assert(condition, message) {
     }
 }
 
-/*************************************************************************
- * Modify String to behave like a Python String
- *************************************************************************/
-
-String.prototype.startswith = function (str) {
-    return this.slice(0, str.length) === str;
-};
-
-String.prototype.__repr__ = function(args, kwargs) {
-    return "'" + this.toString() + "'";
-};
-
-
-String.prototype.__iter__ = function() {
-    return new batavia.core.str_iterator(this);
-};
-
-batavia.core.str_iterator = function (data) {
-    Object.call(this);
-    this.index = 0;
-    this.data = data;
-};
-
-batavia.core.str_iterator.prototype = Object.create(Object.prototype);
-
-batavia.core.str_iterator.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new batavia.builtins.StopIteration();
-    }
-    this.index++;
-    return retval;
-};
-
-batavia.core.str_iterator.prototype.__str__ = function() {
-    return "<str_iterator object at 0x99999999>";
-};
-/*************************************************************************
- * A Python dictionary type
- *************************************************************************/
-
-batavia.core.Dict = function(args, kwargs) {
-    Object.call(this);
-    if (args) {
-        this.update(args);
-    }
-};
-
-batavia.core.Dict.prototype = Object.create(Object.prototype);
-
-batavia.core.Dict.prototype.update = function(values) {
-    for (var key in values) {
-        if (values.hasOwnProperty(key)) {
-            this[key] = values[key];
-        }
-    }
-};
-
-batavia.core.Dict.prototype.copy = function() {
-    return new batavia.core.Dict(this);
-};
-
-batavia.core.Dict.prototype.items = function() {
-    var result = [];
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            result.push([key, this[key]]);
-        }
-    }
-    return result;
-};
-
-batavia.core.Dict.prototype.toString = function () {
-    return this.__str__();
-};
-
-batavia.core.Dict.prototype.__str__ = function () {
-    var result = "{", values = [];
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            values.push(batavia.builtins.repr([key], null) + ": " + batavia.builtins.repr([this[key]], null));
-        }
-    }
-    result += values.join(', ');
-    result += "}";
-    return result;
-};
-
-/*************************************************************************
- * A Python List type
- *************************************************************************/
-
-batavia.core.List = function() {
-    function List() {
-        if (arguments.length === 0) {
-            this.push.apply(this);
-        } else if (arguments.length === 1) {
-            this.push.apply(this, arguments[0]);
-        } else {
-            throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
-        }
-    }
-
-    function Array() {
-    }
-
-    Array.prototype = [];
-
-    List.prototype = new Array;
-    List.prototype.length = 0;
-
-    List.prototype.__len__ = function () {
-        return this.length;
-    };
-
-    List.prototype.append = function(value) {
-        this.push(value);
-    };
-
-    List.prototype.extend = function(values) {
-        if (values.length > 0) {
-            this.push.apply(this, values);
-        }
-    };
-
-    List.prototype.toString = function() {
-        return this.__str__();
-    };
-
-    List.prototype.__repr__ = function() {
-        return this.__str__();
-    };
-
-    List.prototype.__str__ = function() {
-        return '[' + this.map(function(obj) {
-                return batavia.builtins.repr([obj], null);
-            }).join(', ') + ']';
-    };
-
-    List.prototype.__iter__ = function() {
-        return new batavia.core.list_iterator(this);
-    };
-
-    List.prototype.constructor = List;
-    return List;
-}();
-
-
-batavia.core.list_iterator = function (data) {
-    Object.call(this);
-    this.index = 0;
-    this.data = data;
-};
-
-batavia.core.list_iterator.prototype = Object.create(Object.prototype);
-
-batavia.core.list_iterator.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new batavia.builtins.StopIteration();
-    }
-    this.index++;
-    return retval;
-};
-
-batavia.core.list_iterator.prototype.__str__ = function() {
-    return "<list_iterator object at 0x99999999>";
-};
-
-/*************************************************************************
- * A Python Set type
- *************************************************************************/
-
-batavia.core.Set = function(args, kwargs) {
-    Object.call(this);
-    if (args) {
-        this.update(args);
-    }
-};
-
-batavia.core.Set.prototype = Object.create(Object.prototype);
-
-batavia.core.Set.prototype.add = function(v) {
-    this[v] = null;
-};
-
-batavia.core.Set.prototype.remove = function(v) {
-    delete this[v];
-};
-
-batavia.core.Set.prototype.update = function(values) {
-    for (var value in values) {
-        if (values.hasOwnProperty(value)) {
-            this[values[value]] = null;
-        }
-    }
-};
-
-
-batavia.core.Set.prototype.toString = function() {
-    return this.__str__();
-};
-
-batavia.core.Set.prototype.__str__ = function() {
-    var result = "{", values = [];
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            values.push(batavia.builtins.repr(key));
-        }
-    }
-    result += values.join(', ');
-    result += "}";
-    return result;
-};
-
-batavia.core.Set.prototype.__iter__ = function() {
-    return new batavia.core.set_iterator(this);
-};
-
-batavia.core.set_iterator = function (data) {
-    Object.call(this);
-    this.index = 0;
-    this.data = data;
-};
-
-batavia.core.set_iterator.prototype = Object.create(Object.prototype);
-
-batavia.core.set_iterator.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new batavia.builtins.StopIteration();
-    }
-    this.index++;
-    return retval;
-};
-
-batavia.core.set_iterator.prototype.__str__ = function() {
-    return "<set_iterator object at 0x99999999>";
-};
-
-/*************************************************************************
- * A Python FrozenSet type
- *************************************************************************/
-
-batavia.core.FrozenSet = function(args, kwargs) {
-    batavia.core.Set.call(this, args, kwargs);
-};
-
-batavia.core.FrozenSet.prototype = Object.create(batavia.core.Set.prototype);
-
-/*************************************************************************
- * A Python Tuple type
- *************************************************************************/
-
-batavia.core.Tuple = function() {
-    function Tuple(length){
-        if (arguments.length === 0) {
-            this.push.apply(this);
-        } else if (arguments.length === 1) {
-            this.push.apply(this, arguments[0]);
-        } else {
-            throw new batavia.builtins.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
-        }
-
-    }
-
-    function Array() {
-    }
-
-    Array.prototype = [];
-
-    Tuple.prototype = new Array;
-    Tuple.prototype.length = 0;
-
-    Tuple.prototype.__len__ = function () {
-        return this.length;
-    };
-
-    Tuple.prototype.toString = function() {
-        return this.__str__();
-    };
-
-    Tuple.prototype.__str__ = function() {
-        return '(' + this.map(function(obj) {
-                return batavia.builtins.repr([obj], null);
-            }).join(', ') + ')';
-    };
-
-    Tuple.prototype.__iter__ = function() {
-        return new batavia.core.tuple_iterator(this);
-    };
-
-    Tuple.prototype.constructor = Tuple;
-    return Tuple;
-}();
-
-
-batavia.core.tuple_iterator = function (data) {
-    Object.call(this);
-    this.index = 0;
-    this.data = data;
-};
-
-batavia.core.tuple_iterator.prototype = Object.create(Object.prototype);
-
-batavia.core.tuple_iterator.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new batavia.builtins.StopIteration();
-    }
-    this.index++;
-    return retval;
-};
-
-batavia.core.tuple_iterator.prototype.__str__ = function() {
-    return "<tuple_iterator object at 0x99999999>";
-};
-
-/*************************************************************************
- * A Python Float type
- *************************************************************************/
-
-batavia.core.Float = function() {
-    function Float(val) {
-        this.val = val;
-    }
-
-    Float.prototype = Object.create(Object.prototype);
-
-    Float.prototype.toString = function() {
-        return this.__str__();
-    };
-
-    Float.prototype.__str__ = function() {
-        if (this.val == Math.round(this. val)) return this.val + '.0';
-        else return this.val.toString();
-    };
-
-    Float.prototype.valueOf = function() {
-        return this.val;
-    };
-
-    return Float;
-}();
-
-/*************************************************************************
- * An implementation of range()
- *************************************************************************/
-
-batavia.core.range = function(start, stop, step) {
-    this.start = start;
-    this.stop = stop;
-    this.step = step || 1;
-
-    if (this.stop === undefined) {
-        this.start = 0;
-        this.stop = start;
-    }
-};
-
-batavia.core.range.prototype.toString = function() {
-    return this.__str__();
-};
-
-batavia.core.range.prototype.__str__ = function() {
-    if (this.step) {
-        return '(' + this.start + ', ' + this.stop + ', ' + this.step + ')';
-    } else {
-        return '(' + this.start + ', ' + this.stop + ')';
-    }
-};
-
-
-batavia.core.range.prototype.__iter__ = function() {
-    return new batavia.core.range_iterator(this);
-};
-
-
-batavia.core.range_iterator = function (data) {
-    Object.call(this);
-    this.data = data;
-    this.index = this.data.start;
-};
-
-batavia.core.range_iterator.prototype = Object.create(Object.prototype);
-
-batavia.core.range_iterator.prototype.__next__ = function() {
-    var retval = this.index;
-    if (this.index < this.data.stop) {
-        this.index = this.index + this.data.step;
-        return retval;
-    }
-    throw new batavia.builtins.StopIteration();
-};
-
-batavia.core.range_iterator.prototype.__str__ = function() {
-    return "<range_iterator object at 0x99999999>";
-};
 
 /*************************************************************************
  * Operator defintions that match Python-like behavior.
@@ -421,8 +23,8 @@ batavia.operators = {
     POSITIVE: function(a) {
         if (typeof a === 'string') {
             throw new batavia.builtins.TypeError("bad operand type for unary +: 'str'");
-        } else if (a instanceof batavia.core.Float) {
-            return new batavia.core.Float(+a.valueOf());
+        } else if (a instanceof batavia.types.Float) {
+            return new batavia.types.Float(+a.valueOf());
         } else {
             return +a;
         }
@@ -430,8 +32,8 @@ batavia.operators = {
     NEGATIVE: function(a) {
         if (typeof a === 'string') {
             throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
-        } else if (a instanceof batavia.core.Float) {
-            return new batavia.core.Float(-a.valueOf());
+        } else if (a instanceof batavia.types.Float) {
+            return new batavia.types.Float(-a.valueOf());
         } else {
             return -a;
         }
@@ -464,7 +66,7 @@ batavia.operators = {
             if (b === null){
                 throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
             }
-            result = new batavia.core.List();
+            result = new batavia.types.List();
             if (typeof b == 'number' || typeof b == 'boolean') {
                 for (i = 0; i < b; i++) {
                     result.extend(a);
@@ -478,8 +80,8 @@ batavia.operators = {
                     (typeof a.valueOf() == 'number' || typeof a == 'boolean') &&
                     (typeof b.valueOf() == 'number' || typeof b == 'boolean')
                 )) {
-            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
-                result = new batavia.core.Float(a*b);
+            if (a instanceof batavia.types.Float || b instanceof batavia.types.Float) {
+                result = new batavia.types.Float(a*b);
             } else {
                 result = a * b;
             }
@@ -495,7 +97,7 @@ batavia.operators = {
     },
     FLOOR_DIVIDE: function(a, b) {
         try {
-            return new batavia.core.Float(Math.floor(batavia.operators.TRUE_DIVIDE(a, b).valueOf()));
+            return new batavia.types.Float(Math.floor(batavia.operators.TRUE_DIVIDE(a, b).valueOf()));
         } catch (err) {
             if (err instanceof batavia.builtins.TypeError) {
                 err.msg = err.msg.replace("/", "//");
@@ -518,8 +120,8 @@ batavia.operators = {
                 throw new batavia.builtins.ZeroDivisionError(aType + " division by zero");
             }
 
-            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
-                result = new batavia.core.Float(a/b);
+            if (a instanceof batavia.types.Float || b instanceof batavia.types.Float) {
+                result = new batavia.types.Float(a/b);
             } else {
                 result = a / b;
             }
@@ -534,7 +136,7 @@ batavia.operators = {
         if (typeof a === 'string') {
             if (b instanceof Array) {
                 return batavia._substitute(a, b);
-            } else if (b instanceof Object && !(b instanceof batavia.core.Float)) {
+            } else if (b instanceof Object && !(b instanceof batavia.types.Float)) {
                 // TODO Handle %(key)s format.
             } else {
                 return batavia._substitute(a, [b]);
@@ -573,8 +175,8 @@ batavia.operators = {
                     (typeof a.valueOf() == 'number' || typeof a == 'boolean') &&
                     (typeof b.valueOf() == 'number' || typeof b == 'boolean')
                 )) {
-            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
-                result = new batavia.core.Float(a + b);
+            if (a instanceof batavia.types.Float || b instanceof batavia.types.Float) {
+                result = new batavia.types.Float(a + b);
             } else {
                 result = a + b;
             }
@@ -591,8 +193,8 @@ batavia.operators = {
                     (typeof a.valueOf() == 'number' || typeof a == 'boolean') &&
                     (typeof b.valueOf() == 'number' || typeof b == 'boolean')
                 )) {
-            if (a instanceof batavia.core.Float || b instanceof batavia.core.Float) {
-                result = new batavia.core.Float(a - b);
+            if (a instanceof batavia.types.Float || b instanceof batavia.types.Float) {
+                result = new batavia.types.Float(a - b);
             } else {
                 result = a - b;
             }
@@ -768,7 +370,7 @@ batavia.make_class = function(args, kwargs) {
     var kwds = kwargs.kwds || args[4] || [];
 
     // Create a locals context, and run the class function in it.
-    var locals = new batavia.core.Dict();
+    var locals = new batavia.types.Dict();
     var retval = func.__call__.apply(this, [[], [], locals]);
 
     // Now construct the class, based on the constructed local context.
@@ -809,7 +411,7 @@ batavia.make_callable = function(func) {
             'code': func.__code__,
             'callargs': callargs,
             'f_globals': func.__globals__,
-            'f_locals': locals || new batavia.core.Dict()
+            'f_locals': locals || new batavia.types.Dict()
         });
 
         if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {
@@ -823,34 +425,4 @@ batavia.make_callable = function(func) {
     };
     fn.__python__ = true;
     return fn;
-};
-
-/*************************************************************************
- * get the argument type as a string
- *************************************************************************/
-
-batavia.get_type_name = function(arg) {
-    var type = 'NoneType';
-
-    switch (typeof arg) {
-        case 'boolean':
-            type = 'bool';
-            break;
-        case 'number':
-            type = 'int';
-            break;
-        case 'string':
-            type = 'str';
-            break;
-        case 'object':
-            if (arg instanceof batavia.core.List) {
-                type = 'list';
-            } else if (arg instanceof batavia.core.Tuple) {
-                type = 'tuple';
-            } else if (arg instanceof batavia.core.Float) {
-                type = 'float';
-            }
-    }
-
-    return type;
 };

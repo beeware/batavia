@@ -351,7 +351,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_ELLIPSIS:
-            retval = batavia.VirtualMachine.Py_Ellipsis;
+            retval = batavia.types.Ellipsis;
             // console.log.info('TYPE_ELLIPSIS');
             break;
 
@@ -387,7 +387,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_FLOAT:
             n = batavia.modules.marshal.r_byte(vm, p);
             buf = batavia.modules.marshal.r_string(vm, p, n);
-            retval = new batavia.core.Float(parseFloat(buf));
+            retval = new batavia.types.Float(parseFloat(buf));
             // console.log.info('TYPE_FLOAT ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -451,7 +451,7 @@ batavia.modules.marshal = {
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
-            retval = new batavia.core.Float(retval);
+            retval = new batavia.types.Float(retval);
             break;
 
         case batavia.modules.marshal.TYPE_COMPLEX:
@@ -582,7 +582,7 @@ batavia.modules.marshal = {
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            retval = new batavia.core.Tuple(new Array(n));
+            retval = new batavia.types.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -603,7 +603,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (tuple size out of range)");
                 break;
             }
-            retval = new batavia.core.Tuple(new Array(n));
+            retval = new batavia.types.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -624,7 +624,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (list size out of range)");
                 break;
             }
-            retval = new batavia.core.List(new Array(n));
+            retval = new batavia.types.List(new Array(n));
             for (i = 0; i < n; i++) {
                 retval[n] = batavia.modules.marshal.r_object(vm, p);
             }
@@ -636,7 +636,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_DICT:
             // console.log.info('TYPE_DICT ' + n);
-            retval = batavia.core.Dict();
+            retval = batavia.types.Dict();
             for (;;) {
                 var key, val;
                 key = r_object(p);
@@ -669,12 +669,12 @@ batavia.modules.marshal = {
                 break;
             }
             if (type == batavia.modules.marshal.TYPE_SET) {
-                retval = batavia.core.Set(null);
+                retval = batavia.types.Set(null);
                 if (flag) {
                    batavia.modules.marshal.r_ref(vm, retval, flag, p);
                 }
             } else {
-                retval = batavia.core.FrozenSet(null);
+                retval = batavia.types.FrozenSet(null);
                 /* must use delayed registration of frozensets because they must
                  * be init with a refcount of 1
                  */
@@ -736,7 +736,7 @@ batavia.modules.marshal = {
                 p.current_filename = filename;
             }
 
-            v = new batavia.core.Code({
+            v = new batavia.types.Code({
                 argcount: argcount,
                 kwonlyargcount: kwonlyargcount,
                 nlocals: nlocals,

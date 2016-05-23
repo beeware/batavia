@@ -6,22 +6,22 @@
 batavia.modules.dis = {
     CO_GENERATOR: 32,  // flag for "this code uses yield"
 
-    hasconst: new batavia.core.Set(),
-    hasname: new batavia.core.Set(),
-    hasjrel: new batavia.core.Set(),
-    hasjabs: new batavia.core.Set(),
-    haslocal: new batavia.core.Set(),
-    hascompare: new batavia.core.Set(),
-    hasfree: new batavia.core.Set(),
-    hasnargs: new batavia.core.Set(),
+    hasconst: new batavia.types.Set(),
+    hasname: new batavia.types.Set(),
+    hasjrel: new batavia.types.Set(),
+    hasjabs: new batavia.types.Set(),
+    haslocal: new batavia.types.Set(),
+    hascompare: new batavia.types.Set(),
+    hasfree: new batavia.types.Set(),
+    hasnargs: new batavia.types.Set(),
 
     opmap: null,
     opname: [],
 
-    unary_ops: new batavia.core.Set(),
-    binary_ops: new batavia.core.Set(),
-    inplace_ops: new batavia.core.Set(),
-    // slice_ops: new batavia.core.Set(),
+    unary_ops: new batavia.types.Set(),
+    binary_ops: new batavia.types.Set(),
+    inplace_ops: new batavia.types.Set(),
+    // slice_ops: new batavia.types.Set(),
 
     def_op: function(name, op) {
         batavia.modules.dis.opname[op] = name;

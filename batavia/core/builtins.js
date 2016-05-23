@@ -52,11 +52,11 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 frame = this.make_frame({
                     'code': code,
                     'f_globals': args[1],
-                    'f_locals': new batavia.core.Dict(),
+                    'f_locals': new batavia.types.Dict(),
                 });
                 this.run_frame(frame);
 
-                root_module = new batavia.core.Module(name, frame.f_locals);
+                root_module = new batavia.types.Module(name, frame.f_locals);
                 batavia.modules.sys.modules[name] = root_module;
             }
 
@@ -73,11 +73,11 @@ batavia.builtins.__import__ = function(args, kwargs) {
                     frame = this.make_frame({
                         'code': code,
                         'f_globals': args[1],
-                        'f_locals': new batavia.core.Dict(),
+                        'f_locals': new batavia.types.Dict(),
                     });
                     this.run_frame(frame);
 
-                    new_sub = new batavia.core.Module(name, frame.f_locals);
+                    new_sub = new batavia.types.Module(name, frame.f_locals);
                     sub_module[name_parts[n]] = new_sub;
                     sub_module = new_sub;
                     batavia.modules.sys.modules[name] = sub_module;
@@ -91,7 +91,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 module = root_module;
             } else if (args[3][0] === "*") {
                 // from <mod> import *
-                module = new batavia.core.Module(sub_module.__name__);
+                module = new batavia.types.Module(sub_module.__name__);
                 for (name in sub_module) {
                     if (sub_module.hasOwnProperty(name)) {
                         module[name] = sub_module[name];
@@ -99,7 +99,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 }
             } else {
                 // from <mod> import <name>, <name>
-                module = new batavia.core.Module(sub_module.__name__);
+                module = new batavia.types.Module(sub_module.__name__);
                 for (var sn = 0; sn < args[3].length; sn++) {
                     name = args[3][sn];
                     if (sub_module[name] === undefined) {
@@ -163,7 +163,7 @@ batavia.builtins.abs = function(args, kwargs) {
     }
 
     if (type == 'float') {
-        return new batavia.core.Float(Math.abs(args[0].valueOf()));
+        return new batavia.types.Float(Math.abs(args[0].valueOf()));
     } else {
         return Math.abs(args[0]);
     }
@@ -441,7 +441,7 @@ batavia.builtins.divmod = function(args, kwargs) {
 
     div = Math.floor(args[0]/args[1]);
     rem = args[0] % args[1];
-    return new batavia.core.Tuple([div, rem]);
+    return new batavia.types.Tuple([div, rem]);
 };
 batavia.builtins.divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.';
 
@@ -796,7 +796,7 @@ batavia.builtins.range = function(args, kwargs){
      throw new batavia.builtins.TypeError('range() expected at most 3 arguments, got ' + args.length);
     }
 
-    return new batavia.core.range(args[0], args[1], args[2]);
+    return new batavia.types.Range(args[0], args[1], args[2]);
 };
 batavia.builtins.range.__doc__ = 'range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn a virtual sequence of numbers from start to stop by step.';
 
@@ -889,7 +889,7 @@ batavia.builtins.sorted = function(args, kwargs) {
             return 0;
         });
 
-        return new batavia.core.List(iterable.map(function (element) {
+        return new batavia.types.List(iterable.map(function (element) {
             return element["value"];
         }));
     }
@@ -999,7 +999,7 @@ batavia.builtins.super = function() {
 };
 
 batavia.builtins.tuple = function(args) {
-    return new batavia.core.Tuple(args[0]);
+    return new batavia.types.Tuple(args[0]);
 };
 
 batavia.builtins.type = function(args, kwargs) {
@@ -1056,7 +1056,7 @@ batavia.builtins.zip = function(args, undefined) {
             sequence.push(args[iterableObj][i]);
         }
 
-        result.push(new batavia.core.Tuple(sequence));
+        result.push(new batavia.types.Tuple(sequence));
     }
 
     return result;

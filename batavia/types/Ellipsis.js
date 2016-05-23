@@ -1,0 +1,2 @@
+
+batavia.types.Ellipsis = {};
