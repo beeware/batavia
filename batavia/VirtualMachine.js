@@ -946,16 +946,21 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
 
 batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     var seq = this.pop();
-    if (seq.__next__) {
+
+    // If the sequence item on top of the stack is iterable,
+    // expand it into an array.
+    if (seq.__iter__) {
         try {
+            var iter = seq.__iter__();
+            seq = [];
             while (true) {
-                this.push(seq.__next__());
+                seq.push(iter.__next__());
             }
         } catch (err) {}
-    } else {
-        for (var i = seq.length; i-- ; ) {
-            this.push(seq[i]);
-        }
+    }
+
+    for (var i = seq.length; i > 0; i--) {
+        this.push(seq[i - 1]);
     }
 };
 

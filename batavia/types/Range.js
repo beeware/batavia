@@ -53,7 +53,7 @@ batavia.types.Range = function() {
     Range.prototype.RangeIterator = function (data) {
         Object.call(this);
         this.data = data;
-        this.index = this.data.start;
+        this.index = this.data.start.valueOf();
     };
 
     Range.prototype.RangeIterator.prototype = Object.create(Object.prototype);
@@ -62,7 +62,7 @@ batavia.types.Range = function() {
         var retval = this.index;
         if (this.index < this.data.stop) {
             this.index = this.index + this.data.step;
-            return retval;
+            return new batavia.types.Int(retval);
         }
         throw new batavia.builtins.StopIteration();
     };
