@@ -574,17 +574,17 @@ batavia.builtins.id = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented");
 };
 
-batavia.builtins.input = function(args) {
+batavia.builtins.input = function(args, kwargs) {
+    if (kwargs && Object.keys(kwargs).length > 0) {
+      throw new batavia.builtins.TypeError("input() doesn't accept keyword arguments");
+    }
     if (args.length > 1) {
       throw new batavia.builtins.TypeError("input expected at most 1 arguments, got " + args.length);
     }
-    if (args.length === 1) {
-      batavia.stdout(String(args[0]) + "\t");
-    }
-    return readline();
+    return batavia.input(String(args[0]));
 };
 
-batavia.builtins.input.__doc__ = "input([prompt]) -> Retrieves input from user in console. Prompt argument is optional. ";
+batavia.builtins.input.__doc__ = "input([prompt]) -> string\n\nRead a string from standard input. The trailing newline is stripped.\nIf the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.\nOn Unix, GNU readline is used if enabled. The prompt string, if given,\nis printed without a trailing newline before reading.";
 
 batavia.builtins.int = function(args, kwargs) {
     if (arguments.length != 2) {
