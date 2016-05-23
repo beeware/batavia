@@ -152,7 +152,7 @@ batavia.operators = {
     },
     MODULO: function(a, b) {
         if (batavia.isinstance(a, batavia.types.Str)) {
-            if (batavia.isinstance(a, [batavia.types.List, batavia.types.Tuple])) {
+            if (batavia.isinstance(b, [batavia.types.List, batavia.types.Tuple])) {
                 return batavia._substitute(a, b);
             // } else if (b instanceof Object && !(b instanceof batavia.types.Float)) {
             //     // TODO Handle %(key)s format.
