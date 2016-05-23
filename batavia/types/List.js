@@ -21,22 +21,26 @@ batavia.types.List = function() {
     List.prototype = Object.create(Array.prototype);
     List.prototype.length = 0;
 
-    List.prototype.__len__ = function () {
-        return this.length;
-    };
+    List.prototype.constructor = List;
 
-    List.prototype.append = function(value) {
-        this.push(value);
-    };
-
-    List.prototype.extend = function(values) {
-        if (values.length > 0) {
-            this.push.apply(this, values);
-        }
-    };
+    /**************************************************
+     * Javascript compatibility methods
+     **************************************************/
 
     List.prototype.toString = function() {
         return this.__str__();
+    };
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    List.prototype.__iter__ = function() {
+        return new List.prototype.ListIterator(this);
+    };
+
+    List.prototype.__len__ = function () {
+        return this.length;
     };
 
     List.prototype.__repr__ = function() {
@@ -48,11 +52,48 @@ batavia.types.List = function() {
                 return batavia.builtins.repr([obj], null);
             }).join(', ') + ']';
     };
-    List.prototype.__iter__ = function() {
-        return new List.prototype.ListIterator(this);
+
+    /**************************************************
+     * Comparison operators
+     **************************************************/
+
+    List.prototype.__le__ = function(args, kwargs) {
+        return this.valueOf() <= args[0];
     };
 
-    List.prototype.constructor = List;
+    List.prototype.__eq__ = function(args, kwargs) {
+        return this.valueOf() == args[0];
+    };
+
+    List.prototype.__ne__ = function(args, kwargs) {
+        return this.valueOf() != args[0];
+    };
+
+    List.prototype.__gt__ = function(args, kwargs) {
+        return this.valueOf() > args[0];
+    };
+
+    List.prototype.__ge__ = function(args, kwargs) {
+        return this.valueOf() >= args[0];
+    };
+
+    List.prototype.__contains__ = function(args, kwargs) {
+        return this.valueOf().index(args[0]) !== -1;
+    };
+
+    /**************************************************
+     * Methods
+     **************************************************/
+
+    List.prototype.append = function(value) {
+        this.push(value);
+    };
+
+    List.prototype.extend = function(values) {
+        if (values.length > 0) {
+            this.push.apply(this, values);
+        }
+    };
 
     /**************************************************
      * List Iterator

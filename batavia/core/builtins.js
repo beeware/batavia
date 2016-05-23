@@ -254,7 +254,13 @@ batavia.builtins.bool = function(args, kwargs) {
         throw new batavia.builtins.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    return args[0] === null ? false : !!(args[0].valueOf());
+    if (args[0] === null) {
+        return batavia.types.NoneType.__bool__();
+    } else if (args[0].__bool__) {
+        return args[0].__bool__();
+    } else {
+        return !!(args[0].valueOf());
+    }
 };
 batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
 
@@ -721,16 +727,17 @@ batavia.builtins.next = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 
-batavia.builtins.None = new batavia.types.NoneType();
 
 batavia.builtins.object = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented");
 };
 
 batavia.builtins.oct = function(args) {
-    if (args.length !== 1)
+    if (args.length !== 1) {
         throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
-return "0o"+args[0].toString(8);
+    }
+
+    return "0o" + args[0].toString(8);
 };
 
 batavia.builtins.open = function() {
@@ -818,7 +825,9 @@ batavia.builtins.repr = function(args, kwargs) {
         throw new batavia.builtins.TypeError('repr() takes exactly 1 argument (' + args.length + ' given)');
     }
 
-    if (args[0].__repr__) {
+    if (args[0] === null) {
+        return batavia.types.NoneType.__repr__();
+    } else if (args[0].__repr__) {
         return args[0].__repr__();
     } else {
         return args[0].toString();
@@ -953,7 +962,9 @@ batavia.builtins.str = function(args, kwargs) {
         throw new batavia.builtins.TypeError('str() takes exactly 1 argument (' + args.length + ' given)');
     }
 
-    if (args[0]['__str__']) {
+    if (args[0] === null) {
+        return batavia.types.NoneType.__str__();
+    } else if (args[0].__str__) {
         return args[0].__str__();
     } else {
         return args[0].toString();
@@ -1059,3 +1070,5 @@ batavia.builtins.zip = function(args, undefined) {
 for (var fn in batavia.builtins) {
     batavia.builtins[fn].__python__ = true;
 }
+
+batavia.builtins.None = null;

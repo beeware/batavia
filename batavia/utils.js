@@ -258,52 +258,6 @@ batavia.operators = {
 };
 
 
-batavia.comparisons = [
-    function (x, y) {  // <
-        return x < y;
-    },
-    function (x, y) {  // <=
-        return x <= y;
-    },
-    function (x, y) {  // ==
-        return x == y;
-    },
-    function (x, y) {  // !=
-        return x != y;
-    },
-    function (x, y) {  // >
-        return x > y;
-    },
-    function (x, y) {  // >=
-        return x >= y;
-    },
-    function (x, y) {  // in
-        return x in y;
-    },
-    function (x, y) {  // not in
-        return !(x in y);
-    },
-    function (x, y) {  // is
-        return x === y;
-    },
-    function (x, y) {  // is not
-        return x !== y;
-    },
-    function (x, y) {  // exception match
-        if (y instanceof Array) {
-            for (var i in y) {
-                if (x === y[i]) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return x === y;
-        }
-    },
-];
-
-
 /*************************************************************************
  * sprintf() implementation
  *************************************************************************/

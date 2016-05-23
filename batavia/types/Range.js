@@ -14,7 +14,27 @@ batavia.types.Range = function() {
         }
     }
 
+    Range.prototype = Object.create(Object.prototype);
+
+    Range.prototype.constructor = Range;
+
+    /**************************************************
+     * Javascript compatibility methods
+     **************************************************/
+
     Range.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    Range.prototype.__iter__ = function() {
+        return new Range.prototype.RangeIterator(this);
+    };
+
+    Range.prototype.__repr__ = function() {
         return this.__str__();
     };
 
@@ -25,12 +45,6 @@ batavia.types.Range = function() {
             return '(' + this.start + ', ' + this.stop + ')';
         }
     };
-
-    Range.prototype.__iter__ = function() {
-        return new Range.prototype.RangeIterator(this);
-    };
-
-    Range.prototype.constructor = Range;
 
     /**************************************************
      * Range Iterator

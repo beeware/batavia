@@ -13,23 +13,29 @@ batavia.types.Set = function() {
 
     Set.prototype = Object.create(Object.prototype);
 
-    Set.prototype.add = function(v) {
-        this[v] = null;
-    };
+    Set.prototype.constructor = Set;
 
-    Set.prototype.remove = function(v) {
-        delete this[v];
-    };
-
-    Set.prototype.update = function(values) {
-        for (var value in values) {
-            if (values.hasOwnProperty(value)) {
-                this[values[value]] = null;
-            }
-        }
-    };
+    /**************************************************
+     * Javascript compatibility methods
+     **************************************************/
 
     Set.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    Set.prototype.__bool__ = function() {
+        return this.valueOf().length !== 0;
+    };
+
+    Set.prototype.__iter__ = function() {
+        return new Set.prototype.SetIterator(this);
+    };
+
+    Set.prototype.__repr__ = function() {
         return this.__str__();
     };
 
@@ -45,11 +51,53 @@ batavia.types.Set = function() {
         return result;
     };
 
-    Set.prototype.__iter__ = function() {
-        return new Set.prototype.SetIterator(this);
+    /**************************************************
+     * Comparison operators
+     **************************************************/
+
+    Set.prototype.__le__ = function(args, kwargs) {
+        return this.valueOf() <= args[0];
     };
 
-    Set.prototype.constructor = Set;
+    Set.prototype.__eq__ = function(args, kwargs) {
+        return this.valueOf() == args[0];
+    };
+
+    Set.prototype.__ne__ = function(args, kwargs) {
+        return this.valueOf() != args[0];
+    };
+
+    Set.prototype.__gt__ = function(args, kwargs) {
+        return this.valueOf() > args[0];
+    };
+
+    Set.prototype.__ge__ = function(args, kwargs) {
+        return this.valueOf() >= args[0];
+    };
+
+    Set.prototype.__contains__ = function(args, kwargs) {
+        return this.valueOf().hasOwnProperty(args[0]);
+    };
+
+    /**************************************************
+     * Methods
+     **************************************************/
+
+    Set.prototype.add = function(v) {
+        this[v] = null;
+    };
+
+    Set.prototype.remove = function(v) {
+        delete this[v];
+    };
+
+    Set.prototype.update = function(values) {
+        for (var value in values) {
+            if (values.hasOwnProperty(value)) {
+                this[values[value]] = null;
+            }
+        }
+    };
 
     /**************************************************
      * Set Iterator

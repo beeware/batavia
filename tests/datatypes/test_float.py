@@ -61,7 +61,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
-        'test_eq_int',
         'test_eq_set',
         'test_eq_str',
 
@@ -166,7 +165,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
-        'test_ne_int',
         'test_ne_set',
         'test_ne_str',
 

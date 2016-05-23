@@ -735,7 +735,131 @@ batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
 
 batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     var items = this.popn(2);
-    this.push(batavia.comparisons[opnum](items[0], items[1]));
+    var result;
+
+    // "in" and "not in" operators (opnum 6 and 7) have reversed
+    // operand order, so they're handled separately.
+    // If the first operand is None, then we need to invoke
+    // the comparison method in a different way, because we can't
+    // bind the operator methods to the null instance.
+
+    if (opnum === 6) {  // x in None
+        if (items[1] === null) {
+            result = batavia.types.NoneType.__contains__(items[0]);
+        } if (items[1].__contains__) {
+            result = items[1].__contains__(items[0]);
+        } else {
+            result = items[0] in items[1];
+        }
+    } else if (opnum === 7) {
+        if (items[1] === null) {  // x not in None
+            result = !batavia.types.NoneType.__contains__(items[0]);
+        } else if (items[1].__contains__) {
+            result = !items[1].__contains__(items[0]);
+        } else {
+            result = !(items[0] in items[1]);
+        }
+    } else if (items[0] === null) {
+        switch(opnum) {
+            case 0:  // <
+                result = batavia.types.NoneType.__lt__(items.slice(1));
+                break;
+            case 1:  // <=
+                result = batavia.types.NoneType.__le__(items.slice(1));
+                break;
+            case 2:  // ==
+                result = batavia.types.NoneType.__eq__(items.slice(1));
+                break;
+            case 3:  // !=
+                result = batavia.types.NoneType.__ne__(items.slice(1));
+                break;
+            case 4:  // >
+                result = batavia.types.NoneType.__gt__(items.slice(1));
+                break;
+            case 5:  // >=
+                result = batavia.types.NoneType.__ge__(items.slice(1));
+                break;
+            case 8:  // is
+                result = items[1] === null;
+                break;
+            case 9:  // is not
+                result = items[1] !== null;
+                break;
+            case 10:  // exception
+                result = items[1] === null;
+                break;
+            default:
+                throw new batavia.builtins.RuntimeError('Unknown operator ' + opnum);
+        }
+    } else {
+        switch(opnum) {
+            case 0:  // <
+                if (items[0].__lt__) {
+                    result = items[0].__lt__(items.slice(1));
+                } else {
+                    result = items[0] < items[1];
+                }
+                break;
+            case 1:  // <=
+                if (items[0].__le__) {
+                    result = items[0].__le__(items.slice(1));
+                } else {
+                    result = items[0] <= items[1];
+                }
+                break;
+            case 2:  // ==
+                if (items[0].__eq__) {
+                    result = items[0].__eq__(items.slice(1));
+                } else {
+                    result = items[0] == items[1];
+                }
+                break;
+            case 3:  // !=
+                if (items[0].__ne__) {
+                    result = items[0].__ne__(items.slice(1));
+                } else {
+                    result = items[0] != items[1];
+                }
+                break;
+            case 4:  // >
+                if (items[0].__gt__) {
+                    result = items[0].__gt__(items.slice(1));
+                } else {
+                    result = items[0] > items[1];
+                }
+                break;
+            case 5:  // >=
+                if (items[0].__ge__) {
+                    result = items[0].__ge__(items.slice(1));
+                } else {
+                    result = items[0] >= items[1];
+                }
+                break;
+            case 8:  // is
+                result = items[0] === items[1];
+                break;
+            case 9:  // is not
+                result = items[0] !== items[1];
+                break;
+            case 10:  // exception match
+                if (items[1] instanceof Array) {
+                    result = false;
+                    for (var i in items[1]) {
+                        if (items[0] === items[1][i]) {
+                            result = true;
+                            break;
+                        }
+                    }
+                } else {
+                    result = items[0] === items[1];
+                }
+                break;
+            default:
+                throw new batavia.builtins.RuntimeError('Unknown operator ' + opnum);
+        }
+    }
+
+    this.push(result);
 };
 
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {

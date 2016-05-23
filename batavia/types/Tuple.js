@@ -21,11 +21,29 @@ batavia.types.Tuple = function() {
     Tuple.prototype = Object.create(Array.prototype);
     Tuple.prototype.length = 0;
 
+    Tuple.prototype.constructor = Tuple;
+
+    /**************************************************
+     * Javascript compatibility methods
+     **************************************************/
+
+    Tuple.prototype.toString = function() {
+        return this.__str__();
+    };
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    Tuple.prototype.__iter__ = function() {
+        return new Tuple.prototype.TupleIterator(this);
+    };
+
     Tuple.prototype.__len__ = function () {
         return this.length;
     };
 
-    Tuple.prototype.toString = function() {
+    Tuple.prototype.__repr__ = function() {
         return this.__str__();
     };
 
@@ -35,11 +53,37 @@ batavia.types.Tuple = function() {
             }).join(', ') + ')';
     };
 
-    Tuple.prototype.__iter__ = function() {
-        return new Tuple.prototype.TupleIterator(this);
+    /**************************************************
+     * Comparison operators
+     **************************************************/
+
+    Tuple.prototype.__le__ = function(args, kwargs) {
+        return this.valueOf() <= args[0];
     };
 
-    Tuple.prototype.constructor = Tuple;
+    Tuple.prototype.__eq__ = function(args, kwargs) {
+        return this.valueOf() == args[0];
+    };
+
+    Tuple.prototype.__ne__ = function(args, kwargs) {
+        return this.valueOf() != args[0];
+    };
+
+    Tuple.prototype.__gt__ = function(args, kwargs) {
+        return this.valueOf() > args[0];
+    };
+
+    Tuple.prototype.__ge__ = function(args, kwargs) {
+        return this.valueOf() >= args[0];
+    };
+
+    Tuple.prototype.__contains__ = function(args, kwargs) {
+        return this.valueOf().index(args[0]) !== -1;
+    };
+
+    /**************************************************
+     * Methods
+     **************************************************/
 
     /**************************************************
      * Tuple Iterator

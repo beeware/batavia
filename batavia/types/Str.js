@@ -3,20 +3,51 @@
  * Modify String to behave like a Python String
  *************************************************************************/
 
-String.prototype.startswith = function (str) {
-    return this.slice(0, str.length) === str;
+batavia.types.Str = String;
+
+/**************************************************
+ * Type conversions
+ **************************************************/
+
+String.prototype.__iter__ = function() {
+    return new String.prototype.StrIterator(this);
 };
 
 String.prototype.__repr__ = function(args, kwargs) {
     return "'" + this.toString() + "'";
 };
 
-
-String.prototype.__iter__ = function() {
-    return new String.prototype.StrIterator(this);
+String.prototype.__str__ = function(args, kwargs) {
+    return this.toString();
 };
 
-batavia.types.Str = String;
+/**************************************************
+ * Comparison operators
+ **************************************************/
+
+String.prototype.__le__ = function(args, kwargs) {
+    return this.valueOf() <= args[0];
+};
+
+String.prototype.__eq__ = function(args, kwargs) {
+    return this.valueOf() == args[0];
+};
+
+String.prototype.__ne__ = function(args, kwargs) {
+    return this.valueOf() != args[0];
+};
+
+String.prototype.__gt__ = function(args, kwargs) {
+    return this.valueOf() > args[0];
+};
+
+String.prototype.__ge__ = function(args, kwargs) {
+    return this.valueOf() >= args[0];
+};
+
+String.prototype.__contains__ = function(args, kwargs) {
+    return false;
+};
 
 /**************************************************
  * Str Iterator
@@ -43,4 +74,11 @@ String.prototype.StrIterator.prototype.__str__ = function() {
     return "<str_iterator object at 0x99999999>";
 };
 
-/**************************************************/
+/**************************************************
+ * Methods
+ **************************************************/
+
+String.prototype.startswith = function (str) {
+    return this.slice(0, str.length) === str;
+};
+
