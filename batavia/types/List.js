@@ -95,6 +95,10 @@ batavia.types.List = function() {
         }
     };
 
+    List.prototype.slice = function() {
+        return new batavia.types.List(Array.prototype.slice.apply(this, arguments));
+    };
+
     /**************************************************
      * List Iterator
      **************************************************/

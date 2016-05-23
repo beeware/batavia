@@ -862,17 +862,17 @@ batavia.builtins.setattr = function(args) {
 
 batavia.builtins.slice = function(args, kwargs) {
     if (args.length == 1) {
-        return {
+        return new batavia.types.Slice({
             start: 0,
             stop: args[0],
             step: 1
-        };
+        });
     } else {
-        return {
+        return new batavia.types.Slice({
             start: args[0],
             stop: args[1],
             step: args[2] || 1
-        };
+        });
     }
 };
 

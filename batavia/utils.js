@@ -219,7 +219,7 @@ batavia.operators = {
         return result;
     },
     SUBSCR: function(a, b) {
-        if (batavia.isinstance(b, batavia.types.Dict)) {
+        if (batavia.isinstance(b, batavia.types.Slice)) {
             var start, stop, step, result;
             if (b.start === null) {
                 start = 0;
@@ -230,7 +230,7 @@ batavia.operators = {
             if (b.step === 1) {
                 result = a.slice(start, stop);
             } else {
-                result = [];
+                result = new batavia.types.List();
                 for (var i = start; i < stop; i += b.step) {
                     result.push(a[i]);
                 }
