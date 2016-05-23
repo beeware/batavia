@@ -58,8 +58,6 @@ batavia.builtins.EOFError = EOFError;
 batavia.builtins.EOFError.prototype = Object.create(batavia.builtins.BaseException.prototype);
 batavia.builtins.EOFError.prototype.constructor = EOFError;
 
-batavia.builtins.Ellipsis = undefined;
-
 function EnvironmentError(msg) {
     batavia.builtins.BaseException.call(this, 'EnvironmentError', msg);
 }

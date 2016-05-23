@@ -14,8 +14,6 @@ class BuiltinStrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_class',
         'test_complex',
         'test_dict',
-        'test_float',
         'test_frozenset',
-        'test_none',
         'test_set',
     ]

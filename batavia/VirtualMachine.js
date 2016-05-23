@@ -27,7 +27,6 @@ batavia.VirtualMachine = function(loader) {
     this.last_exception = null;
 };
 
-batavia.VirtualMachine.Py_Ellipsis = {};
 
 /*
  * Build a table mapping opcodes to a method to be called whenever we encounter that opcode.
@@ -86,7 +85,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
         var code = batavia.modules.marshal.load_pyc(this, payload);
 
         // Set up sys.argv
-        batavia.modules.sys.argv = new batavia.core.List(['batavia']);
+        batavia.modules.sys.argv = new batavia.types.List(['batavia']);
         if (args) {
             batavia.modules.sys.argv.extend(args);
         }
@@ -113,7 +112,7 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
         var payload = this.loader(tag);
         var code = batavia.modules.marshal.load_pyc(this, payload);
 
-        var callargs = new batavia.core.Dict();
+        var callargs = new batavia.types.Dict();
         for (var i = 0, l = args.length; i < l; i++) {
             callargs[code.co_varnames[i]] = args[i];
         }
@@ -234,9 +233,9 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
-        f_locals = new batavia.core.Dict();
+        f_locals = new batavia.types.Dict();
     } else {
-        f_globals = f_locals = new batavia.core.Dict({
+        f_globals = f_locals = new batavia.types.Dict({
             '__builtins__': batavia.builtins,
             '__name__': '__main__',
             '__doc__': null,
@@ -736,18 +735,142 @@ batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
 
 batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     var items = this.popn(2);
-    this.push(batavia.comparisons[opnum](items[0], items[1]));
+    var result;
+
+    // "in" and "not in" operators (opnum 6 and 7) have reversed
+    // operand order, so they're handled separately.
+    // If the first operand is None, then we need to invoke
+    // the comparison method in a different way, because we can't
+    // bind the operator methods to the null instance.
+
+    if (opnum === 6) {  // x in None
+        if (items[1] === null) {
+            result = batavia.types.NoneType.__contains__(items[0]);
+        } if (items[1].__contains__) {
+            result = items[1].__contains__(items[0]);
+        } else {
+            result = items[0] in items[1];
+        }
+    } else if (opnum === 7) {
+        if (items[1] === null) {  // x not in None
+            result = !batavia.types.NoneType.__contains__(items[0]);
+        } else if (items[1].__contains__) {
+            result = !items[1].__contains__(items[0]);
+        } else {
+            result = !(items[0] in items[1]);
+        }
+    } else if (items[0] === null) {
+        switch(opnum) {
+            case 0:  // <
+                result = batavia.types.NoneType.__lt__(items.slice(1));
+                break;
+            case 1:  // <=
+                result = batavia.types.NoneType.__le__(items.slice(1));
+                break;
+            case 2:  // ==
+                result = batavia.types.NoneType.__eq__(items.slice(1));
+                break;
+            case 3:  // !=
+                result = batavia.types.NoneType.__ne__(items.slice(1));
+                break;
+            case 4:  // >
+                result = batavia.types.NoneType.__gt__(items.slice(1));
+                break;
+            case 5:  // >=
+                result = batavia.types.NoneType.__ge__(items.slice(1));
+                break;
+            case 8:  // is
+                result = items[1] === null;
+                break;
+            case 9:  // is not
+                result = items[1] !== null;
+                break;
+            case 10:  // exception
+                result = items[1] === null;
+                break;
+            default:
+                throw new batavia.builtins.RuntimeError('Unknown operator ' + opnum);
+        }
+    } else {
+        switch(opnum) {
+            case 0:  // <
+                if (items[0].__lt__) {
+                    result = items[0].__lt__(items.slice(1));
+                } else {
+                    result = items[0] < items[1];
+                }
+                break;
+            case 1:  // <=
+                if (items[0].__le__) {
+                    result = items[0].__le__(items.slice(1));
+                } else {
+                    result = items[0] <= items[1];
+                }
+                break;
+            case 2:  // ==
+                if (items[0].__eq__) {
+                    result = items[0].__eq__(items.slice(1));
+                } else {
+                    result = items[0] == items[1];
+                }
+                break;
+            case 3:  // !=
+                if (items[0].__ne__) {
+                    result = items[0].__ne__(items.slice(1));
+                } else {
+                    result = items[0] != items[1];
+                }
+                break;
+            case 4:  // >
+                if (items[0].__gt__) {
+                    result = items[0].__gt__(items.slice(1));
+                } else {
+                    result = items[0] > items[1];
+                }
+                break;
+            case 5:  // >=
+                if (items[0].__ge__) {
+                    result = items[0].__ge__(items.slice(1));
+                } else {
+                    result = items[0] >= items[1];
+                }
+                break;
+            case 8:  // is
+                result = items[0] === items[1];
+                break;
+            case 9:  // is not
+                result = items[0] !== items[1];
+                break;
+            case 10:  // exception match
+                if (items[1] instanceof Array) {
+                    result = false;
+                    for (var i in items[1]) {
+                        if (items[0] === items[1][i]) {
+                            result = true;
+                            break;
+                        }
+                    }
+                } else {
+                    result = items[0] === items[1];
+                }
+                break;
+            default:
+                throw new batavia.builtins.RuntimeError('Unknown operator ' + opnum);
+        }
+    }
+
+    this.push(result);
 };
 
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val = obj[attr];
-    if (val instanceof batavia.core.Function) {
+    if (val instanceof batavia.types.Function) {
         // If this is a Python function, we need to know the current
         // context - if it's an attribute of an object (rather than
         // a module) we need to upgrade the Function to a Method.
-        if (!(obj instanceof batavia.core.Module)) {
-            val = new batavia.core.Method(obj, val);
+        if (!(obj instanceof batavia.types.Module)) {
+            val = new batavia.types.Method(obj, val);
         }
     } else if (val instanceof Function) {
         // If this is a native Javascript function, wrap the function
@@ -755,7 +878,8 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         // class, wrap it in a method that uses the Python calling
         // convention, but instantiates the object rather than just
         // proxying the call.
-        if (Object.keys(val.prototype).length > 0) {
+        if (val.prototype && Object.keys(val.prototype).length > 0) {
+            // Python class
             val = function(fn) {
                 return function(args, kwargs) {
                     var obj = Object.create(fn.prototype);
@@ -764,6 +888,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
                 };
             }(val);
         } else {
+            // Native java method
             val = function(fn) {
                 return function(args, kwargs) {
                     return fn.apply(obj, args);
@@ -796,21 +921,21 @@ batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.core.Tuple(items));
+    this.push(new batavia.types.Tuple(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.core.List(items));
+    this.push(new batavia.types.List(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.core.Set(items));
+    this.push(new batavia.types.Set(items));
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    this.push(new batavia.core.Dict());
+    this.push(new batavia.types.Dict());
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
@@ -821,16 +946,21 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
 
 batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     var seq = this.pop();
-    if (seq.__next__) {
+
+    // If the sequence item on top of the stack is iterable,
+    // expand it into an array.
+    if (seq.__iter__) {
         try {
+            var iter = seq.__iter__();
+            seq = [];
             while (true) {
-                this.push(seq.__next__());
+                seq.push(iter.__next__());
             }
         } catch (err) {}
-    } else {
-        for (var i = seq.length; i-- ; ) {
-            this.push(seq[i]);
-        }
+    }
+
+    for (var i = seq.length; i > 0; i--) {
+        this.push(seq[i - 1]);
     }
 };
 
@@ -909,21 +1039,21 @@ batavia.VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
-    if (val) {
+    if (val.__bool__()) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop();
-    if (!val) {
+    if (!val.__bool__()) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
-    if (val) {
+    if (val.__bool__()) {
         this.jump(jump);
     } else {
         this.pop();
@@ -932,7 +1062,7 @@ batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top();
-    if (!val) {
+    if (!val.__bool__()) {
         this.jump(jump);
     } else {
         this.pop();
@@ -1120,7 +1250,7 @@ batavia.VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
     var name = this.pop();
     var code = this.pop();
     var defaults = this.popn(argc);
-    var fn = new batavia.core.Function(name, code, this.frame.f_globals, defaults, null, this);
+    var fn = new batavia.types.Function(name, code, this.frame.f_globals, defaults, null, this);
     this.push(fn);
 };
 
@@ -1132,7 +1262,7 @@ batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
     var name = this.pop();
     var items = this.popn(2);
     var defaults = this.popn(argc);
-    var fn = new batavia.core.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
+    var fn = new batavia.types.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
     this.push(fn);
 };
 
@@ -1158,7 +1288,7 @@ batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
-    var namedargs = new batavia.core.Dict();
+    var namedargs = new batavia.types.Dict();
     for (var i = 0; i < lenKw; i++) {
         var items = this.popn(2);
         namedargs[items[0]] = items[1];
@@ -1249,7 +1379,7 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 batavia.VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2);
     this.push(
-        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]]])
+        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]], null])
     );
 };
 

@@ -2,36 +2,40 @@
 
 General builtin format:
 
-
 // Example: a function that accepts exactly one argument, and no keyword arguments
 batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
-        throw new batavia.builtins.BataviaError("Batavia calling convention not used.")
+        throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.TypeError("<fn>() doesn't accept keyword arguments.")
+        throw new batavia.builtins.TypeError("<fn>() doesn't accept keyword arguments.");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)")
+        throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)");
     }
 
     // if the function only works with a specific object type, add a test
-    var variable = args[0]
+    var obj = args[0];
 
-    if (typeof(variable) !== "<type>") {
+    if (!batavia.isinstance(obj, batavia.types.<type>)) {
         throw new batavia.builtins.TypeError(
-            "<fn>() expects a <type> (" + typeof(variable) + " given)");
+            "<fn>() expects a <type> (" + batavia.type_name(obj) + " given)");
     }
 
     // actual code goes here
-    Javascript.Function.Stuf()
+    Javascript.Function.Stuff();
 }
 batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
 */
 
 batavia.builtins.__import__ = function(args, kwargs) {
+    if (arguments.length !== 2) {
+        throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
+    }
+
     // First, try native modules
     var module = batavia.modules[args[0]];
+
     // If there's no native module, try for a pre-loaded module.
     if (module === undefined) {
         module = batavia.modules.sys.modules[args[0]];
@@ -52,11 +56,11 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 frame = this.make_frame({
                     'code': code,
                     'f_globals': args[1],
-                    'f_locals': new batavia.core.Dict(),
+                    'f_locals': new batavia.types.Dict(),
                 });
                 this.run_frame(frame);
 
-                root_module = new batavia.core.Module(name, frame.f_locals);
+                root_module = new batavia.types.Module(name, frame.f_locals);
                 batavia.modules.sys.modules[name] = root_module;
             }
 
@@ -73,11 +77,11 @@ batavia.builtins.__import__ = function(args, kwargs) {
                     frame = this.make_frame({
                         'code': code,
                         'f_globals': args[1],
-                        'f_locals': new batavia.core.Dict(),
+                        'f_locals': new batavia.types.Dict(),
                     });
                     this.run_frame(frame);
 
-                    new_sub = new batavia.core.Module(name, frame.f_locals);
+                    new_sub = new batavia.types.Module(name, frame.f_locals);
                     sub_module[name_parts[n]] = new_sub;
                     sub_module = new_sub;
                     batavia.modules.sys.modules[name] = sub_module;
@@ -91,7 +95,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 module = root_module;
             } else if (args[3][0] === "*") {
                 // from <mod> import *
-                module = new batavia.core.Module(sub_module.__name__);
+                module = new batavia.types.Module(sub_module.__name__);
                 for (name in sub_module) {
                     if (sub_module.hasOwnProperty(name)) {
                         module[name] = sub_module[name];
@@ -99,11 +103,11 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 }
             } else {
                 // from <mod> import <name>, <name>
-                module = new batavia.core.Module(sub_module.__name__);
+                module = new batavia.types.Module(sub_module.__name__);
                 for (var sn = 0; sn < args[3].length; sn++) {
                     name = args[3][sn];
                     if (sub_module[name] === undefined) {
-                        batavia.builtins.__import__.apply(this, [[sub_module.__name__ + '.' + name, this.frame.f_globals, null, null, null]]);
+                        batavia.builtins.__import__.apply(this, [[sub_module.__name__ + '.' + name, this.frame.f_globals, null, null, null], null]);
                     }
                     module[name] = sub_module[name];
                 }
@@ -155,12 +159,16 @@ batavia.builtins.abs = function(args, kwargs) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
     }
-    if (args[0] === null) {
-        throw new batavia.builtins.TypeError(
-            "bad operand type for abs(): 'NoneType'");
-    }
 
-    return Math.abs(args[0]);
+    var value = args[0];
+    if (batavia.isinstance(value, [batavia.types.Bool, batavia.types.Int])) {
+        return new batavia.types.Int(Math.abs(args[0].valueOf()));
+    } else if (batavia.isinstance(value, batavia.types.Float)) {
+        return new batavia.types.Float(Math.abs(args[0].valueOf()));
+    } else {
+        throw new batavia.builtins.TypeError(
+            "bad operand type for abs(): '" + batavia.type_name(value) + "'");
+    }
 };
 batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
@@ -222,14 +230,14 @@ batavia.builtins.bin = function(args, kwargs) {
         throw new batavia.builtins.TypeError('bin() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    var variable = args[0];
+    var obj = args[0];
 
-    if (typeof(variable) !== "number") {
+    if (!batavia.isinstance(obj, batavia.types.Int)) {
         throw new batavia.builtins.TypeError(
-            "bin() expects a number (" + typeof(variable) + " given)");
+            "'" + batavia.type_name(obj) + "' object cannot be interpreted as an integer");
     }
 
-    return "0b" + variable.toString(2);
+    return "0b" + obj.toString(2);
 };
 batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   ";
 
@@ -246,7 +254,13 @@ batavia.builtins.bool = function(args, kwargs) {
         throw new batavia.builtins.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
-    return !!args[0];
+    if (args[0] === null) {
+        return batavia.types.NoneType.__bool__();
+    } else if (args[0].__bool__) {
+        return args[0].__bool__();
+    } else {
+        return !!(args[0].valueOf());
+    }
 };
 batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
 
@@ -354,33 +368,43 @@ batavia.builtins.dict = function(args, kwargs) {
     if (args.length > 1) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
-    if (typeof args[0] === "number") {
-        // floats and integers are all number types in js
-        // this approximates float checking, but still thinks that
-        // 1.00000000000000000001 is an integer
-        if (args[0].toString().indexOf('.') > 0) {
-            throw new batavia.builtins.TypeError("'float' object is not iterable");
-        }
-        throw new batavia.builtins.TypeError("'int' object is not iterable");
+
+    if (batavia.isinstance(args[0], batavia.types.Int)) {
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
-    if (typeof args[0] === "string" || args[0] instanceof String) {
+    if (batavia.isinstance(args[0], batavia.types.Str)) {
         throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length 1; 2 is required");
     }
-    // error handling for iterables
-    if (args.length === 1 && args.constructor === Array) {
+
+    // handling keyword arguments and no arguments
+    if (args.length === 0 || args[0].length === 0) {
+        if (kwargs) {
+            return new batavia.types.Dict(kwargs);
+        }
+        else {
+            return new batavia.types.Dict();
+        }
+    } else {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number in an iterable throws different error
+<<<<<<< HEAD
                 if (typeof(args[0][i]) === "number") {
                     throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");
                 }
                 else {
+=======
+                if (batavia.isinstance(args[0][i], batavia.types.Int)) {
+                    throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");
+                } else {
+>>>>>>> upstream/master
                     throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required");
                 }
             }
         }
     }
+<<<<<<< HEAD
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {
@@ -392,11 +416,16 @@ batavia.builtins.dict = function(args, kwargs) {
     }
     // passing a dictionary as argument
     if (args[0].constructor === Object) {
+=======
+    // Passing a dictionary as argument
+    if (batavia.isinstance(args[0], batavia.types.Dict)) {
+>>>>>>> upstream/master
         return args[0];
     }
+
     // passing a list as argument
     if (args.length === 1) {
-        var dict = {};
+        var dict = new batavia.types.Dict();
         for (i = 0; i < args[0].length; i++) {
             var sub_array = args[0][i];
             if (sub_array.length === 2) {
@@ -435,7 +464,7 @@ batavia.builtins.divmod = function(args, kwargs) {
 
     div = Math.floor(args[0]/args[1]);
     rem = args[0] % args[1];
-    return new batavia.core.Tuple([div, rem]);
+    return new batavia.types.Tuple([div, rem]);
 };
 batavia.builtins.divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.';
 
@@ -481,23 +510,35 @@ batavia.builtins.float = function(args) {
     if (args.length === 0) {
         return 0.0;
     }
+<<<<<<< HEAD
     var toConvert = args[0];
+=======
 
-    if (typeof(toConvert) === "string") {
-        if (toConvert.search(/[^0-9.]/g) === -1) {
-            return parseFloat(toConvert);
+    var value = args[0];
+>>>>>>> upstream/master
+
+    if (batavia.isinstance(value, batavia.types.Str)) {
+        if (value.search(/[^0-9.]/g) === -1) {
+            return parseFloat(value);
         } else {
-            if (toConvert === "nan" || toConvert === "+nan" || toConvert === "-nan") {
+            if (value === "nan" || value === "+nan" || value === "-nan") {
                 return NaN;
-            } else if(toConvert === "inf" || toConvert === "+inf") {
+            } else if(value === "inf" || value === "+inf") {
                 return Infinity;
             } else if(toConvert === "-inf") {
                 return -Infinity;
             }
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
+<<<<<<< HEAD
     } else if (typeof(args[0]) === "number") {
         return args[0].toFixed(1);
+=======
+    } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
+        return args[0].valueOf().toFixed(1);
+    } else if (batavia.isinstance(value, batavia.types.Float)) {
+        return args[0];
+>>>>>>> upstream/master
     }
 };
 
@@ -645,12 +686,8 @@ batavia.builtins.iter = function(args, kwargs) {
 
     if (args[0].__iter__) {
         return args[0].__iter__();
-    } else if (args[0] instanceof Array) {
-        return new batavia.core.list_iterator(args[0]);
-    } else if (args[0] instanceof String || typeof args[0] === "string") {
-        return new batavia.core.str_iterator(args[0]);
     } else {
-        throw new batavia.builtins.TypeError("'" + (typeof args[0]) + "' object is not iterable");
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
 };
 batavia.builtins.iter.__doc__ = 'iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.';
@@ -729,14 +766,17 @@ batavia.builtins.next = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 
+
 batavia.builtins.object = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented");
 };
 
 batavia.builtins.oct = function(args) {
-    if (args.length !== 1)
+    if (args.length !== 1) {
         throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
-return "0o"+args[0].toString(8);
+    }
+
+    return "0o" + args[0].toString(8);
 };
 
 batavia.builtins.open = function() {
@@ -766,7 +806,7 @@ batavia.builtins.pow = function(args) {
 batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
     args.map(function(elm) {
-        if (elm === null) {
+        if (elm === null || elm === undefined) {
             elements.push("None");
         } else {
             elements.push(elm.__str__ ? elm.__str__() : elm.toString());
@@ -797,7 +837,7 @@ batavia.builtins.range = function(args, kwargs){
      throw new batavia.builtins.TypeError('range() expected at most 3 arguments, got ' + args.length);
     }
 
-    return new batavia.core.range(args[0], args[1], args[2]);
+    return new batavia.types.Range(args[0], args[1], args[2]);
 };
 batavia.builtins.range.__doc__ = 'range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn a virtual sequence of numbers from start to stop by step.';
 
@@ -824,7 +864,9 @@ batavia.builtins.repr = function(args, kwargs) {
         throw new batavia.builtins.TypeError('repr() takes exactly 1 argument (' + args.length + ' given)');
     }
 
-    if (args[0]['__repr__']) {
+    if (args[0] === null) {
+        return batavia.types.NoneType.__repr__();
+    } else if (args[0].__repr__) {
         return args[0].__repr__();
     } else {
         return args[0].toString();
@@ -859,17 +901,17 @@ batavia.builtins.setattr = function(args) {
 
 batavia.builtins.slice = function(args, kwargs) {
     if (args.length == 1) {
-        return {
+        return new batavia.types.Slice({
             start: 0,
             stop: args[0],
             step: 1
-        };
+        });
     } else {
-        return {
+        return new batavia.types.Slice({
             start: args[0],
             stop: args[1],
             step: args[2] || 1
-        };
+        });
     }
 };
 
@@ -877,7 +919,7 @@ batavia.builtins.sorted = function(args, kwargs) {
     var validatedInput = batavia.builtins.sorted._validateInput(args, kwargs);
     var iterable = validatedInput["iterable"];
 
-    if (iterable instanceof Array) {
+    if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
         iterable = iterable.map(validatedInput["preparingFunction"]);
         iterable.sort(function (a, b) {
             if (a["key"] > b["key"]) {
@@ -890,7 +932,7 @@ batavia.builtins.sorted = function(args, kwargs) {
             return 0;
         });
 
-        return new batavia.core.List(iterable.map(function (element) {
+        return new batavia.types.List(iterable.map(function (element) {
             return element["value"];
         }));
     }
@@ -959,7 +1001,9 @@ batavia.builtins.str = function(args, kwargs) {
         throw new batavia.builtins.TypeError('str() takes exactly 1 argument (' + args.length + ' given)');
     }
 
-    if (args[0]['__str__']) {
+    if (args[0] === null) {
+        return batavia.types.NoneType.__str__();
+    } else if (args[0].__str__) {
         return args[0].__str__();
     } else {
         return args[0].toString();
@@ -993,18 +1037,34 @@ batavia.builtins.sum = function(args, kwargs) {
 
     return total;
 };
+batavia.builtins.sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start.";
 
 batavia.builtins.super = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented");
 };
 
 batavia.builtins.tuple = function(args) {
-    return new batavia.core.Tuple(args[0]);
+    return new batavia.types.Tuple(args[0]);
 };
 
-batavia.builtins.type = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented");
+batavia.builtins.type = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("type() doesn't accept keyword arguments");
+    }
+    if (!args || (args.length != 1 && args.length != 3)) {
+        throw new batavia.builtins.TypeError('type() takes 1 or 3 arguments');
+    }
+
+    if (args.length === 1) {
+        return "<class '" + batavia.type_name(args[0]) + "'>";
+    } else {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented for 3 arguments");
+    }
 };
+batavia.builtins.type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type";
 
 batavia.builtins.unichr = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unichr' not implemented");
@@ -1039,7 +1099,7 @@ batavia.builtins.zip = function(args, undefined) {
             sequence.push(args[iterableObj][i]);
         }
 
-        result.push(new batavia.core.Tuple(sequence));
+        result.push(new batavia.types.Tuple(sequence));
     }
 
     return result;
@@ -1049,3 +1109,5 @@ batavia.builtins.zip = function(args, undefined) {
 for (var fn in batavia.builtins) {
     batavia.builtins[fn].__python__ = true;
 }
+
+batavia.builtins.None = null;

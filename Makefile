@@ -1,6 +1,27 @@
 
 ALL_FILES=\
     batavia/batavia.js \
+    batavia/types/Bool.js \
+    batavia/types/Bytearray.js \
+    batavia/types/Bytes.js \
+    batavia/types/Code.js \
+    batavia/types/Complex.js \
+    batavia/types/Dict.js \
+    batavia/types/DictView.js \
+    batavia/types/Ellipsis.js \
+    batavia/types/Float.js \
+    batavia/types/Function.js \
+    batavia/types/Int.js \
+    batavia/types/List.js \
+    batavia/types/Module.js \
+    batavia/types/NoneType.js \
+    batavia/types/Range.js \
+    batavia/types/Set.js \
+    batavia/types/Slice.js \
+    batavia/types/FrozenSet.js \
+    batavia/types/Str.js \
+    batavia/types/Tuple.js \
+    batavia/types/Type.js \
     batavia/utils.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
@@ -11,10 +32,8 @@ ALL_FILES=\
     batavia/core/Block.js \
     batavia/core/builtins.js \
     batavia/core/Cell.js \
-    batavia/core/Code.js \
     batavia/core/Exception.js \
     batavia/core/Frame.js \
-    batavia/core/Function.js \
     batavia/core/PYCFile.js \
     batavia/VirtualMachine.js \
 

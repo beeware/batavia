@@ -12,6 +12,7 @@ var batavia = {
     stderr: fixedConsoleLog,
     input: windowInputPrompt,
     core: {},
+    types: {},
     modules: {},
     builtins: {}
 };

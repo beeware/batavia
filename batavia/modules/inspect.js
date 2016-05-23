@@ -394,7 +394,7 @@ batavia.modules.inspect = {
             arg2value[varargs] = positional.slice(n);
         }
 
-        var possible_kwargs = new batavia.core.Set();
+        var possible_kwargs = new batavia.types.Set();
         possible_kwargs.update(func.argspec.args);
         possible_kwargs.update(func.argspec.kwonlyargs);
 
