@@ -910,21 +910,21 @@ batavia.VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
-    if (val) {
+    if (val.__bool__()) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop();
-    if (!val) {
+    if (!val.__bool__()) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
-    if (val) {
+    if (val.__bool__()) {
         this.jump(jump);
     } else {
         this.pop();
@@ -933,7 +933,7 @@ batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top();
-    if (!val) {
+    if (!val.__bool__()) {
         this.jump(jump);
     } else {
         this.pop();
@@ -1250,7 +1250,7 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 batavia.VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2);
     this.push(
-        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]]])
+        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]], null])
     );
 };
 

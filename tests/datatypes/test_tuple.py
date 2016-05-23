@@ -124,7 +124,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
-        'test_floor_divide_dict',
         'test_floor_divide_frozenset',
         'test_floor_divide_set',
 
@@ -217,13 +216,12 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_set',
         'test_modulo_str',
         'test_modulo_tuple',
-        
+
         'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_frozenset',
         'test_multiply_int',
         'test_multiply_set',
@@ -298,7 +296,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
-        'test_subtract_dict',
         'test_subtract_frozenset',
         'test_subtract_set',
 
@@ -306,7 +303,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
-        'test_true_divide_dict',
         'test_true_divide_frozenset',
         'test_true_divide_set',
 
@@ -411,7 +407,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_frozenset',
         'test_multiply_int',
         'test_multiply_set',

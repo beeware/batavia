@@ -14,12 +14,11 @@ batavia.types.List = function() {
         }
     }
 
-    function Array() {
-    }
+    function Array() {}
 
     Array.prototype = [];
 
-    List.prototype = new Array;
+    List.prototype = Object.create(Array.prototype);
     List.prototype.length = 0;
 
     List.prototype.__len__ = function () {

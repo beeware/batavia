@@ -12,15 +12,13 @@ batavia.types.Tuple = function() {
         } else {
             throw new batavia.builtins.TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)');
         }
-
     }
 
-    function Array() {
-    }
+    function Array() {}
 
     Array.prototype = [];
 
-    Tuple.prototype = new Array;
+    Tuple.prototype = Object.create(Array.prototype);
     Tuple.prototype.length = 0;
 
     Tuple.prototype.__len__ = function () {

@@ -78,11 +78,9 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_bytes',
         'test_add_class',
         'test_add_complex',
-        'test_add_dict',
         'test_add_frozenset',
         'test_add_list',
         'test_add_set',
-        'test_add_tuple',
 
         'test_and_bool',
         'test_and_bytearray',
@@ -110,7 +108,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
-        'test_floor_divide_dict',
         'test_floor_divide_frozenset',
         'test_floor_divide_set',
 
@@ -208,7 +205,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_frozenset',
         'test_multiply_set',
 
@@ -283,7 +279,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
-        'test_subtract_dict',
         'test_subtract_frozenset',
         'test_subtract_set',
 
@@ -291,7 +286,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
-        'test_true_divide_dict',
         'test_true_divide_frozenset',
         'test_true_divide_set',
 
@@ -395,7 +389,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_frozenset',
         'test_multiply_set',
 

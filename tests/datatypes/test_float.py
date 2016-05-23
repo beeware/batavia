@@ -38,7 +38,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_bytes',
         'test_add_class',
         'test_add_complex',
-        'test_add_dict',
         'test_add_frozenset',
         'test_add_set',
 
@@ -62,6 +61,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
+        'test_eq_int',
         'test_eq_set',
         'test_eq_str',
 
@@ -69,7 +69,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
-        'test_floor_divide_dict',
         'test_floor_divide_float',
         'test_floor_divide_frozenset',
         'test_floor_divide_int',
@@ -157,7 +156,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bytearray',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
@@ -168,6 +166,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
+        'test_ne_int',
         'test_ne_set',
         'test_ne_str',
 
@@ -235,7 +234,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
-        'test_subtract_dict',
         'test_subtract_frozenset',
         'test_subtract_set',
 
@@ -243,7 +241,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
-        'test_true_divide_dict',
         'test_true_divide_float',
         'test_true_divide_frozenset',
         'test_true_divide_int',

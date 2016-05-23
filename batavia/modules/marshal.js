@@ -172,7 +172,7 @@ batavia.modules.marshal = {
 
         /* Sign-extension, in case short greater than 16 bits */
         x |= -(x & 0x8000);
-        return x;
+        return new batavia.types.Int(x);
     },
 
     r_long: function(vm, p) {
@@ -184,7 +184,7 @@ batavia.modules.marshal = {
 
         /* Sign extension for 64-bit machines */
         x |= -(x & 0x80000000);
-        return x;
+        return new batavia.types.Int(x);
     },
 
     // r_PyLong: function(vm, p) {

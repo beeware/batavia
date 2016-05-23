@@ -16,6 +16,7 @@ String.prototype.__iter__ = function() {
     return new String.prototype.StrIterator(this);
 };
 
+batavia.types.Str = String;
 
 /**************************************************
  * Str Iterator
