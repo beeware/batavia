@@ -57,28 +57,186 @@ batavia.types.List = function() {
      * Comparison operators
      **************************************************/
 
-    List.prototype.__le__ = function(args, kwargs) {
-        return this.valueOf() <= args[0];
+    List.prototype.__lt__ = function(other) {
+        return this.valueOf() <= other;
     };
 
-    List.prototype.__eq__ = function(args, kwargs) {
-        return this.valueOf() == args[0];
+    List.prototype.__le__ = function(other) {
+        return this.valueOf() <= other;
     };
 
-    List.prototype.__ne__ = function(args, kwargs) {
-        return this.valueOf() != args[0];
+    List.prototype.__eq__ = function(other) {
+        return this.valueOf() == other;
     };
 
-    List.prototype.__gt__ = function(args, kwargs) {
-        return this.valueOf() > args[0];
+    List.prototype.__ne__ = function(other) {
+        return this.valueOf() != other;
     };
 
-    List.prototype.__ge__ = function(args, kwargs) {
-        return this.valueOf() >= args[0];
+    List.prototype.__gt__ = function(other) {
+        return this.valueOf() > other;
     };
 
-    List.prototype.__contains__ = function(args, kwargs) {
-        return this.valueOf().index(args[0]) !== -1;
+    List.prototype.__ge__ = function(other) {
+        return this.valueOf() >= other;
+    };
+
+    List.prototype.__contains__ = function(other) {
+        return this.valueOf().index(other) !== -1;
+    };
+
+    /**************************************************
+     * Unary operators
+     **************************************************/
+
+    List.prototype.__pos__ = function() {
+        return new List(+this.valueOf());
+    };
+
+    List.prototype.__neg__ = function() {
+        return new List(-this.valueOf());
+    };
+
+    List.prototype.__not__ = function() {
+        return new List(!this.valueOf());
+    };
+
+    List.prototype.__invert__ = function() {
+        return new List(~this.valueOf());
+    };
+
+    /**************************************************
+     * Binary operators
+     **************************************************/
+
+    List.prototype.__pow__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__pow__ has not been implemented");
+    };
+
+    List.prototype.__div__ = function(other) {
+        return this.__truediv__(other);
+    };
+
+    List.prototype.__floordiv__ = function(other) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'list' and '" + batavia.type_name(other) + "'");
+    };
+
+    List.prototype.__truediv__ = function(other) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'list' and '" + batavia.type_name(other) + "'");
+    };
+
+    List.prototype.__mul__ = function(other) {
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            result = new List();
+            for (i = 0; i < other.valueOf(); i++) {
+                result.extend(this);
+            }
+            return result;
+        } else if (batavia.isinstance(other, batavia.types.Bool)) {
+            if (other.valueOf()) {
+                return this.copy();
+            } else {
+                return new List();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
+        }
+    };
+
+    List.prototype.__mod__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__mod__ has not been implemented");
+    };
+
+    List.prototype.__add__ = function(other) {
+        if (batavia.isinstance(other, batavia.types.List)) {
+            return new Int(this.valueOf() + other.valueOf());
+        } else {
+            throw new batavia.builtins.TypeError('can only concatenate list (not "' + batavia.type_name(other) + '") to list');
+        }
+    };
+
+    List.prototype.__sub__ = function(other) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'list' and '" + batavia.type_name(other) + "'");
+    };
+
+    List.prototype.__getitem__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__getitem__ has not been implemented");
+    };
+
+    List.prototype.__lshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__lshift__ has not been implemented");
+    };
+
+    List.prototype.__rshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__rshift__ has not been implemented");
+    };
+
+    List.prototype.__and__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__and__ has not been implemented");
+    };
+
+    List.prototype.__xor__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__xor__ has not been implemented");
+    };
+
+    List.prototype.__or__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__or__ has not been implemented");
+    };
+
+    /**************************************************
+     * Inplace operators
+     **************************************************/
+
+    List.prototype.__idiv__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__idiv__ has not been implemented");
+    };
+
+    List.prototype.__ifloordiv__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__ifloordiv__ has not been implemented");
+    };
+
+    List.prototype.__itruediv__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__itruediv__ has not been implemented");
+    };
+
+    List.prototype.__iadd__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__iadd__ has not been implemented");
+    };
+
+    List.prototype.__isub__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__isub__ has not been implemented");
+    };
+
+    List.prototype.__imul__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__imul__ has not been implemented");
+    };
+
+    List.prototype.__imod__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__imod__ has not been implemented");
+    };
+
+    List.prototype.__ipow__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__ipow__ has not been implemented");
+    };
+
+    List.prototype.__ilshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__ilshift__ has not been implemented");
+    };
+
+    List.prototype.__irshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__irshift__ has not been implemented");
+    };
+
+    List.prototype.__iand__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__iand__ has not been implemented");
+    };
+
+    List.prototype.__ixor__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__ixor__ has not been implemented");
+    };
+
+    List.prototype.__ior__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("List.__ior__ has not been implemented");
     };
 
     /**************************************************
@@ -89,6 +247,10 @@ batavia.types.List = function() {
         this.push(value);
     };
 
+    List.prototype.copy = function() {
+        return new List(this);
+    };
+
     List.prototype.extend = function(values) {
         if (values.length > 0) {
             this.push.apply(this, values);
@@ -96,7 +258,7 @@ batavia.types.List = function() {
     };
 
     List.prototype.slice = function() {
-        return new batavia.types.List(Array.prototype.slice.apply(this, arguments));
+        return new List(Array.prototype.slice.apply(this, arguments));
     };
 
     /**************************************************

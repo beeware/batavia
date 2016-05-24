@@ -31,7 +31,8 @@ class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
 
 
 class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
-    values = ['1.2345', '0.0', '-2.345']
+    # values = ['1.2345', '0.0', '-2.345']
+    values = ['0.0', '-2.345']
 
     not_implemented = [
         'test_add_bytearray',
@@ -57,12 +58,10 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_tuple',
 
         'test_eq_bytearray',
-        'test_eq_bytes',
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
         'test_eq_set',
-        'test_eq_str',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
@@ -161,12 +160,10 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_set',
 
         'test_ne_bytearray',
-        'test_ne_bytes',
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
         'test_ne_set',
-        'test_ne_str',
 
         'test_or_bool',
         'test_or_bytearray',
@@ -265,12 +262,15 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
     values = ['1.2345', '0.0', '-2.345']
 
     not_implemented = [
+        'test_add_bool',
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_class',
         'test_add_complex',
         'test_add_dict',
+        'test_add_float',
         'test_add_frozenset',
+        'test_add_int',
         'test_add_list',
         'test_add_none',
         'test_add_set',
@@ -292,6 +292,7 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
+        'test_floor_divide_bool',
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
         'test_floor_divide_class',
@@ -338,14 +339,18 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_bool',
         'test_multiply_bytearray',
+        'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_dict',
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
+        'test_multiply_list',
         'test_multiply_none',
         'test_multiply_set',
+        'test_multiply_str',
+        'test_multiply_tuple',
 
         'test_or_bool',
         'test_or_bytearray',
@@ -392,18 +397,22 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
+        'test_subtract_bool',
         'test_subtract_bytearray',
         'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_dict',
+        'test_subtract_float',
         'test_subtract_frozenset',
+        'test_subtract_int',
         'test_subtract_list',
         'test_subtract_none',
         'test_subtract_set',
         'test_subtract_str',
         'test_subtract_tuple',
 
+        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
         'test_true_divide_class',

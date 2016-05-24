@@ -35,31 +35,418 @@ batavia.VirtualMachine = function(loader) {
  */
 batavia.VirtualMachine.prototype.build_dispatch_table = function() {
     var vm = this;
-
     this.dispatch_table = batavia.modules.dis.opname.map(function(opname, opcode) {
         var operator_name, operator;
 
         if (opcode in batavia.modules.dis.unary_ops) {
             operator_name = opname.slice(6);
-            operator = batavia.operators[operator_name];
-            return function() {
-                var x = this.pop();
-                this.push(operator(x));
-            };
+            switch (operator_name) {
+                case "POSITIVE":
+                    return function() {
+                        var x = this.pop();
+                        if (x === null) {
+                            this.push(batavia.types.NoneType.__pos__());
+                        } else if (x.__pos__) {
+                            this.push(x.__pos__());
+                        } else {
+                            this.push(+x);
+                        }
+                    };
+                case "NEGATIVE":
+                    return function() {
+                        var x = this.pop();
+                        if (x === null) {
+                            this.push(batavia.types.NoneType.__neg__());
+                        } else if (x.__neg__) {
+                            this.push(x.__neg__());
+                        } else {
+                            this.push(-x);
+                        }
+                    };
+                case "NOT":
+                    return function() {
+                        var x = this.pop();
+                        if (x === null) {
+                            this.push(batavia.types.NoneType.__not__());
+                        } else if (x.__not__) {
+                            this.push(x.__not__());
+                        } else {
+                            this.push(-x);
+                        }
+                    };
+                case "INVERT":
+                    return function() {
+                        var x = this.pop();
+                        if (x === null) {
+                            this.push(batavia.types.NoneType.__invert__());
+                        } else if (x.__invert__) {
+                            this.push(x.__invert__());
+                        } else {
+                            this.push(~x);
+                        }
+                    };
+                default:
+                    throw new batavia.builtins.BataviaError("Unknown unary operator " + operator_name);
+            }
         } else if (opcode in batavia.modules.dis.binary_ops) {
             operator_name = opname.slice(7);
-            operator = batavia.operators[operator_name];
-            return function() {
-                var items = this.popn(2);
-                this.push(operator(items[0], items[1]));
-            };
+            switch (operator_name) {
+                case 'POWER':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__pow__(items[1]));
+                        } else if (items[0].__pow__) {
+                            this.push(items[0].__pow__(items[1]));
+                        } else {
+                            this.push(Math.pow(items[0], items[1]));
+                        }
+                    };
+                case 'MULTIPLY':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__mul__(items[1]));
+                        } else if (items[0].__mul__) {
+                            this.push(items[0].__mul__(items[1]));
+                        } else {
+                            this.push(items[0] * items[1]);
+                        }
+                    };
+                case 'MODULO':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__mod__(items[1]));
+                        } else if (items[0].__mod__) {
+                            this.push(items[0].__mod__(items[1]));
+                        } else {
+                            this.push(items[0] % items[1]);
+                        }
+                    };
+                case 'ADD':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__add__(items[1]));
+                        } else if (items[0].__add__) {
+                            this.push(items[0].__add__(items[1]));
+                        } else {
+                            this.push(items[0] + items[1]);
+                        }
+                    };
+                case 'SUBTRACT':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__sub__(items[1]));
+                        } else if (items[0].__sub__) {
+                            this.push(items[0].__sub__(items[1]));
+                        } else {
+                            this.push(items[0] - items[1]);
+                        }
+                    };
+                case 'SUBSCR':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__getitem__(items[1]));
+                        } else if (items[0].__getitem__) {
+                            this.push(items[0].__getitem__(items[1]));
+                        } else {
+                            this.push(items[0][items[1]]);
+                        }
+                    };
+                case 'FLOOR_DIVIDE':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__floordiv__(items[1]));
+                        } else if (items[0].__floordiv__) {
+                            this.push(items[0].__floordiv__(items[1]));
+                        } else {
+                            this.push(items[0] / items[1]);
+                        }
+                    };
+                case 'TRUE_DIVIDE':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__truediv__(items[1]));
+                        } else if (items[0].__truediv__) {
+                            this.push(items[0].__truediv__(items[1]));
+                        } else {
+                            this.push(items[0] / items[1]);
+                        }
+                    };
+                case 'LSHIFT':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__lshift__(items[1]));
+                        } else if (items[0].__lshift__) {
+                            this.push(items[0].__lshift__(items[1]));
+                        } else {
+                            this.push(items[0] << items[1]);
+                        }
+                    };
+                case 'RSHIFT':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__rshift__(items[1]));
+                        } else if (items[0].__rshift__) {
+                            this.push(items[0].__rshift__(items[1]));
+                        } else {
+                            this.push(items[0] >> items[1]);
+                        }
+                    };
+                case 'AND':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__and__(items[1]));
+                        } else if (items[0].__and__) {
+                            this.push(items[0].__and__(items[1]));
+                        } else {
+                            this.push(items[0] & items[1]);
+                        }
+                    };
+                case 'XOR':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__xor__(items[1]));
+                        } else if (items[0].__xor__) {
+                            this.push(items[0].__xor__(items[1]));
+                        } else {
+                            this.push(items[0] ^ items[1]);
+                        }
+                    };
+                case 'OR':
+                    return function() {
+                        var items = this.popn(2);
+                        if (items[0] === null) {
+                            this.push(batavia.types.NoneType.__or__(items[1]));
+                        } else if (items[0].__or__) {
+                            this.push(items[0].__or__(items[1]));
+                        } else {
+                            this.push(items[0] | items[1]);
+                        }
+                    };
+                default:
+                    throw new batavia.builtins.BataviaError("Unknown binary operator " + operator_name);
+            }
         } else if (opcode in batavia.modules.dis.inplace_ops) {
             operator_name = opname.slice(8);
-            operator = batavia.operators[operator_name];
-            return function() {
-                var items = this.popn(2);
-                this.push(operator(items[0], items[1]));
-            };
+            switch (operator_name) {
+                case 'FLOOR_DIVIDE':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__ifloordiv__(items[1]);
+                        } else if (items[0].__ifloordiv__) {
+                            result = items[0].__ifloordiv__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] /= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'TRUE_DIVIDE':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__itruediv__(items[1]);
+                        } else if (items[0].__itruediv__) {
+                            result = items[0].__itruediv__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] /= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'ADD':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__iadd__(items[1]);
+                        } else if (items[0].__iadd__) {
+                            result = items[0].__iadd__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] += items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'SUBTRACT':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__isub__(items[1]);
+                        } else if (items[0].__isub__) {
+                            result = items[0].__isub__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] -= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'MULTIPLY':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__imul__(items[1]);
+                        } else if (items[0].__imul__) {
+                            result = items[0].__imul__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] *= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'MODULO':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__imod__(items[1]);
+                        } else if (items[0].__imod__) {
+                            result = items[0].__imod__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] %= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'POWER':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__ipow__(items[1]);
+                        } else if (items[0].__ipow__) {
+                            result = items[0].__ipow__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] = Math.pow(items[0], items[1]);
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'LSHIFT':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__ilshift__(items[1]);
+                        } else if (items[0].__ilshift__) {
+                            result = items[0].__ilshift__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] <<= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'RSHIFT':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__irshift__(items[1]);
+                        } else if (items[0].__irshift__) {
+                            result = items[0].__irshift__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] >>= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'AND':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__iand__(items[1]);
+                        } else if (items[0].__iand__) {
+                            result = items[0].__iand__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] &= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'XOR':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__ixor__(items[1]);
+                        } else if (items[0].__ixor__) {
+                            result = items[0].__ixor__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] ^= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                case 'OR':
+                    return function() {
+                        var items = this.popn(2);
+                        var result;
+                        if (items[0] === null) {
+                            result = batavia.types.NoneType.__ior__(items[1]);
+                        } else if (items[0].__ior__) {
+                            result = items[0].__ior__(items[1]);
+                            if (result === null) {
+                                result = items[0];
+                            }
+                        } else {
+                            items[0] |= items[1];
+                            result = items[0];
+                        }
+                        this.push(result);
+                    };
+                default:
+                    throw new batavia.builtins.BataviaError("Unknown inplace operator " + operator_name);
+            }
         } else {
             // dispatch
             var bytecode_fn = vm['byte_' + opname];
@@ -762,22 +1149,22 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     } else if (items[0] === null) {
         switch(opnum) {
             case 0:  // <
-                result = batavia.types.NoneType.__lt__(items.slice(1));
+                result = batavia.types.NoneType.__lt__(items[1]);
                 break;
             case 1:  // <=
-                result = batavia.types.NoneType.__le__(items.slice(1));
+                result = batavia.types.NoneType.__le__(items[1]);
                 break;
             case 2:  // ==
-                result = batavia.types.NoneType.__eq__(items.slice(1));
+                result = batavia.types.NoneType.__eq__(items[1]);
                 break;
             case 3:  // !=
-                result = batavia.types.NoneType.__ne__(items.slice(1));
+                result = batavia.types.NoneType.__ne__(items[1]);
                 break;
             case 4:  // >
-                result = batavia.types.NoneType.__gt__(items.slice(1));
+                result = batavia.types.NoneType.__gt__(items[1]);
                 break;
             case 5:  // >=
-                result = batavia.types.NoneType.__ge__(items.slice(1));
+                result = batavia.types.NoneType.__ge__(items[1]);
                 break;
             case 8:  // is
                 result = items[1] === null;
@@ -789,48 +1176,48 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[1] === null;
                 break;
             default:
-                throw new batavia.builtins.RuntimeError('Unknown operator ' + opnum);
+                throw new batavia.builtins.BataviaError('Unknown operator ' + opnum);
         }
     } else {
         switch(opnum) {
             case 0:  // <
                 if (items[0].__lt__) {
-                    result = items[0].__lt__(items.slice(1));
+                    result = items[0].__lt__(items[1]);
                 } else {
                     result = items[0] < items[1];
                 }
                 break;
             case 1:  // <=
                 if (items[0].__le__) {
-                    result = items[0].__le__(items.slice(1));
+                    result = items[0].__le__(items[1]);
                 } else {
                     result = items[0] <= items[1];
                 }
                 break;
             case 2:  // ==
                 if (items[0].__eq__) {
-                    result = items[0].__eq__(items.slice(1));
+                    result = items[0].__eq__(items[1]);
                 } else {
                     result = items[0] == items[1];
                 }
                 break;
             case 3:  // !=
                 if (items[0].__ne__) {
-                    result = items[0].__ne__(items.slice(1));
+                    result = items[0].__ne__(items[1]);
                 } else {
                     result = items[0] != items[1];
                 }
                 break;
             case 4:  // >
                 if (items[0].__gt__) {
-                    result = items[0].__gt__(items.slice(1));
+                    result = items[0].__gt__(items[1]);
                 } else {
                     result = items[0] > items[1];
                 }
                 break;
             case 5:  // >=
                 if (items[0].__ge__) {
-                    result = items[0].__ge__(items.slice(1));
+                    result = items[0].__ge__(items[1]);
                 } else {
                     result = items[0] >= items[1];
                 }
@@ -855,7 +1242,7 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 }
                 break;
             default:
-                throw new batavia.builtins.RuntimeError('Unknown operator ' + opnum);
+                throw new batavia.builtins.BataviaError('Unknown operator ' + opnum);
         }
     }
 

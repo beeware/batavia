@@ -32,7 +32,6 @@ class DictTests(TranspileTestCase):
             print(x)
             """)
 
-    @unittest.expectedFailure
     def test_getitem(self):
         # Simple existent key
         self.assertCodeExecution("""
@@ -328,7 +327,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_list',
         'test_subscr_none',
         'test_subscr_set',
-        'test_subscr_str',
         'test_subscr_tuple',
 
         'test_subtract_bytearray',

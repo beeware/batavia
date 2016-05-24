@@ -17,7 +17,9 @@ batavia.type_name = function(arg) {
             type_name = 'str';
             break;
         case 'object':
-            if (arg instanceof batavia.types.List) {
+            if (arg === null || arg === batavia.types.NoneType) {
+                type_name = 'NoneType';
+            } else if (arg instanceof batavia.types.List) {
                 type_name = 'list';
             } else if (arg instanceof batavia.types.Tuple) {
                 type_name = 'tuple';
@@ -29,8 +31,6 @@ batavia.type_name = function(arg) {
                 type_name = 'bool';
             } else if (arg instanceof batavia.types.Float) {
                 type_name = 'float';
-            } else if (arg === null) {
-                type_name = 'NoneType';
             } else {
                 type_name = 'Native object';
             }

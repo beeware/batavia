@@ -76,6 +76,7 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_unary_positive',
         'test_unary_negative',
+        'test_unary_not',
         'test_unary_invert',
     ]
 
@@ -407,9 +408,15 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
+        'test_multiply_dict',
+        'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
+        'test_multiply_list',
+        'test_multiply_none',
         'test_multiply_set',
+        'test_multiply_str',
+        'test_multiply_tuple',
 
         'test_or_bool',
         'test_or_bytearray',

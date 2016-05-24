@@ -13,11 +13,11 @@ String.prototype.__iter__ = function() {
     return new String.prototype.StrIterator(this);
 };
 
-String.prototype.__repr__ = function(args, kwargs) {
+String.prototype.__repr__ = function() {
     return "'" + this.toString() + "'";
 };
 
-String.prototype.__str__ = function(args, kwargs) {
+String.prototype.__str__ = function() {
     return this.toString();
 };
 
@@ -25,28 +25,198 @@ String.prototype.__str__ = function(args, kwargs) {
  * Comparison operators
  **************************************************/
 
-String.prototype.__le__ = function(args, kwargs) {
-    return this.valueOf() <= args[0];
+String.prototype.__lt__ = function(other) {
+    return this.valueOf() < other;
 };
 
-String.prototype.__eq__ = function(args, kwargs) {
-    return this.valueOf() == args[0];
+String.prototype.__le__ = function(other) {
+    return this.valueOf() <= other;
 };
 
-String.prototype.__ne__ = function(args, kwargs) {
-    return this.valueOf() != args[0];
+String.prototype.__eq__ = function(other) {
+    if (other !== null) {
+        if (batavia.isinstance(other, [
+                    batavia.types.Bool, batavia.types.Int, batavia.types.Float,
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+                ])) {
+            return false;
+        } else {
+            return this.valueOf() === other.valueOf();
+        }
+    } else {
+        return false;
+    }
 };
 
-String.prototype.__gt__ = function(args, kwargs) {
-    return this.valueOf() > args[0];
+String.prototype.__ne__ = function(other) {
+    if (other !== null) {
+        if (batavia.isinstance(other, [
+                    batavia.types.Bool, batavia.types.Int, batavia.types.Float,
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+                ])) {
+            return true;
+        } else {
+            return this.valueOf() !== other.valueOf();
+        }
+    } else {
+        return true;
+    }
 };
 
-String.prototype.__ge__ = function(args, kwargs) {
-    return this.valueOf() >= args[0];
+String.prototype.__gt__ = function(other) {
+    return this.valueOf() > other;
 };
 
-String.prototype.__contains__ = function(args, kwargs) {
+String.prototype.__ge__ = function(other) {
+    return this.valueOf() >= other;
+};
+
+String.prototype.__contains__ = function(other) {
     return false;
+};
+
+/**************************************************
+ * Unary operators
+ **************************************************/
+
+String.prototype.__pos__ = function() {
+    throw new batavia.builtins.TypeError("bad operand type for unary +: 'str'");
+};
+
+String.prototype.__neg__ = function() {
+    throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
+};
+
+String.prototype.__not__ = function() {
+    throw new batavia.builtins.TypeError("bad operand type for unary !: 'str'");
+};
+
+String.prototype.__invert__ = function() {
+    throw new batavia.builtins.TypeError("bad operand type for unary ~: 'str'");
+};
+
+/**************************************************
+ * Binary operators
+ **************************************************/
+
+String.prototype.__pow__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__pow__ has not been implemented");
+};
+
+String.prototype.__div__ = function(other) {
+    return this.__truediv__(other);
+};
+
+String.prototype.__floordiv__ = function(other) {
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'str' and '" + batavia.type_name(other) + "'");
+};
+
+String.prototype.__truediv__ = function(other) {
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'str' and '" + batavia.type_name(other) + "'");
+};
+
+String.prototype.__mul__ = function(other) {
+    throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
+};
+
+String.prototype.__mod__ = function(other) {
+    if (batavia.isinstance(other, [batavia.types.List, batavia.types.Tuple])) {
+        return batavia._substitute(this, other);
+    } else {
+        return batavia._substitute(this, [other]);
+    }
+};
+
+String.prototype.__add__ = function(other) {
+    if (batavia.isinstance(other, batavia.types.Str)) {
+        return this.valueOf() + other;
+    } else {
+        throw new batavia.builtins.TypeError("Can't convert '" + batavia.type_name(other) + "' object to str implicitly");
+    }
+};
+
+String.prototype.__sub__ = function(other) {
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and '" + batavia.type_name(other) + "'");
+};
+
+String.prototype.__getitem__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__getitem__ has not been implemented");
+};
+
+String.prototype.__lshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__lshift__ has not been implemented");
+};
+
+String.prototype.__rshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__rshift__ has not been implemented");
+};
+
+String.prototype.__and__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__and__ has not been implemented");
+};
+
+String.prototype.__xor__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__xor__ has not been implemented");
+};
+
+String.prototype.__or__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__or__ has not been implemented");
+};
+
+/**************************************************
+ * Inplace operators
+ **************************************************/
+
+String.prototype.__idiv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__idiv__ has not been implemented");
+};
+
+String.prototype.__ifloordiv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__ifloordiv__ has not been implemented");
+};
+
+String.prototype.__itruediv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__itruediv__ has not been implemented");
+};
+
+String.prototype.__iadd__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__iadd__ has not been implemented");
+};
+
+String.prototype.__isub__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__isub__ has not been implemented");
+};
+
+String.prototype.__imul__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__imul__ has not been implemented");
+};
+
+String.prototype.__imod__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__imod__ has not been implemented");
+};
+
+String.prototype.__ipow__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__ipow__ has not been implemented");
+};
+
+String.prototype.__ilshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__ilshift__ has not been implemented");
+};
+
+String.prototype.__irshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__irshift__ has not been implemented");
+};
+
+String.prototype.__iand__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__iand__ has not been implemented");
+};
+
+String.prototype.__ixor__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__ixor__ has not been implemented");
+};
+
+String.prototype.__ior__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("String.__ior__ has not been implemented");
 };
 
 /**************************************************
@@ -77,6 +247,11 @@ String.prototype.StrIterator.prototype.__str__ = function() {
 /**************************************************
  * Methods
  **************************************************/
+
+String.prototype.copy = function() {
+    return this.valueOf();
+};
+
 
 String.prototype.startswith = function (str) {
     return this.slice(0, str.length) === str;

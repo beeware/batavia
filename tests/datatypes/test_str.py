@@ -25,7 +25,7 @@ class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
-        'test_unary_invert',
+        'test_unary_not',
     ]
 
 
@@ -55,14 +55,11 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bool',
         'test_eq_bytearray',
         'test_eq_bytes',
         'test_eq_class',
         'test_eq_complex',
-        'test_eq_float',
         'test_eq_frozenset',
-        'test_eq_int',
         'test_eq_set',
 
         'test_floor_divide_bytearray',
@@ -161,14 +158,11 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_int',
         'test_multiply_set',
 
-        'test_ne_bool',
         'test_ne_bytearray',
         'test_ne_bytes',
         'test_ne_class',
         'test_ne_complex',
-        'test_ne_float',
         'test_ne_frozenset',
-        'test_ne_int',
         'test_ne_set',
 
         'test_or_bool',
@@ -266,12 +260,20 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
+        'test_add_bool',
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_class',
         'test_add_complex',
+        'test_add_dict',
+        'test_add_float',
         'test_add_frozenset',
+        'test_add_int',
+        'test_add_list',
+        'test_add_none',
         'test_add_set',
+        'test_add_str',
+        'test_add_tuple',
 
         'test_and_bool',
         'test_and_bytearray',
@@ -318,23 +320,35 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_lshift_str',
         'test_lshift_tuple',
 
+        'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',
         'test_modulo_class',
         'test_modulo_complex',
         'test_modulo_dict',
+        'test_modulo_float',
         'test_modulo_frozenset',
         'test_modulo_list',
+        'test_modulo_int',
+        'test_modulo_none',
         'test_modulo_set',
+        'test_modulo_str',
+        'test_modulo_tuple',
 
         'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
+        'test_multiply_dict',
+        'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
+        'test_multiply_list',
+        'test_multiply_none',
         'test_multiply_set',
+        'test_multiply_str',
+        'test_multiply_tuple',
 
         'test_or_bool',
         'test_or_bytearray',

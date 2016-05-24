@@ -57,33 +57,191 @@ batavia.types.Tuple = function() {
      * Comparison operators
      **************************************************/
 
-    Tuple.prototype.__le__ = function(args, kwargs) {
-        return this.valueOf() <= args[0];
+    Tuple.prototype.__lt__ = function(other) {
+        return this.valueOf() < other;
     };
 
-    Tuple.prototype.__eq__ = function(args, kwargs) {
-        return this.valueOf() == args[0];
+    Tuple.prototype.__le__ = function(other) {
+        return this.valueOf() <= other;
     };
 
-    Tuple.prototype.__ne__ = function(args, kwargs) {
-        return this.valueOf() != args[0];
+    Tuple.prototype.__eq__ = function(other) {
+        return this.valueOf() == other;
     };
 
-    Tuple.prototype.__gt__ = function(args, kwargs) {
-        return this.valueOf() > args[0];
+    Tuple.prototype.__ne__ = function(other) {
+        return this.valueOf() != other;
     };
 
-    Tuple.prototype.__ge__ = function(args, kwargs) {
-        return this.valueOf() >= args[0];
+    Tuple.prototype.__gt__ = function(other) {
+        return this.valueOf() > other;
     };
 
-    Tuple.prototype.__contains__ = function(args, kwargs) {
-        return this.valueOf().index(args[0]) !== -1;
+    Tuple.prototype.__ge__ = function(other) {
+        return this.valueOf() >= other;
+    };
+
+    Tuple.prototype.__contains__ = function(other) {
+        return this.valueOf().index(other) !== -1;
+    };
+
+    /**************************************************
+     * Unary operators
+     **************************************************/
+
+    Tuple.prototype.__pos__ = function() {
+        return new Tuple(+this.valueOf());
+    };
+
+    Tuple.prototype.__neg__ = function() {
+        return new Tuple(-this.valueOf());
+    };
+
+    Tuple.prototype.__not__ = function() {
+        return new Tuple(!this.valueOf());
+    };
+
+    Tuple.prototype.__invert__ = function() {
+        return new Tuple(~this.valueOf());
+    };
+
+    /**************************************************
+     * Binary operators
+     **************************************************/
+
+    Tuple.prototype.__pow__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__pow__ has not been implemented");
+    };
+
+    Tuple.prototype.__div__ = function(other) {
+        return this.__truediv__(other);
+    };
+
+    Tuple.prototype.__floordiv__ = function(other) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'tuple' and '" + batavia.type_name(other) + "'");
+    };
+
+    Tuple.prototype.__truediv__ = function(other) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'tuple' and '" + batavia.type_name(other) + "'");
+    };
+
+    Tuple.prototype.__mul__ = function(other) {
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            result = new List();
+            for (i = 0; i < other.valueOf(); i++) {
+                result.extend(this);
+            }
+            return result;
+        } else if (batavia.isinstance(other, batavia.types.Bool)) {
+            if (other.valueOf()) {
+                return this.copy();
+            } else {
+                return new List();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
+        }
+    };
+
+    Tuple.prototype.__mod__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__mod__ has not been implemented");
+    };
+
+    Tuple.prototype.__add__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__add__ has not been implemented");
+    };
+
+    Tuple.prototype.__sub__ = function(other) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'tuple' and '" + batavia.type_name(other) + "'");
+    };
+
+    Tuple.prototype.__getitem__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__getitem__ has not been implemented");
+    };
+
+    Tuple.prototype.__lshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__lshift__ has not been implemented");
+    };
+
+    Tuple.prototype.__rshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__rshift__ has not been implemented");
+    };
+
+    Tuple.prototype.__and__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__and__ has not been implemented");
+    };
+
+    Tuple.prototype.__xor__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__xor__ has not been implemented");
+    };
+
+    Tuple.prototype.__or__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__or__ has not been implemented");
+    };
+
+    /**************************************************
+     * Inplace operators
+     **************************************************/
+
+    Tuple.prototype.__idiv__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__idiv__ has not been implemented");
+    };
+
+    Tuple.prototype.__ifloordiv__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__ifloordiv__ has not been implemented");
+    };
+
+    Tuple.prototype.__itruediv__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__itruediv__ has not been implemented");
+    };
+
+    Tuple.prototype.__iadd__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__iadd__ has not been implemented");
+    };
+
+    Tuple.prototype.__isub__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__isub__ has not been implemented");
+    };
+
+    Tuple.prototype.__imul__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__imul__ has not been implemented");
+    };
+
+    Tuple.prototype.__imod__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__imod__ has not been implemented");
+    };
+
+    Tuple.prototype.__ipow__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__ipow__ has not been implemented");
+    };
+
+    Tuple.prototype.__ilshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__ilshift__ has not been implemented");
+    };
+
+    Tuple.prototype.__irshift__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__irshift__ has not been implemented");
+    };
+
+    Tuple.prototype.__iand__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__iand__ has not been implemented");
+    };
+
+    Tuple.prototype.__ixor__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__ixor__ has not been implemented");
+    };
+
+    Tuple.prototype.__ior__ = function(other) {
+        throw new batavia.builtins.NotImplementedError("Tuple.__ior__ has not been implemented");
     };
 
     /**************************************************
      * Methods
      **************************************************/
+
+    Tuple.prototype.copy = function() {
+        return new Tuple(this);
+    };
 
     /**************************************************
      * Tuple Iterator
