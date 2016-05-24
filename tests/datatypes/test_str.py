@@ -155,7 +155,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_frozenset',
-        'test_multiply_int',
         'test_multiply_set',
 
         'test_ne_bytearray',

@@ -116,7 +116,15 @@ String.prototype.__truediv__ = function(other) {
 };
 
 String.prototype.__mul__ = function(other) {
-    throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
+    if (batavia.isinstance(other, batavia.types.Int)) {
+        var result = '';
+        for (var i = 0; i < other.valueOf(); i++) {
+            result += this.valueOf();
+        }
+        return result;
+    } else {
+        throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
+    }
 };
 
 String.prototype.__mod__ = function(other) {
@@ -129,7 +137,7 @@ String.prototype.__mod__ = function(other) {
 
 String.prototype.__add__ = function(other) {
     if (batavia.isinstance(other, batavia.types.Str)) {
-        return this.valueOf() + other;
+        return this.valueOf() + other.valueOf();
     } else {
         throw new batavia.builtins.TypeError("Can't convert '" + batavia.type_name(other) + "' object to str implicitly");
     }
