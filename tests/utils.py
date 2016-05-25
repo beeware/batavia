@@ -133,25 +133,27 @@ class PhantomJSCrash(RuntimeError):
 def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fail=None):
     if payload:
         cmd = adjust(payload).replace('\n', '')
-        # print("<<<", cmd)
+        print("<<<", cmd)
 
         _phantomjs.stdin.write(cmd.encode('utf-8'))
         _phantomjs.stdin.write('\n'.encode('utf-8'))
         _phantomjs.stdin.flush()
 
-    # print("WAIT FOR PROMPT...")
+    print("WAIT FOR PROMPT...")
     if output is not None:
         out = output
     else:
         out = []
     out.append("")
+    if out[-1] == "modules.js":
+        wait = input("Press enter to continue")
     while out[-1] != "phantomjs> " and out[-1] != 'PhantomJS has crashed. ':
         try:
             ch = _phantomjs.stdout.read(1).decode("utf-8")
             if ch == '\n':
-                # print(">>>", out[-1])
+                print(">>>", out[-1])
                 out.append("")
-            else:
+            elif ch != '\r':
                 out[-1] += ch
         except IOError:
             continue
