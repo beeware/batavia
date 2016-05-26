@@ -130,7 +130,7 @@ batavia.types.Int = function() {
 
     Int.prototype.__floordiv__ = function(other) {
         if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
-            if (other.valueOf() === 0.0) {
+            if (other.valueOf()) {
                 return new Int(Math.floor(this.valueOf() / other.valueOf()));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
@@ -148,7 +148,7 @@ batavia.types.Int = function() {
 
     Int.prototype.__truediv__ = function(other) {
         if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
-            if (other.valueOf() === 0.0) {
+            if (other.valueOf()) {
                 return new Int(this.valueOf() / other.valueOf());
             } else {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");

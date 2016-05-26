@@ -140,7 +140,7 @@ batavia.types.Float = function() {
 
     Float.prototype.__floordiv__ = function(other) {
         if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
-            if (other.valueOf() === 0.0) {
+            if (other.valueOf()) {
                 return new Float(Math.floor(this.valueOf() / other.valueOf()));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
