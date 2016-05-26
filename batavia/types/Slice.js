@@ -4,9 +4,9 @@
 
 batavia.types.Slice = function() {
     function Slice(kwargs) {
-        this.start = kwargs.start;
+        this.start = kwargs.start || 0;
         this.stop = kwargs.stop;
-        this.step = kwargs.step;
+        this.step = kwargs.step || 1;
     }
 
     Slice.prototype = Object.create(Object.prototype);

@@ -32,7 +32,6 @@ class ListTests(TranspileTestCase):
             print(x)
             """)
 
-    @unittest.expectedFailure
     def test_getitem(self):
         # Simple positive index
         self.assertCodeExecution("""
@@ -56,6 +55,31 @@ class ListTests(TranspileTestCase):
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
             print(x[-10])
+            """)
+
+    def test_slice(self):
+        # Full slice
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[:])
+            """)
+
+        # Left bound slice
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[1:])
+            """)
+
+        # Right bound slice
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[:4])
+            """)
+
+        # Slice bound in both directions
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[1:4])
             """)
 
 
@@ -265,15 +289,8 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_bytes',
         'test_subscr_class',
         'test_subscr_complex',
-        'test_subscr_dict',
-        'test_subscr_float',
         'test_subscr_frozenset',
-        'test_subscr_int',
-        'test_subscr_list',
-        'test_subscr_none',
         'test_subscr_set',
-        'test_subscr_str',
-        'test_subscr_tuple',
 
         'test_subtract_bytearray',
         'test_subtract_bytes',

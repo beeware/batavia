@@ -147,8 +147,41 @@ String.prototype.__sub__ = function(other) {
     throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and '" + batavia.type_name(other) + "'");
 };
 
-String.prototype.__getitem__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__getitem__ has not been implemented");
+String.prototype.__getitem__ = function(index) {
+    if (batavia.isinstance(index, batavia.types.Int)) {
+        if (index.valueOf() < 0) {
+            if (-index.valueOf() > this.length) {
+                throw new batavia.builtins.IndexError("string index out of range");
+            } else {
+                return this[this.length + index];
+            }
+        } else {
+            if (index.valueOf() >= this.length) {
+                throw new batavia.builtins.IndexError("string index out of range");
+            } else {
+                return this[index];
+            }
+        }
+    } else if (batavia.isinstance(index, batavia.types.Slice)) {
+        var start, stop, step;
+        start = index.start.valueOf();
+
+        if (index.stop === null) {
+            stop = this.length;
+        } else {
+            stop = index.stop.valueOf();
+        }
+
+        step = index.step.valueOf();
+
+        if (step != 1) {
+            throw new batavia.builtins.NotImplementedError("String.__getitem__ with a stepped slice has not been implemented");
+        }
+
+        return this.valueOf().slice.call(this, start, stop);
+    } else {
+        throw new batavia.builtins.TypeError("string indices must be integers");
+    }
 };
 
 String.prototype.__lshift__ = function(other) {
@@ -259,7 +292,6 @@ String.prototype.StrIterator.prototype.__str__ = function() {
 String.prototype.copy = function() {
     return this.valueOf();
 };
-
 
 String.prototype.startswith = function (str) {
     return this.slice(0, str.length) === str;

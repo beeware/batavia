@@ -159,8 +159,41 @@ batavia.types.List = function() {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'list' and '" + batavia.type_name(other) + "'");
     };
 
-    List.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__getitem__ has not been implemented");
+    List.prototype.__getitem__ = function(index) {
+        if (batavia.isinstance(index, batavia.types.Int)) {
+            if (index.valueOf() < 0) {
+                if (-index.valueOf() > this.length) {
+                    throw new batavia.builtins.IndexError("list index out of range");
+                } else {
+                    return this[this.length + index];
+                }
+            } else {
+                if (index.valueOf() >= this.length) {
+                    throw new batavia.builtins.IndexError("list index out of range");
+                } else {
+                    return this[index];
+                }
+            }
+        } else if (batavia.isinstance(index, batavia.types.Slice)) {
+            var start, stop, step;
+            start = index.start.valueOf();
+
+            if (index.stop === null) {
+                stop = this.length;
+            } else {
+                stop = index.stop.valueOf();
+            }
+
+            step = index.step.valueOf();
+
+            if (step != 1) {
+                throw new batavia.builtins.NotImplementedError("List.__getitem__ with a stepped slice has not been implemented");
+            }
+
+            return new List(Array.prototype.slice.call(this, start, stop));
+        } else {
+            throw new batavia.builtins.TypeError("list indices must be integers, not " + batavia.type_name(index));
+        }
     };
 
     List.prototype.__lshift__ = function(other) {
@@ -255,10 +288,6 @@ batavia.types.List = function() {
         if (values.length > 0) {
             this.push.apply(this, values);
         }
-    };
-
-    List.prototype.slice = function() {
-        return new List(Array.prototype.slice.apply(this, arguments));
     };
 
     /**************************************************
