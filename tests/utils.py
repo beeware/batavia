@@ -151,7 +151,7 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
             if ch == '\n':
                 # print(">>>", out[-1])
                 out.append("")
-            else:
+            elif ch != '\r':
                 out[-1] += ch
         except IOError:
             continue
@@ -300,7 +300,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             )
             sendPhantomCommand(
                 _phantomjs,
-                "page.injectJs('%s')" % os.path.join('temp', 'modules.js'),
+                "page.injectJs('%s')" % 'temp/modules.js',
                 success=['true', '{}'],
                 on_fail="Unable to inject modules"
             )
@@ -310,7 +310,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
                 for mod, payload in sorted(js.items()):
                     sendPhantomCommand(
                         _phantomjs,
-                        "page.injectJs('%s.js')" % os.path.join('temp', mod),
+                        "page.injectJs('%s.js')" % "/".join(('temp', mod)),
                         output=output,
                         success=['true', '{}'],
                         on_fail="Unable to inject native module %s" % mod
@@ -347,7 +347,7 @@ PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File 
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 
-MEMORY_REFERENCE = re.compile('0x[\dabcdef]{4,12}')
+MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
 
 def cleanse_javascript(input):

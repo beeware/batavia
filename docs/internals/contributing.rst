@@ -17,7 +17,7 @@ instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
-have Python 3, and have virtualenv available for use.
+have Python 3.4, and have virtualenv available for use.
 
 Start by forking Batavia into your own Github repository; then
 check out your fork to your own computer into a development directory:
@@ -55,6 +55,16 @@ Alternatively, you can download the PhantomJS tarball, and put the
 ``phantomjs`` executable somewhere in your path.
 
 .. _Homebrew: http://brew.sh
+
+Windows
+~~~
+
+[Download PhantomJS](http://phantomjs.org/download.html) and extract the .exe
+file into your GitHub repository.
+
+On Windows, Batavia also needs the GNU "make" utility, which you can find
+[here](http://www.equation.com/servlet/equation.cmd?fa=make). This should
+likewise be extracted into your GitHub repository or somewhere in your PATH.
 
 Ubuntu
 ~~~~~~

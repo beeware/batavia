@@ -2,7 +2,7 @@ Getting Started
 ===============
 
 In this guide we will walk you through setting up your Batavia environment for
-development and testing. We will assume that you have a working Python 3,
+development and testing. We will assume that you have a working Python 3.4,
 and use virtualenv.
 
 Get a copy of Batavia
