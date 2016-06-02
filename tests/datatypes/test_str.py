@@ -441,7 +441,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_dict',
-        'test_subtract_float',
         'test_subtract_frozenset',
         'test_subtract_int',
         'test_subtract_list',
