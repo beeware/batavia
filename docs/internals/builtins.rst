@@ -4,6 +4,7 @@ Built-ins
 General Structure
 -------------
 
+.. code-block:: javascript
 
   // Example: a function that accepts exactly one argument, and no keyword arguments
   batavia.builtins.<fn> = function(<args>, <kwargs>) {
