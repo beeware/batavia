@@ -217,7 +217,6 @@ String.prototype.__ifloordiv__ = function(other) {
 };
 
 String.prototype.__itruediv__ = function(other) {
-    //throw new batavia.builtins.TypeError("DDDDDDDD");
     if (batavia.isinstance(other, batavia.types.Bool) ) {
       throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and 'bool'");
     }
