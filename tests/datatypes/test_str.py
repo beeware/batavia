@@ -301,7 +301,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     values = ['""', '"This is a string"']
 
     not_implemented = [
-        'test_add_bool',
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_class',

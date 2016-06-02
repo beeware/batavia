@@ -57,14 +57,15 @@ Alternatively, you can download the PhantomJS tarball, and put the
 .. _Homebrew: http://brew.sh
 
 Windows
-~~~
+~~~~
 
-[Download PhantomJS](http://phantomjs.org/download.html) and extract the .exe
-file into your GitHub repository.
+`Download PhantomJS <http://phantomjs.org/download.html>`__ and extract
+the .exe file into your GitHub repository.
 
-On Windows, Batavia also needs the GNU "make" utility, which you can find
-[here](http://www.equation.com/servlet/equation.cmd?fa=make). This should
-likewise be extracted into your GitHub repository or somewhere in your PATH.
+On Windows, Batavia also needs the GNU "make" utility, which you can 
+find `here <http://www.equation.com/servlet/equation.cmd?fa=make>`__.
+This should likewise be extracted into your GitHub repository or
+somewhere in your PATH.
 
 Ubuntu
 ~~~~~~
@@ -126,11 +127,10 @@ To check that PhantomJS is working, run the following:
 Running the test suite
 ----------------------
 
-You're now ready to run the test suite! Type:
+You're now ready to run the test suite! From the batavia-dev/batavia directory Type:
 
 .. code-block:: bash
 
-    $ cd batavia
     $ python setup.py test
 
 This will take about 5 minutes on most modern PCs/laptops, and will generate around 4000 lines of console output - one line for each test that is executed. Each line will tell you the pass/fail status of each test - e.g.,::

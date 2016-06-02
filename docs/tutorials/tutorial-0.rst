@@ -17,9 +17,8 @@ This tutorial assumes you've read and followed the instructions in
 Starting the test server
 ------------------------
 
-To start the test server, you'll need to be in the ``testserver`` directory::
+To start the test server, you'll need to be in the ``testserver`` directory under the batavia directory::
 
-    $ cd batavia
     $ cd testserver
 
 Once we're in the ``testserver`` directory, we can install the requirements
@@ -31,6 +30,9 @@ Then we can start the test server::
 
     $ ./manage.py runserver
 
+on windows::
+    >python manage.py runserver
+    
 Now point a browser at `http://127.0.0.1:8000`_
 
 .. _http://127.0.0.1:8000: http://127.0.0.1:8000
