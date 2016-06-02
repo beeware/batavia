@@ -57,7 +57,7 @@ Alternatively, you can download the PhantomJS tarball, and put the
 .. _Homebrew: http://brew.sh
 
 Windows
-~~~
+~~~~
 
 [Download PhantomJS](http://phantomjs.org/download.html) and extract the .exe
 file into your GitHub repository.
