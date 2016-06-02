@@ -25,6 +25,7 @@ batavia.VirtualMachine = function(loader) {
     this.frame = null;
     this.return_value = null;
     this.last_exception = null;
+    this.is_vm = true;
 };
 
 
@@ -1673,6 +1674,8 @@ batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 };
 
 batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
+    //@arg is based on
+    //https://docs.python.org/3/library/dis.html#opcode-CALL_FUNCTION
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
     var namedargs = new batavia.types.Dict();
@@ -1690,39 +1693,7 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 
     var func = this.pop();
     // frame = this.frame
-    if ('__self__' in func && '__python__' in func) {
-        // A python-style method
-        // Methods calls get self as an implicit first parameter.
-        if (func.__self__) {
-            posargs.unshift(func.__self__);
-        }
-        // The first parameter must be the correct type.
-        if (posargs[0] instanceof func.constructor) {
-            throw 'unbound method ' + func.__func__.__name__ + '()' +
-                ' must be called with ' + func.__class__.__name__ + ' instance ' +
-                'as first argument (got ' + posargs[0].prototype + ' instance instead)';
-        }
-        func = func.__func__.__call__;
-    } else if ('__call__' in func) {
-        // A Python callable
-        func = func.__call__;
-    } else if (func.prototype) {
-        // If this is a native Javascript class constructor, wrap it
-        // in a method that uses the Python calling convention, but
-        // instantiates the object.
-        if (Object.keys(func.prototype).length > 0) {
-            func = function(fn) {
-                return function(args, kwargs) {
-                    var obj = Object.create(fn.prototype);
-                    fn.apply(obj, args);
-                    return obj;
-                };
-            }(func);
-        }
-    }
-
-    var retval = func.apply(this, [posargs, namedargs]);
-
+    var retval = batavia.run_callable(func, posargs, namedargs);
     this.push(retval);
 };
 
