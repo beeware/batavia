@@ -4,7 +4,6 @@ import unittest
 
 
 class StrTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
             x = "Hello, world"
