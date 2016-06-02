@@ -127,11 +127,10 @@ To check that PhantomJS is working, run the following:
 Running the test suite
 ----------------------
 
-You're now ready to run the test suite! Type:
+You're now ready to run the test suite! From the batavia-dev/batavia directory Type:
 
 .. code-block:: bash
 
-    $ cd batavia
     $ python setup.py test
 
 This will take about 5 minutes on most modern PCs/laptops, and will generate around 4000 lines of console output - one line for each test that is executed. Each line will tell you the pass/fail status of each test - e.g.,::
