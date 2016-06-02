@@ -100,7 +100,8 @@ String.prototype.__invert__ = function() {
  **************************************************/
 
 String.prototype.__pow__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__pow__ has not been implemented");
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '"+ batavia.type_name(other) + "'");
+	//throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'str' and '" + batavia.type_name(other) + "'");
 };
 
 String.prototype.__div__ = function(other) {
