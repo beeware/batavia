@@ -82,6 +82,34 @@ so it should be reliable.
 .. _downloaded here: https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
 .. _Batavia CI server: https://travis-ci.org/pybee/batavia
 
+
+Fedora
+~~~~~~
+Check the instructions at http://phantomjs.org/build.html
+
+Install the dependencies:
+.. code-block:: bash
+	$sudo yum -y install gcc gcc-c++ make flex bison gperf ruby \
+  	$openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel \
+  	$libpng-devel libjpeg-devel
+
+Then download and install phantomjs:
+.. code-block:: bash
+	@git clone git://github.com/ariya/phantomjs.git
+	@cd phantomjs
+	@git checkout 2.1.1
+	@git submodule init
+	@git submodule update
+
+If you want to install phantomejs in an Anaconda enviroment activate it first:
+(not sure whether this is necessary, will maybe remove this)
+.. code-block:: bash
+	@source activate your-env
+
+Then compile and link phantomjs:	
+.. code-block:: bash
+	@python build.py
+	
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
 
