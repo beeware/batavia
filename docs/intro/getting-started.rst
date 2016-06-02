@@ -26,10 +26,10 @@ Then create a virtual environment and install Batavia into it:
     $ pip install -e .
     
 .. code-block:: doscom
-    $ virtualenv --python=c:\python34\python.exe env
-    $ cd env\Spripts
-    $activate
-    pip install -e .
+    > virtualenv --python=c:\python34\python.exe env
+    > cd env\Spripts
+    > activate
+    > pip install -e .
     
 
 Next Steps
