@@ -581,8 +581,10 @@ batavia.builtins.hex = function(args) {
 };
 
 batavia.builtins.id = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented");
+    throw new batavia.builtins.PolyglotError("'id' has no meaning here. See docs/internals/limitations#id");
 };
+batavia.builtins.id__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)';
+
 
 batavia.builtins.input = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");

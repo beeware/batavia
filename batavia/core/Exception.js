@@ -191,6 +191,13 @@ batavia.builtins.OverflowError.prototype.constructor = OverflowError;
 
 batavia.builtins.PendingDeprecationWarning = undefined;
 
+function PolyglotError(msg) {
+    batavia.builtins.BaseException.call(this, 'PolyglotError', msg);
+}
+batavia.builtins.PolyglotError = PolyglotError;
+batavia.builtins.PolyglotError.prototype = Object.create(batavia.builtins.BaseException.prototype);
+batavia.builtins.PolyglotError.prototype.constructor = PolyglotError;
+
 function ReferenceError(msg) {
     batavia.builtins.BaseException.call(this, 'ReferenceError', msg);
 }
