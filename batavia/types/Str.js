@@ -223,7 +223,8 @@ String.prototype.__itruediv__ = function(other) {
 String.prototype.__iadd__ = function(other) {
     if (other !== null) {
         if (batavia.isinstance(other, [
-                    batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict, batavia.types.Float, batavia.types.Int,
+                    batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict, 
+                    batavia.types.Float, batavia.types.Int, batavia.types.List,
                 ])) {
             throw new batavia.builtins.TypeError("Can't convert '" + batavia.type_name(other) + "' object to str implicitly");
         } else {
