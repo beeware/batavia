@@ -86,7 +86,7 @@ so it should be reliable.
 Fedora
 ~~~~~~
 Go to http://phantomjs.org/download.html and download the file for your architecuture  
-i.e. `64bit`_ or `32bit`_.
+i.e. `64bit` or `32bit`.
 
 .. _64bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2  
 .. _32bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2  
