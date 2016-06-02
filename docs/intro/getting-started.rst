@@ -31,6 +31,13 @@ Then create a virtual environment and install Batavia into it:
     > activate
     > pip install -e .
     
+*For those using anaconda*:
+
+.. code-block:: bash
+    $ cd batavia
+    $ conda create -n batavia
+    $ source activate batavia
+    $ pip install -e .
 
 Next Steps
 ----------
