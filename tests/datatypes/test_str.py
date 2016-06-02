@@ -451,7 +451,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_str',
         'test_subtract_tuple',
 
-        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
         'test_true_divide_class',
