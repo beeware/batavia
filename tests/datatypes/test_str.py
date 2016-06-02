@@ -313,7 +313,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_none',
         'test_add_set',
         'test_add_str',
-        'test_add_tuple',
 
         'test_and_bool',
         'test_and_bytearray',
