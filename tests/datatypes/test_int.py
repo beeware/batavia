@@ -20,6 +20,10 @@ class IntTests(TranspileTestCase):
             print('Done.')
             """)
 
+    def test_invalid_literal(self):
+        self.assertCodeExecution("""
+            int('q', 16)
+            """)
 
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['42', '0', '-37']

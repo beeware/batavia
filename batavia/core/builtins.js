@@ -610,7 +610,9 @@ batavia.builtins.int = function(args, kwargs) {
 
     var result = parseInt(value, base);
     if (isNaN(result)) {
-        throw new batavia.builtins.ValueError("invalid literal for int() with base 10: " + batavia.builtins.repr([value], null));
+        throw new batavia.builtins.ValueError(
+            "invalid literal for int() with base " + base + ": " + batavia.builtins.repr([value], null)
+        );
     }
     return result;
 };
