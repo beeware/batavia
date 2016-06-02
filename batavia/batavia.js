@@ -7,6 +7,7 @@ var batavia = {
     stdout: fixedConsoleLog,
     stderr: fixedConsoleLog,
     core: {},
+    types: {},
     modules: {},
     builtins: {}
 };

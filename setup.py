@@ -17,6 +17,9 @@ setup(
     author_email='russell@keith-magee.com',
     url='http://pybee.org/batavia',
     packages=find_packages(exclude=['docs', 'tests']),
+    install_requires=[
+        'jsmin'
+    ],
     license='New BSD',
     classifiers=[
         'Development Status :: 4 - Beta',

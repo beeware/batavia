@@ -1,0 +1,15 @@
+include README.rst
+include CONTRIBUTING.md
+include AUTHORS
+include LICENSE
+include Makefile
+include requirements*.txt
+recursive-include docs *.bat
+recursive-include docs *.py
+recursive-include docs *.rst
+recursive-include docs Makefile
+recursive-include tests *.py
+recursive-include batavia *.js
+recursive-include testserver *.html
+recursive-include testserver *.py
+recursive-include testserver *.txt

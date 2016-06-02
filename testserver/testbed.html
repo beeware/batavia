@@ -11,6 +11,8 @@
             font-family: monospace;
         }
     </style>
+    <!-- A native module to use for testing imports -->
+    <script src="/static/testserver/native.js"></script>
     <!--
         To run this demo:
 
@@ -27,20 +29,45 @@
       -->
     <script src="/static/batavia/batavia.js"></script>
     <script src="/static/batavia/utils.js"></script>
+
+    <script src="/static/batavia/types/Bool.js"></script>
+    <script src="/static/batavia/types/Bytearray.js"></script>
+    <script src="/static/batavia/types/Bytes.js"></script>
+    <script src="/static/batavia/types/Code.js"></script>
+    <script src="/static/batavia/types/Complex.js"></script>
+    <script src="/static/batavia/types/Dict.js"></script>
+    <script src="/static/batavia/types/DictView.js"></script>
+    <script src="/static/batavia/types/Ellipsis.js"></script>
+    <script src="/static/batavia/types/Float.js"></script>
+    <script src="/static/batavia/types/Function.js"></script>
+    <script src="/static/batavia/types/Int.js"></script>
+    <script src="/static/batavia/types/List.js"></script>
+    <script src="/static/batavia/types/Module.js"></script>
+    <script src="/static/batavia/types/NoneType.js"></script>
+    <script src="/static/batavia/types/Range.js"></script>
+    <script src="/static/batavia/types/Set.js"></script>
+    <script src="/static/batavia/types/FrozenSet.js"></script>
+    <script src="/static/batavia/types/Slice.js"></script>
+    <script src="/static/batavia/types/Str.js"></script>
+    <script src="/static/batavia/types/Tuple.js"></script>
+    <script src="/static/batavia/types/Type.js"></script>
+
+
+    <script src="/static/batavia/core/PYCFile.js"></script>
+    <script src="/static/batavia/core/Block.js"></script>
+    <script src="/static/batavia/core/builtins.js"></script>
+    <script src="/static/batavia/core/Cell.js"></script>
+    <script src="/static/batavia/core/Exception.js"></script>
+    <script src="/static/batavia/core/Frame.js"></script>
+
     <script src="/static/batavia/modules/dis.js"></script>
     <script src="/static/batavia/modules/dom.js"></script>
     <script src="/static/batavia/modules/inspect.js"></script>
     <script src="/static/batavia/modules/marshal.js"></script>
     <script src="/static/batavia/modules/sys.js"></script>
     <script src="/static/batavia/modules/time.js"></script>
-    <script src="/static/batavia/core/PYCFile.js"></script>
-    <script src="/static/batavia/core/Block.js"></script>
-    <script src="/static/batavia/core/builtins.js"></script>
-    <script src="/static/batavia/core/Cell.js"></script>
-    <script src="/static/batavia/core/Code.js"></script>
-    <script src="/static/batavia/core/Exception.js"></script>
-    <script src="/static/batavia/core/Frame.js"></script>
-    <script src="/static/batavia/core/Function.js"></script>
+
+
     <script src="/static/batavia/VirtualMachine.js"></script>
     <!--script src="../batavia.js"></script-->
 
@@ -249,8 +276,8 @@ batavia.stderr = stdout;
     <div style="width: 40%; display: table-cell; vertical-align: top;">
         <button onclick="sample()">Run sample.py</button>
         <button onclick="pystone(5)">Run PyStone (5 loops)</button>
+        <button onclick="pystone(500)">Run PyStone (500 loops)</button>
         <button onclick="pystone(50000)">Run PyStone (50000 loops)</button><br />
-        <a href="/tests/">Test suite</a>
     </div>
     <div style="width: 10%; display: table-cell; vertical-align: top;">
         - or -
@@ -261,6 +288,7 @@ batavia.stderr = stdout;
             <input type="submit" value="Run code!" /><p class="warning"><b>NOTE - This is not sandboxed!!</b> This code will be compiled on the webserver, with the same permissions as the user running the web server. There may be vectors for arbitrary code execution. <b>You have been warned!</b></p>
         </form>
     </div>
+    <h2>Console output</h2>
     <hr/>
     <pre id="stdout"></pre>
 </body>

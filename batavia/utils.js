@@ -6,334 +6,37 @@ function assert(condition, message) {
 }
 
 /*************************************************************************
- * Modify String to behave like a Python String
- *************************************************************************/
-
-String.prototype.startswith = function (str) {
-    return this.slice(0, str.length) === str;
-};
-
-/*************************************************************************
- * Modify Object to behave like a Python Dictionary
- *************************************************************************/
-
-batavia.core.Dict = function(args, kwargs) {
-    Object.call(this);
-    if (args) {
-        this.update(args);
-    }
-};
-
-batavia.core.Dict.prototype = Object.create(Object.prototype);
-
-batavia.core.Dict.prototype.update = function(values) {
-    for (var key in values) {
-        if (values.hasOwnProperty(key)) {
-            this[key] = values[key];
-        }
-    }
-};
-
-batavia.core.Dict.prototype.copy = function() {
-    return new batavia.core.Dict(this);
-};
-
-batavia.core.Dict.prototype.items = function() {
-    var result = [];
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            result.push([key, this[key]]);
-        }
-    }
-    return result;
-};
-
-batavia.core.Dict.prototype.toString = function () {
-    return this.__str__();
-};
-
-batavia.core.Dict.prototype.__str__ = function () {
-    var result = "{", values = [];
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            values.push(key + ": " + this[key]);
-        }
-    }
-    result += values.join(', ');
-    result += "}";
-    return result;
-};
-
-/*************************************************************************
- * Modify Array to behave like a Python List
- *************************************************************************/
-
-Array.prototype.append = function(value) {
-    this.push(value);
-};
-
-Array.prototype.extend = function(values) {
-    if (values.length > 0) {
-        this.push.apply(this, values);
-    }
-};
-
-/*************************************************************************
- * Subclass Object to provide a Set object
- *************************************************************************/
-
-batavia.core.Set = function(args, kwargs) {
-    Object.call(this);
-    if (args) {
-        this.update(args);
-    }
-};
-
-batavia.core.Set.prototype = Object.create(Object.prototype);
-
-batavia.core.Set.prototype.add = function(v) {
-    this[v] = null;
-};
-
-batavia.core.Set.prototype.remove = function(v) {
-    delete this[v];
-};
-
-batavia.core.Set.prototype.update = function(values) {
-    for (var value in values) {
-        if (values.hasOwnProperty(value)) {
-            this[values[value]] = null;
-        }
-    }
-};
-
-/*************************************************************************
- * An implementation of iter()
- *************************************************************************/
-
-function iter(data) {
-    // if data is already iterable, just return it.
-    if (data.__next__) {
-        return data;
-    }
-    return new Iterable(data);
-}
-
-function Iterable(data) {
-    this.index = 0;
-    this.data = data;
-}
-
-Iterable.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new batavia.builtins.StopIteration();
-    }
-    this.index++;
-    return retval;
-};
-
-function next(iterator) {
-    return iterator.__next__();
-}
-
-/*************************************************************************
- * An implementation of range()
- *************************************************************************/
-
-function _range(start, stop, step) {
-    this.start = start;
-    this.stop = stop;
-    this.step = step || 1;
-
-    if (this.stop === undefined) {
-        this.start = 0;
-        this.stop = start;
-    }
-
-    this.i = this.start;
-}
-
-_range.prototype.__next__ = function() {
-    var retval = this.i;
-    if (this.i < this.stop) {
-        this.i = this.i + this.step;
-        return retval;
-    }
-    throw new batavia.builtins.StopIteration();
-};
-
-function range(start, stop, step) {
-    return new _range(start, stop, step);
-}
-
-
-/*************************************************************************
  * Operator defintions that match Python-like behavior.
  *************************************************************************/
 
-batavia.operators = {
-    // UNARY operators
-    POSITIVE: function(a) {
-        return +a;
-    },
-    NEGATIVE: function(a) {
-        return -a;
-    },
-    NOT: function(a) {
-        return !a;
-    },
-    CONVERT: function(a) {
-        throw new batavia.builtins.NotImplementedError('Unary convert not implemented');
-    },
-    INVERT: function(a) {
-        throw new batavia.builtins.NotImplementedError('Unary invert not implemented');
-    },
-
-    // BINARY/INPLACE operators
-    POWER: function(a, b) {
-        return Math.pow(a, b);
-    },
-    MULTIPLY: function(a, b) {
-        var result, i;
-        if (a instanceof Array) {
-            result = [];
-            if (b instanceof Array) {
-                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'list'");
-            } else {
-                for (i = 0; i < b; i++) {
-                    result.extend(a);
-                }
-            }
-        } else if (b instanceof Array) {
-            result = [];
-            for (i = 0; i < a; i++) {
-                result.extend(b);
+batavia.isinstance = function(obj, type) {
+    if (type instanceof Array) {
+        for (var t in type) {
+            if (batavia.isinstance(obj, type[t])) {
+                return true;
             }
         }
-        else {
-            result = a * b;
-        }
-        return result;
-    },
-    DIVIDE: function(a, b) {
-        return Math.floor(a / b);
-    },
-    FLOOR_DIVIDE: function(a, b) {
-        return Math.floor(a / b);
-    },
-    TRUE_DIVIDE: function(a, b) {
-        return a / b;
-    },
-    MODULO: function(a, b) {
-        if (typeof a === 'string') {
-            if (b instanceof Array) {
-                return batavia._substitute(a, b);
-            } else if (b instanceof Object) {
-                // TODO Handle %(key)s format.
-            } else {
-                return batavia._substitute(a, [b]);
-            }
-        } else {
-            return a % b;
-        }
-    },
-    ADD: function(a, b) {
-        var result, i;
-        if (a instanceof Array) {
-            if (b instanceof Array) {
-                result = [];
-                result.extend(a);
-                result.extend(b);
-            } else {
-                throw new batavia.builtins.TypeError('can only concatenate list (not "' + (typeof b) + '") to list');
-            }
-        } else if (b instanceof Array) {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: '" + (typeof a) + "' and 'list'");
-        }
-        else {
-            result = a + b;
-        }
-        return result;
-    },
-    SUBTRACT: function(a, b) {
-        return a - b;
-    },
-    SUBSCR: function(a, b) {
-        if (b instanceof Object) {
-            var start, stop, step, result;
-            if (b.start === null) {
-                start = 0;
-            }
-            if (b.stop === null) {
-                stop = a.length;
-            }
-            if (b.step === 1) {
-                result = a.slice(start, stop);
-            } else {
-                result = [];
-                for (var i = start; i < stop; i += b.step) {
-                    result.push(a[i]);
-                }
-            }
-            return result;
-        } else {
-            return a[b];
-        }
-    },
-    LSHIFT: function(a, b) {
-        return a << b;
-    },
-    RSHIFT: function(a, b) {
-        return a >> b;
-    },
-    AND: function(a, b) {
-        return a & b;
-    },
-    XOR: function(a, b) {
-        return a ^ b;
-    },
-    OR: function(a, b) {
-        return a | b;
-    },
-};
-
-batavia.comparisons = [
-    function (x, y) {
-        return x < y;
-    },
-    function (x, y) {
-        return x <= y;
-    },
-    function (x, y) {
-        return x == y;
-    },
-    function (x, y) {
-        return x != y;
-    },
-    function (x, y) {
-        return x > y;
-    },
-    function (x, y) {
-        return x >= y;
-    },
-    function (x, y) {
-        return x in y;
-    },
-    function (x, y) {
-        return !(x in y);
-    },
-    function (x, y) {
-        return x === y;
-    },
-    function (x, y) {
-        return x !== y;
-    },
-    function (x, y) {
         return false;
-    },
-];
-
+    } else {
+        switch (typeof obj) {
+            case 'boolean':
+                return type === batavia.types.Bool;
+            case 'number':
+                return type === batavia.types.Int;
+            case 'string':
+                return type === batavia.types.Str;
+            case 'object':
+                if (type === null || type === batavia.types.NoneType) {
+                    return obj === null;
+                } else {
+                    return obj instanceof type;
+                }
+                break;
+            default:
+                return false;
+        }
+    }
+};
 
 /*************************************************************************
  * sprintf() implementation
@@ -414,7 +117,7 @@ batavia.make_class = function(args, kwargs) {
     var kwds = kwargs.kwds || args[4] || [];
 
     // Create a locals context, and run the class function in it.
-    var locals = new batavia.core.Dict();
+    var locals = new batavia.types.Dict();
     var retval = func.__call__.apply(this, [[], [], locals]);
 
     // Now construct the class, based on the constructed local context.
@@ -432,11 +135,11 @@ batavia.make_class = function(args, kwargs) {
     }
 
     var PyObject = function(vm, klass) {
-        var constructor = function(args, kwargs) {
+        var __new__ = function(args, kwargs) {
             return new klass(vm, args, kwargs);
         };
-        constructor.__python__ = true;
-        return constructor;
+        __new__.__python__ = true;
+        return __new__;
     }(this, klass);
 
     return PyObject;
@@ -448,13 +151,14 @@ batavia.make_class = function(args, kwargs) {
 
 batavia.make_callable = function(func) {
     var fn = function(args, kwargs, locals) {
+        var retval;
         var callargs = batavia.modules.inspect.getcallargs(func, args, kwargs);
 
         var frame = this.make_frame({
             'code': func.__code__,
             'callargs': callargs,
             'f_globals': func.__globals__,
-            'f_locals': locals || new batavia.core.Dict(),
+            'f_locals': locals || new batavia.types.Dict()
         });
 
         if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {

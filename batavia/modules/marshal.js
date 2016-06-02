@@ -172,7 +172,7 @@ batavia.modules.marshal = {
 
         /* Sign-extension, in case short greater than 16 bits */
         x |= -(x & 0x8000);
-        return x;
+        return new batavia.types.Int(x);
     },
 
     r_long: function(vm, p) {
@@ -184,7 +184,7 @@ batavia.modules.marshal = {
 
         /* Sign extension for 64-bit machines */
         x |= -(x & 0x80000000);
-        return x;
+        return new batavia.types.Int(x);
     },
 
     // r_PyLong: function(vm, p) {
@@ -336,6 +336,7 @@ batavia.modules.marshal = {
         switch (type) {
 
         case batavia.modules.marshal.TYPE_null:
+            retval = null;
             // console.log.info('TYPE_NULL ');
             break;
 
@@ -350,7 +351,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_ELLIPSIS:
-            retval = batavia.VirtualMachine.Py_Ellipsis;
+            retval = batavia.types.Ellipsis;
             // console.log.info('TYPE_ELLIPSIS');
             break;
 
@@ -386,7 +387,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_FLOAT:
             n = batavia.modules.marshal.r_byte(vm, p);
             buf = batavia.modules.marshal.r_string(vm, p, n);
-            retval = parseFloat(buf);
+            retval = new batavia.types.Float(parseFloat(buf));
             // console.log.info('TYPE_FLOAT ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -424,11 +425,9 @@ batavia.modules.marshal = {
 
             /* Sixth byte */
             flo = buf.charCodeAt(2) << 16;
-            p += incr;
 
             /* Seventh byte */
             flo |= buf.charCodeAt(1) << 8;
-            p += incr;
 
             /* Eighth byte */
             flo |= buf.charCodeAt(0);
@@ -452,6 +451,7 @@ batavia.modules.marshal = {
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
+            retval = new batavia.types.Float(retval);
             break;
 
         case batavia.modules.marshal.TYPE_COMPLEX:
@@ -582,7 +582,7 @@ batavia.modules.marshal = {
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            retval = new Array(n);
+            retval = new batavia.types.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -603,7 +603,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (tuple size out of range)");
                 break;
             }
-            retval = new Array(n);
+            retval = new batavia.types.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -624,7 +624,7 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (list size out of range)");
                 break;
             }
-            retval = new Array(n);
+            retval = new batavia.types.List(new Array(n));
             for (i = 0; i < n; i++) {
                 retval[n] = batavia.modules.marshal.r_object(vm, p);
             }
@@ -636,7 +636,7 @@ batavia.modules.marshal = {
 
         case batavia.modules.marshal.TYPE_DICT:
             // console.log.info('TYPE_DICT ' + n);
-            retval = {};
+            retval = batavia.types.Dict();
             for (;;) {
                 var key, val;
                 key = r_object(p);
@@ -668,12 +668,13 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (set size out of range)");
                 break;
             }
-            retval = (type == batavia.modules.marshal.TYPE_SET) ? PySet_New(null) : PyFrozenSet_New(null);
             if (type == batavia.modules.marshal.TYPE_SET) {
+                retval = batavia.types.Set(null);
                 if (flag) {
                    batavia.modules.marshal.r_ref(vm, retval, flag, p);
                 }
             } else {
+                retval = batavia.types.FrozenSet(null);
                 /* must use delayed registration of frozensets because they must
                  * be init with a refcount of 1
                  */
@@ -735,7 +736,7 @@ batavia.modules.marshal = {
                 p.current_filename = filename;
             }
 
-            v = new batavia.core.Code({
+            v = new batavia.types.Code({
                 argcount: argcount,
                 kwonlyargcount: kwonlyargcount,
                 nlocals: nlocals,
@@ -806,7 +807,12 @@ batavia.modules.marshal = {
      * ignored."
      */
 
-    load_pyc: function(vm, pyc) {
-        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(pyc));
+    load_pyc: function(vm, payload) {
+        if (payload === null || payload.length === 0) {
+            throw new batavia.builtins.BataviaError('Empty PYC payload');
+        } else if (payload.startswith('ERROR:')) {
+            throw new batavia.builtins.BataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'));
+        }
+        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(atob(payload)));
     }
 };
