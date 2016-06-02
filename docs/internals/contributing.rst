@@ -85,7 +85,17 @@ so it should be reliable.
 
 Fedora
 ~~~~~~
-Check the instructions at http://phantomjs.org/build.html
+Go to http://phantomjs.org/download.html and download the file for your distro.
+.. _64bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+.. _32bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
+unpack the file to your prefered location and add the bin directory to your PATH environment variable.
+
+
+Build from sources on linux
+~~~~~~
+Building phantomjs takes 30min to several hours. Do this only if the other methods don't work. 
+Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
+If no binary is available, check the instructions at http://phantomjs.org/build.html
 
 Install the dependencies:
 .. code-block:: bash
@@ -95,20 +105,20 @@ Install the dependencies:
 
 Then download and install phantomjs:
 .. code-block:: bash
-	@git clone git://github.com/ariya/phantomjs.git
-	@cd phantomjs
-	@git checkout 2.1.1
-	@git submodule init
-	@git submodule update
+	$git clone git://github.com/ariya/phantomjs.git
+	$cd phantomjs
+	$git checkout 2.1.1
+	$git submodule init
+	$git submodule update
 
 If you want to install phantomejs in an Anaconda enviroment activate it first:
 (not sure whether this is necessary, will maybe remove this)
 .. code-block:: bash
-	@source activate your-env
+	$source activate your-env
 
 Then compile and link phantomjs:	
 .. code-block:: bash
-	@python build.py
+	$python build.py
 	
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
