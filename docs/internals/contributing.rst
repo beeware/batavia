@@ -85,10 +85,10 @@ so it should be reliable.
 
 Fedora
 ~~~~~~
-Go to http://phantomjs.org/download.html and download the file for your distro.
-.. _64bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-.. _32bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
-unpack the file to your prefered location and add the bin directory to your PATH environment variable.
+Go to http://phantomjs.org/download.html and download the file for your distro.  
+.. _64bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2  
+.. _32bit https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2  
+Unpack the file to your prefered location and add the bin directory to your PATH environment variable.  
 
 
 Build from sources on linux
@@ -99,26 +99,21 @@ If no binary is available, check the instructions at http://phantomjs.org/build.
 
 Install the dependencies:
 .. code-block:: bash
-	$sudo yum -y install gcc gcc-c++ make flex bison gperf ruby \
-  	$openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel \
-  	$libpng-devel libjpeg-devel
+	$ sudo yum -y install gcc gcc-c++ make flex bison gperf ruby \
+  	$ openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel \
+  	$ libpng-devel libjpeg-devel
 
 Then download and install phantomjs:
 .. code-block:: bash
-	$git clone git://github.com/ariya/phantomjs.git
-	$cd phantomjs
-	$git checkout 2.1.1
-	$git submodule init
-	$git submodule update
-
-If you want to install phantomejs in an Anaconda enviroment activate it first:
-(not sure whether this is necessary, will maybe remove this)
-.. code-block:: bash
-	$source activate your-env
+	$ git clone git://github.com/ariya/phantomjs.git
+	$ cd phantomjs
+	$ git checkout 2.1.1
+	$ git submodule init
+	$ git submodule update
 
 Then compile and link phantomjs:	
 .. code-block:: bash
-	$python build.py
+	$ python build.py
 	
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
