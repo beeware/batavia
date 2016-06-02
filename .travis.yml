@@ -3,6 +3,7 @@ dist: trusty
 language: python
 python:
   - "3.4"
+  - "3.5"
 install:
   - "pip install ."
   - mkdir travis-phantomjs

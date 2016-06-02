@@ -108,6 +108,16 @@ class DictTests(TranspileTestCase):
             x = dict([('a', 1), ('b', 2, False)])
             """)
 
+    def test_print_dict(self):
+        """
+        Primarily useful to assert that dict is able to be printed
+        since bytecode has changed for dict creation between 3.4 and 3.5
+        """
+        self.assertCodeExecution("""
+            foo = {'a': 1}
+            print(foo)
+            """)
+
     @unittest.expectedFailure
     def test_builtin_non_sequence(self):
         # One of the elements isn't a sequence
