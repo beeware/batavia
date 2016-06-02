@@ -9,6 +9,8 @@ batavia.core.PYCFile = function(data) {
     this.size = data.slice(8, 12);
     this.data = data.slice(12);
 
+    batavia.BATAVIA_MAGIC = this.magic;
+
     // this.data = data;
     this.depth = 0;
     this.ptr = 0;
