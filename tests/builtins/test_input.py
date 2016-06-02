@@ -2,7 +2,8 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class InputTests(TranspileTestCase):
-    pass
+    def test_input(self):
+        self.assertRaises(EOFError, input("foo"))
 
 
 # class BuiltinInputFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):

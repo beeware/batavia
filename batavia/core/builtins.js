@@ -368,6 +368,7 @@ batavia.builtins.dict = function(args, kwargs) {
     if (args.length > 1) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
+
     if (batavia.isinstance(args[0], batavia.types.Int)) {
         throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
@@ -388,16 +389,37 @@ batavia.builtins.dict = function(args, kwargs) {
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number in an iterable throws different error
+<<<<<<< HEAD
+                if (typeof(args[0][i]) === "number") {
+                    throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");
+                }
+                else {
+=======
                 if (batavia.isinstance(args[0][i], batavia.types.Int)) {
                     throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");
                 } else {
+>>>>>>> upstream/master
                     throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required");
                 }
             }
         }
     }
+<<<<<<< HEAD
+    // handling keyword arguments and no arguments
+    if (args.length === 0 || args[0].length === 0) {
+        if (kwargs) {
+            return kwargs;
+        }
+        else {
+            return {};
+        }
+    }
+    // passing a dictionary as argument
+    if (args[0].constructor === Object) {
+=======
     // Passing a dictionary as argument
     if (batavia.isinstance(args[0], batavia.types.Dict)) {
+>>>>>>> upstream/master
         return args[0];
     }
 
@@ -488,8 +510,12 @@ batavia.builtins.float = function(args) {
     if (args.length === 0) {
         return 0.0;
     }
+<<<<<<< HEAD
+    var toConvert = args[0];
+=======
 
     var value = args[0];
+>>>>>>> upstream/master
 
     if (batavia.isinstance(value, batavia.types.Str)) {
         if (value.search(/[^0-9.]/g) === -1) {
@@ -504,10 +530,15 @@ batavia.builtins.float = function(args) {
             }
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
+<<<<<<< HEAD
+    } else if (typeof(args[0]) === "number") {
+        return args[0].toFixed(1);
+=======
     } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
         return args[0].valueOf().toFixed(1);
     } else if (batavia.isinstance(value, batavia.types.Float)) {
         return args[0];
+>>>>>>> upstream/master
     }
 };
 
@@ -584,9 +615,17 @@ batavia.builtins.id = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented");
 };
 
-batavia.builtins.input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
+batavia.builtins.input = function(args, kwargs) {
+    if (kwargs && Object.keys(kwargs).length > 0) {
+      throw new batavia.builtins.TypeError("input() doesn't accept keyword arguments");
+    }
+    if (args.length > 1) {
+      throw new batavia.builtins.TypeError("input expected at most 1 arguments, got " + args.length);
+    }
+    return batavia.input(String(args[0]));
 };
+
+batavia.builtins.input.__doc__ = "input([prompt]) -> string\n\nRead a string from standard input. The trailing newline is stripped.\nIf the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.\nOn Unix, GNU readline is used if enabled. The prompt string, if given,\nis printed without a trailing newline before reading.";
 
 batavia.builtins.int = function(args, kwargs) {
     if (arguments.length != 2) {
