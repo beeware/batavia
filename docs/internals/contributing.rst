@@ -98,21 +98,27 @@ Therefore, first have a look at http://phantomjs.org/download.html for prebuilds
 If no binary is available, check the instructions at http://phantomjs.org/build.html
 
 Install the dependencies:
+
 .. code-block:: bash
+
 	$ sudo yum -y install gcc gcc-c++ make flex bison gperf ruby \
   	$ openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel \
   	$ libpng-devel libjpeg-devel
 
 Then download and install phantomjs:
+
 .. code-block:: bash
+
 	$ git clone git://github.com/ariya/phantomjs.git
 	$ cd phantomjs
 	$ git checkout 2.1.1
 	$ git submodule init
 	$ git submodule update
 
-Then compile and link phantomjs:	
+Then compile and link phantomjs:
+
 .. code-block:: bash
+
 	$ python build.py
 	
 Raspbian/Raspberry Pi
