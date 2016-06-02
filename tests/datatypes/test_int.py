@@ -355,7 +355,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subtract_bool',
         'test_subtract_bytearray',
         'test_subtract_bytes',
         'test_subtract_class',
@@ -363,7 +362,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_dict',
         'test_subtract_frozenset',
         'test_subtract_float',
-        'test_subtract_int',
         'test_subtract_list',
         'test_subtract_none',
         'test_subtract_set',

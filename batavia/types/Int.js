@@ -297,7 +297,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Int.__isub__ has not been implemented");
+        return this.__sub__(other).valueOf();
     };
 
     Int.prototype.__imul__ = function(other) {
