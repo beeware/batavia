@@ -393,6 +393,13 @@ def cleanse_python(input):
     )
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = PYTHON_FLOAT.sub('\\1e\\2\\3', out).replace("'test.py'", '***EXECUTABLE***')
+
+    # Python 3.4.4 changed the error message returned by int()
+    out = out.replace(
+        'int() argument must be a string or a number, not',
+        'int() argument must be a string, a bytes-like object or a number, not'
+    )
+
     out = out.replace('\r\n', '\n')
     return out
 

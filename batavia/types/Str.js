@@ -221,7 +221,15 @@ String.prototype.__itruediv__ = function(other) {
 };
 
 String.prototype.__iadd__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__iadd__ has not been implemented");
+    if (other !== null) {
+        if (batavia.isinstance(other, [
+                    batavia.types.Bool
+                ])) {
+            throw new batavia.builtins.TypeError("Can't convert 'bool' object to str implicitly");
+        } else {
+            throw new batavia.builtins.NotImplementedError("String.__iadd__ has not been implemented");
+        }
+    }
 };
 
 String.prototype.__isub__ = function(other) {

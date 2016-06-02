@@ -2,7 +2,7 @@ sudo: required
 dist: trusty
 language: python
 python:
-  - "3.4"
+  - "3.4.4"
 install:
   - "pip install ."
   - mkdir travis-phantomjs
