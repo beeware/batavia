@@ -320,7 +320,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_class',
         'test_and_complex',
         'test_and_frozenset',
-        'test_and_int',
         'test_and_list',
         'test_and_none',
         'test_and_set',
