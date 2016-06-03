@@ -37,6 +37,8 @@ batavia.type_name = function(arg) {
                 type_name = 'frozenset';
             } else if (arg instanceof batavia.types.Set) {
                 type_name = 'set';
+            } else if (arg instanceof batavia.types.Bytes) {
+                type_name = 'bytes';
             } else {
                 type_name = 'Native object';
             }
