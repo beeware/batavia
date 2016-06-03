@@ -319,7 +319,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_bytes',
         'test_and_class',
         'test_and_complex',
-        'test_and_dict',
         'test_and_float',
         'test_and_frozenset',
         'test_and_int',

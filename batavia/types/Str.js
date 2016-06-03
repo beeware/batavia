@@ -259,6 +259,7 @@ String.prototype.__irshift__ = function(other) {
 String.prototype.__iand__ = function(other) {
     if (batavia.isinstance(other, [
             batavia.types.Bool,
+            batavia.types.Dict
         ])) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + batavia.type_name(other) + "'");
     } else {
