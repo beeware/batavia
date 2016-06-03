@@ -50,14 +50,10 @@ class BuiltinMapFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         self.assertCodeExecution(self.base_code % ("[1, 2, 3]", "x * 2"))
 
     not_implemented = [
-        'test_bytes',
+        'test_bytearray',
         'test_class',
         'test_complex',
         'test_dict',
         'test_frozenset',
-        'test_list',
-        'test_none',
         'test_set',
-        'test_str',
-        'test_tuple',
     ]

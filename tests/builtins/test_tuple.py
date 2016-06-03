@@ -9,7 +9,6 @@ class BuiltinTupleFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["tuple"]
 
     not_implemented = [
-        'test_bool',
         'test_bytearray',
         'test_bytes',
         'test_class',

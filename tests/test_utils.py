@@ -51,7 +51,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
+            TypeError
                 test.py:3
             """
         )
@@ -67,7 +67,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
+            TypeError
                 test.py:3
                 test.py:6
                 test.py:9
@@ -85,7 +85,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """
             Hello, world.
             ### EXCEPTION ###
-            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
+            TypeError
                 test.py:3
             """
         )
@@ -140,7 +140,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
+            TypeError
                 test.py:3
             """
         )
@@ -159,7 +159,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
+            TypeError
                 test.py:3
                 test.py:6
                 test.py:9
@@ -178,7 +178,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """
             Hello, world.
             ### EXCEPTION ###
-            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
+            TypeError
                 test.py:3
             """
         )
