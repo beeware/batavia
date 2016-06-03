@@ -435,11 +435,7 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_class',
-        'test_subtract_complex',
-        'test_subtract_frozenset',
         'test_subtract_set',
 
         'test_true_divide_bool',
