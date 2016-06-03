@@ -37,6 +37,14 @@ Then create a virtual environment and install Batavia into it:
     $ cd batavia
     $ pip install -e .
 
+*For those using anaconda*:
+
+.. code-block:: bash
+    $ cd batavia
+    $ conda create -n batavia-dev
+    $ source activate batavia-dev
+    $ pip install -e .
+
 Lastly, you'll need to obtain and install `PhantomJS`_. PhantomJS is a
 headless browser that allows Batavia to test it's behavior in a "real"
 browser. Installation instructions vary between platforms.
@@ -146,7 +154,7 @@ also see a summary of the cause of those problems.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
 make sure the test suite is always in a passing state. If you *do* get any
-failures, errors, or unexpected successes, please get in touch, because you
+failures, errors, or unexpected successes, please check out the `troubleshooting section <#troubleshooting>`_ or get in touch, because you
 may have found a problem.
 
 .. _continuous integration: https://travis-ci.org/pybee/batavia
@@ -177,3 +185,14 @@ Or, to run all the datatypes tests:
 
     $ python setup.py test -s tests.datatypes
 
+Troubleshooting
+---------------
+
+- For Homebrew users, check that your installed version of phantomjs is 2.1.1
+    + $ brew list phantomjs
+
+- If you get an failure message saying `AssertionError: Unable to inject Batavia: false`, make sure there are contents in `batavia.min.js`. If the file is empty, run the following commands and run the test suite again
+    + $ pip install jsmin 
+    + $ make clean
+    + $ make
+    + $ python setup.py test
