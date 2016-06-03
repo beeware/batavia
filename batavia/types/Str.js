@@ -233,7 +233,7 @@ String.prototype.__iadd__ = function(other) {
 };
 
 String.prototype.__isub__ = function(other) {
-    throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'str' and '" + batavia.type_name(other) +"'")
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'str' and '" + batavia.type_name(other) + "'")
 };
 
 String.prototype.__imul__ = function(other) {
