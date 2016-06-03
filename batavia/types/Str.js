@@ -131,7 +131,7 @@ String.prototype.__mul__ = function(other) {
 };
 
 String.prototype.__mod__ = function(other) {
-    if (batavia.isinstance(other, [batavia.types.List, batavia.types.Tuple])) {
+    if (batavia.isinstance(other, batavia.types.Tuple)) {
         return batavia._substitute(this, other);
     } else {
         return batavia._substitute(this, [other]);

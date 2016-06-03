@@ -189,13 +189,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_set',
         'test_lt_tuple',
 
-        'test_modulo_bytearray',
         'test_modulo_bytes',
-        'test_modulo_class',
-        'test_modulo_complex',
-        'test_modulo_dict',
-        'test_modulo_frozenset',
-        'test_modulo_list',
         'test_modulo_set',
 
         'test_multiply_bytearray',
