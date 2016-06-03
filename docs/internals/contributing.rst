@@ -91,6 +91,54 @@ so it should be reliable.
 .. _downloaded here: https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
 .. _Batavia CI server: https://travis-ci.org/pybee/batavia
 
+
+Fedora
+~~~~~~
+Go to http://phantomjs.org/download.html and download the file for your architecuture  
+i.e. `64bit`_ or `32bit`_.
+
+.. _64bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2  
+.. _32bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2  
+Unpack the file to your prefered location and add the bin directory to your PATH environment variable.  
+
+.. code-block:: bash
+
+	$ export PATH=$PATH:/path-to-bin-directory
+
+
+
+Build from sources on linux
+~~~~~~
+Building phantomjs takes 30min to several hours. Do this only if the other methods don't work. 
+Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
+If no binary is available, check the instructions at http://phantomjs.org/build.html
+
+Install the dependencies (on Fedora):
+
+.. code-block:: bash
+
+	$ sudo yum -y install gcc gcc-c++ make flex bison gperf ruby \
+  	$ openssl-devel freetype-devel fontconfig-devel libicu-devel sqlite-devel \
+  	$ libpng-devel libjpeg-devel
+
+
+
+Then download and install phantomjs:
+
+.. code-block:: bash
+
+	$ git clone git://github.com/ariya/phantomjs.git
+	$ cd phantomjs
+	$ git checkout 2.1.1
+	$ git submodule init
+	$ git submodule update
+
+Then compile and link phantomjs:
+
+.. code-block:: bash
+
+	$ python build.py
+	
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
 
