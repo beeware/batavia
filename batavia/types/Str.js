@@ -122,6 +122,9 @@ String.prototype.__mul__ = function(other) {
             result += this.valueOf();
         }
         return result;
+    } else if (batavia.isinstance(other, batavia.types.Bool)) {
+        result = other == true ? this.valueOf() : '';
+        return result;
     } else {
         throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
     }

@@ -198,7 +198,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_list',
         'test_modulo_set',
 
-        'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
