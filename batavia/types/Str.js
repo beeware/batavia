@@ -252,7 +252,19 @@ String.prototype.__imul__ = function(other) {
 };
 
 String.prototype.__imod__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__imod__ has not been implemented");
+    if (batavia.isinstance(other, [
+            batavia.types.Bool,
+            batavia.types.Float,
+            batavia.types.FrozenSet,
+            batavia.types.Int,
+            batavia.types.NoneType,
+            batavia.types.Str,
+            batavia.types.Tuple
+        ])) {
+        throw new batavia.builtins.TypeError("not all arguments converted during string formatting");
+    } else {
+        throw new batavia.builtins.NotImplementedError("String.__imod__ has not been implemented");
+    }
 };
 
 String.prototype.__ipow__ = function(other) {
