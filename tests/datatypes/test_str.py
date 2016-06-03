@@ -297,7 +297,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_complex',
         'test_add_frozenset',
         'test_add_set',
-        'test_add_str',
 
         'test_and_bytearray',
         'test_and_bytes',
