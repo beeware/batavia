@@ -1288,7 +1288,11 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    items[1][name] = items[0];
+    if (items[1].__setattr__ == undefined) {
+        items[1][name] = items[0];
+    } else {
+        items[1].__setattr__(name, items[0]);
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
