@@ -277,7 +277,7 @@ String.prototype.__ixor__ = function(other) {
             batavia.types.List,
             batavia.types.NoneType,
             batavia.types.Str,
-            batavia.types.Tuple
+            batavia.types.Tuple,
         ])) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for ^=: 'str' and '" + batavia.type_name(other) + "'");
     } else {
