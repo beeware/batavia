@@ -581,8 +581,10 @@ batavia.builtins.hex = function(args) {
 };
 
 batavia.builtins.id = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'id' not implemented");
+    throw new batavia.builtins.PolyglotError("'id' has no meaning here. See docs/internals/limitations#id");
 };
+batavia.builtins.id__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)';
+
 
 batavia.builtins.input = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
@@ -610,7 +612,9 @@ batavia.builtins.int = function(args, kwargs) {
 
     var result = parseInt(value, base);
     if (isNaN(result)) {
-        throw new batavia.builtins.ValueError("invalid literal for int() with base 10: " + batavia.builtins.repr([value], null));
+        throw new batavia.builtins.ValueError(
+            "invalid literal for int() with base " + base + ": " + batavia.builtins.repr([value], null)
+        );
     }
     return result;
 };

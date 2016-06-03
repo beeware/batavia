@@ -1288,7 +1288,11 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    items[1][name] = items[0];
+    if (items[1].__setattr__ == undefined) {
+        items[1][name] = items[0];
+    } else {
+        items[1].__setattr__(name, items[0]);
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
@@ -1322,13 +1326,50 @@ batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    this.push(new batavia.types.Dict());
+    switch (batavia.BATAVIA_MAGIC) {
+        case batavia.BATAVIA_MAGIC_35:
+            var items = this.popn(size * 2);
+            var obj = {};
+
+            for (var i = 0; i < items.length; i += 2) {
+                obj[items[i]] = items[i + 1];
+            }
+
+            this.push(new batavia.types.Dict(obj));
+
+            return;
+
+        case batavia.BATAVIA_MAGIC_34:
+            this.push(new batavia.types.Dict());
+
+            return;
+
+        default:
+            throw new batavia.builtins.BataviaError(
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
+            );
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
-    var items = this.popn(3);
-    items[0][items[2]] = items[1];
-    this.push(items[0]);
+    switch (batavia.BATAVIA_MAGIC) {
+        case batavia.BATAVIA_MAGIC_35:
+            throw new batavia.builtins.BataviaError(
+                "STORE_MAP is unsupported with BATAVIA_MAGIC"
+            );
+
+        case batavia.BATAVIA_MAGIC_34:
+            var items = this.popn(3);
+            items[0][items[2]] = items[1];
+            this.push(items[0]);
+
+            return;
+
+        default:
+            throw new batavia.builtins.BataviaError(
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
+            );
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {

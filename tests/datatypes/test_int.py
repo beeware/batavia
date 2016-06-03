@@ -20,6 +20,10 @@ class IntTests(TranspileTestCase):
             print('Done.')
             """)
 
+    def test_invalid_literal(self):
+        self.assertCodeExecution("""
+            int('q', 16)
+            """)
 
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['42', '0', '-37']
@@ -137,7 +141,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_set',
-        'test_multiply_str',
         'test_multiply_tuple',
 
         'test_ne_bytearray',
@@ -295,19 +298,13 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-        'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_float',
         'test_multiply_frozenset',
-        'test_multiply_int',
-        'test_multiply_list',
-        'test_multiply_none',
         'test_multiply_set',
-        'test_multiply_str',
         'test_multiply_tuple',
 
         'test_or_bool',
