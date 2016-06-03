@@ -671,8 +671,8 @@ batavia.builtins.license = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented");
 };
 
-batavia.builtins.list = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'list' not implemented");
+batavia.builtins.list = function(args) {
+    return new batavia.types.List(args[0]);
 };
 
 batavia.builtins.locals = function() {
