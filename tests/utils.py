@@ -191,9 +191,15 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
 
 def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None):
     # Output source code into test directory
-    py_filename = os.path.join(test_dir, 'test.py')
-    with open(py_filename, 'w') as py_source:
-        py_source.write(adjust(main_code, run_in_function=run_in_function))
+    assert isinstance(main_code, (str, bytes)), (
+        'I have no idea how to run tests for code of type {}'
+        ''.format(type(main_code))
+    )
+
+    if isinstance(main_code, str):
+        py_filename = os.path.join(test_dir, 'test.py')
+        with open(py_filename, 'w') as py_source:
+            py_source.write(adjust(main_code, run_in_function=run_in_function))
 
     modules = {}
 
@@ -201,9 +207,12 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
     cwd = os.getcwd()
     os.chdir(test_dir)
 
-    py_compile.compile('test.py')
-    with open(importlib.util.cache_from_source('test.py'), 'rb') as compiled:
-        modules['testcase'] = base64.encodebytes(compiled.read())
+    if isinstance(main_code, str):
+        py_compile.compile('test.py')
+        with open(importlib.util.cache_from_source('test.py'), 'rb') as compiled:
+            modules['testcase'] = base64.encodebytes(compiled.read())
+    elif isinstance(main_code, bytes):
+        modules['testcase'] = main_code
 
     if extra_code:
         for name, code in extra_code.items():

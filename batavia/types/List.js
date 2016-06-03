@@ -192,7 +192,11 @@ batavia.types.List = function() {
 
             return new List(Array.prototype.slice.call(this, start, stop));
         } else {
-            throw new batavia.builtins.TypeError("list indices must be integers, not " + batavia.type_name(index));
+            var msg = "list indices must be integers or slices, not ";
+            if (batavia.BATAVIA_MAGIC == batavia.BATAVIA_MAGIC_34) {
+                msg = "list indices must be integers, not ";
+            }
+            throw new batavia.builtins.TypeError(msg + batavia.type_name(index));
         }
     };
 

@@ -108,6 +108,46 @@ class DictTests(TranspileTestCase):
             x = dict([('a', 1), ('b', 2, False)])
             """)
 
+    def test_print_dict(self):
+        """
+        Primarily useful to assert that dict is able to be printed
+        since bytecode has changed for dict creation between 3.4 and 3.5
+        """
+        self.assertCodeExecution("""
+            foo = {'a': 1}
+            print(foo)
+            """)
+
+    def test_print_dict_bytecode_34(self):
+        # equivalent to
+        #   foo = {'a': 1}
+        #   print(foo)
+        # we are using explicit bytecode here so that we can test
+        # differences in Python bytecode between diff Py versions
+        # within a single test suite
+        bytecode = (
+            b'7gwNCsmyUFcaAAAA4wAAAAAAAAAAAAAAAAMAAABAAAAAcxsAAABpAQBkAABkAQA2WgAAZQEAZQAA\n'
+            b'gwEAAWQCAFMpA+kBAAAA2gFhTikC2gNmb2/aBXByaW50qQByBQAAAHIFAAAA+gd0ZXN0LnB52gg8\n'
+            b'bW9kdWxlPgEAAABzAgAAAA0B\n'
+        )
+        expected = "{'a': 1}\n"
+        self.assertJavaScriptExecution(bytecode, expected, js={})
+
+    def test_print_dict_bytecode_35(self):
+        # equivalent to
+        #   foo = {'a': 1}
+        #   print(foo)
+        # we are using explicit bytecode here so that we can test
+        # differences in Python bytecode between diff Py versions
+        # within a single test suite
+        bytecode = (
+            b'Fg0NChCzUFcaAAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAcxoAAABkAABkAQBpAQBaAABlAQBlAACD\n'
+            b'AQABZAIAUykD2gFh6QEAAABOKQLaA2Zvb9oFcHJpbnSpAHIFAAAAcgUAAAD6B3Rlc3QucHnaCDxt\n'
+            b'b2R1bGU+AQAAAHMCAAAADAE=\n'
+        )
+        expected = "{'a': 1}\n"
+        self.assertJavaScriptExecution(bytecode, expected, js={})
+
     @unittest.expectedFailure
     def test_builtin_non_sequence(self):
         # One of the elements isn't a sequence
