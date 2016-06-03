@@ -264,7 +264,8 @@ String.prototype.__iand__ = function(other) {
             batavia.types.Int,
             batavia.types.List,
             batavia.types.NoneType,
-            batavia.types.Str
+            batavia.types.Str,
+            batavia.types.Tuple
         ])) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + batavia.type_name(other) + "'");
     } else {
