@@ -673,7 +673,7 @@ batavia.builtins.license = function() {
 };
 
 batavia.builtins.list = function(args) {
-    return new batavia.types.List(args);
+    return new batavia.types.List(args[0]);
 };
 
 batavia.builtins.locals = function() {
