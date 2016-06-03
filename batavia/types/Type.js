@@ -33,6 +33,8 @@ batavia.type_name = function(arg) {
                 type_name = 'float';
             } else if (arg instanceof batavia.types.Complex) {
                 type_name = 'complex';
+            } else if (arg instanceof batavia.types.FrozenSet) {
+                type_name = 'frozenset';
             } else {
                 type_name = 'Native object';
             }
