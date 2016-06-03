@@ -53,7 +53,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_set',
         'test_eq_str',
 
-        'test_floor_divide_bool',
         'test_floor_divide_bytearray',
         'test_floor_divide_class',
         'test_floor_divide_complex',
