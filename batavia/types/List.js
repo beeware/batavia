@@ -22,7 +22,8 @@ batavia.types.List = function() {
     List.prototype.length = 0;
 
     List.prototype.constructor = List;
-
+    List.__name__ = 'list';
+  
     /**************************************************
      * Javascript compatibility methods
      **************************************************/
