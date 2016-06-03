@@ -262,6 +262,7 @@ String.prototype.__iand__ = function(other) {
             batavia.types.Dict,
             batavia.types.Float,
             batavia.types.Int,
+            batavia.types.List,
         ])) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + batavia.type_name(other) + "'");
     } else {
