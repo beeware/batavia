@@ -432,18 +432,10 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_true_divide_str',
         'test_true_divide_tuple',
 
-        'test_xor_bool',
         'test_xor_bytearray',
         'test_xor_bytes',
         'test_xor_class',
         'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
         'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_none',
         'test_xor_set',
-        'test_xor_str',
-        'test_xor_tuple',
     ]
