@@ -321,7 +321,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_complex',
         'test_and_frozenset',
         'test_and_set',
-        'test_and_str',
         'test_and_tuple',
 
         'test_floor_divide_bool',
