@@ -39,6 +39,8 @@ batavia.type_name = function(arg) {
                 type_name = 'set';
             } else if (arg instanceof batavia.types.Bytes) {
                 type_name = 'bytes';
+            } else if (arg instanceof batavia.types.ByteArray) {
+                type_name = 'bytearray';
             } else {
                 type_name = 'Native object';
             }
