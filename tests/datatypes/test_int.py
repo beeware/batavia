@@ -141,7 +141,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_set',
-        'test_multiply_str',
         'test_multiply_tuple',
 
         'test_ne_bytearray',
@@ -306,7 +305,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_set',
-        'test_multiply_str',
         'test_multiply_tuple',
 
         'test_or_bool',

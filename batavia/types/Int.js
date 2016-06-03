@@ -177,6 +177,12 @@ batavia.types.Int = function() {
                 result.extend(other);
             }
             return result;
+        } else if (batavia.isinstance(other, batavia.types.Str)) {
+            var result = '';
+            for (var i = 0; i < this.valueOf(); i++) {
+                result += other.valueOf();
+              }
+            return result;
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'int' and '" + batavia.type_name(other) + "'");
         }
