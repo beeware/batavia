@@ -38,8 +38,14 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__str__ = function() {
-        if (this.val === Math.round(this. val)) {
-            return this.val + '.0';
+        if (this.val === 0) {
+            if (1/this.val === Infinity) {
+                return '0.0';
+            } else {
+                return '-0.0';
+            }
+        } else if (this.val === Math.round(this. val)) {
+            return this.val.toString() + '.0';
         } else {
             return this.val.toString();
         }
