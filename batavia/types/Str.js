@@ -257,7 +257,13 @@ String.prototype.__irshift__ = function(other) {
 };
 
 String.prototype.__iand__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__iand__ has not been implemented");
+    if (batavia.isinstance(other, [
+            batavia.types.Bool,
+        ])) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + batavia.type_name(other) + "'");
+    } else {
+        throw new batavia.builtins.NotImplementedError("String.__iand__ has not been implemented");
+    }
 };
 
 String.prototype.__ixor__ = function(other) {
