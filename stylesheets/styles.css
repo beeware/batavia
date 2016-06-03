@@ -16,6 +16,10 @@ p, ul, ol, table, pre, dl {
   margin:0 0 20px;
 }
 
+ul.github-bar{
+  margin: 0 0 0;
+}
+
 h1, h2, h3 {
   line-height:1.1;
 }
@@ -180,7 +184,7 @@ footer {
   width:270px;
   float:left;
   position:fixed;
-  bottom:50px;
+  bottom:0px;
 }
 
 @media print, screen and (max-width: 960px) {
