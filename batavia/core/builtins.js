@@ -219,6 +219,10 @@ batavia.builtins.any = function(args, kwargs) {
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
+batavia.builtins.ascii = function() {
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'ascii' not implemented");
+};
+
 batavia.builtins.bin = function(args, kwargs) {
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
@@ -467,14 +471,8 @@ batavia.builtins.eval = function(args, kwargs) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
 };
 
-batavia.builtins.exit = function(args, kwargs) {
-    // TODO maybe throw bad errors on exit args code != 0?
-    // NOTE You can't actually exit a JavaScript session, so...
-    console.log("Goodbye");
-};
-
-batavia.builtins.file = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'file' not implemented");
+batavia.builtins.exec = function() {
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exec' not implemented");
 };
 
 batavia.builtins.filter = function() {
@@ -620,9 +618,6 @@ batavia.builtins.int = function(args, kwargs) {
 };
 batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4";
 
-batavia.builtins.intern = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'intern' not implemented");
-};
 
 batavia.builtins.isinstance = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'isinstance' not implemented");
@@ -682,10 +677,6 @@ batavia.builtins.list = function() {
 
 batavia.builtins.locals = function() {
     return this.frame.f_locals;
-};
-
-batavia.builtins.long = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'long' not implemented");
 };
 
 batavia.builtins.map = function(args, kwargs) {
@@ -784,10 +775,6 @@ batavia.builtins.property = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'property' not implemented");
 };
 
-batavia.builtins.quit = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'quit' not implemented");
-};
-
 batavia.builtins.range = function(args, kwargs){
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
@@ -805,18 +792,6 @@ batavia.builtins.range = function(args, kwargs){
     return new batavia.types.Range(args[0], args[1], args[2]);
 };
 batavia.builtins.range.__doc__ = 'range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn a virtual sequence of numbers from start to stop by step.';
-
-batavia.builtins.raw_input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'raw_input' not implemented");
-};
-
-batavia.builtins.reduce = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reduce' not implemented");
-};
-
-batavia.builtins.reload = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reload' not implemented");
-};
 
 batavia.builtins.repr = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -1030,14 +1005,6 @@ batavia.builtins.type = function(args, kwargs) {
     }
 };
 batavia.builtins.type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type";
-
-batavia.builtins.unichr = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unichr' not implemented");
-};
-
-batavia.builtins.unicode = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'unicode' not implemented");
-};
 
 batavia.builtins.vars = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'vars' not implemented");
