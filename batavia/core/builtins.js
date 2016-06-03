@@ -219,6 +219,10 @@ batavia.builtins.any = function(args, kwargs) {
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
+batavia.builtins.ascii = function() {
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'ascii' not implemented");
+};
+
 batavia.builtins.bin = function(args, kwargs) {
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
@@ -465,6 +469,10 @@ batavia.builtins.enumerate.__doc__ = 'enumerate(iterable[, start]) -> iterator f
 
 batavia.builtins.eval = function(args, kwargs) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
+};
+
+batavia.builtins.exec = function() {
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exec' not implemented");
 };
 
 batavia.builtins.filter = function() {
