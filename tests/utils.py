@@ -360,7 +360,7 @@ MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
 
 def cleanse_javascript(input):
-    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
     stack = JS_STACK.findall(input)
 
     stacklines = []
@@ -388,7 +388,7 @@ def cleanse_javascript(input):
 
 
 def cleanse_python(input):
-    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
     stack = PYTHON_STACK.findall(input)
     out = '%s%s%s' % (
         out,
