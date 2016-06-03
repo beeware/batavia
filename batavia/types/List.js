@@ -149,7 +149,16 @@ batavia.types.List = function() {
 
     List.prototype.__add__ = function(other) {
         if (batavia.isinstance(other, batavia.types.List)) {
-            return new Int(this.valueOf() + other.valueOf());
+            result = new List();
+                for (i=0; i < this.length; i++){
+                    result.push(this[i]);
+                }
+
+                for (i=0; i < other.length; i++){
+                    result.push(other[i]);
+                }
+
+                return result;
         } else {
             throw new batavia.builtins.TypeError('can only concatenate list (not "' + batavia.type_name(other) + '") to list');
         }
