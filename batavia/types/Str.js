@@ -220,6 +220,9 @@ String.prototype.__ifloordiv__ = function(other) {
 };
 
 String.prototype.__itruediv__ = function(other) {
+    if (batavia.isinstance(other, batavia.types.Bool) ) {
+      throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and 'bool'");
+    } 
     throw new batavia.builtins.NotImplementedError("String.__itruediv__ has not been implemented");
 };
 
