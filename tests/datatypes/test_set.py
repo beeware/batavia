@@ -79,7 +79,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_int',
         'test_add_list',
         'test_add_none',
-        'test_add_set',
         'test_add_str',
         'test_add_tuple',
 
