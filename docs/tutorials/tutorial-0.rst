@@ -53,7 +53,7 @@ Then click on the "Run code" button. The page will reload, and below the line
 on the page after the "Console output" label, you'll see the output you'd
 expect from this Python program::
 
-    Hello, World
+    Hello World!
 
 Congratulations! You've just run your first Python program under Javascript
 using Batavia! Let's get a little more adventurous, and add a loop. Replace
