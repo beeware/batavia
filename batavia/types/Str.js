@@ -42,7 +42,18 @@ String.prototype.__lt__ = function(other) {
 };
 
 String.prototype.__le__ = function(other) {
-    return this.valueOf() <= other;
+    if (other !== null) {
+        if (batavia.isinstance(other, [
+                    batavia.types.Bool, batavia.types.Int, batavia.types.Float,
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+                ])) {
+            throw new batavia.builtins.TypeError("unorderable types: str() <= " + batavia.type_name(other) + "()");
+        } else {
+            return this.valueOf() <= other;
+        }
+    } else {
+        throw new batavia.builtins.TypeError("unorderable types: str() <= NoneType()"); 
+    }
 };
 
 String.prototype.__eq__ = function(other) {
@@ -76,11 +87,33 @@ String.prototype.__ne__ = function(other) {
 };
 
 String.prototype.__gt__ = function(other) {
-    return this.valueOf() > other;
+    if (other !== null) {
+        if (batavia.isinstance(other, [
+                    batavia.types.Bool, batavia.types.Int, batavia.types.Float,
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+                ])) {
+            throw new batavia.builtins.TypeError("unorderable types: str() > " + batavia.type_name(other) + "()");
+        } else {
+            return this.valueOf() > other;
+        }
+    } else {
+        throw new batavia.builtins.TypeError("unorderable types: str() > NoneType()"); 
+    }
 };
 
 String.prototype.__ge__ = function(other) {
-    return this.valueOf() >= other;
+    if (other !== null) {
+        if (batavia.isinstance(other, [
+                    batavia.types.Bool, batavia.types.Int, batavia.types.Float,
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+                ])) {
+            throw new batavia.builtins.TypeError("unorderable types: str() >= " + batavia.type_name(other) + "()");
+        } else {
+            return this.valueOf() >= other;
+        }
+    } else {
+        throw new batavia.builtins.TypeError("unorderable types: str() >= NoneType()"); 
+    }
 };
 
 String.prototype.__contains__ = function(other) {
@@ -200,23 +233,23 @@ String.prototype.__getitem__ = function(index) {
 };
 
 String.prototype.__lshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__lshift__ has not been implemented");
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'str' and '"+ batavia.type_name(other) + "'");
 };
 
 String.prototype.__rshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__rshift__ has not been implemented");
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'str' and '"+ batavia.type_name(other) + "'");
 };
 
 String.prototype.__and__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__and__ has not been implemented");
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'str' and '"+ batavia.type_name(other) + "'");
 };
 
 String.prototype.__xor__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__xor__ has not been implemented");
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'str' and '"+ batavia.type_name(other) + "'");
 };
 
 String.prototype.__or__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__or__ has not been implemented");
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'str' and '"+ batavia.type_name(other) + "'");
 };
 
 /**************************************************
