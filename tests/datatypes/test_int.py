@@ -79,13 +79,8 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_bytes',
         'test_gt_class',
         'test_gt_complex',
-        'test_gt_dict',
         'test_gt_frozenset',
-        'test_gt_list',
-        'test_gt_none',
         'test_gt_set',
-        'test_gt_str',
-        'test_gt_tuple',
 
         'test_le_bytearray',
         'test_le_bytes',
