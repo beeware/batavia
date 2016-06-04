@@ -200,23 +200,33 @@ String.prototype.__getitem__ = function(index) {
 };
 
 String.prototype.__lshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__lshift__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for <<: 'str' and '" + batavia.types.NoneType + "'"
+    );
 };
 
 String.prototype.__rshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__rshift__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for >>: 'str' and '" + batavia.types.NoneType + "'"
+    );
 };
 
 String.prototype.__and__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__and__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for &: 'str' and '" + batavia.types.NoneType + "'"
+    );
 };
 
 String.prototype.__xor__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__xor__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for ^: 'str' and '" + batavia.types.NoneType + "'"
+    );
 };
 
 String.prototype.__or__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__or__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for |: 'str' and '" + batavia.types.NoneType + "'"
+    );
 };
 
 /**************************************************
