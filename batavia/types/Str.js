@@ -42,7 +42,12 @@ String.prototype.__lt__ = function(other) {
 };
 
 String.prototype.__le__ = function(other) {
-    return this.valueOf() <= other;
+    if (batavia.isinstance(other, batavia.types.Str)) {
+        return this.valueOf() <= other;
+    }
+    var tname = batavia.type_name(other);
+    var msg = "unorderable types: str() <= " + tname + "()";
+    throw new batavia.builtins.TypeError(msg);
 };
 
 String.prototype.__eq__ = function(other) {
@@ -230,35 +235,33 @@ String.prototype.__getitem__ = function(index) {
 };
 
 String.prototype.__lshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__lshift__ has not been implemented");
+    var tname = batavia.type_name(other);
+    var msg = "unsupported operand type(s) for <<: 'str' and '" + tname + "'";
+    throw new batavia.builtins.TypeError(msg);
 };
 
 String.prototype.__rshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__rshift__ has not been implemented");
+    var tname = batavia.type_name(other);
+    var msg = "unsupported operand type(s) for >>: 'str' and '" + tname + "'";
+    throw new batavia.builtins.TypeError(msg);
 };
 
 String.prototype.__and__ = function(other) {
-    var unsupported_types = [
-        batavia.types.Bool,
-        batavia.types.Dict,
-        batavia.types.Float,
-        batavia.types.Int,
-        batavia.types.List,
-        batavia.types.NoneType,
-        batavia.types.Str,
-        batavia.types.Tuple
-        ];
-    var msg = "unsupported operand type(s) for &: 'str' and '";
-    msg += batavia.type_name(other) + "'";
+    var tname = batavia.type_name(other);
+    var msg = "unsupported operand type(s) for &: 'str' and '" + tname + "'";
     throw new batavia.builtins.TypeError(msg);
 };
 
 String.prototype.__xor__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__xor__ has not been implemented");
+    var tname = batavia.type_name(other);
+    var msg = "unsupported operand type(s) for ^: 'str' and '" + tname + "'";
+    throw new batavia.builtins.TypeError(msg);
 };
 
 String.prototype.__or__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__or__ has not been implemented");
+    var tname = batavia.type_name(other);
+    var msg = "unsupported operand type(s) for |: 'str' and '" + tname + "'";
+    throw new batavia.builtins.TypeError(msg);
 };
 
 /**************************************************
