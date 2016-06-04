@@ -42,7 +42,11 @@ String.prototype.__lt__ = function(other) {
 };
 
 String.prototype.__le__ = function(other) {
-    return this.valueOf() <= other;
+    if(other !== null){
+        
+    return this.valueOf() <= other;    
+    }
+
 };
 
 String.prototype.__eq__ = function(other) {
