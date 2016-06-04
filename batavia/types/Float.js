@@ -186,7 +186,24 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__mod__ has not been implemented");
+        /* TODO:  Handle negative case */
+        if (batavia.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
+            if (other.valueOf() == 0) {
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
+            } else {
+                return new Float(this.valueOf() % other.valueOf());
+            }
+        } else if (batavia.isinstance(other, batavia.types.Bool)) {
+            if (other.valueOf()) {
+                return new Float(this.valueOf() % other.valueOf());
+            } else {
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
+            }
+        } else {
+            throw new batavia.builtins.TypeError(
+                "unsupported operand type(s) for +: 'float' and '" + batavia.type_name(other) + "'"
+            );
+        }
     };
 
     Float.prototype.__add__ = function(other) {
@@ -214,23 +231,33 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__lshift__ has not been implemented");
+        throw new batavia.builtins.TypeError(
+            "unsupported operand type(s) for <<: 'float' and '" + batavia.types.NoneType + "'"
+        );
     };
 
     Float.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__rshift__ has not been implemented");
+        throw new batavia.builtins.TypeError(
+            "unsupported operand type(s) for >>: 'float' and '" + batavia.types.NoneType + "'"
+        );
     };
 
     Float.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__and__ has not been implemented");
+        throw new batavia.builtins.TypeError(
+            "unsupported operand type(s) for &: 'float' and '" + batavia.types.NoneType + "'"
+        );
     };
 
     Float.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__xor__ has not been implemented");
+        throw new batavia.builtins.TypeError(
+            "unsupported operand type(s) for ^: 'float' and '" + batavia.types.NoneType + "'"
+        );
     };
 
     Float.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__or__ has not been implemented");
+        throw new batavia.builtins.TypeError(
+            "unsupported operand type(s) for |: 'float' and '" + batavia.types.NoneType + "'"
+        );
     };
 
     /**************************************************
