@@ -43,8 +43,14 @@ String.prototype.__lt__ = function(other) {
 
 String.prototype.__le__ = function(other) {
     if(other !== null){
-        
-    return this.valueOf() <= other;    
+        if(batavia.isinstance(other, [batavia.types.Bool, batavia.types.Int,
+                batavia.types.Float,batavia.types.List, batavia.types.Dict, batavia.types.Tuple])){
+            throw new batavia.builtins.TypeError("unorderable types: str() <= " + batavia.type_name(other) + "()");
+        } else {
+            return this.valueOf() <= other;
+        }
+    } else {
+        throw new batavia.builtins.TypeError("unorderable types: str() <= NoneType()")
     }
 
 };
