@@ -50,7 +50,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
-        'test_eq_set',
         'test_eq_str',
 
         'test_floor_divide_bytearray',
@@ -141,7 +140,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
-        'test_ne_set',
         'test_ne_str',
 
         'test_or_bool',

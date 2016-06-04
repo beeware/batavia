@@ -184,7 +184,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_complex',
         'test_eq_dict',
         'test_eq_frozenset',
-        'test_eq_set',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_class',
@@ -293,7 +292,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_complex',
         'test_ne_dict',
         'test_ne_frozenset',
-        'test_ne_set',
 
         'test_or_bool',
         'test_or_bytearray',

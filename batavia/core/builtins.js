@@ -840,14 +840,16 @@ batavia.builtins.round = function(args) {
 };
 
 batavia.builtins.set = function(args,kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.builtins.TypeError("set() doesn't accept keyword arguments.");
     }
-    if (args.length > 1) {
+    if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
     }
 	return new batavia.types.Set(args[0]);
-	
 };
 
 batavia.builtins.setattr = function(args) {

@@ -303,6 +303,7 @@ String.prototype.__imod__ = function(other) {
             batavia.types.FrozenSet,
             batavia.types.Int,
             batavia.types.NoneType,
+            batavia.types.Set,
             batavia.types.Str,
             batavia.types.Tuple
         ])) {
