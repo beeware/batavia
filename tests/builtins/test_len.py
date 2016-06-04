@@ -17,6 +17,5 @@ class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_float',
         'test_frozenset',
         'test_int',
-        'test_none',
         'test_set',
     ]

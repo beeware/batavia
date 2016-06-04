@@ -37,14 +37,12 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_add_bytearray',
-        'test_add_bytes',
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
         'test_add_set',
 
         'test_and_bytearray',
-        'test_and_bytes',
         'test_and_class',
         'test_and_complex',
         'test_and_frozenset',
@@ -58,14 +56,11 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_set',
         'test_eq_str',
 
-        'test_floor_divide_bool',
         'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_float',
         'test_floor_divide_frozenset',
-        'test_floor_divide_int',
         'test_floor_divide_set',
 
         'test_ge_bytearray',
@@ -105,7 +100,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_tuple',
 
         'test_lshift_bytearray',
-        'test_lshift_bytes',
         'test_lshift_class',
         'test_lshift_complex',
         'test_lshift_frozenset',
@@ -126,7 +120,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_modulo_bool',
         'test_modulo_bytearray',
-        'test_modulo_bytes',
         'test_modulo_class',
         'test_modulo_complex',
         'test_modulo_float',
@@ -152,28 +145,20 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_str',
 
         'test_or_bytearray',
-        'test_or_bytes',
         'test_or_class',
         'test_or_complex',
         'test_or_frozenset',
         'test_or_set',
 
         'test_power_bytearray',
-        'test_power_bytes',
         'test_power_class',
         'test_power_complex',
-        'test_power_dict',
         'test_power_float',
         'test_power_frozenset',
         'test_power_int',
-        'test_power_list',
-        'test_power_none',
         'test_power_set',
-        'test_power_str',
-        'test_power_tuple',
 
         'test_rshift_bytearray',
-        'test_rshift_bytes',
         'test_rshift_class',
         'test_rshift_complex',
         'test_rshift_frozenset',
@@ -196,7 +181,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_tuple',
 
         'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
@@ -204,7 +188,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_true_divide_bool',
         'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_float',
@@ -213,7 +196,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_set',
 
         'test_xor_bytearray',
-        'test_xor_bytes',
         'test_xor_class',
         'test_xor_complex',
         'test_xor_frozenset',
@@ -226,17 +208,11 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_add_bytearray',
-        'test_add_bytes',
         'test_add_class',
         'test_add_complex',
-        'test_add_dict',
         'test_add_float',
         'test_add_frozenset',
-        'test_add_list',
-        'test_add_none',
         'test_add_set',
-        'test_add_str',
-        'test_add_tuple',
 
         'test_and_bool',
         'test_and_bytearray',
@@ -353,17 +329,11 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_tuple',
 
         'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
-        'test_subtract_dict',
         'test_subtract_frozenset',
         'test_subtract_float',
-        'test_subtract_list',
-        'test_subtract_none',
         'test_subtract_set',
-        'test_subtract_str',
-        'test_subtract_tuple',
 
         'test_true_divide_bool',
         'test_true_divide_bytearray',
