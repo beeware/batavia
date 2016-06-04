@@ -31,6 +31,8 @@ batavia.type_name = function(arg) {
                 type_name = 'bool';
             } else if (arg instanceof batavia.types.Float) {
                 type_name = 'float';
+			} else if (arg instanceof batavia.types.Set) {
+				type_name = 'set';
             } else {
                 type_name = 'Native object';
             }
