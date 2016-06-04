@@ -11,7 +11,8 @@ batavia.types.Int = function() {
     Int.prototype = Object.create(Object.prototype);
 
     Int.prototype.constructor = Int;
-
+    Int.__name__ = 'int';
+    
     /**************************************************
      * Javascript compatibility methods
      **************************************************/
@@ -177,6 +178,12 @@ batavia.types.Int = function() {
                 result.extend(other);
             }
             return result;
+        } else if (batavia.isinstance(other, batavia.types.Str)) {
+            var result = '';
+            for (var i = 0; i < this.valueOf(); i++) {
+                result += other.valueOf();
+              }
+            return result;
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'int' and '" + batavia.type_name(other) + "'");
         }
@@ -297,11 +304,18 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Int.__isub__ has not been implemented");
+        return this.__sub__(other).valueOf();
     };
 
     Int.prototype.__imul__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Int.__imul__ has not been implemented");
+        if (batavia.isinstance(other, [
+                batavia.types.Dict,
+                batavia.types.NoneType,
+        ])) {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *=: 'int' and '" + batavia.type_name(other) + "'");
+        } else {
+            return this.__mul__(other).valueOf();
+        }
     };
 
     Int.prototype.__imod__ = function(other) {

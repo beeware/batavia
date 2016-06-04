@@ -12,6 +12,7 @@ batavia.types.Module = function() {
     Module.prototype = Object.create(Object.prototype);
 
     Module.prototype.constructor = Module;
-
+    Module.__name__ = 'module';
+    
     return Module;
 }();

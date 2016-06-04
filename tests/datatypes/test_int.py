@@ -20,6 +20,10 @@ class IntTests(TranspileTestCase):
             print('Done.')
             """)
 
+    def test_invalid_literal(self):
+        self.assertCodeExecution("""
+            int('q', 16)
+            """)
 
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['42', '0', '-37']
@@ -137,7 +141,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_set',
-        'test_multiply_str',
         'test_multiply_tuple',
 
         'test_ne_bytearray',
@@ -295,19 +298,13 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-        'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
-        'test_multiply_dict',
         'test_multiply_float',
         'test_multiply_frozenset',
-        'test_multiply_int',
-        'test_multiply_list',
-        'test_multiply_none',
         'test_multiply_set',
-        'test_multiply_str',
         'test_multiply_tuple',
 
         'test_or_bool',
@@ -355,7 +352,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subtract_bool',
         'test_subtract_bytearray',
         'test_subtract_bytes',
         'test_subtract_class',
@@ -363,7 +359,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_dict',
         'test_subtract_frozenset',
         'test_subtract_float',
-        'test_subtract_int',
         'test_subtract_list',
         'test_subtract_none',
         'test_subtract_set',

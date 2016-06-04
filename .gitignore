@@ -11,3 +11,6 @@ distribute-*
 /batavia.min.js
 /tests/temp
 env
+.eggs/
+.python-version
+.idea/  # PyCharm settings

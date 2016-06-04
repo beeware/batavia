@@ -14,6 +14,7 @@ batavia.types.Set = function() {
     Set.prototype = Object.create(Object.prototype);
 
     Set.prototype.constructor = Set;
+    Set.__name__ = 'set'
 
     /**************************************************
      * Javascript compatibility methods

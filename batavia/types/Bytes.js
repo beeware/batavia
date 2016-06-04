@@ -11,7 +11,8 @@ batavia.types.Bytes = function() {
     Bytes.prototype = Object.create(Object.prototype);
 
     Bytes.prototype.constructor = Bytes;
-
+    Bytes.__name__ = 'bytes';
+    
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

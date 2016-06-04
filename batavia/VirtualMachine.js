@@ -25,6 +25,7 @@ batavia.VirtualMachine = function(loader) {
     this.frame = null;
     this.return_value = null;
     this.last_exception = null;
+    this.is_vm = true;
 };
 
 
@@ -1275,7 +1276,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
                 };
             }(val);
         } else {
-            // Native java method
+            // Native javascript method
             val = function(fn) {
                 return function(args, kwargs) {
                     return fn.apply(obj, args);
@@ -1288,7 +1289,11 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    items[1][name] = items[0];
+    if (items[1].__setattr__ == undefined) {
+        items[1][name] = items[0];
+    } else {
+        items[1].__setattr__(name, items[0]);
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
@@ -1322,13 +1327,50 @@ batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    this.push(new batavia.types.Dict());
+    switch (batavia.BATAVIA_MAGIC) {
+        case batavia.BATAVIA_MAGIC_35:
+            var items = this.popn(size * 2);
+            var obj = {};
+
+            for (var i = 0; i < items.length; i += 2) {
+                obj[items[i]] = items[i + 1];
+            }
+
+            this.push(new batavia.types.Dict(obj));
+
+            return;
+
+        case batavia.BATAVIA_MAGIC_34:
+            this.push(new batavia.types.Dict());
+
+            return;
+
+        default:
+            throw new batavia.builtins.BataviaError(
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
+            );
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
-    var items = this.popn(3);
-    items[0][items[2]] = items[1];
-    this.push(items[0]);
+    switch (batavia.BATAVIA_MAGIC) {
+        case batavia.BATAVIA_MAGIC_35:
+            throw new batavia.builtins.BataviaError(
+                "STORE_MAP is unsupported with BATAVIA_MAGIC"
+            );
+
+        case batavia.BATAVIA_MAGIC_34:
+            var items = this.popn(3);
+            items[0][items[2]] = items[1];
+            this.push(items[0]);
+
+            return;
+
+        default:
+            throw new batavia.builtins.BataviaError(
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
+            );
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
@@ -1673,6 +1715,8 @@ batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 };
 
 batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
+    //@arg is based on
+    //https://docs.python.org/3/library/dis.html#opcode-CALL_FUNCTION
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
     var namedargs = new batavia.types.Dict();
@@ -1690,39 +1734,7 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 
     var func = this.pop();
     // frame = this.frame
-    if ('__self__' in func && '__python__' in func) {
-        // A python-style method
-        // Methods calls get self as an implicit first parameter.
-        if (func.__self__) {
-            posargs.unshift(func.__self__);
-        }
-        // The first parameter must be the correct type.
-        if (posargs[0] instanceof func.constructor) {
-            throw 'unbound method ' + func.__func__.__name__ + '()' +
-                ' must be called with ' + func.__class__.__name__ + ' instance ' +
-                'as first argument (got ' + posargs[0].prototype + ' instance instead)';
-        }
-        func = func.__func__.__call__;
-    } else if ('__call__' in func) {
-        // A Python callable
-        func = func.__call__;
-    } else if (func.prototype) {
-        // If this is a native Javascript class constructor, wrap it
-        // in a method that uses the Python calling convention, but
-        // instantiates the object.
-        if (Object.keys(func.prototype).length > 0) {
-            func = function(fn) {
-                return function(args, kwargs) {
-                    var obj = Object.create(fn.prototype);
-                    fn.apply(obj, args);
-                    return obj;
-                };
-            }(func);
-        }
-    }
-
-    var retval = func.apply(this, [posargs, namedargs]);
-
+    var retval = batavia.run_callable(this, func, posargs, namedargs);
     this.push(retval);
 };
 

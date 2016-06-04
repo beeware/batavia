@@ -11,6 +11,7 @@ batavia.types.FrozenSet = function() {
     FrozenSet.prototype = Object.create(batavia.types.Set.prototype);
 
     FrozenSet.prototype.constructor = FrozenSet;
-
+    FrozenSet.__name__ = 'frozenset';
+    
     return FrozenSet;
 }();
