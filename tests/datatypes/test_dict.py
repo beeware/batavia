@@ -172,7 +172,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_add_bytearray',
-        'test_add_bytes',
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
@@ -201,7 +200,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_set',
 
         'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
@@ -355,29 +353,21 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subscr_bool',
         'test_subscr_bytearray',
-        'test_subscr_bytes',
         'test_subscr_class',
         'test_subscr_complex',
         'test_subscr_dict',
-        'test_subscr_float',
         'test_subscr_frozenset',
-        'test_subscr_int',
         'test_subscr_list',
-        'test_subscr_none',
         'test_subscr_set',
-        'test_subscr_tuple',
 
         'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
         'test_subtract_set',
 
         'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_frozenset',

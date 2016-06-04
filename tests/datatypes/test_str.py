@@ -103,7 +103,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_set',
 
         'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
@@ -151,7 +150,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_set',
 
         'test_multiply_bytearray',
-        'test_multiply_bytes',
         'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_frozenset',
@@ -171,7 +169,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_or_set',
 
         'test_power_bytearray',
-        'test_power_bytes',
         'test_power_class',
         'test_power_complex',
         'test_power_frozenset',
@@ -191,14 +188,12 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_set',
 
         'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
         'test_subtract_set',
 
         'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_frozenset',
@@ -225,7 +220,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_set',
 
         'test_and_bytearray',
-        'test_and_bytes',
         'test_and_class',
         'test_and_complex',
         'test_and_frozenset',
@@ -265,7 +259,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_bytes',
         'test_modulo_complex',
         'test_modulo_dict',
-        'test_modulo_frozenset',
         'test_modulo_list',
         'test_modulo_set',
 
@@ -285,7 +278,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_tuple',
 
         'test_or_bytearray',
-        'test_or_bytes',
         'test_or_class',
         'test_or_complex',
         'test_or_frozenset',
@@ -321,11 +313,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subtract_bytes',
-        'test_subtract_bytearray',
-        'test_subtract_class',
-        'test_subtract_complex',
-        'test_subtract_frozenset',
         'test_subtract_set',
 
         'test_true_divide_bytearray',
@@ -343,7 +330,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_true_divide_tuple',
 
         'test_xor_bytearray',
-        'test_xor_bytes',
         'test_xor_class',
         'test_xor_complex',
         'test_xor_frozenset',

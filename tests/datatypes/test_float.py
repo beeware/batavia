@@ -36,7 +36,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_add_bytearray',
-        'test_add_bytes',
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
@@ -64,7 +63,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_set',
 
         'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_float',
@@ -226,14 +224,12 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_tuple',
 
         'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
         'test_subtract_set',
 
         'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_float',
