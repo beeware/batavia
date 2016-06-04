@@ -208,7 +208,19 @@ String.prototype.__rshift__ = function(other) {
 };
 
 String.prototype.__and__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__and__ has not been implemented");
+    var unsupported_types = [
+        batavia.types.Bool,
+        batavia.types.Dict,
+        batavia.types.Float,
+        batavia.types.Int,
+        batavia.types.List,
+        batavia.types.NoneType,
+        batavia.types.Str,
+        batavia.types.Tuple
+        ];
+    var msg = "unsupported operand type(s) for &: 'str' and '";
+    msg += batavia.type_name(other) + "'";
+    throw new batavia.builtins.TypeError(msg);
 };
 
 String.prototype.__xor__ = function(other) {
