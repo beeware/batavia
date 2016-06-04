@@ -47,7 +47,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_int',
         'test_add_list',
         'test_add_none',
-        'test_add_set',
         'test_add_str',
         'test_add_tuple',
 
@@ -83,7 +82,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_int',
         'test_floor_divide_list',
         'test_floor_divide_none',
-        'test_floor_divide_set',
         'test_floor_divide_str',
         'test_floor_divide_tuple',
 
@@ -169,7 +167,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_int',
         'test_modulo_list',
         'test_modulo_none',
-        'test_modulo_set',
         'test_modulo_str',
         'test_modulo_tuple',
 
@@ -180,7 +177,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_set',
 
         'test_ne_bytearray',
         'test_ne_class',
@@ -214,7 +210,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_int',
         'test_power_list',
         'test_power_none',
-        'test_power_set',
         'test_power_str',
         'test_power_tuple',
 
@@ -244,7 +239,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_int',
         'test_subscr_list',
         'test_subscr_none',
-        'test_subscr_set',
         'test_subscr_str',
         'test_subscr_tuple',
 
@@ -259,7 +253,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_int',
         'test_subtract_list',
         'test_subtract_none',
-        'test_subtract_set',
         'test_subtract_str',
         'test_subtract_tuple',
 
@@ -274,7 +267,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_int',
         'test_true_divide_list',
         'test_true_divide_none',
-        'test_true_divide_set',
         'test_true_divide_str',
         'test_true_divide_tuple',
 
@@ -370,7 +362,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_int',
         'test_modulo_list',
         'test_modulo_none',
-        'test_modulo_set',
         'test_modulo_str',
         'test_modulo_tuple',
 
@@ -445,7 +436,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_int',
         'test_subtract_list',
         'test_subtract_none',
-        'test_subtract_set',
         'test_subtract_str',
         'test_subtract_tuple',
 
