@@ -11,7 +11,8 @@ batavia.types.Int = function() {
     Int.prototype = Object.create(Object.prototype);
 
     Int.prototype.constructor = Int;
-
+    Int.__name__ = 'int';
+    
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

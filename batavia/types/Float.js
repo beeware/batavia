@@ -8,6 +8,7 @@ batavia.types.Float = function() {
         this.val = val;
     }
 
+    Float.__name__ = 'float';
     Float.prototype = Object.create(Object.prototype);
 
     Float.prototype.constructor = Float;

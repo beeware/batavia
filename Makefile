@@ -9,10 +9,12 @@ ALL_FILES=\
     batavia/types/Dict.js \
     batavia/types/DictView.js \
     batavia/types/Ellipsis.js \
+    batavia/types/Filter.js \
     batavia/types/Float.js \
     batavia/types/Function.js \
     batavia/types/Int.js \
     batavia/types/List.js \
+    batavia/types/Map.js \
     batavia/types/Module.js \
     batavia/types/NoneType.js \
     batavia/types/Range.js \
