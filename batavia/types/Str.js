@@ -37,12 +37,26 @@ String.prototype.__lt__ = function(other) {
             return this.valueOf() < other;
         }
     } else {
-        throw new batavia.builtins.TypeError("unorderable types: str() < NoneType()"); 
+        throw new batavia.builtins.TypeError("unorderable types: str() < NoneType()");
     }
 };
 
 String.prototype.__le__ = function(other) {
+<<<<<<< Updated upstream
     if (other !== null){
+=======
+    if(other !== null){
+        if(){
+
+        }else {
+            return this.valueOf() <= other;
+        }
+            //if it exists
+        //
+            //throw error if its not a string
+
+    }
+>>>>>>> Stashed changes
 
     return this.valueOf() <= other;
     }
