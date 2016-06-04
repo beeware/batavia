@@ -41,9 +41,12 @@ batavia.isinstance = function(obj, type) {
 /*************************************************************************
  * sprintf() implementation
  *************************************************************************/
-
 batavia._substitute = function(format, args) {
     var results = [];
+    var special_case_types = [
+        batavia.types.List,
+        batavia.types.Dict,
+        batavia.types.Bytes];
 
     /* This is the general form regex for a sprintf-like string. */
     var re = /\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/g;
@@ -97,6 +100,9 @@ batavia._substitute = function(format, args) {
             results.push(format.slice(lastIndex, match.index));
             lastIndex = re.lastIndex;
             results.push(arg);
+        } else if (    (args.constructor == Array)
+                    && batavia.isinstance(args[0], special_case_types)) {
+            return format
         } else {
             throw new batavia.builtins.TypeError('not all arguments converted during string formatting');
         }
