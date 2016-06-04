@@ -76,11 +76,41 @@ String.prototype.__ne__ = function(other) {
 };
 
 String.prototype.__gt__ = function(other) {
-    return this.valueOf() > other;
+    var unsupported_types = [
+        batavia.types.Bool,
+        batavia.types.Dict,
+        batavia.types.Float,
+        batavia.types.Int,
+        batavia.types.List,
+        batavia.types.NoneType,
+        batavia.types.Tuple
+    ];
+    if (batavia.isinstance(other, unsupported_types)) {
+        var msg = "unorderable types: str() > ";
+        msg += batavia.type_name(other) + "()";
+        throw new batavia.builtins.TypeError(msg);
+    } else {
+        return this.valueOf() > other;
+    }
 };
 
 String.prototype.__ge__ = function(other) {
-    return this.valueOf() >= other;
+    var unsupported_types = [
+        batavia.types.Bool,
+        batavia.types.Dict,
+        batavia.types.Float,
+        batavia.types.Int,
+        batavia.types.List,
+        batavia.types.NoneType,
+        batavia.types.Tuple
+    ];
+    if (batavia.isinstance(other, unsupported_types)) {
+        var msg = "unorderable types: str() >= ";
+        msg += batavia.type_name(other) + "()";
+        throw new batavia.builtins.TypeError(msg);
+    } else {
+        return this.valueOf() >= other;
+    }
 };
 
 String.prototype.__contains__ = function(other) {
