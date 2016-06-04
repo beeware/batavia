@@ -103,7 +103,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lshift_complex',
         'test_lshift_frozenset',
         'test_lshift_int',
-        'test_lshift_set',
 
         'test_lt_bytearray',
         'test_lt_bytes',
@@ -124,7 +123,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_float',
         'test_modulo_frozenset',
         'test_modulo_int',
-        'test_modulo_set',
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
@@ -132,7 +130,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
         'test_multiply_float',
         'test_multiply_frozenset',
-        'test_multiply_set',
         'test_multiply_tuple',
 
         'test_ne_bytearray',
@@ -146,7 +143,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_or_class',
         'test_or_complex',
         'test_or_frozenset',
-        'test_or_set',
 
         'test_power_bytearray',
         'test_power_class',
@@ -307,7 +303,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_int',
         'test_power_list',
         'test_power_none',
-        'test_power_set',
         'test_power_str',
         'test_power_tuple',
 

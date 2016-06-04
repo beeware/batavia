@@ -121,7 +121,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
-        'test_floor_divide_set',
 
         'test_ge_bool',
         'test_ge_bytearray',
@@ -219,7 +218,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_set',
 
         'test_ne_bytearray',
         'test_ne_class',

@@ -255,7 +255,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_floor_divide_int',
         'test_floor_divide_list',
         'test_floor_divide_none',
-        'test_floor_divide_set',
         'test_floor_divide_str',
         'test_floor_divide_tuple',
 
@@ -314,7 +313,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_int',
         'test_power_list',
         'test_power_none',
-        'test_power_set',
         'test_power_str',
         'test_power_tuple',
 
@@ -349,7 +347,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_true_divide_int',
         'test_true_divide_list',
         'test_true_divide_none',
-        'test_true_divide_set',
         'test_true_divide_str',
         'test_true_divide_tuple',
 

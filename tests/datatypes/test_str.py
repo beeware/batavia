@@ -87,7 +87,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
-        'test_add_set',
 
         'test_and_bytearray',
         'test_and_complex',
@@ -103,7 +102,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_bytearray',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
-        'test_floor_divide_set',
 
         'test_ge_bytearray',
         'test_ge_bytes',
@@ -143,7 +141,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bytearray',
         'test_multiply_complex',
         'test_multiply_frozenset',
-        'test_multiply_set',
 
         'test_ne_bytearray',
         'test_ne_bytes',
@@ -159,7 +156,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_bytearray',
         'test_power_complex',
         'test_power_frozenset',
-        'test_power_set',
 
         'test_rshift_bytearray',
         'test_rshift_complex',

@@ -99,7 +99,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
-        'test_add_set',
 
         'test_and_bool',
         'test_and_bytearray',
@@ -126,7 +125,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
-        'test_floor_divide_set',
 
         'test_ge_bool',
         'test_ge_bytearray',
@@ -222,7 +220,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_frozenset',
-        'test_multiply_set',
 
         'test_ne_bytearray',
         'test_ne_class',
