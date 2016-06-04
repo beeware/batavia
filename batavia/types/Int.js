@@ -49,7 +49,7 @@ batavia.types.Int = function() {
         if (other !== null) {
             if (batavia.isinstance(other, [
                         batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
-                        batavia.types.None
+                        batavia.types.None, batavia.types.Str
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
             } else {

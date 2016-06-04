@@ -112,7 +112,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_complex',
         'test_lt_frozenset',
         'test_lt_set',
-        'test_lt_str',
 
         'test_modulo_bool',
         'test_modulo_bytearray',
