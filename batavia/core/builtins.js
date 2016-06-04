@@ -290,7 +290,7 @@ batavia.builtins.callable = function(args, kwargs) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('callable() expected exactly 1 argument (' + args.length + ' given)');
     }
-    if (typeof(args[0]) === "function") {
+    if (typeof(args[0]) === "function" || (args[0] && args[0].__call__)) {
         return true;
     } else {
         return false;
@@ -475,8 +475,14 @@ batavia.builtins.exec = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exec' not implemented");
 };
 
-batavia.builtins.filter = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented");
+batavia.builtins.filter = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("filter() doesn't accept keyword arguments");
+    }
+    return new batavia.types.filter(args, kwargs);
 };
 
 batavia.builtins.float = function(args) {
@@ -643,18 +649,19 @@ batavia.builtins.iter = function(args, kwargs) {
     if (args.length > 2) {
         throw new batavia.builtins.TypeError("len() expected at most 2 arguments, got 3");
     }
-
-    if (args[0].__iter__) {
-        return args[0].__iter__();
+    var iterobj = args[0];
+    if (iterobj.__iter__) {
+        //needs to work for __iter__ in JS impl (e.g. Map/Filter) and python ones
+        return batavia.run_callable(iterobj, iterobj.__iter__, [], null);
     } else {
-        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(iterobj) + "' object is not iterable");
     }
 };
 batavia.builtins.iter.__doc__ = 'iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.';
 
 batavia.builtins.len = function(args, kwargs) {
     if (!args || args.length !== 1 || args[0] === undefined) {
-        throw new batavia.builtins.TypeError("len() takes exactly one argument (0 given)");
+        throw new batavia.builtins.TypeError("len() takes exactly one argument (" + args.length + " given)");
     }
 
     //if (args[0].hasOwnProperty("__len__")) {
@@ -671,8 +678,8 @@ batavia.builtins.license = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented");
 };
 
-batavia.builtins.list = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'list' not implemented");
+batavia.builtins.list = function(args) {
+    return new batavia.types.List(args[0]);
 };
 
 batavia.builtins.locals = function() {
@@ -680,8 +687,13 @@ batavia.builtins.locals = function() {
 };
 
 batavia.builtins.map = function(args, kwargs) {
-    // FIXME
-    args[0].call(this, [args[1]], {});
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("map() doesn't accept keyword arguments");
+    }
+  return new batavia.types.map(args, kwargs);
 };
 
 batavia.builtins.max = function(args, kwargs) {
