@@ -17,7 +17,6 @@ class BuiltinOctFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_dict',
         'test_float',
         'test_frozenset',
-        'test_int',
         'test_list',
         'test_set',
         'test_str',

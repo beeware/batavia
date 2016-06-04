@@ -743,6 +743,10 @@ batavia.builtins.oct = function(args) {
     if (args.length !== 1) {
         throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
     }
+    
+    if(args[0] < 0) {
+        return "-0o" + ( 0 - args[0]).toString(8);
+    }
 
     return "0o" + args[0].toString(8);
 };
