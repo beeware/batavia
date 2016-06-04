@@ -661,7 +661,7 @@ batavia.builtins.iter.__doc__ = 'iter(iterable) -> iterator\niter(callable, sent
 
 batavia.builtins.len = function(args, kwargs) {
     if (!args || args.length !== 1 || args[0] === undefined) {
-        throw new batavia.builtins.TypeError("len() takes exactly one argument (0 given)");
+        throw new batavia.builtins.TypeError("len() takes exactly one argument (" + args.length + " given)");
     }
 
     //if (args[0].hasOwnProperty("__len__")) {
