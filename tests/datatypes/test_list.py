@@ -125,7 +125,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_complex',
         'test_eq_frozenset',
         'test_eq_list',
-        'test_eq_set',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
@@ -236,7 +235,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_complex',
         'test_ne_frozenset',
         'test_ne_list',
-        'test_ne_set',
 
         'test_or_bool',
         'test_or_bytearray',
