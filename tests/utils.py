@@ -630,13 +630,13 @@ class UnaryOperationTestCase:
 
 SAMPLE_DATA = [
     ('bool', ['True', 'False']),
-    # ('bytearray', [3]),
+    ('bytearray', ['bytearray()', 'bytearray(1)', 'bytearray([1, 2, 3])']),
     ('bytes', ["b''", "b'This is another string of bytes'"]),
-    # ('class', ['']),
-    # ('complex', ['']),
+    ('class', ['type(1)', 'type("a")']),
+    ('complex', ['1j', '1+2j', '-5j']),
     ('dict', ["{}", "{'a': 1, 'c': 2.3456, 'd': 'another'}"]),
     ('float', ['2.3456', '0.0', '-3.14159']),
-    # ('frozenset', ),
+    ('frozenset', ['frozenset([1, 2]), frozenset()']),
     ('int', ['3', '0', '-5']),
     ('list', ["[]", "[3, 4, 5]"]),
     ('set', ["set()", "{1, 2.3456, 'another'}"]),
