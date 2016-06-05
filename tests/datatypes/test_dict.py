@@ -176,8 +176,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_complex',
         'test_add_frozenset',
 
-        'test_and_set',
-
         'test_eq_bytearray',
         'test_eq_class',
         'test_eq_complex',
@@ -193,7 +191,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_class',
         'test_ge_complex',
         'test_ge_frozenset',
-        'test_ge_set',
 
         'test_gt_bool',
         'test_gt_bytearray',
@@ -338,13 +335,11 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
-        'test_subtract_set',
 
         'test_true_divide_bytearray',
         'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_frozenset',
-        'test_true_divide_set',
 
         'test_xor_bool',
         'test_xor_bytearray',

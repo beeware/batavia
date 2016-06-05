@@ -92,7 +92,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_class',
         'test_and_complex',
         'test_and_frozenset',
-        'test_and_set',
 
         'test_eq_bytearray',
         'test_eq_bytes',
@@ -126,13 +125,9 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_set',
 
         'test_lshift_bytearray',
-<<<<<<< HEAD
-=======
         'test_lshift_class',
->>>>>>> upstream/master
         'test_lshift_complex',
         'test_lshift_frozenset',
-        'test_lshift_set',
 
         'test_lt_bytearray',
         'test_lt_bytes',
@@ -154,26 +149,18 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_frozenset',
 
         'test_or_bytearray',
-<<<<<<< HEAD
-=======
         'test_or_class',
->>>>>>> upstream/master
         'test_or_complex',
         'test_or_frozenset',
-        'test_or_set',
 
         'test_power_bytearray',
         'test_power_complex',
         'test_power_frozenset',
 
         'test_rshift_bytearray',
-<<<<<<< HEAD
-=======
         'test_rshift_class',
->>>>>>> upstream/master
         'test_rshift_complex',
         'test_rshift_frozenset',
-        'test_rshift_set',
 
         'test_subscr_bool',
         'test_subscr_bytearray',
@@ -184,21 +171,15 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_bytearray',
         'test_subtract_complex',
         'test_subtract_frozenset',
-        'test_subtract_set',
 
         'test_true_divide_bytearray',
         'test_true_divide_complex',
         'test_true_divide_frozenset',
-        'test_true_divide_set',
 
         'test_xor_bytearray',
-<<<<<<< HEAD
-=======
         'test_xor_class',
->>>>>>> upstream/master
         'test_xor_complex',
         'test_xor_frozenset',
-        'test_xor_set',
     ]
 
 
@@ -309,7 +290,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_bytearray',
         'test_subtract_complex',
         'test_subtract_frozenset',
-        'test_subtract_set',
 
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
