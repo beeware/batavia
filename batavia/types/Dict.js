@@ -52,23 +52,34 @@ batavia.types.Dict = function() {
      **************************************************/
 
     Dict.prototype.__lt__ = function(other) {
-        return this.valueOf() < other;
+        throw new batavia.builtins.TypeError("unorderable types: dict() < dict()");
     };
 
     Dict.prototype.__le__ = function(other) {
-        return this.valueOf() <= other;
+        throw new batavia.builtins.TypeError("unorderable types: dict() <= dict()");
     };
 
     Dict.prototype.__eq__ = function(other) {
-        return this.valueOf() == other;
+        if (batavia.isinstance(other, [batavia.types.NoneType]) == true) return false;
+
+        for (var i in this) {
+            if (this.hasOwnProperty(i) !== other.hasOwnProperty(i)) return false;
+            if (this[i] != other[i]) return false;
+        }
+
+        for (var j in other) {
+            if (typeof(this[j]) == 'undefined') return false;
+        }
+
+        return true;
     };
 
     Dict.prototype.__ne__ = function(other) {
-        return this.valueOf() != other;
+        return this.__eq__(other) == false;
     };
 
     Dict.prototype.__gt__ = function(other) {
-        return this.valueOf() > other;
+        throw new batavia.builtins.TypeError("unorderable types: dict() > dict()");
     };
 
     Dict.prototype.__ge__ = function(other) {
