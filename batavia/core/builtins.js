@@ -179,14 +179,14 @@ batavia.builtins.all = function(args, kwargs) {
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.builtins.TypeError("all() doesn't accept keyword arguments");
     }
-    if (args.length === 0) {
-        return true;
-    }
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('all() expected exactly 0 or 1 argument (' + args.length + ' given)');
     }
+    if(!args[0].__iter__) {
+        throw new batavia.builtins.TypeError('TypeError: ' + batavia.type_name(args[0]) + ' object is not iterable');
+    }
 
-    for (var i in args[0]) {
+    for (var i=0;i<args[0].length; i++) {
         if (!args[0][i]) {
            return false;
         }
