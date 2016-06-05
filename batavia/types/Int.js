@@ -53,7 +53,7 @@ batavia.types.Int = function() {
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
             } else {
-                return this.valueOf() < other;
+                return this.valueOf() < other.valueOf();
             }
         } else {
             throw new batavia.builtins.TypeError("unorderable types: int() < NoneType()");
