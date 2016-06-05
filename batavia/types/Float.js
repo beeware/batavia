@@ -242,31 +242,31 @@ batavia.types.Float = function() {
 
     Float.prototype.__lshift__ = function(other) {
         throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for <<: 'float' and '" + batavia.types.NoneType + "'"
+            "unsupported operand type(s) for <<: 'float' and '" + batavia.type_name(other) + "'"
         );
     };
 
     Float.prototype.__rshift__ = function(other) {
         throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for >>: 'float' and '" + batavia.types.NoneType + "'"
+            "unsupported operand type(s) for >>: 'float' and '" + batavia.type_name(other) + "'"
         );
     };
 
     Float.prototype.__and__ = function(other) {
         throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for &: 'float' and '" + batavia.types.NoneType + "'"
+            "unsupported operand type(s) for &: 'float' and '" + batavia.type_name(other) + "'"
         );
     };
 
     Float.prototype.__xor__ = function(other) {
         throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for ^: 'float' and '" + batavia.types.NoneType + "'"
+            "unsupported operand type(s) for ^: 'float' and '" + batavia.type_name(other) + "'"
         );
     };
 
     Float.prototype.__or__ = function(other) {
         throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for |: 'float' and '" + batavia.types.NoneType + "'"
+            "unsupported operand type(s) for |: 'float' and '" + batavia.type_name(other) + "'"
         );
     };
 
