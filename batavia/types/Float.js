@@ -8,6 +8,10 @@ batavia.types.Float = function() {
         this.val = val;
     }
 
+    function python_modulo(n, M) {
+        return ((n % M) + M) % M;
+    }
+
     Float.__name__ = 'float';
     Float.prototype = Object.create(Object.prototype);
 
@@ -186,16 +190,16 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__mod__ = function(other) {
-        /* TODO:  Handle negative case */
+        /* TODO: Fix case for -0.0, which is coming out 0.0 */
         if (batavia.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
             if (other.valueOf() == 0) {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
             } else {
-                return new Float(this.valueOf() % other.valueOf());
+                return new Float(python_modulo(this.valueOf(), other.valueOf()));
             }
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return new Float(this.valueOf() % other.valueOf());
+                return new Float(python_modulo(this.valueOf(), other.valueOf()));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
             }
