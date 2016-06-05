@@ -47,9 +47,17 @@ batavia.types.Int = function() {
 
     Int.prototype.__lt__ = function(other) {
         if (other !== null) {
-            return this.valueOf() < other.valueOf();
+            if (batavia.isinstance(other, [
+                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
+                        batavia.types.NoneType, batavia.types.Str
+                    ])) {
+                throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
+            } else {
+                return this.valueOf() < other.valueOf();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: int() < NoneType()");
         }
-        return false;
     };
 
     Int.prototype.__le__ = function(other) {
