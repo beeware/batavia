@@ -189,7 +189,9 @@ You're now ready to run the test suite! From the batavia-dev/batavia directory T
 
     $ python setup.py test
 
-This will take about 5 minutes on most modern PCs/laptops, and will generate around 4000 lines of console output - one line for each test that is executed. Each line will tell you the pass/fail status of each test - e.g.,::
+This will take at least 5 minutes, and can take upwards of 1.5hrs, on most modern PCs/laptops,
+and will generate around 4000 lines of console output - one line for each test that is executed.
+Each line will tell you the pass/fail status of each test - e.g.,::
 
     test_abs_not_implemented (tests.builtins.test_abs.AbsTests) ... expected failure
     test_bool (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... ok
@@ -199,6 +201,7 @@ way (``expected failure``). These outcomes are what you expect to see. If you
 see any lines that end ``FAIL``, ``ERROR``, or ``unexpected success``, then
 you've found a problem. If this happens, at the end of the test run, you’ll
 also see a summary of the cause of those problems.
+ If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
 make sure the test suite is always in a passing state. If you *do* get any
