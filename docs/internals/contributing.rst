@@ -239,8 +239,11 @@ Troubleshooting
 - For Homebrew users, check that your installed version of phantomjs is 2.1.1
     + $ brew list phantomjs
 
-- If you get an failure message saying `AssertionError: Unable to inject Batavia: false`, make sure there are contents in `batavia.min.js`. If the file is empty, run the following commands and run the test suite again
-    + $ pip install jsmin 
-    + $ make clean
-    + $ make
-    + $ python setup.py test
+- If you get an failure message saying `AssertionError: Unable to inject Batavia: false`, make sure there are contents in `batavia.min.js`. If the file is empty, run the following commands and run the test suite again:
+
+  .. code-block:: bash
+
+      $ pip install jsmin 
+      $ make clean
+      $ make
+      $ python setup.py test
