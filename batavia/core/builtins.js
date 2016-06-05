@@ -730,7 +730,14 @@ batavia.builtins.min = function(args, kwargs) {
 };
 batavia.builtins.min.__doc__ = "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.";
 
-batavia.builtins.next = function() {
+batavia.builtins.next = function(arg) {
+    if(arg.length > 0){
+        
+        //return next in line
+    } else {
+        //stop irrertor
+    }
+
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 
