@@ -743,8 +743,27 @@ batavia.builtins.oct = function(args) {
     if (args.length !== 1) {
         throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
     }
+    var value = args[0];
+    if(batavia.isinstance(value, batavia.types.Bool)) {
+        if(value.__str__() === "true") {
+            return '0o1';
+        } else {
+            return '0o0';
+        }
+    }
 
-    return "0o" + args[0].toString(8);
+    if(!batavia.isinstance(value, batavia.types.Int)) {
+        if(value.__index__) {
+             value = value.__index__();
+        } else {
+            throw new batavia.builtins.TypeError("__index__ method needed for non-integer inputs");
+        }
+    }
+    if(value < 0) {
+        return "-0o" + (0 - value).toString(8);
+    }
+
+    return "0o" + value.toString(8);
 };
 
 batavia.builtins.open = function() {

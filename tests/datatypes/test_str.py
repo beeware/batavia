@@ -89,6 +89,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_frozenset',
 
         'test_and_bytearray',
+        'test_and_class',
         'test_and_complex',
         'test_and_frozenset',
         'test_and_set',
@@ -125,6 +126,10 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_set',
 
         'test_lshift_bytearray',
+<<<<<<< HEAD
+=======
+        'test_lshift_class',
+>>>>>>> upstream/master
         'test_lshift_complex',
         'test_lshift_frozenset',
         'test_lshift_set',
@@ -149,6 +154,10 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_frozenset',
 
         'test_or_bytearray',
+<<<<<<< HEAD
+=======
+        'test_or_class',
+>>>>>>> upstream/master
         'test_or_complex',
         'test_or_frozenset',
         'test_or_set',
@@ -158,6 +167,10 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_frozenset',
 
         'test_rshift_bytearray',
+<<<<<<< HEAD
+=======
+        'test_rshift_class',
+>>>>>>> upstream/master
         'test_rshift_complex',
         'test_rshift_frozenset',
         'test_rshift_set',
@@ -179,6 +192,10 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_set',
 
         'test_xor_bytearray',
+<<<<<<< HEAD
+=======
+        'test_xor_class',
+>>>>>>> upstream/master
         'test_xor_complex',
         'test_xor_frozenset',
         'test_xor_set',
