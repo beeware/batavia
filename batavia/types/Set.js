@@ -7,7 +7,7 @@ batavia.types.Set = function() {
     function Set(args, kwargs) {
         Object.call(this);
         if (args) {
-            this.update(args);
+            this.update(args[0]);
         }
     }
 
@@ -44,7 +44,7 @@ batavia.types.Set = function() {
         var result = "{", values = [];
         for (var key in this) {
             if (this.hasOwnProperty(key)) {
-                values.push(batavia.builtins.repr(key));
+                values.push(batavia.builtins.str(key, null));
             }
         }
         result += values.join(', ');
@@ -134,7 +134,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__add__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__add__ has not been implemented");
+		throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__sub__ = function(other) {

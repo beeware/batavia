@@ -120,7 +120,38 @@ Boolean.prototype.__div__ = function(other) {
 };
 
 Boolean.prototype.__floordiv__ = function(other) {
-    throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'bool' and '" + batavia.type_name(other) + "'");
+    if (batavia.isinstance(other, batavia.types.Bool)) {
+        if (!other.valueOf()) {
+            throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
+        } else if (this.valueOf() && other.valueOf()) {
+            return new batavia.types.Int(1);
+        } else {
+            return new batavia.types.Int(0);
+        }
+    } else if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
+        var thisValue;
+        var message = "";
+
+        if (batavia.isinstance(other, batavia.types.Int)) {        
+            thisValue = this.valueOf() ? 1 : 0;
+            message = "integer division or modulo by zero";
+        } else {
+            thisValue = this.valueOf() ? 1.0 : 0.0;
+            message = "float divmod()";
+        }
+
+        var roundedVal = Math.floor(thisValue / other);
+
+        if (other === 0) {
+            throw new batavia.builtins.ZeroDivisionError(message);
+        } else if (batavia.isinstance(other, batavia.types.Int)) {
+            return new batavia.types.Int(roundedVal);
+        } else {
+            return new batavia.types.Float(roundedVal);
+        }
+    } else {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'bool' and '" + batavia.type_name(other) + "'");
+    }
 };
 
 Boolean.prototype.__truediv__ = function(other) {
@@ -247,7 +278,7 @@ Boolean.prototype.__or__ = function(other) {
  **************************************************/
 
 Boolean.prototype.__idiv__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("Boolean.__idiv__ has not been implemented");
+    throw new batavia.builtins.AttributeError("module' object has no attribute 'idiv'");
 };
 
 Boolean.prototype.__ifloordiv__ = function(other) {

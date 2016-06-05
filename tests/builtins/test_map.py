@@ -21,7 +21,7 @@ class BuiltinMapFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
 
                 def __iter__(self):
                     return self
-                
+
             def testish(x):
                 return %s
 
@@ -35,14 +35,14 @@ class BuiltinMapFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
             except StopIteration:
                 pass
     """
-    
+
     def test_bool(self):
         self.assertCodeExecution(self.base_code % ("[True,False,True]", "bool(x)"))
 
     #bytearray bug returns the bytecode num instead of bytechar
     #def test_bytearray(self):
     #    self.assertCodeExecution(self.base_code % ("b'123'", "x"))
-        
+
     def test_float(self):
         self.assertCodeExecution(self.base_code % ("[3.14, 2.17, 1.0]", "x > 1"))
 

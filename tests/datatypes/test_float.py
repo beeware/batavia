@@ -25,7 +25,6 @@ class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
     values = ['1.2345', '0.0', '-2.345']
 
     not_implemented = [
-        'test_unary_negative',
         'test_unary_invert',
     ]
 
@@ -39,7 +38,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
-        'test_add_set',
 
         'test_and_bytearray',
         'test_and_class',
@@ -51,15 +49,11 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
-        'test_eq_set',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_class',
         'test_floor_divide_complex',
-        'test_floor_divide_float',
         'test_floor_divide_frozenset',
-        'test_floor_divide_int',
-        'test_floor_divide_set',
 
         'test_ge_bytearray',
         'test_ge_bytes',
@@ -130,13 +124,11 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_set',
 
         'test_ne_bytearray',
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
-        'test_ne_set',
 
         'test_or_bytearray',
         'test_or_class',
@@ -184,7 +176,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
-        'test_subtract_set',
 
         'test_true_divide_bytearray',
         'test_true_divide_class',
@@ -192,7 +183,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_float',
         'test_true_divide_frozenset',
         'test_true_divide_int',
-        'test_true_divide_set',
 
         'test_xor_bytearray',
         'test_xor_class',
