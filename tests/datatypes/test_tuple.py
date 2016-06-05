@@ -116,13 +116,11 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
-        'test_eq_set',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
-        'test_floor_divide_set',
 
         'test_ge_bool',
         'test_ge_bytearray',
@@ -220,13 +218,11 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_set',
 
         'test_ne_bytearray',
         'test_ne_class',
         'test_ne_complex',
         'test_ne_frozenset',
-        'test_ne_set',
 
         'test_or_bool',
         'test_or_bytearray',
@@ -292,13 +288,11 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
-        'test_subtract_set',
 
         'test_true_divide_bytearray',
         'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_frozenset',
-        'test_true_divide_set',
 
         'test_xor_bool',
         'test_xor_bytearray',

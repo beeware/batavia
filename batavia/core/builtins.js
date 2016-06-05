@@ -839,8 +839,23 @@ batavia.builtins.round = function(args) {
     return Math.round(args[0] * base) / base;
 };
 
-batavia.builtins.set = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'set' not implemented");
+batavia.builtins.set = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("set() doesn't accept keyword arguments");
+    }
+    if (args.length > 1) {
+        throw new batavia.builtins.TypeError("set() expected at most 1 arguments, got " + args.length);
+    } else if (args.length == 1) {
+        if (!args[0].__iter__) {
+            throw new batavia.builtins.TypeError("'" + args + "' object is not iterable");
+        }
+        return new batavia.types.Set(args)
+    } else {
+        return new batavia.types.Set();
+    }
 };
 
 batavia.builtins.setattr = function(args) {
