@@ -72,16 +72,10 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_tuple',
 
         'test_gt_bytearray',
-        'test_gt_bytes',
         'test_gt_class',
         'test_gt_complex',
-        'test_gt_dict',
         'test_gt_frozenset',
-        'test_gt_list',
-        'test_gt_none',
         'test_gt_set',
-        'test_gt_str',
-        'test_gt_tuple',
 
         'test_le_bytearray',
         'test_le_bytes',
@@ -102,16 +96,10 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lshift_int',
 
         'test_lt_bytearray',
-        'test_lt_bytes',
         'test_lt_class',
         'test_lt_complex',
-        'test_lt_dict',
         'test_lt_frozenset',
-        'test_lt_list',
-        'test_lt_none',
         'test_lt_set',
-        'test_lt_str',
-        'test_lt_tuple',
 
         'test_modulo_bool',
         'test_modulo_bytearray',
