@@ -626,16 +626,13 @@ batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\
 
 
 batavia.builtins.isinstance = function(object, classinfo) {
-    //return true or false based on if type matches object
     if(batavia.isinstance(object,[ batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple])){
      if(typeof object == typeof classinfo){
-         return false
+         return true;
      } else{
-         return false
+         return false;
      }
-
-
     }else{
         throw new batavia.builtins.TypeError("Builtin Batavia function 'isinstance' not implemented for" + object);
     }
