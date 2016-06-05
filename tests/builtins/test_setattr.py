@@ -12,7 +12,5 @@ class BuiltinSetattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_bytearray',
         'test_class',
         'test_complex',
-        'test_dict',
         'test_frozenset',
-        'test_set'
     ]

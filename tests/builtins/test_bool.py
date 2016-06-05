@@ -56,6 +56,7 @@ class BuiltinBoolFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     not_implemented = [
         'test_bytearray',
         'test_complex',
+        'test_class',
         'test_dict',
         'test_frozenset',
         'test_list',

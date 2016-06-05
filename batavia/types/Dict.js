@@ -79,11 +79,11 @@ batavia.types.Dict = function() {
     };
 
     Dict.prototype.__gt__ = function(other) {
-        throw new batavia.builtins.TypeError("unorderable types: dict() > dict()");
+        throw new batavia.builtins.TypeError("unorderable types: dict() > "+ batavia.type_name(other) + "()");
     };
 
     Dict.prototype.__ge__ = function(other) {
-        throw new batavia.builtins.TypeError("unorderable types: dict() >= dict()");
+        throw new batavia.builtins.TypeError("unorderable types: dict() >= "+ batavia.type_name(other) + "()");
     };
 
     Dict.prototype.__contains__ = function(other) {
