@@ -97,7 +97,7 @@ batavia.types.Dict = function() {
              if (batavia.isinstance(other, [
                          batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                          batavia.types.Int, batavia.types.List, batavia.types.NoneType,
-                         batavia.types.Str, batavia.types.Tuple
+                         batavia.types.Set, batavia.types.Str, batavia.types.Tuple
                     ])) {
                  throw new batavia.builtins.TypeError("unorderable types: dict() > " + batavia.type_name(other) + "()");
              } else {
