@@ -52,11 +52,11 @@ batavia.types.Dict = function() {
      **************************************************/
 
     Dict.prototype.__lt__ = function(other) {
-        throw new batavia.builtins.TypeError("unorderable types: dict() < dict()");
+        throw new batavia.builtins.TypeError("unorderable types: dict() < "+ batavia.type_name(other) + "()");
     };
 
     Dict.prototype.__le__ = function(other) {
-        throw new batavia.builtins.TypeError("unorderable types: dict() <= dict()");
+        throw new batavia.builtins.TypeError("unorderable types: dict() <= "+ batavia.type_name(other) + "()");
     };
 
     Dict.prototype.__eq__ = function(other) {
