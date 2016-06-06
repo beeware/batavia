@@ -104,7 +104,7 @@ batavia.types.Dict = function() {
      **************************************************/
 
     Dict.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Dict.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + batavia.type_name(other) + "'");
     };
 
     Dict.prototype.__div__ = function(other) {
