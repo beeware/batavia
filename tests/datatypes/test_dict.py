@@ -176,6 +176,11 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_complex',
         'test_add_frozenset',
 
+        'test_and_bytearray',
+        'test_and_class',
+        'test_and_complex',
+        'test_and_frozenset',
+
         'test_eq_bytearray',
         'test_eq_class',
         'test_eq_complex',
