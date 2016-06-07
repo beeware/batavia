@@ -58,12 +58,12 @@ batavia.types.Dict = function() {
                          batavia.types.Int, batavia.types.List, batavia.types.NoneType,
                          batavia.types.Str, batavia.types.Tuple
                     ])) {
-                 throw new batavia.builtins.TypeError("unorderable types: dict() > " + batavia.type_name(other) + "()");
+                 throw new batavia.builtins.TypeError("unorderable types: dict() < " + batavia.type_name(other) + "()");
              } else {
-                 return this.valueOf() > other.valueOf();
+                 return this.valueOf() < other.valueOf();
              }
          } else {
-             throw new batavia.builtins.TypeError("unorderable types: dict() > NoneType()");
+             throw new batavia.builtins.TypeError("unorderable types: dict() < NoneType()");
          }
         return this.valueOf() < other;
     };
@@ -75,12 +75,12 @@ batavia.types.Dict = function() {
                          batavia.types.Int, batavia.types.List, batavia.types.NoneType,
                          batavia.types.Str, batavia.types.Tuple
                     ])) {
-                 throw new batavia.builtins.TypeError("unorderable types: dict() >= " + batavia.type_name(other) + "()");
+                 throw new batavia.builtins.TypeError("unorderable types: dict() <= " + batavia.type_name(other) + "()");
              } else {
-                 return this.valueOf() >= other.valueOf();
+                 return this.valueOf() <= other.valueOf();
              }
          } else {
-             throw new batavia.builtins.TypeError("unorderable types: dict() >= NoneType()");
+             throw new batavia.builtins.TypeError("unorderable types: dict() <= NoneType()");
          }
     };
 
