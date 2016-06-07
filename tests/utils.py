@@ -360,6 +360,10 @@ MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
 
 def cleanse_javascript(input):
+    # Test the specific message
+    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>{linesep}'.format(linesep=os.linesep), input)
+    # Test just the exception type
+    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
     out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
     stack = JS_STACK.findall(input)
 
@@ -388,7 +392,11 @@ def cleanse_javascript(input):
 
 
 def cleanse_python(input):
-    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
+    # Test the specific message
+    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+    # Test just the exception type
+    # out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
+
     stack = PYTHON_STACK.findall(input)
     out = '%s%s%s' % (
         out,
@@ -403,10 +411,10 @@ def cleanse_python(input):
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = PYTHON_FLOAT.sub('\\1e\\2\\3', out).replace("'test.py'", '***EXECUTABLE***')
 
-    # Python 3.4.4 changed the error message returned by int()
+    # Python 3.4.4 changed the message describing strings in exceptions
     out = out.replace(
-        'int() argument must be a string or a number, not',
-        'int() argument must be a string, a bytes-like object or a number, not'
+        'argument must be a string or',
+        'argument must be a string, a bytes-like object or'
     )
 
     out = out.replace('\r\n', '\n')
