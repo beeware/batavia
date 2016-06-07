@@ -625,8 +625,19 @@ batavia.builtins.int = function(args, kwargs) {
 batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4";
 
 
-batavia.builtins.isinstance = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'isinstance' not implemented");
+batavia.builtins.isinstance = function(object, classinfo) {
+    if(batavia.isinstance(object,[ batavia.types.Bool, batavia.types.Int, batavia.types.Float,
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple])){
+     if(typeof object == typeof classinfo){
+         return true;
+     } else{
+         return false;
+     }
+    }else{
+        throw new batavia.builtins.TypeError("Builtin Batavia function 'isinstance' not implemented for" + object);
+    }
+
+
 };
 
 batavia.builtins.issubclass = function() {
@@ -731,6 +742,8 @@ batavia.builtins.min = function(args, kwargs) {
 batavia.builtins.min.__doc__ = "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.";
 
 batavia.builtins.next = function() {
+    //if its iterable return next thing in iterable
+    //else stop iteration 
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 
