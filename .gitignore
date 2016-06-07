@@ -13,4 +13,6 @@ distribute-*
 env
 .eggs/
 .python-version
-.idea/  # PyCharm settings
+
+# PyCharm settings
+.idea

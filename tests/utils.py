@@ -630,18 +630,18 @@ class UnaryOperationTestCase:
 
 SAMPLE_DATA = [
     ('bool', ['True', 'False']),
-    # ('bytearray', [3]),
+    ('bytearray', ['bytearray()', 'bytearray(1)', 'bytearray([1, 2, 3])']),
     ('bytes', ["b''", "b'This is another string of bytes'"]),
-    # ('class', ['']),
-    # ('complex', ['']),
+    ('class', ['type(1)', 'type("a")', 'type(object())', 'type("MyClass", (object,), {})']),
+    ('complex', ['1j', '1+2j', '-5j']),
     ('dict', ["{}", "{'a': 1, 'c': 2.3456, 'd': 'another'}"]),
     ('float', ['2.3456', '0.0', '-3.14159']),
-    # ('frozenset', ),
+    ('frozenset', ['frozenset([1, 2]), frozenset()']),
     ('int', ['3', '0', '-5']),
     ('list', ["[]", "[3, 4, 5]"]),
     ('set', ["set()", "{1, 2.3456, 'another'}"]),
-    ('str', ['""', '"This is another string"']),
-    ('tuple', ["(1, 2.3456, 'another')"]),
+    ('str', ['""', '"This is another string"', '"One arg: %s"', '"Three args: %s | %s | %s"']),
+    ('tuple', ["(1, 2)", "(1, 2.3456, 'another')"]),
     ('none', ['None']),
 ]
 
@@ -766,5 +766,4 @@ class BuiltinFunctionTestCase:
             """ % kwargs, "Error running %(operation)s with x=%(x)s" % kwargs)
 
     for datatype, examples in SAMPLE_DATA:
-        if datatype != 'set' and datatype != 'frozenset' and datatype != 'dict':
-            vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
+        vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
