@@ -1,7 +1,5 @@
 /*
-
 General builtin format:
-
 // Example: a function that accepts exactly one argument, and no keyword arguments
 batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
@@ -13,15 +11,12 @@ batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)");
     }
-
     // if the function only works with a specific object type, add a test
     var obj = args[0];
-
     if (!batavia.isinstance(obj, batavia.types.<type>)) {
         throw new batavia.builtins.TypeError(
             "<fn>() expects a <type> (" + batavia.type_name(obj) + " given)");
     }
-
     // actual code goes here
     Javascript.Function.Stuff();
 }
