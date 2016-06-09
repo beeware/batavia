@@ -471,6 +471,7 @@ batavia.builtins.eval = function(args, kwargs) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
 };
 
+<<<<<<< HEAD
 batavia.builtins.exec = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exec' not implemented");
 };
@@ -483,6 +484,10 @@ batavia.builtins.filter = function(args, kwargs) {
         throw new batavia.builtins.TypeError("filter() doesn't accept keyword arguments");
     }
     return new batavia.types.filter(args, kwargs);
+=======
+batavia.builtins.filter = function() {
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented");
+>>>>>>> removed non python3 built in functions
 };
 
 batavia.builtins.float = function(args) {
