@@ -1,7 +1,5 @@
 /*
-
 General builtin format:
-
 // Example: a function that accepts exactly one argument, and no keyword arguments
 batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
@@ -13,15 +11,12 @@ batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)");
     }
-
     // if the function only works with a specific object type, add a test
     var obj = args[0];
-
     if (!batavia.isinstance(obj, batavia.types.<type>)) {
         throw new batavia.builtins.TypeError(
             "<fn>() expects a <type> (" + batavia.type_name(obj) + " given)");
     }
-
     // actual code goes here
     Javascript.Function.Stuff();
 }
@@ -471,7 +466,6 @@ batavia.builtins.eval = function(args, kwargs) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
 };
 
-<<<<<<< HEAD
 batavia.builtins.exec = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exec' not implemented");
 };
@@ -484,10 +478,6 @@ batavia.builtins.filter = function(args, kwargs) {
         throw new batavia.builtins.TypeError("filter() doesn't accept keyword arguments");
     }
     return new batavia.types.filter(args, kwargs);
-=======
-batavia.builtins.filter = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'filter' not implemented");
->>>>>>> removed non python3 built in functions
 };
 
 batavia.builtins.float = function(args) {
