@@ -169,10 +169,6 @@ batavia.types.Set = function() {
      * Inplace operators
      **************************************************/
 
-    Set.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__idiv__ has not been implemented");
-    };
-
     Set.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Set.__ifloordiv__ has not been implemented");
     };

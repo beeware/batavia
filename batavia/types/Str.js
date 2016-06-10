@@ -266,10 +266,6 @@ String.prototype.__or__ = function(other) {
  * Inplace operators
  **************************************************/
 
-String.prototype.__idiv__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__idiv__ has not been implemented");
-};
-
 String.prototype.__ifloordiv__ = function(other) {
     throw new batavia.builtins.NotImplementedError("String.__ifloordiv__ has not been implemented");
 };

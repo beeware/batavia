@@ -234,10 +234,6 @@ batavia.types.List = function() {
      * Inplace operators
      **************************************************/
 
-    List.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__idiv__ has not been implemented");
-    };
-
     List.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("List.__ifloordiv__ has not been implemented");
     };

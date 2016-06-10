@@ -184,10 +184,6 @@ batavia.types.Tuple = function() {
      * Inplace operators
      **************************************************/
 
-    Tuple.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__idiv__ has not been implemented");
-    };
-
     Tuple.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Tuple.__ifloordiv__ has not been implemented");
     };
