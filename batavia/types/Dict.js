@@ -13,8 +13,8 @@ batavia.types.Dict = function() {
     Dict.prototype = Object.create(Object.prototype);
 
     Dict.prototype.constructor = Dict;
-    Dict.__name__ = '__dict__';
-    
+    Dict.prototype.__name__ = 'dict';
+
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

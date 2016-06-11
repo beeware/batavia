@@ -30,7 +30,7 @@ print('Done.')
 
 class JavaScriptNormalizationTests(unittest.TestCase):
     def assertNormalized(self, actual, expected):
-        self.assertEqual(cleanse_javascript(adjust(actual)), adjust(expected))
+        self.assertEqual(cleanse_javascript(adjust(actual), None), adjust(expected))
 
     def test_no_exception(self):
         self.assertNormalized(
@@ -51,7 +51,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError
+            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
                 test.py:3
             """
         )
@@ -67,7 +67,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError
+            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
                 test.py:3
                 test.py:6
                 test.py:9
@@ -85,7 +85,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """
             Hello, world.
             ### EXCEPTION ###
-            TypeError
+            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
                 test.py:3
             """
         )
@@ -118,7 +118,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
 
 class PythonNormalizationTests(unittest.TestCase):
     def assertNormalized(self, actual, expected):
-        self.assertEqual(cleanse_python(adjust(actual)), adjust(expected))
+        self.assertEqual(cleanse_python(adjust(actual), None), adjust(expected))
 
     def test_no_exception(self):
         self.assertNormalized(
@@ -140,7 +140,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError
+            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
                 test.py:3
             """
         )
@@ -159,7 +159,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """,
             """
             ### EXCEPTION ###
-            TypeError
+            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
                 test.py:3
                 test.py:6
                 test.py:9
@@ -178,7 +178,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """
             Hello, world.
             ### EXCEPTION ###
-            TypeError
+            TypeError: unsupported operand type(s) for &: 'float' and 'bool'
                 test.py:3
             """
         )

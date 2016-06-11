@@ -11,7 +11,7 @@ class BuiltinGetattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     not_implemented = [
         'test_bytearray',
         'test_complex',
-        'test_dict',
+        'test_class',
         'test_frozenset',
-        'test_set',
+        'test_None',
     ]

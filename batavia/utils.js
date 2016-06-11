@@ -139,15 +139,16 @@ batavia.make_class = function(args, kwargs) {
             klass.prototype[attr] = locals[attr];
         }
     }
+    klass.prototype.__name__ = name;
 
-    var PyObject = function(vm, klass) {
+    var PyObject = function(vm, klass, name) {
         var __new__ = function(args, kwargs) {
             return new klass(vm, args, kwargs);
         };
         __new__.__python__ = true;
         return __new__;
-    }(this, klass);
-    
+    }(this, klass, name);
+
     return PyObject;
 };
 
@@ -184,14 +185,14 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
     // Here you are in JS-land, and you want to call a method on an object
     // but what kind of callable is it?  You may not know if you were passed
     // the function as an argument.
-    
+
     // TODO: consider separating these out, which might make things more
     //   efficient, but this at least consolidates the use-cases.
-    
+
     // This gets the right js-callable thing, and runs it in the VirtualMachine.
-    
+
     // There are a couple of scenarios:
-    // 1. You *are* the virtual machine, and you want to call it: 
+    // 1. You *are* the virtual machine, and you want to call it:
     //    See batavia.VirtualMachine.prototype.call_function
     //    run_callable(<virtualmachine.is_vm=true>, <python method>, ...)
     //    i.e. run_callable(this, func, posargs, namedargs_dict)
@@ -208,7 +209,7 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
     //the VM should pass itself in self, but if it already blessed
     //  a method with itself on ._vm just use that.
     var vm = (func._vm) ? func._vm : self;
-    
+
     if (self && !self.is_vm && func.__python__ && !func.__self__) {
         // In scenarios 2,3 the VM would normally be doing this
         // at the moment of getting the function through LOAD_ATTR

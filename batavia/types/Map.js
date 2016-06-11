@@ -24,15 +24,15 @@ batavia.types.map = function() {
     map.prototype.toString = function() {
         return this.__str__();
     };
-  
+
     /**************************************************
      * Type conversions
      **************************************************/
 
     map.prototype.__iter__ = function() {
         return this;
-    }
-  
+    };
+
     map.prototype.__next__ = function() {
         if (!this._iter) {
             this._iter = batavia.builtins.iter([this._sequence], null);
@@ -44,12 +44,12 @@ batavia.types.map = function() {
 
         var sval = batavia.run_callable(this._iter, this._iter.__next__, [], null);
         return batavia.run_callable(false, this._func, [sval], null);
-    }
+    };
 
     map.prototype.__str__ = function() {
         return "<map object at 0x99999999>";
-    }
-  
+    };
+
     /**************************************************/
 
     return map;

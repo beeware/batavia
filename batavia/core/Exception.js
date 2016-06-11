@@ -161,12 +161,12 @@ batavia.builtins.NameError = NameError;
 batavia.builtins.NameError.prototype = Object.create(batavia.builtins.BaseException.prototype);
 batavia.builtins.NameError.prototype.constructor = NameError;
 
-function NotImplemented(msg) {
-    batavia.builtins.BaseException.call(this, 'NotImplemented', msg);
+function NotImplementedException(msg) {
+    batavia.builtins.BaseException.call(this, 'NotImplementedException', msg);
 }
-batavia.builtins.NotImplemented = NotImplemented;
-batavia.builtins.NotImplemented.prototype = Object.create(batavia.builtins.BaseException.prototype);
-batavia.builtins.NotImplemented.prototype.constructor = NotImplemented;
+batavia.builtins.NotImplementedException = NotImplementedException;
+batavia.builtins.NotImplementedException.prototype = Object.create(batavia.builtins.BaseException.prototype);
+batavia.builtins.NotImplementedException.prototype.constructor = NotImplementedException;
 
 function NotImplementedError(msg) {
     batavia.builtins.BaseException.call(this, 'NotImplementedError', msg);

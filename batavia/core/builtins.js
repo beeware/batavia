@@ -786,7 +786,7 @@ batavia.builtins.pow = function(args) {
         z = args[2];
         return Math.pow(x, y) % z;
     } else {
-        throw new batavia.builtins.TypeError("pow() takes two or three arguments (" + args.length + " given)");
+        throw new batavia.builtins.TypeError("pow expected at least 2 arguments, got " + args.length);
     }
 };
 
@@ -1083,3 +1083,4 @@ for (var fn in batavia.builtins) {
 }
 
 batavia.builtins.None = null;
+batavia.builtins.NotImplemented = new batavia.types.NotImplementedType();

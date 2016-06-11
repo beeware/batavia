@@ -4,7 +4,7 @@
  *************************************************************************/
 
 batavia.types.Bool = Boolean;
-Boolean.__name__ = 'bool';
+Boolean.prototype.__name__ = 'bool';
 
 /**************************************************
  * Type conversions
@@ -132,7 +132,7 @@ Boolean.prototype.__floordiv__ = function(other) {
         var thisValue;
         var message = "";
 
-        if (batavia.isinstance(other, batavia.types.Int)) {        
+        if (batavia.isinstance(other, batavia.types.Int)) {
             thisValue = this.valueOf() ? 1 : 0;
             message = "integer division or modulo by zero";
         } else {

@@ -22,8 +22,8 @@ batavia.types.Tuple = function() {
     Tuple.prototype.length = 0;
 
     Tuple.prototype.constructor = Tuple;
-    Tuple.__name__ = 'tuple';
-    
+    Tuple.prototype.__name__ = 'tuple';
+
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

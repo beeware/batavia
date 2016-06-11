@@ -17,6 +17,7 @@ ALL_FILES=\
     batavia/types/Map.js \
     batavia/types/Module.js \
     batavia/types/NoneType.js \
+    batavia/types/NotImplementedType.js \
     batavia/types/Range.js \
     batavia/types/Set.js \
     batavia/types/Slice.js \
