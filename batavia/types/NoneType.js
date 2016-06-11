@@ -134,10 +134,6 @@ batavia.types.NoneType = {
      * Inplace operators
      **************************************************/
 
-    __idiv__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__idiv__ has not been implemented");
-    },
-
     __ifloordiv__: function(other) {
         throw new batavia.builtins.NotImplementedError("NoneType.__ifloordiv__ has not been implemented");
     },

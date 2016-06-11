@@ -222,10 +222,6 @@ batavia.types.Dict = function() {
      * Inplace operators
      **************************************************/
 
-    Dict.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Dict.__idiv__ has not been implemented");
-    };
-
     Dict.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Dict.__ifloordiv__ has not been implemented");
     };

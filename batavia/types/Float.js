@@ -274,10 +274,6 @@ batavia.types.Float = function() {
      * Inplace operators
      **************************************************/
 
-    Float.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Float.__idiv__ has not been implemented");
-    };
-
     Float.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Float.__ifloordiv__ has not been implemented");
     };
