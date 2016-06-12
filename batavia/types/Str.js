@@ -4,7 +4,7 @@
  *************************************************************************/
 
 batavia.types.Str = String;
-String.__name__ = 'str';
+String.prototype.__class__ = new batavia.types.Type('str');
 
 /**************************************************
  * Type conversions
@@ -161,14 +161,15 @@ String.prototype.__truediv__ = function(other) {
 };
 
 String.prototype.__mul__ = function(other) {
+    var result;
     if (batavia.isinstance(other, batavia.types.Int)) {
-        var result = '';
+        result = '';
         for (var i = 0; i < other.valueOf(); i++) {
             result += this.valueOf();
         }
         return result;
     } else if (batavia.isinstance(other, batavia.types.Bool)) {
-        result = other == true ? this.valueOf() : '';
+        result = other === true ? this.valueOf() : '';
         return result;
     } else {
         throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
@@ -278,7 +279,7 @@ String.prototype.__itruediv__ = function(other) {
 };
 
 String.prototype.__iadd__ = function(other) {
-    if (other == null || other == batavia.types.NoneType){
+    if (other === null || other == batavia.types.NoneType){
         throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
     } else if(batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict,
@@ -295,7 +296,7 @@ String.prototype.__iadd__ = function(other) {
 };
 
 String.prototype.__isub__ = function(other) {
-    throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'str' and '" + batavia.type_name(other) + "'")
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'str' and '" + batavia.type_name(other) + "'");
 };
 
 String.prototype.__imul__ = function(other) {
@@ -423,7 +424,7 @@ String.prototype.startswith = function (str) {
 };
 
 String.prototype.__setattr__ = function (name, val) {
-    if (this.__proto__[name] == undefined) {
+    if (this.__proto__[name] === undefined) {
         throw new batavia.builtins.AttributeError("'str' object has no attribute '" + name + "'");
     } else {
         throw new batavia.builtins.AttributeError("'str' object attribute '" + name + "' is read-only");

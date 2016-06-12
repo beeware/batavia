@@ -15,10 +15,8 @@ batavia.types.Range = function() {
     }
 
     Range.prototype = Object.create(Object.prototype);
+    Range.prototype.__class__ = new batavia.types.Type('range');
 
-    Range.prototype.constructor = Range;
-    Range.__name__ = 'range';
-    
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

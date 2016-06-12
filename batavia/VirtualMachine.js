@@ -532,7 +532,7 @@ batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
 batavia.VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
     var exception = new exc(message);
     this.last_exception = {
-        'exc_type': exception.constructor,
+        'exc_type': exception.__class__,
         'value': exception,
         'traceback': this.create_traceback()
     };
@@ -772,7 +772,7 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
                 frame = this.last_exception.traceback[t];
                 trace.push('  File "' + frame.filename + '", line ' + frame.line + ', in ' + frame.module);
             }
-            trace.push(this.last_exception.value.toString());
+            trace.push(this.last_exception.value.name + ': ' + this.last_exception.value.toString());
             console.log(trace.join('\n'));
             this.last_exception = null;
         } else {
@@ -941,7 +941,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
                 throw err;
             } else if (this.last_exception === null) {
                 this.last_exception = {
-                    'exc_type': err.constructor,
+                    'exc_type': err.__class__,
                     'value': err,
                     'traceback': this.create_traceback()
                 };
@@ -1230,17 +1230,7 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[0] !== items[1];
                 break;
             case 10:  // exception match
-                if (items[1] instanceof Array) {
-                    result = false;
-                    for (var i in items[1]) {
-                        if (items[0] === items[1][i]) {
-                            result = true;
-                            break;
-                        }
-                    }
-                } else {
-                    result = items[0] === items[1];
-                }
+                result = batavia.issubclass(items[0], items[1]);
                 break;
             default:
                 throw new batavia.builtins.BataviaError('Unknown operator ' + opnum);
@@ -1589,7 +1579,7 @@ batavia.VirtualMachine.prototype.do_raise = function(exc, cause) {
         }
     } else if (exc instanceof batavia.builtins.BaseException) {
         // As in `throw ValueError('foo')`
-        exc_type = exc.constructor;
+        exc_type = exc.__class__;
         val = exc;
     } else {
         return 'exception';  // error

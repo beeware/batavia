@@ -20,10 +20,8 @@ batavia.types.Tuple = function() {
 
     Tuple.prototype = Object.create(Array.prototype);
     Tuple.prototype.length = 0;
+    Tuple.prototype.__class__ = new batavia.types.Type('tuple');
 
-    Tuple.prototype.constructor = Tuple;
-    Tuple.__name__ = 'tuple';
-    
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

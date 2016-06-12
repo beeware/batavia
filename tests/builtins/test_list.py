@@ -9,6 +9,7 @@ class BuiltinListFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["list"]
 
     not_implemented = [
+        'test_bool',
         'test_bytearray',
         'test_bytes',
         'test_class',
@@ -17,7 +18,8 @@ class BuiltinListFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_float',
         'test_frozenset',
         'test_int',
-        'test_none',
+        'test_None',
+        'test_NotImplemented',
         'test_set',
         'test_str',
     ]

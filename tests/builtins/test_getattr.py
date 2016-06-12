@@ -12,5 +12,7 @@ class BuiltinGetattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_bytearray',
         'test_class',
         'test_complex',
+        'test_class',
         'test_frozenset',
+        'test_None',
     ]

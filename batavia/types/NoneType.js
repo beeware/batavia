@@ -11,11 +11,11 @@ batavia.types.NoneType = {
     },
 
     __repr__: function() {
-        return 'None';
+        return "<class 'NoneType'>";
     },
 
     __str__: function() {
-        return 'None';
+        return "<class 'NoneType'>";
     },
 
     /**************************************************

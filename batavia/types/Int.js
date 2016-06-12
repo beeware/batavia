@@ -5,14 +5,13 @@
 
 batavia.types.Int = function() {
     function Int(val) {
+        Object.call(this);
         this.val = val;
     }
 
     Int.prototype = Object.create(Object.prototype);
+    Int.prototype.__class__ = new batavia.types.Type('int');
 
-    Int.prototype.constructor = Int;
-    Int.__name__ = 'int';
-    
     /**************************************************
      * Javascript compatibility methods
      **************************************************/

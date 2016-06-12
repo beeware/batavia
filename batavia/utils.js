@@ -6,7 +6,7 @@ function assert(condition, message) {
 }
 
 /*************************************************************************
- * Operator defintions that match Python-like behavior.
+ * Type comparison defintions that match Python-like behavior.
  *************************************************************************/
 
 batavia.isinstance = function(obj, type) {
@@ -32,6 +32,67 @@ batavia.isinstance = function(obj, type) {
                     return obj instanceof type;
                 }
                 break;
+            default:
+                return false;
+        }
+    }
+};
+
+batavia.type_name = function(arg) {
+    var type_name;
+
+    switch (typeof arg) {
+        case 'boolean':
+            type_name = 'bool';
+            break;
+        case 'number':
+            type_name = 'Native number';
+            break;
+        case 'string':
+            type_name = 'str';
+            break;
+        case 'object':
+            if (arg === null || arg === batavia.types.NoneType) {
+                type_name = 'NoneType';
+            } else if (arg.__class__.__name__) {
+                type_name = arg.__class__.__name__;
+            } else {
+                type_name = 'Native object';
+            }
+    }
+
+    return type_name;
+};
+
+batavia.issubclass = function(cls, type) {
+    var t;
+    if (type instanceof Array) {
+        for (t in type) {
+            if (batavia.issubclass(cls, type[t])) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        switch (typeof cls) {
+            case 'boolean':
+                return type === batavia.types.Bool;
+            case 'number':
+                return type === batavia.types.Int;
+            case 'string':
+                return type === batavia.types.Str;
+            case 'object':
+                if (type === null || type === batavia.types.NoneType) {
+                    return cls === null;
+                } else {
+                    var mro = cls.mro();
+                    for (t in mro) {
+                        if (mro[t] === type.prototype.__class__) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             default:
                 return false;
         }
@@ -100,9 +161,9 @@ batavia._substitute = function(format, args) {
             results.push(format.slice(lastIndex, match.index));
             lastIndex = re.lastIndex;
             results.push(arg);
-        } else if (    (args.constructor == Array)
+        } else if (    (args.constructor === Array)
                     && batavia.isinstance(args[0], special_case_types)) {
-            return format
+            return format;
         } else {
             throw new batavia.builtins.TypeError('not all arguments converted during string formatting');
         }
@@ -115,6 +176,7 @@ batavia._substitute = function(format, args) {
 /*************************************************************************
  * Class construction
  *************************************************************************/
+
 batavia.make_class = function(args, kwargs) {
     var func = args[0];
     var name = args[1];
@@ -139,15 +201,16 @@ batavia.make_class = function(args, kwargs) {
             klass.prototype[attr] = locals[attr];
         }
     }
+    klass.prototype.__class__ = new batavia.types.Type(name, bases);
 
-    var PyObject = function(vm, klass) {
+    var PyObject = function(vm, klass, name) {
         var __new__ = function(args, kwargs) {
             return new klass(vm, args, kwargs);
         };
         __new__.__python__ = true;
         return __new__;
-    }(this, klass);
-    
+    }(this, klass, name);
+
     return PyObject;
 };
 
@@ -184,14 +247,14 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
     // Here you are in JS-land, and you want to call a method on an object
     // but what kind of callable is it?  You may not know if you were passed
     // the function as an argument.
-    
+
     // TODO: consider separating these out, which might make things more
     //   efficient, but this at least consolidates the use-cases.
-    
+
     // This gets the right js-callable thing, and runs it in the VirtualMachine.
-    
+
     // There are a couple of scenarios:
-    // 1. You *are* the virtual machine, and you want to call it: 
+    // 1. You *are* the virtual machine, and you want to call it:
     //    See batavia.VirtualMachine.prototype.call_function
     //    run_callable(<virtualmachine.is_vm=true>, <python method>, ...)
     //    i.e. run_callable(this, func, posargs, namedargs_dict)
@@ -208,7 +271,7 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
     //the VM should pass itself in self, but if it already blessed
     //  a method with itself on ._vm just use that.
     var vm = (func._vm) ? func._vm : self;
-    
+
     if (self && !self.is_vm && func.__python__ && !func.__self__) {
         // In scenarios 2,3 the VM would normally be doing this
         // at the moment of getting the function through LOAD_ATTR
@@ -253,4 +316,4 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
 
     var retval = func.apply(vm, [posargs, namedargs]);
     return retval;
-}
+};

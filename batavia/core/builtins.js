@@ -177,11 +177,12 @@ batavia.builtins.all = function(args, kwargs) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('all() expected exactly 0 or 1 argument (' + args.length + ' given)');
     }
+
     if(!args[0].__iter__) {
-        throw new batavia.builtins.TypeError('TypeError: ' + batavia.type_name(args[0]) + ' object is not iterable');
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
 
-    for (var i=0;i<args[0].length; i++) {
+    for (var i = 0; i < args[0].length; i++) {
         if (!args[0][i]) {
            return false;
         }
@@ -619,21 +620,21 @@ batavia.builtins.int = function(args, kwargs) {
 };
 batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4";
 
-
-batavia.builtins.isinstance = function(object, classinfo) {
-    if(batavia.isinstance(object,[ batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple])){
-     if(typeof object == typeof classinfo){
-         return true;
-     } else{
-         return false;
-     }
-    }else{
-        throw new batavia.builtins.TypeError("Builtin Batavia function 'isinstance' not implemented for" + object);
+batavia.builtins.isinstance = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("isinstance() takes no keyword arguments");
     }
 
+    if (!args || args.length != 2) {
+        throw new batavia.builtins.TypeError("isinstance expected 2 arguments, got " + args.length);
+    }
 
+    return batavia.isinstance(args[0], args[1]);
 };
+batavia.builtins.isinstance.__doc__ = "isinstance(object, class-or-type-or-tuple) -> bool\n\nReturn whether an object is an instance of a class or of a subclass thereof.\nWith a type as second argument, return whether that is the object's type.\nThe form using a tuple, isinstance(x, (A, B, ...)), is a shortcut for\nisinstance(x, A) or isinstance(x, B) or ... (etc.).";
 
 batavia.builtins.issubclass = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
@@ -696,11 +697,19 @@ batavia.builtins.map = function(args, kwargs) {
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
+
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.builtins.TypeError("map() doesn't accept keyword arguments");
     }
-  return new batavia.types.map(args, kwargs);
+
+    if (!args || args.length < 2) {
+        throw new batavia.builtins.TypeError('map() must have at least two arguments.');
+    }
+
+    return new batavia.types.map(args, kwargs);
 };
+batavia.builtins.map.__doc__ = 'map(func, *iterables) --> map object\n\nMake an iterator that computes the function using arguments from\neach of the iterables.  Stops when the shortest iterable is exhausted.';
+
 
 batavia.builtins.max = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -738,7 +747,7 @@ batavia.builtins.min.__doc__ = "min(iterable, *[, default=obj, key=func]) -> val
 
 batavia.builtins.next = function() {
     //if its iterable return next thing in iterable
-    //else stop iteration 
+    //else stop iteration
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 
@@ -794,7 +803,7 @@ batavia.builtins.pow = function(args) {
         z = args[2];
         return Math.pow(x, y) % z;
     } else {
-        throw new batavia.builtins.TypeError("pow() takes two or three arguments (" + args.length + " given)");
+        throw new batavia.builtins.TypeError("pow expected at least 2 arguments, got " + args.length);
     }
 };
 
@@ -844,7 +853,7 @@ batavia.builtins.repr = function(args, kwargs) {
     }
 
     if (args[0] === null) {
-        return batavia.types.NoneType.__repr__();
+        return 'None';
     } else if (args[0].__repr__) {
         return args[0].__repr__();
     } else {
@@ -990,7 +999,7 @@ batavia.builtins.str = function(args, kwargs) {
     }
 
     if (args[0] === null) {
-        return batavia.types.NoneType.__str__();
+        return 'None';
     } else if (args[0].__str__) {
         return args[0].__str__();
     } else {
@@ -1047,9 +1056,13 @@ batavia.builtins.type = function(args, kwargs) {
     }
 
     if (args.length === 1) {
-        return "<class '" + batavia.type_name(args[0]) + "'>";
+        if (args[0] === null) {
+            return batavia.types.NoneType;
+        } else {
+            return args[0].__class__;
+        }
     } else {
-        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented for 3 arguments");
+        return new batavia.types.Type(args[0], args[1], args[2]);
     }
 };
 batavia.builtins.type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type";
@@ -1091,3 +1104,4 @@ for (var fn in batavia.builtins) {
 }
 
 batavia.builtins.None = null;
+batavia.builtins.NotImplemented = new batavia.types.NotImplementedType();

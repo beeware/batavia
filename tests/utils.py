@@ -78,10 +78,7 @@ def adjust(text, run_in_function=False):
     first_line = lines[0].lstrip()
     n_spaces = len(lines[0]) - len(first_line)
 
-    if run_in_function:
-        n_spaces = n_spaces - 4
-
-    final_lines = [line[n_spaces:] for line in lines]
+    final_lines = [('    ' if run_in_function else '') + line[n_spaces:] for line in lines]
 
     if run_in_function:
         final_lines = [
@@ -359,8 +356,10 @@ PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
 
-def cleanse_javascript(input):
-    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
+def cleanse_javascript(input, substitutions):
+    # Test the specific message
+    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+
     stack = JS_STACK.findall(input)
 
     stacklines = []
@@ -382,13 +381,22 @@ def cleanse_javascript(input):
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
-    out = JS_FLOAT.sub('\\1e\\2\\3', out).replace("'test.py'", '***EXECUTABLE***')
+    out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    out = out.replace("'test.py'", '***EXECUTABLE***')
+
+    if substitutions:
+        for to_value, from_values in substitutions.items():
+            for from_value in from_values:
+                out = out.replace(from_value, to_value)
+
     out = out.replace('\r\n', '\n')
     return out
 
 
-def cleanse_python(input):
-    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>{linesep}'.format(linesep=os.linesep), input)
+def cleanse_python(input, substitutions):
+    # Test the specific message
+    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+
     stack = PYTHON_STACK.findall(input)
     out = '%s%s%s' % (
         out,
@@ -401,20 +409,31 @@ def cleanse_python(input):
         os.linesep if stack else ''
     )
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
-    out = PYTHON_FLOAT.sub('\\1e\\2\\3', out).replace("'test.py'", '***EXECUTABLE***')
+    out = PYTHON_FLOAT.sub('\\1e\\2\\3', out)
+    out = out.replace("'test.py'", '***EXECUTABLE***')
 
-    # Python 3.4.4 changed the error message returned by int()
+    # Python 3.4.4 changed the message describing strings in exceptions
     out = out.replace(
-        'int() argument must be a string or a number, not',
-        'int() argument must be a string, a bytes-like object or a number, not'
+        'argument must be a string or',
+        'argument must be a string, a bytes-like object or'
     )
+
+    if substitutions:
+        for to_value, from_values in substitutions.items():
+            for from_value in from_values:
+                out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
     return out
 
 
 class TranspileTestCase(TestCase):
-    def assertCodeExecution(self, code, message=None, extra_code=None, run_in_global=True, run_in_function=True, args=None):
+    def assertCodeExecution(
+            self, code,
+            message=None,
+            extra_code=None,
+            run_in_global=True, run_in_function=True,
+            args=None, substitutions=None):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
         #==================================================
@@ -453,8 +472,8 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleanse_javascript(js_out)
-            py_out = cleanse_python(py_out)
+            js_out = cleanse_javascript(js_out, substitutions)
+            py_out = cleanse_python(py_out, substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -499,8 +518,8 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleanse_javascript(js_out)
-            py_out = cleanse_python(py_out)
+            js_out = cleanse_javascript(js_out, substitutions)
+            py_out = cleanse_python(py_out, substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -509,7 +528,11 @@ class TranspileTestCase(TestCase):
                 context = 'Function context'
             self.assertEqual(js_out, py_out, context)
 
-    def assertJavaScriptExecution(self, code, out, extra_code=None, js=None, run_in_global=True, run_in_function=True, args=None):
+    def assertJavaScriptExecution(
+            self, code, out,
+            extra_code=None, js=None,
+            run_in_global=True, run_in_function=True,
+            args=None, substitutions=None):
         "Run code under JavaScript and check the output is as expected"
         self.maxDiff = None
         #==================================================
@@ -553,7 +576,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleanse_javascript(js_out)
+            js_out = cleanse_javascript(js_out, substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             self.assertEqual(js_out, py_out, 'Global context')
@@ -592,28 +615,143 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleanse_javascript(js_out)
+            js_out = cleanse_javascript(js_out, substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             self.assertEqual(js_out, py_out, 'Function context')
 
 
+SAMPLE_DATA = {
+    'bool': [
+            'True',
+            'False',
+        ],
+    'bytearray': [
+            'bytearray()',
+            'bytearray(1)',
+            'bytearray([1, 2, 3])',
+        ],
+    'bytes': [
+            "b''",
+            "b'This is another string of bytes'",
+        ],
+    'class': [
+            'type(1)',
+            'type("a")',
+            'type(object())',
+            'type("MyClass", (object,), {})',
+        ],
+    'complex': [
+            '1j',
+            '1+2j',
+            '-5j',
+        ],
+    'dict': [
+            "{}",
+            "{'a': 1, 'c': 2.3456, 'd': 'another'}",
+        ],
+    'float': [
+            '2.3456',
+            '0.0',
+            '-3.14159',
+        ],
+    'frozenset': [
+            'frozenset([1, 2])',
+            'frozenset()',
+        ],
+    'int': [
+            '3',
+            '0',
+            '-5',
+        ],
+    'list': [
+            "[]",
+            "[3, 4, 5]",
+            '[1, 2, 3, 4, 5]',
+            "['a','b','c']",
+        ],
+    'set': [
+            "set()",
+            "{1, 2.3456, 'another'}",
+        ],
+    'str': [
+            '""',
+            '"This is another string"',
+            '"One arg: %s"',
+            '"Three args: %s | %s | %s"',
+        ],
+    'tuple': [
+            "(1, 2)",
+            "(3, 1.2, True, )",
+            "(1, 2.3456, 'another')",
+        ],
+    'None': [
+            'None',
+        ],
+    'NotImplemented': [
+            'NotImplemented',
+        ],
+}
+
+
+SAMPLE_SUBSTITUTIONS = {
+    # Normalize set ordering
+    "{1, 2.3456, 'another'}": [
+        "{1, 'another', 2.3456}",
+        "{2.3456, 1, 'another'}",
+        "{2.3456, 'another', 1}",
+        "{'another', 1, 2.3456}",
+        "{'another', 2.3456, 1}",
+    ],
+    "{'a', 'b', 'c'}": [
+        "{'a', 'c', 'b'}",
+        "{'b', 'a', 'c'}",
+        "{'b', 'c', 'a'}",
+        "{'c', 'a', 'b'}",
+        "{'c', 'b', 'a'}",
+    ],
+    # Normalize dictionary ordering
+    "{'a': 1, 'c': 2.3456, 'd': 'another'}": [
+        "{'a': 1, 'd': 'another', 'c': 2.3456}",
+        "{'c': 2.3456, 'd': 'another', 'a': 1}",
+        "{'c': 2.3456, 'a': 1, 'd': 'another'}",
+        "{'d': 'another', 'a': 1, 'c': 2.3456}",
+        "{'d': 'another', 'c': 2.3456, 'a': 1}",
+    ],
+}
+
+
 def _unary_test(test_name, operation):
     def func(self):
-        for value in self.values:
-            self.assertUnaryOperation(x=value, operation=operation, format=self.format)
+        for value in SAMPLE_DATA[self.data_type]:
+            self.assertUnaryOperation(
+                x=value,
+                operation=operation,
+                format=self.format,
+                substitutions=SAMPLE_SUBSTITUTIONS
+            )
     return func
 
 
 class UnaryOperationTestCase:
     format = ''
 
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
+
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
         # when the test case runs.
         for test_name in dir(self):
             if test_name.startswith('test_'):
-                getattr(self, test_name).__dict__['__unittest_expecting_failure__'] = test_name in self.not_implemented
+                expect_failure = hasattr(self, 'not_implemented') and test_name in self.not_implemented
+                getattr(self, test_name).__dict__['__unittest_expecting_failure__'] = expect_failure
         return super().run(result=result)
 
     def assertUnaryOperation(self, **kwargs):
@@ -628,35 +766,30 @@ class UnaryOperationTestCase:
     test_unary_invert = _unary_test('test_unary_invert', '~')
 
 
-SAMPLE_DATA = [
-    ('bool', ['True', 'False']),
-    ('bytearray', ['bytearray()', 'bytearray(1)', 'bytearray([1, 2, 3])']),
-    ('bytes', ["b''", "b'This is another string of bytes'"]),
-    ('class', ['type(1)', 'type("a")', 'type(object())', 'type("MyClass", (object,), {})']),
-    ('complex', ['1j', '1+2j', '-5j']),
-    ('dict', ["{}", "{'a': 1, 'c': 2.3456, 'd': 'another'}"]),
-    ('float', ['2.3456', '0.0', '-3.14159']),
-    ('frozenset', ['frozenset([1, 2]), frozenset()']),
-    ('int', ['3', '0', '-5']),
-    ('list', ["[]", "[3, 4, 5]"]),
-    ('set', ["set()", "{1, 2.3456, 'another'}"]),
-    ('str', ['""', '"This is another string"', '"One arg: %s"', '"Three args: %s | %s | %s"']),
-    ('tuple', ["(1, 2)", "(1, 2.3456, 'another')"]),
-    ('none', ['None']),
-]
-
-
 def _binary_test(test_name, operation, examples):
     def func(self):
-        for value in self.values:
-            for example in examples:
-                self.assertBinaryOperation(x=value, y=example, operation=operation, format=self.format)
+        self.assertBinaryOperation(
+            x_values=SAMPLE_DATA[self.data_type],
+            y_values=examples,
+            operation=operation,
+            format=self.format,
+            substitutions=SAMPLE_SUBSTITUTIONS
+        )
     return func
 
 
 class BinaryOperationTestCase:
     format = ''
     y = 3
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
 
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
@@ -666,14 +799,35 @@ class BinaryOperationTestCase:
                 getattr(self, test_name).__dict__['__unittest_expecting_failure__'] = test_name in self.not_implemented
         return super().run(result=result)
 
-    def assertBinaryOperation(self, **kwargs):
-        self.assertCodeExecution("""
-            x = %(x)s
-            y = %(y)s
-            print(%(format)s%(operation)s)
-            """ % kwargs, "Error running %(operation)s with x=%(x)s and y=%(y)s" % kwargs)
+    def assertBinaryOperation(self, x_values, y_values, operation, format, substitutions):
+        data = []
+        for x in x_values:
+            for y in y_values:
+                data.append((x, y))
 
-    for datatype, examples in SAMPLE_DATA:
+        self.assertCodeExecution(
+            '##################################################\n'.join(
+                adjust("""
+                    try:
+                        x = %(x)s
+                        y = %(y)s
+                        print(%(format)s%(operation)s)
+                    except Exception as e:
+                        print(type(e), ':', e)
+                    """ % {
+                        'x': x,
+                        'y': y,
+                        'operation': operation,
+                        'format': format,
+                    }
+                )
+                for x, y in data
+            ),
+            "Error running %s" % operation,
+            substitutions=substitutions
+        )
+
+    for datatype, examples in SAMPLE_DATA.items():
         vars()['test_add_%s' % datatype] = _binary_test('test_add_%s' % datatype, 'x + y', examples)
         vars()['test_subtract_%s' % datatype] = _binary_test('test_subtract_%s' % datatype, 'x - y', examples)
         vars()['test_multiply_%s' % datatype] = _binary_test('test_multiply_%s' % datatype, 'x * y', examples)
@@ -698,15 +852,30 @@ class BinaryOperationTestCase:
 
 def _inplace_test(test_name, operation, examples):
     def func(self):
-        for value in self.values:
+        for value in SAMPLE_DATA[self.data_type]:
             for example in examples:
-                self.assertInplaceOperation(x=value, y=example, operation=operation, format=self.format)
+                self.assertInplaceOperation(
+                    x=value,
+                    y=example,
+                    operation=operation,
+                    format=self.format,
+                    substitutions=SAMPLE_SUBSTITUTIONS,
+                )
     return func
 
 
 class InplaceOperationTestCase:
     format = ''
     y = 3
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
 
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
@@ -717,14 +886,18 @@ class InplaceOperationTestCase:
         return super().run(result=result)
 
     def assertInplaceOperation(self, **kwargs):
-        self.assertCodeExecution("""
+        substitutions = kwargs.pop('substitutions')
+        self.assertCodeExecution(
+            """
             x = %(x)s
             y = %(y)s
             %(operation)s
             print(%(format)sx)
-            """ % kwargs, "Error running %(operation)s with x=%(x)s and y=%(y)s" % kwargs)
+            """ % kwargs, "Error running %(operation)s with x=%(x)s and y=%(y)s" % kwargs,
+            substitutions=substitutions
+        )
 
-    for datatype, examples in SAMPLE_DATA:
+    for datatype, examples in SAMPLE_DATA.items():
         vars()['test_add_%s' % datatype] = _inplace_test('test_add_%s' % datatype, 'x += y', examples)
         vars()['test_subtract_%s' % datatype] = _inplace_test('test_subtract_%s' % datatype, 'x -= y', examples)
         vars()['test_multiply_%s' % datatype] = _inplace_test('test_multiply_%s' % datatype, 'x *= y', examples)
@@ -743,12 +916,27 @@ def _builtin_test(test_name, operation, examples):
     def func(self):
         for function in self.functions:
             for example in examples:
-                self.assertBuiltinFunction(x=example, f=function, operation=operation, format=self.format)
+                self.assertBuiltinFunction(
+                    x=example,
+                    f=function,
+                    operation=operation,
+                    format=self.format,
+                    substitutions=SAMPLE_SUBSTITUTIONS
+                )
     return func
 
 
 class BuiltinFunctionTestCase:
     format = ''
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
 
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
@@ -759,11 +947,71 @@ class BuiltinFunctionTestCase:
         return super().run(result=result)
 
     def assertBuiltinFunction(self, **kwargs):
-        self.assertCodeExecution("""
+        substitutions = kwargs.pop('substitutions')
+        self.assertCodeExecution(
+            """
             f = %(f)s
             x = %(x)s
             print(%(format)s%(operation)s)
-            """ % kwargs, "Error running %(operation)s with x=%(x)s" % kwargs)
+            """ % kwargs, "Error running %(operation)s with f=%(f)s, x=%(x)s" % kwargs,
+            substitutions=substitutions
+        )
 
-    for datatype, examples in SAMPLE_DATA:
+    for datatype, examples in SAMPLE_DATA.items():
         vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
+
+
+def _builtin_twoarg_test(test_name, operation, examples1, examples2):
+    def func(self):
+        for function in self.functions:
+            for example1 in examples1:
+                for example2 in examples2:
+                    self.assertBuiltinTwoargFunction(
+                        x=example1,
+                        y=example2,
+                        f=function,
+                        operation=operation,
+                        format=self.format,
+                        substitutions=SAMPLE_SUBSTITUTIONS
+                    )
+    return func
+
+
+class BuiltinTwoargFunctionTestCase:
+    format = ''
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
+
+    def run(self, result=None):
+        # Override the run method to inject the "expectingFailure" marker
+        # when the test case runs.
+        for test_name in dir(self):
+            if test_name.startswith('test_'):
+                getattr(self, test_name).__dict__['__unittest_expecting_failure__'] = test_name in self.not_implemented
+        return super().run(result=result)
+
+    def assertBuiltinTwoargFunction(self, **kwargs):
+        substitutions = kwargs.pop('substitutions')
+        self.assertCodeExecution(
+            """
+            f = %(f)s
+            x = %(x)s
+            y = %(y)s
+            print(%(format)s%(operation)s)
+            """ % kwargs, "Error running %(operation)s with f=%(f)s, x=%(x)s and y=%(y)s" % kwargs,
+            substitutions=substitutions
+        )
+
+    for datatype1, examples1 in SAMPLE_DATA.items():
+        for datatype2, examples2 in SAMPLE_DATA.items():
+            vars()['test_%s_%s' % (datatype1, datatype2)] = _builtin_twoarg_test(
+                'test_%s_%s' % (datatype1, datatype2),
+                'f(x, y)', examples1, examples2
+            )

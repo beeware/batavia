@@ -31,8 +31,7 @@ batavia.types.Function = function() {
     }
 
     Function.prototype = Object.create(Object.prototype);
-
-    Function.prototype.constructor = Function;
+    Function.prototype.__class__ = new batavia.types.Type('function');
 
     return Function;
 }();

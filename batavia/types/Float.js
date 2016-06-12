@@ -8,14 +8,12 @@ batavia.types.Float = function() {
         this.val = val;
     }
 
+    Float.prototype = Object.create(Object.prototype);
+    Float.prototype.__class__ = new batavia.types.Type('float');
+
     function python_modulo(n, M) {
         return ((n % M) + M) % M;
     }
-
-    Float.__name__ = 'float';
-    Float.prototype = Object.create(Object.prototype);
-
-    Float.prototype.constructor = Float;
 
     /**************************************************
      * Javascript compatibility methods
@@ -186,10 +184,10 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__mul__ = function(other) {
-        if (batavia.isinstance(other, batavia.types.Dict)) {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'float' and 'dict'");
-        } else if (other === null) {
+        if (other === null) {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'float' and 'NoneType'");
+        } else if (batavia.isinstance(other, [batavia.types.NotImplementedType, batavia.types.Dict])) {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'float' and '" + batavia.type_name(other) + "'");
         } else {
             throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'float'");
         }
@@ -198,7 +196,7 @@ batavia.types.Float = function() {
     Float.prototype.__mod__ = function(other) {
         /* TODO: Fix case for -0.0, which is coming out 0.0 */
         if (batavia.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
-            if (other.valueOf() == 0) {
+            if (other.valueOf() === 0) {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
             } else {
                 return new Float(python_modulo(this.valueOf(), other.valueOf()));
@@ -211,7 +209,7 @@ batavia.types.Float = function() {
             }
         } else {
             throw new batavia.builtins.TypeError(
-                "unsupported operand type(s) for +: 'float' and '" + batavia.type_name(other) + "'"
+                "unsupported operand type(s) for %: 'float' and '" + batavia.type_name(other) + "'"
             );
         }
     };
