@@ -235,41 +235,37 @@ String.prototype.__getitem__ = function(index) {
 
 String.prototype.__lshift__ = function(other) {
     throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for <<: 'str' and '" + batavia.types.NoneType + "'"
+        "unsupported operand type(s) for <<: 'str' and '" + batavia.type_name(other) + "'"
     );
 };
 
 String.prototype.__rshift__ = function(other) {
     throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for >>: 'str' and '" + batavia.types.NoneType + "'"
+        "unsupported operand type(s) for >>: 'str' and '" + batavia.type_name(other) + "'"
     );
 };
 
 String.prototype.__and__ = function(other) {
     throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for &: 'str' and '" + batavia.types.NoneType + "'"
+        "unsupported operand type(s) for &: 'str' and '" + batavia.type_name(other) + "'"
     );
 };
 
 String.prototype.__xor__ = function(other) {
     throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for ^: 'str' and '" + batavia.types.NoneType + "'"
+        "unsupported operand type(s) for ^: 'str' and '" + batavia.type_name(other) + "'"
     );
 };
 
 String.prototype.__or__ = function(other) {
     throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for |: 'str' and '" + batavia.types.NoneType + "'"
+        "unsupported operand type(s) for |: 'str' and '" + batavia.type_name(other) + "'"
     );
 };
 
 /**************************************************
  * Inplace operators
  **************************************************/
-
-String.prototype.__idiv__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__idiv__ has not been implemented");
-};
 
 String.prototype.__ifloordiv__ = function(other) {
     throw new batavia.builtins.NotImplementedError("String.__ifloordiv__ has not been implemented");
@@ -304,7 +300,7 @@ String.prototype.__isub__ = function(other) {
 };
 
 String.prototype.__imul__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__imul__ has not been implemented");
+    return this.__mul__(other);
 };
 
 String.prototype.__imod__ = function(other) {
@@ -329,11 +325,15 @@ String.prototype.__ipow__ = function(other) {
 };
 
 String.prototype.__ilshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__ilshift__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for <<: 'str' and '" + batavia.type_name(other) + "'"
+    )
 };
 
 String.prototype.__irshift__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__irshift__ has not been implemented");
+    throw new batavia.builtins.TypeError(
+        "unsupported operand type(s) for <<: 'str' and '" + batavia.type_name(other) + "'"
+    )
 };
 
 String.prototype.__iand__ = function(other) {

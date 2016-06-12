@@ -9,15 +9,11 @@ class BuiltinAllFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["all"]
 
     not_implemented = [
-        'test_bool',
         'test_bytearray',
         'test_class',
+        'test_dict',
         'test_complex',
-        'test_float',
         'test_frozenset',
-        'test_int',
-        'test_list',
         'test_None',
         'test_NotImplemented',
-        'test_set',
     ]

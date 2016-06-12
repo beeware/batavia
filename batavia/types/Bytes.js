@@ -190,10 +190,6 @@ batavia.types.Bytes = function() {
      * Inplace operators
      **************************************************/
 
-    Bytes.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytes.__idiv__ has not been implemented");
-    };
-
     Bytes.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Bytes.__ifloordiv__ has not been implemented");
     };

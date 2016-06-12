@@ -120,11 +120,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__truediv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__truediv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__mul__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__mul__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__mod__ = function(other) {
@@ -166,10 +166,6 @@ batavia.types.Set = function() {
     /**************************************************
      * Inplace operators
      **************************************************/
-
-    Set.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__idiv__ has not been implemented");
-    };
 
     Set.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Set.__ifloordiv__ has not been implemented");

@@ -1,7 +1,5 @@
 /*
-
 General builtin format:
-
 // Example: a function that accepts exactly one argument, and no keyword arguments
 batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
@@ -13,15 +11,12 @@ batavia.builtins.<fn> = function(<args>, <kwargs>) {
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)");
     }
-
     // if the function only works with a specific object type, add a test
     var obj = args[0];
-
     if (!batavia.isinstance(obj, batavia.types.<type>)) {
         throw new batavia.builtins.TypeError(
             "<fn>() expects a <type> (" + batavia.type_name(obj) + " given)");
     }
-
     // actual code goes here
     Javascript.Function.Stuff();
 }
@@ -179,14 +174,15 @@ batavia.builtins.all = function(args, kwargs) {
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.builtins.TypeError("all() doesn't accept keyword arguments");
     }
-    if (args.length === 0) {
-        return true;
-    }
     if (!args || args.length != 1) {
         throw new batavia.builtins.TypeError('all() expected exactly 0 or 1 argument (' + args.length + ' given)');
     }
 
-    for (var i in args[0]) {
+    if(!args[0].__iter__) {
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+    }
+
+    for (var i = 0; i < args[0].length; i++) {
         if (!args[0][i]) {
            return false;
         }
@@ -624,10 +620,21 @@ batavia.builtins.int = function(args, kwargs) {
 };
 batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4";
 
+batavia.builtins.isinstance = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("isinstance() takes no keyword arguments");
+    }
 
-batavia.builtins.isinstance = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'isinstance' not implemented");
+    if (!args || args.length != 2) {
+        throw new batavia.builtins.TypeError("isinstance expected 2 arguments, got " + args.length);
+    }
+
+    return batavia.isinstance(args[0], args[1]);
 };
+batavia.builtins.isinstance.__doc__ = "isinstance(object, class-or-type-or-tuple) -> bool\n\nReturn whether an object is an instance of a class or of a subclass thereof.\nWith a type as second argument, return whether that is the object's type.\nThe form using a tuple, isinstance(x, (A, B, ...)), is a shortcut for\nisinstance(x, A) or isinstance(x, B) or ... (etc.).";
 
 batavia.builtins.issubclass = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
@@ -690,11 +697,19 @@ batavia.builtins.map = function(args, kwargs) {
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
+
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.builtins.TypeError("map() doesn't accept keyword arguments");
     }
-  return new batavia.types.map(args, kwargs);
+
+    if (!args || args.length < 2) {
+        throw new batavia.builtins.TypeError('map() must have at least two arguments.');
+    }
+
+    return new batavia.types.map(args, kwargs);
 };
+batavia.builtins.map.__doc__ = 'map(func, *iterables) --> map object\n\nMake an iterator that computes the function using arguments from\neach of the iterables.  Stops when the shortest iterable is exhausted.';
+
 
 batavia.builtins.max = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -731,6 +746,8 @@ batavia.builtins.min = function(args, kwargs) {
 batavia.builtins.min.__doc__ = "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.";
 
 batavia.builtins.next = function() {
+    //if its iterable return next thing in iterable
+    //else stop iteration
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
 

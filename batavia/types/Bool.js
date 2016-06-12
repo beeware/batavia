@@ -277,10 +277,6 @@ Boolean.prototype.__or__ = function(other) {
  * Inplace operators
  **************************************************/
 
-Boolean.prototype.__idiv__ = function(other) {
-    throw new batavia.builtins.AttributeError("module' object has no attribute 'idiv'");
-};
-
 Boolean.prototype.__ifloordiv__ = function(other) {
     throw new batavia.builtins.NotImplementedError("Boolean.__ifloordiv__ has not been implemented");
 };

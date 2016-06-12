@@ -167,10 +167,6 @@ batavia.types.Complex = function() {
      * Inplace operators
      **************************************************/
 
-    Complex.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Complex.__idiv__ has not been implemented");
-    };
-
     Complex.prototype.__ifloordiv__ = function(other) {
         throw new batavia.builtins.NotImplementedError("Complex.__ifloordiv__ has not been implemented");
     };
