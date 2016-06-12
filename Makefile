@@ -1,6 +1,8 @@
 
 ALL_FILES=\
     batavia/batavia.js \
+    batavia/utils.js \
+    batavia/types/Type.js \
     batavia/types/Bool.js \
     batavia/types/Bytearray.js \
     batavia/types/Bytes.js \
@@ -24,8 +26,6 @@ ALL_FILES=\
     batavia/types/FrozenSet.js \
     batavia/types/Str.js \
     batavia/types/Tuple.js \
-    batavia/types/Type.js \
-    batavia/utils.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
     batavia/modules/marshal.js \

@@ -836,7 +836,7 @@ batavia.builtins.repr = function(args, kwargs) {
     }
 
     if (args[0] === null) {
-        return batavia.types.NoneType.__repr__();
+        return 'None';
     } else if (args[0].__repr__) {
         return args[0].__repr__();
     } else {
@@ -982,7 +982,7 @@ batavia.builtins.str = function(args, kwargs) {
     }
 
     if (args[0] === null) {
-        return batavia.types.NoneType.__str__();
+        return 'None';
     } else if (args[0].__str__) {
         return args[0].__str__();
     } else {
@@ -1039,9 +1039,13 @@ batavia.builtins.type = function(args, kwargs) {
     }
 
     if (args.length === 1) {
-        return "<class '" + batavia.type_name(args[0]) + "'>";
+        if (args[0] === null) {
+            return batavia.types.NoneType;
+        } else {
+            return args[0].__class__;
+        }
     } else {
-        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'type' not implemented for 3 arguments");
+        return new batavia.types.Type(args[0], args[1], args[2]);
     }
 };
 batavia.builtins.type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type";

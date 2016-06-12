@@ -12,9 +12,7 @@ batavia.types.Complex = function() {
     }
 
     Complex.prototype = Object.create(Object.prototype);
-
-    Complex.prototype.constructor = Complex;
-    Complex.prototype.__name__ = 'complex';
+    Complex.prototype.__class_ = new batavia.types.Type('complex');
 
     /**************************************************
      * Javascript compatibility methods

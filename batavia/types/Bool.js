@@ -4,7 +4,7 @@
  *************************************************************************/
 
 batavia.types.Bool = Boolean;
-Boolean.prototype.__name__ = 'bool';
+Boolean.prototype.__class__ = new batavia.types.Type('bool');
 
 /**************************************************
  * Type conversions

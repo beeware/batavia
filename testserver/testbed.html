@@ -30,6 +30,8 @@
     <script src="/static/batavia/batavia.js"></script>
     <script src="/static/batavia/utils.js"></script>
 
+    <script src="/static/batavia/types/Type.js"></script>
+
     <script src="/static/batavia/types/Bool.js"></script>
     <script src="/static/batavia/types/Bytearray.js"></script>
     <script src="/static/batavia/types/Bytes.js"></script>
@@ -53,7 +55,6 @@
     <script src="/static/batavia/types/Slice.js"></script>
     <script src="/static/batavia/types/Str.js"></script>
     <script src="/static/batavia/types/Tuple.js"></script>
-    <script src="/static/batavia/types/Type.js"></script>
 
 
     <script src="/static/batavia/core/PYCFile.js"></script>
@@ -262,7 +263,7 @@ function pystone(loops) {
 // Now define a stdout function that will output to the page.
 function stdout(content) {
     var pre = document.getElementById('stdout');
-    pre.innerHTML = pre.innerHTML + content;
+    pre.textContent = pre.textContent + content;
 }
 
 batavia.stdout = stdout;

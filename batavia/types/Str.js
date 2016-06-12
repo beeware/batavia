@@ -4,7 +4,7 @@
  *************************************************************************/
 
 batavia.types.Str = String;
-String.prototype.__name__ = 'str';
+String.prototype.__class__ = new batavia.types.Type('str');
 
 /**************************************************
  * Type conversions

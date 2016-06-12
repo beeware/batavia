@@ -14,8 +14,7 @@ batavia.types.filter = function() {
     }
 
     filter.prototype = Object.create(Object.prototype);
-
-    filter.prototype.constructor = filter;
+    filter.prototype.__class_ = new batavia.types.Type('filter');
 
     /**************************************************
      * Javascript compatibility methods

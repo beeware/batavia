@@ -78,10 +78,7 @@ def adjust(text, run_in_function=False):
     first_line = lines[0].lstrip()
     n_spaces = len(lines[0]) - len(first_line)
 
-    if run_in_function:
-        n_spaces = n_spaces - 4
-
-    final_lines = [line[n_spaces:] for line in lines]
+    final_lines = [('    ' if run_in_function else '') + line[n_spaces:] for line in lines]
 
     if run_in_function:
         final_lines = [
@@ -739,6 +736,15 @@ def _unary_test(test_name, operation):
 class UnaryOperationTestCase:
     format = ''
 
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
+
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
         # when the test case runs.
@@ -762,21 +768,28 @@ class UnaryOperationTestCase:
 
 def _binary_test(test_name, operation, examples):
     def func(self):
-        for value in SAMPLE_DATA[self.data_type]:
-            for example in examples:
-                self.assertBinaryOperation(
-                    x=value,
-                    y=example,
-                    operation=operation,
-                    format=self.format,
-                    substitutions=SAMPLE_SUBSTITUTIONS
-                )
+        self.assertBinaryOperation(
+            x_values=SAMPLE_DATA[self.data_type],
+            y_values=examples,
+            operation=operation,
+            format=self.format,
+            substitutions=SAMPLE_SUBSTITUTIONS
+        )
     return func
 
 
 class BinaryOperationTestCase:
     format = ''
     y = 3
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
 
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
@@ -786,14 +799,31 @@ class BinaryOperationTestCase:
                 getattr(self, test_name).__dict__['__unittest_expecting_failure__'] = test_name in self.not_implemented
         return super().run(result=result)
 
-    def assertBinaryOperation(self, **kwargs):
-        substitutions = kwargs.pop('substitutions')
+    def assertBinaryOperation(self, x_values, y_values, operation, format, substitutions):
+        data = []
+        for x in x_values:
+            for y in y_values:
+                data.append((x, y))
+
         self.assertCodeExecution(
-            """
-            x = %(x)s
-            y = %(y)s
-            print(%(format)s%(operation)s)
-            """ % kwargs, "Error running %(operation)s with x=%(x)s and y=%(y)s" % kwargs,
+            '##################################################\n'.join(
+                adjust("""
+                    try:
+                        x = %(x)s
+                        y = %(y)s
+                        print(%(format)s%(operation)s)
+                    except Exception as e:
+                        print(type(e), ':', e)
+                    """ % {
+                        'x': x,
+                        'y': y,
+                        'operation': operation,
+                        'format': format,
+                    }
+                )
+                for x, y in data
+            ),
+            "Error running %s" % operation,
             substitutions=substitutions
         )
 
@@ -837,6 +867,15 @@ def _inplace_test(test_name, operation, examples):
 class InplaceOperationTestCase:
     format = ''
     y = 3
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
 
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
@@ -890,6 +929,15 @@ def _builtin_test(test_name, operation, examples):
 class BuiltinFunctionTestCase:
     format = ''
 
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
+
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
         # when the test case runs.
@@ -931,6 +979,15 @@ def _builtin_twoarg_test(test_name, operation, examples1, examples2):
 
 class BuiltinTwoargFunctionTestCase:
     format = ''
+
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
 
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker

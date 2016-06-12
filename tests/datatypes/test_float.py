@@ -35,13 +35,11 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_bytearray',
         'test_add_bytes',
-        'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
 
         'test_and_bytearray',
         'test_and_bytes',
-        'test_and_class',
         'test_and_complex',
         'test_and_frozenset',
 
@@ -52,7 +50,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
-        'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_float',
         'test_floor_divide_frozenset',
@@ -102,7 +99,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_class',
         'test_lshift_complex',
         'test_lshift_frozenset',
 
@@ -123,7 +119,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',
-        'test_modulo_class',
         'test_modulo_complex',
         'test_modulo_float',
         'test_modulo_frozenset',
@@ -145,7 +140,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_class',
         'test_or_complex',
         'test_or_frozenset',
 
@@ -168,7 +162,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
-        'test_rshift_class',
         'test_rshift_complex',
         'test_rshift_frozenset',
 
@@ -191,13 +184,11 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
 
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
-        'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_float',
         'test_true_divide_frozenset',
@@ -205,7 +196,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_xor_bytearray',
         'test_xor_bytes',
-        'test_xor_class',
         'test_xor_complex',
         'test_xor_frozenset',
     ]

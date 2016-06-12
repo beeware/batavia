@@ -20,9 +20,7 @@ batavia.types.List = function() {
 
     List.prototype = Object.create(Array.prototype);
     List.prototype.length = 0;
-
-    List.prototype.constructor = List;
-    List.prototype.__name__ = 'list';
+    List.prototype.__class__ = new batavia.types.Type('list');
 
     /**************************************************
      * Javascript compatibility methods

@@ -185,7 +185,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bool',
         'test_multiply_bytes',
         'test_multiply_bytearray',
-        'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',

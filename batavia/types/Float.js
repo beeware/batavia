@@ -9,9 +9,7 @@ batavia.types.Float = function() {
     }
 
     Float.prototype = Object.create(Object.prototype);
-
-    Float.prototype.constructor = Float;
-    Float.prototype.__name__ = 'float';
+    Float.prototype.__class__ = new batavia.types.Type('float');
 
     function python_modulo(n, M) {
         return ((n % M) + M) % M;

@@ -10,9 +10,7 @@ batavia.types.Slice = function() {
     }
 
     Slice.prototype = Object.create(Object.prototype);
-
-    Slice.prototype.constructor = Slice;
-    Slice.prototype.__name__ = 'slice';
+    Slice.prototype.__class__ = new batavia.types.Type('slice');
 
     /**************************************************
      * Javascript compatibility methods

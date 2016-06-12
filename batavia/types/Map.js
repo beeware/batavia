@@ -14,8 +14,7 @@ batavia.types.map = function() {
     }
 
     map.prototype = Object.create(Object.prototype);
-
-    map.prototype.constructor = map;
+    map.prototype.__class__ = new batavia.types.Type('map');
 
     /**************************************************
      * Javascript compatibility methods

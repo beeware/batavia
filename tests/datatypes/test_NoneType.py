@@ -37,7 +37,6 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_bytearray',
         'test_add_bytes',
-        'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
 
@@ -64,7 +63,6 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
-        'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
 
@@ -118,7 +116,6 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_class',
         'test_lshift_complex',
         'test_lshift_frozenset',
 
@@ -140,12 +137,10 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_modulo_bytearray',
         'test_modulo_bytes',
-        'test_modulo_class',
         'test_modulo_complex',
         'test_modulo_frozenset',
 
         'test_multiply_bytearray',
-        'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_frozenset',
 
@@ -188,7 +183,6 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
-        'test_rshift_class',
         'test_rshift_complex',
         'test_rshift_frozenset',
 
@@ -210,13 +204,11 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
 
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
-        'test_true_divide_class',
         'test_true_divide_complex',
         'test_true_divide_frozenset',
 

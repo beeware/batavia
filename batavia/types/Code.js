@@ -22,8 +22,7 @@ batavia.types.Code = function() {
     }
 
     Code.prototype = Object.create(Object.prototype);
-
-    Code.prototype.constructor = Code;
+    Code.prototype.__class__ = new batavia.types.Type('code');
 
     return Code;
 }();

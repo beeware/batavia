@@ -10,9 +10,7 @@ batavia.types.Module = function() {
     }
 
     Module.prototype = Object.create(Object.prototype);
-
-    Module.prototype.constructor = Module;
-    Module.prototype.__name__ = 'module';
+    Module.prototype.__class__ = new batavia.types.Type('module');
 
     return Module;
 }();

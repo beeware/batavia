@@ -12,9 +12,7 @@ batavia.types.NotImplementedType = function() {
     }
 
     NotImplementedType.prototype = Object.create(Object.prototype);
-
-    NotImplementedType.prototype.constructor = NotImplementedType;
-    NotImplementedType.prototype.__name__ = 'NotImplementedType';
+    NotImplementedType.prototype.__class__ = new batavia.types.Type('NotImplementedType');
 
     /**************************************************
      * Javascript compatibility methods

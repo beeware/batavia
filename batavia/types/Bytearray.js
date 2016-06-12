@@ -9,9 +9,7 @@ batavia.types.Bytearray = function() {
     }
 
     Bytearray.prototype = Object.create(Object.prototype);
-
-    Bytearray.prototype.constructor = Bytearray;
-    Bytearray.prototype.__name__ = 'bytes';
+    Bytearray.prototype.__class__ = new batavia.types.Type('bytearray');
 
     /**************************************************
      * Javascript compatibility methods
