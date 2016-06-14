@@ -341,7 +341,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_true_divide_None',
         'test_true_divide_NotImplemented',
         'test_true_divide_set',
-        'test_true_divide_str',
         'test_true_divide_tuple',
 
         'test_xor_bytearray',

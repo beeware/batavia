@@ -275,6 +275,9 @@ String.prototype.__itruediv__ = function(other) {
     if (batavia.isinstance(other, batavia.types.Bool) ) {
       throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and 'bool'");
     }
+    else if (batavia.isinstance(other, batavia.types.Str) ){
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and 'str'");
+    }
     throw new batavia.builtins.NotImplementedError("String.__itruediv__ has not been implemented");
 };
 
