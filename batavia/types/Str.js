@@ -268,17 +268,27 @@ String.prototype.__or__ = function(other) {
  **************************************************/
 
 String.prototype.__ifloordiv__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__ifloordiv__ has not been implemented");
+    if (batavia.isinstance(other, [ 
+            batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict,
+            batavia.types.Float, batavia.types.Int, batavia.types.List,
+            batavia.types.NoneType, batavia.types.Str,
+            ])) {
+      throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'str' and '" + batavia.type_name(other) + "'");
+    } else {
+        throw new batavia.builtins.NotImplementedError("String.__ifloordiv__ has not been implemented");
+    }
 };
 
 String.prototype.__itruediv__ = function(other) {
-    if (batavia.isinstance(other, batavia.types.Bool) ) {
-      throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and 'bool'");
+    if (batavia.isinstance(other, [ 
+            batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict,
+            batavia.types.Float, batavia.types.Int, batavia.types.List,
+            batavia.types.NoneType, batavia.types.Str
+            ])) {
+      throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and '" + batavia.type_name(other) + "'");
+    } else {
+        throw new batavia.builtins.NotImplementedError("String.__itruediv__ has not been implemented");
     }
-    else if (batavia.isinstance(other, batavia.types.Str) ){
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and 'str'");
-    }
-    throw new batavia.builtins.NotImplementedError("String.__itruediv__ has not been implemented");
 };
 
 String.prototype.__iadd__ = function(other) {
