@@ -344,9 +344,15 @@ String.prototype.__ilshift__ = function(other) {
 };
 
 String.prototype.__irshift__ = function(other) {
-    throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for <<: 'str' and '" + batavia.type_name(other) + "'"
-    )
+    if (batavia.isinstance(other, [
+            batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+            batavia.types.Int, batavia.types.List, batavia.types.NoneType,
+            batavia.types.Str, batavia.types.Tuple
+        ])) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>=: 'str' and '" + batavia.type_name(other) + "'");
+    } else {
+        throw new batavia.builtins.NotImplementedError("String.__irshift__ has not been implemented");
+    }
 };
 
 String.prototype.__iand__ = function(other) {
