@@ -334,7 +334,15 @@ String.prototype.__imod__ = function(other) {
 };
 
 String.prototype.__ipow__ = function(other) {
-    throw new batavia.builtins.NotImplementedError("String.__ipow__ has not been implemented");
+    if (batavia.isinstance(other, [
+            batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+            batavia.types.Int, batavia.types.List, batavia.types.NoneType,
+            batavia.types.Str, batavia.types.Tuple
+        ])) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + batavia.type_name(other) + "'");
+    } else {
+        throw new batavia.builtins.NotImplementedError("String.__ipow__ has not been implemented");
+    }
 };
 
 String.prototype.__ilshift__ = function(other) {
