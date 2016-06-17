@@ -55,11 +55,35 @@ batavia.types.Set = function() {
      **************************************************/
 
     Set.prototype.__lt__ = function(other) {
-        return this.valueOf() <= other;
+        if (other !== null) {
+            if (batavia.isinstance(other, [
+                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+                        batavia.types.List, batavia.types.Int, batavia.types.Range,
+                        batavia.types.Str, batavia.types.Tuple
+                    ])) {
+                throw new batavia.builtins.TypeError("unorderable types: set() < " + batavia.type_name(other) + "()");
+            } else {
+                return this.valueOf() < other.valueOf();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: set() < NoneType()");
+        }
     };
 
     Set.prototype.__le__ = function(other) {
-        return this.valueOf() <= other;
+        if (other !== null) {
+            if (batavia.isinstance(other, [
+                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+                        batavia.types.List, batavia.types.Int, batavia.types.Range,
+                        batavia.types.Str, batavia.types.Tuple
+                    ])) {
+                throw new batavia.builtins.TypeError("unorderable types: set() <= " + batavia.type_name(other) + "()");
+            } else {
+                return this.valueOf() <= other.valueOf();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: set() <= NoneType()");
+        }
     };
 
     Set.prototype.__eq__ = function(other) {
@@ -71,11 +95,35 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__gt__ = function(other) {
-        return this.valueOf() > other;
+        if (other !== null) {
+            if (batavia.isinstance(other, [
+                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+                        batavia.types.List, batavia.types.Int, batavia.types.Range,
+                        batavia.types.Str, batavia.types.Tuple
+                    ])) {
+                throw new batavia.builtins.TypeError("unorderable types: set() > " + batavia.type_name(other) + "()");
+            } else {
+                return this.valueOf() > other.valueOf();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: set() > NoneType()");
+        }
     };
 
     Set.prototype.__ge__ = function(other) {
-        return this.valueOf() >= other;
+        if (other !== null) {
+            if (batavia.isinstance(other, [
+                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+                        batavia.types.List, batavia.types.Int, batavia.types.Range,
+                        batavia.types.Str, batavia.types.Tuple
+                    ])) {
+                throw new batavia.builtins.TypeError("unorderable types: set() >= " + batavia.type_name(other) + "()");
+            } else {
+                return this.valueOf() >= other.valueOf();
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: set() >= NoneType()");
+        }
     };
 
     Set.prototype.__contains__ = function(other) {
