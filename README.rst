@@ -4,6 +4,10 @@
 .. image:: https://travis-ci.org/pybee/batavia.svg?branch=master
     :target: https://travis-ci.org/pybee/batavia
 
+.. image:: https://badges.gitter.im/pybee/developers.svg
+    :target: https://gitter.im/pybee/developers
+
+
 Batavia
 =======
 
