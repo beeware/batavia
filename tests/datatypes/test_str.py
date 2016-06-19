@@ -270,7 +270,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_class',
         'test_multiply_complex',
         'test_multiply_frozenset',
 
@@ -301,7 +300,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_class',
         'test_subtract_complex',
         'test_subtract_frozenset',
 
