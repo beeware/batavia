@@ -20,5 +20,6 @@ class BuiltinIntFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_None',
         'test_NotImplemented',
         'test_set',
+        'test_str',
         'test_tuple',
     ]
