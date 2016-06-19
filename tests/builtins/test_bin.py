@@ -2,7 +2,17 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class BinTests(TranspileTestCase):
-    pass
+    def test_int_but_no_index(self):
+        self.assertCodeExecution("""
+            class IntLike:
+                def __init__(self, val):
+                    self.val = val
+                def __int__(self):
+                    return self.val
+
+            x = IntLike(5)
+            print(bin(x))
+            """)
 
 
 class BuiltinBinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
