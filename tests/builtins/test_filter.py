@@ -1,13 +1,9 @@
 from .. utils import TranspileTestCase, BuiltinTwoargFunctionTestCase
 
+from unittest import expectedFailure
+
 
 class FilterTests(TranspileTestCase):
-    pass
-
-
-class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["filter"]
-
     base_code = """
             #placeholder while list()s etc aren't fully implemented
             class ListLike:
@@ -38,17 +34,21 @@ class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCas
     """
 
     def test_bool(self):
-        self.assertCodeExecution(self.base_code % ("[True,False,True]", "bool(x)"))
+        self.assertCodeExecution(self.base_code % ("[True, False, True]", "bool(x)"))
 
-    #bytearray bug returns the bytecode num instead of bytechar
-    #def test_bytearray(self):
-    #    self.assertCodeExecution(self.base_code % ("b'123'", "x"))
+    @expectedFailure
+    def test_bytearray(self):
+        self.assertCodeExecution(self.base_code % ("b'123'", "x"))
 
     def test_float(self):
         self.assertCodeExecution(self.base_code % ("[3.14, 2.17, 1.0]", "x > 1"))
 
     def test_int(self):
         self.assertCodeExecution(self.base_code % ("[1, 2, 3]", "x * 2"))
+
+
+class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
+    functions = ["filter"]
 
     not_implemented = [
         'test_bool_bool',
