@@ -141,14 +141,16 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
         out = output
     else:
         out = []
-    out.append("")
-    while out[-1] != "phantomjs> " and out[-1] != 'PhantomJS has crashed. ':
+
+    out.append(b'')
+    while out[-1] != b"phantomjs> " and out[-1] != b'PhantomJS has crashed. ':
         try:
-            ch = _phantomjs.stdout.read(1).decode("utf-8")
-            if ch == '\n':
+            ch = _phantomjs.stdout.read(1)
+            if ch == b'\n':
                 # print(">>>", out[-1])
-                out.append("")
-            elif ch != '\r':
+                out[-1] = out[-1].decode("utf-8")
+                out.append(b'')
+            elif ch != b'\r':
                 out[-1] += ch
         except IOError:
             continue
@@ -670,8 +672,8 @@ SAMPLE_DATA = {
             '-3.14159',
         ],
     'frozenset': [
-            'frozenset([1, 2])',
-            'frozenset()',
+            "frozenset()",
+            "frozenset({1, 2.3456, 'another'})",
         ],
     'int': [
             '3',
@@ -903,7 +905,6 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
             _phantomjs.stdin.close()
             _phantomjs.stdout.close()
             _phantomjs = None
-
 
     def assertInplaceOperation(self, x_values, y_values, operation, format, substitutions):
         data = []

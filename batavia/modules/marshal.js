@@ -571,6 +571,9 @@ batavia.modules.marshal = {
             }
             retval = batavia.modules.marshal.r_string(vm, n, p);
 
+            // Now decode the contents from UTF-8
+            retval = decodeURIComponent(escape(retval));
+
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }

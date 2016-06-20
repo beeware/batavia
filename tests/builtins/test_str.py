@@ -18,6 +18,4 @@ class BuiltinStrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_range',
         'test_set',
         'test_slice',
-        'test_str',
-        'test_tuple',
     ]

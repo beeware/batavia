@@ -22,5 +22,4 @@ class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_range',
         'test_set',
         'test_slice',
-        'test_str',
     ]
