@@ -15,5 +15,7 @@ class BuiltinPrintFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_complex',
         'test_frozenset',
         'test_NotImplemented',
-        'test_set'
+        'test_range',
+        'test_set',
+        'test_slice',
     ]

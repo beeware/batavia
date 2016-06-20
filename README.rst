@@ -83,14 +83,20 @@ If you experience problems with Batavia, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 Before submitting a pull request, please make sure your forked branch is up
-to date with the original branch. To do this: 
-	- set your upstream remote
-		+ $ git remote add upstream https://github.com/pybee/batavia.git
-	- make sure you have the latest changes from upstream
-		+ $ git fetch upstream
-	- rebase your **master** branch to **upstream** before pushing to git and
-	submitting a pull request
-		+ $ git rebase upstream/master
+to date with the original branch. To do this:
+
+- set your upstream remote::
+
+    $ git remote add upstream https://github.com/pybee/batavia.git
+
+- make sure you have the latest changes from upstream::
+
+    $ git fetch upstream
+
+- rebase your **master** branch to **upstream** before pushing to git and
+  submitting a pull request::
+
+    $ git rebase upstream/master
 
 
 .. _BeeWare suite: http://pybee.org

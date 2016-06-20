@@ -20,7 +20,9 @@ class BuiltinSortedFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_int',
         'test_None',
         'test_NotImplemented',
+        'test_range',
         'test_set',
+        'test_slice',
         'test_str',
         'test_tuple',
     ]

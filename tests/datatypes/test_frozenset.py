@@ -3,75 +3,12 @@ from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationT
 import unittest
 
 
-class TupleTests(TranspileTestCase):
-    @unittest.expectedFailure
-    def test_setattr(self):
-        self.assertCodeExecution("""
-            x = (1, 2, 3)
-            x.attr = 42
-            print('Done.')
-            """)
-
-    @unittest.expectedFailure
-    def test_getattr(self):
-        self.assertCodeExecution("""
-            x = (1, 2, 3)
-            print(x.attr)
-            print('Done.')
-            """)
-
-    def test_creation(self):
-        self.assertCodeExecution("""
-            a = 1
-            b = 2
-            c = 3
-            d = 4
-            e = 5
-            x = (a, b, c, d, e)
-            print(x)
-            """)
-
-    def test_const_creation(self):
-        self.assertCodeExecution("""
-            x = (1, 2, 3, 4, 5)
-            print(x)
-            """)
-
-    def test_const_creation_multitype(self):
-        self.assertCodeExecution("""
-            x = (1, 2.5, "3", True, 5)
-            print(x)
-            """)
-
-    @unittest.expectedFailure
-    def test_getitem(self):
-        # Simple positive index
-        self.assertCodeExecution("""
-            x = (1, 2, 3, 4, 5)
-            print(x[2])
-            """)
-
-        # Simple negative index
-        self.assertCodeExecution("""
-            x = (1, 2, 3, 4, 5)
-            print(x[-2])
-            """)
-
-        # Positive index out of range
-        self.assertCodeExecution("""
-            x = (1, 2, 3, 4, 5)
-            print(x[10])
-            """)
-
-        # Negative index out of range
-        self.assertCodeExecution("""
-            x = (1, 2, 3, 4, 5)
-            print(x[-10])
-            """)
+class FrozensetTests(TranspileTestCase):
+    pass
 
 
-class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
-    data_type = 'tuple'
+class UnaryFrozensetOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'frozenset'
 
     not_implemented = [
         'test_unary_invert',
@@ -81,8 +18,8 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     ]
 
 
-class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
-    data_type = 'tuple'
+class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
+    data_type = 'frozenset'
 
     not_implemented = [
         'test_add_bool',
@@ -121,16 +58,41 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
+        'test_eq_bool',
         'test_eq_bytearray',
+        'test_eq_bytes',
         'test_eq_class',
         'test_eq_complex',
+        'test_eq_dict',
+        'test_eq_float',
         'test_eq_frozenset',
+        'test_eq_int',
+        'test_eq_list',
+        'test_eq_None',
+        'test_eq_NotImplemented',
+        'test_eq_range',
+        'test_eq_set',
+        'test_eq_slice',
+        'test_eq_str',
         'test_eq_tuple',
 
+        'test_floor_divide_bool',
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
+        'test_floor_divide_class',
         'test_floor_divide_complex',
+        'test_floor_divide_dict',
+        'test_floor_divide_float',
         'test_floor_divide_frozenset',
+        'test_floor_divide_int',
+        'test_floor_divide_list',
+        'test_floor_divide_None',
+        'test_floor_divide_NotImplemented',
+        'test_floor_divide_range',
+        'test_floor_divide_set',
+        'test_floor_divide_slice',
+        'test_floor_divide_str',
+        'test_floor_divide_tuple',
 
         'test_ge_bool',
         'test_ge_bytearray',
@@ -148,6 +110,7 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_set',
         'test_ge_slice',
         'test_ge_str',
+        'test_ge_tuple',
 
         'test_gt_bool',
         'test_gt_bytearray',
@@ -165,6 +128,7 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_set',
         'test_gt_slice',
         'test_gt_str',
+        'test_gt_tuple',
 
         'test_le_bool',
         'test_le_bytearray',
@@ -182,6 +146,7 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_set',
         'test_le_slice',
         'test_le_str',
+        'test_le_tuple',
 
         'test_lshift_bool',
         'test_lshift_bytearray',
@@ -217,6 +182,7 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_set',
         'test_lt_slice',
         'test_lt_str',
+        'test_lt_tuple',
 
         'test_modulo_bool',
         'test_modulo_bytearray',
@@ -239,14 +205,37 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
+        'test_multiply_class',
         'test_multiply_complex',
+        'test_multiply_dict',
+        'test_multiply_float',
         'test_multiply_frozenset',
         'test_multiply_int',
+        'test_multiply_list',
+        'test_multiply_None',
+        'test_multiply_NotImplemented',
+        'test_multiply_range',
+        'test_multiply_set',
+        'test_multiply_slice',
+        'test_multiply_str',
+        'test_multiply_tuple',
 
+        'test_ne_bool',
         'test_ne_bytearray',
+        'test_ne_bytes',
         'test_ne_class',
         'test_ne_complex',
+        'test_ne_dict',
+        'test_ne_float',
         'test_ne_frozenset',
+        'test_ne_int',
+        'test_ne_list',
+        'test_ne_None',
+        'test_ne_NotImplemented',
+        'test_ne_range',
+        'test_ne_set',
+        'test_ne_slice',
+        'test_ne_str',
         'test_ne_tuple',
 
         'test_or_bool',
@@ -321,15 +310,41 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_str',
         'test_subscr_tuple',
 
+        'test_subtract_bool',
         'test_subtract_bytearray',
         'test_subtract_bytes',
+        'test_subtract_class',
         'test_subtract_complex',
+        'test_subtract_dict',
+        'test_subtract_float',
         'test_subtract_frozenset',
+        'test_subtract_int',
+        'test_subtract_list',
+        'test_subtract_None',
+        'test_subtract_NotImplemented',
+        'test_subtract_range',
+        'test_subtract_set',
+        'test_subtract_slice',
+        'test_subtract_str',
+        'test_subtract_tuple',
 
+        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
+        'test_true_divide_class',
         'test_true_divide_complex',
+        'test_true_divide_dict',
+        'test_true_divide_float',
         'test_true_divide_frozenset',
+        'test_true_divide_int',
+        'test_true_divide_list',
+        'test_true_divide_None',
+        'test_true_divide_NotImplemented',
+        'test_true_divide_range',
+        'test_true_divide_set',
+        'test_true_divide_slice',
+        'test_true_divide_str',
+        'test_true_divide_tuple',
 
         'test_xor_bool',
         'test_xor_bytearray',
@@ -351,8 +366,8 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     ]
 
 
-class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
-    data_type = 'tuple'
+class InplaceFrozensetOperationTests(InplaceOperationTestCase, TranspileTestCase):
+    data_type = 'frozenset'
 
     not_implemented = [
         'test_add_bool',

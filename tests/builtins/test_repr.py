@@ -15,5 +15,7 @@ class BuiltinReprFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_complex',
         'test_frozenset',
         'test_NotImplemented',
+        'test_range',
         'test_set',
+        'test_slice',
     ]

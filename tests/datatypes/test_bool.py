@@ -58,7 +58,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_list',
         'test_floor_divide_None',
         'test_floor_divide_NotImplemented',
+        'test_floor_divide_range',
         'test_floor_divide_set',
+        'test_floor_divide_slice',
         'test_floor_divide_str',
         'test_floor_divide_tuple',
 
@@ -71,7 +73,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_list',
         'test_ge_None',
         'test_ge_NotImplemented',
+        'test_ge_range',
         'test_ge_set',
+        'test_ge_slice',
         'test_ge_str',
         'test_ge_tuple',
 
@@ -84,7 +88,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_list',
         'test_gt_None',
         'test_gt_NotImplemented',
+        'test_gt_range',
         'test_gt_set',
+        'test_gt_slice',
         'test_gt_str',
         'test_gt_tuple',
 
@@ -97,7 +103,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_list',
         'test_le_None',
         'test_le_NotImplemented',
+        'test_le_range',
         'test_le_set',
+        'test_le_slice',
         'test_le_str',
         'test_le_tuple',
 
@@ -116,7 +124,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_list',
         'test_lt_None',
         'test_lt_NotImplemented',
+        'test_lt_range',
         'test_lt_set',
+        'test_lt_slice',
         'test_lt_str',
         'test_lt_tuple',
 
@@ -158,7 +168,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_list',
         'test_power_None',
         'test_power_NotImplemented',
+        'test_power_range',
         'test_power_set',
+        'test_power_slice',
         'test_power_str',
         'test_power_tuple',
 
@@ -180,7 +192,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_list',
         'test_subscr_None',
         'test_subscr_NotImplemented',
+        'test_subscr_range',
         'test_subscr_set',
+        'test_subscr_slice',
         'test_subscr_str',
         'test_subscr_tuple',
 
@@ -221,7 +235,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_int',
         'test_add_None',
         'test_add_NotImplemented',
+        'test_add_range',
         'test_add_set',
+        'test_add_slice',
         'test_add_str',
         'test_add_tuple',
 
@@ -237,7 +253,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_list',
         'test_and_None',
         'test_and_NotImplemented',
+        'test_and_range',
         'test_and_set',
+        'test_and_slice',
         'test_and_str',
         'test_and_tuple',
 
@@ -253,7 +271,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_floor_divide_list',
         'test_floor_divide_None',
         'test_floor_divide_NotImplemented',
+        'test_floor_divide_range',
         'test_floor_divide_set',
+        'test_floor_divide_slice',
         'test_floor_divide_str',
         'test_floor_divide_tuple',
 
@@ -269,7 +289,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_lshift_list',
         'test_lshift_None',
         'test_lshift_NotImplemented',
+        'test_lshift_range',
         'test_lshift_set',
+        'test_lshift_slice',
         'test_lshift_str',
         'test_lshift_tuple',
 
@@ -285,7 +307,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_list',
         'test_modulo_None',
         'test_modulo_NotImplemented',
+        'test_modulo_range',
         'test_modulo_set',
+        'test_modulo_slice',
         'test_modulo_str',
         'test_modulo_tuple',
 
@@ -301,7 +325,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_list',
         'test_multiply_None',
         'test_multiply_NotImplemented',
+        'test_multiply_range',
         'test_multiply_set',
+        'test_multiply_slice',
         'test_multiply_str',
         'test_multiply_tuple',
 
@@ -317,7 +343,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_or_list',
         'test_or_None',
         'test_or_NotImplemented',
+        'test_or_range',
         'test_or_set',
+        'test_or_slice',
         'test_or_str',
         'test_or_tuple',
 
@@ -333,7 +361,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_list',
         'test_power_None',
         'test_power_NotImplemented',
+        'test_power_range',
         'test_power_set',
+        'test_power_slice',
         'test_power_str',
         'test_power_tuple',
 
@@ -349,7 +379,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_list',
         'test_rshift_None',
         'test_rshift_NotImplemented',
+        'test_rshift_range',
         'test_rshift_set',
+        'test_rshift_slice',
         'test_rshift_str',
         'test_rshift_tuple',
 
@@ -365,7 +397,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_list',
         'test_subtract_None',
         'test_subtract_NotImplemented',
+        'test_subtract_range',
         'test_subtract_set',
+        'test_subtract_slice',
         'test_subtract_str',
         'test_subtract_tuple',
 
@@ -381,7 +415,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_true_divide_list',
         'test_true_divide_None',
         'test_true_divide_NotImplemented',
+        'test_true_divide_range',
         'test_true_divide_set',
+        'test_true_divide_slice',
         'test_true_divide_str',
         'test_true_divide_tuple',
 
@@ -397,7 +433,9 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_xor_list',
         'test_xor_None',
         'test_xor_NotImplemented',
+        'test_xor_range',
         'test_xor_set',
+        'test_xor_slice',
         'test_xor_str',
         'test_xor_tuple',
     ]

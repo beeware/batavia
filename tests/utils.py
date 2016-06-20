@@ -141,14 +141,16 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
         out = output
     else:
         out = []
-    out.append("")
-    while out[-1] != "phantomjs> " and out[-1] != 'PhantomJS has crashed. ':
+
+    out.append(b'')
+    while out[-1] != b"phantomjs> " and out[-1] != b'PhantomJS has crashed. ':
         try:
-            ch = _phantomjs.stdout.read(1).decode("utf-8")
-            if ch == '\n':
+            ch = _phantomjs.stdout.read(1)
+            if ch == b'\n':
                 # print(">>>", out[-1])
-                out.append("")
-            elif ch != '\r':
+                out[-1] = out[-1].decode("utf-8")
+                out.append(b'')
+            elif ch != b'\r':
                 out[-1] += ch
         except IOError:
             continue
@@ -670,8 +672,8 @@ SAMPLE_DATA = {
             '-3.14159',
         ],
     'frozenset': [
-            'frozenset([1, 2])',
-            'frozenset()',
+            "frozenset()",
+            "frozenset({1, 2.3456, 'another'})",
         ],
     'int': [
             '3',
@@ -681,21 +683,39 @@ SAMPLE_DATA = {
     'list': [
             "[]",
             "[3, 4, 5]",
-            '[1, 2, 3, 4, 5]',
+            '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',
             "['a','b','c']",
+        ],
+    'range': [
+            "range(0)",
+            "range(5)",
+            "range(2, 7)",
+            "range(2, 7, 2)",
+            "range(7, 2, -1)",
+            "range(7, 2, -2)",
         ],
     'set': [
             "set()",
             "{1, 2.3456, 'another'}",
         ],
+    'slice': [
+            "slice(0)",
+            "slice(5)",
+            "slice(2, 7)",
+            "slice(2, 7, 2)",
+            "slice(7, 2, -1)",
+            "slice(7, 2, -2)",
+        ],
     'str': [
             '""',
             '"This is another string"',
+            '"Mÿ hôvèrçràft îß fûłl öf éêlś"',
             '"One arg: %s"',
             '"Three args: %s | %s | %s"',
         ],
     'tuple': [
             "(1, 2)",
+            "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
             "(3, 1.2, True, )",
             "(1, 2.3456, 'another')",
         ],
@@ -885,7 +905,6 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
             _phantomjs.stdin.close()
             _phantomjs.stdout.close()
             _phantomjs = None
-
 
     def assertInplaceOperation(self, x_values, y_values, operation, format, substitutions):
         data = []
