@@ -21,7 +21,9 @@ class BuiltinIdFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_list',
         'test_None',
         'test_NotImplemented',
+        'test_range',
         'test_set',
+        'test_slice',
         'test_str',
         'test_tuple',
     ]

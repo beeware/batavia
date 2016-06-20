@@ -41,10 +41,12 @@ class BuiltinSumFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_frozenset',
         'test_float',
         'test_int',
+        'test_list',
         'test_None',
         'test_NotImplemented',
-        'test_list',
+        'test_range',
         'test_set',
+        'test_slice',
         'test_str',
         'test_tuple',
     ]

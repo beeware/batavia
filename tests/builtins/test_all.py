@@ -15,4 +15,5 @@ class BuiltinAllFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_frozenset',
         'test_None',
         'test_NotImplemented',
+        'test_range',
     ]
