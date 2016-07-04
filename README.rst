@@ -1,15 +1,15 @@
 .. image:: http://pybee.org/batavia/static/images/batavia-72.png
     :target: https://pybee.org/batavia
 
+Batavia
+=======
+
 .. image:: https://travis-ci.org/pybee/batavia.svg?branch=master
     :target: https://travis-ci.org/pybee/batavia
 
-.. image:: https://badges.gitter.im/pybee/developers.svg
-    :target: https://gitter.im/pybee/developers
+.. image:: https://badges.gitter.im/pybee/general.svg
+    :target: https://gitter.im/pybee/general
 
-
-Batavia
-=======
 
 **Batavia is an early alpha project. If it breaks, you get to keep all the shiny pieces.**
 
