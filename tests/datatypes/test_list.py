@@ -202,8 +202,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_frozenset',
 
         'test_multiply_bytearray',
-        'test_multiply_int', # is this test bugging out?
-        'test_multiply_bool', # also, this one?
         'test_multiply_bytes',
         'test_multiply_complex',
         'test_multiply_frozenset',
