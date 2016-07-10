@@ -109,11 +109,11 @@ batavia.types.List = function() {
      **************************************************/
 
     List.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__div__ = function(other) {
-        return this.__truediv__(other);
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__floordiv__ = function(other) {
@@ -127,12 +127,16 @@ batavia.types.List = function() {
     List.prototype.__mul__ = function(other) {
         if (batavia.isinstance(other, batavia.types.Int)) {
             result = new List();
-            for (i = 0; i < other.valueOf(); i++) {
-                result.extend(this);
+            if(other <= 0) {
+                return result;
+            } else {
+                for (i = 0; i < other; i++) {
+                    result.extend(this);
+                }
+                return result;
             }
-            return result;
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
-            if (other.valueOf()) {
+            if (other) {
                 return this.copy();
             } else {
                 return new List();
@@ -143,7 +147,7 @@ batavia.types.List = function() {
     };
 
     List.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__mod__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__add__ = function(other) {
@@ -209,23 +213,23 @@ batavia.types.List = function() {
     };
 
     List.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__lshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__rshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__and__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__xor__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__or__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     /**************************************************
@@ -233,51 +237,75 @@ batavia.types.List = function() {
      **************************************************/
 
     List.prototype.__ifloordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__itruediv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__itruediv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__iadd__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__iadd__ has not been implemented");
+        if(batavia.isinstance(other, [batavia.types.List, batavia.types.Str,
+            batavia.types.Tuple])) {
+            for(i=0; i< other.length; i++) {
+              this.push(other[i]);
+            }
+            return this;
+        } else {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(other) + "' object is not iterable");
+        }
     };
 
     List.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__isub__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__imul__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__imul__ has not been implemented");
+        if(batavia.isinstance(other, batavia.types.Int)) {
+            if(other <= 0) {
+                return new List();
+            } else {
+                list_length = this.length;
+                for(i=1; i < other; i++) {
+                    for(j=0; j < list_length; j++) {
+                        this.push(this[j]);
+                    }
+                }
+                return this;
+            }
+        } else if(batavia.isinstance(other, batavia.types.Bool)) {
+            return other == true ? this : new List();
+        } else {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + batavia.type_name(other) + "'");
+        }
     };
 
     List.prototype.__imod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__imod__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__ipow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__ipow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__ilshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__ilshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__irshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__irshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__iand__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__iand__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__ixor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__ixor__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     List.prototype.__ior__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("List.__ior__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'list' and '" + batavia.type_name(other) + "'");
     };
 
     /**************************************************
