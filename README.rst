@@ -1,5 +1,5 @@
-.. image:: http://pybee.org/batavia/static/images/batavia-72.png
-    :target: https://pybee.org/batavia
+.. image:: http://pybee.org/project/projects/bridges/batavia/batavia-72.png
+    :target: http://pybee.org/batavia
 
 Batavia
 =======
