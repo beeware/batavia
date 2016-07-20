@@ -31,6 +31,7 @@ Then we can start the test server::
     $ ./manage.py runserver
 
 on windows::
+
     >python manage.py runserver
     
 Now point a browser at `http://127.0.0.1:8000`_
