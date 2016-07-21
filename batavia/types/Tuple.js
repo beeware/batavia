@@ -147,7 +147,21 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__add__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__add__ has not been implemented");
+		if (!batavia.isinstance(other, batavia.types.Tuple)) {
+			throw new batavia.builtins.TypeError('can only concatenate tuple (not "' + batavia.type_name(other) + '") to tuple')
+		} else {
+			result = new Tuple();
+			for (i=0; i < this.length; i++){
+				result.push(this[i]);
+			}
+
+			for (i=0; i < other.length; i++){
+				result.push(other[i]);
+			}
+
+			return result;
+			// throw new batavia.builtins.NotImplementedError("Tuple.__add__ has not been implemented");
+		}
     };
 
     Tuple.prototype.__sub__ = function(other) {
