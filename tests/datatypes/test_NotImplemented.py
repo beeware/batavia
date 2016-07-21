@@ -39,7 +39,6 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
         'test_add_range',
         'test_add_set',
         'test_add_slice',
-        'test_add_str',
         'test_add_tuple',
 
         'test_and_bool',
@@ -361,7 +360,6 @@ class InplaceNotImplementedOperationTests(InplaceOperationTestCase, TranspileTes
         'test_add_range',
         'test_add_set',
         'test_add_slice',
-        'test_add_str',
         'test_add_tuple',
 
         'test_and_bool',

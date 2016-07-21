@@ -132,7 +132,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__add__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("NotImplementedType.__add__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'NotImplementedType' and 'str'");
     };
 
     NotImplementedType.prototype.__sub__ = function(other) {
@@ -180,7 +180,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__iadd__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("NotImplementedType.__iadd__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +=: 'NotImplementedType' and 'str'");
     };
 
     NotImplementedType.prototype.__isub__ = function(other) {
