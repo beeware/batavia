@@ -109,7 +109,7 @@ batavia.types.Tuple = function() {
      **************************************************/
 
     Tuple.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__div__ = function(other) {
