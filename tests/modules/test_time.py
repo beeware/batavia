@@ -6,10 +6,15 @@ import unittest
 class TimeTests(TranspileTestCase):
     @unittest.expectedFailure
     def test_time(self):
-        # CONSIDER: Is there a good way to test this? CPython sorta punts it...
         self.assertCodeExecution("""
             import time
-            print(time.time())
+
+            # Demonstrate that we're getting the same type...
+            print(type(time.time()))
+
+            # ...and that type is infact a float.
+            print(isinstance(time.time(), float))
+
             print('Done.')
             """)
 

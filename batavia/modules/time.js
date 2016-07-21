@@ -6,7 +6,7 @@ batavia.modules.time = {
 
     time: function() {
         // JS operates in milliseconds, Python in seconds, so divide by 1000
-        return new Date().getTime() / 1000;
+        return new batavia.types.Float(new Date().getTime() / 1000);
     },
 
     sleep: function(secs) {
