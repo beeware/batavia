@@ -482,8 +482,6 @@ class TranspileTestCase(TestCase):
                 context = 'Global context: %s' % message
             else:
                 context = 'Global context'
-
-
             self.assertEqual(js_out, py_out, context)
 
         #==================================================
