@@ -11,7 +11,7 @@ This tutorial assumes you've read and followed the instructions in
 :doc:`/intro/getting-started`. If you've done this, you should have:
 
 * A ``tutorial`` directory with a Batavia checkout,
-* A activated Python 3.4 virtual environment, and
+* An activated Python 3.4 virtual environment, and
 * Batavia installed in that virtual environment
 
 Starting the test server
@@ -21,44 +21,44 @@ To start the test server, you'll need to be in the ``testserver`` directory unde
 
     $ cd testserver
 
-Once we're in the ``testserver`` directory, we can install the requirements
+Once you're in the ``testserver`` directory, you can install the requirements
 for the test server::
 
     $ pip install -r requirements.txt
 
-Then we can start the test server::
+Then you can start the test server::
 
     $ ./manage.py runserver
 
-on windows::
+on Windows::
 
     >python manage.py runserver
     
-Now point a browser at `http://127.0.0.1:8000`_
+Now open your browser and go to `http://127.0.0.1:8000`_
 
 .. _http://127.0.0.1:8000: http://127.0.0.1:8000
 
-This should show you a page titled "Batavia testbed".
+You should now see a page titled "Batavia testbed" with some buttons on the left and a text box on the right.
 
 It's alive!
 -----------
 
-On the right hand side of the screen is a text box. This is where you can put your
-sample Python code. Into this text box, type:
+On the right hand side of the screen is a text box. This is where you can enter your
+Python code. Type the following into this text box:
 
 .. code-block:: python
 
     print("Hello World!")
 
-Then click on the "Run code" button. The page will reload, and below the line
-on the page after the "Console output" label, you'll see the output you'd
+Then click on the "Run code" button. The page will reload, and below the area
+on the page named "Console output", you'll see the output you'd
 expect from this Python program::
 
     Hello World!
 
 Congratulations! You've just run your first Python program under Javascript
-using Batavia! Let's get a little more adventurous, and add a loop. Replace
-the code in the text box with the following:
+using Batavia! Now you can get a little more adventurous and try a loop. Replace
+your existing code in the text box with the following:
 
 .. code-block:: python
 
@@ -83,19 +83,19 @@ console output section::
 What just happened?
 -------------------
 
-So - what happened when you pressed the "Run Code" button?
+What happened when you pressed the "Run code" button?
 
 When you clicked "Run code", your browser submitted the content of the text
 box as a HTTP ``POST`` request to the test server. The test server took that
-content, and compiled it as if it were Python code. It didn't *run* the code -
-it just compiled it to bytecode. That is, it created the ``.pyc`` file that
-would have been produced if you wrote the same code into a ``test.py`` file and
+content, and compiled it as if it were Python code. It didn't *run* the code --
+it just compiled it to bytecode. It created the ``.pyc`` file that
+would have been produced if you had written the same code into a ``test.py`` file and
 ran ``python test.py``.
 
 Having compiled the source code into bytecode form, it then encoded the
-contents of the pyc file into base64, and inserted that base64 string into the
+contents of the ``.pyc`` file into base64, and inserted that base64 string into the
 returned HTML response. If you inspect the source code for the page, you
-should see a block in the document ``<head>`` that look something like:
+should see a block in the document ``<head>`` that looks something like:
 
 .. code-block:: html
 
@@ -106,8 +106,8 @@ should see a block in the document ``<head>`` that look something like:
     </script>
 
 That string is the base64 encoded version of the Python program you submitted.
-The browser then takes this base64 string, decodes it back into a byte string,
-and runs it through Batavia - a 15kb Javascript module that does the same thing
+The browser then takes this base64 string, decodes it back into a bytestring,
+and runs it through Batavia -- a 15kb Javascript module that does the same thing
 in a browser that CPython does on the desktop: iterprets Python bytecode as a
 running program.
 
@@ -116,14 +116,14 @@ Push the button...
 
 You may also have noticed a set of buttons on the left hand side of the
 screen. These are some pre-canned example code, ready for testing. Try
-clicking on the "Run sample.py" button. When you do, your browser should pop
-up a new window, and load the `BeeWare website`_. If you close that window and
+clicking the "Run sample.py" button. Your browser should pop
+up a new window and load the `BeeWare website`_. If you close that window and
 go back to the Batavia testbed, you should see a lot of output in the console
 section of the screen.
 
 .. _BeeWare website: http://pybee.org
 
-If you want to see you can `inspect the source code`_. However, one part of
+If you want to, you can `inspect the source code`_. One part of
 ``sample.py`` that is of particular interest is the part that opens the new
 browser window:
 
@@ -148,9 +148,9 @@ What you should notice is that except for the ``dom`` prefix, this is the same
 API that you would use in Javascript to open a new browser window, set the
 page title, and add some text to the end of an element. The entire browser DOM
 is exposed in this way, so anything you can do in Javascript, you can do in
-Batavia, too.
+Batavia.
 
-If you want, you can use this code in the sample code window - copy and paste this code into the "run code" text box, click "Run Code", and you get a popup window.
+You can even use this code in the sample code window: copy and paste this code into the "run code" text box, click "Run code", and you get a popup window.
 
 .. _inspect the source code: https://github.com/pybee/batavia/blob/master/testserver/sample.py
 
@@ -169,7 +169,7 @@ native performance by running the following in a Python shell::
     This machine benchmarks at 95842.9 pystones/second
 
 You'll probably notice that Batavia is significantly slower than native
-CPython. This is to be expected - we're going through a very complex process
-to run this code. However, it's not overly concerning -- after all, the main
+CPython. This is to be expected -- Batavia is going through a very complex process
+to run this code. It's not overly concerning, though, as the main
 use case here is basic DOM manipulation and responding to button clicks, not
 heavy computation.
