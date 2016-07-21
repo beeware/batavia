@@ -45,7 +45,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_frozenset',
 
         'test_eq_bytearray',
-        'test_eq_bytes',
         'test_eq_class',
         'test_eq_complex',
         'test_eq_frozenset',
