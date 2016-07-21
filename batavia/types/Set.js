@@ -224,7 +224,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__iadd__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__iadd__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__isub__ = function(other) {
