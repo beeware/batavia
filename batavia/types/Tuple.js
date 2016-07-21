@@ -254,11 +254,11 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__imod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__imod__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %=: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__ipow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__ipow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__ilshift__ = function(other) {
