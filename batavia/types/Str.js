@@ -347,7 +347,7 @@ String.prototype.__ipow__ = function(other) {
 
 String.prototype.__ilshift__ = function(other) {
     throw new batavia.builtins.TypeError(
-        "unsupported operand type(s) for <<: 'str' and '" + batavia.type_name(other) + "'"
+        "unsupported operand type(s) for <<=: 'str' and '" + batavia.type_name(other) + "'"
     )
 };
 

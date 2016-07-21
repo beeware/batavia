@@ -1,0 +1,34 @@
+{
+  "name": "batavia",
+  "main": [
+	"batavia/batavia.js"
+  ],
+  "homepage": "https://github.com/pybee/batavia",
+  "authors": [
+    "Russell Keith-Magee <russell@keith-magee.com>"
+  ],
+  "description": "Run Python bytecode in Javascript",
+  "keywords": [
+    "python"
+  ],
+  "license": "New BSD",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+	"testserver",
+	".gitignore",
+	".travis.yml",
+	"AUTHORS",
+	"CONTRIBUTING.md",
+	"LICENSE",
+	"MANIFEST.in",
+	"Makefile",
+	"README.rst",
+	"batavia.egg-info",
+	"docs",
+	"setup.py"
+  ]
+}
