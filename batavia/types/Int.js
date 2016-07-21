@@ -75,7 +75,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__eq__ = function(other) {
-        if (other !== null) {
+        if (other !== null && !batavia.isinstance(other, batavia.types.Str)) {
             return this.valueOf() == other.valueOf();
         }
         return false;
