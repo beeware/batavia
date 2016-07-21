@@ -132,7 +132,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__add__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'NotImplementedType' and 'str'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'NotImplementedType' and '" + batavia.type_name(other) + "'");
     };
 
     NotImplementedType.prototype.__sub__ = function(other) {
@@ -180,7 +180,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__iadd__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +=: 'NotImplementedType' and 'str'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +=: 'NotImplementedType' and '" + batavia.type_name(other) + "'");
     };
 
     NotImplementedType.prototype.__isub__ = function(other) {
