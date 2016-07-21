@@ -43,7 +43,6 @@ class TupleTests(TranspileTestCase):
             print(x)
             """)
 
-    @unittest.expectedFailure
     def test_getitem(self):
         # Simple positive index
         self.assertCodeExecution("""

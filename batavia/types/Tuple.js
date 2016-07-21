@@ -168,8 +168,45 @@ batavia.types.Tuple = function() {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
-    Tuple.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__getitem__ has not been implemented");
+    Tuple.prototype.__getitem__ = function(index) {
+		if (batavia.isinstance(index, batavia.types.Int)) {
+            if (index.valueOf() < 0) {
+                if (-index.valueOf() > this.length) {
+                    throw new batavia.builtins.IndexError("tuple index out of range");
+                } else {
+                    return this[this.length + index];
+                }
+            } else {
+                if (index.valueOf() >= this.length) {
+                    throw new batavia.builtins.IndexError("tuple index out of range");
+                } else {
+                    return this[index];
+                }
+            }
+        } else if (batavia.isinstance(index, batavia.types.Slice)) {
+            var start, stop, step;
+            start = index.start.valueOf();
+
+            if (index.stop === null) {
+                stop = this.length;
+            } else {
+                stop = index.stop.valueOf();
+            }
+
+            step = index.step.valueOf();
+
+            if (step != 1) {
+                throw new batavia.builtins.NotImplementedError("Tuple.__getitem__ with a stepped slice has not been implemented");
+            }
+
+            return new Tuple(Array.prototype.slice.call(this, start, stop));
+        } else {
+            var msg = "tuple indices must be integers or slices, not ";
+            if (batavia.BATAVIA_MAGIC == batavia.BATAVIA_MAGIC_34) {
+                msg = "tuple indices must be integers, not ";
+            }
+            throw new batavia.builtins.TypeError(msg + batavia.type_name(index));
+		}
     };
 
     Tuple.prototype.__lshift__ = function(other) {
