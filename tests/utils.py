@@ -708,6 +708,7 @@ SAMPLE_DATA = {
         ],
     'str': [
             '""',
+            '"3"',
             '"This is another string"',
             '"Mÿ hôvèrçràft îß fûłl öf éêlś"',
             '"One arg: %s"',
