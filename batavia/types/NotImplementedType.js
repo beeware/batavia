@@ -116,7 +116,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("NotImplementedType.__floordiv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'NotImplementedType' and '" + batavia.type_name(other) + "'")
     };
 
     NotImplementedType.prototype.__truediv__ = function(other) {
@@ -152,7 +152,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("NotImplementedType.__and__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'NotImplementedType' and '" + batavia.type_name(other) + "'")
     };
 
     NotImplementedType.prototype.__xor__ = function(other) {
@@ -172,7 +172,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__ifloordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("NotImplementedType.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'NotImplementedType' and '" + batavia.type_name(other) + "'")
     };
 
     NotImplementedType.prototype.__itruediv__ = function(other) {
@@ -208,7 +208,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__iand__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("NotImplementedType.__iand__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'NotImplementedType' and '" + batavia.type_name(other) + "'")
     };
 
     NotImplementedType.prototype.__ixor__ = function(other) {
