@@ -22,8 +22,12 @@ batavia.types.NoneType = {
      * Comparison operators
      **************************************************/
 
+    __lt__: function(other) {
+        throw new batavia.builtins.TypeError("unorderable types: NoneType() < " +  batavia.type_name(other) + "()");
+    },
+
     __le__: function(other) {
-        return false;
+        throw new batavia.builtins.TypeError("unorderable types: NoneType() <= " +  batavia.type_name(other) + "()");
     },
 
     __eq__: function(other) {
@@ -35,11 +39,11 @@ batavia.types.NoneType = {
     },
 
     __gt__: function(other) {
-        return false;
+        throw new batavia.builtins.TypeError("unorderable types: NoneType() > " +  batavia.type_name(other) + "()");
     },
 
     __ge__: function(other) {
-        return false;
+        throw new batavia.builtins.TypeError("unorderable types: NoneType() >= " +  batavia.type_name(other) + "()");
     },
 
     __contains__: function(other) {
@@ -71,7 +75,7 @@ batavia.types.NoneType = {
      **************************************************/
 
     __pow__: function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for pow: 'NoneType' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __div__: function(other) {
@@ -107,7 +111,7 @@ batavia.types.NoneType = {
     },
 
     __getitem__: function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for []: 'NoneType' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("'NoneType' object is not subscriptable");
     },
 
     __lshift__: function(other) {
@@ -119,15 +123,15 @@ batavia.types.NoneType = {
     },
 
     __and__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__and__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __xor__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__xor__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __or__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__or__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     /**************************************************
