@@ -304,13 +304,9 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_class',
         'test_or_complex',
         'test_or_frozenset',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
+        
 
         'test_power_bytearray',
         'test_power_bytes',
