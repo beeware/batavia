@@ -187,11 +187,11 @@ batavia.types.Tuple = function() {
      **************************************************/
 
     Tuple.prototype.__ifloordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__itruediv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__itruediv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__iadd__ = function(other) {
