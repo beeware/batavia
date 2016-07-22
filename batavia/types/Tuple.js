@@ -65,11 +65,27 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__eq__ = function(other) {
-        return this.valueOf() == other;
+        if (this.valueOf().length == other.length) {
+            return false;
+        }
+
+        for (i = 0; i < other.valueOf().length; i++) {
+            if (this.valueOf()[i] instanceof Array && other[i] instanceof Array) {
+                if (!this.valueOf()[i].__eq__(other[i])){
+                    return false;
+                }
+            }
+            else if (this.valueOf()[i] != other[i]) {
+                return false;
+            }
+        }
+
+        return true;
+
     };
 
     Tuple.prototype.__ne__ = function(other) {
-        return this.valueOf() != other;
+        return !this.__eq__(other)
     };
 
     Tuple.prototype.__gt__ = function(other) {
