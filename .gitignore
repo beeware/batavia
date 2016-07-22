@@ -13,6 +13,8 @@ distribute-*
 env
 .eggs/
 .python-version
+make.exe
+phantomjs.exe
 
 # PyCharm settings
 .idea
