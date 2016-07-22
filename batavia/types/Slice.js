@@ -4,7 +4,7 @@
 
 batavia.types.Slice = function() {
     function Slice(kwargs) {
-        this.start = kwargs.start || 0;
+        this.start = kwargs.start;
         this.stop = kwargs.stop;
         this.step = kwargs.step || 1;
     }

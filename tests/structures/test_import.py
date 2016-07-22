@@ -4,7 +4,6 @@ import unittest
 
 
 class ImportTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_import_stdlib_module(self):
         "You can import a Python module implemented in Java (a native stdlib shim)"
         self.assertCodeExecution(
