@@ -160,7 +160,6 @@ batavia.types.Tuple = function() {
 			}
 
 			return result;
-			// throw new batavia.builtins.NotImplementedError("Tuple.__add__ has not been implemented");
 		}
     };
 
