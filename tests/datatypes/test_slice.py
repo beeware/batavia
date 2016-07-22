@@ -4,7 +4,6 @@ import unittest
 
 
 class SliceTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_slice_list(self):
         self.assertCodeExecution("""
             x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -34,7 +33,6 @@ class SliceTests(TranspileTestCase):
             print("x[2:8:2] = ", x[2:8:2])
             """)
 
-    @unittest.expectedFailure
     def test_slice_string(self):
         self.assertCodeExecution("""
             x = "0123456789a"
