@@ -51,11 +51,11 @@ batavia.types.NoneType = {
      **************************************************/
 
     __pos__: function() {
-        throw new batavia.builtins.NotImplementedError("NoneType.__pos__ has not been implemented");
+        throw new batavia.builtins.TypeError("bad operand type for unary +: 'NoneType'");
     },
 
     __neg__: function() {
-        throw new batavia.builtins.NotImplementedError("NoneType.__neg__ has not been implemented");
+        throw new batavia.builtins.TypeError("bad operand type for unary -: 'NoneType'");
     },
 
     __not__: function() {
@@ -63,7 +63,7 @@ batavia.types.NoneType = {
     },
 
     __invert__: function() {
-        throw new batavia.builtins.NotImplementedError("NoneType.__invert__ has not been implemented");
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'NoneType'");
     },
 
     /**************************************************

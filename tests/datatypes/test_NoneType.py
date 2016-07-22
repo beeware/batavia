@@ -24,12 +24,6 @@ class NoneTypeTests(TranspileTestCase):
 class UnaryNoneTypeOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'None'
 
-    not_implemented = [
-        'test_unary_positive',
-        'test_unary_negative',
-        'test_unary_invert',
-    ]
-
 
 class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'None'
