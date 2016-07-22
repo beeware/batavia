@@ -199,7 +199,7 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__isub__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__imul__ = function(other) {
