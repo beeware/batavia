@@ -368,12 +368,15 @@ batavia.builtins.dict = function(args, kwargs) {
     if (args.length > 1) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
-    if (batavia.isinstance(args[0], batavia.types.Int)) {
+    if (batavia.isinstance(args[0], [batavia.types.Int, batavia.types.Bool])) {
         throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
     if (batavia.isinstance(args[0], batavia.types.Str)) {
         throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length 1; 2 is required");
     }
+    //if single bool case
+
+    //if multiple bool case
 
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
