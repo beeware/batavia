@@ -113,7 +113,7 @@ batavia.types.Tuple = function() {
      **************************************************/
 
     Tuple.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__div__ = function(other) {
@@ -147,19 +147,69 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__mod__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__add__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__add__ has not been implemented");
+		if (!batavia.isinstance(other, batavia.types.Tuple)) {
+			throw new batavia.builtins.TypeError('can only concatenate tuple (not "' + batavia.type_name(other) + '") to tuple')
+		} else {
+			result = new Tuple();
+			for (i=0; i < this.length; i++){
+				result.push(this[i]);
+			}
+
+			for (i=0; i < other.length; i++){
+				result.push(other[i]);
+			}
+
+			return result;
+		}
     };
 
     Tuple.prototype.__sub__ = function(other) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
-    Tuple.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__getitem__ has not been implemented");
+    Tuple.prototype.__getitem__ = function(index) {
+		if (batavia.isinstance(index, batavia.types.Int)) {
+            if (index.valueOf() < 0) {
+                if (-index.valueOf() > this.length) {
+                    throw new batavia.builtins.IndexError("tuple index out of range");
+                } else {
+                    return this[this.length + index];
+                }
+            } else {
+                if (index.valueOf() >= this.length) {
+                    throw new batavia.builtins.IndexError("tuple index out of range");
+                } else {
+                    return this[index];
+                }
+            }
+        } else if (batavia.isinstance(index, batavia.types.Slice)) {
+            var start, stop, step;
+            start = index.start.valueOf();
+
+            if (index.stop === null) {
+                stop = this.length;
+            } else {
+                stop = index.stop.valueOf();
+            }
+
+            step = index.step.valueOf();
+
+            if (step != 1) {
+                throw new batavia.builtins.NotImplementedError("Tuple.__getitem__ with a stepped slice has not been implemented");
+            }
+
+            return new Tuple(Array.prototype.slice.call(this, start, stop));
+        } else {
+            var msg = "tuple indices must be integers or slices, not ";
+            if (batavia.BATAVIA_MAGIC == batavia.BATAVIA_MAGIC_34) {
+                msg = "tuple indices must be integers, not ";
+            }
+            throw new batavia.builtins.TypeError(msg + batavia.type_name(index));
+		}
     };
 
     Tuple.prototype.__lshift__ = function(other) {
@@ -207,11 +257,11 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__imod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__imod__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %=: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__ipow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__ipow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__ilshift__ = function(other) {
