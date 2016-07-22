@@ -350,10 +350,12 @@ JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
 JS_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
+JS_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
 
 PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
+PYTHON_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
 
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
@@ -384,6 +386,7 @@ def cleanse_javascript(input, substitutions):
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
     out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    out = JS_FLOAT_ROUND.sub('\\1', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
     if substitutions:
@@ -412,6 +415,7 @@ def cleanse_python(input, substitutions):
     )
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = PYTHON_FLOAT.sub('\\1e\\2\\3', out)
+    out = PYTHON_FLOAT_ROUND.sub('\\1', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
     # Python 3.4.4 changed the message describing strings in exceptions
