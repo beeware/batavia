@@ -75,7 +75,7 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__ge__ = function(other) {
-        return this.valueOf() >= other;
+        throw new batavia.builtins.TypeError("unorderable types: NotImplementedType() >= " + batavia.type_name(other) + "()");
     };
 
     NotImplementedType.prototype.__contains__ = function(other) {
