@@ -57,7 +57,11 @@ batavia.types.Tuple = function() {
      **************************************************/
 
     Tuple.prototype.__lt__ = function(other) {
-        return this.valueOf() < other;
+        if (!batavia.isinstance(other, batavia.types.Tuple)) {
+            throw new batavia.builtins.TypeError('unorderable types: tuple() < ' + batavia.type_name(other) + '()')
+        } else {
+            return this.valueOf() < other;
+        }
     };
 
     Tuple.prototype.__le__ = function(other) {
