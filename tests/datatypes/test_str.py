@@ -69,6 +69,30 @@ class StrTests(TranspileTestCase):
             print(x[1:4])
             """)
 
+        # Slice with step 0 (error)
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[::0])
+            """)
+
+        # Slice with revese step
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[::-1])
+            """)
+
+        # Slice -1 stop with reverse step
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[-5:-1:-1])
+            """)
+
+        # Slice -1 start with revese step
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[-1:0:-1])
+            """)
+
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'

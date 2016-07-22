@@ -82,6 +82,30 @@ class ListTests(TranspileTestCase):
             print(x[1:4])
             """)
 
+        # Slice with step 0 (error)
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[::0])
+            """)
+
+        # Slice with revese step
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[::-1])
+            """)
+
+        # Slice -1 stop with reverse step
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[-5:-1:-1])
+            """)
+
+        # Slice -1 start with revese step
+        self.assertCodeExecution("""
+            x = [1, 2, 3, 4, 5]
+            print(x[-1:0:-1])
+            """)
+
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
@@ -232,7 +256,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_bytes',
         'test_subscr_complex',
         'test_subscr_frozenset',
-        'test_subscr_slice',
 
         'test_subtract_bytearray',
         'test_subtract_bytes',

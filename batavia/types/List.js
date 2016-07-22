@@ -188,21 +188,46 @@ batavia.types.List = function() {
             }
         } else if (batavia.isinstance(index, batavia.types.Slice)) {
             var start, stop, step;
-            start = index.start.valueOf();
-
-            if (index.stop === null) {
-                stop = this.length;
-            } else {
-                stop = index.stop.valueOf();
-            }
-
+            start = index.start === null ? undefined : index.start.valueOf();
+            stop = index.stop === null ? undefined : index.stop.valueOf();
             step = index.step.valueOf();
 
-            if (step != 1) {
-                throw new batavia.builtins.NotImplementedError("List.__getitem__ with a stepped slice has not been implemented");
+            if (step === 0) {
+                throw new batavia.builtins.ValueError("slice step cannot be zero");
             }
 
-            return new List(Array.prototype.slice.call(this, start, stop));
+            // clone list
+            var result = Array.prototype.slice.call(this);
+
+            // handle step
+            if (step === undefined || step === 1) {
+                return new List(result.slice(start, stop));
+            } else if (step > 0) {
+                result = result.slice(start, stop);
+            } else if (step < 0) {
+                // adjust start/stop to swap inclusion/exlusion in slice
+                if (start !== undefined && start !== -1) {
+                    start = start + 1;
+                } else if (start === -1) {
+                    start = result.length;
+                }
+                if (stop !== undefined && stop !== -1) {
+                    stop = stop + 1;
+                } else if (stop === -1) {
+                    stop = result.length;
+                }
+
+                result = result.slice(stop, start).reverse();
+            }
+
+            var steppedResult = [];
+            for (var i = 0; i < result.length; i = i + Math.abs(step)) {
+                steppedResult.push(result[i]);
+            }
+
+            result = steppedResult;
+
+            return new List(result);
         } else {
             var msg = "list indices must be integers or slices, not ";
             if (batavia.BATAVIA_MAGIC == batavia.BATAVIA_MAGIC_34) {
