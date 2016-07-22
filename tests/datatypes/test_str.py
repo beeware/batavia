@@ -22,74 +22,74 @@ class StrTests(TranspileTestCase):
     def test_getitem(self):
         # Simple positive index
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[2])
             """)
 
         # Simple negative index
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-2])
             """)
 
         # Positive index out of range
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[10])
             """)
 
         # Negative index out of range
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-10])
             """)
 
     def test_slice(self):
         # Full slice
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[:])
             """)
 
         # Left bound slice
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[1:])
             """)
 
         # Right bound slice
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[:4])
             """)
 
         # Slice bound in both directions
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[1:4])
             """)
 
         # Slice with step 0 (error)
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[::0])
             """)
 
         # Slice with revese step
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[::-1])
             """)
 
         # Slice -1 stop with reverse step
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-5:-1:-1])
             """)
 
         # Slice -1 start with revese step
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-1:0:-1])
             """)
 
