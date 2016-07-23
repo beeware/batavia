@@ -220,7 +220,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_bytearray',
         'test_subscr_complex',
         'test_subscr_frozenset',
-        'test_subscr_slice',
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
