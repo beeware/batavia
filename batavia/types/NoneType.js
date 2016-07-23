@@ -135,54 +135,54 @@ batavia.types.NoneType = {
      **************************************************/
 
     __ifloordiv__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __itruediv__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__itruediv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __iadd__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__iadd__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __isub__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__isub__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __imul__: function(other) {
         if (batavia.isinstance(other, [batavia.types.List, batavia.types.Tuple, batavia.types.Str])) {
             throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NoneType'");
         } else {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'NoneType' and '" + batavia.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *=: 'NoneType' and '" + batavia.type_name(other) + "'");
         }
     },
 
     __imod__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__imod__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __ipow__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__ipow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __ilshift__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__ilshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __irshift__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__irshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __iand__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__iand__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __ixor__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__ixor__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^=: 'NoneType' and '" + batavia.type_name(other) + "'");
     },
 
     __ior__: function(other) {
-        throw new batavia.builtins.NotImplementedError("NoneType.__ior__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + batavia.type_name(other) + "'");
     }
 };
