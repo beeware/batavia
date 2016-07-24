@@ -242,7 +242,7 @@ String.prototype.__getitem__ = function(index) {
                 stop = result.length;
             }
 
-            result = result.slice(stop, start).reverse();
+            result = result.slice(stop, start).split('').reverse().join('');
         }
 
         var steppedResult = "";
