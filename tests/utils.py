@@ -93,7 +93,7 @@ def adjust(text, run_in_function=False):
 def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     """Run a block of Python code with the Python interpreter."""
     # Output source code into test directory
-    with open(os.path.join(test_dir, 'test.py'), 'w') as py_source:
+    with open(os.path.join(test_dir, 'test.py'), 'w', encoding='utf-8') as py_source:
         py_source.write(adjust(main_code, run_in_function=run_in_function))
 
     if extra_code:
@@ -111,12 +111,15 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     if args is None:
         args = []
 
+    env_copy = os.environ.copy()
+    env_copy['PYTHONIOENCODING'] = 'UTF-8'
     proc = subprocess.Popen(
         [sys.executable, "test.py"] + args,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         cwd=test_dir,
+        env=env_copy,
     )
     out = proc.communicate()
 
@@ -197,7 +200,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
 
     if isinstance(main_code, str):
         py_filename = os.path.join(test_dir, 'test.py')
-        with open(py_filename, 'w') as py_source:
+        with open(py_filename, 'w', encoding='utf-8') as py_source:
             py_source.write(adjust(main_code, run_in_function=run_in_function))
 
     modules = {}
