@@ -359,6 +359,7 @@ PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File 
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 PYTHON_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
+PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
 
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
@@ -419,6 +420,7 @@ def cleanse_python(input, substitutions):
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = PYTHON_FLOAT.sub('\\1e\\2\\3', out)
     out = PYTHON_FLOAT_ROUND.sub('\\1', out)
+    out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
     # Python 3.4.4 changed the message describing strings in exceptions
