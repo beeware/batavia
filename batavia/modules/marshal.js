@@ -257,6 +257,64 @@ batavia.modules.marshal = {
     //     return null;
     // },
 
+    r_float: function(vm, p)
+    {
+        buf = p.fread(8);
+
+        var sign;
+        var e;
+        var fhi, flo;
+        var incr = 1;
+        var retval;
+
+        /* First byte */
+        sign = (buf.charCodeAt(7) >> 7) & 1;
+        e = (buf.charCodeAt(7) & 0x7F) << 4;
+
+        /* Second byte */
+        e |= (buf.charCodeAt(6) >> 4) & 0xF;
+        fhi = (buf.charCodeAt(6) & 0xF) << 24;
+
+        if (e == 2047) {
+            throw "can't unpack IEEE 754 special value on non-IEEE platform";
+        }
+
+        /* Third byte */
+        fhi |= buf.charCodeAt(5) << 16;
+
+        /* Fourth byte */
+        fhi |= buf.charCodeAt(4)  << 8;
+
+        /* Fifth byte */
+        fhi |= buf.charCodeAt(3);
+
+        /* Sixth byte */
+        flo = buf.charCodeAt(2) << 16;
+
+        /* Seventh byte */
+        flo |= buf.charCodeAt(1) << 8;
+
+        /* Eighth byte */
+        flo |= buf.charCodeAt(0);
+
+        retval = fhi + flo / 16777216.0; /* 2**24 */
+        retval /= 268435456.0; /* 2**28 */
+
+        if (e === 0) {
+            e = -1022;
+        } else {
+            retval += 1.0;
+            e -= 1023;
+        }
+        retval = retval * Math.pow(2, e);
+
+        if (sign) {
+            retval = -retval;
+        }
+
+        return new batavia.types.Float(retval);
+    },
+
     /* allocate the reflist index for a new object. Return -1 on failure */
     r_ref_reserve: function(vm, flag, p) {
         if (flag) { /* currently only FLAG_REF is defined */
@@ -455,61 +513,38 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_COMPLEX:
+            n = batavia.modules.marshal.r_byte(vm, p);
+            if (n == batavia.core.PYCFile.EOF) {
+                vm.PyErr_SetString(batavia.builtins.EOFError,
+                    "EOF read where object expected");
+                break;
+            }
+            buf = batavia.modules.marshal.r_string(vm, p, n);
+            real = new batavia.types.Float(parseFloat(buf));
+            n = batavia.modules.marshal.r_byte(vm, p);
+            if (n == batavia.core.PYCFile.EOF) {
+                vm.PyErr_SetString(batavia.builtins.EOFError,
+                    "EOF read where object expected");
+                break;
+            }
+            buf = batavia.modules.marshal.r_string(vm, p, n);
+            imag = new batavia.types.Float(parseFloat(buf));
+            retval = new batavia.types.Complex(real, imag);
             // console.log.info('TYPE_COMPLEX ' + retval);
-        //     {
-        //     char buf[256], *ptr;
-        //     Py_complex c;
-        //     n = batavia.modules.marshal.r_byte(vm, p);
-        //     if (n == EOF) {
-        //         vm.PyErr_SetString(batavia.builtins.EOFError,
-        //             "EOF read where object expected");
-        //         break;
-        //     }
-        //     ptr = r_string(n, p);
-        //     if (ptr === null)
-        //         break;
-        //     memcpy(buf, ptr, n);
-        //     buf[n] = '\0';
-        //     c.real = PyOS_string_to_double(buf, null, null);
-        //     if (c.real == -1.0 && vm.PyErr_Occurred())
-        //         break;
-        //     n = batavia.modules.marshal.r_byte(vm, p);
-        //     if (n == EOF) {
-        //         vm.PyErr_SetString(batavia.builtins.EOFError,
-        //             "EOF read where object expected");
-        //         break;
-        //     }
-        //     ptr = r_string(n, p);
-        //     if (ptr === null)
-        //         break;
-        //     memcpy(buf, ptr, n);
-        //     buf[n] = '\0';
-        //     c.imag = PyOS_string_to_double(buf, null, null);
-        //     if (c.imag == -1.0 && vm.PyErr_Occurred())
-        //         break;
-        //     retval = PyComplex_FromCComplex(c);
-        //     Marsha.r_ref(vm, retval, flag, p);
+            if (flag) {
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
+            }
             break;
 
         case batavia.modules.marshal.TYPE_BINARY_COMPLEX:
-            // console.log.info('TYPE_COMPLEX ' + retval);
-        //         unsigned char *buf;
-        //         Py_complex c;
-        //         buf = batavia.modules.marshal.r_string(vm, 8, p);
-        //         if (buf === null)
-        //             break;
-        //         c.real = _PyFloat_Unpack8(buf, 1);
-        //         if (c.real == -1.0 && vm.PyErr_Occurred())
-        //             break;
-        //         buf = batavia.modules.marshal.r_string(vm, 8, p);
-        //         if (buf === null)
-        //             break;
-        //         c.imag = _PyFloat_Unpack8(buf, 1);
-        //         if (c.imag == -1.0 && vm.PyErr_Occurred())
-        //             break;
-        //         retval = PyComplex_FromCComplex(c);
-        //         Marsha.r_ref(vm, retval, flag, p);
-                break;
+            real = batavia.modules.marshal.r_float(vm, p);
+            imag = batavia.modules.marshal.r_float(vm, p);
+            retval = new batavia.types.Complex(real, imag);
+            // console.log.info('TYPE_BINARY_COMPLEX ' + retval);
+            if (flag) {
+                batavia.modules.marshal.r_ref(vm, retval, flag, p);
+            }
+            break;
 
         case batavia.modules.marshal.TYPE_STRING:
             n = batavia.modules.marshal.r_long(vm, p);
