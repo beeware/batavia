@@ -873,7 +873,7 @@ batavia.builtins.reversed = function(args, kwargs) {
         return new_iterable;
     }
 
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects");
 
 };
 
