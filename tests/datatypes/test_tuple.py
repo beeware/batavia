@@ -83,6 +83,27 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
+    @unittest.expectedFailure
+    def test_test_eq_bytearray(self):
+        raise NotImplementedError
+
+    @unittest.expectedFailure
+    def test_test_eq_class(self):
+        raise NotImplementedError
+
+    @unittest.expectedFailure
+    def test_test_eq_complex(self):
+        raise NotImplementedError
+
+    @unittest.expectedFailure
+    def test_test_eq_frozenset(self):
+        raise NotImplementedError
+
+    def test_test_eq_tuple(self):
+        self.assertCodeExecution("""
+            (1, 2, 3, 4, 5) == (1, 2, 3, 4, 5)
+            """)
+
     not_implemented = [
         'test_add_bytearray',
         'test_add_bytes',
@@ -106,12 +127,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_slice',
         'test_and_str',
         'test_and_tuple',
-
-        'test_eq_bytearray',
-        'test_eq_class',
-        'test_eq_complex',
-        'test_eq_frozenset',
-        'test_eq_tuple',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
