@@ -2,7 +2,11 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class ReversedTests(TranspileTestCase):
-    pass
+    
+    def test_reverse_list(self):
+        self.assertCodeExecution("""
+            list(reversed([1,2,3]))
+        """)
 
 
 class BuiltinReversedFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
