@@ -1549,7 +1549,7 @@ batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
             };
             why = 'reraise';
         } else {
-            throw new batavia.builtins.BataviaError("Confused END_FINALLY");
+            throw new batavia.builtins.BataviaError("Confused END_FINALLY: " + value.toString());
         }
     }
     return why;
