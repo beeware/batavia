@@ -44,10 +44,10 @@ batavia.types.Complex = function() {
         // console.log(100000, re, im);
         if (batavia.isinstance(re, batavia.types.Str)) {
             // console.log(1000, re, im);
-            var regex = /\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?/i;
+            var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i;
             var match = regex.exec(re);
-            if (match == null) {
-                throw new batavia.builtins.ValueError("complex() arg '" + re + "' is a malformed string");
+            if (match == null || re == "") {
+                throw new batavia.builtins.ValueError("complex() arg is a malformed string");
             }
             this.real = part_from_str(match[1]);
             this.imag = part_from_str(match[3]);

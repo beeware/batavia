@@ -74,7 +74,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_eq_bytearray',
         'test_eq_class',
-        'test_eq_complex',
         'test_eq_frozenset',
         'test_eq_str',
 
@@ -203,13 +202,11 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',
 
         'test_ne_bytearray',
         'test_ne_class',
-        'test_ne_complex',
         'test_ne_frozenset',
         'test_ne_str',
 
@@ -438,7 +435,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',
 

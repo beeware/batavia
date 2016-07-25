@@ -80,7 +80,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_eq_bytearray',
         'test_eq_class',
-        'test_eq_complex',
         'test_eq_frozenset',
         'test_eq_range',
 
@@ -230,7 +229,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_ne_bytearray',
         'test_ne_class',
-        'test_ne_complex',
         'test_ne_frozenset',
         'test_ne_range',
 
