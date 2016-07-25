@@ -870,7 +870,7 @@ batavia.builtins.reversed = function(args, kwargs) {
     if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
         var new_iterable = iterable.slice(0);
         new_iterable.reverse();
-        return new_iterable;
+        return new batavia.types.List(new_iterable);
     }
 
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects");
