@@ -5,7 +5,7 @@ class ReversedTests(TranspileTestCase):
     
     def test_reverse_list(self):
         self.assertCodeExecution("""
-            list(reversed([1,2,3]))
+            print(list(reversed([1,2,3])))
         """)
 
 
