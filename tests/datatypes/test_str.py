@@ -262,7 +262,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_complex',
         'test_lshift_frozenset',
 
         'test_modulo_bool',
@@ -285,7 +284,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
 
         'test_or_bytearray',
