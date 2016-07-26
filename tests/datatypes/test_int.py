@@ -50,7 +50,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
         'test_floor_divide_complex',
-        'test_floor_divide_float',
         'test_floor_divide_frozenset',
 
         'test_ge_bytearray',
@@ -118,13 +117,10 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_complex',
         'test_subtract_frozenset',
 
-        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
         'test_true_divide_complex',
-        'test_true_divide_float',
         'test_true_divide_frozenset',
-        'test_true_divide_int',
 
         'test_xor_bytearray',
         'test_xor_bytes',
@@ -148,7 +144,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
         'test_floor_divide_complex',
-        'test_floor_divide_float',
         'test_floor_divide_frozenset',
 
         'test_lshift_bytearray',
@@ -185,13 +180,10 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_complex',
         'test_subtract_frozenset',
 
-        'test_true_divide_bool',
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
         'test_true_divide_complex',
-        'test_true_divide_float',
         'test_true_divide_frozenset',
-        'test_true_divide_int',
 
         'test_xor_bytearray',
         'test_xor_bytes',
