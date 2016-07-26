@@ -881,9 +881,20 @@ batavia.builtins.repr = function(args, kwargs) {
 };
 batavia.builtins.repr.__doc__ = 'repr(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) == object.';
 
-batavia.builtins.reversed = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented");
+batavia.builtins.reversed = function(args, kwargs) {
+    var iterable = args[0];
+    if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
+        var new_iterable = iterable.slice(0);
+        new_iterable.reverse();
+        return new batavia.types.List(new_iterable);
+    }
+
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects");
+
 };
+
+batavia.builtins.reversed.__doc__ = 'reversed(sequence) -> reverse iterator over values of the sequence\n\nReturn a reverse iterator';
+
 
 batavia.builtins.round = function(args) {
     var p = 0; // Precision
