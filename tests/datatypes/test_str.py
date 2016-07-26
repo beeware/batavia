@@ -22,74 +22,74 @@ class StrTests(TranspileTestCase):
     def test_getitem(self):
         # Simple positive index
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[2])
             """)
 
         # Simple negative index
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-2])
             """)
 
         # Positive index out of range
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[10])
             """)
 
         # Negative index out of range
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-10])
             """)
 
     def test_slice(self):
         # Full slice
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[:])
             """)
 
         # Left bound slice
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[1:])
             """)
 
         # Right bound slice
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[:4])
             """)
 
         # Slice bound in both directions
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[1:4])
             """)
 
         # Slice with step 0 (error)
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[::0])
             """)
 
         # Slice with revese step
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[::-1])
             """)
 
         # Slice -1 stop with reverse step
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-5:-1:-1])
             """)
 
         # Slice -1 start with revese step
         self.assertCodeExecution("""
-            x = [1, 2, 3, 4, 5]
+            x = 'abcde'
             print(x[-1:0:-1])
             """)
 
@@ -108,18 +108,15 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_bytearray',
         'test_add_bytes',
-        'test_add_complex',
         'test_add_frozenset',
 
         'test_and_bytearray',
         'test_and_bytes',
-        'test_and_complex',
         'test_and_frozenset',
 
         'test_eq_bytearray',
         'test_eq_bytes',
         'test_eq_class',
-        'test_eq_complex',
         'test_eq_frozenset',
 
         'test_floor_divide_bytearray',
@@ -159,7 +156,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_complex',
         'test_lshift_frozenset',
 
         'test_lt_bytearray',
@@ -192,49 +188,39 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
 
         'test_ne_bytearray',
         'test_ne_bytes',
         'test_ne_class',
-        'test_ne_complex',
         'test_ne_frozenset',
 
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_complex',
         'test_or_frozenset',
 
         'test_power_bytearray',
         'test_power_bytes',
-        'test_power_complex',
         'test_power_frozenset',
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
-        'test_rshift_complex',
         'test_rshift_frozenset',
 
         'test_subscr_bool',
         'test_subscr_bytearray',
-        'test_subscr_complex',
         'test_subscr_frozenset',
-        'test_subscr_slice',
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_complex',
         'test_subtract_frozenset',
 
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
-        'test_true_divide_complex',
         'test_true_divide_frozenset',
 
         'test_xor_bytearray',
         'test_xor_bytes',
-        'test_xor_complex',
         'test_xor_frozenset',
     ]
 
@@ -276,7 +262,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_complex',
         'test_lshift_frozenset',
 
         'test_modulo_bool',
@@ -299,18 +284,12 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
 
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_class',
         'test_or_complex',
         'test_or_frozenset',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
 
         'test_power_bytearray',
         'test_power_bytes',
@@ -334,7 +313,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_complex',
         'test_subtract_frozenset',
 
         'test_true_divide_bytearray',

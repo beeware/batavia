@@ -124,17 +124,14 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_bytearray',
         'test_add_bytes',
-        'test_add_complex',
         'test_add_frozenset',
 
         'test_and_bytearray',
         'test_and_bytes',
-        'test_and_complex',
         'test_and_frozenset',
 
         'test_eq_bytearray',
         'test_eq_class',
-        'test_eq_complex',
         'test_eq_frozenset',
         'test_eq_list',
 
@@ -199,7 +196,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_complex',
         'test_lshift_frozenset',
 
         'test_lt_bool',
@@ -227,49 +223,40 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
 
         'test_ne_bytearray',
         'test_ne_class',
-        'test_ne_complex',
         'test_ne_frozenset',
         'test_ne_list',
 
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_complex',
         'test_or_frozenset',
 
         'test_power_bytearray',
         'test_power_bytes',
-        'test_power_complex',
         'test_power_frozenset',
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
-        'test_rshift_complex',
         'test_rshift_frozenset',
 
         'test_subscr_bool',
         'test_subscr_bytearray',
         'test_subscr_bytes',
-        'test_subscr_complex',
         'test_subscr_frozenset',
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_complex',
         'test_subtract_frozenset',
 
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
-        'test_true_divide_complex',
         'test_true_divide_frozenset',
 
         'test_xor_bytearray',
         'test_xor_bytes',
-        'test_xor_complex',
         'test_xor_frozenset',
     ]
 
@@ -280,7 +267,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_bytearray',
         'test_add_bytes',
-        'test_add_complex',
         'test_add_dict',
         'test_add_frozenset',
         'test_add_range',
@@ -288,7 +274,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_and_bytearray',
         'test_and_bytes',
-        'test_and_complex',
         'test_and_frozenset',
 
         'test_floor_divide_bytearray',
@@ -296,10 +281,8 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
 
-
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_complex',
         'test_lshift_frozenset',
 
         'test_modulo_bytearray',
@@ -309,36 +292,29 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
-        'test_multiply_complex',
         'test_multiply_frozenset',
 
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_complex',
         'test_or_frozenset',
 
         'test_power_bytearray',
         'test_power_bytes',
-        'test_power_complex',
         'test_power_frozenset',
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
-        'test_rshift_complex',
         'test_rshift_frozenset',
 
         'test_subtract_bytearray',
         'test_subtract_bytes',
-        'test_subtract_complex',
         'test_subtract_frozenset',
 
         'test_true_divide_bytearray',
         'test_true_divide_bytes',
-        'test_true_divide_complex',
         'test_true_divide_frozenset',
 
         'test_xor_bytearray',
         'test_xor_bytes',
-        'test_xor_complex',
         'test_xor_frozenset',
     ]

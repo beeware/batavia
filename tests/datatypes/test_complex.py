@@ -3,30 +3,33 @@ from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationT
 import unittest
 
 
-class NoneTypeTests(TranspileTestCase):
+class ComplexTests(TranspileTestCase):
     @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
-            x = None
-            x.thing = 42
+            x = b'hello, world'
+            x.attr = 42
             print('Done.')
             """)
 
     @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
-            x = None
-            y = x.thing
+            x = b'hello, world'
+            print(x.attr)
             print('Done.')
             """)
 
 
-class UnaryNoneTypeOperationTests(UnaryOperationTestCase, TranspileTestCase):
-    data_type = 'None'
+class UnaryComplexOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'complex'
+
+    not_implemented = [
+    ]
 
 
-class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
-    data_type = 'None'
+class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
+    data_type = 'complex'
 
     not_implemented = [
         'test_add_bytearray',
@@ -42,8 +45,6 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_eq_frozenset',
 
         'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_complex',
         'test_floor_divide_frozenset',
 
         'test_ge_bytearray',
@@ -53,22 +54,20 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_bytearray',
         'test_gt_bytes',
         'test_gt_frozenset',
-        
-        'test_le_bytearray',
-        'test_le_bytes',
-        'test_le_frozenset',
-
-        'test_lshift_bytearray',
-        'test_lshift_bytes',
-        'test_lshift_frozenset',
 
         'test_lt_bytearray',
         'test_lt_bytes',
         'test_lt_frozenset',
 
+        'test_lshift_bytearray',
+        'test_lshift_bytes',
+        'test_lshift_frozenset',
+
+        'test_le_bytearray',
+        'test_le_bytes',
+        'test_le_frozenset',
+
         'test_modulo_bytearray',
-        'test_modulo_bytes',
-        'test_modulo_complex',
         'test_modulo_frozenset',
 
         'test_multiply_bytearray',
@@ -82,9 +81,23 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_or_bytes',
         'test_or_frozenset',
 
+        'test_power_bool',
         'test_power_bytearray',
         'test_power_bytes',
+        'test_power_class',
+        'test_power_complex',
+        'test_power_dict',
+        'test_power_float',
         'test_power_frozenset',
+        'test_power_int',
+        'test_power_list',
+        'test_power_None',
+        'test_power_NotImplemented',
+        'test_power_range',
+        'test_power_set',
+        'test_power_slice',
+        'test_power_str',
+        'test_power_tuple',
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
@@ -107,8 +120,8 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
     ]
 
 
-class InplaceNoneTypeOperationTests(InplaceOperationTestCase, TranspileTestCase):
-    data_type = 'None'
+class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
+    data_type = 'complex'
 
     not_implemented = [
         'test_add_bytearray',
@@ -120,8 +133,6 @@ class InplaceNoneTypeOperationTests(InplaceOperationTestCase, TranspileTestCase)
         'test_and_frozenset',
 
         'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_complex',
         'test_floor_divide_frozenset',
 
         'test_lshift_bytearray',
@@ -129,8 +140,6 @@ class InplaceNoneTypeOperationTests(InplaceOperationTestCase, TranspileTestCase)
         'test_lshift_frozenset',
 
         'test_modulo_bytearray',
-        'test_modulo_bytes',
-        'test_modulo_complex',
         'test_modulo_frozenset',
 
         'test_multiply_bytearray',
@@ -140,9 +149,23 @@ class InplaceNoneTypeOperationTests(InplaceOperationTestCase, TranspileTestCase)
         'test_or_bytes',
         'test_or_frozenset',
 
+        'test_power_bool',
         'test_power_bytearray',
         'test_power_bytes',
+        'test_power_class',
+        'test_power_complex',
+        'test_power_dict',
+        'test_power_float',
         'test_power_frozenset',
+        'test_power_int',
+        'test_power_list',
+        'test_power_None',
+        'test_power_NotImplemented',
+        'test_power_range',
+        'test_power_set',
+        'test_power_slice',
+        'test_power_str',
+        'test_power_tuple',
 
         'test_rshift_bytearray',
         'test_rshift_bytes',

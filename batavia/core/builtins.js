@@ -322,8 +322,24 @@ batavia.builtins.compile = function(args, kwargs) {
 batavia.builtins.compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified.";
 
 batavia.builtins.complex = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'complex' not implemented");
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("complex() doesn't accept keyword arguments");
+    }
+    if (!args || args.length > 2) {
+        throw new batavia.builtins.TypeError('complex() expected at most 2 arguments (' + args.length + ' given)');
+    }
+    var re = 0;
+    if (args.length >= 1) {
+        re = args[0];
+    }
+    var im = 0;
+    if (args.length == 2) {
+        im = args[1];
+    }
+    return new batavia.types.Complex(re, im);
 };
 batavia.builtins.complex.__doc__ = 'complex(real[, imag]) -> complex number\n\nCreate a complex number from a real part and an optional imaginary part.\nThis is equivalent to (real + imag*1j) where imag defaults to 0.';
 
@@ -368,12 +384,15 @@ batavia.builtins.dict = function(args, kwargs) {
     if (args.length > 1) {
         throw new batavia.builtins.TypeError("dict expected at most 1 arguments, got " + args.length);
     }
-    if (batavia.isinstance(args[0], batavia.types.Int)) {
+    if (batavia.isinstance(args[0], [batavia.types.Int, batavia.types.Bool])) {
         throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
     if (batavia.isinstance(args[0], batavia.types.Str)) {
         throw new batavia.builtins.ValueError("dictionary update sequence element #0 has length 1; 2 is required");
     }
+    //if single bool case
+
+    //if multiple bool case
 
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
@@ -862,9 +881,20 @@ batavia.builtins.repr = function(args, kwargs) {
 };
 batavia.builtins.repr.__doc__ = 'repr(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) == object.';
 
-batavia.builtins.reversed = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented");
+batavia.builtins.reversed = function(args, kwargs) {
+    var iterable = args[0];
+    if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
+        var new_iterable = iterable.slice(0);
+        new_iterable.reverse();
+        return new batavia.types.List(new_iterable);
+    }
+
+    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects");
+
 };
+
+batavia.builtins.reversed.__doc__ = 'reversed(sequence) -> reverse iterator over values of the sequence\n\nReturn a reverse iterator';
+
 
 batavia.builtins.round = function(args) {
     var p = 0; // Precision

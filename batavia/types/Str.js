@@ -242,7 +242,7 @@ String.prototype.__getitem__ = function(index) {
                 stop = result.length;
             }
 
-            result = result.slice(stop, start).reverse();
+            result = result.slice(stop, start).split('').reverse().join('');
         }
 
         var steppedResult = "";
@@ -431,7 +431,15 @@ String.prototype.__ior__ = function(other) {
             batavia.types.List,
             batavia.types.NoneType,
             batavia.types.Str,
-            batavia.types.Tuple
+            batavia.types.Tuple,
+            batavia.types.Type,
+            batavia.types.Range,
+            batavia.types.NotImplementedType,
+            batavia.types.Set,
+            batavia.types.Slice,
+
+
+
         ])) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'str' and '" + batavia.type_name(other) + "'");
     } else {

@@ -37,13 +37,11 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_bool',
         'test_and_bytearray',
         'test_and_bytes',
-        'test_and_complex',
         'test_and_frozenset',
 
         'test_eq_bytearray',
         'test_eq_bytes',
         'test_eq_class',
-        'test_eq_complex',
         'test_eq_frozenset',
         'test_eq_str',
 
@@ -111,7 +109,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lshift_bytearray',
         'test_lshift_bytes',
-        'test_lshift_complex',
         'test_lshift_frozenset',
         'test_lshift_int',
 
@@ -149,14 +146,12 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_bytearray',
         'test_ne_bytes',
         'test_ne_class',
-        'test_ne_complex',
         'test_ne_frozenset',
         'test_ne_str',
 
         'test_or_bool',
         'test_or_bytearray',
         'test_or_bytes',
-        'test_or_complex',
         'test_or_frozenset',
 
         'test_power_bytearray',
@@ -176,7 +171,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_rshift_bytearray',
         'test_rshift_bytes',
-        'test_rshift_complex',
         'test_rshift_frozenset',
         'test_rshift_int',
 
@@ -214,7 +208,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_xor_bool',
         'test_xor_bytearray',
         'test_xor_bytes',
-        'test_xor_complex',
         'test_xor_frozenset',
     ]
 

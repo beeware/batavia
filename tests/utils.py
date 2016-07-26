@@ -93,7 +93,7 @@ def adjust(text, run_in_function=False):
 def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     """Run a block of Python code with the Python interpreter."""
     # Output source code into test directory
-    with open(os.path.join(test_dir, 'test.py'), 'w') as py_source:
+    with open(os.path.join(test_dir, 'test.py'), 'w', encoding='utf-8') as py_source:
         py_source.write(adjust(main_code, run_in_function=run_in_function))
 
     if extra_code:
@@ -111,12 +111,15 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     if args is None:
         args = []
 
+    env_copy = os.environ.copy()
+    env_copy['PYTHONIOENCODING'] = 'UTF-8'
     proc = subprocess.Popen(
         [sys.executable, "test.py"] + args,
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         cwd=test_dir,
+        env=env_copy,
     )
     out = proc.communicate()
 
@@ -197,7 +200,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
 
     if isinstance(main_code, str):
         py_filename = os.path.join(test_dir, 'test.py')
-        with open(py_filename, 'w') as py_source:
+        with open(py_filename, 'w', encoding='utf-8') as py_source:
             py_source.write(adjust(main_code, run_in_function=run_in_function))
 
     modules = {}
@@ -350,10 +353,13 @@ JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
 JS_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
+JS_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
 
 PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
+PYTHON_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
+PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
 
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
@@ -384,6 +390,7 @@ def cleanse_javascript(input, substitutions):
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
     out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    out = JS_FLOAT_ROUND.sub('\\1', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
     if substitutions:
@@ -412,6 +419,8 @@ def cleanse_python(input, substitutions):
     )
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = PYTHON_FLOAT.sub('\\1e\\2\\3', out)
+    out = PYTHON_FLOAT_ROUND.sub('\\1', out)
+    out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
     # Python 3.4.4 changed the message describing strings in exceptions
@@ -659,8 +668,9 @@ SAMPLE_DATA = {
         ],
     'complex': [
             '1j',
+            '3.14159265j',
             '1+2j',
-            '-5j',
+            '3-4j',
         ],
     'dict': [
             "{}",
