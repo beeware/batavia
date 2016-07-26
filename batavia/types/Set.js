@@ -290,6 +290,10 @@ batavia.types.Set = function() {
      * Methods
      **************************************************/
 
+    /* Preserve the original objects as values when adding to the set;
+     * JS object keys are coerced to string.
+     */
+
     Set.prototype.add = function(v) {
         this[v] = v;
     };
