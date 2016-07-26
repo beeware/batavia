@@ -166,12 +166,19 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__floordiv__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
+        if (batavia.isinstance(other, batavia.types.Int)) {
             if (other.valueOf()) {
                 return new Int(Math.floor(this.valueOf() / other.valueOf()));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
+        } else if (batavia.isinstance(other, batavia.types.Float)) {
+            if (other.valueOf()) {
+                return new batavia.types.Float(Math.floor(this.valueOf() / other.valueOf()));
+            } else {
+                throw new batavia.builtins.ZeroDivisionError("float divmod()");
+            }
+
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
                 return new Int(Math.floor(this.valueOf()));
@@ -186,15 +193,16 @@ batavia.types.Int = function() {
     Int.prototype.__truediv__ = function(other) {
         if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
             if (other.valueOf()) {
-                return new Int(this.valueOf() / other.valueOf());
-            } else {
+                return new batavia.types.Float(this.valueOf() / other.valueOf()).toString();
+            } else if (batavia.isinstance(other, batavia.types.Float)) {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
             }
+            throw new batavia.builtins.ZeroDivisionError("division by zero");
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return new Int(this.valueOf());
+                return new batavia.types.Float(this.valueOf());
             } else {
-                throw new batavia.builtins.ZeroDivisionError("float division by zero");
+                throw new batavia.builtins.ZeroDivisionError("division by zero");
             }
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'int' and '" + batavia.type_name(other) + "'");
