@@ -223,9 +223,15 @@ batavia.types.Int = function() {
             }
             return result;
         } else if (batavia.isinstance(other, batavia.types.Str)) {
-            var result = '';
+            result = '';
             for (var i = 0; i < this.valueOf(); i++) {
                 result += other.valueOf();
+              }
+            return result;
+        } else if (batavia.isinstance(other, batavia.types.Tuple)) {
+            result = new batavia.types.Tuple();
+            for (var i = 0; i < this.valueOf(); i++) {
+                result.__add__(other);
               }
             return result;
         } else {
