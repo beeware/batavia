@@ -119,7 +119,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_complex',
         'test_ge_frozenset',
         'test_ge_NotImplemented',
-        'test_ge_set',
         'test_ge_slice',
 
         'test_gt_bytearray',
@@ -128,7 +127,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_complex',
         'test_gt_frozenset',
         'test_gt_NotImplemented',
-        'test_gt_set',
         'test_gt_slice',
 
         'test_le_bytearray',
@@ -137,7 +135,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_complex',
         'test_le_frozenset',
         'test_le_NotImplemented',
-        'test_le_set',
         'test_le_slice',
 
         'test_lshift_bool',
@@ -164,7 +161,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_complex',
         'test_lt_frozenset',
         'test_lt_NotImplemented',
-        'test_lt_set',
         'test_lt_slice',
 
         'test_modulo_bool',
