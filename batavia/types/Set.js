@@ -7,7 +7,7 @@ batavia.types.Set = function() {
     function Set(args, kwargs) {
         Object.call(this);
         if (args) {
-            this.update(args[0]);
+            this.update(args);
         }
     }
 
@@ -39,10 +39,13 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__str__ = function() {
+        if (Object.keys(this).length == 0) {
+            return "set()";
+        }
         var result = "{", values = [];
         for (var key in this) {
             if (this.hasOwnProperty(key)) {
-                values.push(batavia.builtins.str(key, null));
+                values.push(batavia.builtins.repr([this[key]], null));
             }
         }
         result += values.join(', ');
@@ -252,7 +255,27 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__iand__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__iand__ has not been implemented");
+        if (other === null || batavia.isinstance(other, [
+                batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+                batavia.types.List, batavia.types.Int, batavia.types.Range,
+                batavia.types.Slice, batavia.types.Str, batavia.types.Tuple
+            ])) {
+            throw new batavia.builtins.TypeError(
+                "unsupported operand type(s) for &=: 'set' and '" + batavia.type_name(other) + "'");
+        }
+        if (batavia.isinstance(other, batavia.types.Set)) {
+            var intersection = new Set();
+            for (var key in this) {
+                if (this.hasOwnProperty(key)) {
+                    if (other.hasOwnProperty(key)) {
+                        intersection.add(other[key]);
+                    }
+                }
+            }
+            return intersection;
+        }
+        throw new batavia.builtins.NotImplementedError(
+            "Set.__iand__ has not been implemented for type '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__ixor__ = function(other) {
@@ -267,8 +290,12 @@ batavia.types.Set = function() {
      * Methods
      **************************************************/
 
+    /* Preserve the original objects as values when adding to the set;
+     * JS object keys are coerced to string.
+     */
+
     Set.prototype.add = function(v) {
-        this[v] = null;
+        this[v] = v;
     };
 
     Set.prototype.copy = function() {
@@ -282,7 +309,7 @@ batavia.types.Set = function() {
     Set.prototype.update = function(values) {
         for (var value in values) {
             if (values.hasOwnProperty(value)) {
-                this[values[value]] = null;
+                this[values[value]] = values[value];
             }
         }
     };
