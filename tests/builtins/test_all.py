@@ -27,7 +27,6 @@ class BuiltinAllFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_dict',
         'test_complex',
         'test_frozenset',
-        'test_None',
         'test_NotImplemented',
         'test_range',
     ]
