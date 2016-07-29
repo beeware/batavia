@@ -168,6 +168,9 @@ batavia.builtins.abs = function(args, kwargs) {
 batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
 batavia.builtins.all = function(args, kwargs) {
+    if (args[0] == null) {
+        throw new batavia.builtins.TypeError("'NoneType' object is not iterable");
+    }
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
