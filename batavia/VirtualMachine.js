@@ -1330,6 +1330,7 @@ batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
 
             return;
 
+        case batavia.BATAVIA_MAGIC_35a0:
         case batavia.BATAVIA_MAGIC_34:
             this.push(new batavia.types.Dict());
 
@@ -1349,6 +1350,7 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
                 "STORE_MAP is unsupported with BATAVIA_MAGIC"
             );
 
+        case batavia.BATAVIA_MAGIC_35a0:
         case batavia.BATAVIA_MAGIC_34:
             var items = this.popn(3);
             items[0][items[2]] = items[1];

@@ -16,3 +16,4 @@ var batavia = {
 batavia.BATAVIA_MAGIC = null;
 batavia.BATAVIA_MAGIC_34 = String.fromCharCode(238, 12, 13, 10);
 batavia.BATAVIA_MAGIC_35 = String.fromCharCode(22, 13, 13, 10);
+batavia.BATAVIA_MAGIC_35a0 = String.fromCharCode(248, 12, 13, 10);
