@@ -1335,6 +1335,12 @@ batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
 
             return;
 
+        
+        case batavia.BATAVIA_MAGIC_35a0:
+            this.push(new batavia.types.Dict());
+
+            return;
+
         default:
             throw new batavia.builtins.BataviaError(
                 "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
@@ -1355,6 +1361,14 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
             this.push(items[0]);
 
             return;
+
+        case batavia.BATAVIA_MAGIC_35a0:
+            var items = this.popn(3);
+            items[0][items[2]] = items[1];
+            this.push(items[0]);
+
+            return;
+
 
         default:
             throw new batavia.builtins.BataviaError(
