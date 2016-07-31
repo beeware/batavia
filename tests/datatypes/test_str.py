@@ -151,7 +151,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_frozenset',
         'test_le_NotImplemented',
         'test_le_range',
-        'test_le_set',
         'test_le_slice',
 
         'test_lshift_bytearray',
