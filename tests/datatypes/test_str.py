@@ -131,7 +131,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_frozenset',
         'test_ge_NotImplemented',
         'test_ge_range',
-        'test_ge_set',
         'test_ge_slice',
 
         'test_gt_bytearray',
