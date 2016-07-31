@@ -77,7 +77,16 @@ batavia.types.List = function() {
     };
 
     List.prototype.__ge__ = function(other) {
-        return this.valueOf() >= other;
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list >= list behavior */
+                return this.valueOf() >= other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() >= " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() >= NoneType()");
+        }
     };
 
     List.prototype.__contains__ = function(other) {
