@@ -144,7 +144,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_set',
         'test_gt_slice',
 
-        'test_le_bytearray',
+
         'test_le_bytes',
         'test_le_class',
         'test_le_complex',
