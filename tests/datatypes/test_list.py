@@ -134,8 +134,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_frozenset',
 
         'test_ge_bool',
-        'test_ge_bytearray',
-        'test_ge_bytes',
         'test_ge_class',
         'test_ge_complex',
         'test_ge_dict',
@@ -152,8 +150,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_tuple',
 
         'test_gt_bool',
-        'test_gt_bytearray',
-        'test_gt_bytes',
         'test_gt_class',
         'test_gt_complex',
         'test_gt_dict',
@@ -170,8 +166,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_tuple',
 
         'test_le_bool',
-        'test_le_bytearray',
-        'test_le_bytes',
         'test_le_class',
         'test_le_complex',
         'test_le_dict',
@@ -190,8 +184,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lshift_frozenset',
 
         'test_lt_bool',
-        'test_lt_bytearray',
-        'test_lt_bytes',
         'test_lt_class',
         'test_lt_complex',
         'test_lt_dict',
