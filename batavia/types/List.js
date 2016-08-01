@@ -58,23 +58,30 @@ batavia.types.List = function() {
 
     List.prototype.__lt__ = function(other) {
 
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
-
-            throw new batavia.builtins.TypeError("unorderable types: list() < " + batavia.type_name(other) + "()")
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list < list behavior */
+                return this.valueOf() < other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() < " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() < NoneType()");
         }
-
-        return this.valueOf() <= other;
     };
 
     List.prototype.__le__ = function(other) {
-
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
-
-            throw new batavia.builtins.TypeError("unorderable types: list() <= " + batavia.type_name(other) + "()")
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list <= list behavior */
+                return this.valueOf() <= other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() <= " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() <= NoneType()");
         }
 
-
-        return this.valueOf() <= other;
     };
 
     List.prototype.__eq__ = function(other) {
@@ -87,22 +94,30 @@ batavia.types.List = function() {
 
     List.prototype.__gt__ = function(other) {
 
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
-
-            throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()")
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list > list behavior */
+                return this.valueOf() > other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() > NoneType()");
         }
-
-        return this.valueOf() > other;
     };
 
     List.prototype.__ge__ = function(other) {
-
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
-
-            throw new batavia.builtins.TypeError("unorderable types: list() >= " + batavia.type_name(other) + "()")
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list >= list behavior */
+                return this.valueOf() >= other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() >= " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() >= NoneType()");
         }
 
-        return this.valueOf() >= other;
     };
 
     List.prototype.__contains__ = function(other) {
