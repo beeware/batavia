@@ -68,8 +68,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
     not_implemented = [
-        'test_add_bytearray',
-        'test_add_bytes',
         'test_add_frozenset',
 
         'test_and_bool',
@@ -90,7 +88,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bytearray',
         'test_eq_class',
         'test_eq_frozenset',
         'test_eq_set',
@@ -199,7 +196,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_bytearray',
         'test_ne_class',
         'test_ne_frozenset',
         'test_ne_set',
@@ -294,8 +290,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_str',
         'test_subtract_tuple',
 
-        'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_frozenset',
 
         'test_xor_bool',
@@ -322,8 +316,6 @@ class InplaceSetOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
     not_implemented = [
-        'test_add_bytearray',
-        'test_add_bytes',
         'test_add_frozenset',
 
         'test_and_bytearray',

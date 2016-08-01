@@ -72,11 +72,9 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bytearray',
         'test_eq_bytes',
         'test_eq_class',
         'test_eq_frozenset',
-        'test_eq_str',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -97,7 +95,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_tuple',
 
         'test_ge_bool',
-        'test_ge_bytearray',
         'test_ge_bytes',
         'test_ge_class',
         'test_ge_complex',
@@ -115,7 +112,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_tuple',
 
         'test_gt_bool',
-        'test_gt_bytearray',
         'test_gt_bytes',
         'test_gt_class',
         'test_gt_complex',
@@ -168,7 +164,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lshift_tuple',
 
         'test_le_bool',
-        'test_le_bytearray',
         'test_le_bytes',
         'test_le_class',
         'test_le_complex',
@@ -204,9 +199,10 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_tuple',
 
         'test_multiply_bool',
+        # 'test_multiply_class',
+        # 'test_multiply_complex',
         'test_multiply_frozenset',
         'test_multiply_int',
-        'test_multiply_tuple',
 
         'test_ne_bytes',
         'test_ne_class',
@@ -437,6 +433,8 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_bool',
         'test_multiply_bytearray',
         'test_multiply_bytes',
+        'test_multiply_class',
+        'test_multiply_complex',
         'test_multiply_None',
         'test_multiply_NotImplemented',
         'test_multiply_class'

@@ -84,8 +84,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
     not_implemented = [
-        'test_add_bytearray',
-        'test_add_bytes',
         'test_add_frozenset',
 
         'test_and_bool',
@@ -106,13 +104,10 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bytearray',
         'test_eq_class',
         'test_eq_frozenset',
         'test_eq_tuple',
 
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
 
@@ -133,13 +128,11 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_slice',
         'test_ge_str',
 
-        'test_gt_bytearray',
-        'test_gt_bytes',
         'test_gt_frozenset',
 
-        'test_le_bool',
         'test_le_bytearray',
         'test_le_bytes',
+        'test_le_bool',
         'test_le_class',
         'test_le_complex',
         'test_le_dict',
@@ -172,22 +165,15 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lshift_str',
         'test_lshift_tuple',
 
-        'test_lt_bytearray',
-        'test_lt_bytes',
         'test_lt_frozenset',
 
-        'test_modulo_bytearray',
-        'test_modulo_bytes',
         'test_modulo_complex',
         'test_modulo_frozenset',
 
         'test_multiply_bool',
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
         'test_multiply_frozenset',
         'test_multiply_int',
 
-        'test_ne_bytearray',
         'test_ne_class',
         'test_ne_frozenset',
         'test_ne_tuple',
@@ -210,8 +196,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_or_str',
         'test_or_tuple',
 
-        'test_power_bytearray',
-        'test_power_bytes',
         'test_power_frozenset',
 
         'test_rshift_bool',
@@ -233,17 +217,11 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_rshift_tuple',
 
         'test_subscr_bool',
-        'test_subscr_bytearray',
-        'test_subscr_bytes',
         'test_subscr_frozenset',
         'test_subscr_slice',
 
-        'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_frozenset',
 
-        'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_frozenset',
 
         'test_xor_bool',
@@ -270,9 +248,10 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
     not_implemented = [
-        'test_add_bool',
+
         'test_add_bytearray',
         'test_add_bytes',
+        'test_add_bool',
         'test_add_class',
         'test_add_complex',
         'test_add_dict',
@@ -306,8 +285,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
 
@@ -329,8 +306,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_lshift_str',
         'test_lshift_tuple',
 
-        'test_modulo_bytearray',
-        'test_modulo_bytes',
         'test_modulo_complex',
         'test_modulo_frozenset',
 
@@ -370,8 +345,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_or_str',
         'test_or_tuple',
 
-        'test_power_bytearray',
-        'test_power_bytes',
         'test_power_frozenset',
 
         'test_rshift_bool',
@@ -392,12 +365,8 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_frozenset',
 
-        'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_frozenset',
 
         'test_xor_bool',

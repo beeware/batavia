@@ -10,6 +10,7 @@ class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_bool',
+        'test_bytes',
         'test_bytearray',
         'test_class',
         'test_complex',

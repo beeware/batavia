@@ -147,7 +147,7 @@ class BinaryBytearrayOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lt_bool',
         'test_lt_bytearray',
-        'test_lt_bytes',
+        'test_lt_class',
         'test_lt_complex',
         'test_lt_dict',
         'test_lt_float',
@@ -180,6 +180,7 @@ class BinaryBytearrayOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
+        'test_multiply_frozenset',
         'test_multiply_bool',
         'test_multiply_int',
 
