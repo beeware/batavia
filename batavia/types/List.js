@@ -57,11 +57,29 @@ batavia.types.List = function() {
      **************************************************/
 
     List.prototype.__lt__ = function(other) {
-        return this.valueOf() <= other;
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list < list behavior */
+                return this.valueOf() < other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() < " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() < NoneType()");
+        }
     };
 
     List.prototype.__le__ = function(other) {
-        return this.valueOf() <= other;
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list <= list behavior */
+                return this.valueOf() <= other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() <= " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() <= NoneType()");
+        }
     };
 
     List.prototype.__eq__ = function(other) {
@@ -73,7 +91,16 @@ batavia.types.List = function() {
     };
 
     List.prototype.__gt__ = function(other) {
-        return this.valueOf() > other;
+        if (other !== null) {
+            if (batavia.isinstance(other, batavia.types.List)) {
+                /* update this line to get Pythonic list > list behavior */
+                return this.valueOf() > other;
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: list() > NoneType()");
+        }
     };
 
     List.prototype.__ge__ = function(other) {
