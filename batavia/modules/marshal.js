@@ -556,7 +556,10 @@ batavia.modules.marshal = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (string size out of range)");
                 break;
             }
-            retval = batavia.modules.marshal.r_string(vm, n, p);
+//            retval = batavia.modules.marshal.r_string(vm, n, p);
+            var contents = batavia.modules.marshal.r_string(vm, n, p);
+            var split = contents.split('').map(function (b) { return b.charCodeAt(); });
+            retval = new batavia.types.Bytes(split);
 
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -780,7 +783,7 @@ batavia.modules.marshal = {
                 nlocals: nlocals,
                 stacksize: stacksize,
                 flags: flags,
-                code: code.split('').map(function (b) { return b.charCodeAt(); }),
+                code: code,
                 consts: consts,
                 names: names,
                 varnames: varnames,

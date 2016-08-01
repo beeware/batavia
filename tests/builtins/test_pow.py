@@ -71,7 +71,6 @@ class BuiltinPowFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["pow"]
 
     not_implemented = [
-        'test_bytearray',
         'test_frozenset',
     ]
 

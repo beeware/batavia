@@ -9,6 +9,5 @@ class BuiltinIsinstanceFunctionTests(BuiltinFunctionTestCase, TranspileTestCase)
     functions = ["isinstance"]
 
     not_implemented = [
-        'test_bytearray',
         'test_frozenset',
     ]

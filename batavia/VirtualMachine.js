@@ -666,15 +666,15 @@ batavia.VirtualMachine.prototype.create_traceback = function() {
         // f_lineno (the line for the start of the method)
         // and adding the line offsets from the line
         // number table.
-        var lnotab = frame.f_code.co_lnotab;
+        var lnotab = frame.f_code.co_lnotab.val;
         var byte_num = 0;
         var line_num = frame.f_code.co_firstlineno;
 
         var byte_incr, line_incr;
         for (var idx = 1; idx < lnotab.length, byte_num < frame.f_lasti; idx += 2) {
-            byte_num += lnotab.charCodeAt(idx - 1);
+            byte_num += lnotab[idx-1]
             if (byte_num < frame.f_lasti) {
-                line_num += lnotab.charCodeAt(idx);
+                line_num += lnotab[idx];
             }
         }
 
@@ -696,16 +696,16 @@ batavia.VirtualMachine.prototype.unpack_code = function(code) {
     var unpacked_code = [];
     var args;
 
-    while (pos < code.co_code.length) {
+    while (pos < code.co_code.val.length) {
         var opcode_start_pos = pos;
 
-        var opcode = code.co_code[pos++];
+        var opcode = code.co_code.val[pos++];
 
         if (opcode < batavia.modules.dis.HAVE_ARGUMENT) {
             args = [];
         } else {
-            var lo = code.co_code[pos++];
-            var hi = code.co_code[pos++];
+            var lo = code.co_code.val[pos++];
+            var hi = code.co_code.val[pos++];
             var intArg = lo + (hi << 8);
 
             if (opcode in batavia.modules.dis.hasconst) {

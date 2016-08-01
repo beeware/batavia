@@ -57,6 +57,7 @@ batavia.types.List = function() {
      **************************************************/
 
     List.prototype.__lt__ = function(other) {
+
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 /* update this line to get Pythonic list < list behavior */
@@ -80,6 +81,7 @@ batavia.types.List = function() {
         } else {
             throw new batavia.builtins.TypeError("unorderable types: list() <= NoneType()");
         }
+
     };
 
     List.prototype.__eq__ = function(other) {
@@ -91,6 +93,7 @@ batavia.types.List = function() {
     };
 
     List.prototype.__gt__ = function(other) {
+
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 /* update this line to get Pythonic list > list behavior */
@@ -114,6 +117,7 @@ batavia.types.List = function() {
         } else {
             throw new batavia.builtins.TypeError("unorderable types: list() >= NoneType()");
         }
+
     };
 
     List.prototype.__contains__ = function(other) {
