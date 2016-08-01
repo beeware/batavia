@@ -36,7 +36,7 @@ batavia.types.Bytearray = function() {
     };
 
     Bytearray.prototype.__str__ = function() {
-        return this.val.toString();
+        return "bytearray(" +  this.val.toString() + ")";
     };
 
     /**************************************************

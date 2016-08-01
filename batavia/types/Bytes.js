@@ -36,7 +36,8 @@ batavia.types.Bytes = function() {
     };
 
     Bytes.prototype.__str__ = function() {
-        return this.val.toString();
+
+        return "b'" + String.fromCharCode.apply(null, this.val) + "'";
     };
 
     /**************************************************
