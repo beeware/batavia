@@ -340,6 +340,7 @@ String.prototype.__isub__ = function(other) {
 
 String.prototype.__imul__ = function(other) {
     return this.__mul__(other);
+
 };
 
 String.prototype.__imod__ = function(other) {

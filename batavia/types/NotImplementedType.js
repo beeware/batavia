@@ -124,7 +124,9 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__mul__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.Tuple, batavia.types.Str, batavia.types.List])) {
+        if (batavia.isinstance(other, [batavia.types.Tuple, batavia.types.Str, batavia.types.List, batavia.types.Bytes,
+            batavia.types.Bytearray
+        ])) {
             throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NotImplementedType'")
         }
         throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'NotImplementedType' and '" + batavia.type_name(other) + "'")
@@ -191,7 +193,9 @@ batavia.types.NotImplementedType = function() {
     };
 
     NotImplementedType.prototype.__imul__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.Tuple, batavia.types.Str, batavia.types.List])) {
+        if (batavia.isinstance(other, [batavia.types.Tuple, batavia.types.Str, batavia.types.List, batavia.types.Bytes,
+            batavia.types.Bytearray
+        ])) {
             throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'NotImplementedType'")
         }
         throw new batavia.builtins.TypeError("unsupported operand type(s) for *=: 'NotImplementedType' and '" + batavia.type_name(other) + "'")
