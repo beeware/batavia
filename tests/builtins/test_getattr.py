@@ -9,7 +9,6 @@ class BuiltinGetattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["getattr"]
 
     not_implemented = [
-        'test_bytearray',
         'test_frozenset',
         'test_None',
     ]

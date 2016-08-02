@@ -114,7 +114,6 @@ class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bytearray',
         'test_eq_class',
         'test_eq_frozenset',
         'test_eq_slice',
@@ -263,7 +262,6 @@ class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_bytearray',
         'test_ne_class',
         'test_ne_frozenset',
         'test_ne_slice',

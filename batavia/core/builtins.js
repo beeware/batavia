@@ -268,8 +268,30 @@ batavia.builtins.bool = function(args, kwargs) {
 batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
 
 batavia.builtins.bytearray = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'bytearray' not implemented");
+
+//    bytearray(string, encoding[, errors]) -> bytearray
+//    bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+//    bytearray(iterable_of_ints) -> bytearray
+//    bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
+//    bytearray() -> empty bytes array
+
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("<fn>() doesn't accept keyword arguments.");
+    }
+
+
+    if (args.length == 1 && batavia.isinstance(args[0], batavia.types.Bytes)) {
+        // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+        return new batavia.types.Bytearray(args[0])
+    } else {
+        throw new batavia.builtins.NotImplementedError(
+            "Not implemented"
+        )
+    }
+
 };
 batavia.builtins.bytearray.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer';
 

@@ -652,10 +652,11 @@ SAMPLE_DATA = {
             'False',
         ],
     'bytearray': [
-            'bytearray()',
-            'bytearray(1)',
-            'bytearray([1, 2, 3])',
-        ],
+            #'bytearray()',
+            #'bytearray(1)',
+            #'bytearray([1, 2, 3])',
+            'bytearray(b"hello world")',
+    ],
     'bytes': [
             "b''",
             "b'This is another string of bytes'",

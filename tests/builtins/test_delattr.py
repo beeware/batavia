@@ -9,7 +9,6 @@ class BuiltinDelattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["delattr"]
 
     not_implemented = [
-        'test_bytearray',
         'test_frozenset',
         'test_None',
     ]

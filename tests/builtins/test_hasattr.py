@@ -9,7 +9,6 @@ class BuiltinHasattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["hasattr"]
 
     not_implemented = [
-        'test_bytearray',
         'test_frozenset',
         'test_None',
     ]
