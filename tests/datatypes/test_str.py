@@ -126,7 +126,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_frozenset',
         'test_ge_NotImplemented',
         'test_ge_range',
-        'test_ge_set',
         'test_ge_slice',
 
         'test_gt_bytearray',
@@ -136,7 +135,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_frozenset',
         'test_gt_NotImplemented',
         'test_gt_range',
-        'test_gt_set',
         'test_gt_slice',
 
 
