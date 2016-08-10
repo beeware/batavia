@@ -656,10 +656,10 @@ SAMPLE_DATA = {
             #'bytearray(1)',
             #'bytearray([1, 2, 3])',
             'bytearray(b"hello world")',
-    ],
+        ],
     'bytes': [
-            "b''",
-            "b'This is another string of bytes'",
+            'b""',
+            'b"This is another string of bytes"'
         ],
     'class': [
             'type(1)',
@@ -672,50 +672,60 @@ SAMPLE_DATA = {
             '3.14159265j',
             '1+2j',
             '3-4j',
+            ‘-5j’,
         ],
     'dict': [
-            "{}",
-            "{'a': 1, 'c': 2.3456, 'd': 'another'}",
+            '{}',
+            '{"a": 1, "c": 2.3456, "d": "another"}',
         ],
     'float': [
             '2.3456',
             '0.0',
             '-3.14159',
+            '-4.81756',
+            '5.5',
+            '-3.5',
+            '4.5',
+            '-4.5',
+            '-3.5'
         ],
     'frozenset': [
-            "frozenset()",
-            "frozenset({1, 2.3456, 'another'})",
+            'frozenset()',
+            'frozenset({1, 2.3456, "another"})',
         ],
     'int': [
             '3',
             '0',
             '-5',
+            '-3',
+            '5',
+            '1',
         ],
     'list': [
-            "[]",
-            "[3, 4, 5]",
+            '[]',
+            '[3, 4, 5]',
             '[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]',
-            "['a','b','c']",
+            '["a","b","c"]',
         ],
     'range': [
-            "range(0)",
-            "range(5)",
-            "range(2, 7)",
-            "range(2, 7, 2)",
-            "range(7, 2, -1)",
-            "range(7, 2, -2)",
+            'range(0)',
+            'range(5)',
+            'range(2, 7)',
+            'range(2, 7, 2)',
+            'range(7, 2, -1)',
+            'range(7, 2, -2)',
         ],
     'set': [
-            "set()",
-            "{1, 2.3456, 'another'}",
+            'set()',
+            '{1, 2.3456, "another"}',
         ],
     'slice': [
-            "slice(0)",
-            "slice(5)",
-            "slice(2, 7)",
-            "slice(2, 7, 2)",
-            "slice(7, 2, -1)",
-            "slice(7, 2, -2)",
+            'slice(0)',
+            'slice(5)',
+            'slice(2, 7)',
+            'slice(2, 7, 2)',
+            'slice(7, 2, -1)',
+            'slice(7, 2, -2)',
         ],
     'str': [
             '""',
@@ -726,10 +736,10 @@ SAMPLE_DATA = {
             '"Three args: %s | %s | %s"',
         ],
     'tuple': [
-            "(1, 2)",
-            "(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)",
-            "(3, 1.2, True, )",
-            "(1, 2.3456, 'another')",
+            '(1, 2)',
+            '(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)',
+            '(3, 1.2, True, )',
+            '(1, 2.3456, "another")',
         ],
     'None': [
             'None',
@@ -764,6 +774,8 @@ SAMPLE_SUBSTITUTIONS = {
         "{'d': 'another', 'a': 1, 'c': 2.3456}",
         "{'d': 'another', 'c': 2.3456, 'a': 1}",
     ],
+    # Normalize precision error
+    "-3.14159": ["-3.1415900000000008",],
 }
 
 
@@ -795,10 +807,13 @@ class UnaryOperationTestCase(NotImplementedToExpectedFailure):
             '##################################################\n'.join(
                 adjust("""
                     try:
+                        print('>>> x = %(x)s')
+                        print('>>> %(format)s%(operation)sx')
                         x = %(x)s
                         print(%(format)s%(operation)sx)
                     except Exception as e:
                         print(type(e), ':', e)
+                    print()
                     """ % {
                         'x': x,
                         'operation': operation,
@@ -852,11 +867,15 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
             '##################################################\n'.join(
                 adjust("""
                     try:
+                        print('>>> x = %(x)s')
+                        print('>>> y = %(y)s')
+                        print('>>> %(format)s%(operation)s')
                         x = %(x)s
                         y = %(y)s
                         print(%(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
+                    print()
                     """ % {
                         'x': x,
                         'y': y,
@@ -928,12 +947,17 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
             '##################################################\n'.join(
                 adjust("""
                     try:
+                        print('>>> x = %(x)s')
+                        print('>>> y = %(y)s')
+                        print('>>> %(operation)s')
+                        print('>>> %(format)sx')
                         x = %(x)s
                         y = %(y)s
                         %(operation)s
                         print(%(format)sx)
                     except Exception as e:
                         print(type(e), ':', e)
+                    print()
                     """ % {
                         'x': x,
                         'y': y,
@@ -996,11 +1020,15 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
             '##################################################\n'.join(
                 adjust("""
                     try:
+                        print('>>> f = %(f)s')
+                        print('>>> x = %(x)s')
+                        print('>>> %(format)s%(operation)s')
                         f = %(f)s
                         x = %(x)s
                         print(%(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
+                    print()
                     """ % {
                         'f': f,
                         'x': x,
@@ -1054,12 +1082,17 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
             '##################################################\n'.join(
                 adjust("""
                     try:
+                        print('>>> f = %(f)s')
+                        print('>>> x = %(x)s')
+                        print('>>> y = %(y)s')
+                        print('>>> %(format)s%(operation)s')
                         f = %(f)s
                         x = %(x)s
                         y = %(y)s
                         print(%(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
+                    print()
                     """ % {
                         'f': f,
                         'x': x,
