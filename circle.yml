@@ -1,6 +1,6 @@
 machine:
   post:
-    - pyenv global 3.4.4 3.5.1
+    - pyenv global 3.4.4
 
 dependencies:
   pre:
@@ -12,5 +12,5 @@ dependencies:
 
 test:
   override:
-     - python setup.py test
+     - python3.4 setup.py test
 
