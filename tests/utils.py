@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import base64
 import contextlib
 from io import StringIO
