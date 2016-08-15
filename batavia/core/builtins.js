@@ -689,19 +689,19 @@ batavia.builtins.iter = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.TypeError("len() doesn't accept keyword arguments");
+        throw new batavia.builtins.TypeError("iter() doesn't accept keyword arguments");
     }
     if (!args || args.length === 0) {
-        throw new batavia.builtins.TypeError("len() expected at least 1 arguments, got 0");
+        throw new batavia.builtins.TypeError("iter() expected at least 1 arguments, got 0");
     }
     if (args.length == 2) {
-        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' with callable/sentinet not implemented");
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'iter' with callable/sentinel not implemented");
     }
     if (args.length > 2) {
-        throw new batavia.builtins.TypeError("len() expected at most 2 arguments, got 3");
+        throw new batavia.builtins.TypeError("iter() expected at most 2 arguments, got 3");
     }
     var iterobj = args[0];
-    if (iterobj.__iter__) {
+    if (iterobj !== null && iterobj.__iter__) {
         //needs to work for __iter__ in JS impl (e.g. Map/Filter) and python ones
         return batavia.run_callable(iterobj, iterobj.__iter__, [], null);
     } else {
@@ -730,6 +730,9 @@ batavia.builtins.license = function() {
 };
 
 batavia.builtins.list = function(args) {
+    if (args.length === 0) {
+      return new batavia.types.List();
+    }
     return new batavia.types.List(args[0]);
 };
 
@@ -1123,6 +1126,9 @@ batavia.builtins.super = function() {
 };
 
 batavia.builtins.tuple = function(args) {
+    if (args.length === 0) {
+      return new batavia.types.Tuple();
+    }
     return new batavia.types.Tuple(args[0]);
 };
 

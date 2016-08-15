@@ -5,6 +5,13 @@ function assert(condition, message) {
     }
 }
 
+batavia.isArray = Array.isArray;
+if (!batavia.isArray) {
+    batavia.isArray = function (obj) {
+        return  Object.prototype.toString.call(obj) === '[object Array]';
+    };
+}
+
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
  *************************************************************************/
@@ -316,4 +323,23 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
 
     var retval = func.apply(vm, [posargs, namedargs]);
     return retval;
+};
+
+/************************
+ * Working with iterables
+ ************************/
+
+// Iterate a python iterable to completion,
+// calling a javascript callback on each item that it yields.
+batavia.iter_for_each = function(iterobj, callback) {
+    try {
+        while (true) {
+            var next = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+            callback(next);
+        }
+    } catch (err) {
+        if (!(err instanceof batavia.builtins.StopIteration)) {
+            throw err;
+        }
+    }
 };
