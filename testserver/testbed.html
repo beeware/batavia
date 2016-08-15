@@ -282,7 +282,7 @@ batavia.stderr = stdout;
     <div class="indent_block">
         <form method="post">
             <textarea id="text_editor" cols="80" rows="8" name="code">{{ customcode.code }}</textarea>
-            <p class="warning">
+            <p class="warning important">
                 <b>NOTE - This is not sandboxed!!</b> This code will be compiled on the webserver, with the same permissions as the user running the web server. There may be vectors for arbitrary code execution. <b>You have been warned!</b>
             </p>
             <input type="submit" value="Run your code!" />
@@ -296,7 +296,7 @@ batavia.stderr = stdout;
         <button onclick="pystone(500)">Run PyStone (500 loops)</button>
         <button onclick="pystone(50000)">Run PyStone (50000 loops)</button><br />
         <p class="warning">
-            <b>NOTE - Run Sample.py will open a new page; that's intended. The Run PyStone (50000 loops) example will take some time to complete without immediate feedback.</b>
+            NOTE - Run Sample.py will open a new page; that's intended. The Run PyStone (50000 loops) example will take some time to complete without immediate feedback.
         </p>
     </div>
     <hr/>

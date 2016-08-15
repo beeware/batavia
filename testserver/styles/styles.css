@@ -1,8 +1,11 @@
 .warning {
-    color: #bb0000;
     margin-left, margin-right: 30px;
     margin-top, margin-bottom: 10px;
     font-size: 80%;
+}
+
+.warning.important{
+    color: #bb0000;
 }
 
 @font-face {
