@@ -1,17 +1,16 @@
 machine:
-  environment:
-  post:
-    - pyenv global 3.4.4
+  python:
+    version: 3.5.1
 
 dependencies:
+  cache_directories:
+    - circleci-phantomjs
   pre:
-     - "pip install ."
+     - pip install .
      - mkdir circleci-phantomjs
-     - wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -O $PWD/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
-     - tar -xvf $PWD/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -C $PWD/circleci-phantomjs
-     - cp -r $PWD/circleci-phantomjs/* /home/ubuntu/bin 
+     - wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -O circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
+     - tar -xvf $PWD/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -C circleci-phantomjs
 
 test:
   override:
-     - python3.4 setup.py test
-
+     - PATH="/home/ubnutu/circleci-phantomjs:$PATH" python setup.py test
