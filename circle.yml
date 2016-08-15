@@ -1,0 +1,16 @@
+machine:
+  post:
+    - pyenv global 3.4.4 3.5.1
+
+dependencies:
+  pre:
+     - "pip install ."
+     - mkdir travis-phantomjs
+     - wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -O $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
+     - tar -xvf $PWD/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -C $PWD/travis-phantomjs
+     - export PATH=$PWD/travis-phantomjs:$PATH
+
+test:
+  override:
+     - python setup.py test
+
