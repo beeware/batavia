@@ -7,7 +7,7 @@ dependencies:
   pre:
      - "pip install ."
      - mkdir circleci-phantomjs
-     - wget https://s3.amazonaws.com/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -O $PWD/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
+     - wget https://s3.amazonaws.com/travis-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -O $PWD/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2
      - tar -xvf $PWD/circleci-phantomjs/phantomjs-2.0.0-ubuntu-14.04.tar.bz2 -C $PWD/circleci-phantomjs
      - cp -r $PWD/circleci-phantomjs/* /home/ubuntu/bin 
 
