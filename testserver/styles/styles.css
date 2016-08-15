@@ -1,0 +1,69 @@
+.warning {
+    color: #bb0000;
+    margin-left, margin-right: 30px;
+    margin-top, margin-bottom: 10px;
+    font-size: 80%;
+}
+
+@font-face {
+    font-family: cutive_regular;
+    src: url(/static/testserver/styles/cutive/Cutive-Regular.ttf);
+}
+
+body{
+    background-color: #eceeef;
+    line-height: 1.5;
+    color: #373a3c;
+    margin: 20px;
+}
+
+h1, h2, h3, h4 {
+    font-family: cutive_regular;
+    font-weight: normal;
+}
+
+h1 {
+    font-size: 2.5rem;
+}
+
+h2 {
+    font-size: 2rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+
+#stdout{
+    background-color: #fff;
+}
+
+p, button {
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+button, input{
+    background-color: #373a3c;
+    border: none;
+    font-weight: bold;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px;
+}
+
+.fa-circle {
+    font-size: 50% !important;
+}
+
+hr {
+    border: 1px solid #fff;
+}
+
+.indent_block{
+    margin: 20px;
+    margin-bottom:50px;
+}
