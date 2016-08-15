@@ -13,4 +13,5 @@ dependencies:
 
 test:
   override:
-     - PATH="/home/ubnutu/circleci-phantomjs:$PATH" python setup.py test
+     - phantomjs --version
+     - python setup.py test
