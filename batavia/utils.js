@@ -317,3 +317,20 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
     var retval = func.apply(vm, [posargs, namedargs]);
     return retval;
 };
+
+/************************
+ * Working with iterables
+ ************************/
+
+batavia.iter_for_each = function(iterobj, callback) {
+    try {
+        while (true) {
+            var next = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+            callback(next);
+        }
+    } catch (err) {
+        if (!(err instanceof batavia.builtins.StopIteration)) {
+            throw err;
+        }
+    }
+};

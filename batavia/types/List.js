@@ -8,17 +8,25 @@ batavia.types.List = function() {
         if (arguments.length === 0) {
             this.push.apply(this);
         } else if (arguments.length === 1) {
-            this.push.apply(this, arguments[0]);
+            if (arguments[0] instanceof Array) {
+                this.push.apply(this, arguments[0]);
+            } else {
+                var iterobj = batavia.builtins.iter([arguments[0]], null);
+                var self = this;
+                batavia.iter_for_each(iterobj, function(val) {
+                    self.push(val);
+                });
+            }
         } else {
             throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
         }
     }
 
-    function Array() {}
+    function Array_() {}
 
-    Array.prototype = [];
+    Array_.prototype = [];
 
-    List.prototype = Object.create(Array.prototype);
+    List.prototype = Object.create(Array_.prototype);
     List.prototype.length = 0;
     List.prototype.__class__ = new batavia.types.Type('list');
 
@@ -255,7 +263,7 @@ batavia.types.List = function() {
             }
 
             // clone list
-            var result = Array.prototype.slice.call(this);
+            var result = Array_.prototype.slice.call(this);
 
             // handle step
             if (step === undefined || step === 1) {
