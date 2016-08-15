@@ -20,6 +20,12 @@ class BytesTests(TranspileTestCase):
             print('Done.')
             """)
 
+    @unittest.expectedFailure
+    def test_init(self):
+        self.assertCodeExecution("""
+            x = 'bytes("Ramón de España", 'utf-8')'
+            print(x) 
+            """)
 
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'

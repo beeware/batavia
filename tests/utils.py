@@ -675,7 +675,8 @@ SAMPLE_DATA = {
         ],
     'bytes': [
             'b""',
-            'b"This is another string of bytes"'
+            'b"This is another string of bytes"',
+            'b"\x01\x75"', # mixing nonprintable and printable bytes
         ],
     'class': [
             'type(1)',
