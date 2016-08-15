@@ -27,6 +27,12 @@
         This will run the test code, and display stdout/stderr
         on the visible page.
       -->
+
+    <!--These three are from CodeMirror, - https://codemirror.net/ - for adding syntax highlighting to text area -->
+    <script src="/static/testserver/CodeMirror/lib/codemirror.js"></script>
+    <script src="/static/testserver/CodeMirror/mode/python/python.js"></script>
+    <link rel=stylesheet href="/static/testserver/CodeMirror/lib/codemirror.css">
+
     <script src="/static/batavia/batavia.js"></script>
     <script src="/static/batavia/utils.js"></script>
 
@@ -288,10 +294,21 @@ batavia.stderr = stdout;
     </div>
     <div style="width: 40%; display: table-cell;">
         <form method="post">
-            <textarea cols="80" rows="8" name="code">{{ customcode.code }}</textarea><br/>
+            <textarea id="text_editor" cols="80" rows="8" name="code">{{ customcode.code }}</textarea><br/>
             <input type="submit" value="Run code!" /><p class="warning"><b>NOTE - This is not sandboxed!!</b> This code will be compiled on the webserver, with the same permissions as the user running the web server. There may be vectors for arbitrary code execution. <b>You have been warned!</b></p>
         </form>
     </div>
+
+    <script>
+        var myTextEditor = document.getElementById('text_editor');
+        var myCodeMirror = CodeMirror.fromTextArea(myTextEditor, {
+            indentUnit: 4, //Python is four spaces indented
+            smartIndent: true, //Detects blocks, places code four spaces indented 
+            lineWrapping: true, //Otherwise you'd need to scroll right
+            lineNumbers: true
+        });
+    </script>
+
     <h2>Console output</h2>
     <hr/>
     <pre id="stdout"></pre>
