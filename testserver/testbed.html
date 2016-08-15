@@ -278,7 +278,6 @@ batavia.stderr = stdout;
 <body>
 {% endif %}
     <h1>Batavia testbed</h1>
-    
     <h3>Try running some Python in the browser</h3>
     <div class="indent_block">
         <form method="post">
@@ -296,6 +295,9 @@ batavia.stderr = stdout;
         <button onclick="pystone(5)">Run PyStone (5 loops)</button>
         <button onclick="pystone(500)">Run PyStone (500 loops)</button>
         <button onclick="pystone(50000)">Run PyStone (50000 loops)</button><br />
+        <p class="warning">
+            <b>NOTE - Run Sample.py will open a new page; that's intended. The Run PyStone (50000 loops) example will take some time to complete without immediate feedback.</b>
+        </p>
     </div>
     <hr/>
     <script>
@@ -309,7 +311,6 @@ batavia.stderr = stdout;
     </script>
     <h3>Console output</h3>
     <div class="indent_block">
-        
         <pre id="stdout"></pre>
     </div>
     <hr/>
