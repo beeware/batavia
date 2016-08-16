@@ -28,7 +28,7 @@ batavia.types.Bytes = function() {
      **************************************************/
 
     Bytes.prototype.__bool__ = function() {
-        return this.size() !== 0;
+        return this.val.length > 0;
     };
 
     Bytes.prototype.__repr__ = function() {

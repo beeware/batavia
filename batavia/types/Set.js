@@ -27,7 +27,7 @@ batavia.types.Set = function() {
      **************************************************/
 
     Set.prototype.__bool__ = function() {
-        return this.valueOf().length !== 0;
+        return Object.keys(this).length > 0;
     };
 
     Set.prototype.__iter__ = function() {
