@@ -157,9 +157,11 @@ batavia.builtins.abs = function(args, kwargs) {
 
     var value = args[0];
     if (batavia.isinstance(value, [batavia.types.Bool, batavia.types.Int])) {
-        return new batavia.types.Int(Math.abs(args[0].valueOf()));
+        return new batavia.types.Int(Math.abs(value.valueOf()));
     } else if (batavia.isinstance(value, batavia.types.Float)) {
-        return new batavia.types.Float(Math.abs(args[0].valueOf()));
+        return new batavia.types.Float(Math.abs(value.valueOf()));
+    } else if (batavia.isinstance(value, batavia.types.Complex)) {
+        return new batavia.types.Float(Math.sqrt(Math.pow(value.real, 2) + Math.pow(value.imag, 2)));
     } else {
         throw new batavia.builtins.TypeError(
             "bad operand type for abs(): '" + batavia.type_name(value) + "'");
