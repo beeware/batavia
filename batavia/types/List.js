@@ -8,7 +8,16 @@ batavia.types.List = function() {
         if (arguments.length === 0) {
             this.push.apply(this);
         } else if (arguments.length === 1) {
-            this.push.apply(this, arguments[0]);
+            // Fast-path for native Array objects.
+            if (batavia.isArray(arguments[0])) {
+                this.push.apply(this, arguments[0]);
+            } else {
+                var iterobj = batavia.builtins.iter([arguments[0]], null);
+                var self = this;
+                batavia.iter_for_each(iterobj, function(val) {
+                    self.push(val);
+                });
+            }
         } else {
             throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
         }

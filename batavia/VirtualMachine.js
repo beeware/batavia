@@ -974,7 +974,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
     this.pop_frame();
 
     if (why === 'exception') {
-        throw this.last_exception;
+        throw this.last_exception.value;
     }
 
     return this.return_value;
