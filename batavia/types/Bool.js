@@ -101,7 +101,7 @@ Boolean.prototype.__neg__ = function() {
 };
 
 Boolean.prototype.__not__ = function() {
-    return !this.valueOf();
+    return batavia.types.Bool(!this.valueOf());
 };
 
 Boolean.prototype.__invert__ = function() {
@@ -109,7 +109,7 @@ Boolean.prototype.__invert__ = function() {
 };
 
 Boolean.prototype.__int__ = function() {
-    if (this.valueOf() === true) {
+    if (this.valueOf()) {
         return new batavia.types.Int(1);
     } else {
         return new batavia.types.Int(0);

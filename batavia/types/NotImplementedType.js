@@ -27,7 +27,7 @@ batavia.types.NotImplementedType = function() {
      **************************************************/
 
     NotImplementedType.prototype.__bool__ = function() {
-        return this.valueOf().length !== 0;
+        return new batavia.types.Bool(true);
     };
 
     NotImplementedType.prototype.__repr__ = function() {
