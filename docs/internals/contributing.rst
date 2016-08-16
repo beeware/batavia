@@ -236,6 +236,21 @@ Or, to run all the datatypes tests:
 
     $ python setup.py test -s tests.datatypes
 
+External JS Dependencies
+------------------------
+
+In order to avoid reinventing the wheel, batavia makes use of external JavaScript libraries. While we manage the Python external dependencies using the Python Package Index and standard tools like `pip`, for JS we've decided to copy the code into our own repository. This practice of copying external source code is often known as 'vendoring'.
+
+
+These vendored JS libraries live inside the `batavia/vendor/vendored.js` file, and can be used under the `batavia.vendored.<libraryname>` module hierarchy.
+
+For instance, we vendored `Feross's Buffer library`_ so we can use `Node's Buffer API`_ to manipulate binary strings efficiently on any browser. It's available as `batavia.vendored.Buffer`.
+
+.. _Feross's Buffer library: https://github.com/feross/buffer
+.. _Node's Buffer API: https://nodejs.org/api/buffer.html
+
+More details on how to add newer JS dependencies as you need them can be found in the file `batavia/vendor/VENDORING`.
+
 Troubleshooting
 ---------------
 
