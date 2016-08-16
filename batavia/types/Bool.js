@@ -20,9 +20,9 @@ Boolean.prototype.__repr__ = function(args, kwargs) {
 
 Boolean.prototype.__str__ = function(args, kwargs) {
     if (this.valueOf()) {
-        return "true";
+        return "True";
     } else {
-        return "false";
+        return "False";
     }
 };
 
@@ -77,6 +77,14 @@ Boolean.prototype.__not__ = function() {
 
 Boolean.prototype.__invert__ = function() {
     return ~this.valueOf();
+};
+
+Boolean.prototype.__int__ = function() {
+    if (this.valueOf() === true) {
+        return new batavia.types.Int(1);
+    } else {
+        return new batavia.types.Int(0);
+    }
 };
 
 /**************************************************
