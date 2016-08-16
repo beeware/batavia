@@ -733,6 +733,7 @@ SAMPLE_DATA = {
             '"3"',
             '"This is another string"',
             '"Mÿ hôvèrçràft îß fûłl öf éêlś"',
+            '"🐍🐍🐝🐝\x01"',
             '"One arg: %s"',
             '"Three args: %s | %s | %s"',
         ],
