@@ -1,0 +1,15 @@
+Artisanal Vendoring of External JS Dependencies
+-----------------------------------------------
+
+Eventually, this directory should contain git-subtree checkouts 
+of the vendored repositories, and the vendored libraries would
+be packaged with a real packager.
+
+For now, all vendored libraries are processed by hand,
+
+- copied and pasted by hand, 
+- tagged with their (name: description, source URI, license),
+- inserted in an IIFE to keep the global scope clean, and
+- assigned to the batavia.vendored.<vendoredlibname> hierarchy 
+
+The vendored file is in batavia/vendor/vendored.js
