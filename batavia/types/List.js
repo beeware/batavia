@@ -23,11 +23,11 @@ batavia.types.List = function() {
         }
     }
 
-    function Array() {}
+    function Array_() {}
 
-    Array.prototype = [];
+    Array_.prototype = [];
 
-    List.prototype = Object.create(Array.prototype);
+    List.prototype = Object.create(Array_.prototype);
     List.prototype.length = 0;
     List.prototype.__class__ = new batavia.types.Type('list');
 
@@ -268,7 +268,7 @@ batavia.types.List = function() {
             }
 
             // clone list
-            var result = Array.prototype.slice.call(this);
+            var result = Array_.prototype.slice.call(this);
 
             // handle step
             if (step === undefined || step === 1) {

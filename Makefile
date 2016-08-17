@@ -37,6 +37,7 @@ ALL_FILES=\
     batavia/core/Cell.js \
     batavia/core/Exception.js \
     batavia/core/Frame.js \
+    batavia/core/Generator.js \
     batavia/core/PYCFile.js \
     batavia/VirtualMachine.js \
 
@@ -78,6 +79,7 @@ ALL_FILES_WIN=\
     batavia\core\Cell.js \
     batavia\core\Exception.js \
     batavia\core\Frame.js \
+    batavia\core\Generator.js \
     batavia\core\PYCFile.js \
     batavia\VirtualMachine.js \
 
