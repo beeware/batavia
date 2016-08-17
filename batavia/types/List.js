@@ -61,6 +61,10 @@ batavia.types.List = function() {
             }).join(', ') + ']';
     };
 
+    List.prototype.__bool__ = function() {
+        return this.length > 0;
+    };
+
     /**************************************************
      * Comparison operators
      **************************************************/

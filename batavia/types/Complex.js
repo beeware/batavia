@@ -100,7 +100,7 @@ batavia.types.Complex = function() {
      **************************************************/
 
     Complex.prototype.__bool__ = function() {
-        return this.real || this.imag;
+        return Boolean(this.real || this.imag);
     };
 
     Complex.prototype.__iter__ = function() {

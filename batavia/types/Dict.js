@@ -26,7 +26,7 @@ batavia.types.Dict = function() {
      **************************************************/
 
     Dict.prototype.__bool__ = function() {
-        return this.size() !== 0;
+        return Object.keys(this).length > 0;
     };
 
     Dict.prototype.__repr__ = function() {
