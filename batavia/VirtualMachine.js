@@ -909,17 +909,32 @@ batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
 
     return why;
 };
+
 /*
  * Run a frame until it returns (somehow).
  *
  * Exceptions are raised, the return value is returned.
+ * If the frame was halted partway through execution
+ * (e.g. by yielding from a generator) then it will resume
+ * from whereever it left off.
  *
  */
 batavia.VirtualMachine.prototype.run_frame = function(frame) {
     var why, operation;
 
     this.push_frame(frame);
-    while (true) {
+
+    // If there's an unhandled exception then resume
+    // execution by handling it.
+
+    if (this.last_exception) {
+        why = 'exception'
+        while (why && frame.block_stack.length > 0) {
+            why = this.manage_block_stack(why);
+        }
+    }
+
+    while (!why) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
         var opname = batavia.modules.dis.opname[operation.opcode];
 
@@ -962,10 +977,6 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
                 // Deal with any block management we need to do.
                 why = this.manage_block_stack(why);
             }
-        }
-
-        if (why) {
-            break;
         }
     }
 
@@ -1738,10 +1749,11 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
     return "return";
 };
 
-// batavia.VirtualMachine.prototype.byte_YIELD_VALUE = function {
-//         this.return_value = this.pop()
-//         return "yield"
-// }
+batavia.VirtualMachine.prototype.byte_YIELD_VALUE = function() {
+    this.return_value = this.pop()
+    return "yield";
+};
+
 // batavia.VirtualMachine.prototype.byte_YIELD_FROM = function {
 //         u = this.pop()
 //         x = this.top()

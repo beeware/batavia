@@ -32,6 +32,38 @@ class ListTests(TranspileTestCase):
             print(x)
             """)
 
+    def test_type_constructor(self):
+        self.assertCodeExecution("""
+            x = list()
+            print(x)
+            """)
+
+        self.assertCodeExecution("""
+            x = list([1, 2, 3, 4, 5])
+            print(x)
+            """)
+
+        self.assertCodeExecution("""
+            x = list((1, 2, 3, 4, 5))
+            print(x)
+            """)
+
+        self.assertCodeExecution("""
+            class ListLike:
+                def __init__(self, limit):
+                    self.i = 0
+                    self.limit = limit
+                def __iter__(self):
+                    return self
+                def __next__(self):
+                    self.i += 1
+                    if self.i > self.limit:
+                        raise StopIteration()
+                    return self.i
+            x = list(ListLike(5))
+            print(x)
+            """)
+
     def test_getitem(self):
         # Simple positive index
         self.assertCodeExecution("""
