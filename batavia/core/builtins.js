@@ -267,7 +267,7 @@ batavia.builtins.bool = function(args, kwargs) {
         return !!(args[0].valueOf());
     }
 };
-batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.';
+batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nIn CPython, the builtins True and False are the only two instances of the class bool.\nAlso in CPython, the class bool is a subclass of the class int, and cannot be subclassed.\nBatavia implements booleans as a native Javascript Boolean, enhanced with additional __dunder__ methods.\n"Integer-ness" of booleans is faked via batavia.builtins.Bool\'s __int__ method.';
 
 batavia.builtins.bytearray = function(args, kwargs) {
 
@@ -648,6 +648,9 @@ batavia.builtins.int = function(args, kwargs) {
     var value = 0;
     if (args && args.length === 1) {
         value = args[0];
+        if(batavia.isinstance(value, batavia.types.Bool)) {
+            return value.__int__()
+        }
     } else if (args && args.length === 2) {
         value = args[0];
         base = args[1];
@@ -811,11 +814,7 @@ batavia.builtins.oct = function(args) {
     }
     var value = args[0];
     if(batavia.isinstance(value, batavia.types.Bool)) {
-        if(value.__str__() === "true") {
-            return '0o1';
-        } else {
-            return '0o0';
-        }
+        return "0o" + value.__int__().toString(8)
     }
 
     if(!batavia.isinstance(value, batavia.types.Int)) {

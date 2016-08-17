@@ -9,7 +9,6 @@ class BuiltinIntFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["int"]
 
     not_implemented = [
-        'test_bool',
         'test_bytearray',
         'test_bytes',
         'test_class',
