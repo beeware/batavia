@@ -15,7 +15,6 @@
  * license: MIT
 
  *****************************************************************/
-
 batavia.vendored.toString = {}.toString;
 batavia.vendored.isArray = Array.isArray || function (arr) {
   return batavia.vendored.toString.call(arr) == '[object Array]';
@@ -31,6 +30,7 @@ batavia.vendored.isArray = Array.isArray || function (arr) {
 
  *****************************************************************/
 
+batavia.vendored.ieee754 = {};
 batavia.vendored.ieee754.read = function (buffer, offset, isLE, mLen, nBytes) {
     var e, m
     var eLen = nBytes * 8 - mLen - 1
@@ -127,10 +127,6 @@ batavia.vendored.ieee754.write = function (buffer, value, offset, isLE, mLen, nB
  *****************************************************************/
 
 batavia.vendored.base64 = function() {
-
-    exports.toByteArray = toByteArray
-    exports.fromByteArray = fromByteArray
-
     var lookup = []
     var revLookup = []
     var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
@@ -235,6 +231,9 @@ batavia.vendored.base64 = function() {
 
         return parts.join('')
     }
+    var exports = {};
+    exports.toByteArray = toByteArray
+    exports.fromByteArray = fromByteArray
     return exports
 }();
 
@@ -263,10 +262,6 @@ batavia.vendored.buffer = function() {
     var ieee754 = batavia.vendored.ieee754
     var isArray = batavia.vendored.isArray
 
-    exports.Buffer = Buffer
-    exports.SlowBuffer = SlowBuffer
-    exports.INSPECT_MAX_BYTES = 50
-
     /**
      * If `Buffer.TYPED_ARRAY_SUPPORT`:
      *   === true    Use Uint8Array implementation (fastest)
@@ -290,14 +285,6 @@ batavia.vendored.buffer = function() {
      * We detect these buggy browsers and set `Buffer.TYPED_ARRAY_SUPPORT` to `false` so they
      * get the Object implementation, which is slower but behaves correctly.
      */
-    Buffer.TYPED_ARRAY_SUPPORT = global.TYPED_ARRAY_SUPPORT !== undefined
-        ? global.TYPED_ARRAY_SUPPORT
-        : typedArraySupport()
-
-    /*
-     * Export kMaxLength after typed array support is determined.
-     */
-    exports.kMaxLength = kMaxLength()
 
     function typedArraySupport () {
         try {

@@ -31,6 +31,7 @@
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 
     <script src="/static/batavia/batavia.js"></script>
+    <script src="/static/batavia/vendor/vendored.js"></script>
     <script src="/static/batavia/utils.js"></script>
 
     <script src="/static/batavia/types/Type.js"></script>
@@ -291,7 +292,7 @@ batavia.stderr = stdout;
     </div>
     <hr/>
     <h3>Or run some of our Python scripts</h3>
-    <div class="indent_block">        
+    <div class="indent_block">
         <button onclick="sample()">Run sample.py</button>
         <button onclick="pystone(5)">Run PyStone (5 loops)</button>
         <button onclick="pystone(500)">Run PyStone (500 loops)</button>
@@ -305,7 +306,7 @@ batavia.stderr = stdout;
         var myTextEditor = document.getElementById('text_editor');
         var myCodeMirror = CodeMirror.fromTextArea(myTextEditor, {
             indentUnit: 4, //Python is four spaces indented
-            smartIndent: true, //Detects blocks, places code four spaces indented 
+            smartIndent: true, //Detects blocks, places code four spaces indented
             lineWrapping: true, //Otherwise you'd need to scroll right
             lineNumbers: true
         });

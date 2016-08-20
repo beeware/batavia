@@ -1,6 +1,7 @@
 
 ALL_FILES=\
     batavia/batavia.js \
+		batavia/vendor/vendored.js \
     batavia/utils.js \
     batavia/types/Type.js \
     batavia/types/Bool.js \
@@ -43,6 +44,7 @@ ALL_FILES=\
 
 ALL_FILES_WIN=\
     batavia\batavia.js \
+		batavia\vendor\vendored.js \
     batavia\utils.js \
     batavia\types\Type.js \
     batavia\types\Bool.js \
