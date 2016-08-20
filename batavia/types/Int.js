@@ -6,7 +6,7 @@
 batavia.types.Int = function() {
     function Int(val) {
         Object.call(this);
-        this.val = val;
+        this.val = new batavia.vendored.BigNumber(val);
     }
 
     Int.prototype = Object.create(Object.prototype);
