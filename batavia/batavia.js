@@ -9,7 +9,8 @@ var batavia = {
     core: {},
     types: {},
     modules: {},
-    builtins: {}
+    builtins: {},
+    vendored: {}
 };
 
 // set in PYCFile while parsing python bytecode

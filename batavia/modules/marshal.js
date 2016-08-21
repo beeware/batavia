@@ -74,18 +74,11 @@ batavia.modules.marshal = {
        exactly 2**15. */
 
     PyLong_MARSHAL_SHIFT: 15,
-// #define PyLong_MARSHAL_BASE ((short)1 << PyLong_MARSHAL_SHIFT)
-// #define PyLong_MARSHAL_MASK (PyLong_MARSHAL_BASE - 1)
-// #if PyLong_SHIFT % PyLong_MARSHAL_SHIFT != 0
-// #error "PyLong_SHIFT must be a multiple of PyLong_MARSHAL_SHIFT"
-// #endif
-// #define PyLong_MARSHAL_RATIO (PyLong_SHIFT / PyLong_MARSHAL_SHIFT)
+    PyLong_MARSHAL_BASE: 1<<15,
+    PyLong_MARSHAL_MASK: (1<<15)-1,
+    PyLong_MARSHAL_RATIO: 30/15,
 
-// #define W_TYPE(t, p) do { \
-//     w_byte((t) | flag, (p)); \
-// } while(0)
-
-    SIZE32_MAX: Math.pow(2, 32),
+    SIZE32_MAX: 0x7FFFFFFF,
 
     r_string: function(vm, n, p)
     {
@@ -187,75 +180,28 @@ batavia.modules.marshal = {
         return new batavia.types.Int(x);
     },
 
-    // r_PyLong: function(vm, p) {
-    //     var ob;
-    //     var n, size, i;
-    //     var j, md, shorts_in_top_digit;
-    //     var d;
-
-    //     n = r_long(p);
-    //     if (vm.PyErr_Occurred())
-    //         return null;
-    //     if (n === 0) {
-    //         return _PyLong_New(0);
-    //     }
-    //     if (n < -batavia.modules.marshal.SIZE32_MAX || n > batavia.modules.marshal.SIZE32_MAX) {
-    //         vm.PyErr_SetString(batavia.builtins.ValueError,
-    //                        "bad marshal data (long size out of range)");
-    //         return null;
-    //     }
-
-    //     size = 1 + (Math.abs(n) - 1) / PyLong_MARSHAL_RATIO;
-    //     shorts_in_top_digit = 1 + (Math.abs(n) - 1) % PyLong_MARSHAL_RATIO;
-    //     ob = _PyLong_New(size);
-    //     if (ob === null)
-    //         return null;
-
-    //     //FIXME Py_SIZE(ob) = n > 0 ? size : -size;
-
-    //     for (i = 0; i < size-1; i++) {
-    //         d = 0;
-    //         for (j=0; j < PyLong_MARSHAL_RATIO; j++) {
-    //             md = r_short(p);
-    //             if (vm.PyErr_Occurred()) {
-    //                 return null;
-    //             }
-    //             if (md < 0 || md > PyLong_MARSHAL_BASE) {
-    //                 goto bad_digit;
-    //             }
-    //             d += (digit)md << j*PyLong_MARSHAL_SHIFT;
-    //         }
-    //         ob.ob_digit[i] = d;
-    //     }
-
-    //     d = 0;
-    //     for (j=0; j < shorts_in_top_digit; j++) {
-    //         md = r_short(p);
-    //         if (vm.PyErr_Occurred()) {
-    //             return null;
-    //         }
-    //         if (md < 0 || md > PyLong_MARSHAL_BASE)
-    //             goto bad_digit;
-    //         /* topmost marshal digit should be nonzero */
-    //         if (md === 0 && j == shorts_in_top_digit - 1) {
-    //             vm.PyErr_SetString(batavia.builtins.ValueError,
-    //                 "bad marshal data (unnormalized long data)");
-    //             return null;
-    //         }
-    //         d += (digit)md << j*PyLong_MARSHAL_SHIFT;
-    //     }
-    //     if (vm.PyErr_Occurred()) {
-    //         return null;
-    //     }
-    //     /* top digit should be nonzero, else the resulting PyLong won't be
-    //        normalized */
-    //     ob.ob_digit[size-1] = d;
-    //     return (var )ob;
-    //   bad_digit:
-    //     vm.PyErr_SetString(batavia.builtins.ValueError,
-    //                     "bad marshal data (digit out of range in long)");
-    //     return null;
-    // },
+    r_PyLong: function(vm, p) {
+        var n = batavia.modules.marshal.r_long(vm, p);
+        if (n === 0) {
+          return new batavia.types.Int(0);
+        }
+        var negative = false;
+        if (n < 0) {
+          n = -n;
+          negative = true;
+        }
+        var num = new batavia.vendored.BigNumber(0);
+        // in little-endian order
+        var multiplier = new batavia.vendored.BigNumber(1);
+        for (var i = 0; i < n; i++) {
+          num = num.add(multiplier.mul(batavia.modules.marshal.r_short(vm, p)));
+          multiplier = multiplier.mul(batavia.modules.marshal.PyLong_MARSHAL_BASE);
+        }
+        if (negative) {
+          num = num.neg();
+        }
+        return new batavia.types.Int(num);
+    },
 
     r_float: function(vm, p)
     {
@@ -818,6 +764,7 @@ batavia.modules.marshal = {
         default:
             /* Bogus data got written, which isn't ideal.
                This will let you keep working and recover. */
+
             vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (unknown type code '" + type + "')");
             break;
 
