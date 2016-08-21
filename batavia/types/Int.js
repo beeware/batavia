@@ -6,7 +6,7 @@
 batavia.types.Int = function() {
     function Int(val) {
         Object.call(this);
-        this.val = new batavia.vendored.BigNumber(val);
+        this.val = val;
     }
 
     Int.prototype = Object.create(Object.prototype);
@@ -37,7 +37,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__str__ = function() {
-        return this.val.toString();
+        return this.val.toFixed(0);
     };
 
     /**************************************************
