@@ -154,7 +154,15 @@ batavia.types.Int = function() {
             if (this.valueOf() == 0 && other.valueOf() < 0) {
                 throw new batavia.builtins.ZeroDivisionError("0.0 cannot be raised to a negative power");
             } else {
-                return new Int(Math.pow(this.valueOf(), other.valueOf()));
+                var a = new batavia.vendored.BigNumber(this.valueOf());
+                var b = new batavia.vendored.BigNumber(other.valueOf());
+                var result = a.pow(b);
+                if (result.isInt()) {
+                    return new Int(result);
+                } else {
+                    // truncate precision to a float
+                    return new batavia.types.Float(result*1.0);
+                }
             }
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'int' and '" + batavia.type_name(other) + "'");
