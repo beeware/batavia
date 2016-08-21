@@ -136,7 +136,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__not__ = function() {
-        return new Int(!this.valueOf());
+        return new batavia.types.Bool(!this.valueOf());
     };
 
     Int.prototype.__invert__ = function() {
