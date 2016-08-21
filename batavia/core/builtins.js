@@ -374,12 +374,12 @@ batavia.builtins.copyright = function(args, kwargs) {
     console.log("Batavia: Copyright (c) 2015 Russell Keith-Magee. (BSD-3 Licence)\n"+
                 "byterun: Copyright (c) 2013, Ned Batchelder. (MIT Licence)");
 };
-batavia.builtins.copyright.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.';
+batavia.builtins.copyright.__doc__ = 'copyright()\n\ninteractive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.';
 
 batavia.builtins.credits = function(args, kwargs) {
     console.log("Thanks to all contributors, including those in AUTHORS, for supporting Batavia development. See https://github.com/pybee/batavia for more information");
 };
-batavia.builtins.credits.__doc__ = 'interactive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.';
+batavia.builtins.credits.__doc__ = 'credits()\n\ninteractive prompt objects for printing the license text, a list of\n    contributors and the copyright notice.';
 
 batavia.builtins.delattr = function(args, kwargs) {
     if (args) {
@@ -616,8 +616,9 @@ batavia.builtins.hash = function() {
 };
 
 batavia.builtins.help = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'help' not implemented");
+    console.log("For help, please see: https://github.com/pybee/batavia.");
 };
+batavia.builtins.help.__doc__ = 'In Python, this is a wrapper around pydoc.help. In Batavia, this is a link to the README.';
 
 batavia.builtins.hex = function(args) {
     if (args.length !== 1) {
@@ -629,7 +630,7 @@ batavia.builtins.hex = function(args) {
 batavia.builtins.id = function() {
     throw new batavia.builtins.PolyglotError("'id' has no meaning here. See docs/internals/limitations#id");
 };
-batavia.builtins.id__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)';
+batavia.builtins.id.__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)';
 
 
 batavia.builtins.input = function() {
@@ -731,8 +732,12 @@ batavia.builtins.len = function(args, kwargs) {
 batavia.builtins.len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.';
 
 batavia.builtins.license = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'license' not implemented");
+    console.log("LICENSE file is available at https://github.com/pybee/batavia/blob/master/LICENSE");
+    batavia.builtins.credits()
+    batavia.builtins.copyright()
 };
+batavia.builtins.license.__doc__ = 'license()\n\nPrompt printing the license text, a list of contributors, and the copyright notice';
+
 
 batavia.builtins.list = function(args) {
     if (args.length === 0) {
