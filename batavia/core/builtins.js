@@ -287,11 +287,11 @@ batavia.builtins.bytearray = function(args, kwargs) {
 
     if (args.length == 1 && batavia.isinstance(args[0], batavia.types.Bytes)) {
         // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
-        return new batavia.types.Bytearray(args[0])
+        return new batavia.types.Bytearray(args[0]);
     } else {
         throw new batavia.builtins.NotImplementedError(
             "Not implemented"
-        )
+        );
     }
 
 };
@@ -512,10 +512,12 @@ batavia.builtins.enumerate.__doc__ = 'enumerate(iterable[, start]) -> iterator f
 batavia.builtins.eval = function(args, kwargs) {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'eval' not implemented");
 };
+batavia.builtins.eval.__doc__ = 'eval(source[, globals[, locals]]) -> value\n\nEvaluate the source in the context of globals and locals.\nThe source may be a string representing a Python expression\nor a code object as returned by compile().\nThe globals must be a dictionary and locals can be any mapping,\ndefaulting to the current globals and locals.\nIf only globals is given, locals defaults to it.\n';
 
 batavia.builtins.exec = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'exec' not implemented");
 };
+batavia.builtins.exec.__doc__ = 'exec(object[, globals[, locals]])\n\nRead and execute code from an object, which can be a string or a code\nobject.\nThe globals and locals are dictionaries, defaulting to the current\nglobals and locals.  If only globals is given, locals defaults to it.';
 
 batavia.builtins.filter = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -526,6 +528,7 @@ batavia.builtins.filter = function(args, kwargs) {
     }
     return new batavia.types.filter(args, kwargs);
 };
+batavia.builtins.filter.__doc__ = 'filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.'; 
 
 batavia.builtins.float = function(args) {
     if (args.length > 1) {
@@ -562,10 +565,13 @@ batavia.builtins.float.__doc__ = 'float([x]) -> Convert a string or a number to 
 batavia.builtins.format = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'format' not implemented");
 };
+batavia.builtins.format.__doc__ = 'format(value[, format_spec]) -> string\n\nReturns value.__format__(format_spec)\nformat_spec defaults to ""'; 
+
 
 batavia.builtins.frozenset = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'frozenset' not implemented");
 };
+batavia.builtins.frozenset.__doc__ = 'frozenset() -> empty frozenset object\nfrozenset(iterable) -> frozenset object\n\nBuild an immutable unordered collection of unique elements.';
 
 batavia.builtins.getattr = function(args) {
     if (args) {
@@ -587,10 +593,12 @@ batavia.builtins.getattr = function(args) {
         throw new batavia.builtins.TypeError("getattr expected at least 2 arguments, got 0");
     }
 };
+batavia.builtins.getattr.__doc__ = "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case.";
 
 batavia.builtins.globals = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'globals' not implemented");
 };
+batavia.builtins.globals.__doc__ = "globals() -> dictionary\n\nReturn the dictionary containing the current scope's global variables.";
 
 batavia.builtins.hasattr = function(args) {
     if (args) {
@@ -610,10 +618,12 @@ batavia.builtins.hasattr = function(args) {
         throw new batavia.builtins.TypeError("hasattr expected 2 arguments, got 0");
     }
 };
+batavia.builtins.hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)';
 
 batavia.builtins.hash = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hash' not implemented");
 };
+batavia.builtins.hash.__doc__ = 'hash(object) -> integer\n\nReturn a hash value for the object.  Two objects with the same value have\nthe same hash value.  The reverse is not necessarily true, but likely.';
 
 batavia.builtins.help = function() {
     console.log("For help, please see: https://github.com/pybee/batavia.");
@@ -626,6 +636,7 @@ batavia.builtins.hex = function(args) {
     }
     return "0x" + args[0].toString(16);
 };
+batavia.builtins.hex.__doc__ = "hex(number) -> string\n\nReturn the hexadecimal representation of an integer.\n\n   >>> hex(3735928559)\n   '0xdeadbeef'\n";
 
 batavia.builtins.id = function() {
     throw new batavia.builtins.PolyglotError("'id' has no meaning here. See docs/internals/limitations#id");
@@ -636,6 +647,7 @@ batavia.builtins.id.__doc__ = 'Return the identity of an object.  This is guaran
 batavia.builtins.input = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
 };
+batavia.builtins.input.__doc__ = 'input([prompt]) -> string\n\nRead a string from standard input.  The trailing newline is stripped.\nIf the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.\nOn Unix, GNU readline is used if enabled.  The prompt string, if given,\nis printed without a trailing newline before reading.';
 
 batavia.builtins.int = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -650,7 +662,7 @@ batavia.builtins.int = function(args, kwargs) {
     if (args && args.length === 1) {
         value = args[0];
         if(batavia.isinstance(value, batavia.types.Bool)) {
-            return value.__int__()
+            return value.__int__();
         }
     } else if (args && args.length === 2) {
         value = args[0];
@@ -689,6 +701,7 @@ batavia.builtins.isinstance.__doc__ = "isinstance(object, class-or-type-or-tuple
 batavia.builtins.issubclass = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'issubclass' not implemented");
 };
+batavia.builtins.issubclass.__doc__ = 'issubclass(C, B) -> bool\n\nReturn whether class C is a subclass (i.e., a derived class) of class B.\nWhen using a tuple as the second argument issubclass(X, (A, B, ...)),\nis a shortcut for issubclass(X, A) or issubclass(X, B) or ... (etc.).';
 
 batavia.builtins.iter = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -733,11 +746,10 @@ batavia.builtins.len.__doc__ = 'len(object)\n\nReturn the number of items of a s
 
 batavia.builtins.license = function() {
     console.log("LICENSE file is available at https://github.com/pybee/batavia/blob/master/LICENSE");
-    batavia.builtins.credits()
-    batavia.builtins.copyright()
+    batavia.builtins.credits();
+    batavia.builtins.copyright();
 };
 batavia.builtins.license.__doc__ = 'license()\n\nPrompt printing the license text, a list of contributors, and the copyright notice';
-
 
 batavia.builtins.list = function(args) {
     if (args.length === 0) {
@@ -745,10 +757,12 @@ batavia.builtins.list = function(args) {
     }
     return new batavia.types.List(args[0]);
 };
+batavia.builtins.list.__doc__ = "list() -> new empty list\nlist(iterable) -> new list initialized from iterable's items";
 
 batavia.builtins.locals = function() {
     return this.frame.f_locals;
 };
+batavia.builtins.locals.__doc__ = "locals() -> dictionary\n\nUpdate and return a dictionary containing the current scope's local variables.";
 
 batavia.builtins.map = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -786,6 +800,7 @@ batavia.builtins.max.__doc__ = "max(iterable, *[, default=obj, key=func]) -> val
 batavia.builtins.memoryview = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'memoryview' not implemented");
 };
+batavia.builtins.memoryview.__doc__ = 'memoryview(object)\n\nCreate a new memoryview object which references the given object.';
 
 batavia.builtins.min = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -807,11 +822,13 @@ batavia.builtins.next = function() {
     //else stop iteration
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'next' not implemented");
 };
+batavia.builtins.next.__doc__ = 'next(iterator[, default])\n\nReturn the next item from the iterator. If default is given and the iterator\nis exhausted, it is returned instead of raising StopIteration.';
 
 
 batavia.builtins.object = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented");
 };
+batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring. 
 
 batavia.builtins.oct = function(args) {
     if (args.length !== 1) {
@@ -819,7 +836,7 @@ batavia.builtins.oct = function(args) {
     }
     var value = args[0];
     if(batavia.isinstance(value, batavia.types.Bool)) {
-        return "0o" + value.__int__().toString(8)
+        return "0o" + value.__int__().toString(8);
     }
 
     if(!batavia.isinstance(value, batavia.types.Int)) {
@@ -835,14 +852,17 @@ batavia.builtins.oct = function(args) {
 
     return "0o" + value.toString(8);
 };
+batavia.builtins.oct.__doc__ = "oct(number) -> string\n\nReturn the octal representation of an integer.\n\n   >>> oct(342391)\n   '0o1234567'\n";
 
 batavia.builtins.open = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'open' not implemented");
 };
+batavia.builtins.open.__doc__ = 'open() is complicated.'; // 6575 character long docstring
 
 batavia.builtins.ord = function(args, kwargs) {
     return args[0].charCodeAt(0);
 };
+batavia.builtins.ord.__doc__ = 'ord(c) -> integer\n\nReturn the integer ordinal of a one-character string.';
 
 batavia.builtins.pow = function(args) {
     var x, y, z;
@@ -861,7 +881,7 @@ batavia.builtins.pow = function(args) {
             throw new batavia.builtins.TypeError("pow() requires all arguments be integers when 3 arguments are present");
         }
         if (y < 0) {
-          throw new batavia.builtins.TypeError("Builtin Batavia does not support negative exponents")
+          throw new batavia.builtins.TypeError("Builtin Batavia does not support negative exponents");
         }
         if (y == 0) {
           return 1;
@@ -886,6 +906,7 @@ batavia.builtins.pow = function(args) {
         throw new batavia.builtins.TypeError("pow expected at least 2 arguments, got " + args.length);
     }
 };
+batavia.builtins.pow.__doc__ = 'pow(x, y[, z]) -> number\n\nWith two arguments, equivalent to x**y.  With three arguments,\nequivalent to (x**y) % z, but may be more efficient (e.g. for ints).';
 
 batavia.builtins.print = function(args, kwargs) {
     var elements = [], print_value;
@@ -898,10 +919,13 @@ batavia.builtins.print = function(args, kwargs) {
     });
     batavia.stdout(elements.join(' ') + "\n");
 };
+batavia.builtins.print.__doc__ = "print(value, ..., sep=' ', end='\\n', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.\nOptional keyword arguments:\nfile:  a file-like object (stream); defaults to the current sys.stdout.\nsep:   string inserted between values, default a space.\nend:   string appended after the last value, default a newline.\nflush: whether to forcibly flush the stream.";
+
 
 batavia.builtins.property = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'property' not implemented");
 };
+batavia.builtins.property.__doc__ = 'property(fget=None, fset=None, fdel=None, doc=None) -> property attribute\n\nfget is a function to be used for getting an attribute value, and likewise\nfset is a function for setting, and fdel a function for del\'ing, an\nattribute.  Typical use is to define a managed attribute x:\n\nclass C(object):\n    def getx(self): return self._x\n    def setx(self, value): self._x = value\n    def delx(self): del self._x\n    x = property(getx, setx, delx, "I\'m the \'x\' property.")\n\nDecorators make defining new properties or modifying existing ones easy:\n\nclass C(object):\n    @property\n    def x(self):\n        "I am the \'x\' property."\n        return self._x\n    @x.setter\n    def x(self, value):\n        self._x = value\n    @x.deleter\n    def x(self):\n        del self._x\n';
 
 batavia.builtins.range = function(args, kwargs){
     if (arguments.length != 2) {
@@ -965,6 +989,7 @@ batavia.builtins.round = function(args) {
     var base = Math.pow(10, p);
     return Math.round(args[0] * base) / base;
 };
+batavia.builtins.round.__doc__ = 'round(number[, ndigits]) -> number\n\nRound a number to a given precision in decimal digits (default 0 digits).\nThis returns an int when called with one argument, otherwise the\nsame type as the number. ndigits may be negative.';
 
 batavia.builtins.set = function(args,kwargs) {
     if (arguments.length != 2) {
@@ -978,6 +1003,7 @@ batavia.builtins.set = function(args,kwargs) {
     }
 	return new batavia.types.Set(args[0]);
 };
+batavia.builtins.set.__doc__ = 'set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.';
 
 batavia.builtins.setattr = function(args) {
     if (args.length !== 3) {
@@ -986,6 +1012,7 @@ batavia.builtins.setattr = function(args) {
 
     args[0][args[1]] = args[2];
 };
+batavia.builtins.setattr.__doc__ = "setattr(object, name, value)\n\nSet a named attribute on an object; setattr(x, 'y', v) is equivalent to\n``x.y = v''.";
 
 batavia.builtins.slice = function(args, kwargs) {
     if (args.length == 1) {
@@ -1002,6 +1029,7 @@ batavia.builtins.slice = function(args, kwargs) {
         });
     }
 };
+batavia.builtins.slice.__doc__ = 'slice(stop)\nslice(start, stop[, step])\n\nCreate a slice object.  This is used for extended slicing (e.g. a[0:10:2]).';
 
 batavia.builtins.sorted = function(args, kwargs) {
     var validatedInput = batavia.builtins.sorted._validateInput(args, kwargs);
@@ -1027,6 +1055,7 @@ batavia.builtins.sorted = function(args, kwargs) {
 
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
 };
+batavia.builtins.sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list';
 
 batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
     var bigger = 1;
@@ -1077,6 +1106,7 @@ batavia.builtins.sorted._validateInput = function (args, kwargs, undefined) {
 batavia.builtins.staticmethod = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'staticmethod' not implemented");
 };
+batavia.builtins.staticmethod.__doc__ = 'staticmethod(function) -> method\n\nConvert a function to be a static method.\n\nA static method does not receive an implicit first argument.\nTo declare a static method, use this idiom:\n\n     class C:\n     def f(arg1, arg2, ...): ...\n     f = staticmethod(f)\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()).  The instance is ignored except for its class.\n\nStatic methods in Python are similar to those found in Java or C++.\nFor a more advanced concept, see the classmethod builtin.';
 
 batavia.builtins.str = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -1130,6 +1160,7 @@ batavia.builtins.sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the su
 batavia.builtins.super = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented");
 };
+batavia.builtins.super.__doc__ = 'super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)\n';
 
 batavia.builtins.tuple = function(args) {
     if (args.length === 0) {
@@ -1137,6 +1168,7 @@ batavia.builtins.tuple = function(args) {
     }
     return new batavia.types.Tuple(args[0]);
 };
+batavia.builtins.tuple.__doc__ = "tuple() -> empty tuple\ntuple(iterable) -> tuple initialized from iterable's items\n\nIf the argument is a tuple, the return value is the same object.";
 
 batavia.builtins.type = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -1164,6 +1196,7 @@ batavia.builtins.type.__doc__ = "type(object_or_name, bases, dict)\ntype(object)
 batavia.builtins.vars = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'vars' not implemented");
 };
+batavia.builtins.vars.__doc__ = 'vars([object]) -> dictionary\n\nWithout arguments, equivalent to locals().\nWith an argument, equivalent to object.__dict__.';
 
 batavia.builtins.zip = function(args, undefined) {
     if (args === undefined) {
@@ -1191,6 +1224,7 @@ batavia.builtins.zip = function(args, undefined) {
 
     return result;
 };
+batavia.builtins.zip.__doc__ = 'zip(iter1 [,iter2 [...]]) --> zip object\n\nReturn a zip object whose .__next__() method returns a tuple where\nthe i-th element comes from the i-th iterable argument.  The .__next__()\nmethod continues until the shortest iterable in the argument sequence\nis exhausted and then it raises StopIteration.';
 
 // Mark all builtins as Python methods.
 for (var fn in batavia.builtins) {
