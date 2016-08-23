@@ -25,6 +25,36 @@ class IntTests(TranspileTestCase):
             int('q', 16)
             """)
 
+    def test_addition_promotes_past_32bits(self):
+        self.assertCodeExecution("""
+            print(0x80000000 + 1)
+            """)
+
+    def test_addition_promotes_past_64bits(self):
+        self.assertCodeExecution("""
+            print(0x7fffffffffffffff + 2)
+            """)
+
+    def test_subtraction_promotes_past_32bits(self):
+        self.assertCodeExecution("""
+            print(-0x7fffffff - 3)
+            """)
+
+    def test_subtraction_promotes_past_64bits(self):
+        self.assertCodeExecution("""
+            print(-0x7fffffffffffffff - 3)
+            """)
+
+    def test_multiplication_promotes(self):
+        self.assertCodeExecution("""
+            print(2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2+1)
+            """)
+
+    def test_pow_promotes(self):
+        self.assertCodeExecution("""
+            print((2**1024)+1)
+            """)
+
 
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
