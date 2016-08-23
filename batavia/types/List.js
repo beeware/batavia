@@ -244,24 +244,25 @@ batavia.types.List = function() {
 
     List.prototype.__getitem__ = function(index) {
         if (batavia.isinstance(index, batavia.types.Int)) {
-            if (index.valueOf() < 0) {
-                if (-index.valueOf() > this.length) {
+            var idx = index.int32();
+            if (idx < 0) {
+                if (-idx > this.length) {
                     throw new batavia.builtins.IndexError("list index out of range");
                 } else {
-                    return this[this.length + index];
+                    return this[this.length + idx];
                 }
             } else {
-                if (index.valueOf() >= this.length) {
+                if (idx >= this.length) {
                     throw new batavia.builtins.IndexError("list index out of range");
                 } else {
-                    return this[index];
+                    return this[idx];
                 }
             }
         } else if (batavia.isinstance(index, batavia.types.Slice)) {
             var start, stop, step;
-            start = index.start === null ? undefined : index.start.valueOf();
-            stop = index.stop === null ? undefined : index.stop.valueOf();
-            step = index.step.valueOf();
+            start = index.start === null ? undefined : index.start;
+            stop = index.stop === null ? undefined : index.stop;
+            step = index.step;
 
             if (step === 0) {
                 throw new batavia.builtins.ValueError("slice step cannot be zero");

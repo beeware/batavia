@@ -185,31 +185,32 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__getitem__ = function(index) {
-		if (batavia.isinstance(index, batavia.types.Int)) {
-            if (index.valueOf() < 0) {
-                if (-index.valueOf() > this.length) {
+    		if (batavia.isinstance(index, batavia.types.Int)) {
+            var idx = index.int32();
+            if (idx < 0) {
+                if (-idx > this.length) {
                     throw new batavia.builtins.IndexError("tuple index out of range");
                 } else {
-                    return this[this.length + index];
+                    return this[this.length + idx];
                 }
             } else {
-                if (index.valueOf() >= this.length) {
+                if (idx >= this.length) {
                     throw new batavia.builtins.IndexError("tuple index out of range");
                 } else {
-                    return this[index];
+                    return this[idx];
                 }
             }
         } else if (batavia.isinstance(index, batavia.types.Slice)) {
             var start, stop, step;
-            start = index.start.valueOf();
+            start = index.start;
 
             if (index.stop === null) {
                 stop = this.length;
             } else {
-                stop = index.stop.valueOf();
+                stop = index.stop;
             }
 
-            step = index.step.valueOf();
+            step = index.step;
 
             if (step != 1) {
                 throw new batavia.builtins.NotImplementedError("Tuple.__getitem__ with a stepped slice has not been implemented");
@@ -222,7 +223,7 @@ batavia.types.Tuple = function() {
                 msg = "tuple indices must be integers, not ";
             }
             throw new batavia.builtins.TypeError(msg + batavia.type_name(index));
-		}
+    		}
     };
 
     Tuple.prototype.__lshift__ = function(other) {
