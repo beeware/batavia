@@ -279,9 +279,9 @@ batavia.types.Int = function() {
         if (batavia.isinstance(other, batavia.types.Int)) {
             return new Int(this.val.add(other.val));
         } else if (batavia.isinstance(other, batavia.types.Float)) {
-            return new batavia.types.Float(this.valueOf() + other.valueOf());
+            return new batavia.types.Float(parseFloat(this.val.add(other.val)));
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
-            return new Int(this.valueOf() + (other.valueOf() ? 1 : 0));
+            return new Int(this.val.add(other.valueOf() ? 1 : 0));
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'int' and '" + batavia.type_name(other) + "'");
         }

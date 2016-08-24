@@ -257,7 +257,7 @@ batavia.types.Float = function() {
 
     Float.prototype.__add__ = function(other) {
         if (batavia.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
-            return new Float(this.valueOf() + other.valueOf());
+            return new Float(this.valueOf() + parseFloat(other.valueOf()));
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             return new Float(this.valueOf() + (other.valueOf() ? 1.0 : 0.0));
         } else {
