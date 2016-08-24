@@ -57,7 +57,7 @@ batavia.types.Int = function() {
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
             } else {
-                return this.valueOf() < other.valueOf();
+                return this.val.lt(other.valueOf());
             }
         } else {
             throw new batavia.builtins.TypeError("unorderable types: int() < NoneType()");
@@ -73,7 +73,7 @@ batavia.types.Int = function() {
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() <= " + batavia.type_name(other) + "()");
             } else {
-                return this.valueOf() <= other.valueOf();
+                return this.val.lte(other.valueOf());
             }
         } else {
             throw new batavia.builtins.TypeError("unorderable types: int() <= NoneType()");
@@ -82,7 +82,7 @@ batavia.types.Int = function() {
 
     Int.prototype.__eq__ = function(other) {
         if (other !== null && !batavia.isinstance(other, batavia.types.Str)) {
-            return this.valueOf() == other.valueOf();
+            return this.val.eq(other.valueOf());
         }
         return false;
     };
@@ -100,7 +100,7 @@ batavia.types.Int = function() {
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() > " + batavia.type_name(other) + "()");
             } else {
-                return this.valueOf() > other.valueOf();
+                return this.val.gt(other.valueOf());
             }
         } else {
             throw new batavia.builtins.TypeError("unorderable types: int() > NoneType()");
@@ -116,7 +116,7 @@ batavia.types.Int = function() {
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() >= " + batavia.type_name(other) + "()");
             } else {
-                return this.valueOf() >= other.valueOf();
+                return this.val.gte(other.valueOf());
             }
         } else {
             throw new batavia.builtins.TypeError("unorderable types: int() >= NoneType()");
