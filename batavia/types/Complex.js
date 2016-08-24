@@ -49,8 +49,8 @@ batavia.types.Complex = function() {
             if (match == null || re == "") {
                 throw new batavia.builtins.ValueError("complex() arg is a malformed string");
             }
-            this.real = part_from_str(match[1]);
-            this.imag = part_from_str(match[3]);
+            this.real = parseFloat(part_from_str(match[1]));
+            this.imag = parseFloat(part_from_str(match[3]));
             if (match[2] == '-') {
                 this.imag = -this.imag;
             }
@@ -68,12 +68,12 @@ batavia.types.Complex = function() {
             if (batavia.isinstance(re, batavia.types.Bool)) {
                 this.real = re.valueOf() ? 1 : 0;
             } else {
-                this.real = re;
+                this.real = parseFloat(re);
             }
             if (batavia.isinstance(im, batavia.types.Bool)) {
                 this.imag = im.valueOf() ? 1 : 0;
             } else {
-                this.imag = im;
+                this.imag = parseFloat(im);
             }
         } else if (batavia.isinstance(re, batavia.types.Complex) && !im) {
             // console.log(3000, re, im);
