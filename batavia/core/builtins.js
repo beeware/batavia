@@ -528,7 +528,7 @@ batavia.builtins.filter = function(args, kwargs) {
     }
     return new batavia.types.filter(args, kwargs);
 };
-batavia.builtins.filter.__doc__ = 'filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.'; 
+batavia.builtins.filter.__doc__ = 'filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.';
 
 batavia.builtins.float = function(args) {
     if (args.length > 1) {
@@ -565,7 +565,7 @@ batavia.builtins.float.__doc__ = 'float([x]) -> Convert a string or a number to 
 batavia.builtins.format = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'format' not implemented");
 };
-batavia.builtins.format.__doc__ = 'format(value[, format_spec]) -> string\n\nReturns value.__format__(format_spec)\nformat_spec defaults to ""'; 
+batavia.builtins.format.__doc__ = 'format(value[, format_spec]) -> string\n\nReturns value.__format__(format_spec)\nformat_spec defaults to ""';
 
 
 batavia.builtins.frozenset = function() {
@@ -828,7 +828,7 @@ batavia.builtins.next.__doc__ = 'next(iterator[, default])\n\nReturn the next it
 batavia.builtins.object = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented");
 };
-batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring. 
+batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring.
 
 batavia.builtins.oct = function(args) {
     if (args.length !== 1) {
@@ -1017,15 +1017,15 @@ batavia.builtins.setattr.__doc__ = "setattr(object, name, value)\n\nSet a named 
 batavia.builtins.slice = function(args, kwargs) {
     if (args.length == 1) {
         return new batavia.types.Slice({
-            start: 0,
+            start: new batavia.types.Int(0),
             stop: args[0],
-            step: 1
+            step: new batavia.types.Int(1)
         });
     } else {
         return new batavia.types.Slice({
             start: args[0],
             stop: args[1],
-            step: args[2] || 1
+            step: new batavia.types.Int(args[2] || 1)
         });
     }
 };
