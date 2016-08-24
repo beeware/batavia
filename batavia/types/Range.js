@@ -6,12 +6,13 @@ batavia.types.Range = function() {
     // BUG: Range supports longs.
     function Range(start, stop, step) {
         this.start = start.int32();
-        this.stop = stop.int32();
         this.step = new batavia.types.Int(step || 1).int32();
 
-        if (this.stop === undefined) {
+        if (stop === undefined) {
             this.start = 0;
             this.stop = start;
+        } else {
+            this.stop = stop.int32();
         }
     }
 
