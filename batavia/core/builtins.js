@@ -1143,10 +1143,10 @@ batavia.builtins.sum = function(args, kwargs) {
         throw new batavia.builtins.TypeError('sum() expected at most 2 argument, got ' + args.length);
     }
 
-    var total = 0;
+    var total = new batavia.types.Int(0);
     try {
         total = args[0].reduce(function(a, b) {
-            return a + b;
+            return a.__add__(b);
         });
     } catch (err) {
         throw new batavia.builtins.TypeError(
