@@ -1149,17 +1149,14 @@ batavia.builtins.sum = function(args, kwargs) {
         throw new batavia.builtins.TypeError('sum() expected at most 2 argument, got ' + args.length);
     }
 
-    var total = new batavia.types.Int(0);
     try {
-        total = args[0].reduce(function(a, b) {
+        return args[0].reduce(function(a, b) {
             return a.__add__(b);
-        });
+        }, new batavia.types.Int(0));
     } catch (err) {
         throw new batavia.builtins.TypeError(
                 "bad operand type for sum(): 'NoneType'");
     }
-
-    return total;
 };
 batavia.builtins.sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start.";
 

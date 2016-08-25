@@ -4,6 +4,11 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class SumTests(TranspileTestCase):
+    def test_sum_empty_list(self):
+        self.assertCodeExecution("""
+            print(sum([]))
+        """)
+
     def test_sum_list(self):
         self.assertCodeExecution("""
             print(sum([1, 2, 3, 4, 5, 6, 7]))
