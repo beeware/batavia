@@ -94,6 +94,8 @@ batavia.types.Float = function() {
             var val;
             if (batavia.isinstance(other, batavia.types.Bool)) {
                 val = other.valueOf() ? 1.0 : 0.0;
+            } else if (batavia.isinstance(other, batavia.types.Int)) {
+                val = parseFloat(other.val);
             } else {
                 val = other.valueOf();
             }
