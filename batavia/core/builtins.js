@@ -1038,11 +1038,13 @@ batavia.builtins.sorted = function(args, kwargs) {
     if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
         iterable = iterable.map(validatedInput["preparingFunction"]);
         iterable.sort(function (a, b) {
-            if (a["key"] > b["key"]) {
+            // TODO: we should ensure that this uses only the same operations
+            // as CPython, and roughly the same amount.
+            if (a["key"].__gt__(b["key"])) {
                 return validatedInput["bigger"];
             }
 
-            if (a["key"] < b["key"]) {
+            if (a["key"].__lt__(b["key"])) {
                 return validatedInput["smaller"];
             }
             return 0;
