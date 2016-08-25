@@ -197,7 +197,7 @@ Boolean.prototype.__add__ = function(other) {
     } else if (batavia.isinstance(other, batavia.types.Float)) {
         return new batavia.types.Float((this.valueOf() ? 1.0 : 0.0) + other.valueOf());
     } else if (batavia.isinstance(other, batavia.types.Int)) {
-        return new batavia.types.Int((this.valueOf() ? 1 : 0) + other.valueOf());
+        return new batavia.types.Int(other.val.add(this.valueOf() ? 1 : 0));
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'bool' and '" + batavia.type_name(other) + "'");
     }
@@ -217,7 +217,7 @@ Boolean.prototype.__sub__ = function(other) {
     } else if (batavia.isinstance(other, batavia.types.Float)) {
         return new batavia.types.Float((this.valueOf() ? 1.0 : 0.0) - other.valueOf());
     } else if (batavia.isinstance(other, batavia.types.Int)) {
-        return new batavia.types.Int((this.valueOf() ? 1 : 0) - other.valueOf());
+        return new batavia.types.Int(other.val.sub(this.valueOf() ? 1 : 0).neg());
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'bool' and '" + batavia.type_name(other) + "'");
     }
@@ -340,4 +340,3 @@ Boolean.prototype.__ior__ = function(other) {
 Boolean.prototype.copy = function() {
     return this.valueOf();
 };
-
