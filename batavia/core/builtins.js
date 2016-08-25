@@ -554,7 +554,7 @@ batavia.builtins.float = function(args) {
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
     } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
-        return args[0].valueOf().toFixed(1);
+        return parseFloat(args[0]).toFixed(1);
     } else if (batavia.isinstance(value, batavia.types.Float)) {
         return args[0];
     }
