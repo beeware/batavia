@@ -1038,8 +1038,12 @@ batavia.builtins.sorted = function(args, kwargs) {
     if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
         iterable = iterable.map(validatedInput["preparingFunction"]);
         iterable.sort(function (a, b) {
-            // TODO: we should ensure that this uses only the same operations
-            // as CPython, and roughly the same amount.
+            // TODO: Replace this with a better, guaranteed stable sort.
+            // Javascript's default sort has performance problems in some
+            // implementations and is not guaranteed to be stable, while
+            // CPython's sorted is stable and efficient. See:
+            // * https://docs.python.org/3/library/functions.html#sorted
+            // * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
             if (a["key"].__gt__(b["key"])) {
                 return validatedInput["bigger"];
             }

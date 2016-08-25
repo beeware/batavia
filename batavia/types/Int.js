@@ -61,6 +61,8 @@ batavia.types.Int = function() {
                 throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
             } else if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.lt(other ? 1 : 0);
+            } else if (batavia.isinstance(other, batavia.types.Int)) {
+                return this.val.lt(other.val);
             } else {
                 return this.val.lt(other.valueOf());
             }
@@ -79,6 +81,8 @@ batavia.types.Int = function() {
                 throw new batavia.builtins.TypeError("unorderable types: int() <= " + batavia.type_name(other) + "()");
             } else if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.lte(other ? 1 : 0);
+            } else if (batavia.isinstance(other, batavia.types.Int)) {
+                return this.val.lte(other.val);
             } else {
                 return this.val.lte(other.valueOf());
             }
@@ -111,6 +115,8 @@ batavia.types.Int = function() {
                 throw new batavia.builtins.TypeError("unorderable types: int() > " + batavia.type_name(other) + "()");
             } else if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.gt(other ? 1 : 0);
+            } else if (batavia.isinstance(other, batavia.types.Int)) {
+                return this.val.gt(other.val);
             } else {
                 return this.val.gt(other.valueOf());
             }
@@ -129,6 +135,8 @@ batavia.types.Int = function() {
                 throw new batavia.builtins.TypeError("unorderable types: int() >= " + batavia.type_name(other) + "()");
             } else if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.gte(other ? 1 : 0);
+            } else if (batavia.isinstance(other, batavia.types.Int)) {
+                return this.val.gte(other.val);
             } else {
                 return this.val.gte(other.valueOf());
             }
