@@ -2,6 +2,9 @@
 /*************************************************************************
  * A Python int type
  *************************************************************************/
+var euclidean_mod = function(a, b) {
+  return ((a % b) + b) % b;
+}
 
 batavia.types.Int = function() {
     function Int(val) {
@@ -186,7 +189,12 @@ batavia.types.Int = function() {
             }
         } else if (batavia.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
-                return new batavia.types.Float(this.val.div(other.val).floor());
+                var result = parseFloat(this.val.div(other.val).floor());
+                // check for negative 0
+                if ((result == 0.0) && (other.valueOf() < 0)) {
+                  result = "-0.0";
+                }
+                return new batavia.types.Float(result);
             } else {
                 throw new batavia.builtins.ZeroDivisionError("float divmod()");
             }
@@ -203,16 +211,32 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__truediv__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
+        // if it is dividing by another int, we can allow both to be bigger than floats
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            if (other.val.isZero()) {
+                throw new batavia.builtins.ZeroDivisionError("division by zero");
+            }
+            var result = this.val.div(other.val);
+            // check for negative 0
+            if ((other.val.lt(0)) && result.isZero()) {
+              result = "-0.0";
+            }
+            return new batavia.types.Float(parseFloat(result));
+        } else if (batavia.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
-                return new batavia.types.Float(this.val.div(other.valueOf())).toString();
+                var result = parseFloat(this.val.valueOf()) / other.val;
+                // check for negative 0
+                if ((other.valueOf() < 0) && (result == 0)) {
+                  result = "-0.0";
+                }
+                return new batavia.types.Float(parseFloat(result));
             } else if (batavia.isinstance(other, batavia.types.Float)) {
                 throw new batavia.builtins.ZeroDivisionError("float division by zero");
             }
             throw new batavia.builtins.ZeroDivisionError("division by zero");
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return new batavia.types.Float(this.valueOf());
+                return new batavia.types.Float(parseFloat(this.val));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("division by zero");
             }
@@ -225,7 +249,7 @@ batavia.types.Int = function() {
         if (batavia.isinstance(other, batavia.types.Int)) {
             return new Int(this.val.mul(other.val));
         } else if (batavia.isinstance(other, batavia.types.Float)) {
-            return new batavia.types.Float(this.val.mul(other.valueOf()));
+            return new batavia.types.Float(parseFloat(this.val) * other.val);
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             return new Int(this.val.mul(other.valueOf() ? 1 : 0));
         } else if (batavia.isinstance(other, batavia.types.List)) {
@@ -253,14 +277,14 @@ batavia.types.Int = function() {
 
     Int.prototype.__mod__ = function(other) {
         if (batavia.isinstance(other, batavia.types.Int)) {
-            if (other.valueOf() !== 0) {
-                return new Int(this.val.mod(other.val));
+            if (!other.val.isZero()) {
+                return new Int(this.val.mod(other.val).add(other.val).mod(other.val));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
         } else if (batavia.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
-                return new batavia.types.Float(this.val.mod(other.val).valueOf());
+                return new batavia.types.Float(euclidean_mod(parseFloat(this.val), other.val));
             } else {
                 throw new batavia.builtins.ZeroDivisionError("float modulo");
             }
@@ -279,7 +303,8 @@ batavia.types.Int = function() {
         if (batavia.isinstance(other, batavia.types.Int)) {
             return new Int(this.val.add(other.val));
         } else if (batavia.isinstance(other, batavia.types.Float)) {
-            return new batavia.types.Float(parseFloat(this.val.add(other.val)));
+
+            return new batavia.types.Float(parseFloat(this.val) + other.val);
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             return new Int(this.val.add(other.valueOf() ? 1 : 0));
         } else {
@@ -291,7 +316,7 @@ batavia.types.Int = function() {
         if (batavia.isinstance(other, batavia.types.Int)) {
             return new Int(this.val.sub(other.val));
         } else if (batavia.isinstance(other, batavia.types.Float)) {
-            return new batavia.types.Float(this.val.sub(other.val));
+            return new batavia.types.Float(parseFloat(this.val) - other.val);
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             return new Int(this.val.sub(other.valueOf() ? 1 : 0));
         } else {
@@ -312,7 +337,11 @@ batavia.types.Int = function() {
                 return new Int(this.val.mul(new batavia.vendored.BigNumber(2).pow(other.valueOf())));
             }
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
-            return new Int(this.val.mul(2));
+            if (other.valueOf()) {
+              return new Int(this.val.mul(2));
+            } else {
+              return this;
+            }
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'int' and '" + batavia.type_name(other) + "'");
         }

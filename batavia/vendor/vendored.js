@@ -4778,6 +4778,3 @@ batavia.vendored.buffer = function() {
         globalObj.BigNumber = BigNumber;
     }
 })(batavia.vendored);
-
-// Python uses Euclidean modulo.
-batavia.vendored.BigNumber.config({ MODULO_MODE: batavia.vendored.BigNumber.EUCLID });
