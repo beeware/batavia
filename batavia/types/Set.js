@@ -203,7 +203,18 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__and__ has not been implemented");
+        if(batavia.isinstance(other, [batavia.types.Set])){
+            var both = [];
+            for(var key in this){
+                if(this.hasOwnProperty(key)){
+                    if (other.__contains__(key)){
+                        both.push(this[key]);
+                    }
+                }
+            }
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__xor__ = function(other) {
