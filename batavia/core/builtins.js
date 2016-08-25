@@ -740,7 +740,7 @@ batavia.builtins.len = function(args, kwargs) {
         //return args[0].__len__.apply(vm);
     //}
 
-    return args[0].length;
+    return new batavia.types.Int(args[0].length);
 };
 batavia.builtins.len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.';
 
