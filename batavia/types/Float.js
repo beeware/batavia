@@ -47,10 +47,22 @@ batavia.types.Float = function() {
                 return '-0.0';
             }
         } else if (this.val === Math.round(this. val)) {
-            return this.val.toString() + '.0';
+            var s = this.val.toString();
+            if (s.length >= 19) {
+              // force conversion to scientific
+              return this.val.toExponential();
+            }
+            if (s.indexOf('.') < 0) {
+              return s + '.0';
+            }
+            return s;
         } else {
             return this.val.toString();
         }
+    };
+
+    Float.prototype.__float__ = function() {
+        return this;
     };
 
     /**************************************************
@@ -162,6 +174,10 @@ batavia.types.Float = function() {
 
     Float.prototype.__invert__ = function() {
         throw new batavia.builtins.TypeError("bad operand type for unary ~: 'float'");
+    };
+
+    Float.prototype.__abs__ = function() {
+        return new Float(Math.abs(this.valueOf()));
     };
 
     /**************************************************

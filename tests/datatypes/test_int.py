@@ -23,7 +23,7 @@ class IntTests(TranspileTestCase):
     def test_invalid_literal(self):
         self.assertCodeExecution("""
             int('q', 16)
-            """)
+            """, run_in_function=False)
 
     def test_addition_promotes_past_32bits(self):
         self.assertCodeExecution("""
@@ -116,6 +116,8 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_float',
         'test_power_frozenset',
 
+        'test_rshift_int', # this works, but some of the cases are too large
+                           # until we replace bignumber.js
         'test_rshift_frozenset',
 
         'test_subscr_frozenset',
@@ -158,6 +160,8 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_float',
         'test_power_frozenset',
 
+        'test_rshift_int', # this works, but some of the cases are too large
+                           # until we replace bignumber.js
         'test_rshift_frozenset',
 
         'test_subtract_complex',

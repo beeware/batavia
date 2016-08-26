@@ -12,7 +12,7 @@ class BinTests(TranspileTestCase):
 
             x = IntLike(5)
             print(bin(x))
-            """)
+            """, run_in_function=False)
 
 
 class BuiltinBinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):

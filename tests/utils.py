@@ -684,11 +684,11 @@ SAMPLE_DATA = {
             '2.3456',
             '0.0',
             '-3.14159',
-            # '-4.81756',
-            # '5.5',
-            # '-3.5',
-            # '4.5',
-            # '-4.5',
+            '-4.81756',
+            '5.5',
+            '-3.5',
+            '4.5',
+            '-4.5',
         ],
     'frozenset': [
             'frozenset()',
@@ -698,9 +698,24 @@ SAMPLE_DATA = {
             '3',
             '0',
             '-5',
-            # '-3',
-            # '5',
-            # '1',
+            '-3',
+            '5',
+            '1',
+            '-1',
+            '9223372036854775807',
+            '9223372036854775808',
+            '-9223372036854775807',
+            '-9223372036854775808',
+            '18446744073709551615',
+            '18446744073709551616',
+            '18446744073709551617',
+            '-18446744073709551615',
+            '-18446744073709551616',
+            '-18446744073709551617',
+            '1361129467683753853853498429727072845824',
+            '-1361129467683753853853498429727072845824',
+            '179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216',
+            '-179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216',
         ],
     'list': [
             '[]',
@@ -836,11 +851,17 @@ class UnaryOperationTestCase(NotImplementedToExpectedFailure):
     test_unary_invert = _unary_test('test_unary_invert', '~')
 
 
-def _binary_test(test_name, operation, examples):
+def _binary_test(test_name, operation, examples, small_ints=False):
     def func(self):
+        # CPython will attempt to malloc itself to death for some operations,
+        # e.g., 1 << (2**32)
+        # so we have this dirty hack
+        actuals = examples
+        if small_ints and test_name.endswith('_int'):
+            actuals = [x for x in examples if abs(int(x)) < 8192]
         self.assertBinaryOperation(
             x_values=SAMPLE_DATA[self.data_type],
-            y_values=examples,
+            y_values=actuals,
             operation=operation,
             format=self.format,
             substitutions=SAMPLE_SUBSTITUTIONS
@@ -896,14 +917,14 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
     for datatype, examples in SAMPLE_DATA.items():
         vars()['test_add_%s' % datatype] = _binary_test('test_add_%s' % datatype, 'x + y', examples)
         vars()['test_subtract_%s' % datatype] = _binary_test('test_subtract_%s' % datatype, 'x - y', examples)
-        vars()['test_multiply_%s' % datatype] = _binary_test('test_multiply_%s' % datatype, 'x * y', examples)
+        vars()['test_multiply_%s' % datatype] = _binary_test('test_multiply_%s' % datatype, 'x * y', examples, small_ints=True)
         vars()['test_floor_divide_%s' % datatype] = _binary_test('test_floor_divide_%s' % datatype, 'x // y', examples)
         vars()['test_true_divide_%s' % datatype] = _binary_test('test_true_divide_%s' % datatype, 'x / y', examples)
         vars()['test_modulo_%s' % datatype] = _binary_test('test_modulo_%s' % datatype, 'x % y', examples)
-        vars()['test_power_%s' % datatype] = _binary_test('test_power_%s' % datatype, 'x ** y', examples)
+        vars()['test_power_%s' % datatype] = _binary_test('test_power_%s' % datatype, 'x ** y', examples, small_ints=True)
         vars()['test_subscr_%s' % datatype] = _binary_test('test_subscr_%s' % datatype, 'x[y]', examples)
-        vars()['test_lshift_%s' % datatype] = _binary_test('test_lshift_%s' % datatype, 'x << y', examples)
-        vars()['test_rshift_%s' % datatype] = _binary_test('test_rshift_%s' % datatype, 'x >> y', examples)
+        vars()['test_lshift_%s' % datatype] = _binary_test('test_lshift_%s' % datatype, 'x << y', examples, small_ints=True)
+        vars()['test_rshift_%s' % datatype] = _binary_test('test_rshift_%s' % datatype, 'x >> y', examples, small_ints=True)
         vars()['test_and_%s' % datatype] = _binary_test('test_and_%s' % datatype, 'x & y', examples)
         vars()['test_xor_%s' % datatype] = _binary_test('test_xor_%s' % datatype, 'x ^ y', examples)
         vars()['test_or_%s' % datatype] = _binary_test('test_or_%s' % datatype, 'x | y', examples)
@@ -916,11 +937,14 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
         vars()['test_ne_%s' % datatype] = _binary_test('test_ne_%s' % datatype, 'x != y', examples)
 
 
-def _inplace_test(test_name, operation, examples):
+def _inplace_test(test_name, operation, examples, small_ints=False):
     def func(self):
+        actuals = examples
+        if small_ints and test_name.endswith('_int'):
+            actuals = [x for x in examples if abs(int(x)) < 8192]
         self.assertInplaceOperation(
             x_values=SAMPLE_DATA[self.data_type],
-            y_values=examples,
+            y_values=actuals,
             operation=operation,
             format=self.format,
             substitutions=SAMPLE_SUBSTITUTIONS,
@@ -978,12 +1002,12 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
     for datatype, examples in SAMPLE_DATA.items():
         vars()['test_add_%s' % datatype] = _inplace_test('test_add_%s' % datatype, 'x += y', examples)
         vars()['test_subtract_%s' % datatype] = _inplace_test('test_subtract_%s' % datatype, 'x -= y', examples)
-        vars()['test_multiply_%s' % datatype] = _inplace_test('test_multiply_%s' % datatype, 'x *= y', examples)
+        vars()['test_multiply_%s' % datatype] = _inplace_test('test_multiply_%s' % datatype, 'x *= y', examples, small_ints=True)
         vars()['test_floor_divide_%s' % datatype] = _inplace_test('test_floor_divide_%s' % datatype, 'x //= y', examples)
         vars()['test_true_divide_%s' % datatype] = _inplace_test('test_true_divide_%s' % datatype, 'x /= y', examples)
         vars()['test_modulo_%s' % datatype] = _inplace_test('test_modulo_%s' % datatype, 'x %= y', examples)
-        vars()['test_power_%s' % datatype] = _inplace_test('test_power_%s' % datatype, 'x **= y', examples)
-        vars()['test_lshift_%s' % datatype] = _inplace_test('test_lshift_%s' % datatype, 'x <<= y', examples)
+        vars()['test_power_%s' % datatype] = _inplace_test('test_power_%s' % datatype, 'x **= y', examples, small_ints=True)
+        vars()['test_lshift_%s' % datatype] = _inplace_test('test_lshift_%s' % datatype, 'x <<= y', examples, small_ints=True)
         vars()['test_rshift_%s' % datatype] = _inplace_test('test_rshift_%s' % datatype, 'x >>= y', examples)
         vars()['test_and_%s' % datatype] = _inplace_test('test_and_%s' % datatype, 'x &= y', examples)
         vars()['test_xor_%s' % datatype] = _inplace_test('test_xor_%s' % datatype, 'x ^= y', examples)
@@ -1081,6 +1105,14 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
             for x in x_values:
                 for y in y_values:
                     data.append((f, x, y))
+
+        # filter out very large integers for some operations so as not
+        # to crash CPython
+        data = [(f, x, y) for f, x, y in data if not
+            (f == 'pow' and
+             x.lstrip('-').isdigit() and
+             y.lstrip('-').isdigit() and
+             (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
 
         self.assertCodeExecution(
             '##################################################\n'.join(

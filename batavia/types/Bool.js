@@ -26,6 +26,10 @@ Boolean.prototype.__str__ = function(args, kwargs) {
     }
 };
 
+Boolean.prototype.__float__ = function() {
+    return new batavia.types.Float(this.valueOf() ? 1.0 : 0.0);
+};
+
 /**************************************************
  * Comparison operators
  **************************************************/
@@ -259,7 +263,9 @@ Boolean.prototype.__rshift__ = function(other) {
 
 Boolean.prototype.__and__ = function(other) {
     if (batavia.isinstance(other, batavia.types.Int)) {
-        return new batavia.types.Int((this.valueOf() ? 1 : 0) & other.valueOf());
+        return this.__int__().__and__(other);
+    } else if (batavia.isinstance(other, batavia.types.Bool)) {
+        return new Boolean((this.valueOf() ? 1 : 0) & (other.valueOf() ? 1 : 0));
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'bool' and '" + batavia.type_name(other) + "'");
     }
@@ -267,7 +273,9 @@ Boolean.prototype.__and__ = function(other) {
 
 Boolean.prototype.__xor__ = function(other) {
     if (batavia.isinstance(other, batavia.types.Int)) {
-        return new batavia.types.Int((this.valueOf() ? 1 : 0) ^ other.valueOf());
+        return this.__int__().__xor__(other);
+    } else if (batavia.isinstance(other, batavia.types.Bool)) {
+        return new Boolean((this.valueOf() ? 1 : 0) ^ (other.valueOf() ? 1 : 0));
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'bool' and '" + batavia.type_name(other) + "'");
     }
@@ -275,7 +283,9 @@ Boolean.prototype.__xor__ = function(other) {
 
 Boolean.prototype.__or__ = function(other) {
     if (batavia.isinstance(other, batavia.types.Int)) {
-        return new batavia.types.Int((this.valueOf() ? 1 : 0) | other.valueOf());
+        return this.__int__().__or__(other);
+    } else if (batavia.isinstance(other, batavia.types.Bool)) {
+        return new Boolean((this.valueOf() ? 1 : 0) | (other.valueOf() ? 1 : 0));
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");
     }

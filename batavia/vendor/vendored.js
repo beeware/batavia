@@ -4778,3 +4778,8 @@ batavia.vendored.buffer = function() {
         globalObj.BigNumber = BigNumber;
     }
 })(batavia.vendored);
+
+batavia.vendored.BigNumber.config({
+  DECIMAL_PLACES: 324,
+  ROUNDING_MODE: batavia.vendored.BigNumber.ROUND_HALF_EVEN
+});
