@@ -201,17 +201,18 @@ String.prototype.__sub__ = function(other) {
 
 String.prototype.__getitem__ = function(index) {
     if (batavia.isinstance(index, batavia.types.Int)) {
-        if (index.valueOf() < 0) {
-            if (-index.valueOf() > this.length) {
+        var idx = index.int32();
+        if (idx < 0) {
+            if (-idx > this.length) {
                 throw new batavia.builtins.IndexError("string index out of range");
             } else {
-                return this[this.length + index];
+                return this[this.length + idx];
             }
         } else {
-            if (index.valueOf() >= this.length) {
+            if (idx >= this.length) {
                 throw new batavia.builtins.IndexError("string index out of range");
             } else {
-                return this[index];
+                return this[idx];
             }
         }
     } else if (batavia.isinstance(index, batavia.types.Slice)) {

@@ -3,6 +3,7 @@
  * A Python complex type
  *************************************************************************/
 
+
 batavia.types.Complex = function() {
     // Polyfill below from
     // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is#Polyfill_for_non-ES6_browsers
@@ -49,8 +50,8 @@ batavia.types.Complex = function() {
             if (match == null || re == "") {
                 throw new batavia.builtins.ValueError("complex() arg is a malformed string");
             }
-            this.real = part_from_str(match[1]);
-            this.imag = part_from_str(match[3]);
+            this.real = parseFloat(part_from_str(match[1]));
+            this.imag = parseFloat(part_from_str(match[3]));
             if (match[2] == '-') {
                 this.imag = -this.imag;
             }
@@ -62,18 +63,21 @@ batavia.types.Complex = function() {
             throw new batavia.builtins.TypeError(
                 "complex() argument must be a string, a bytes-like object or a number, not '" + batavia.type_name(im) + "'"
             );
+        } else if (typeof re == 'number' && typeof im == 'number') {
+            this.real = re;
+            this.imag = im;
         } else if (batavia.isinstance(re, [batavia.types.Float, batavia.types.Int, batavia.types.Bool]) &&
             batavia.isinstance(im, [batavia.types.Float, batavia.types.Int, batavia.types.Bool])) {
             // console.log(2000, re, im);
             if (batavia.isinstance(re, batavia.types.Bool)) {
                 this.real = re.valueOf() ? 1 : 0;
             } else {
-                this.real = re;
+                this.real = parseFloat(re);
             }
             if (batavia.isinstance(im, batavia.types.Bool)) {
                 this.imag = im.valueOf() ? 1 : 0;
             } else {
-                this.imag = im;
+                this.imag = parseFloat(im);
             }
         } else if (batavia.isinstance(re, batavia.types.Complex) && !im) {
             // console.log(3000, re, im);
@@ -112,7 +116,7 @@ batavia.types.Complex = function() {
     };
 
     Complex.prototype.__str__ = function() {
-        if (this.real.valueOf() || Object.is(this.real.valueOf(), -0)) {
+        if (this.real.valueOf() || Object.is(this.real, -0)) {
             return "(" + part_to_str(this.real) + (this.imag >= 0 ? "+" : "-") + part_to_str(Math.abs(this.imag)) + "j)";
         } else {
             return part_to_str(this.imag) + "j";
@@ -169,7 +173,7 @@ batavia.types.Complex = function() {
     };
 
     Complex.prototype.__neg__ = function() {
-        return new Complex(-this.real.valueOf(), -this.imag.valueOf());
+        return new Complex(-this.real, -this.imag);
     };
 
     Complex.prototype.__not__ = function() {
@@ -192,7 +196,13 @@ batavia.types.Complex = function() {
     };
 
     function __div__(x, y, inplace) {
-        if (batavia.isinstance(y, [batavia.types.Float, batavia.types.Int])) {
+        if (batavia.isinstance(y, batavia.types.Int)) {
+            if (!y.val.isZero()) {
+                return new Complex(x.real / parseFloat(y.val), x.imag / parseFloat(y.val));
+            } else {
+                throw new batavia.builtins.ZeroDivisionError("complex division by zero");
+            }
+        } else if (batavia.isinstance(y, batavia.types.Float)) {
             if (y.valueOf()) {
                 return new Complex(x.real / y.valueOf(), x.imag / y.valueOf());
             } else {
@@ -231,7 +241,13 @@ batavia.types.Complex = function() {
     };
 
     function __mul__(x, y, inplace) {
-        if (batavia.isinstance(y, [batavia.types.Int, batavia.types.Float])) {
+        if (batavia.isinstance(y, batavia.types.Int)) {
+            if (!y.val.isZero()) {
+                return new Complex(x.real * parseFloat(y.val), x.imag * parseFloat(y.val));
+            } else {
+                return new Complex(0, 0);
+            }
+        } else if (batavia.isinstance(y, batavia.types.Float)) {
             if (y.valueOf()) {
                 return new Complex(x.real * y.valueOf(), x.imag * y.valueOf());
             } else {
@@ -263,7 +279,9 @@ batavia.types.Complex = function() {
     };
 
     function __add__(x, y, inplace) {
-        if (batavia.isinstance(y, [batavia.types.Int, batavia.types.Float])) {
+        if (batavia.isinstance(y, batavia.types.Int)) {
+            return new Complex(x.real + parseFloat(y.val), x.imag);
+        } else if (batavia.isinstance(y, batavia.types.Float)) {
             return new Complex(x.real + y.valueOf(), x.imag);
         } else if (batavia.isinstance(y, batavia.types.Bool)) {
             return new Complex(x.real + (y.valueOf() ? 1.0 : 0.0), x.imag);
@@ -281,7 +299,9 @@ batavia.types.Complex = function() {
     };
 
     function __sub__(x, y, inplace) {
-        if (batavia.isinstance(y, [batavia.types.Int, batavia.types.Float])) {
+        if (batavia.isinstance(y, batavia.types.Int)) {
+            return new Complex(x.real - parseFloat(y.val), x.imag);
+        } else if (batavia.isinstance(y, batavia.types.Float)) {
             return new Complex(x.real - y.valueOf(), x.imag);
         } else if (batavia.isinstance(y, batavia.types.Bool)) {
             return new Complex(x.real - (y.valueOf() ? 1.0 : 0.0), x.imag);

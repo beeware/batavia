@@ -528,7 +528,7 @@ batavia.builtins.filter = function(args, kwargs) {
     }
     return new batavia.types.filter(args, kwargs);
 };
-batavia.builtins.filter.__doc__ = 'filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.'; 
+batavia.builtins.filter.__doc__ = 'filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.';
 
 batavia.builtins.float = function(args) {
     if (args.length > 1) {
@@ -554,7 +554,7 @@ batavia.builtins.float = function(args) {
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
     } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
-        return args[0].valueOf().toFixed(1);
+        return parseFloat(args[0]).toFixed(1);
     } else if (batavia.isinstance(value, batavia.types.Float)) {
         return args[0];
     }
@@ -565,7 +565,7 @@ batavia.builtins.float.__doc__ = 'float([x]) -> Convert a string or a number to 
 batavia.builtins.format = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'format' not implemented");
 };
-batavia.builtins.format.__doc__ = 'format(value[, format_spec]) -> string\n\nReturns value.__format__(format_spec)\nformat_spec defaults to ""'; 
+batavia.builtins.format.__doc__ = 'format(value[, format_spec]) -> string\n\nReturns value.__format__(format_spec)\nformat_spec defaults to ""';
 
 
 batavia.builtins.frozenset = function() {
@@ -740,7 +740,7 @@ batavia.builtins.len = function(args, kwargs) {
         //return args[0].__len__.apply(vm);
     //}
 
-    return args[0].length;
+    return new batavia.types.Int(args[0].length);
 };
 batavia.builtins.len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.';
 
@@ -828,7 +828,7 @@ batavia.builtins.next.__doc__ = 'next(iterator[, default])\n\nReturn the next it
 batavia.builtins.object = function() {
     throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'object' not implemented");
 };
-batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring. 
+batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring.
 
 batavia.builtins.oct = function(args) {
     if (args.length !== 1) {
@@ -1017,15 +1017,15 @@ batavia.builtins.setattr.__doc__ = "setattr(object, name, value)\n\nSet a named 
 batavia.builtins.slice = function(args, kwargs) {
     if (args.length == 1) {
         return new batavia.types.Slice({
-            start: 0,
+            start: new batavia.types.Int(0),
             stop: args[0],
-            step: 1
+            step: new batavia.types.Int(1)
         });
     } else {
         return new batavia.types.Slice({
             start: args[0],
             stop: args[1],
-            step: args[2] || 1
+            step: new batavia.types.Int(args[2] || 1)
         });
     }
 };
@@ -1038,11 +1038,17 @@ batavia.builtins.sorted = function(args, kwargs) {
     if (batavia.isinstance(iterable, [batavia.types.List, batavia.types.Tuple])) {
         iterable = iterable.map(validatedInput["preparingFunction"]);
         iterable.sort(function (a, b) {
-            if (a["key"] > b["key"]) {
+            // TODO: Replace this with a better, guaranteed stable sort.
+            // Javascript's default sort has performance problems in some
+            // implementations and is not guaranteed to be stable, while
+            // CPython's sorted is stable and efficient. See:
+            // * https://docs.python.org/3/library/functions.html#sorted
+            // * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+            if (a["key"].__gt__(b["key"])) {
                 return validatedInput["bigger"];
             }
 
-            if (a["key"] < b["key"]) {
+            if (a["key"].__lt__(b["key"])) {
                 return validatedInput["smaller"];
             }
             return 0;
@@ -1143,17 +1149,14 @@ batavia.builtins.sum = function(args, kwargs) {
         throw new batavia.builtins.TypeError('sum() expected at most 2 argument, got ' + args.length);
     }
 
-    var total = 0;
     try {
-        total = args[0].reduce(function(a, b) {
-            return a + b;
-        });
+        return args[0].reduce(function(a, b) {
+            return a.__add__(b);
+        }, new batavia.types.Int(0));
     } catch (err) {
         throw new batavia.builtins.TypeError(
                 "bad operand type for sum(): 'NoneType'");
     }
-
-    return total;
 };
 batavia.builtins.sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start.";
 

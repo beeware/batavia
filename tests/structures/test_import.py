@@ -902,9 +902,9 @@ class NativeImportTests(TranspileTestCase):
                         };
 
                         mod.MyClass.prototype.doStuff = function(a, b, c) {
-                            console.log("first: " + a + ' ' + this.x + ' ' + (a + this.x));
-                            console.log("second: " + b + ' ' + this.y + ' ' + (b + this.y));
-                            console.log("third: " + c + ' ' + this.z + ' ' + (c + this.z));
+                            console.log("first: " + a + ' ' + this.x + ' ' + (a.__add__(this.x)));
+                            console.log("second: " + b + ' ' + this.y + ' ' + (b.__add__(this.y)));
+                            console.log("third: " + c + ' ' + this.z + ' ' + (c.__add__(this.z)));
                         };
 
                         return mod;
@@ -944,9 +944,9 @@ class NativeImportTests(TranspileTestCase):
                         };
 
                         mod.MyClass.prototype.doStuff = function(a, b, c) {
-                            console.log("first: " + a + ' ' + this.x + ' ' + (a + this.x));
-                            console.log("second: " + b + ' ' + this.y + ' ' + (b + this.y));
-                            console.log("third: " + c + ' ' + this.z + ' ' + (c + this.z));
+                            console.log("first: " + a + ' ' + this.x + ' ' + (a.__add__(this.x)));
+                            console.log("second: " + b + ' ' + this.y + ' ' + (b.__add__(this.y)));
+                            console.log("third: " + c + ' ' + this.z + ' ' + (c.__add__(this.z)));
                         };
 
                         return mod;

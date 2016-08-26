@@ -94,6 +94,8 @@ batavia.types.Float = function() {
             var val;
             if (batavia.isinstance(other, batavia.types.Bool)) {
                 val = other.valueOf() ? 1.0 : 0.0;
+            } else if (batavia.isinstance(other, batavia.types.Int)) {
+                val = parseFloat(other.val);
             } else {
                 val = other.valueOf();
             }
@@ -185,7 +187,13 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__floordiv__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            if (!other.val.isZero()) {
+                return new Float(Math.floor(this.valueOf() / other.valueOf()));
+            } else {
+                throw new batavia.builtins.ZeroDivisionError("float divmod()");
+            }
+        } else if (batavia.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
                 return new Float(Math.floor(this.valueOf() / other.valueOf()));
             } else {
@@ -203,7 +211,13 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__truediv__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            if (!other.val.isZero()) {
+                return new Float(this.valueOf() / other.valueOf());
+            } else {
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
+            }
+        } else if (batavia.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
                 return new Float(this.valueOf() / other.valueOf());
             } else {
@@ -236,7 +250,13 @@ batavia.types.Float = function() {
 
     Float.prototype.__mod__ = function(other) {
         /* TODO: Fix case for -0.0, which is coming out 0.0 */
-        if (batavia.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            if (other.val.isZero()) {
+                throw new batavia.builtins.ZeroDivisionError("float modulo");
+            } else {
+                return new Float(python_modulo(this.valueOf(), parseFloat(other.val)));
+            }
+        } else if (batavia.isinstance(other, batavia.types.Float)) {
             if (other.valueOf() === 0) {
                 throw new batavia.builtins.ZeroDivisionError("float modulo");
             } else {
@@ -257,7 +277,7 @@ batavia.types.Float = function() {
 
     Float.prototype.__add__ = function(other) {
         if (batavia.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
-            return new Float(this.valueOf() + other.valueOf());
+            return new Float(this.valueOf() + parseFloat(other.valueOf()));
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             return new Float(this.valueOf() + (other.valueOf() ? 1.0 : 0.0));
         } else {

@@ -25,6 +25,36 @@ class IntTests(TranspileTestCase):
             int('q', 16)
             """)
 
+    def test_addition_promotes_past_32bits(self):
+        self.assertCodeExecution("""
+            print(0x80000000 + 1)
+            """)
+
+    def test_addition_promotes_past_64bits(self):
+        self.assertCodeExecution("""
+            print(0x7fffffffffffffff + 2)
+            """)
+
+    def test_subtraction_promotes_past_32bits(self):
+        self.assertCodeExecution("""
+            print(-0x7fffffff - 3)
+            """)
+
+    def test_subtraction_promotes_past_64bits(self):
+        self.assertCodeExecution("""
+            print(-0x7fffffffffffffff - 3)
+            """)
+
+    def test_multiplication_promotes(self):
+        self.assertCodeExecution("""
+            print(2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2*2+1)
+            """)
+
+    def test_pow_promotes(self):
+        self.assertCodeExecution("""
+            print((2**1024)+1)
+            """)
+
 
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
@@ -39,7 +69,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_and_frozenset',
 
-        'test_eq_bytes',
         'test_eq_class',
         'test_eq_frozenset',
 
@@ -80,7 +109,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
         'test_multiply_frozenset',
 
-        'test_ne_bytes',
         'test_ne_class',
         'test_ne_frozenset',
 

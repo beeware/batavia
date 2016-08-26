@@ -4,9 +4,10 @@
 
 batavia.types.Slice = function() {
     function Slice(kwargs) {
-        this.start = kwargs.start;
-        this.stop = kwargs.stop;
-        this.step = kwargs.step || 1;
+        // BUG: slices can support arbitrary-sized arguments.
+        this.start = kwargs.start === null ? null : kwargs.start.int32();
+        this.stop = kwargs.stop === null ? null : kwargs.stop.int32();
+        this.step = (kwargs.step || 1)|0;
     }
 
     Slice.prototype = Object.create(Object.prototype);
