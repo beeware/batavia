@@ -211,11 +211,21 @@ batavia.builtins.any = function(args, kwargs) {
         throw new batavia.builtins.TypeError('any() expected exactly 0 or 1 arguments (' + args.length + ' given)');
     }
 
+    if (batavia.isinstance(args[0], batavia.types.Tuple)) {
+      for (var i = 0; i < args[0].length; i++) {
+        if (args[0][i]) {
+           return true;
+        }
+      }
+      return false;
+    }
+
     for (var i in args[0]) {
         if (args[0][i]) {
            return true;
         }
     }
+
     return false;
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
@@ -433,8 +443,8 @@ batavia.builtins.dict = function(args, kwargs) {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
-                // single number in an iterable throws different error
-                if (batavia.isinstance(args[0][i], batavia.types.Int)) {
+                // single number or bool in an iterable throws different error
+                if (batavia.isinstance(args[0][i], [batavia.types.Bool, batavia.types.Int])) {
                     throw new batavia.builtins.TypeError("cannot convert dictionary update sequence element #" + i + " to a sequence");
                 } else {
                     throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + args[0][i].length + "; 2 is required");
@@ -542,19 +552,19 @@ batavia.builtins.float = function(args) {
 
     if (batavia.isinstance(value, batavia.types.Str)) {
         if (value.search(/[^0-9.]/g) === -1) {
-            return parseFloat(value);
+            return new batavia.types.Float(parseFloat(value));
         } else {
             if (value === "nan" || value === "+nan" || value === "-nan") {
-                return NaN;
+                return new batavia.types.Float(NaN);
             } else if(value === "inf" || value === "+inf") {
-                return Infinity;
+                return new batavia.types.Float(Infinity);
             } else if(toConvert === "-inf") {
-                return -Infinity;
+                return new batavia.types.Float(-Infinity);
             }
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
     } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
-        return parseFloat(args[0]).toFixed(1);
+        return new batavia.types.Float(parseFloat(args[0]).toFixed(1));
     } else if (batavia.isinstance(value, batavia.types.Float)) {
         return args[0];
     }

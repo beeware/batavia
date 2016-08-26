@@ -68,33 +68,72 @@ batavia.types.Tuple = function() {
     Tuple.prototype.__lt__ = function(other) {
         if (!batavia.isinstance(other, batavia.types.Tuple)) {
             throw new batavia.builtins.TypeError('unorderable types: tuple() < ' + batavia.type_name(other) + '()')
-        } else {
-            return this.valueOf() < other;
         }
+        if (this.length == 0 && other.length > 0) {
+            return true;
+        }
+        for (var i = 0; i < this.length; i++) {
+            if (i >= other.length) {
+                return false;
+            }
+            if (this[i].__lt__(other[i])) {
+                return true;
+            } else if (this[i].__eq__(other[i])) {
+                continue;
+            } else {
+                return false;
+            }
+        }
+        return this.length < other.length;
     };
 
     Tuple.prototype.__le__ = function(other) {
-        return this.valueOf() <= other;
+        return this.__lt__(other) || this.__eq__(other);
     };
 
     Tuple.prototype.__eq__ = function(other) {
-        return this.valueOf() == other;
+        if (!batavia.isinstance(other, batavia.types.Tuple)) {
+            return false;
+        }
+        if (this.length != other.length) {
+            return false;
+        }
+        for (var i = 0; i < this.length; i++) {
+            if (!this[i].__eq__(other[i])) {
+                return false;
+            }
+        }
+        return true;
     };
 
     Tuple.prototype.__ne__ = function(other) {
-        return this.valueOf() != other;
+        return !this.__eq__(other);
     };
 
     Tuple.prototype.__gt__ = function(other) {
         if (!batavia.isinstance(other, batavia.types.Tuple)) {
             throw new batavia.builtins.TypeError('unorderable types: tuple() > ' + batavia.type_name(other) + '()')
-        } else {
-            return this.valueOf() > other;
         }
+        if (this.length == 0 && other.length > 0) {
+            return false;
+        }
+        for (var i = 0; i < this.length; i++) {
+            if (i >= other.length) {
+                return true;
+            }
+            if (this[i].__lt__(other[i])) {
+                return false;
+            } else if (this[i].__eq__(other[i])) {
+                continue;
+            } else {
+                return true;
+            }
+        }
+        return this.length > other.length;
     };
 
     Tuple.prototype.__ge__ = function(other) {
-        return this.valueOf() >= other;
+      return this.__gt__(other) || this.__eq__(other);
     };
 
     Tuple.prototype.__contains__ = function(other) {
@@ -106,19 +145,23 @@ batavia.types.Tuple = function() {
      **************************************************/
 
     Tuple.prototype.__pos__ = function() {
-        return new Tuple(+this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary +: 'tuple'");
     };
 
     Tuple.prototype.__neg__ = function() {
-        return new Tuple(-this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary -: 'tuple'");
     };
 
     Tuple.prototype.__not__ = function() {
-        return new Tuple(!this.valueOf());
+        return !this.__bool__();
     };
 
     Tuple.prototype.__invert__ = function() {
-        return new Tuple(~this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'tuple'");
+    };
+
+    Tuple.prototype.__bool__ = function() {
+        return this.length > 0;
     };
 
     /**************************************************

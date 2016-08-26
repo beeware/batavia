@@ -148,7 +148,6 @@ class DictTests(TranspileTestCase):
         expected = "{'a': 1}\n"
         self.assertJavaScriptExecution(bytecode, expected, js={})
 
-    @unittest.expectedFailure
     def test_builtin_non_sequence(self):
         # One of the elements isn't a sequence
         self.assertCodeExecution("""

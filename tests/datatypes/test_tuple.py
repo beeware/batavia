@@ -72,13 +72,6 @@ class TupleTests(TranspileTestCase):
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
-    not_implemented = [
-        'test_unary_invert',
-        'test_unary_negative',
-        'test_unary_not',
-        'test_unary_positive',
-    ]
-
 
 class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
@@ -106,7 +99,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_eq_class',
         'test_eq_frozenset',
-        'test_eq_tuple',
 
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
@@ -176,7 +168,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_ne_class',
         'test_ne_frozenset',
-        'test_ne_tuple',
 
         'test_or_bool',
         'test_or_bytearray',
