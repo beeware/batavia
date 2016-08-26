@@ -454,12 +454,14 @@ batavia.modules.marshal = {
             if (sign) {
                 retval = -retval;
             }
+
             // console.log.info('TYPE_BINARY_FLOAT ' + retval);
+
+            retval = new batavia.types.Float(retval);
 
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
             }
-            retval = new batavia.types.Float(retval);
             break;
 
         case batavia.modules.marshal.TYPE_COMPLEX:
