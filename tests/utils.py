@@ -20,9 +20,11 @@ from unittest import TestCase
 _batavia_built = False
 _phantomjs = None
 
-# prep a bunch of Python interpreters running in a temp directory, ready to accept input
-python_queue = Queue(maxsize=16)
-phantomjs_queue = Queue(maxsize=16)
+# prep a bunch of Python and PhantomJS interpreters running in a temp directory,
+# ready to accept input
+QUEUE_SIZE = 1
+python_queue = Queue(maxsize=QUEUE_SIZE)
+phantomjs_queue = Queue(maxsize=QUEUE_SIZE)
 test_dir = os.path.join(os.path.dirname(__file__), 'temp')
 
 
@@ -126,9 +128,10 @@ def fill_python_queue():
     while True:
         python_queue.put(prep_python())
 
-fill_python_queue_thread = threading.Thread(target=fill_python_queue)
-fill_python_queue_thread.daemon = True
-fill_python_queue_thread.start()
+for i in range(QUEUE_SIZE):
+    fill_python_queue_thread = threading.Thread(target=fill_python_queue)
+    fill_python_queue_thread.daemon = True
+    fill_python_queue_thread.start()
 
 
 def prep_phantomjs():
@@ -282,9 +285,10 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
         # print("PHANTOMJS READY")
         return None
 
-fill_phantomjs_queue_thread = threading.Thread(target=fill_phantomjs_queue)
-fill_phantomjs_queue_thread.daemon = True
-fill_phantomjs_queue_thread.start()
+for i in range(QUEUE_SIZE):
+    fill_phantomjs_queue_thread = threading.Thread(target=fill_phantomjs_queue)
+    fill_phantomjs_queue_thread.daemon = True
+    fill_phantomjs_queue_thread.start()
 
 _phantomjs = None
 
