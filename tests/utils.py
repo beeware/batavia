@@ -21,7 +21,8 @@ _batavia_built = False
 _phantomjs = None
 
 # prep a bunch of Python interpreters running in a temp directory, ready to accept input
-python_queue = Queue(maxsize=64)
+python_queue = Queue(maxsize=16)
+phantomjs_queue = Queue(maxsize=16)
 test_dir = os.path.join(os.path.dirname(__file__), 'temp')
 
 
@@ -129,6 +130,63 @@ fill_python_queue_thread = threading.Thread(target=fill_python_queue)
 fill_python_queue_thread.daemon = True
 fill_python_queue_thread.start()
 
+
+def prep_phantomjs():
+    """Spins up a phantomjs interpreter to get ready to run"""
+
+    try:
+        os.mkdir(test_dir)
+    except FileExistsError:
+        pass
+
+    # Start the phantomjs environment.
+    phantomjs = subprocess.Popen(
+        ["phantomjs"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=os.path.dirname(__file__),
+    )
+    sendPhantomCommand(phantomjs)
+
+    sendPhantomCommand(
+        phantomjs,
+        "var page = require('webpage').create()",
+        success='undefined',
+        on_fail="Unable to create webpage."
+    )
+
+    sendPhantomCommand(
+        phantomjs,
+        """
+        page.onConsoleMessage = function (msg) {
+            console.log(msg);
+        }
+        """,
+        success=['undefined', '{}'],
+        on_fail="Unable to create console redirection"
+    )
+
+    sendPhantomCommand(
+        phantomjs,
+        "page.injectJs('polyfill.js')",
+        success=['true', '{}'],
+        on_fail="Unable to inject polyfill"
+    )
+    sendPhantomCommand(
+        phantomjs,
+        "page.injectJs('../batavia.min.js')",
+        success=['true', '{}'],
+        on_fail="Unable to inject Batavia"
+    )
+
+    return phantomjs
+
+def fill_phantomjs_queue():
+    while True:
+        phantomjs_queue.put(prep_phantomjs())
+
+
 def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     """Run a block of Python code with the Python interpreter."""
 
@@ -169,9 +227,9 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
         cmd = adjust(payload).replace('\n', '')
         # print("<<<", cmd)
 
-        _phantomjs.stdin.write(cmd.encode('utf-8'))
-        _phantomjs.stdin.write('\n'.encode('utf-8'))
-        _phantomjs.stdin.flush()
+        phantomjs.stdin.write(cmd.encode('utf-8'))
+        phantomjs.stdin.write('\n'.encode('utf-8'))
+        phantomjs.stdin.flush()
 
     # print("WAIT FOR PROMPT...")
     if output is not None:
@@ -182,7 +240,7 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
     out.append(b'')
     while out[-1] != b"phantomjs> " and out[-1] != b'PhantomJS has crashed. ':
         try:
-            ch = _phantomjs.stdout.read(1)
+            ch = phantomjs.stdout.read(1)
             if ch == b'\n':
                 # print(">>>", out[-1])
                 out[-1] = out[-1].decode("utf-8")
@@ -224,10 +282,16 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
         # print("PHANTOMJS READY")
         return None
 
+fill_phantomjs_queue_thread = threading.Thread(target=fill_phantomjs_queue)
+fill_phantomjs_queue_thread.daemon = True
+fill_phantomjs_queue_thread.start()
 
-
+_phantomjs = None
 
 def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None):
+    # ensure batavia is built
+    build_batavia()
+
     # Output source code into test directory
     assert isinstance(main_code, (str, bytes)), (
         'I have no idea how to run tests for code of type {}'
@@ -295,56 +359,12 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             )
         )
 
-    global _phantomjs
     out = None
     while out is None:
         try:
+            global _phantomjs
             if _phantomjs is None:
-                build_batavia()
-
-                if _phantomjs is None:
-                    # Make sure Batavia is compiled
-
-                    # Start the phantomjs environment.
-                    _phantomjs = subprocess.Popen(
-                        ["phantomjs"],
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        cwd=os.path.dirname(__file__),
-                    )
-                    sendPhantomCommand(_phantomjs)
-
-            sendPhantomCommand(
-                _phantomjs,
-                "var page = require('webpage').create()",
-                success='undefined',
-                on_fail="Unable to create webpage."
-            )
-
-            sendPhantomCommand(
-                _phantomjs,
-                """
-                page.onConsoleMessage = function (msg) {
-                    console.log(msg);
-                }
-                """,
-                success=['undefined', '{}'],
-                on_fail="Unable to create console redirection"
-            )
-
-            sendPhantomCommand(
-                _phantomjs,
-                "page.injectJs('polyfill.js')",
-                success=['true', '{}'],
-                on_fail="Unable to inject polyfill"
-            )
-            sendPhantomCommand(
-                _phantomjs,
-                "page.injectJs('../batavia.min.js')",
-                success=['true', '{}'],
-                on_fail="Unable to inject Batavia"
-            )
+                _phantomjs = phantomjs_queue.get()
             sendPhantomCommand(
                 _phantomjs,
                 "page.injectJs('%s')" % 'temp/modules.js',
@@ -352,13 +372,11 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
                 on_fail="Unable to inject modules"
             )
 
-            output = []
             if js is not None:
                 for mod, payload in sorted(js.items()):
                     sendPhantomCommand(
                         _phantomjs,
                         "page.injectJs('%s.js')" % "/".join(('temp', mod)),
-                        output=output,
                         success=['true', '{}'],
                         on_fail="Unable to inject native module %s" % mod
                     )
@@ -372,14 +390,15 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
                     });
                     vm.run('testcase', []);
                 });
-                """,
-                output=output
+                """
             )
+
         except PhantomJSCrash:
             _phantomjs.kill()
             _phantomjs.stdin.close()
             _phantomjs.stdout.close()
             _phantomjs = None
+
 
     return out
 
