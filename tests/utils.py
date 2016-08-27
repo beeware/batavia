@@ -6,10 +6,12 @@ from io import StringIO
 import importlib
 import os
 import py_compile
+from queue import Queue, Empty
 import re
 import shutil
 import subprocess
 import sys
+import threading
 import traceback
 from unittest import TestCase
 
@@ -17,6 +19,10 @@ from unittest import TestCase
 # A state variable to determine if the test environment has been configured.
 _batavia_built = False
 _phantomjs = None
+
+# prep a bunch of Python interpreters running in a temp directory, ready to accept input
+python_queue = Queue(maxsize=64)
+test_dir = os.path.join(os.path.dirname(__file__), 'temp')
 
 
 def build_batavia():
@@ -92,11 +98,41 @@ def adjust(text, run_in_function=False):
     return '\n'.join(final_lines)
 
 
+def prep_python(args=None):
+    """Spins up a Python interpreter to get ready to run"""
+
+    try:
+        os.mkdir(test_dir)
+    except FileExistsError:
+        pass
+
+    if args is None:
+        args = []
+
+    env_copy = os.environ.copy()
+    env_copy['PYTHONIOENCODING'] = 'UTF-8'
+    proc = subprocess.Popen(
+        [sys.executable, "-"] + args,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=test_dir,
+        env=env_copy,
+    )
+    return proc
+
+def fill_python_queue():
+    while True:
+        python_queue.put(prep_python())
+
+fill_python_queue_thread = threading.Thread(target=fill_python_queue)
+fill_python_queue_thread.daemon = True
+fill_python_queue_thread.start()
+
 def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
     """Run a block of Python code with the Python interpreter."""
-    # Output source code into test directory
-    with open(os.path.join(test_dir, 'test.py'), 'w', encoding='utf-8') as py_source:
-        py_source.write(adjust(main_code, run_in_function=run_in_function))
+
+    run_code = adjust(main_code, run_in_function=run_in_function)
 
     if extra_code:
         for name, code in extra_code.items():
@@ -110,20 +146,16 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
             with open(os.path.join(test_dir, *path), 'w') as py_source:
                 py_source.write(adjust(code))
 
+    proc = None
     if args is None:
-        args = []
+        try:
+            proc = python_queue.get_nowait()
+        except Empty:
+            pass
+    if proc is None:
+        proc = prep_python(args=args)
 
-    env_copy = os.environ.copy()
-    env_copy['PYTHONIOENCODING'] = 'UTF-8'
-    proc = subprocess.Popen(
-        [sys.executable, "test.py"] + args,
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        cwd=test_dir,
-        env=env_copy,
-    )
-    out = proc.communicate()
+    out = proc.communicate(run_code.encode("utf8"))
 
     return out[0].decode('utf8')
 
@@ -191,6 +223,8 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
     else:
         # print("PHANTOMJS READY")
         return None
+
+
 
 
 def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None):
@@ -350,15 +384,15 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
     return out
 
 
-JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
+JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n(?:    .*\r?\n)?)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
 JS_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 JS_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
 
-PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
-PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
+PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n(?:    .*\r?\n)?)+(?P<exception>.*?): (?P<message>.*\r?\n)')
+PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n(    .*\r?\n)?')
 PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
 PYTHON_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
 PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
@@ -373,7 +407,6 @@ def cleanse_javascript(input, substitutions):
     stack = JS_STACK.findall(input)
 
     stacklines = []
-    test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
     for filename, line in stack:
         if filename.startswith(test_dir):
             filename = filename[len(test_dir)+1:]
@@ -393,7 +426,10 @@ def cleanse_javascript(input, substitutions):
     out = JS_BOOL_FALSE.sub("False", out)
     out = JS_FLOAT.sub('\\1e\\2\\3', out)
     out = JS_FLOAT_ROUND.sub('\\1', out)
-    out = out.replace("'test.py'", '***EXECUTABLE***')
+    out = out.replace('test.py:', '***EXECUTABLE***:')
+    out = out.replace('"test.py"', '***EXECUTABLE***')
+    out = out.replace('"<stdin>"', '***EXECUTABLE***')
+    out = out.replace('<stdin>', '***EXECUTABLE***')
 
     if substitutions:
         for to_value, from_values in substitutions.items():
@@ -401,6 +437,8 @@ def cleanse_javascript(input, substitutions):
                 out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
+    out = out.rstrip('\n') + '\n'
+
     return out
 
 
@@ -423,7 +461,10 @@ def cleanse_python(input, substitutions):
     out = PYTHON_FLOAT.sub('\\1e\\2\\3', out)
     out = PYTHON_FLOAT_ROUND.sub('\\1', out)
     out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
-    out = out.replace("'test.py'", '***EXECUTABLE***')
+    out = out.replace('test.py:', '***EXECUTABLE***:')
+    out = out.replace('"test.py"', '***EXECUTABLE***')
+    out = out.replace('"<stdin>"', '***EXECUTABLE***')
+    out = out.replace('<stdin>', '***EXECUTABLE***')
 
     # Python 3.4.4 changed the message describing strings in exceptions
     out = out.replace(
@@ -437,7 +478,17 @@ def cleanse_python(input, substitutions):
                 out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
+    out = out.rstrip('\n') + '\n'
     return out
+
+def cleanup_dir(dir):
+    """Clean up the test directory where the class file was written, but leave the directory."""
+    for fname in os.listdir(dir):
+        path = os.path.join(dir, fname)
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+        else:
+            os.remove(path)
 
 
 class TranspileTestCase(TestCase):
@@ -455,7 +506,6 @@ class TranspileTestCase(TestCase):
         if run_in_global:
             try:
                 # Create the temp directory into which code will be placed
-                test_dir = os.path.join(os.path.dirname(__file__), 'temp')
                 try:
                     os.mkdir(test_dir)
                 except FileExistsError:
@@ -479,9 +529,7 @@ class TranspileTestCase(TestCase):
             except Exception as e:
                 self.fail(e)
             finally:
-                # Clean up the test directory where the class file was written.
-                shutil.rmtree(test_dir)
-                # print(js_out)
+                cleanup_dir(test_dir)
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
@@ -501,7 +549,6 @@ class TranspileTestCase(TestCase):
         if run_in_function:
             try:
                 # Create the temp directory into which code will be placed
-                test_dir = os.path.join(os.path.dirname(__file__), 'temp')
                 try:
                     os.mkdir(test_dir)
                 except FileExistsError:
@@ -525,9 +572,7 @@ class TranspileTestCase(TestCase):
             except Exception as e:
                 self.fail(e)
             finally:
-                # Clean up the test directory where the class file was written.
-                shutil.rmtree(test_dir)
-                # print(js_out)
+                cleanup_dir(test_dir)
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
@@ -561,7 +606,6 @@ class TranspileTestCase(TestCase):
         if run_in_global:
             try:
                 # Create the temp directory into which code will be placed
-                test_dir = os.path.join(os.path.dirname(__file__), 'temp')
                 try:
                     os.mkdir(test_dir)
                 except FileExistsError:
@@ -583,9 +627,7 @@ class TranspileTestCase(TestCase):
             except Exception as e:
                 self.fail(e)
             finally:
-                # Clean up the test directory where the class file was written.
-                shutil.rmtree(test_dir)
-                # print(js_out)
+                cleanup_dir(test_dir)
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
@@ -600,7 +642,6 @@ class TranspileTestCase(TestCase):
         if run_in_function:
             try:
                 # Create the temp directory into which code will be placed
-                test_dir = os.path.join(os.path.dirname(__file__), 'temp')
                 try:
                     os.mkdir(test_dir)
                 except FileExistsError:

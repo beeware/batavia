@@ -52,7 +52,7 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """
             ### EXCEPTION ###
             TypeError: unsupported operand type(s) for &: 'float' and 'bool'
-                test.py:3
+                ***EXECUTABLE***:3
             """
         )
 
@@ -68,9 +68,9 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             """
             ### EXCEPTION ###
             TypeError: unsupported operand type(s) for &: 'float' and 'bool'
-                test.py:3
-                test.py:6
-                test.py:9
+                ***EXECUTABLE***:3
+                ***EXECUTABLE***:6
+                ***EXECUTABLE***:9
             """
         )
 
@@ -86,16 +86,16 @@ class JavaScriptNormalizationTests(unittest.TestCase):
             Hello, world.
             ### EXCEPTION ###
             TypeError: unsupported operand type(s) for &: 'float' and 'bool'
-                test.py:3
+                ***EXECUTABLE***:3
             """
         )
 
     def test_bool(self):
-        self.assertNormalized('true', 'True')
-        self.assertNormalized('false', 'False')
+        self.assertNormalized('true\n', 'True\n')
+        self.assertNormalized('false\n', 'False\n')
 
     def test_float(self):
-        self.assertNormalized('7.950899459780156e-06', '7.950899459780156e-6')
+        self.assertNormalized('7.950899459780156e-06\n', '7.950899459780156e-6\n')
 
     def test_memory_reference(self):
         self.assertNormalized(
@@ -141,7 +141,7 @@ class PythonNormalizationTests(unittest.TestCase):
             """
             ### EXCEPTION ###
             TypeError: unsupported operand type(s) for &: 'float' and 'bool'
-                test.py:3
+                ***EXECUTABLE***:3
             """
         )
 
@@ -160,9 +160,9 @@ class PythonNormalizationTests(unittest.TestCase):
             """
             ### EXCEPTION ###
             TypeError: unsupported operand type(s) for &: 'float' and 'bool'
-                test.py:3
-                test.py:6
-                test.py:9
+                ***EXECUTABLE***:3
+                ***EXECUTABLE***:6
+                ***EXECUTABLE***:9
             """
         )
 
@@ -179,12 +179,12 @@ class PythonNormalizationTests(unittest.TestCase):
             Hello, world.
             ### EXCEPTION ###
             TypeError: unsupported operand type(s) for &: 'float' and 'bool'
-                test.py:3
+                ***EXECUTABLE***:3
             """
         )
 
     def test_float(self):
-        self.assertNormalized('7.950899459780156e-06', '7.950899459780156e-6')
+        self.assertNormalized('7.950899459780156e-06\n', '7.950899459780156e-6\n')
 
     def test_memory_reference(self):
         self.assertNormalized(
