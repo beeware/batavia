@@ -794,11 +794,7 @@ batavia.VirtualMachine.prototype.unwind_block = function(block) {
 
     if (block.type === 'except-handler') {
         exc = this.popn(3);
-        this.last_exception = {
-            'exc_type': exc[2],
-            'value': exc[1],
-            'traceback': exc[0]
-        };
+        // we don't need to set the last_exception, as it was handled
     }
 };
 
@@ -886,6 +882,8 @@ batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
             (block.type === 'setup-except' || block.type === 'finally')) {
         this.push_block('except-handler');
         var exc = this.last_exception;
+        // clear the last_exception so that we know it is handled
+        this.last_exception = null;
         this.push(exc.traceback);
         this.push(exc.value);
         this.push(exc.exc_type);
@@ -954,12 +952,12 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
                 // Batavia errors are a major problem; ABORT HARD
                 this.last_exception = null;
                 throw err;
-            } else if (this.last_exception === null) {
-                this.last_exception = {
-                    'exc_type': err.__class__,
-                    'value': err,
-                    'traceback': this.create_traceback()
-                };
+            } else if (this.last_exception == null) {
+              this.last_exception = {
+                  'exc_type': err.__class__,
+                  'value': err,
+                  'traceback': this.create_traceback()
+              };
             }
             why = 'exception';
         }

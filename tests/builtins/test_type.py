@@ -9,6 +9,5 @@ class BuiltinTypeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["type"]
 
     not_implemented = [
-        'test_class',
         'test_frozenset',
     ]

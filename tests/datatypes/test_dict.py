@@ -175,7 +175,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_and_frozenset',
 
-        'test_eq_class',
         'test_eq_dict',
         'test_eq_frozenset',
 
@@ -267,7 +266,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_set',
         'test_multiply_slice',
 
-        'test_ne_class',
         'test_ne_dict',
         'test_ne_frozenset',
 
@@ -326,7 +324,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_range',
         'test_subscr_set',
         'test_subscr_slice',
-        'test_subscr_str',
         'test_subscr_tuple',
 
         'test_subtract_frozenset',
