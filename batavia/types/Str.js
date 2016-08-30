@@ -30,7 +30,10 @@ String.prototype.__lt__ = function(other) {
     if (other !== null) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+                    batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
+                    batavia.types.Bytearray, batavia.types.Bytes, batavia.types.Type,
+                    batavia.types.Complex, batavia.types.NotImplementedType,
+                    batavia.types.Range, batavia.types.Set, batavia.types.Slice
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() < " + batavia.type_name(other) + "()");
         } else {
@@ -46,7 +49,9 @@ String.prototype.__le__ = function(other) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                    batavia.types.Set, batavia.types.Bytearray
+                    batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
+                    batavia.types.Type, batavia.types.Complex, batavia.types.NotImplementedType,
+                    batavia.types.Range, batavia.types.Slice
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() <= " + batavia.type_name(other) + "()");
         } else {
@@ -92,7 +97,10 @@ String.prototype.__gt__ = function(other) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                    batavia.types.Set
+                    batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
+                    batavia.types.Type, batavia.types.Complex,
+                    batavia.types.NotImplementedType, batavia.types.Range,
+                    batavia.types.Slice
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() > " + batavia.type_name(other) + "()");
         } else {
