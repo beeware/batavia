@@ -24,7 +24,10 @@ batavia.types.Int = function() {
      **************************************************/
 
     Int.prototype.int32 = function() {
-      return this.valueOf()|0;
+      if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+          throw new batavia.builtins.IndexError("cannot fit 'int' into an index-sized integer");
+      }
+      return parseInt(this.valueOf());
     }
 
     Int.prototype.valueOf = function() {

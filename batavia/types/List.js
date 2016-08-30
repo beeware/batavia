@@ -435,11 +435,15 @@ batavia.types.List = function() {
 
     List.prototype.ListIterator.prototype = Object.create(Object.prototype);
 
+    List.prototype.ListIterator.prototype.__iter__ = function() {
+        return this;
+    };
+
     List.prototype.ListIterator.prototype.__next__ = function() {
-        var retval = this.data[this.index];
-        if (retval === undefined) {
+        if (this.index >= this.data.length) {
             throw new batavia.builtins.StopIteration();
         }
+        var retval = this.data[this.index];
         this.index++;
         return retval;
     };
@@ -449,6 +453,7 @@ batavia.types.List = function() {
     };
 
     List.prototype.ListIterator.prototype.constructor = List.prototype.ListIterator;
+    List.prototype.ListIterator.prototype.__class__ = new batavia.types.Type('list_iterator');
 
     /**************************************************/
 
