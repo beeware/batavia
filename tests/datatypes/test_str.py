@@ -203,15 +203,15 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
     not_implemented = [
-        'test_add_bytearray',
-        'test_add_bytes',
-        'test_add_class',
-        'test_add_complex',
+        # 'test_add_bytearray',
+        # 'test_add_bytes',
+        # 'test_add_class',
+        # 'test_add_complex',
         'test_add_frozenset',
-        'test_add_NotImplemented',
-        'test_add_range',
-        'test_add_set',
-        'test_add_slice',
+        # 'test_add_NotImplemented',
+        # 'test_add_range',
+        # 'test_add_set',
+        # 'test_add_slice',
 
         'test_and_bytearray',
         'test_and_bytes',
