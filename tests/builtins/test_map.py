@@ -5,24 +5,12 @@ from unittest import expectedFailure
 
 class MapTests(TranspileTestCase):
     base_code = """
-            class ListLike:
-                x = %s
-                index = 0
-
-                def __next__(self):
-                    self.index = self.index + 1
-                    if self.index > len(self.x):
-                        raise StopIteration
-                    return self.x[self.index]
-
-                def __iter__(self):
-                    return self
-
+            x = %s
             def testish(x):
                 return %s
 
-            print(map(testish, ListLike()))
-            mylist = ListLike()
+            print(map(testish, x))
+            mylist = iter(x)
             print(map(testish, mylist).__next__())
             print(map(testish, mylist).__next__())
             print(map(testish, mylist).__next__())
