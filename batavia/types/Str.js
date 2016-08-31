@@ -332,19 +332,10 @@ String.prototype.__itruediv__ = function(other) {
 };
 
 String.prototype.__iadd__ = function(other) {
-    if (other === null || other == batavia.types.NoneType){
-        throw new batavia.builtins.TypeError("Can't convert 'NoneType' object to str implicitly");
-    } else if(batavia.isinstance(other, [
-                    batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict,
-                    batavia.types.Float, batavia.types.Int, batavia.types.List,
-                ])) {
-        throw new batavia.builtins.TypeError("Can't convert '" + batavia.type_name(other) + "' object to str implicitly");
-
-    } else if (batavia.isinstance(other, batavia.types.Str)){
+    if (batavia.isinstance(other, batavia.types.Str)) {
         return this.valueOf() + other.valueOf();
-
     } else {
-        throw new batavia.builtins.NotImplementedError("String.__iadd__ has not been implemented");
+        throw new batavia.builtins.TypeError("Can't convert '" + batavia.type_name(other) + "' object to str implicitly");
     }
 };
 
