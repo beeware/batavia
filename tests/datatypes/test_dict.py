@@ -48,7 +48,7 @@ class DictTests(TranspileTestCase):
             print('c' in x)
             print('c' not in x)
             print(x['c'])
-            """)
+            """, run_in_function=False)
 
     @unittest.expectedFailure
     def test_clear(self):
@@ -106,7 +106,7 @@ class DictTests(TranspileTestCase):
         # One of the elements isn't a 2-tuple
         self.assertCodeExecution("""
             x = dict([('a', 1), ('b', 2, False)])
-            """)
+            """, run_in_function=False)
 
     def test_print_dict(self):
         """
@@ -152,7 +152,7 @@ class DictTests(TranspileTestCase):
         # One of the elements isn't a sequence
         self.assertCodeExecution("""
             x = dict([('a', 1), False, ('b', 2)])
-            """)
+            """, run_in_function=False)
 
 
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):

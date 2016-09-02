@@ -116,8 +116,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_float',
         'test_power_frozenset',
 
-        'test_rshift_int', # this works, but some of the cases are too large
-                           # until we replace bignumber.js
         'test_rshift_frozenset',
 
         'test_subscr_frozenset',
