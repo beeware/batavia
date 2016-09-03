@@ -171,15 +171,7 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_frozenset',
 
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
         'test_and_frozenset',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
 
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',

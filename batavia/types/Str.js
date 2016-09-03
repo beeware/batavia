@@ -396,20 +396,9 @@ String.prototype.__irshift__ = function(other) {
 };
 
 String.prototype.__iand__ = function(other) {
-    if (batavia.isinstance(other, [
-            batavia.types.Bool,
-            batavia.types.Dict,
-            batavia.types.Float,
-            batavia.types.Int,
-            batavia.types.List,
-            batavia.types.NoneType,
-            batavia.types.Str,
-            batavia.types.Tuple
-        ])) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + batavia.type_name(other) + "'");
-    } else {
-        throw new batavia.builtins.NotImplementedError("String.__iand__ has not been implemented");
-    }
+
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + batavia.type_name(other) + "'");
+
 };
 
 String.prototype.__ixor__ = function(other) {
