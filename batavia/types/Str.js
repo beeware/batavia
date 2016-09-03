@@ -147,7 +147,8 @@ String.prototype.__neg__ = function() {
 };
 
 String.prototype.__not__ = function() {
-    throw new batavia.builtins.TypeError("bad operand type for unary !: 'str'");
+
+    return this.length == 0;
 };
 
 String.prototype.__invert__ = function() {
