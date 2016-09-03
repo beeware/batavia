@@ -97,9 +97,6 @@ class StrTests(TranspileTestCase):
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
-    not_implemented = [
-        'test_unary_not',
-    ]
 
 
 class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
