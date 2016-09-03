@@ -201,35 +201,12 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_power_frozenset',
 
-        'test_rshift_bytearray',
-        'test_rshift_bytes',
-        'test_rshift_class',
-        'test_rshift_complex',
         'test_rshift_frozenset',
-        'test_rshift_NotImplemented',
-        'test_rshift_range',
-        'test_rshift_set',
-        'test_rshift_slice',
 
         'test_subtract_frozenset',
 
-        'test_true_divide_bytearray',
-        'test_true_divide_bytes',
-        'test_true_divide_class',
-        'test_true_divide_complex',
         'test_true_divide_frozenset',
-        'test_true_divide_NotImplemented',
-        'test_true_divide_range',
-        'test_true_divide_set',
-        'test_true_divide_slice',
 
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
         'test_xor_frozenset',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
+
     ]
