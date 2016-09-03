@@ -197,20 +197,9 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_frozenset',
 
-        'test_or_bytearray',
-        'test_or_bytes',
-        'test_or_complex',
         'test_or_frozenset',
 
-        'test_power_bytearray',
-        'test_power_bytes',
-        'test_power_class',
-        'test_power_complex',
         'test_power_frozenset',
-        'test_power_NotImplemented',
-        'test_power_range',
-        'test_power_set',
-        'test_power_slice',
 
         'test_rshift_bytearray',
         'test_rshift_bytes',

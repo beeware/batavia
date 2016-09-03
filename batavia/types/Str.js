@@ -363,15 +363,8 @@ String.prototype.__imod__ = function(other) {
 };
 
 String.prototype.__ipow__ = function(other) {
-    if (batavia.isinstance(other, [
-            batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-            batavia.types.Int, batavia.types.List, batavia.types.NoneType,
-            batavia.types.Str, batavia.types.Tuple
-        ])) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + batavia.type_name(other) + "'");
-    } else {
-        throw new batavia.builtins.NotImplementedError("String.__ipow__ has not been implemented");
-    }
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + batavia.type_name(other) + "'");
+
 };
 
 String.prototype.__ilshift__ = function(other) {
@@ -416,28 +409,9 @@ String.prototype.__ixor__ = function(other) {
 };
 
 String.prototype.__ior__ = function(other) {
-    if (batavia.isinstance(other, [
-            batavia.types.Bool,
-            batavia.types.Dict,
-            batavia.types.Float,
-            batavia.types.Int,
-            batavia.types.List,
-            batavia.types.NoneType,
-            batavia.types.Str,
-            batavia.types.Tuple,
-            batavia.types.Type,
-            batavia.types.Range,
-            batavia.types.NotImplementedType,
-            batavia.types.Set,
-            batavia.types.Slice,
+    throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'str' and '" + batavia.type_name(other) + "'");
 
-
-
-        ])) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'str' and '" + batavia.type_name(other) + "'");
-    } else {
-        throw new batavia.builtins.NotImplementedError("String.__ior__ has not been implemented");
-    }};
+};
 
 /**************************************************
  * Str Iterator
