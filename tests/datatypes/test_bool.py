@@ -33,7 +33,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_complex',
         'test_add_frozenset',
 
-        'test_and_bool',
         'test_and_frozenset',
 
         'test_eq_frozenset',
@@ -136,7 +135,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_frozenset',
         'test_ne_str',
 
-        'test_or_bool',
         'test_or_frozenset',
 
         'test_power_bytearray',
@@ -184,7 +182,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_frozenset',
         'test_true_divide_int',
 
-        'test_xor_bool',
         'test_xor_frozenset',
     ]
 

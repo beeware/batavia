@@ -11,7 +11,7 @@ class AbsTests(TranspileTestCase):
 
             x = NotAbsLike()
             print(abs(x))
-            """)
+            """, run_in_function=False)
 
 
 class BuiltinAbsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):

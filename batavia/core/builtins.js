@@ -156,12 +156,12 @@ batavia.builtins.abs = function(args, kwargs) {
     }
 
     var value = args[0];
-    if (batavia.isinstance(value, [batavia.types.Bool, batavia.types.Int])) {
+    if (batavia.isinstance(value, batavia.types.Bool)) {
         return new batavia.types.Int(Math.abs(value.valueOf()));
-    } else if (batavia.isinstance(value, batavia.types.Float)) {
-        return new batavia.types.Float(Math.abs(value.valueOf()));
-    } else if (batavia.isinstance(value, batavia.types.Complex)) {
-        return new batavia.types.Float(Math.sqrt(Math.pow(value.real, 2) + Math.pow(value.imag, 2)));
+    } else if (batavia.isinstance(value, [batavia.types.Int,
+                                          batavia.types.Float,
+                                          batavia.types.Complex])) {
+        return value.__abs__();
     } else {
         throw new batavia.builtins.TypeError(
             "bad operand type for abs(): '" + batavia.type_name(value) + "'");
@@ -368,12 +368,15 @@ batavia.builtins.complex = function(args, kwargs) {
     if (!args || args.length > 2) {
         throw new batavia.builtins.TypeError('complex() expected at most 2 arguments (' + args.length + ' given)');
     }
-    var re = 0;
+    if (batavia.isinstance(args[0], batavia.types.Complex) && !args[1]) {
+        return args[0];
+    }
+    var re = new batavia.types.Float(0);
     if (args.length >= 1) {
         re = args[0];
     }
-    var im = 0;
-    if (args.length == 2) {
+    var im = new batavia.types.Float(0);
+    if (args.length == 2 && args[1]) {
         im = args[1];
     }
     return new batavia.types.Complex(re, im);
@@ -563,10 +566,8 @@ batavia.builtins.float = function(args) {
             }
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");
         }
-    } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
-        return new batavia.types.Float(parseFloat(args[0]).toFixed(1));
-    } else if (batavia.isinstance(value, batavia.types.Float)) {
-        return args[0];
+    } else if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool, batavia.types.Float])) {
+        return args[0].__float__();
     }
 };
 
@@ -671,7 +672,7 @@ batavia.builtins.int = function(args, kwargs) {
     var value = 0;
     if (args && args.length === 1) {
         value = args[0];
-        if(batavia.isinstance(value, batavia.types.Bool)) {
+        if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
             return value.__int__();
         }
     } else if (args && args.length === 2) {
@@ -681,14 +682,14 @@ batavia.builtins.int = function(args, kwargs) {
         throw new batavia.builtins.TypeError(
             "int() takes at most 2 arguments (" + args.length + " given)");
     }
-
+    // TODO: this should be able to parse things longer than 53 bits
     var result = parseInt(value, base);
     if (isNaN(result)) {
         throw new batavia.builtins.ValueError(
             "invalid literal for int() with base " + base + ": " + batavia.builtins.repr([value], null)
         );
     }
-    return result;
+    return new batavia.types.Int(result);
 };
 batavia.builtins.int.__doc__ = "int(x=0) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4";
 
@@ -845,7 +846,13 @@ batavia.builtins.oct = function(args) {
         throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
     }
     var value = args[0];
-    if(batavia.isinstance(value, batavia.types.Bool)) {
+    if (batavia.isinstance(value, batavia.types.Int)) {
+        if (value.val.isNeg()) {
+            return "-0o" + value.val.toString(8).substr(1);
+        } else {
+            return "0o" + value.val.toString(8);
+        }
+    } else if (batavia.isinstance(value, batavia.types.Bool)) {
         return "0o" + value.__int__().toString(8);
     }
 
@@ -879,7 +886,7 @@ batavia.builtins.pow = function(args) {
     if (args.length === 2) {
         x = args[0];
         y = args[1];
-        return Math.pow(x, y);
+        return x.__pow__(y);
     } else if (args.length === 3) {
         x = args[0];
         y = args[1];
@@ -996,8 +1003,16 @@ batavia.builtins.round = function(args) {
     if (args.length == 2) {
         p = args[1];
     }
-    var base = Math.pow(10, p);
-    return Math.round(args[0] * base) / base;
+    var result = 0;
+    if (batavia.isinstance(args[0], batavia.types.Bool)) {
+        result = args[0].__int__();
+    } else {
+        result = new batavia.vendored.BigNumber(args[0]).round(p);
+    }
+    if (args.length == 1) {
+        return new batavia.types.Int(result);
+    }
+    return batavia.types.Float(result.valueOf());
 };
 batavia.builtins.round.__doc__ = 'round(number[, ndigits]) -> number\n\nRound a number to a given precision in decimal digits (default 0 digits).\nThis returns an int when called with one argument, otherwise the\nsame type as the number. ndigits may be negative.';
 

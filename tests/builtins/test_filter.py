@@ -5,28 +5,17 @@ from unittest import expectedFailure
 
 class FilterTests(TranspileTestCase):
     base_code = """
-            #placeholder while list()s etc aren't fully implemented
-            class ListLike:
-                x = %s
-                index = 0
-
-                def __iter__(self):
-                    return self
-
-                def __next__(self):
-                    self.index = self.index + 1
-                    if self.index > len(self.x):
-                        raise StopIteration
-                    return self.x[self.index]
-
+            x = %s
             def testish(x):
                 return %s
 
-            print(filter(testish, ListLike()))
-            mylist = ListLike()
-            print(filter(testish, mylist).__next__())
-            print(filter(testish, mylist).__next__())
-            print(filter(testish, mylist).__next__())
+            print(x)
+            print(filter(testish, x))
+            mylist = iter(x)
+            print(filter(testish, x).__next__())
+            print(filter(testish, x).__next__())
+            print(filter(testish, x).__next__())
+            print(type(iter(x)))
             try:
                 print(filter(testish, mylist).__next__())
             except StopIteration:
@@ -34,17 +23,17 @@ class FilterTests(TranspileTestCase):
     """
 
     def test_bool(self):
-        self.assertCodeExecution(self.base_code % ("[True, False, True]", "bool(x)"))
+        self.assertCodeExecution(self.base_code % ("[True, False, True]", "bool(x)"), run_in_function=False)
 
     @expectedFailure
     def test_bytearray(self):
-        self.assertCodeExecution(self.base_code % ("b'123'", "x"))
+        self.assertCodeExecution(self.base_code % ("b'123'", "x"), run_in_function=False)
 
     def test_float(self):
-        self.assertCodeExecution(self.base_code % ("[3.14, 2.17, 1.0]", "x > 1"))
+        self.assertCodeExecution(self.base_code % ("[3.14, 2.17, 1.0]", "x > 1"), run_in_function=False)
 
     def test_int(self):
-        self.assertCodeExecution(self.base_code % ("[1, 2, 3]", "x * 2"))
+        self.assertCodeExecution(self.base_code % ("[1, 2, 3]", "x * 2"), run_in_function=False)
 
 
 class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
