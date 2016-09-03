@@ -94,7 +94,7 @@ batavia.issubclass = function(cls, type) {
                 } else {
                     var mro = cls.mro();
                     for (t in mro) {
-                        if (mro[t] === type.prototype.__class__) {
+                        if (type != null && type.prototype != null && mro[t] === type.prototype.__class__) {
                             return true;
                         }
                     }

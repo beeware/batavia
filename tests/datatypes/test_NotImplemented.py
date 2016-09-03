@@ -27,11 +27,8 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
 
         'test_add_frozenset',
 
-
         'test_and_frozenset',
 
-
-        'test_eq_class',
         'test_eq_frozenset',
 
 
@@ -54,8 +51,6 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
 
         'test_multiply_frozenset',
 
-
-        'test_ne_class',
         'test_ne_frozenset',
 
         'test_or_frozenset',

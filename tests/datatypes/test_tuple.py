@@ -97,7 +97,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_class',
         'test_eq_frozenset',
 
         'test_floor_divide_complex',
@@ -166,7 +165,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_frozenset',
         'test_multiply_int',
 
-        'test_ne_class',
         'test_ne_frozenset',
 
         'test_or_bool',

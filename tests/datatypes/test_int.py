@@ -69,7 +69,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_and_frozenset',
 
-        'test_eq_class',
         'test_eq_frozenset',
 
         'test_floor_divide_complex',
@@ -109,7 +108,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
         'test_multiply_frozenset',
 
-        'test_ne_class',
         'test_ne_frozenset',
 
         'test_or_frozenset',

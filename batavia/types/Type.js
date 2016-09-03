@@ -27,7 +27,7 @@ batavia.types.Type = function() {
         if (bases) {
             this.__base__ = bases[0].prototype.__class__;
             this.__bases__ = [];
-            for (var base in bases) {
+            for (var base = 0; base < bases.length; base++) {
                 this.__bases__.push(bases[base].prototype.__class__);
             }
         } else if (name === 'object' && bases === undefined) {

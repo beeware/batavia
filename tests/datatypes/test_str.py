@@ -111,10 +111,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_and_frozenset',
 
-
-        'test_eq_class',
         'test_eq_frozenset',
-
 
         'test_floor_divide_complex',
         'test_floor_divide_frozenset',
@@ -149,7 +146,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_multiply_frozenset',
 
-        'test_ne_class',
         'test_ne_frozenset',
 
         'test_or_frozenset',

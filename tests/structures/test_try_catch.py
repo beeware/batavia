@@ -2,6 +2,21 @@ from ..utils import TranspileTestCase
 
 
 class TryExceptTests(TranspileTestCase):
+
+    def test_try_double_throw(self):
+        # throw two exceptions, make sure the second one is correct
+        self.assertCodeExecution("""
+            try:
+                int('asdf')
+            except Exception as e:
+                print(e)
+            try:
+                obj.no_such_attribute
+            except Exception as e:
+                print(e)
+            print('Done.')
+        """)
+
     def test_try_except(self):
         # No exception
         self.assertCodeExecution("""
@@ -467,7 +482,7 @@ class TryExceptFinallyTests(TranspileTestCase):
             """)
 
     def test_try_except_finally(self):
-        # No exception
+        # Caught Exception
         self.assertCodeExecution("""
             try:
                 obj.no_such_attribute

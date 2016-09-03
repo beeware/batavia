@@ -36,7 +36,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_bool',
         'test_and_frozenset',
 
-        'test_eq_class',
         'test_eq_frozenset',
         'test_eq_str',
 
@@ -134,7 +133,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_class',
         'test_ne_frozenset',
         'test_ne_str',
 

@@ -55,4 +55,4 @@ class AssignmentTests(TranspileTestCase):
             else:
                 print("No")
             print('Done.')
-            """)
+            """, run_in_function=False)
