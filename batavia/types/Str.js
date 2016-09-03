@@ -308,14 +308,11 @@ String.prototype.__or__ = function(other) {
  **************************************************/
 
 String.prototype.__ifloordiv__ = function(other) {
-    if (batavia.isinstance(other, [
-            batavia.types.Bool, batavia.types.Tuple, batavia.types.Dict,
-            batavia.types.Float, batavia.types.Int, batavia.types.List,
-            batavia.types.NoneType, batavia.types.Str,
-            ])) {
-      throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'str' and '" + batavia.type_name(other) + "'");
+
+    if (batavia.isinstance(other, [batavia.types.Complex])){
+        throw new batavia.builtins.TypeError("can't take floor of complex number.")
     } else {
-        throw new batavia.builtins.NotImplementedError("String.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'str' and '" + batavia.type_name(other) + "'");
     }
 };
 

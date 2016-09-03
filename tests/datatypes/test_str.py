@@ -173,15 +173,7 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_and_frozenset',
 
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_class',
-        'test_floor_divide_complex',
         'test_floor_divide_frozenset',
-        'test_floor_divide_NotImplemented',
-        'test_floor_divide_range',
-        'test_floor_divide_set',
-        'test_floor_divide_slice',
 
         'test_lshift_frozenset',
 
