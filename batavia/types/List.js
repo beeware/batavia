@@ -108,7 +108,21 @@ batavia.types.List = function() {
     };
 
     List.prototype.__eq__ = function(other) {
-        return this.valueOf() == other;
+        if (batavia.isinstance(other, batavia.types.List)){
+            // must be a list to possibly be equal
+            if(this.length !== other.length){
+                // lists must have same number of items
+                return false
+            } else {
+                for(var i=0; i<this.length; i++){
+                    if(this[i] !== other[i]) {return false;}
+                }
+                return true;
+            }
+
+        } else {
+            return false;
+        }
     };
 
     List.prototype.__ne__ = function(other) {
@@ -160,19 +174,19 @@ batavia.types.List = function() {
      **************************************************/
 
     List.prototype.__pos__ = function() {
-        return new List(+this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary +: 'list'")
     };
 
     List.prototype.__neg__ = function() {
-        return new List(-this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary -: 'list'")
     };
 
     List.prototype.__not__ = function() {
-        return new List(!this.valueOf());
+        return this.length == 0;
     };
 
     List.prototype.__invert__ = function() {
-        return new List(~this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'list'")
     };
 
     /**************************************************
