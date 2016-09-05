@@ -40,6 +40,15 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__str__ = function() {
+        if (!isFinite(this.val)) {
+            if (isNaN(this.val)) {
+                return "nan";
+            }
+            if (this.val < 0) {
+                return "-inf";
+            }
+            return "inf";
+        }
         if (this.val === 0) {
             if (1/this.val === Infinity) {
                 return '0.0';
