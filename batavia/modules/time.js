@@ -1,7 +1,9 @@
 
 batavia.modules.time = {
+    _startTime: new Date().getTime(),
     clock: function() {
-        return new Date().getTime();
+        // TODO: this does something a little different in CPython.
+        return new batavia.types.Float(new Date().getTime() - batavia.modules.time._startTime);
     },
 
     time: function() {
