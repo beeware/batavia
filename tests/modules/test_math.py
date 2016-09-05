@@ -14,9 +14,9 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
-        'atan2',
-        'log',
-        'pow',
+        # 'atan2', # disabled due to the extra time they take on CircleCI for now :(
+        # 'log',
+        # 'pow',
     ])
 
     TODO = [
