@@ -1,15 +1,310 @@
-from ..utils import TranspileTestCase
+from ..utils import ModuleFunctionTestCase, TranspileTestCase
 
-import random
-import unittest
+class MathTests(ModuleFunctionTestCase, TranspileTestCase):
+    ModuleFunctionTestCase.add_one_arg_tests('math', [
+        'atan',
+        'ceil',
+        'cos',
+        'exp',
+        'floor',
+        'log',
+        'sin',
+        'sqrt',
+        'tan',
+    ])
+
+    ModuleFunctionTestCase.add_two_arg_tests('math', [
+        'atan2',
+        'log',
+        'pow',
+    ])
+
+    TODO = [
+        'acos',
+        'acosh',
+        'asin',
+        'asinh',
+        'atanh',
+        'copysign',
+        'cosh',
+        'degress',
+        'erf',
+        'erfc',
+        'expm1',
+        'fabs',
+        'factorial',
+        'fmod',
+        'frexp',
+        'fsum',
+        'gamma',
+        'gcd',
+        'hypot',
+        'isclose',
+        'isfinite',
+        'isinf',
+        'isnan',
+        'ldexp',
+        'lgamma',
+        'log10',
+        'log2',
+        'modf',
+        'radians',
+        'sinh',
+        'tanh',
+        'trunc',
+    ]
 
 
-test_nums = []
-random.seed(1234)
-for i in range(100):
-    test_nums.append(random.random() * 5.0 - 10.0)
+    not_implemented = [
+        'test_math_atan2_bool_frozenset',
+        'test_math_atan2_bytearray_frozenset',
+        'test_math_atan2_bytes_frozenset',
+        'test_math_atan2_class_frozenset',
+        'test_math_atan2_complex_frozenset',
+        'test_math_atan2_dict_frozenset',
+        'test_math_atan2_float_frozenset',
+        'test_math_atan2_frozenset_bool',
+        'test_math_atan2_frozenset_bytearray',
+        'test_math_atan2_frozenset_bytes',
+        'test_math_atan2_frozenset_class',
+        'test_math_atan2_frozenset_complex',
+        'test_math_atan2_frozenset_dict',
+        'test_math_atan2_frozenset_float',
+        'test_math_atan2_frozenset_frozenset',
+        'test_math_atan2_frozenset_int',
+        'test_math_atan2_frozenset_list',
+        'test_math_atan2_frozenset_None',
+        'test_math_atan2_frozenset_NotImplemented',
+        'test_math_atan2_frozenset_range',
+        'test_math_atan2_frozenset_set',
+        'test_math_atan2_frozenset_slice',
+        'test_math_atan2_frozenset_str',
+        'test_math_atan2_frozenset_tuple',
+        'test_math_atan2_int_frozenset',
+        'test_math_atan2_int_int',
+        'test_math_atan2_list_frozenset',
+        'test_math_atan2_None_frozenset',
+        'test_math_atan2_NotImplemented_frozenset',
+        'test_math_atan2_range_frozenset',
+        'test_math_atan2_set_frozenset',
+        'test_math_atan2_slice_frozenset',
+        'test_math_atan2_str_frozenset',
+        'test_math_atan2_tuple_frozenset',
 
-class MathTests(TranspileTestCase):
+        'test_math_atan_bytearray',
+        'test_math_atan_bytes',
+        'test_math_atan_class',
+        'test_math_atan_complex',
+        'test_math_atan_dict',
+        'test_math_atan_frozenset',
+        'test_math_atan_list',
+        'test_math_atan_None',
+        'test_math_atan_NotImplemented',
+        'test_math_atan_range',
+        'test_math_atan_set',
+        'test_math_atan_slice',
+        'test_math_atan_str',
+        'test_math_atan_tuple',
+
+        'test_math_ceil_bytearray',
+        'test_math_ceil_bytes',
+        'test_math_ceil_class',
+        'test_math_ceil_complex',
+        'test_math_ceil_dict',
+        'test_math_ceil_frozenset',
+        'test_math_ceil_int',
+        'test_math_ceil_list',
+        'test_math_ceil_None',
+        'test_math_ceil_NotImplemented',
+        'test_math_ceil_range',
+        'test_math_ceil_set',
+        'test_math_ceil_slice',
+        'test_math_ceil_str',
+        'test_math_ceil_tuple',
+
+        'test_math_cos_bytearray',
+        'test_math_cos_bytes',
+        'test_math_cos_class',
+        'test_math_cos_complex',
+        'test_math_cos_dict',
+        'test_math_cos_frozenset',
+        'test_math_cos_list',
+        'test_math_cos_None',
+        'test_math_cos_NotImplemented',
+        'test_math_cos_range',
+        'test_math_cos_set',
+        'test_math_cos_slice',
+        'test_math_cos_str',
+        'test_math_cos_tuple',
+
+        'test_math_exp_bytearray',
+        'test_math_exp_bytes',
+        'test_math_exp_class',
+        'test_math_exp_complex',
+        'test_math_exp_dict',
+        'test_math_exp_frozenset',
+        'test_math_exp_int',
+        'test_math_exp_list',
+        'test_math_exp_None',
+        'test_math_exp_NotImplemented',
+        'test_math_exp_range',
+        'test_math_exp_set',
+        'test_math_exp_slice',
+        'test_math_exp_str',
+        'test_math_exp_tuple',
+
+        'test_math_floor_bytearray',
+        'test_math_floor_bytes',
+        'test_math_floor_class',
+        'test_math_floor_complex',
+        'test_math_floor_dict',
+        'test_math_floor_frozenset',
+        'test_math_floor_int',
+        'test_math_floor_list',
+        'test_math_floor_None',
+        'test_math_floor_NotImplemented',
+        'test_math_floor_range',
+        'test_math_floor_set',
+        'test_math_floor_slice',
+        'test_math_floor_str',
+        'test_math_floor_tuple',
+
+        'test_math_log_bool',
+        'test_math_log_bool_frozenset',
+        'test_math_log_bytearray',
+        'test_math_log_bytearray_frozenset',
+        'test_math_log_bytes',
+        'test_math_log_bytes_frozenset',
+        'test_math_log_class',
+        'test_math_log_class_frozenset',
+        'test_math_log_complex',
+        'test_math_log_complex_frozenset',
+        'test_math_log_dict',
+        'test_math_log_dict_frozenset',
+        'test_math_log_float',
+        'test_math_log_float_frozenset',
+        'test_math_log_frozenset',
+        'test_math_log_frozenset_bool',
+        'test_math_log_frozenset_bytearray',
+        'test_math_log_frozenset_bytes',
+        'test_math_log_frozenset_class',
+        'test_math_log_frozenset_complex',
+        'test_math_log_frozenset_dict',
+        'test_math_log_frozenset_float',
+        'test_math_log_frozenset_frozenset',
+        'test_math_log_frozenset_int',
+        'test_math_log_frozenset_list',
+        'test_math_log_frozenset_None',
+        'test_math_log_frozenset_NotImplemented',
+        'test_math_log_frozenset_range',
+        'test_math_log_frozenset_set',
+        'test_math_log_frozenset_slice',
+        'test_math_log_frozenset_str',
+        'test_math_log_frozenset_tuple',
+        'test_math_log_int',
+        'test_math_log_int_int',
+        'test_math_log_int_frozenset',
+        'test_math_log_list',
+        'test_math_log_list_frozenset',
+        'test_math_log_None',
+        'test_math_log_None_frozenset',
+        'test_math_log_NotImplemented',
+        'test_math_log_NotImplemented_frozenset',
+        'test_math_log_range',
+        'test_math_log_range_frozenset',
+        'test_math_log_set',
+        'test_math_log_set_frozenset',
+        'test_math_log_slice',
+        'test_math_log_slice_frozenset',
+        'test_math_log_str',
+        'test_math_log_str_frozenset',
+        'test_math_log_tuple',
+        'test_math_log_tuple_frozenset',
+
+        'test_math_pow_bool_frozenset',
+        'test_math_pow_bytearray_frozenset',
+        'test_math_pow_bytes_frozenset',
+        'test_math_pow_class_frozenset',
+        'test_math_pow_complex_frozenset',
+        'test_math_pow_dict_frozenset',
+        'test_math_pow_float_frozenset',
+        'test_math_pow_frozenset_bool',
+        'test_math_pow_frozenset_bytearray',
+        'test_math_pow_frozenset_bytes',
+        'test_math_pow_frozenset_class',
+        'test_math_pow_frozenset_complex',
+        'test_math_pow_frozenset_dict',
+        'test_math_pow_frozenset_float',
+        'test_math_pow_frozenset_frozenset',
+        'test_math_pow_frozenset_int',
+        'test_math_pow_frozenset_list',
+        'test_math_pow_frozenset_None',
+        'test_math_pow_frozenset_NotImplemented',
+        'test_math_pow_frozenset_range',
+        'test_math_pow_frozenset_set',
+        'test_math_pow_frozenset_slice',
+        'test_math_pow_frozenset_str',
+        'test_math_pow_frozenset_tuple',
+        'test_math_pow_int_frozenset',
+        'test_math_pow_int_int',
+        'test_math_pow_list_frozenset',
+        'test_math_pow_None_frozenset',
+        'test_math_pow_NotImplemented_frozenset',
+        'test_math_pow_range_frozenset',
+        'test_math_pow_set_frozenset',
+        'test_math_pow_slice_frozenset',
+        'test_math_pow_str_frozenset',
+        'test_math_pow_tuple_frozenset',
+
+        'test_math_sin_bytearray',
+        'test_math_sin_bytes',
+        'test_math_sin_class',
+        'test_math_sin_complex',
+        'test_math_sin_dict',
+        'test_math_sin_float', # only fails for formatting reasons
+        'test_math_sin_frozenset',
+        'test_math_sin_list',
+        'test_math_sin_None',
+        'test_math_sin_NotImplemented',
+        'test_math_sin_range',
+        'test_math_sin_set',
+        'test_math_sin_slice',
+        'test_math_sin_str',
+        'test_math_sin_tuple',
+
+        'test_math_sqrt_bytearray',
+        'test_math_sqrt_bytes',
+        'test_math_sqrt_class',
+        'test_math_sqrt_complex',
+        'test_math_sqrt_dict',
+        'test_math_sqrt_float',
+        'test_math_sqrt_frozenset',
+        'test_math_sqrt_int',
+        'test_math_sqrt_list',
+        'test_math_sqrt_None',
+        'test_math_sqrt_NotImplemented',
+        'test_math_sqrt_range',
+        'test_math_sqrt_set',
+        'test_math_sqrt_slice',
+        'test_math_sqrt_str',
+        'test_math_sqrt_tuple',
+
+        'test_math_tan_bytearray',
+        'test_math_tan_bytes',
+        'test_math_tan_class',
+        'test_math_tan_complex',
+        'test_math_tan_dict',
+        'test_math_tan_float', # formatting error only
+        'test_math_tan_frozenset',
+        'test_math_tan_list',
+        'test_math_tan_None',
+        'test_math_tan_NotImplemented',
+        'test_math_tan_range',
+        'test_math_tan_set',
+        'test_math_tan_slice',
+        'test_math_tan_str',
+        'test_math_tan_tuple',
+    ]
 
     def test_constants(self):
         self.assertCodeExecution("""
@@ -19,196 +314,3 @@ class MathTests(TranspileTestCase):
             print(math.nan)
             print(math.pi)
             """)
-
-    def one_arg_func(self, funcname, positive=False):
-        if positive:
-            nums = [abs(num) for num in test_nums]
-        else:
-            nums = test_nums
-        self.assertCodeExecution("""
-            import math
-            nums = %s
-            for r in nums:
-                print(math.%s(r))
-            """ % (repr(nums), funcname))
-
-    def two_arg_func(self, funcname, positive=False):
-        if positive:
-            nums = [abs(num) for num in test_nums]
-        else:
-            nums = test_nums
-        self.assertCodeExecution("""
-            import math
-            nums = %s
-            for r in nums:
-                for s in nums:
-                    print(math.%s(r, s))
-            """ % (repr(nums), funcname))
-
-
-    @unittest.expectedFailure
-    def test_acos(self):
-        self.one_arg_func('acos')
-
-    @unittest.expectedFailure
-    def test_acosh(self):
-        self.one_arg_func('acosh')
-
-    @unittest.expectedFailure
-    def test_asin(self):
-        self.one_arg_func('asin')
-
-    @unittest.expectedFailure
-    def test_asinh(self):
-        self.one_arg_func('asinh')
-
-    def test_atan(self):
-        self.one_arg_func('atan')
-
-    def test_atan2(self):
-        self.two_arg_func('atan2')
-
-    @unittest.expectedFailure
-    def test_atanh(self):
-        self.one_arg_func('atanh')
-
-    def test_ceil(self):
-        self.one_arg_func('ceil')
-
-    @unittest.expectedFailure
-    def test_copysign(self):
-        self.one_arg_func('copysign')
-
-    def test_cos(self):
-        self.one_arg_func('cos')
-
-    @unittest.expectedFailure
-    def test_cosh(self):
-        self.one_arg_func('cosh')
-
-    @unittest.expectedFailure
-    def test_degrees(self):
-        self.one_arg_func('degrees')
-
-    @unittest.expectedFailure
-    def test_erf(self):
-        self.one_arg_func('erf')
-
-    @unittest.expectedFailure
-    def test_erfc(self):
-        self.one_arg_func('erfc')
-
-    @unittest.expectedFailure # TODO: this is correct, but differences in float printing makes it fail
-    def test_exp(self):
-        self.one_arg_func('exp')
-
-    @unittest.expectedFailure
-    def test_expm1(self):
-        self.one_arg_func('expm1')
-
-    @unittest.expectedFailure
-    def test_fabs(self):
-        self.one_arg_func('fabs')
-
-    @unittest.expectedFailure
-    def test_factorial(self):
-        self.one_arg_func('factorial')
-
-    def test_floor(self):
-        self.one_arg_func('floor')
-
-    @unittest.expectedFailure
-    def test_fmod(self):
-        self.one_arg_func('fmod')
-
-    @unittest.expectedFailure
-    def test_frexp(self):
-        self.one_arg_func('frexp')
-
-    @unittest.expectedFailure
-    def test_fsum(self):
-        self.one_arg_func('fsum')
-
-    @unittest.expectedFailure
-    def test_gamma(self):
-        self.one_arg_func('gamma')
-
-    @unittest.expectedFailure
-    def test_gcd(self):
-        self.one_arg_func('gcd')
-
-    @unittest.expectedFailure
-    def test_hypot(self):
-        self.two_arg_func('hypot')
-
-    @unittest.expectedFailure
-    def test_isclose(self):
-        self.one_arg_func('isclose')
-
-    @unittest.expectedFailure
-    def test_isfinite(self):
-        self.one_arg_func('isfinite')
-
-    @unittest.expectedFailure
-    def test_isinf(self):
-        self.one_arg_func('isinf')
-
-    @unittest.expectedFailure
-    def test_isnan(self):
-        self.one_arg_func('isnan')
-
-    @unittest.expectedFailure
-    def test_ldexp(self):
-        self.one_arg_func('ldexp')
-
-    @unittest.expectedFailure
-    def test_lgamma(self):
-        self.one_arg_func('lgamma')
-
-    def test_log(self):
-        self.one_arg_func('log', positive=True)
-        self.two_arg_func('log', positive=True)
-
-    @unittest.expectedFailure
-    def test_log10(self):
-        self.one_arg_func('log10', positive=True)
-
-    @unittest.expectedFailure
-    def test_log1p(self):
-        self.one_arg_func('log1p', positive=True)
-
-    @unittest.expectedFailure
-    def test_log2(self):
-        self.one_arg_func('log2', positive=True)
-
-    @unittest.expectedFailure
-    def test_modf(self):
-        self.one_arg_func('modf')
-
-    def test_pow(self):
-        self.two_arg_func('pow', positive=True)
-
-    @unittest.expectedFailure
-    def test_radians(self):
-        self.one_arg_func('radians')
-
-    def test_sin(self):
-        self.one_arg_func('sin')
-
-    @unittest.expectedFailure
-    def test_sinh(self):
-        self.one_arg_func('sinh')
-
-    def test_sqrt(self):
-        self.one_arg_func('sqrt', positive=True)
-
-    def test_tan(self):
-        self.one_arg_func('tan')
-
-    @unittest.expectedFailure
-    def test_tanh(self):
-        self.one_arg_func('tanh')
-
-    @unittest.expectedFailure
-    def test_trunc(self):
-        self.one_arg_func('trunc')
