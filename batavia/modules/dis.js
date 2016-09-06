@@ -84,6 +84,7 @@ batavia.modules.dis = {
         batavia.modules.dis.def_op('DUP_TOP_TWO', 5);
 
         batavia.modules.dis.def_op('NOP', 9);
+        batavia.modules.dis.NOP = 9;
         batavia.modules.dis.def_unary_op('UNARY_POSITIVE', 10);
         batavia.modules.dis.def_unary_op('UNARY_NEGATIVE', 11);
         batavia.modules.dis.def_unary_op('UNARY_NOT', 12);
@@ -218,4 +219,3 @@ batavia.modules.dis = {
         batavia.modules.dis.EXTENDED_ARG = 144;
     }
 };
-
