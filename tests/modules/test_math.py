@@ -231,7 +231,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_cosh_class',
         'test_math_cosh_complex',
         'test_math_cosh_dict',
-        'test_math_cosh_float',
         'test_math_cosh_frozenset',
         'test_math_cosh_int',
         'test_math_cosh_list',
@@ -437,7 +436,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_sin_class',
         'test_math_sin_complex',
         'test_math_sin_dict',
-        'test_math_sin_float', # only fails for formatting reasons
         'test_math_sin_frozenset',
         'test_math_sin_list',
         'test_math_sin_None',
@@ -486,7 +484,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_tan_class',
         'test_math_tan_complex',
         'test_math_tan_dict',
-        'test_math_tan_float', # formatting error only
         'test_math_tan_frozenset',
         'test_math_tan_list',
         'test_math_tan_None',
@@ -502,7 +499,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_tanh_class',
         'test_math_tanh_complex',
         'test_math_tanh_dict',
-        'test_math_tanh_float',
         'test_math_tanh_frozenset',
         'test_math_tanh_int',
         'test_math_tanh_list',

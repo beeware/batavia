@@ -795,6 +795,15 @@ SAMPLE_SUBSTITUTIONS = {
     ],
     # Normalize precision error
     "-3.14159": ["-3.1415900000000008",],
+    "-0.0000026535897933527304": ["-2.6535897933527304e-6",],
+    "0.000002653589793362073": ["2.653589793362073e-6",],
+    "-0.9981778976111988": ["-0.9981778976111987",],
+    "-0.9962720564728149": ["-0.9962720564728148",],
+    "0.9999665971563039": ["0.9999665971563038",],
+    "0.9818155173002924": ["0.9818155173002925",],
+    "61.83553558589159": ["61.8355355858916",],
+    "11.591922629945447": ["11.591922629945449",],
+    "5.267662140304228": ["5.267662140304229",],
 }
 
 
@@ -1158,6 +1167,7 @@ def _module_one_arg_func_test(name, module, f,  examples):
             module=module,
             func=f,
             x_values=examples,
+            substitutions=SAMPLE_SUBSTITUTIONS
         )
     return func
 
@@ -1169,6 +1179,7 @@ def _module_two_arg_func_test(name, module, f,  examples, examples2):
             func=f,
             x_values=examples,
             y_values=examples2,
+            substitutions=SAMPLE_SUBSTITUTIONS
         )
     return func
 
@@ -1182,7 +1193,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             _phantomjs.stdout.close()
             _phantomjs = None
 
-    def assertOneArgModuleFuction(self, name, module, func, x_values):
+    def assertOneArgModuleFuction(self, name, module, func, x_values, substitutions):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1206,7 +1217,9 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                 )
                 for x in x_values
             ),
-            "Error running %s module %s" % (module, name))
+            "Error running %s module %s" % (module, name),
+            substitutions=substitutions
+        )
 
     def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values):
         self.assertCodeExecution(
