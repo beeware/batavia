@@ -147,7 +147,7 @@ batavia.modules.math = {
 
     // TODO: this isn't supported in PhantomJS
     log10: function(x) {
-        return batavia.modules.math.log10(x);
+        return new batavia.types.Float(Math.log10(x.__float__().val));
     },
 
     // TODO: this isn't supported in PhantomJS
