@@ -93,7 +93,7 @@ batavia.modules.math = {
         if (!isFinite(result)) {
             throw new batavia.builtins.OverflowError("math range error");
         }
-        return new batavia.types.Float(Math.exp(x.__float__().val));
+        return new batavia.types.Float(result);
     },
 
     expm1: function(x) {
@@ -217,7 +217,11 @@ batavia.modules.math = {
 
     sqrt: function(x) {
         batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(Math.sqrt(x.__float__().val));
+        var result = Math.sqrt(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        return new batavia.types.Float(result);
     },
 
     tan: function(x) {

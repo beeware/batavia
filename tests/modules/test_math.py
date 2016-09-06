@@ -309,9 +309,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_sinh_frozenset',
 
-        'test_math_sqrt_float',
         'test_math_sqrt_frozenset',
-        'test_math_sqrt_int',
 
         'test_math_tan_frozenset',
 
