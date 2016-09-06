@@ -86,6 +86,10 @@ batavia.modules.math = {
 
     exp: function(x) {
         batavia.modules.math._checkFloat(x);
+        var result = Math.exp(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.OverflowError("math range error");
+        }
         return new batavia.types.Float(Math.exp(x.__float__().val));
     },
 

@@ -174,7 +174,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_cosh_frozenset',
 
         'test_math_exp_frozenset',
-        'test_math_exp_int',
 
         'test_math_expm1_frozenset',
 
