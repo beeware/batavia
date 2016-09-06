@@ -167,7 +167,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_atanh_frozenset',
 
         'test_math_ceil_frozenset',
-        'test_math_ceil_int',
 
         'test_math_cos_frozenset',
 
@@ -178,7 +177,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_expm1_frozenset',
 
         'test_math_floor_frozenset',
-        'test_math_floor_int',
 
         'test_math_log_bool',
         'test_math_log_bool_frozenset',

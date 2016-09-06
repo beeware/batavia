@@ -54,6 +54,9 @@ batavia.modules.math = {
     },
 
     ceil: function(x) {
+        if (batavia.isinstance(x, batavia.types.Int)) {
+            return x;
+        }
         batavia.modules.math._checkFloat(x);
         return new batavia.types.Int(Math.ceil(x.__float__().val));
     },
@@ -107,6 +110,9 @@ batavia.modules.math = {
     },
 
     floor: function(x) {
+        if (batavia.isinstance(x, batavia.types.Int)) {
+            return x;
+        }
         batavia.modules.math._checkFloat(x);
         return new batavia.types.Int(Math.floor(x.__float__().val));
     },
