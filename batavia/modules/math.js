@@ -9,35 +9,52 @@ batavia.modules.math = {
     pi: new batavia.types.Float(Math.PI),
     inf: new batavia.types.Float(Infinity),
 
+    _checkFloat: function(x) {
+        if (batavia.isinstance(x, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't convert complex to float");
+        } else if (!batavia.isinstance(x, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError('a float is required');
+        }
+    },
+
     acos: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.acos(x.__float__().val));
     },
 
     acosh: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.acosh(x.__float__().val));
     },
 
     asin: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.asin(x.__float__().val));
     },
 
     asinh: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.asinh(x.__float__().val));
     },
 
     atan: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.atan(x.__float__().val));
     },
 
     atan2: function(y, x) {
+        batavia.modules.math._checkFloat(y);
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.atan2(y.__float__().val, x.__float__().val));
     },
 
-    atanh: function(y, x) {
-        return new batavia.types.Float(Math.atanh(y.__float__().val, x.__float__().val));
+    atanh: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(Math.atanh(x.__float__().val));
     },
 
     ceil: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Int(Math.ceil(x.__float__().val));
     },
 
@@ -46,10 +63,12 @@ batavia.modules.math = {
     },
 
     cos: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.cos(x.__float__().val));
     },
 
     cosh: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.cosh(x.__float__().val));
     },
 
@@ -66,10 +85,12 @@ batavia.modules.math = {
     },
 
     exp: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.exp(x.__float__().val));
     },
 
     expm1: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.expm1(x.__float__().val));
     },
 
@@ -82,6 +103,7 @@ batavia.modules.math = {
     },
 
     floor: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Int(Math.floor(x.__float__().val));
     },
 
@@ -106,6 +128,8 @@ batavia.modules.math = {
     },
 
     hypot: function(x, y) {
+        batavia.modules.math._checkFloat(x);
+        batavia.modules.math._checkFloat(y);
         return new batavia.types.Float(Math.hypot(x.__float__().val, y.__float__().val));
     },
 
@@ -134,22 +158,26 @@ batavia.modules.math = {
     },
 
     log: function(x, base) {
+        batavia.modules.math._checkFloat(x);
         if (base == null) {
             return new batavia.types.Float(Math.log(x.__float__().val));
         }
+        batavia.modules.math._checkFloat(base);
         return new batavia.types.Float(Math.log(x.__float__().val) / Math.log(base.__float__().val));
     },
 
     log10: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.log10(x.__float__().val));
     },
 
     log1p: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.log1p(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     log2: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.log2(x.__float__().val));
     },
 
@@ -158,6 +186,8 @@ batavia.modules.math = {
     },
 
     pow: function(x, y) {
+        batavia.modules.math._checkFloat(x);
+        batavia.modules.math._checkFloat(y);
         return new batavia.types.Float(Math.pow(x.__float__().val, y.__float__().val));
     },
 
@@ -166,29 +196,32 @@ batavia.modules.math = {
     },
 
     sin: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.sin(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     sinh: function(x) {
-        return new batavia.types.Float(Math.sinh(x.__float__().val));
+      batavia.modules.math._checkFloat(x);
+      return new batavia.types.Float(Math.sinh(x.__float__().val));
     },
 
     sqrt: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.sqrt(x.__float__().val));
     },
 
     tan: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.tan(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     tanh: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.tanh(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     trunc: function(x) {
+        batavia.modules.math._checkFloat(x);
         return new batavia.types.Float(Math.trunc(x.__float__().val));
     },
 };
