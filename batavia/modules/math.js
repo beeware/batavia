@@ -24,7 +24,11 @@ batavia.modules.math = {
 
     acosh: function(x) {
         batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(Math.acosh(x.__float__().val));
+        var result = Math.acosh(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        return new batavia.types.Float(result);
     },
 
     asin: function(x) {
@@ -50,6 +54,10 @@ batavia.modules.math = {
 
     atanh: function(x) {
         batavia.modules.math._checkFloat(x);
+        var result = Math.atanh(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
         return new batavia.types.Float(Math.atanh(x.__float__().val));
     },
 
@@ -72,6 +80,10 @@ batavia.modules.math = {
 
     cosh: function(x) {
         batavia.modules.math._checkFloat(x);
+        var result = Math.cosh(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.OverflowError("math range error");
+        }
         return new batavia.types.Float(Math.cosh(x.__float__().val));
     },
 
@@ -98,6 +110,10 @@ batavia.modules.math = {
 
     expm1: function(x) {
         batavia.modules.math._checkFloat(x);
+        var result = Math.expm1(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.OverflowError("math range error");
+        }
         return new batavia.types.Float(Math.expm1(x.__float__().val));
     },
 
@@ -188,6 +204,10 @@ batavia.modules.math = {
 
     log2: function(x) {
         batavia.modules.math._checkFloat(x);
+        var result = Math.log2(x.__float__().val);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
         return new batavia.types.Float(Math.log2(x.__float__().val));
     },
 
@@ -212,7 +232,11 @@ batavia.modules.math = {
 
     sinh: function(x) {
       batavia.modules.math._checkFloat(x);
-      return new batavia.types.Float(Math.sinh(x.__float__().val));
+      var result = Math.sinh(x.__float__().val);
+      if (!isFinite(result)) {
+          throw new batavia.builtins.OverflowError("math range error");
+      }
+      return new batavia.types.Float(result);
     },
 
     sqrt: function(x) {
