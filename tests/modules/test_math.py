@@ -258,7 +258,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_exp_str',
         'test_math_exp_tuple',
 
-        'test_math_expm1_bool',
         'test_math_expm1_bytearray',
         'test_math_expm1_bytes',
         'test_math_expm1_class',
