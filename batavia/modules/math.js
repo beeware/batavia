@@ -13,7 +13,6 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.acos(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     acosh: function(x) {
         return new batavia.types.Float(Math.acosh(x.__float__().val));
     },
@@ -22,7 +21,6 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.asin(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     asinh: function(x) {
         return new batavia.types.Float(Math.asinh(x.__float__().val));
     },
@@ -35,7 +33,6 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.atan2(y.__float__().val, x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     atanh: function(y, x) {
         return new batavia.types.Float(Math.atanh(y.__float__().val, x.__float__().val));
     },
@@ -72,7 +69,6 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.exp(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     expm1: function(x) {
         return new batavia.types.Float(Math.expm1(x.__float__().val));
     },
@@ -109,7 +105,6 @@ batavia.modules.math = {
         throw new batavia.builtins.NotImplementedError("math.gcd has not been implemented");
     },
 
-    // TODO: this isn't supported in PhantomJS
     hypot: function(x, y) {
         return new batavia.types.Float(Math.hypot(x.__float__().val, y.__float__().val));
     },
@@ -145,12 +140,10 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.log(x.__float__().val) / Math.log(base.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     log10: function(x) {
         return new batavia.types.Float(Math.log10(x.__float__().val));
     },
 
-    // TODO: this isn't supported in PhantomJS
     log1p: function(x) {
         return new batavia.types.Float(Math.log1p(x.__float__().val));
     },
