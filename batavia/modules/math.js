@@ -47,9 +47,11 @@ batavia.modules.math = {
     },
 
     atan2: function(y, x) {
-        batavia.modules.math._checkFloat(y);
         batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(Math.atan2(y.__float__().val, x.__float__().val));
+        var xx = x.__float__().val;
+        batavia.modules.math._checkFloat(y);
+        var yy = y.__float__().val;
+        return new batavia.types.Float(Math.atan2(yy, xx));
     },
 
     atanh: function(x) {
@@ -183,13 +185,41 @@ batavia.modules.math = {
         throw new batavia.builtins.NotImplementedError("math.lgamma has not been implemented");
     },
 
+    // TODO: CPython math.log supports taking logarithms of arbitrary precision ints, which bignumber.js doesn't do for us.
     log: function(x, base) {
+        if (x == null) {
+            throw new batavia.builtins.TypeError("a float is required");
+        }
         batavia.modules.math._checkFloat(x);
-        if (base == null) {
+        if (x.__le__(new batavia.types.Float(0.0))) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        if (x.__eq__(new batavia.types.Float(1.0)) && batavia.isinstance(base, batavia.types.Int) && base.val.gt(1)) {
+            return new batavia.types.Float(0.0);
+        }
+        var bb;
+        if (typeof base !== 'undefined') {
+            batavia.modules.math._checkFloat(base);
+            if (base.__le__(new batavia.types.Float(0.0))) {
+                throw new batavia.builtins.ValueError("math domain error");
+            }
+            bb = base.__float__().val;
+        }
+        if (typeof base !== 'undefined') {
+            batavia.modules.math._checkFloat(base);
+            bb = base.__float__().val;
+            if (bb <= 0.0) {
+                throw new batavia.builtins.ValueError("math domain error");
+            }
+        }
+        if (typeof base === 'undefined') {
             return new batavia.types.Float(Math.log(x.__float__().val));
         }
-        batavia.modules.math._checkFloat(base);
-        return new batavia.types.Float(Math.log(x.__float__().val) / Math.log(base.__float__().val));
+        if (bb == 1.0) {
+            throw new batavia.builtins.ZeroDivisionError("float division by zero");
+        }
+        var xx = x.__float__().val;
+        return new batavia.types.Float(Math.log(xx) / Math.log(bb));
     },
 
     log10: function(x) {
@@ -216,9 +246,21 @@ batavia.modules.math = {
     },
 
     pow: function(x, y) {
-        batavia.modules.math._checkFloat(x);
         batavia.modules.math._checkFloat(y);
-        return new batavia.types.Float(Math.pow(x.__float__().val, y.__float__().val));
+        var yy = y.__float__().val;
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        var result = Math.pow(x, y);
+        if (xx < 0 && !Number.isInteger(yy) && yy != 0.0) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        if (xx == 0.0 && yy < 0.0) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        if (!isFinite(result)) {
+            throw new batavia.builtins.OverflowError("math range error");
+        }
+        return new batavia.types.Float(result);
     },
 
     radians: function() {

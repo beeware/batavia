@@ -26,9 +26,9 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
-        # 'atan2', # disabled due to the extra time they take on CircleCI for now :(
-        # 'log',
-        # 'pow',
+        'atan2',
+        'log',
+        'pow',
     ])
 
     TODO = [
@@ -123,15 +123,14 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_floor_frozenset',
 
-        'test_math_log_bool',
         'test_math_log_bool_frozenset',
         'test_math_log_bytearray_frozenset',
         'test_math_log_bytes_frozenset',
         'test_math_log_class_frozenset',
         'test_math_log_complex_frozenset',
         'test_math_log_dict_frozenset',
-        'test_math_log_float',
         'test_math_log_float_frozenset',
+        'test_math_log_float_int',
         'test_math_log_frozenset',
         'test_math_log_frozenset_bool',
         'test_math_log_frozenset_bytearray',
@@ -151,6 +150,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_log_frozenset_str',
         'test_math_log_frozenset_tuple',
         'test_math_log_int',
+        'test_math_log_int_float',
         'test_math_log_int_int',
         'test_math_log_int_frozenset',
         'test_math_log_list_frozenset',
@@ -200,7 +200,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_pow_frozenset_str',
         'test_math_pow_frozenset_tuple',
         'test_math_pow_int_frozenset',
-        'test_math_pow_int_int',
         'test_math_pow_list_frozenset',
         'test_math_pow_None_frozenset',
         'test_math_pow_NotImplemented_frozenset',

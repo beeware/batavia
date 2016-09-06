@@ -1229,7 +1229,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             substitutions=substitutions
         )
 
-    def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values):
+    def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values, substitutions):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1256,7 +1256,8 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                 )
                 for x in x_values for y in y_values
             ),
-            "Error running %s module %s" % (module, name))
+            "Error running %s module %s" % (module, name),
+            substitutions=substitutions)
 
     @classmethod
     def add_one_arg_tests(self, module, functions):
