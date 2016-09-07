@@ -39,7 +39,9 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
     this.dispatch_table = batavia.modules.dis.opname.map(function(opname, opcode) {
         var operator_name, operator;
 
-        if (opcode in batavia.modules.dis.unary_ops) {
+        if (opcode == batavia.modules.dis.NOP) {
+            return function() {};
+        } else if (opcode in batavia.modules.dis.unary_ops) {
             operator_name = opname.slice(6);
             switch (operator_name) {
                 case "POSITIVE":
@@ -695,18 +697,57 @@ batavia.VirtualMachine.prototype.unpack_code = function(code) {
     var pos = 0;
     var unpacked_code = [];
     var args;
+    var extra = 0;
 
     while (pos < code.co_code.val.length) {
         var opcode_start_pos = pos;
 
         var opcode = code.co_code.val[pos++];
 
+        // next opcode has 4-byte argument effectively.
+        if (opcode == batavia.modules.dis.EXTENDED_ARG) {
+            var lo = code.co_code.val[pos++];
+            var hi = code.co_code.val[pos++];
+            extra = (lo << 16) | (hi << 24);
+            // emulate four NOPs
+            unpacked_code[opcode_start_pos] = {
+                'opoffset': opcode_start_pos,
+                'opcode': batavia.modules.dis.NOP,
+                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'args': [],
+                'next_pos': pos
+            };
+            unpacked_code[opcode_start_pos + 1] = {
+                'opoffset': opcode_start_pos + 1,
+                'opcode': batavia.modules.dis.NOP,
+                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'args': [],
+                'next_pos': pos
+            };
+            unpacked_code[opcode_start_pos + 2] = {
+                'opoffset': opcode_start_pos + 2,
+                'opcode': batavia.modules.dis.NOP,
+                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'args': [],
+                'next_pos': pos
+            };
+            unpacked_code[opcode_start_pos + 3] = {
+                'opoffset': opcode_start_pos + 3,
+                'opcode': batavia.modules.dis.NOP,
+                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'args': [],
+                'next_pos': pos
+            };
+            continue;
+        }
+
         if (opcode < batavia.modules.dis.HAVE_ARGUMENT) {
             args = [];
         } else {
             var lo = code.co_code.val[pos++];
             var hi = code.co_code.val[pos++];
-            var intArg = lo + (hi << 8);
+            var intArg = lo | (hi << 8) | extra;
+            extra = 0; // use extended arg if present
 
             if (opcode in batavia.modules.dis.hasconst) {
                 args = [code.co_consts[intArg]];
@@ -1823,4 +1864,7 @@ batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {
 
 batavia.VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
     this.frame.f_lineno = lineno;
+};
+
+batavia.VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
 };
