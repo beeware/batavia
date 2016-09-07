@@ -1,7 +1,7 @@
 
 ALL_FILES=\
     batavia/batavia.js \
-		batavia/vendor/vendored.js \
+    batavia/vendor/vendored.js \
     batavia/utils.js \
     batavia/types/Type.js \
     batavia/types/Bool.js \
@@ -31,7 +31,7 @@ ALL_FILES=\
     batavia/modules/dom.js \
     batavia/modules/marshal.js \
     batavia/modules/inspect.js \
-		batavia/modules/math.js \
+    batavia/modules/math.js \
     batavia/modules/sys.js \
     batavia/modules/time.js \
     batavia/core/Block.js \
@@ -45,7 +45,7 @@ ALL_FILES=\
 
 ALL_FILES_WIN=\
     batavia\batavia.js \
-		batavia\vendor\vendored.js \
+    batavia\vendor\vendored.js \
     batavia\utils.js \
     batavia\types\Type.js \
     batavia\types\Bool.js \
@@ -75,7 +75,7 @@ ALL_FILES_WIN=\
     batavia\modules\dom.js \
     batavia\modules\marshal.js \
     batavia\modules\inspect.js \
-		batavia/modules/math.js \
+    batavia/modules/math.js \
     batavia\modules\sys.js \
     batavia\modules\time.js \
     batavia\core\Block.js \
