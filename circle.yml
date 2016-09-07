@@ -4,4 +4,5 @@ machine:
 
 test:
   override:
-     - python setup.py test
+     - python setup.py test:
+         timeout: 60

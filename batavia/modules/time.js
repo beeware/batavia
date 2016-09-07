@@ -1,7 +1,8 @@
 
 batavia.modules.time = {
+    _startTime: new Date().getTime(),
     clock: function() {
-        return new Date().getTime();
+        return new batavia.types.Float(new Date().getTime() - batavia.modules.time._startTime);
     },
 
     time: function() {

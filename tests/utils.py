@@ -795,6 +795,17 @@ SAMPLE_SUBSTITUTIONS = {
     ],
     # Normalize precision error
     "-3.14159": ["-3.1415900000000008",],
+    "-0.0000026535897933527304": ["-2.6535897933527304e-6",],
+    "0.000002653589793362073": ["2.653589793362073e-6",],
+    "-0.9981778976111988": ["-0.9981778976111987",],
+    "-0.9962720564728149": ["-0.9962720564728148",],
+    "0.9999665971563039": ["0.9999665971563038",],
+    "0.9818155173002924": ["0.9818155173002925",],
+    "61.83553558589159": ["61.8355355858916",],
+    "11.591922629945447": ["11.591922629945449",],
+    "5.267662140304228": ["5.267662140304229",],
+    "0.0000026535897933620727": ["2.6535897933620727e-6",],
+    "-0.00000265358979335273": ["-2.65358979335273e-6",],
 }
 
 
@@ -1149,3 +1160,109 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
                 'test_%s_%s' % (datatype1, datatype2),
                 'f(x, y)', examples1, examples2
             )
+
+
+def _module_one_arg_func_test(name, module, f,  examples):
+    def func(self):
+        self.assertOneArgModuleFuction(
+            name=name,
+            module=module,
+            func=f,
+            x_values=examples,
+            substitutions=SAMPLE_SUBSTITUTIONS
+        )
+    return func
+
+def _module_two_arg_func_test(name, module, f,  examples, examples2):
+    def func(self):
+        self.assertTwoArgModuleFuction(
+            name=name,
+            module=module,
+            func=f,
+            x_values=examples,
+            y_values=examples2,
+            substitutions=SAMPLE_SUBSTITUTIONS
+        )
+    return func
+
+class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
+    @classmethod
+    def tearDownClass(cls):
+        global _phantomjs
+        if _phantomjs:
+            _phantomjs.kill()
+            _phantomjs.stdin.close()
+            _phantomjs.stdout.close()
+            _phantomjs = None
+
+    def assertOneArgModuleFuction(self, name, module, func, x_values, substitutions):
+        self.assertCodeExecution(
+            '##################################################\n'.join(
+                adjust("""
+                    try:
+                        print('>>> import %(m)s')
+                        print('>>> f = %(m)s.%(f)s')
+                        print('>>> x = %(x)s')
+                        print('>>> f(x)')
+                        import %(m)s
+                        f = %(m)s.%(f)s
+                        x = %(x)s
+                        print(f(x))
+                    except Exception as e:
+                        print(type(e), ':', e)
+                    print()
+                    """ % {
+                        'f': func,
+                        'x': x,
+                        'm': module,
+                    }
+                )
+                for x in x_values
+            ),
+            "Error running %s module %s" % (module, name),
+            substitutions=substitutions
+        )
+
+    def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values):
+        self.assertCodeExecution(
+            '##################################################\n'.join(
+                adjust("""
+                    try:
+                        print('>>> import %(m)s')
+                        print('>>> f = %(m)s.%(f)s')
+                        print('>>> x = %(x)s')
+                        print('>>> y = %(y)s')
+                        print('>>> f(x, y)')
+                        import %(m)s
+                        f = %(m)s.%(f)s
+                        x = %(x)s
+                        x = %(y)s
+                        print(f(x, y))
+                    except Exception as e:
+                        print(type(e), ':', e)
+                    print()
+                    """ % {
+                        'f': func,
+                        'x': x,
+                        'y': y,
+                        'm': module,
+                    }
+                )
+                for x in x_values for y in y_values
+            ),
+            "Error running %s module %s" % (module, name))
+
+    @classmethod
+    def add_one_arg_tests(self, module, functions):
+        for func in functions:
+            for datatype, examples in SAMPLE_DATA.items():
+                name = 'test_%s_%s_%s' % (module, func, datatype)
+                setattr(self, name, _module_one_arg_func_test(name, 'math', func, examples))
+
+    @classmethod
+    def add_two_arg_tests(self, module, functions):
+        for func in functions:
+            for datatype, examples in SAMPLE_DATA.items():
+                for datatype2, examples2 in SAMPLE_DATA.items():
+                    name = 'test_%s_%s_%s_%s' % (module, func, datatype, datatype2)
+                    setattr(self, name, _module_two_arg_func_test(name, 'math', func, examples, examples2))
