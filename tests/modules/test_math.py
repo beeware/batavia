@@ -33,7 +33,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
     TODO = [
         'copysign',
-        'degress',
+        'degrees',
         'erf',
         'erfc',
         'fabs',
@@ -228,3 +228,52 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.nan)
             print(math.pi)
             """)
+
+    def test_docstrings(self):
+        self.assertCodeExecution("""
+        import math
+        print(math.acos.__doc__)
+        print(math.acosh.__doc__)
+        print(math.asin.__doc__)
+        print(math.asinh.__doc__)
+        print(math.atan.__doc__)
+        print(math.atan2.__doc__)
+        print(math.atanh.__doc__)
+        print(math.ceil.__doc__)
+        print(math.copysign.__doc__)
+        print(math.cos.__doc__)
+        print(math.cosh.__doc__)
+        print(math.degrees.__doc__)
+        print(math.erf.__doc__)
+        print(math.erfc.__doc__)
+        print(math.exp.__doc__)
+        print(math.expm1.__doc__)
+        print(math.fabs.__doc__)
+        print(math.factorial.__doc__)
+        print(math.floor.__doc__)
+        print(math.fmod.__doc__)
+        print(math.frexp.__doc__)
+        print(math.fsum.__doc__)
+        print(math.gamma.__doc__)
+        print(math.gcd.__doc__)
+        print(math.hypot.__doc__)
+        print(math.isclose.__doc__)
+        print(math.isfinite.__doc__)
+        print(math.isinf.__doc__)
+        print(math.isnan.__doc__)
+        print(math.ldexp.__doc__)
+        print(math.lgamma.__doc__)
+        print(math.log.__doc__)
+        print(math.log10.__doc__)
+        print(math.log1p.__doc__)
+        print(math.log2.__doc__)
+        print(math.modf.__doc__)
+        print(math.pow.__doc__)
+        print(math.radians.__doc__)
+        print(math.sin.__doc__)
+        print(math.sinh.__doc__)
+        print(math.sqrt.__doc__)
+        print(math.tan.__doc__)
+        print(math.tanh.__doc__)
+        print(math.trunc.__doc__)
+        """)
