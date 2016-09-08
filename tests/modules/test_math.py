@@ -14,6 +14,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'degrees',
         'exp',
         'expm1',
+        'erf',
+        'erfc',
         'floor',
         'log',
         'log10',
@@ -35,8 +37,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     TODO = [
-        'erf',
-        'erfc',
         'fabs',
         'factorial',
         'fmod',
@@ -153,6 +153,10 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_degrees_frozenset',
 
+        'test_math_erf_frozenset',
+
+        'test_math_erfc_frozenset',
+
         'test_math_exp_frozenset',
 
         'test_math_expm1_frozenset',
@@ -265,6 +269,15 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.inf)
             print(math.nan)
             print(math.pi)
+            """)
+
+    def test_erf(self):
+        # test some of the edge cases of erf to 15 digits of precision
+        self.assertCodeExecution("""
+            import math
+            print(round(math.erf(0.75) * (10**15)))
+            print(round(math.erf(1.40) * (10**15)))
+            print(round(math.erf(1.60) * (10**15)))
             """)
 
     def test_docstrings(self):

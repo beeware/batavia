@@ -102,12 +102,92 @@ batavia.modules.math = {
         return new batavia.types.Float(x.__float__().val * 57.295779513082322865);
     },
 
-    erf: function() {
-        throw new batavia.builtins.NotImplementedError("math.erf has not been implemented");
+    // taylor series expansion for erf(x)
+    _erf_series: function(x) {
+        // From CPython docs:
+        //
+        // erf(x) = x*exp(-x*x)/sqrt(pi) * [
+        //                    2/1 + 4/3 x**2 + 8/15 x**4 + 16/105 x**6 + ...]
+        // x**(2k-2) here is 4**k*factorial(k)/factorial(2*k)
+        var y = 2.0;
+        var num = 4;
+        var denom = 2;
+        var xk = 1;
+        // CPython uses 25 terms.
+        for (var i = 2; i < 26; i++) {
+            num *= 4;
+            num *= i;
+            for (var j = 2 * (i - 1) + 1; j <= 2 * i; j++) {
+              denom *= j;
+            }
+            xk *= x * x;
+            y += xk * num / denom;
+        }
+        return y * x * Math.exp(-x * x) / Math.sqrt(Math.PI);
     },
 
-    erfc: function() {
-        throw new batavia.builtins.NotImplementedError("math.erfc has not been implemented");
+    // continued fraction expansion of 1 - erf(x)
+    _erfc_cfrac: function(x) {
+        // From CPython docs:
+        //
+        // erfc(x) = x*exp(-x*x)/sqrt(pi) * [1/(0.5 + x**2 -) 0.5/(2.5 + x**2 - )
+        //                               3.0/(4.5 + x**2 - ) 7.5/(6.5 + x**2 - ) ...]
+        //
+        //    after the first term, the general term has the form:
+        //
+        //       k*(k-0.5)/(2*k+0.5 + x**2 - ...).
+
+        if (x > 30.0) {
+            return 0.0;
+        }
+
+        var p_n = 1;
+        var p_n_1 = 0.0;
+        var q_n = 0.5 + x * x;
+        var q_n_1 = 1.0;
+        var a = 0.0;
+        var coeff = 0.5;
+
+        // CPython uses 50 terms.
+        for (var k = 0; k < 50; k++) {
+            a += coeff;
+            coeff += 2;
+            var b = coeff + x * x;
+
+            var t = p_n;
+            p_n = b * p_n - a * p_n_1;
+            p_n_1 = t;
+
+            t = q_n;
+            q_n = b * q_n - a * q_n_1;
+            q_n_1 = t;
+        }
+        return p_n / q_n * x * Math.exp(-x * x) / Math.sqrt(Math.PI);
+    },
+
+    erf: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        // Save the sign of x
+        var sign = 1;
+        if (xx < 0) {
+            sign = -1;
+        }
+        xx = Math.abs(x);
+
+        var CUTOFF = 1.5;
+        var result;
+        if (xx < 1.5) {
+            result = batavia.modules.math._erf_series(xx);
+        } else {
+            result = 1.0 - batavia.modules.math._erfc_cfrac(xx);
+        }
+        return new batavia.types.Float(sign * result);
+    },
+
+    erfc: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(1.0 - batavia.modules.math.erf(x).val);
     },
 
     exp: function(x) {
