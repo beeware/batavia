@@ -96,8 +96,10 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.cosh(x.__float__().val));
     },
 
-    degrees: function() {
-        throw new batavia.builtins.NotImplementedError("math.degrees has not been implemented");
+    degrees: function(x) {
+        batavia.modules.math._checkFloat(x);
+        // multiply by 180 / math.pi
+        return new batavia.types.Float(x.__float__().val * 57.295779513082322865);
     },
 
     erf: function() {
@@ -270,8 +272,10 @@ batavia.modules.math = {
         return new batavia.types.Float(result);
     },
 
-    radians: function() {
-        throw new batavia.builtins.NotImplementedError("math.radians has not been implemented");
+    radians: function(x) {
+        batavia.modules.math._checkFloat(x);
+        // multiply by math.pi / 180
+        return new batavia.types.Float(x.__float__().val * 0.017453292519943295);
     },
 
     sin: function(x) {

@@ -11,6 +11,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'ceil',
         'cos',
         'cosh',
+        'degrees',
         'exp',
         'expm1',
         'floor',
@@ -18,6 +19,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'log10',
         'log1p',
         'log2',
+        'radians',
         'sin',
         'sinh',
         'sqrt',
@@ -33,7 +35,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     TODO = [
-        'degrees',
         'erf',
         'erfc',
         'fabs',
@@ -51,7 +52,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'ldexp',
         'lgamma',
         'modf',
-        'radians',
         'trunc',
     ]
 
@@ -151,6 +151,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_cosh_frozenset',
 
+        'test_math_degrees_frozenset',
+
         'test_math_exp_frozenset',
 
         'test_math_expm1_frozenset',
@@ -242,6 +244,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_pow_slice_frozenset',
         'test_math_pow_str_frozenset',
         'test_math_pow_tuple_frozenset',
+
+        'test_math_radians_frozenset',
 
         'test_math_sin_frozenset',
 
