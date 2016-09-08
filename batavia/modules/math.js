@@ -208,8 +208,9 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.expm1(x.__float__().val));
     },
 
-    fabs: function() {
-        throw new batavia.builtins.NotImplementedError("math.fabs has not been implemented");
+    fabs: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(Math.abs(x.__float__().val));
     },
 
     factorial: function() {
