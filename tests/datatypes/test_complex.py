@@ -38,33 +38,8 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_int',
         'test_subtract_int',
 
-        'test_add_frozenset',
-
-        'test_and_frozenset',
-
-        'test_eq_frozenset',
-
-        'test_floor_divide_frozenset',
-
-        'test_ge_frozenset',
-
-        'test_gt_frozenset',
-
-        'test_lt_frozenset',
-
-        'test_lshift_frozenset',
-
-        'test_le_frozenset',
-
-        'test_modulo_frozenset',
-
         'test_multiply_bytearray',
-        'test_multiply_frozenset',
         'test_multiply_bytes',
-
-        'test_ne_frozenset',
-
-        'test_or_frozenset',
 
         'test_power_bool',
         'test_power_bytearray',
@@ -83,16 +58,6 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_slice',
         'test_power_str',
         'test_power_tuple',
-
-        'test_rshift_frozenset',
-
-        'test_subscr_frozenset',
-
-        'test_subtract_frozenset',
-
-        'test_true_divide_frozenset',
-
-        'test_xor_frozenset',
     ]
 
 
@@ -103,21 +68,8 @@ class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_int',
         'test_subtract_int',
 
-        'test_add_frozenset',
-
-        'test_and_frozenset',
-
-        'test_floor_divide_frozenset',
-
-        'test_lshift_frozenset',
-
-        'test_modulo_frozenset',
-
         'test_multiply_bytearray',
-        'test_multiply_frozenset',
         'test_multiply_bytes',
-
-        'test_or_frozenset',
 
         'test_power_bool',
         'test_power_bytearray',
@@ -136,12 +88,4 @@ class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_slice',
         'test_power_str',
         'test_power_tuple',
-
-        'test_rshift_frozenset',
-
-        'test_subtract_frozenset',
-
-        'test_true_divide_frozenset',
-
-        'test_xor_frozenset',
     ]

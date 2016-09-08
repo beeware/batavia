@@ -10,5 +10,4 @@ class BuiltinCallableFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_class',
-        'test_frozenset',
     ]

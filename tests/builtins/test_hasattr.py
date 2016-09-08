@@ -9,6 +9,5 @@ class BuiltinHasattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["hasattr"]
 
     not_implemented = [
-        'test_frozenset',
         'test_None',
     ]

@@ -73,7 +73,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_tuple',
 
         'test_eq_bytes',
-        'test_eq_frozenset',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -198,13 +197,9 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_tuple',
 
         'test_multiply_bool',
-        # 'test_multiply_class',
-        # 'test_multiply_complex',
-        'test_multiply_frozenset',
         'test_multiply_int',
 
         'test_ne_bytes',
-        'test_ne_frozenset',
 
         'test_or_bool',
         'test_or_bytearray',

@@ -11,6 +11,4 @@ class BuiltinComplexFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     not_implemented = [
         # this works, but printing is broken for floats in some tricky cases
         'test_int',
-
-        'test_frozenset',
     ]

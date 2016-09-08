@@ -114,7 +114,6 @@ class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_frozenset',
         'test_eq_slice',
 
         'test_floor_divide_bool',
@@ -261,7 +260,6 @@ class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_frozenset',
         'test_ne_slice',
 
         'test_or_bool',
