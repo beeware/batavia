@@ -19,6 +19,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'fabs',
         'factorial',
         'floor',
+        'frexp',
         'log',
         'log10',
         'log1p',
@@ -40,7 +41,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     TODO = [
-        'frexp',
         'fsum',
         'gamma',
         'gcd',
@@ -202,6 +202,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_fmod_str_frozenset',
         'test_math_fmod_tuple_frozenset',
 
+        'test_math_frexp_frozenset',
+
         'test_math_log_bool_frozenset',
         'test_math_log_bytearray_frozenset',
         'test_math_log_bytes_frozenset',
@@ -318,6 +320,21 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(round(math.erf(1.40) * (10**15)))
             print(round(math.erf(1.60) * (10**15)))
             """)
+
+    def test_frexp(self):
+        # test some of the edge cases of for frexp
+        self.assertCodeExecution("""
+            import math
+            print(math.frexp(float('nan')))
+            print(math.frexp(float('inf')))
+            print(math.frexp(float('-inf')))
+            print(math.frexp(-0.0))
+            print(math.frexp(0.0))
+            print(math.frexp(2**-1026)) # denormal
+            print(math.frexp(2**-1027)) # denormal
+            print(math.frexp(1.9**-1150)) # denormal
+            """)
+
 
     def test_docstrings(self):
         self.assertCodeExecution("""

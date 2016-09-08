@@ -284,8 +284,36 @@ batavia.modules.math = {
         return new batavia.types.Float(x.__float__().val % y.__float__().val);
     },
 
-    frexp: function() {
-        throw new batavia.builtins.NotImplementedError("math.frexp has not been implemented");
+    frexp: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        // check for 0, -0, NaN, Inf, -Inf
+        if (xx === 0 || !isFinite(xx)) {
+            return new batavia.types.Tuple([x.__float__(), new batavia.types.Int(0)]);
+        }
+        var buff = new batavia.vendored.buffer.Buffer(8);
+        buff.writeDoubleLE(x, 0);
+        var a = buff.readUInt32LE(0);
+        var b = buff.readUInt32LE(4);
+        var exp = ((b >> 20) & 0x7ff) - 1022;
+        var num;
+        // check for denormal number
+        if (exp == -1022) {
+            // each leading zero increases the exponent
+            num = (b & 0xfffff) * 4294967296 + a;
+            while ((num != 0) && (num < 0x8000000000000)) {
+                exp--;
+                num *= 2;
+            }
+            num = num / 0x10000000000000;
+        } else {
+          num = 0x10000000000000 + (b & 0xfffff) * 4294967296 + a;
+          num = num / 0x20000000000000;
+        }
+        if (b >> 31) {
+            num = -num;
+        }
+        return new batavia.types.Tuple([new batavia.types.Float(num), new batavia.types.Int(exp)]);
     },
 
     fsum: function() {
