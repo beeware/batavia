@@ -278,8 +278,10 @@ batavia.modules.math = {
         return new batavia.types.Int(Math.floor(x.__float__().val));
     },
 
-    fmod: function() {
-        throw new batavia.builtins.NotImplementedError("math.fmod has not been implemented");
+    fmod: function(x, y) {
+        batavia.modules.math._checkFloat(y);
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(x.__float__().val % y.__float__().val);
     },
 
     frexp: function() {
