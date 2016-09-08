@@ -26,14 +26,14 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
-        # 'atan2', # disabled due to the extra time they take on CircleCI for now :(
+        # 'atan2', # commented out because they take too long in CircleCI
         # 'log',
         # 'pow',
     ])
 
     TODO = [
         'copysign',
-        'degress',
+        'degrees',
         'erf',
         'erfc',
         'fabs',
@@ -57,75 +57,20 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
 
     not_implemented = [
-        'test_math_acos_bytearray',
-        'test_math_acos_bytes',
-        'test_math_acos_class',
-        'test_math_acos_complex',
-        'test_math_acos_dict',
         'test_math_acos_float',
         'test_math_acos_frozenset',
         'test_math_acos_int',
-        'test_math_acos_list',
-        'test_math_acos_None',
-        'test_math_acos_NotImplemented',
-        'test_math_acos_range',
-        'test_math_acos_set',
-        'test_math_acos_slice',
-        'test_math_acos_str',
-        'test_math_acos_tuple',
 
-        'test_math_acosh_bool',
-        'test_math_acosh_bytearray',
-        'test_math_acosh_bytes',
-        'test_math_acosh_class',
-        'test_math_acosh_complex',
-        'test_math_acosh_dict',
         'test_math_acosh_float',
         'test_math_acosh_frozenset',
-        'test_math_acosh_int',
-        'test_math_acosh_list',
-        'test_math_acosh_None',
-        'test_math_acosh_NotImplemented',
-        'test_math_acosh_range',
-        'test_math_acosh_set',
-        'test_math_acosh_slice',
-        'test_math_acosh_str',
-        'test_math_acosh_tuple',
 
-        'test_math_asin_bytearray',
-        'test_math_asin_bytes',
-        'test_math_asin_class',
-        'test_math_asin_complex',
-        'test_math_asin_dict',
         'test_math_asin_float',
         'test_math_asin_frozenset',
         'test_math_asin_int',
-        'test_math_asin_list',
-        'test_math_asin_None',
-        'test_math_asin_NotImplemented',
-        'test_math_asin_range',
-        'test_math_asin_set',
-        'test_math_asin_slice',
-        'test_math_asin_str',
-        'test_math_asin_tuple',
 
-        'test_math_asinh_bool',
-        'test_math_asinh_bytearray',
-        'test_math_asinh_bytes',
-        'test_math_asinh_class',
-        'test_math_asinh_complex',
-        'test_math_asinh_dict',
         'test_math_asinh_float',
         'test_math_asinh_frozenset',
         'test_math_asinh_int',
-        'test_math_asinh_list',
-        'test_math_asinh_None',
-        'test_math_asinh_NotImplemented',
-        'test_math_asinh_range',
-        'test_math_asinh_set',
-        'test_math_asinh_slice',
-        'test_math_asinh_str',
-        'test_math_asinh_tuple',
 
         'test_math_atan2_bool_frozenset',
         'test_math_atan2_bytearray_frozenset',
@@ -162,148 +107,30 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_atan2_str_frozenset',
         'test_math_atan2_tuple_frozenset',
 
-        'test_math_atan_bytearray',
-        'test_math_atan_bytes',
-        'test_math_atan_class',
-        'test_math_atan_complex',
-        'test_math_atan_dict',
         'test_math_atan_frozenset',
-        'test_math_atan_list',
-        'test_math_atan_None',
-        'test_math_atan_NotImplemented',
-        'test_math_atan_range',
-        'test_math_atan_set',
-        'test_math_atan_slice',
-        'test_math_atan_str',
-        'test_math_atan_tuple',
 
-        'test_math_atanh_bool',
-        'test_math_atanh_bytearray',
-        'test_math_atanh_bytes',
-        'test_math_atanh_class',
-        'test_math_atanh_complex',
-        'test_math_atanh_dict',
-        'test_math_atanh_float',
         'test_math_atanh_frozenset',
-        'test_math_atanh_int',
-        'test_math_atanh_list',
-        'test_math_atanh_None',
-        'test_math_atanh_NotImplemented',
-        'test_math_atanh_range',
-        'test_math_atanh_set',
-        'test_math_atanh_slice',
-        'test_math_atanh_str',
-        'test_math_atanh_tuple',
 
-        'test_math_ceil_bytearray',
-        'test_math_ceil_bytes',
-        'test_math_ceil_class',
-        'test_math_ceil_complex',
-        'test_math_ceil_dict',
         'test_math_ceil_frozenset',
-        'test_math_ceil_int',
-        'test_math_ceil_list',
-        'test_math_ceil_None',
-        'test_math_ceil_NotImplemented',
-        'test_math_ceil_range',
-        'test_math_ceil_set',
-        'test_math_ceil_slice',
-        'test_math_ceil_str',
-        'test_math_ceil_tuple',
 
-        'test_math_cos_bytearray',
-        'test_math_cos_bytes',
-        'test_math_cos_class',
-        'test_math_cos_complex',
-        'test_math_cos_dict',
         'test_math_cos_frozenset',
-        'test_math_cos_list',
-        'test_math_cos_None',
-        'test_math_cos_NotImplemented',
-        'test_math_cos_range',
-        'test_math_cos_set',
-        'test_math_cos_slice',
-        'test_math_cos_str',
-        'test_math_cos_tuple',
 
-        'test_math_cosh_bytearray',
-        'test_math_cosh_bytes',
-        'test_math_cosh_class',
-        'test_math_cosh_complex',
-        'test_math_cosh_dict',
         'test_math_cosh_frozenset',
-        'test_math_cosh_int',
-        'test_math_cosh_list',
-        'test_math_cosh_None',
-        'test_math_cosh_NotImplemented',
-        'test_math_cosh_range',
-        'test_math_cosh_set',
-        'test_math_cosh_slice',
-        'test_math_cosh_str',
-        'test_math_cosh_tuple',
 
-        'test_math_exp_bytearray',
-        'test_math_exp_bytes',
-        'test_math_exp_class',
-        'test_math_exp_complex',
-        'test_math_exp_dict',
         'test_math_exp_frozenset',
-        'test_math_exp_int',
-        'test_math_exp_list',
-        'test_math_exp_None',
-        'test_math_exp_NotImplemented',
-        'test_math_exp_range',
-        'test_math_exp_set',
-        'test_math_exp_slice',
-        'test_math_exp_str',
-        'test_math_exp_tuple',
 
-        'test_math_expm1_bytearray',
-        'test_math_expm1_bytes',
-        'test_math_expm1_class',
-        'test_math_expm1_complex',
-        'test_math_expm1_dict',
         'test_math_expm1_frozenset',
-        'test_math_expm1_int',
-        'test_math_expm1_list',
-        'test_math_expm1_None',
-        'test_math_expm1_NotImplemented',
-        'test_math_expm1_range',
-        'test_math_expm1_set',
-        'test_math_expm1_slice',
-        'test_math_expm1_str',
-        'test_math_expm1_tuple',
 
-        'test_math_floor_bytearray',
-        'test_math_floor_bytes',
-        'test_math_floor_class',
-        'test_math_floor_complex',
-        'test_math_floor_dict',
         'test_math_floor_frozenset',
-        'test_math_floor_int',
-        'test_math_floor_list',
-        'test_math_floor_None',
-        'test_math_floor_NotImplemented',
-        'test_math_floor_range',
-        'test_math_floor_set',
-        'test_math_floor_slice',
-        'test_math_floor_str',
-        'test_math_floor_tuple',
 
-        'test_math_log_bool',
         'test_math_log_bool_frozenset',
-        'test_math_log_bytearray',
         'test_math_log_bytearray_frozenset',
-        'test_math_log_bytes',
         'test_math_log_bytes_frozenset',
-        'test_math_log_class',
         'test_math_log_class_frozenset',
-        'test_math_log_complex',
         'test_math_log_complex_frozenset',
-        'test_math_log_dict',
         'test_math_log_dict_frozenset',
-        'test_math_log_float',
         'test_math_log_float_frozenset',
+        'test_math_log_float_int',
         'test_math_log_frozenset',
         'test_math_log_frozenset_bool',
         'test_math_log_frozenset_bytearray',
@@ -323,77 +150,30 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_log_frozenset_str',
         'test_math_log_frozenset_tuple',
         'test_math_log_int',
+        'test_math_log_int_float',
         'test_math_log_int_int',
         'test_math_log_int_frozenset',
-        'test_math_log_list',
         'test_math_log_list_frozenset',
-        'test_math_log_None',
         'test_math_log_None_frozenset',
-        'test_math_log_NotImplemented',
         'test_math_log_NotImplemented_frozenset',
-        'test_math_log_range',
         'test_math_log_range_frozenset',
-        'test_math_log_set',
         'test_math_log_set_frozenset',
-        'test_math_log_slice',
         'test_math_log_slice_frozenset',
-        'test_math_log_str',
         'test_math_log_str_frozenset',
-        'test_math_log_tuple',
         'test_math_log_tuple_frozenset',
 
         'test_math_log10_bool',
-        'test_math_log10_bytearray',
-        'test_math_log10_bytes',
-        'test_math_log10_class',
-        'test_math_log10_complex',
-        'test_math_log10_dict',
         'test_math_log10_float',
         'test_math_log10_frozenset',
         'test_math_log10_int',
-        'test_math_log10_list',
-        'test_math_log10_None',
-        'test_math_log10_NotImplemented',
-        'test_math_log10_range',
-        'test_math_log10_set',
-        'test_math_log10_slice',
-        'test_math_log10_str',
-        'test_math_log10_tuple',
 
-        'test_math_log1p_bytearray',
-        'test_math_log1p_bytes',
-        'test_math_log1p_class',
-        'test_math_log1p_complex',
-        'test_math_log1p_dict',
         'test_math_log1p_float',
         'test_math_log1p_frozenset',
         'test_math_log1p_int',
-        'test_math_log1p_list',
-        'test_math_log1p_None',
-        'test_math_log1p_NotImplemented',
-        'test_math_log1p_range',
-        'test_math_log1p_set',
-        'test_math_log1p_slice',
-        'test_math_log1p_str',
-        'test_math_log1p_tuple',
 
-        'test_math_log2_bool',
-        'test_math_log2_bytearray',
-        'test_math_log2_bytes',
-        'test_math_log2_class',
-        'test_math_log2_complex',
-        'test_math_log2_dict',
         'test_math_log2_float',
         'test_math_log2_frozenset',
         'test_math_log2_int',
-        'test_math_log2_list',
-        'test_math_log2_None',
-        'test_math_log2_NotImplemented',
-        'test_math_log2_range',
-        'test_math_log2_set',
-        'test_math_log2_slice',
-        'test_math_log2_str',
-        'test_math_log2_tuple',
 
         'test_math_pow_bool_frozenset',
         'test_math_pow_bytearray_frozenset',
@@ -420,7 +200,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_pow_frozenset_str',
         'test_math_pow_frozenset_tuple',
         'test_math_pow_int_frozenset',
-        'test_math_pow_int_int',
         'test_math_pow_list_frozenset',
         'test_math_pow_None_frozenset',
         'test_math_pow_NotImplemented_frozenset',
@@ -430,84 +209,15 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_pow_str_frozenset',
         'test_math_pow_tuple_frozenset',
 
-        'test_math_sin_bytearray',
-        'test_math_sin_bytes',
-        'test_math_sin_class',
-        'test_math_sin_complex',
-        'test_math_sin_dict',
         'test_math_sin_frozenset',
-        'test_math_sin_list',
-        'test_math_sin_None',
-        'test_math_sin_NotImplemented',
-        'test_math_sin_range',
-        'test_math_sin_set',
-        'test_math_sin_slice',
-        'test_math_sin_str',
-        'test_math_sin_tuple',
 
-        'test_math_sinh_bytearray',
-        'test_math_sinh_bytes',
-        'test_math_sinh_class',
-        'test_math_sinh_complex',
-        'test_math_sinh_dict',
         'test_math_sinh_frozenset',
-        'test_math_sinh_int',
-        'test_math_sinh_list',
-        'test_math_sinh_None',
-        'test_math_sinh_NotImplemented',
-        'test_math_sinh_range',
-        'test_math_sinh_set',
-        'test_math_sinh_slice',
-        'test_math_sinh_str',
-        'test_math_sinh_tuple',
 
-        'test_math_sqrt_bytearray',
-        'test_math_sqrt_bytes',
-        'test_math_sqrt_class',
-        'test_math_sqrt_complex',
-        'test_math_sqrt_dict',
-        'test_math_sqrt_float',
         'test_math_sqrt_frozenset',
-        'test_math_sqrt_int',
-        'test_math_sqrt_list',
-        'test_math_sqrt_None',
-        'test_math_sqrt_NotImplemented',
-        'test_math_sqrt_range',
-        'test_math_sqrt_set',
-        'test_math_sqrt_slice',
-        'test_math_sqrt_str',
-        'test_math_sqrt_tuple',
 
-        'test_math_tan_bytearray',
-        'test_math_tan_bytes',
-        'test_math_tan_class',
-        'test_math_tan_complex',
-        'test_math_tan_dict',
         'test_math_tan_frozenset',
-        'test_math_tan_list',
-        'test_math_tan_None',
-        'test_math_tan_NotImplemented',
-        'test_math_tan_range',
-        'test_math_tan_set',
-        'test_math_tan_slice',
-        'test_math_tan_str',
-        'test_math_tan_tuple',
 
-        'test_math_tanh_bytearray',
-        'test_math_tanh_bytes',
-        'test_math_tanh_class',
-        'test_math_tanh_complex',
-        'test_math_tanh_dict',
         'test_math_tanh_frozenset',
-        'test_math_tanh_int',
-        'test_math_tanh_list',
-        'test_math_tanh_None',
-        'test_math_tanh_NotImplemented',
-        'test_math_tanh_range',
-        'test_math_tanh_set',
-        'test_math_tanh_slice',
-        'test_math_tanh_str',
-        'test_math_tanh_tuple',
     ]
 
     def test_constants(self):
@@ -518,3 +228,52 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.nan)
             print(math.pi)
             """)
+
+    def test_docstrings(self):
+        self.assertCodeExecution("""
+        import math
+        print(math.acos.__doc__)
+        print(math.acosh.__doc__)
+        print(math.asin.__doc__)
+        print(math.asinh.__doc__)
+        print(math.atan.__doc__)
+        print(math.atan2.__doc__)
+        print(math.atanh.__doc__)
+        print(math.ceil.__doc__)
+        print(math.copysign.__doc__)
+        print(math.cos.__doc__)
+        print(math.cosh.__doc__)
+        print(math.degrees.__doc__)
+        print(math.erf.__doc__)
+        print(math.erfc.__doc__)
+        print(math.exp.__doc__)
+        print(math.expm1.__doc__)
+        print(math.fabs.__doc__)
+        print(math.factorial.__doc__)
+        print(math.floor.__doc__)
+        print(math.fmod.__doc__)
+        print(math.frexp.__doc__)
+        print(math.fsum.__doc__)
+        print(math.gamma.__doc__)
+        print(math.gcd.__doc__)
+        print(math.hypot.__doc__)
+        print(math.isclose.__doc__)
+        print(math.isfinite.__doc__)
+        print(math.isinf.__doc__)
+        print(math.isnan.__doc__)
+        print(math.ldexp.__doc__)
+        print(math.lgamma.__doc__)
+        print(math.log.__doc__)
+        print(math.log10.__doc__)
+        print(math.log1p.__doc__)
+        print(math.log2.__doc__)
+        print(math.modf.__doc__)
+        print(math.pow.__doc__)
+        print(math.radians.__doc__)
+        print(math.sin.__doc__)
+        print(math.sinh.__doc__)
+        print(math.sqrt.__doc__)
+        print(math.tan.__doc__)
+        print(math.tanh.__doc__)
+        print(math.trunc.__doc__)
+        """)

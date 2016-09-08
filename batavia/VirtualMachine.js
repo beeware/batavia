@@ -1317,10 +1317,13 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
             }(val);
         } else {
             // Native javascript method
+            var doc = val.__doc__;
             val = function(fn) {
-                return function(args, kwargs) {
+                var f = function(args, kwargs) {
                     return fn.apply(obj, args);
                 };
+                f.__doc__ = doc;
+                return f;
             }(val);
         }
     }
