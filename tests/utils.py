@@ -692,6 +692,8 @@ SAMPLE_DATA = {
         ],
     'frozenset': [
             'frozenset()',
+            'frozenset([1])',
+            # 'frozenset({"1"})', this reveals some bugs in our code
             'frozenset({1, 2.3456, "another"})',
         ],
     'int': [
