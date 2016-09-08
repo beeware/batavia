@@ -27,12 +27,12 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
         # 'atan2', # commented out because they take too long in CircleCI
+        # 'copysign',
         # 'log',
         # 'pow',
     ])
 
     TODO = [
-        'copysign',
         'degrees',
         'erf',
         'erfc',
@@ -112,6 +112,40 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_atanh_frozenset',
 
         'test_math_ceil_frozenset',
+
+        'test_math_copysign_bool_frozenset',
+        'test_math_copysign_bytearray_frozenset',
+        'test_math_copysign_bytes_frozenset',
+        'test_math_copysign_class_frozenset',
+        'test_math_copysign_complex_frozenset',
+        'test_math_copysign_dict_frozenset',
+        'test_math_copysign_float_frozenset',
+        'test_math_copysign_frozenset_bool',
+        'test_math_copysign_frozenset_bytearray',
+        'test_math_copysign_frozenset_bytes',
+        'test_math_copysign_frozenset_class',
+        'test_math_copysign_frozenset_complex',
+        'test_math_copysign_frozenset_dict',
+        'test_math_copysign_frozenset_float',
+        'test_math_copysign_frozenset_frozenset',
+        'test_math_copysign_frozenset_int',
+        'test_math_copysign_frozenset_list',
+        'test_math_copysign_frozenset_None',
+        'test_math_copysign_frozenset_NotImplemented',
+        'test_math_copysign_frozenset_range',
+        'test_math_copysign_frozenset_set',
+        'test_math_copysign_frozenset_slice',
+        'test_math_copysign_frozenset_str',
+        'test_math_copysign_frozenset_tuple',
+        'test_math_copysign_int_frozenset',
+        'test_math_copysign_list_frozenset',
+        'test_math_copysign_None_frozenset',
+        'test_math_copysign_NotImplemented_frozenset',
+        'test_math_copysign_range_frozenset',
+        'test_math_copysign_set_frozenset',
+        'test_math_copysign_slice_frozenset',
+        'test_math_copysign_str_frozenset',
+        'test_math_copysign_tuple_frozenset',
 
         'test_math_cos_frozenset',
 

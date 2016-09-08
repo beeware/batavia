@@ -71,8 +71,15 @@ batavia.modules.math = {
         return new batavia.types.Int(Math.ceil(x.__float__().val));
     },
 
-    copysign: function() {
-        throw new batavia.builtins.NotImplementedError("math.copysign has not been implemented");
+    copysign: function(x, y) {
+        batavia.modules.math._checkFloat(y);
+        batavia.modules.math._checkFloat(x);
+        var yy = y.__float__().val;
+        var xx = x.__float__().val;
+        if ((xx >= 0) != (yy >= 0)) {
+            return x.__float__().__neg__();
+        }
+        return x;
     },
 
     cos: function(x) {
