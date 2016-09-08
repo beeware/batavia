@@ -17,6 +17,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'erf',
         'erfc',
         'fabs',
+        'factorial',
         'floor',
         'log',
         'log10',
@@ -38,7 +39,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     TODO = [
-        'factorial',
         'fmod',
         'frexp',
         'fsum',
@@ -162,6 +162,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_expm1_frozenset',
 
         'test_math_fabs_frozenset',
+
+        'test_math_factorial_frozenset',
 
         'test_math_floor_frozenset',
 

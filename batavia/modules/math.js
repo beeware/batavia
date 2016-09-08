@@ -213,8 +213,61 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.abs(x.__float__().val));
     },
 
-    factorial: function() {
-        throw new batavia.builtins.NotImplementedError("math.factorial has not been implemented");
+    // efficiently multiply all of the bignumbers in the list together, returning the product
+    _mul_list: function(l, start, end) {
+        var len = end - start + 1;
+        if (len == 0) {
+            return new batavia.vendored.BigNumber(1);
+        } else if (len == 1) {
+            return l[start];
+        } else if (len == 2) {
+            return l[start].mul(l[start + 1]);
+        } else if (len == 3) {
+            return l[start].mul(l[start + 1]).mul(l[start + 2]);
+        }
+
+        // split into halves and recurse
+        var mid = Math.round(start + len/2);
+        var a = batavia.modules.math._mul_list(l, start, mid);
+        var b = batavia.modules.math._mul_list(l, mid + 1, end);
+        return a.mul(b);
+    },
+
+    factorial: function(x) {
+        var num;
+
+        if (batavia.isinstance(x, batavia.types.Int)) {
+            num = x.val;
+        } else if (batavia.isinstance(x, batavia.types.Float)) {
+            if (!x.is_integer().valueOf()) {
+                throw new batavia.builtins.ValueError("factorial() only accepts integral values");
+            }
+            num = new batavia.vendored.BigNumber(x.valueOf());
+        } else if (batavia.isinstance(x, batavia.types.Bool)) {
+            return new batavia.types.Int(1);
+        } else if (batavia.isinstance(x, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't convert complex to int");
+        } else if (x == null) {
+            throw new batavia.builtins.TypeError("an integer is required (got type NoneType)");
+        } else {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + x.__class__.__name__ + ")");
+        }
+
+        if (num.isNegative()) {
+            throw new batavia.builtins.ValueError("factorial() not defined for negative values");
+        }
+
+        if (num.isZero()) {
+            return new batavia.types.Int(1);
+        }
+
+        // a basic pyramid multiplication
+        var nums = [];
+        while (!num.isZero()) {
+            nums.push(num);
+            num = num.sub(1);
+        }
+        return new batavia.types.Int(batavia.modules.math._mul_list(nums, 0, nums.length - 1));
     },
 
     floor: function(x) {

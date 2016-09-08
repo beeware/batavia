@@ -1178,13 +1178,18 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
             )
 
 
-def _module_one_arg_func_test(name, module, f,  examples):
+def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
+    # Factorials can make us run out of memory and crash.
+    # so we have this dirty hack
+    actuals = examples
+    if small_ints and name.endswith('_int'):
+        actuals = [x for x in examples if abs(int(x)) < 8192]
     def func(self):
         self.assertOneArgModuleFuction(
             name=name,
             module=module,
             func=f,
-            x_values=examples,
+            x_values=actuals,
             substitutions=SAMPLE_SUBSTITUTIONS
         )
     return func
@@ -1274,7 +1279,8 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
         for func in functions:
             for datatype, examples in SAMPLE_DATA.items():
                 name = 'test_%s_%s_%s' % (module, func, datatype)
-                setattr(self, name, _module_one_arg_func_test(name, 'math', func, examples))
+                small_ints = module == 'math' and func == 'factorial'
+                setattr(self, name, _module_one_arg_func_test(name, 'math', func, examples, small_ints=small_ints))
 
     @classmethod
     def add_two_arg_tests(self, module, functions):
