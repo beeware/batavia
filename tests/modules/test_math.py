@@ -21,6 +21,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'floor',
         'frexp',
         'fsum',
+        'gamma',
+        'lgamma',
         'log',
         'log10',
         'log1p',
@@ -42,7 +44,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     TODO = [
-        'gamma',
         'gcd',
         'hypot',
         'isclose',
@@ -50,7 +51,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'isinf',
         'isnan',
         'ldexp',
-        'lgamma',
         'modf',
         'trunc',
     ]

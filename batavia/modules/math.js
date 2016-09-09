@@ -328,9 +328,117 @@ batavia.modules.math = {
         return new batavia.types.Float(sum);
     },
 
-    gamma: function() {
-        throw new batavia.builtins.NotImplementedError("math.gamma has not been implemented");
-    },
+    gamma: function(x) {
+        // adapted from public domain code at http://picomath.org/javascript/gamma.js.html
+
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+
+        if (xx <= 0.0) {
+            if (Number.isInteger(xx)) {
+                throw new batavia.builtins.ValueError('math domain error');
+            }
+            // analytic continuation using reflection formula
+            // gamma(z) * gamma(1-z) = pi / sin(pi * z)
+            return new batavia.types.Float(Math.PI / Math.sin(Math.PI * xx) / batavia.modules.math.gamma(new batavia.types.Float(1 - xx)));
+        }
+
+        // Split the function domain into three intervals:
+        // (0, 0.001), [0.001, 12), and (12, infinity)
+
+        ///////////////////////////////////////////////////////////////////////////
+        // First interval: (0, 0.001)
+        //
+        // For small x, 1/Gamma(x) has power series x + gamma x^2  - ...
+        // So in this range, 1/Gamma(x) = x + gamma x^2 with error on the order of x^3.
+        // The relative error over this interval is less than 6e-7.
+
+        var gamma = 0.577215664901532860606512090; // Euler's gamma constant
+
+        if (xx < 0.001) {
+            return new batavia.types.Float(1.0 / (x * (1.0 + gamma * x)));
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Second interval: [0.001, 12)
+
+        if (xx < 12.0) {
+            // The algorithm directly approximates gamma over (1,2) and uses
+            // reduction identities to reduce other arguments to this interval.
+            var y = xx;
+            var n = 0;
+            var arg_was_less_than_one = (y < 1.0);
+
+            // Add or subtract integers as necessary to bring y into (1,2)
+            // Will correct for this below
+            if (arg_was_less_than_one) {
+              y += 1.0;
+            } else {
+                n = Math.floor(y) - 1;  // will use n later
+                y -= n;
+            }
+
+            // numerator coefficients for approximation over the interval (1,2)
+            var p =
+            [
+                -1.71618513886549492533811E+0,
+                 2.47656508055759199108314E+1,
+                -3.79804256470945635097577E+2,
+                 6.29331155312818442661052E+2,
+                 8.66966202790413211295064E+2,
+                -3.14512729688483675254357E+4,
+                -3.61444134186911729807069E+4,
+                 6.64561438202405440627855E+4
+            ];
+            // denominator coefficients for approximation over the interval (1,2)
+            var q =
+            [
+                -3.08402300119738975254353E+1,
+                 3.15350626979604161529144E+2,
+                -1.01515636749021914166146E+3,
+                -3.10777167157231109440444E+3,
+                 2.25381184209801510330112E+4,
+                 4.75584627752788110767815E+3,
+                -1.34659959864969306392456E+5,
+                -1.15132259675553483497211E+5
+            ];
+
+            var num = 0.0;
+            var den = 1.0;
+
+            var z = y - 1;
+            for (i = 0; i < 8; i++) {
+                num = (num + p[i]) * z;
+                den = den * z + q[i];
+            }
+            var result = num / den + 1.0;
+
+            // Apply correction if argument was not initially in (1,2)
+            if (arg_was_less_than_one) {
+                // Use identity gamma(z) = gamma(z+1)/z
+                // The variable "result" now holds gamma of the original y + 1
+                // Thus we use y-1 to get back the orginal y.
+                result /= (y - 1.0);
+            } else {
+                // Use the identity gamma(z+n) = z*(z+1)* ... *(z+n-1)*gamma(z)
+                for (i = 0; i < n; i++) {
+                    result *= y++;
+                }
+           }
+
+           return new batavia.types.Float(result);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Third interval: [12, infinity)
+
+        if (xx > 171.624) {
+            // Correct answer too large to display.
+            throw new batavia.builtins.OverflowError("math range error");
+        }
+
+        return batavia.modules.math.exp(batavia.modules.math.lgamma(x));
+     },
 
     gcd: function() {
         throw new batavia.builtins.NotImplementedError("math.gcd has not been implemented");
@@ -362,8 +470,54 @@ batavia.modules.math = {
         throw new batavia.builtins.NotImplementedError("math.ldexp has not been implemented");
     },
 
-    lgamma: function() {
-        throw new batavia.builtins.NotImplementedError("math.lgamma has not been implemented");
+    lgamma: function(x) {
+        // adapted from public domain code at http://picomath.org/javascript/gamma.js.html
+
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+
+        if (xx <= 0.0) {
+            if (Number.isInteger(xx)) {
+                throw new batavia.builtins.ValueError('math domain error');
+            }
+            // analytic continuation using reflection formula
+            // gamma(z) * gamma(1-z) = pi / sin(pi * z)
+            // lgamma(z) + lgamma(1-z) = log(pi / sin |pi * z|)
+            return new batavia.types.Float(Math.log(Math.abs(Math.PI / Math.sin(Math.PI * xx))) - batavia.modules.math.lgamma(new batavia.types.Float(1 - xx)));
+        }
+
+        if (xx < 12.0) {
+            var gx = batavia.modules.math.gamma(x).val;
+            return new batavia.types.Float(Math.log(Math.abs(gx)));
+        }
+
+        // Abramowitz and Stegun 6.1.41
+        // Asymptotic series should be good to at least 11 or 12 figures
+        // For error analysis, see Whittiker and Watson
+        // A Course in Modern Analysis (1927), page 252
+
+        var c =
+        [
+             1.0/12.0,
+            -1.0/360.0,
+             1.0/1260.0,
+            -1.0/1680.0,
+             1.0/1188.0,
+            -691.0/360360.0,
+             1.0/156.0,
+            -3617.0/122400.0
+        ];
+        var z = 1.0 / (xx * xx);
+        var sum = c[7];
+        for (var i = 6; i >= 0; i--) {
+            sum *= z;
+            sum += c[i];
+        }
+        var series = sum / xx;
+
+        var halfLogTwoPi = 0.91893853320467274178032973640562;
+        var logGamma = (xx - 0.5) * Math.log(xx) - xx + halfLogTwoPi + series;
+        return new batavia.types.Float(logGamma);
     },
 
     log: function(x, base) {
