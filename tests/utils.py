@@ -795,13 +795,21 @@ SAMPLE_SUBSTITUTIONS = {
         "{'d': 'another', 'a': 1, 'c': 2.3456}",
         "{'d': 'another', 'c': 2.3456, 'a': 1}",
     ],
-    # Normalize set to list error
+    # Normalize set to list ordering
     "[1, 2.3456, 'another']": [
         "[1, 'another', 2.3456]",
         "[2.3456, 1, 'another']",
         "['another', 1, 2.3456]",
         "['another', 2.3456, 1]",
         "[2.3456, 'another', 1]",
+    ],
+    # Normalize set to tuple ordering
+    "(1, 2.3456, 'another')": [
+        "(1, 'another', 2.3456)",
+        "(2.3456, 1, 'another')",
+        "('another', 1, 2.3456)",
+        "('another', 2.3456, 1)",
+        "(2.3456, 'another', 1)",
     ],
     # Normalize precision error
     "-0.00000265358979335273": ["-2.65358979335273e-6",],
