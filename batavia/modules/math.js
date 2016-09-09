@@ -316,8 +316,16 @@ batavia.modules.math = {
         return new batavia.types.Tuple([new batavia.types.Float(num), new batavia.types.Int(exp)]);
     },
 
-    fsum: function() {
-        throw new batavia.builtins.NotImplementedError("math.fsum has not been implemented");
+    fsum: function(iterable) {
+        var iterobj = batavia.builtins.iter([iterable], null);
+        var sum = 0.0;
+        batavia.iter_for_each(iterobj, function(val) {
+            if (!batavia.isinstance(val, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+                throw new batavia.builtins.TypeError('a float is required');
+            }
+            sum += val.__float__().val;
+        });
+        return new batavia.types.Float(sum);
     },
 
     gamma: function() {

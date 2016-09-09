@@ -20,6 +20,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'factorial',
         'floor',
         'frexp',
+        'fsum',
         'log',
         'log10',
         'log1p',
@@ -41,7 +42,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
     ])
 
     TODO = [
-        'fsum',
         'gamma',
         'gcd',
         'hypot',
@@ -67,6 +67,13 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_asinh_float',
         'test_math_asinh_int',
+
+        'test_math_fsum_NotImplemented',
+        'test_math_fsum_bytearray',
+        'test_math_fsum_bytes',
+        'test_math_fsum_complex',
+        'test_math_fsum_dict',
+        'test_math_fsum_range',
     ]
 
     def test_constants(self):
