@@ -1035,7 +1035,7 @@ batavia.builtins.set = function(args,kwargs) {
     if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
     }
-	  return new batavia.types.Set(args[0]);
+    return new batavia.types.Set(args[0]);
 };
 batavia.builtins.set.__doc__ = 'set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.';
 
