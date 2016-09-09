@@ -44,7 +44,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__iter__ = function() {
-        return new Set.prototype.SetIterator(this);
+        return new batavia.types.SetIterator(this);
     };
 
     Set.prototype.__repr__ = function() {
@@ -335,33 +335,6 @@ batavia.types.Set = function() {
                 this[values[value]] = values[value];
             }
         }
-    };
-
-    /**************************************************
-     * Set Iterator
-     **************************************************/
-
-    Set.prototype.SetIterator = function (data) {
-        Object.call(this);
-        this.index = 0;
-        this.data = data;
-        this.keys = Object.keys(data);
-    };
-
-    Set.prototype.SetIterator.prototype = Object.create(Object.prototype);
-
-    Set.prototype.SetIterator.prototype.__next__ = function() {
-        var key = this.keys[this.index];
-        if (key === undefined) {
-            throw new batavia.builtins.StopIteration();
-        }
-        var retval = this.data[key];
-        this.index++;
-        return retval;
-    };
-
-    Set.prototype.SetIterator.prototype.__str__ = function() {
-        return "<set_iterator object at 0x99999999>";
     };
 
     /**************************************************/

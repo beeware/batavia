@@ -44,7 +44,7 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__iter__ = function() {
-        return new FrozenSet.prototype.SetIterator(this);
+        return new batavia.types.SetIterator(this);
     };
 
     FrozenSet.prototype.__repr__ = function() {
@@ -235,33 +235,6 @@ batavia.types.FrozenSet = function() {
 
     FrozenSet.prototype.__or__ = function(other) {
         throw new batavia.builtins.NotImplementedError("FrozenSet.__or__ has not been implemented");
-    };
-
-    /**************************************************
-     * Set Iterator
-     **************************************************/
-
-    FrozenSet.prototype.SetIterator = function (data) {
-        Object.call(this);
-        this.index = 0;
-        this.data = data;
-        this.keys = Object.keys(data);
-    };
-
-    FrozenSet.prototype.SetIterator.prototype = Object.create(Object.prototype);
-
-    FrozenSet.prototype.SetIterator.prototype.__next__ = function() {
-        var key = this.keys[this.index];
-        if (key === undefined) {
-            throw new batavia.builtins.StopIteration();
-        }
-        var retval = this.data[key];
-        this.index++;
-        return retval;
-    };
-
-    FrozenSet.prototype.SetIterator.prototype.__str__ = function() {
-        return "<set_iterator object at 0x99999999>";
     };
 
     /**************************************************/
