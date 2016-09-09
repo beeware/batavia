@@ -71,8 +71,15 @@ batavia.modules.math = {
         return new batavia.types.Int(Math.ceil(x.__float__().val));
     },
 
-    copysign: function() {
-        throw new batavia.builtins.NotImplementedError("math.copysign has not been implemented");
+    copysign: function(x, y) {
+        batavia.modules.math._checkFloat(y);
+        batavia.modules.math._checkFloat(x);
+        var yy = y.__float__().val;
+        var xx = x.__float__().val;
+        if ((xx >= 0) != (yy >= 0)) {
+            return x.__float__().__neg__();
+        }
+        return x;
     },
 
     cos: function(x) {
@@ -89,16 +96,98 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.cosh(x.__float__().val));
     },
 
-    degrees: function() {
-        throw new batavia.builtins.NotImplementedError("math.degrees has not been implemented");
+    degrees: function(x) {
+        batavia.modules.math._checkFloat(x);
+        // multiply by 180 / math.pi
+        return new batavia.types.Float(x.__float__().val * 57.295779513082322865);
     },
 
-    erf: function() {
-        throw new batavia.builtins.NotImplementedError("math.erf has not been implemented");
+    // taylor series expansion for erf(x)
+    _erf_series: function(x) {
+        // From CPython docs:
+        //
+        // erf(x) = x*exp(-x*x)/sqrt(pi) * [
+        //                    2/1 + 4/3 x**2 + 8/15 x**4 + 16/105 x**6 + ...]
+        // x**(2k-2) here is 4**k*factorial(k)/factorial(2*k)
+        var y = 2.0;
+        var num = 4;
+        var denom = 2;
+        var xk = 1;
+        // CPython uses 25 terms.
+        for (var i = 2; i < 26; i++) {
+            num *= 4;
+            num *= i;
+            for (var j = 2 * (i - 1) + 1; j <= 2 * i; j++) {
+              denom *= j;
+            }
+            xk *= x * x;
+            y += xk * num / denom;
+        }
+        return y * x * Math.exp(-x * x) / Math.sqrt(Math.PI);
     },
 
-    erfc: function() {
-        throw new batavia.builtins.NotImplementedError("math.erfc has not been implemented");
+    // continued fraction expansion of 1 - erf(x)
+    _erfc_cfrac: function(x) {
+        // From CPython docs:
+        //
+        // erfc(x) = x*exp(-x*x)/sqrt(pi) * [1/(0.5 + x**2 -) 0.5/(2.5 + x**2 - )
+        //                               3.0/(4.5 + x**2 - ) 7.5/(6.5 + x**2 - ) ...]
+        //
+        //    after the first term, the general term has the form:
+        //
+        //       k*(k-0.5)/(2*k+0.5 + x**2 - ...).
+
+        if (x > 30.0) {
+            return 0.0;
+        }
+
+        var p_n = 1;
+        var p_n_1 = 0.0;
+        var q_n = 0.5 + x * x;
+        var q_n_1 = 1.0;
+        var a = 0.0;
+        var coeff = 0.5;
+
+        // CPython uses 50 terms.
+        for (var k = 0; k < 50; k++) {
+            a += coeff;
+            coeff += 2;
+            var b = coeff + x * x;
+
+            var t = p_n;
+            p_n = b * p_n - a * p_n_1;
+            p_n_1 = t;
+
+            t = q_n;
+            q_n = b * q_n - a * q_n_1;
+            q_n_1 = t;
+        }
+        return p_n / q_n * x * Math.exp(-x * x) / Math.sqrt(Math.PI);
+    },
+
+    erf: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        // Save the sign of x
+        var sign = 1;
+        if (xx < 0) {
+            sign = -1;
+        }
+        xx = Math.abs(x);
+
+        var CUTOFF = 1.5;
+        var result;
+        if (xx < 1.5) {
+            result = batavia.modules.math._erf_series(xx);
+        } else {
+            result = 1.0 - batavia.modules.math._erfc_cfrac(xx);
+        }
+        return new batavia.types.Float(sign * result);
+    },
+
+    erfc: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(1.0 - batavia.modules.math.erf(x).val);
     },
 
     exp: function(x) {
@@ -119,12 +208,66 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.expm1(x.__float__().val));
     },
 
-    fabs: function() {
-        throw new batavia.builtins.NotImplementedError("math.fabs has not been implemented");
+    fabs: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(Math.abs(x.__float__().val));
     },
 
-    factorial: function() {
-        throw new batavia.builtins.NotImplementedError("math.factorial has not been implemented");
+    // efficiently multiply all of the bignumbers in the list together, returning the product
+    _mul_list: function(l, start, end) {
+        var len = end - start + 1;
+        if (len == 0) {
+            return new batavia.vendored.BigNumber(1);
+        } else if (len == 1) {
+            return l[start];
+        } else if (len == 2) {
+            return l[start].mul(l[start + 1]);
+        } else if (len == 3) {
+            return l[start].mul(l[start + 1]).mul(l[start + 2]);
+        }
+
+        // split into halves and recurse
+        var mid = Math.round(start + len/2);
+        var a = batavia.modules.math._mul_list(l, start, mid);
+        var b = batavia.modules.math._mul_list(l, mid + 1, end);
+        return a.mul(b);
+    },
+
+    factorial: function(x) {
+        var num;
+
+        if (batavia.isinstance(x, batavia.types.Int)) {
+            num = x.val;
+        } else if (batavia.isinstance(x, batavia.types.Float)) {
+            if (!x.is_integer().valueOf()) {
+                throw new batavia.builtins.ValueError("factorial() only accepts integral values");
+            }
+            num = new batavia.vendored.BigNumber(x.valueOf());
+        } else if (batavia.isinstance(x, batavia.types.Bool)) {
+            return new batavia.types.Int(1);
+        } else if (batavia.isinstance(x, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't convert complex to int");
+        } else if (x == null) {
+            throw new batavia.builtins.TypeError("an integer is required (got type NoneType)");
+        } else {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + x.__class__.__name__ + ")");
+        }
+
+        if (num.isNegative()) {
+            throw new batavia.builtins.ValueError("factorial() not defined for negative values");
+        }
+
+        if (num.isZero()) {
+            return new batavia.types.Int(1);
+        }
+
+        // a basic pyramid multiplication
+        var nums = [];
+        while (!num.isZero()) {
+            nums.push(num);
+            num = num.sub(1);
+        }
+        return new batavia.types.Int(batavia.modules.math._mul_list(nums, 0, nums.length - 1));
     },
 
     floor: function(x) {
@@ -135,12 +278,42 @@ batavia.modules.math = {
         return new batavia.types.Int(Math.floor(x.__float__().val));
     },
 
-    fmod: function() {
-        throw new batavia.builtins.NotImplementedError("math.fmod has not been implemented");
+    fmod: function(x, y) {
+        batavia.modules.math._checkFloat(y);
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Float(x.__float__().val % y.__float__().val);
     },
 
-    frexp: function() {
-        throw new batavia.builtins.NotImplementedError("math.frexp has not been implemented");
+    frexp: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        // check for 0, -0, NaN, Inf, -Inf
+        if (xx === 0 || !isFinite(xx)) {
+            return new batavia.types.Tuple([x.__float__(), new batavia.types.Int(0)]);
+        }
+        var buff = new batavia.vendored.buffer.Buffer(8);
+        buff.writeDoubleLE(x, 0);
+        var a = buff.readUInt32LE(0);
+        var b = buff.readUInt32LE(4);
+        var exp = ((b >> 20) & 0x7ff) - 1022;
+        var num;
+        // check for denormal number
+        if (exp == -1022) {
+            // each leading zero increases the exponent
+            num = (b & 0xfffff) * 4294967296 + a;
+            while ((num != 0) && (num < 0x8000000000000)) {
+                exp--;
+                num *= 2;
+            }
+            num = num / 0x10000000000000;
+        } else {
+          num = 0x10000000000000 + (b & 0xfffff) * 4294967296 + a;
+          num = num / 0x20000000000000;
+        }
+        if (b >> 31) {
+            num = -num;
+        }
+        return new batavia.types.Tuple([new batavia.types.Float(num), new batavia.types.Int(exp)]);
     },
 
     fsum: function() {
@@ -263,8 +436,10 @@ batavia.modules.math = {
         return new batavia.types.Float(result);
     },
 
-    radians: function() {
-        throw new batavia.builtins.NotImplementedError("math.radians has not been implemented");
+    radians: function(x) {
+        batavia.modules.math._checkFloat(x);
+        // multiply by math.pi / 180
+        return new batavia.types.Float(x.__float__().val * 0.017453292519943295);
     },
 
     sin: function(x) {

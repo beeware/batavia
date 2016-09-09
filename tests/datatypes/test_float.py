@@ -20,6 +20,13 @@ class FloatTests(TranspileTestCase):
             print('Done.')
             """)
 
+    def test_is_integer(self):
+        self.assertCodeExecution("""
+            print(3.14159.is_integer())
+            print(3.0.is_integer())
+            print('Done.')
+            """)
+
 
 class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'float'

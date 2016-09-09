@@ -432,6 +432,10 @@ batavia.types.Float = function() {
         return new Float(this.valueOf());
     };
 
+    Float.prototype.is_integer = function() {
+        return new batavia.types.Bool(Number.isInteger(this.valueOf()));
+    }
+
     /**************************************************/
 
     return Float;

@@ -559,9 +559,9 @@ batavia.builtins.float = function(args) {
         } else {
             if (value === "nan" || value === "+nan" || value === "-nan") {
                 return new batavia.types.Float(NaN);
-            } else if(value === "inf" || value === "+inf") {
+            } else if (value === "inf" || value === "+inf") {
                 return new batavia.types.Float(Infinity);
-            } else if(toConvert === "-inf") {
+            } else if (value === "-inf") {
                 return new batavia.types.Float(-Infinity);
             }
             throw new batavia.builtins.ValueError("could not convert string to float: '" + args[0] + "'");

@@ -11,13 +11,20 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'ceil',
         'cos',
         'cosh',
+        'degrees',
         'exp',
         'expm1',
+        'erf',
+        'erfc',
+        'fabs',
+        'factorial',
         'floor',
+        'frexp',
         'log',
         'log10',
         'log1p',
         'log2',
+        'radians',
         'sin',
         'sinh',
         'sqrt',
@@ -27,19 +34,13 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
         # 'atan2', # commented out because they take too long in CircleCI
+        # 'copysign',
+        # 'fmod',
         # 'log',
         # 'pow',
     ])
 
     TODO = [
-        'copysign',
-        'degrees',
-        'erf',
-        'erfc',
-        'fabs',
-        'factorial',
-        'fmod',
-        'frexp',
         'fsum',
         'gamma',
         'gcd',
@@ -51,7 +52,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'ldexp',
         'lgamma',
         'modf',
-        'radians',
         'trunc',
     ]
 
@@ -113,15 +113,96 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_ceil_frozenset',
 
+        'test_math_copysign_bool_frozenset',
+        'test_math_copysign_bytearray_frozenset',
+        'test_math_copysign_bytes_frozenset',
+        'test_math_copysign_class_frozenset',
+        'test_math_copysign_complex_frozenset',
+        'test_math_copysign_dict_frozenset',
+        'test_math_copysign_float_frozenset',
+        'test_math_copysign_frozenset_bool',
+        'test_math_copysign_frozenset_bytearray',
+        'test_math_copysign_frozenset_bytes',
+        'test_math_copysign_frozenset_class',
+        'test_math_copysign_frozenset_complex',
+        'test_math_copysign_frozenset_dict',
+        'test_math_copysign_frozenset_float',
+        'test_math_copysign_frozenset_frozenset',
+        'test_math_copysign_frozenset_int',
+        'test_math_copysign_frozenset_list',
+        'test_math_copysign_frozenset_None',
+        'test_math_copysign_frozenset_NotImplemented',
+        'test_math_copysign_frozenset_range',
+        'test_math_copysign_frozenset_set',
+        'test_math_copysign_frozenset_slice',
+        'test_math_copysign_frozenset_str',
+        'test_math_copysign_frozenset_tuple',
+        'test_math_copysign_int_frozenset',
+        'test_math_copysign_list_frozenset',
+        'test_math_copysign_None_frozenset',
+        'test_math_copysign_NotImplemented_frozenset',
+        'test_math_copysign_range_frozenset',
+        'test_math_copysign_set_frozenset',
+        'test_math_copysign_slice_frozenset',
+        'test_math_copysign_str_frozenset',
+        'test_math_copysign_tuple_frozenset',
+
         'test_math_cos_frozenset',
 
         'test_math_cosh_frozenset',
+
+        'test_math_degrees_frozenset',
+
+        'test_math_erf_frozenset',
+
+        'test_math_erfc_frozenset',
 
         'test_math_exp_frozenset',
 
         'test_math_expm1_frozenset',
 
+        'test_math_fabs_frozenset',
+
+        'test_math_factorial_frozenset',
+
         'test_math_floor_frozenset',
+
+        'test_math_fmod_bool_frozenset',
+        'test_math_fmod_bytearray_frozenset',
+        'test_math_fmod_bytes_frozenset',
+        'test_math_fmod_class_frozenset',
+        'test_math_fmod_complex_frozenset',
+        'test_math_fmod_dict_frozenset',
+        'test_math_fmod_float_frozenset',
+        'test_math_fmod_frozenset',
+        'test_math_fmod_frozenset_bool',
+        'test_math_fmod_frozenset_bytearray',
+        'test_math_fmod_frozenset_bytes',
+        'test_math_fmod_frozenset_class',
+        'test_math_fmod_frozenset_complex',
+        'test_math_fmod_frozenset_dict',
+        'test_math_fmod_frozenset_float',
+        'test_math_fmod_frozenset_frozenset',
+        'test_math_fmod_frozenset_int',
+        'test_math_fmod_frozenset_list',
+        'test_math_fmod_frozenset_None',
+        'test_math_fmod_frozenset_NotImplemented',
+        'test_math_fmod_frozenset_range',
+        'test_math_fmod_frozenset_set',
+        'test_math_fmod_frozenset_slice',
+        'test_math_fmod_frozenset_str',
+        'test_math_fmod_frozenset_tuple',
+        'test_math_fmod_int_frozenset',
+        'test_math_fmod_list_frozenset',
+        'test_math_fmod_None_frozenset',
+        'test_math_fmod_NotImplemented_frozenset',
+        'test_math_fmod_range_frozenset',
+        'test_math_fmod_set_frozenset',
+        'test_math_fmod_slice_frozenset',
+        'test_math_fmod_str_frozenset',
+        'test_math_fmod_tuple_frozenset',
+
+        'test_math_frexp_frozenset',
 
         'test_math_log_bool_frozenset',
         'test_math_log_bytearray_frozenset',
@@ -209,6 +290,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_pow_str_frozenset',
         'test_math_pow_tuple_frozenset',
 
+        'test_math_radians_frozenset',
+
         'test_math_sin_frozenset',
 
         'test_math_sinh_frozenset',
@@ -228,6 +311,30 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.nan)
             print(math.pi)
             """)
+
+    def test_erf(self):
+        # test some of the edge cases of erf to 15 digits of precision
+        self.assertCodeExecution("""
+            import math
+            print(round(math.erf(0.75) * (10**15)))
+            print(round(math.erf(1.40) * (10**15)))
+            print(round(math.erf(1.60) * (10**15)))
+            """)
+
+    def test_frexp(self):
+        # test some of the edge cases of for frexp
+        self.assertCodeExecution("""
+            import math
+            print(math.frexp(float('nan')))
+            print(math.frexp(float('inf')))
+            print(math.frexp(float('-inf')))
+            print(math.frexp(-0.0))
+            print(math.frexp(0.0))
+            print(math.frexp(2**-1026)) # denormal
+            print(math.frexp(2**-1027)) # denormal
+            print(math.frexp(1.9**-1150)) # denormal
+            """)
+
 
     def test_docstrings(self):
         self.assertCodeExecution("""
