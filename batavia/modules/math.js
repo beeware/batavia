@@ -454,8 +454,9 @@ batavia.modules.math = {
         throw new batavia.builtins.NotImplementedError("math.isclose has not been implemented");
     },
 
-    isfinite: function() {
-        throw new batavia.builtins.NotImplementedError("math.isfinite has not been implemented");
+    isfinite: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Bool(isFinite(x.__float__().val));
     },
 
     isinf: function() {
