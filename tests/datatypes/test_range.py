@@ -78,7 +78,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_frozenset',
         'test_eq_range',
 
         'test_floor_divide_bool',
@@ -225,7 +224,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_frozenset',
         'test_ne_range',
 
         'test_or_bool',

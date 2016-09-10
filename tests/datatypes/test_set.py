@@ -20,9 +20,8 @@ class SetTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_creation(self):
-        # Empty dict
+        # Empty set
         self.assertCodeExecution("""
             x = set()
             print(x)
@@ -52,6 +51,14 @@ class SetTests(TranspileTestCase):
             print('c' in x)
             """)
 
+    @unittest.expectedFailure
+    def test_iter(self):
+        self.assertCodeExecution("""
+            print(list(iter(set([]))))
+            print(list(iter({1, 2})))
+            """)
+
+
 
 class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
@@ -59,7 +66,6 @@ class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_unary_positive',
         'test_unary_negative',
-        'test_unary_not',
         'test_unary_invert',
     ]
 
@@ -68,13 +74,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
     not_implemented = [
-        'test_add_frozenset',
-
-        'test_and_frozenset',
-
-        'test_eq_frozenset',
-        'test_eq_set',
-
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
@@ -179,9 +178,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_str',
         'test_multiply_tuple',
 
-        'test_ne_frozenset',
-        'test_ne_set',
-
         'test_or_bool',
         'test_or_bytearray',
         'test_or_bytes',
@@ -272,8 +268,6 @@ class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_str',
         'test_subtract_tuple',
 
-        'test_true_divide_frozenset',
-
         'test_xor_bool',
         'test_xor_bytearray',
         'test_xor_bytes',
@@ -298,8 +292,6 @@ class InplaceSetOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
     not_implemented = [
-        'test_add_frozenset',
-
         'test_and_bytearray',
         'test_and_bytes',
         'test_and_class',

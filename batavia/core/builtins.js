@@ -579,8 +579,17 @@ batavia.builtins.format = function() {
 batavia.builtins.format.__doc__ = 'format(value[, format_spec]) -> string\n\nReturns value.__format__(format_spec)\nformat_spec defaults to ""';
 
 
-batavia.builtins.frozenset = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'frozenset' not implemented");
+batavia.builtins.frozenset = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("frozenset() doesn't accept keyword arguments.");
+    }
+    if (args && args.length > 1) {
+        throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
+    }
+    return new batavia.types.FrozenSet(args[0]);
 };
 batavia.builtins.frozenset.__doc__ = 'frozenset() -> empty frozenset object\nfrozenset(iterable) -> frozenset object\n\nBuild an immutable unordered collection of unique elements.';
 
@@ -1026,7 +1035,7 @@ batavia.builtins.set = function(args,kwargs) {
     if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
     }
-	return new batavia.types.Set(args[0]);
+    return new batavia.types.Set(args[0]);
 };
 batavia.builtins.set.__doc__ = 'set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.';
 

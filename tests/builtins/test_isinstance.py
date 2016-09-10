@@ -7,7 +7,3 @@ class IsinstanceTests(TranspileTestCase):
 
 class BuiltinIsinstanceFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["isinstance"]
-
-    not_implemented = [
-        'test_frozenset',
-    ]

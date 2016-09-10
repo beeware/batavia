@@ -49,14 +49,8 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 
         'test_add_complex',
-        'test_add_frozenset',
-
-        'test_and_frozenset',
-
-        'test_eq_frozenset',
 
         'test_floor_divide_complex',
-        'test_floor_divide_frozenset',
 
         'test_ge_bytearray',
         'test_ge_bytes',
@@ -76,8 +70,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_complex',
         'test_le_frozenset',
 
-        'test_lshift_frozenset',
-
         'test_lt_bytearray',
         'test_lt_bytes',
         'test_lt_class',
@@ -86,32 +78,16 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_modulo_complex',
 
-        'test_modulo_frozenset',
-
         'test_multiply_bytes',
         'test_multiply_bytearray',
         'test_multiply_complex',
-        'test_multiply_frozenset',
-
-        'test_ne_frozenset',
-
-        'test_or_frozenset',
 
         'test_power_complex',
         'test_power_float',
-        'test_power_frozenset',
-
-        'test_rshift_frozenset',
-
-        'test_subscr_frozenset',
 
         'test_subtract_complex',
-        'test_subtract_frozenset',
 
         'test_true_divide_complex',
-        'test_true_divide_frozenset',
-
-        'test_xor_frozenset',
     ]
 
 
@@ -127,39 +103,20 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_int',
         'test_true_divide_int',
 
-
         'test_add_complex',
-        'test_add_frozenset',
-
-        'test_and_frozenset',
 
         'test_floor_divide_complex',
-        'test_floor_divide_frozenset',
-
-        'test_lshift_frozenset',
 
         'test_modulo_complex',
-        'test_modulo_frozenset',
 
         'test_multiply_bytes',
         'test_multiply_bytearray',
         'test_multiply_complex',
-        'test_multiply_frozenset',
-
-
-        'test_or_frozenset',
 
         'test_power_complex',
         'test_power_float',
-        'test_power_frozenset',
-
-        'test_rshift_frozenset',
 
         'test_subtract_complex',
-        'test_subtract_frozenset',
 
         'test_true_divide_complex',
-        'test_true_divide_frozenset',
-
-        'test_xor_frozenset',
     ]

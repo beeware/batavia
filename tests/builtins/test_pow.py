@@ -101,11 +101,6 @@ class PowTests(TranspileTestCase):
 class BuiltinPowFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["pow"]
 
-    not_implemented = [
-        'test_frozenset',
-    ]
-
-
 class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
     functions = ["pow"]
 
@@ -198,11 +193,8 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_complex_str',
         'test_complex_tuple',
 
-        'test_dict_frozenset',
-
         'test_float_complex',
         'test_float_float',
-        'test_float_frozenset',
         'test_float_int',
 
         'test_frozenset_bool',
@@ -225,9 +217,6 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
 
         'test_int_complex',
         'test_int_float',
-        'test_int_frozenset',
-
-        'test_list_frozenset',
 
         'test_None_bool',
         'test_None_bytearray',
@@ -246,8 +235,6 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_None_slice',
         'test_None_str',
         'test_None_tuple',
-
-        'test_NotImplemented_frozenset',
 
         'test_range_bool',
         'test_range_bytearray',
@@ -302,8 +289,4 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_slice_slice',
         'test_slice_str',
         'test_slice_tuple',
-
-        'test_str_frozenset',
-
-        'test_tuple_frozenset',
     ]

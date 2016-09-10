@@ -31,7 +31,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__iter__ = function() {
-        return new Set.prototype.SetIterator(this);
+        return new batavia.types.SetIterator(this);
     };
 
     Set.prototype.__repr__ = function() {
@@ -90,11 +90,23 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__eq__ = function(other) {
-        return this.valueOf() == other;
+        if (!batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])) {
+            return new batavia.types.Bool(false);
+        }
+        if (Object.keys(this).length != Object.keys(other).length) {
+            return new batavia.types.Bool(false);
+        }
+        var iterobj = batavia.builtins.iter([this], null);
+        var equal = true;
+        batavia.iter_for_each(iterobj, function(val) {
+            equal = equal && other.__contains__(val);
+        });
+
+        return new batavia.types.Bool(equal);
     };
 
     Set.prototype.__ne__ = function(other) {
-        return this.valueOf() != other;
+        return this.__eq__(other).__not__();
     };
 
     Set.prototype.__gt__ = function(other) {
@@ -138,20 +150,8 @@ batavia.types.Set = function() {
      * Unary operators
      **************************************************/
 
-    Set.prototype.__pos__ = function() {
-        return new Set(+this.valueOf());
-    };
-
-    Set.prototype.__neg__ = function() {
-        return new Set(-this.valueOf());
-    };
-
     Set.prototype.__not__ = function() {
-        return new Set(!this.valueOf());
-    };
-
-    Set.prototype.__invert__ = function() {
-        return new Set(~this.valueOf());
+        return this.__bool__().__not__();
     };
 
     /**************************************************
@@ -203,15 +203,14 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__and__ = function(other) {
-        if(batavia.isinstance(other, [batavia.types.Set])){
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
             var both = [];
-            for(var key in this){
-                if(this.hasOwnProperty(key)){
-                    if (other.__contains__(key)){
-                        both.push(this[key]);
-                    }
+            var iterobj = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj, function(val) {
+                if (other.__contains__(val)) {
+                    both.push(val);
                 }
-            }
+            });
             return new Set(both);
         }
         throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'set' and '" + batavia.type_name(other) + "'");
@@ -317,37 +316,21 @@ batavia.types.Set = function() {
         delete this[v];
     };
 
-    Set.prototype.update = function(values) {
-        for (var value in values) {
-            if (values.hasOwnProperty(value)) {
-                this[values[value]] = values[value];
+    Set.prototype.update = function(args) {
+        // Fast-path for native Array objects.
+        if (batavia.isArray(args)) {
+            for (var i = 0; i < args.length; i++) {
+                this[args[i]] = args[i];
             }
+        } else if (batavia.isinstance(args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
+            var iterobj = batavia.builtins.iter([args], null);
+            var self = this;
+            batavia.iter_for_each(iterobj, function(val) {
+                self[val] = val;
+            });
+        } else {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(args) + "' object is not iterable");
         }
-    };
-
-    /**************************************************
-     * Set Iterator
-     **************************************************/
-
-    Set.prototype.SetIterator = function (data) {
-        Object.call(this);
-        this.index = 0;
-        this.data = data;
-    };
-
-    Set.prototype.SetIterator.prototype = Object.create(Object.prototype);
-
-    Set.prototype.SetIterator.prototype.__next__ = function() {
-        var retval = this.data[this.index];
-        if (retval === undefined) {
-            throw new batavia.builtins.StopIteration();
-        }
-        this.index++;
-        return retval;
-    };
-
-    Set.prototype.SetIterator.prototype.__str__ = function() {
-        return "<set_iterator object at 0x99999999>";
     };
 
     /**************************************************/

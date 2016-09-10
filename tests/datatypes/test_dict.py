@@ -171,15 +171,9 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
 
-        'test_add_frozenset',
-
-        'test_and_frozenset',
-
         'test_eq_dict',
-        'test_eq_frozenset',
 
         'test_floor_divide_complex',
-        'test_floor_divide_frozenset',
 
         'test_ge_bytearray',
         'test_ge_bytes',
@@ -267,7 +261,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_slice',
 
         'test_ne_dict',
-        'test_ne_frozenset',
 
         'test_or_bool',
         'test_or_bytearray',
@@ -287,8 +280,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_or_slice',
         'test_or_str',
         'test_or_tuple',
-
-        'test_power_frozenset',
 
         'test_rshift_bool',
         'test_rshift_bytearray',
@@ -325,10 +316,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_set',
         'test_subscr_slice',
         'test_subscr_tuple',
-
-        'test_subtract_frozenset',
-
-        'test_true_divide_frozenset',
 
         'test_xor_bool',
         'test_xor_bytearray',

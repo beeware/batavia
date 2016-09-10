@@ -7,7 +7,3 @@ class TypeTests(TranspileTestCase):
 
 class BuiltinTypeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["type"]
-
-    not_implemented = [
-        'test_frozenset',
-    ]

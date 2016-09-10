@@ -15,8 +15,6 @@ class BuiltinTupleFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_bytes',
         'test_complex',
         'test_dict',
-        'test_frozenset',
         'test_NotImplemented',
         'test_range',
-        'test_set',
     ]
