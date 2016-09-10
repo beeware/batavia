@@ -7,20 +7,7 @@ batavia.types.Set = function() {
     function Set(args, kwargs) {
         Object.call(this);
         if (args) {
-            // Fast-path for native Array objects.
-            if (batavia.isArray(args)) {
-                for (var i = 0; i < args.length; i++) {
-                    this[args[i]] = args[i];
-                }
-            } else if (batavia.isinstance(args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
-                var iterobj = batavia.builtins.iter([args], null);
-                var self = this;
-                batavia.iter_for_each(iterobj, function(val) {
-                    self[val] = val;
-                });
-            } else {
-                throw new batavia.builtins.TypeError("'" + batavia.type_name(args) + "' object is not iterable");
-            }
+            this.update(args);
         }
     }
 
@@ -329,11 +316,20 @@ batavia.types.Set = function() {
         delete this[v];
     };
 
-    Set.prototype.update = function(values) {
-        for (var value in values) {
-            if (values.hasOwnProperty(value)) {
-                this[values[value]] = values[value];
+    Set.prototype.update = function(args) {
+        // Fast-path for native Array objects.
+        if (batavia.isArray(args)) {
+            for (var i = 0; i < args.length; i++) {
+                this[args[i]] = args[i];
             }
+        } else if (batavia.isinstance(args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
+            var iterobj = batavia.builtins.iter([args], null);
+            var self = this;
+            batavia.iter_for_each(iterobj, function(val) {
+                self[val] = val;
+            });
+        } else {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(args) + "' object is not iterable");
         }
     };
 
