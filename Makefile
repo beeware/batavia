@@ -23,7 +23,7 @@ ALL_FILES=\
     batavia/types/NotImplementedType.js \
     batavia/types/Range.js \
     batavia/types/Set.js \
-		batavia/types/SetIterator.js \
+    batavia/types/SetIterator.js \
     batavia/types/Slice.js \
     batavia/types/FrozenSet.js \
     batavia/types/Str.js \
@@ -68,7 +68,7 @@ ALL_FILES_WIN=\
     batavia\types\NotImplementedType.js \
     batavia\types\Range.js \
     batavia\types\Set.js \
-		batavia\types\SetIterator.js \
+    batavia\types\SetIterator.js \
     batavia\types\Slice.js \
     batavia\types\FrozenSet.js \
     batavia\types\Str.js \
