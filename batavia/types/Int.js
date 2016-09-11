@@ -719,6 +719,10 @@ batavia.types.Int = function() {
         return new Int(this.valueOf());
     };
 
+    Int.prototype.__trunc__ = function() {
+        return this;
+    };
+
     /**************************************************/
 
     return Int;

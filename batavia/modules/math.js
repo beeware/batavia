@@ -697,8 +697,12 @@ batavia.modules.math = {
     },
 
     trunc: function(x) {
-        batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(Math.trunc(x.__float__().val));
+        if (x === null) {
+            throw new batavia.builtins.TypeError("type NoneType doesn't define __trunc__ method");
+        } else if (!x.__trunc__) {
+            throw new batavia.builtins.TypeError("type " + batavia.type_name(x) + " doesn't define __trunc__ method");
+        }
+        return x.__trunc__();
     }
 };
 

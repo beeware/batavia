@@ -37,6 +37,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'sqrt',
         'tan',
         'tanh',
+        'trunc',
     ])
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
@@ -52,7 +53,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'gcd',
         'isclose',
         'ldexp',
-        'trunc',
     ]
 
 
