@@ -42,13 +42,13 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         # 'atan2', # commented out because they take too long in CircleCI
         # 'copysign',
         # 'fmod',
+        # 'hypot',
         # 'log',
         # 'pow',
     ])
 
     TODO = [
         'gcd',
-        'hypot',
         'isclose',
         'ldexp',
         'modf',
