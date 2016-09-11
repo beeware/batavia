@@ -46,13 +46,13 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'fmod',
         'hypot',
         'gcd',
+        'ldexp',
         'log',
         'pow',
     ], numerics_only=True)
 
     TODO = [
         'isclose',
-        'ldexp',
     ]
 
 
@@ -194,4 +194,19 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.isnan(float('-inf')))
             print(math.isnan(float('inf')))
             print(math.isnan(float('nan')))
+            """)
+
+    def test_ldexp_zero(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.ldexp(0.0, 100000))
+            print(math.ldexp(-0.0, 100000))
+            """)
+
+    def test_ldexp_int_exps_edge_cases(self):
+        self.assertCodeExecution("""
+            import math
+            for exp in range(-1100, -900):
+                print(exp)
+                print(math.ldexp(1.0, exp))
             """)

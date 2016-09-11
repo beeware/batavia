@@ -498,8 +498,26 @@ batavia.modules.math = {
         return new batavia.types.Bool(isNaN(xx));
     },
 
-    ldexp: function() {
-        throw new batavia.builtins.NotImplementedError("math.ldexp has not been implemented");
+    ldexp: function(x, i) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__();
+        if (!batavia.isinstance(i, [batavia.types.Bool, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError("Expected an int as second argument to ldexp.");
+        }
+        if (xx.val == 0.0) {
+            return xx;
+        }
+        var ii = i.__trunc__().val;
+        if (ii.lt(-1022 - 53)) {
+            ii = -1022 - 53;
+        } else {
+            ii = ii.valueOf();
+        }
+        var result = x.__float__().val * Math.pow(2, ii);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.OverflowError("math range error");
+        }
+        return new batavia.types.Float(result);
     },
 
     lgamma: function(x) {
