@@ -630,8 +630,13 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.log2(x.__float__().val));
     },
 
-    modf: function() {
-        throw new batavia.builtins.NotImplementedError("math.modf has not been implemented");
+    modf: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        var frac = xx % 1;
+        var int = Math.round(xx - frac);
+        return new batavia.types.Tuple([new batavia.types.Float(frac),
+          new batavia.types.Float(int)]);
     },
 
     pow: function(x, y) {

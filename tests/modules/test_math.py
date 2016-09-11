@@ -30,6 +30,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'log10',
         'log1p',
         'log2',
+        'modf',
         'radians',
         'sin',
         'sinh',
@@ -51,7 +52,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'gcd',
         'isclose',
         'ldexp',
-        'modf',
         'trunc',
     ]
 
