@@ -465,8 +465,10 @@ batavia.modules.math = {
         return new batavia.types.Bool(xx == Infinity || xx == -Infinity);
     },
 
-    isnan: function() {
-        throw new batavia.builtins.NotImplementedError("math.isnan has not been implemented");
+    isnan: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        return new batavia.types.Bool(isNaN(xx));
     },
 
     ldexp: function() {

@@ -24,6 +24,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'gamma',
         'isfinite',
         'isinf',
+        'isnan',
         'lgamma',
         'log',
         'log10',
@@ -49,7 +50,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'gcd',
         'hypot',
         'isclose',
-        'isnan',
         'ldexp',
         'modf',
         'trunc',
@@ -185,4 +185,13 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.isinf(float('-inf')))
             print(math.isinf(float('inf')))
             print(math.isinf(float('nan')))
+            """)
+
+    def test_isnan(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.isnan(1))
+            print(math.isnan(float('-inf')))
+            print(math.isnan(float('inf')))
+            print(math.isnan(float('nan')))
             """)
