@@ -1298,7 +1298,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                         import %(m)s
                         f = %(m)s.%(f)s
                         x = %(x)s
-                        x = %(y)s
+                        y = %(y)s
                         print(f(x, y))
                     except Exception as e:
                         print(type(e), ':', e)

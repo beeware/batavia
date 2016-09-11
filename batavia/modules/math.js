@@ -440,8 +440,28 @@ batavia.modules.math = {
         return batavia.modules.math.exp(batavia.modules.math.lgamma(x));
      },
 
-    gcd: function() {
-        throw new batavia.builtins.NotImplementedError("math.gcd has not been implemented");
+    gcd: function(x, y) {
+        if (!batavia.isinstance(x, [batavia.types.Bool, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(x) + "' object cannot be interpreted as an integer");
+        }
+        if (!batavia.isinstance(y, [batavia.types.Bool, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(y) + "' object cannot be interpreted as an integer");
+        }
+        var xx = x.__trunc__().val.abs();
+        var yy = y.__trunc__().val.abs();
+        if (xx.isZero()) {
+            return y.__trunc__().__abs__();
+        } else if (yy.isZero()) {
+            return x.__trunc__().__abs__();
+        }
+        // Standard modulo Euclidean algorithm.
+        // TODO: when our binary shifts are more efficient, switch to binary Euclidean algorithm.
+        while (!yy.isZero()) {
+            var t = yy;
+            yy = xx.mod(yy);
+            xx = t;
+        }
+        return new batavia.types.Int(xx);
     },
 
     hypot: function(x, y) {

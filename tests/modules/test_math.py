@@ -45,12 +45,12 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         # 'copysign',
         # 'fmod',
         # 'hypot',
+        # 'gcd',
         # 'log',
         # 'pow',
     ])
 
     TODO = [
-        'gcd',
         'isclose',
         'ldexp',
     ]
