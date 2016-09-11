@@ -350,3 +350,10 @@ Boolean.prototype.__ior__ = function(other) {
 Boolean.prototype.copy = function() {
     return this.valueOf();
 };
+
+Boolean.prototype.__trunc__ = function() {
+    if (this.valueOf()) {
+        return new batavia.types.Int(1);
+    }
+    return new batavia.types.Int(0);
+};

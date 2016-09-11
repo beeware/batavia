@@ -73,13 +73,13 @@ batavia.modules.math = {
 
     copysign: function(x, y) {
         batavia.modules.math._checkFloat(y);
-        batavia.modules.math._checkFloat(x);
         var yy = y.__float__().val;
+        batavia.modules.math._checkFloat(x);
         var xx = x.__float__().val;
         if ((xx >= 0) != (yy >= 0)) {
             return x.__float__().__neg__();
         }
-        return x;
+        return x.__float__();
     },
 
     cos: function(x) {
@@ -280,8 +280,13 @@ batavia.modules.math = {
 
     fmod: function(x, y) {
         batavia.modules.math._checkFloat(y);
+        var yy = y.__float__().val;
         batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(x.__float__().val % y.__float__().val);
+        var xx = x.__float__().val;
+        if (yy === 0.0) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        return new batavia.types.Float(xx % yy);
     },
 
     frexp: function(x) {
@@ -316,46 +321,301 @@ batavia.modules.math = {
         return new batavia.types.Tuple([new batavia.types.Float(num), new batavia.types.Int(exp)]);
     },
 
-    fsum: function() {
-        throw new batavia.builtins.NotImplementedError("math.fsum has not been implemented");
+    fsum: function(iterable) {
+        var iterobj = batavia.builtins.iter([iterable], null);
+        var sum = 0.0;
+        batavia.iter_for_each(iterobj, function(val) {
+            if (!batavia.isinstance(val, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+                throw new batavia.builtins.TypeError('a float is required');
+            }
+            sum += val.__float__().val;
+        });
+        return new batavia.types.Float(sum);
     },
 
-    gamma: function() {
-        throw new batavia.builtins.NotImplementedError("math.gamma has not been implemented");
-    },
+    gamma: function(x) {
+        // adapted from public domain code at http://picomath.org/javascript/gamma.js.html
 
-    gcd: function() {
-        throw new batavia.builtins.NotImplementedError("math.gcd has not been implemented");
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+
+        if (xx <= 0.0) {
+            if (Number.isInteger(xx)) {
+                throw new batavia.builtins.ValueError('math domain error');
+            }
+            // analytic continuation using reflection formula
+            // gamma(z) * gamma(1-z) = pi / sin(pi * z)
+            return new batavia.types.Float(Math.PI / Math.sin(Math.PI * xx) / batavia.modules.math.gamma(new batavia.types.Float(1 - xx)));
+        }
+
+        // Split the function domain into three intervals:
+        // (0, 0.001), [0.001, 12), and (12, infinity)
+
+        ///////////////////////////////////////////////////////////////////////////
+        // First interval: (0, 0.001)
+        //
+        // For small x, 1/Gamma(x) has power series x + gamma x^2  - ...
+        // So in this range, 1/Gamma(x) = x + gamma x^2 with error on the order of x^3.
+        // The relative error over this interval is less than 6e-7.
+
+        var gamma = 0.577215664901532860606512090; // Euler's gamma constant
+
+        if (xx < 0.001) {
+            return new batavia.types.Float(1.0 / (x * (1.0 + gamma * x)));
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Second interval: [0.001, 12)
+
+        if (xx < 12.0) {
+            // The algorithm directly approximates gamma over (1,2) and uses
+            // reduction identities to reduce other arguments to this interval.
+            var y = xx;
+            var n = 0;
+            var arg_was_less_than_one = (y < 1.0);
+
+            // Add or subtract integers as necessary to bring y into (1,2)
+            // Will correct for this below
+            if (arg_was_less_than_one) {
+              y += 1.0;
+            } else {
+                n = Math.floor(y) - 1;  // will use n later
+                y -= n;
+            }
+
+            // numerator coefficients for approximation over the interval (1,2)
+            var p =
+            [
+                -1.71618513886549492533811E+0,
+                 2.47656508055759199108314E+1,
+                -3.79804256470945635097577E+2,
+                 6.29331155312818442661052E+2,
+                 8.66966202790413211295064E+2,
+                -3.14512729688483675254357E+4,
+                -3.61444134186911729807069E+4,
+                 6.64561438202405440627855E+4
+            ];
+            // denominator coefficients for approximation over the interval (1,2)
+            var q =
+            [
+                -3.08402300119738975254353E+1,
+                 3.15350626979604161529144E+2,
+                -1.01515636749021914166146E+3,
+                -3.10777167157231109440444E+3,
+                 2.25381184209801510330112E+4,
+                 4.75584627752788110767815E+3,
+                -1.34659959864969306392456E+5,
+                -1.15132259675553483497211E+5
+            ];
+
+            var num = 0.0;
+            var den = 1.0;
+
+            var z = y - 1;
+            for (i = 0; i < 8; i++) {
+                num = (num + p[i]) * z;
+                den = den * z + q[i];
+            }
+            var result = num / den + 1.0;
+
+            // Apply correction if argument was not initially in (1,2)
+            if (arg_was_less_than_one) {
+                // Use identity gamma(z) = gamma(z+1)/z
+                // The variable "result" now holds gamma of the original y + 1
+                // Thus we use y-1 to get back the orginal y.
+                result /= (y - 1.0);
+            } else {
+                // Use the identity gamma(z+n) = z*(z+1)* ... *(z+n-1)*gamma(z)
+                for (i = 0; i < n; i++) {
+                    result *= y++;
+                }
+           }
+
+           return new batavia.types.Float(result);
+        }
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Third interval: [12, infinity)
+
+        if (xx > 171.624) {
+            // Correct answer too large to display.
+            throw new batavia.builtins.OverflowError("math range error");
+        }
+
+        return batavia.modules.math.exp(batavia.modules.math.lgamma(x));
+     },
+
+    gcd: function(x, y) {
+        if (!batavia.isinstance(x, [batavia.types.Bool, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(x) + "' object cannot be interpreted as an integer");
+        }
+        if (!batavia.isinstance(y, [batavia.types.Bool, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(y) + "' object cannot be interpreted as an integer");
+        }
+        var xx = x.__trunc__().val.abs();
+        var yy = y.__trunc__().val.abs();
+        if (xx.isZero()) {
+            return y.__trunc__().__abs__();
+        } else if (yy.isZero()) {
+            return x.__trunc__().__abs__();
+        }
+        // Standard modulo Euclidean algorithm.
+        // TODO: when our binary shifts are more efficient, switch to binary Euclidean algorithm.
+        while (!yy.isZero()) {
+            var t = yy;
+            yy = xx.mod(yy);
+            xx = t;
+        }
+        return new batavia.types.Int(xx);
     },
 
     hypot: function(x, y) {
-        batavia.modules.math._checkFloat(x);
         batavia.modules.math._checkFloat(y);
-        return new batavia.types.Float(Math.hypot(x.__float__().val, y.__float__().val));
+        var yy = y.__float__().val;
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        return new batavia.types.Float(Math.hypot(xx, yy));
     },
 
-    isclose: function() {
-        throw new batavia.builtins.NotImplementedError("math.isclose has not been implemented");
+    isclose: function(args, kwargs) {
+        if (arguments.length != 2) {
+            throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
+        }
+        if (args.length == 0) {
+            throw new batavia.builtins.TypeError("Required argument 'a' (pos 1) not found");
+        }
+        if (args.length == 1) {
+            throw new batavia.builtins.TypeError("Required argument 'b' (pos 2) not found");
+        }
+        if (args.length > 2) {
+            throw new batavia.builtins.TypeError("Function takes at most 2 positional arguments (" + args.length + " given)");
+        }
+        var rel_tol = 1e-09;
+        if ('rel_tol' in kwargs) {
+            if (!batavia.isinstance(kwargs.rel_tol, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+                throw new batavia.builtins.TypeError("a float is required");
+            }
+            rel_tol = kwargs.rel_tol.__float__().val;
+        }
+        var abs_tol = 0.0;
+        if ('abs_tol' in kwargs) {
+            if (!batavia.isinstance(kwargs.abs_tol, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+                throw new batavia.builtins.TypeError("a float is required");
+            }
+            abs_tol = kwargs.abs_tol.__float__().val;
+        }
+
+        if (abs_tol < 0.0 || rel_tol < 0.0) {
+            throw new batavia.builtins.ValueError("tolerances must be non-negative");
+        }
+
+        var a = args[0].__float__().val;
+        var b = args[1].__float__().val;
+        if (a == b) {
+            return new batavia.types.Bool(true);
+        }
+        if ((a == Infinity) || (a == -Infinity) || (b == Infinity) || (b == -Infinity)) {
+            return new batavia.types.Bool(false);
+        }
+        if (isNaN(a) || isNaN(b)) {
+            return new batavia.types.Bool(false);
+        }
+        var delta = Math.abs(a - b);
+        if ((delta <= abs_tol) ||
+            (delta <= Math.abs(rel_tol * a)) ||
+            (delta <= Math.abs(rel_tol * a))) {
+            return new batavia.types.Bool(true);
+        }
+        return new batavia.types.Bool(false);
     },
 
-    isfinite: function() {
-        throw new batavia.builtins.NotImplementedError("math.isfinite has not been implemented");
+    isfinite: function(x) {
+        batavia.modules.math._checkFloat(x);
+        return new batavia.types.Bool(isFinite(x.__float__().val));
     },
 
-    isinf: function() {
-        throw new batavia.builtins.NotImplementedError("math.isinf has not been implemented");
+    isinf: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        return new batavia.types.Bool(xx == Infinity || xx == -Infinity);
     },
 
-    isnan: function() {
-        throw new batavia.builtins.NotImplementedError("math.isnan has not been implemented");
+    isnan: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        return new batavia.types.Bool(isNaN(xx));
     },
 
-    ldexp: function() {
-        throw new batavia.builtins.NotImplementedError("math.ldexp has not been implemented");
+    ldexp: function(x, i) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__();
+        if (!batavia.isinstance(i, [batavia.types.Bool, batavia.types.Int])) {
+            throw new batavia.builtins.TypeError("Expected an int as second argument to ldexp.");
+        }
+        if (xx.val == 0.0) {
+            return xx;
+        }
+        var ii = i.__trunc__().val;
+        if (ii.lt(-1022 - 53)) {
+            ii = -1022 - 53;
+        } else {
+            ii = ii.valueOf();
+        }
+        var result = x.__float__().val * Math.pow(2, ii);
+        if (!isFinite(result)) {
+            throw new batavia.builtins.OverflowError("math range error");
+        }
+        return new batavia.types.Float(result);
     },
 
-    lgamma: function() {
-        throw new batavia.builtins.NotImplementedError("math.lgamma has not been implemented");
+    lgamma: function(x) {
+        // adapted from public domain code at http://picomath.org/javascript/gamma.js.html
+
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+
+        if (xx <= 0.0) {
+            if (Number.isInteger(xx)) {
+                throw new batavia.builtins.ValueError('math domain error');
+            }
+            // analytic continuation using reflection formula
+            // gamma(z) * gamma(1-z) = pi / sin(pi * z)
+            // lgamma(z) + lgamma(1-z) = log(pi / sin |pi * z|)
+            return new batavia.types.Float(Math.log(Math.abs(Math.PI / Math.sin(Math.PI * xx))) - batavia.modules.math.lgamma(new batavia.types.Float(1 - xx)));
+        }
+
+        if (xx < 12.0) {
+            var gx = batavia.modules.math.gamma(x).val;
+            return new batavia.types.Float(Math.log(Math.abs(gx)));
+        }
+
+        // Abramowitz and Stegun 6.1.41
+        // Asymptotic series should be good to at least 11 or 12 figures
+        // For error analysis, see Whittiker and Watson
+        // A Course in Modern Analysis (1927), page 252
+
+        var c =
+        [
+             1.0/12.0,
+            -1.0/360.0,
+             1.0/1260.0,
+            -1.0/1680.0,
+             1.0/1188.0,
+            -691.0/360360.0,
+             1.0/156.0,
+            -3617.0/122400.0
+        ];
+        var z = 1.0 / (xx * xx);
+        var sum = c[7];
+        for (var i = 6; i >= 0; i--) {
+            sum *= z;
+            sum += c[i];
+        }
+        var series = sum / xx;
+
+        var halfLogTwoPi = 0.91893853320467274178032973640562;
+        var logGamma = (xx - 0.5) * Math.log(xx) - xx + halfLogTwoPi + series;
+        return new batavia.types.Float(logGamma);
     },
 
     log: function(x, base) {
@@ -376,36 +636,36 @@ batavia.modules.math = {
         if (x.__eq__(new batavia.types.Float(1.0)) && batavia.isinstance(base, batavia.types.Int) && base.val.gt(1)) {
             return new batavia.types.Float(0.0);
         }
-        var bb;
         if (typeof base !== 'undefined') {
             batavia.modules.math._checkFloat(base);
             if (base.__le__(new batavia.types.Float(0.0))) {
                 throw new batavia.builtins.ValueError("math domain error");
             }
-            bb = base.__float__().val;
-        }
-        if (typeof base !== 'undefined') {
-            batavia.modules.math._checkFloat(base);
-            bb = base.__float__().val;
-            if (bb <= 0.0) {
-                throw new batavia.builtins.ValueError("math domain error");
-            }
-        }
-        if (typeof base === 'undefined') {
-            if (batavia.isinstance(x, batavia.types.Int)) {
-                if (x.val.isZero() || x.val.isNeg()) {
+            var lg_base;
+            if (batavia.isinstance(base, batavia.types.Int)) {
+                lg_base = batavia.modules.math._log2_int(base).val;
+            } else {
+                var bb = base.__float__().val;
+                if (bb <= 0.0) {
                     throw new batavia.builtins.ValueError("math domain error");
                 }
-                if (x.__ge__(batavia.MAX_FLOAT)) {
-                    return batavia.modules.math._log2_int(x) * 0.6931471805599453;
-                }
+                lg_base = Math.log2(bb);
             }
-            return new batavia.types.Float(Math.log(x.__float__().val));
+            if (lg_base == 0.0) {
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
+            }
+            return new batavia.types.Float(batavia.modules.math.log2(x).val / lg_base);
         }
-        if (bb == 1.0) {
-            throw new batavia.builtins.ZeroDivisionError("float division by zero");
+
+        if (batavia.isinstance(x, batavia.types.Int)) {
+            if (x.val.isZero() || x.val.isNeg()) {
+                throw new batavia.builtins.ValueError("math domain error");
+            }
+            if (x.__ge__(batavia.MAX_FLOAT)) {
+                return batavia.modules.math._log2_int(x).__mul__(new batavia.types.Float(0.6931471805599453));
+            }
         }
-        return batavia.modules.math.log(x).__div__(batavia.modules.math.log(base));
+        return new batavia.types.Float(Math.log(x.__float__().val));
     },
 
     log10: function(x) {
@@ -463,8 +723,13 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.log2(x.__float__().val));
     },
 
-    modf: function() {
-        throw new batavia.builtins.NotImplementedError("math.modf has not been implemented");
+    modf: function(x) {
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        var frac = xx % 1;
+        var int = Math.round(xx - frac);
+        return new batavia.types.Tuple([new batavia.types.Float(frac),
+          new batavia.types.Float(int)]);
     },
 
     pow: function(x, y) {
@@ -525,10 +790,16 @@ batavia.modules.math = {
     },
 
     trunc: function(x) {
-        batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(Math.trunc(x.__float__().val));
+        if (x === null) {
+            throw new batavia.builtins.TypeError("type NoneType doesn't define __trunc__ method");
+        } else if (!x.__trunc__) {
+            throw new batavia.builtins.TypeError("type " + batavia.type_name(x) + " doesn't define __trunc__ method");
+        }
+        return x.__trunc__();
     }
 };
+
+batavia.modules.math.isclose.__python__ = true;
 
 
 // docstrings taken from Python 3, which falls under this license:

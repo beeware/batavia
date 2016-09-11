@@ -20,41 +20,37 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'factorial',
         'floor',
         'frexp',
+        'fsum',
+        'gamma',
+        'isfinite',
+        'isinf',
+        'isnan',
+        'lgamma',
         'log',
         'log10',
         'log1p',
         'log2',
+        'modf',
         'radians',
         'sin',
         'sinh',
         'sqrt',
         'tan',
         'tanh',
-    ])
+        'trunc',
+    ], numerics_only=True)
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
-        # 'atan2', # commented out because they take too long in CircleCI
-        # 'copysign',
-        # 'fmod',
-        # 'log',
-        # 'pow',
-    ])
-
-    TODO = [
-        'fsum',
-        'gamma',
-        'gcd',
+        'atan2',
+        'copysign',
+        'fmod',
         'hypot',
+        'gcd',
         'isclose',
-        'isfinite',
-        'isinf',
-        'isnan',
         'ldexp',
-        'lgamma',
-        'modf',
-        'trunc',
-    ]
-
+        'log',
+        'pow',
+    ], numerics_only=True)
 
     not_implemented = [
         'test_math_acos_float',
@@ -67,6 +63,13 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
         'test_math_asinh_float',
         'test_math_asinh_int',
+
+        'test_math_fsum_NotImplemented',
+        'test_math_fsum_bytearray',
+        'test_math_fsum_bytes',
+        'test_math_fsum_complex',
+        'test_math_fsum_dict',
+        'test_math_fsum_range',
     ]
 
     def test_constants(self):
@@ -160,4 +163,57 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         self.assertCodeExecution("""
             import math
             print(math.log2(709874778209505449164547067054458951083931193926642747495017164186645751655744875421269098582104920390605124237633349342717862507319743615626304875347198674644024921355443346065756812077971384925385976688379587725754770781522846570196349704093046107733180534854434524219964358869238720766190004394476819714001258060050613741584644204075051799051905412773797764952606797949151269802416842454484878798473655073876851371491648288958091028337719596855793230188189772070425820554754458556422280418578218555923937387100230666995832561534819765559294519688376125270429521528901767210741847034724205354522740365483017692249820977706071766039350554571519522193325468892496901898817050295077767956445820266181178428873389385457683384690338027773216128156778372102965337341550587618703692943484656997212771985652065880479903542484558677381542438761681533659023452046408703963028815731967051176232784200533079872517065868927439508179887199747307382027271992367973398752203981370932249653618260869652706332493188390438513150963811297163798071038159044928635041637968052076196357089673578011991707879168341931769577280340919325350586520247371170996197238085208451603359009350099978722663674682758701714150597529361822020896347673618446802372853705086762735076753958743009317050891017544375235501024966086837113895250374683405794439114588602689057542397605899402997007278070746928906217565081884406372071588251849468961039107688076621346443316677903414760713997208752939061354773484040316969671376565833163179447504252238355930440353052925533204737199987806741014066788960204161921421661842362108279851816761342464770187337809510195703092924098813875328889150143200978204553812664656609886055094625058698584339535625840297952984122026248025706583198398576642795466682257872986978621024920781727232257799954982443614621424967054998813367293022309278882814078744897409296550039950294130952382751224274116423061468974653243010683217587256595866362285666690540129606522748087781211700305323617809257258869461082545385948387418641936602911595988585341866304680338433228594272988376062066145489663624587207289726229598577225356620186185104940607264294055665578166855271669760127452193136730694091219875987070929716353044606178328132861866481581176064425671499601899418528529810234656671652825363206294954548973847080477558394872610479878723418423615445410371409596278175917142530165486625362513678722139651643157453275449743997375003463533610556290097654020572842895402524185827121030107))
+            """)
+
+    def test_isfinite(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.isfinite(1))
+            print(math.isfinite(float('-inf')))
+            print(math.isfinite(float('inf')))
+            print(math.isfinite(float('nan')))
+            """)
+
+    def test_isinf(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.isinf(1))
+            print(math.isinf(float('-inf')))
+            print(math.isinf(float('inf')))
+            print(math.isinf(float('nan')))
+            """)
+
+    def test_isnan(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.isnan(1))
+            print(math.isnan(float('-inf')))
+            print(math.isnan(float('inf')))
+            print(math.isnan(float('nan')))
+            """)
+
+    def test_ldexp_zero(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.ldexp(0.0, 100000))
+            print(math.ldexp(-0.0, 100000))
+            """)
+
+    def test_ldexp_int_exps_edge_cases(self):
+        self.assertCodeExecution("""
+            import math
+            for exp in range(-1100, -900):
+                print(exp)
+                print(math.ldexp(1.0, exp))
+            """)
+
+    def test_isclose_kwargs(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.isclose(1.0, 0.9))
+            print(math.isclose(1.0, 0.9, rel_tol=0.09))
+            print(math.isclose(1.0, 0.9, rel_tol=0.1))
+            print(math.isclose(1.0, 0.9, rel_tol=0.11))
+            print(math.isclose(1.0, 0.9, rel_tol=0.09, abs_tol=0.1))
+            print(math.isclose(1.0, 1.000000001, rel_tol=1.0, abs_tol=1.0))
             """)

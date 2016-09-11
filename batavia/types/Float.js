@@ -434,7 +434,11 @@ batavia.types.Float = function() {
 
     Float.prototype.is_integer = function() {
         return new batavia.types.Bool(Number.isInteger(this.valueOf()));
-    }
+    };
+
+    Float.prototype.__trunc__ = function() {
+        return new batavia.types.Int(Math.trunc(this.valueOf()));
+    };
 
     /**************************************************/
 
