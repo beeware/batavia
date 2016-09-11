@@ -38,17 +38,17 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'tan',
         'tanh',
         'trunc',
-    ])
+    ], numerics_only=True)
 
     ModuleFunctionTestCase.add_two_arg_tests('math', [
-        # 'atan2', # commented out because they take too long in CircleCI
-        # 'copysign',
-        # 'fmod',
-        # 'hypot',
-        # 'gcd',
-        # 'log',
-        # 'pow',
-    ])
+        'atan2',
+        'copysign',
+        'fmod',
+        'hypot',
+        'gcd',
+        'log',
+        'pow',
+    ], numerics_only=True)
 
     TODO = [
         'isclose',

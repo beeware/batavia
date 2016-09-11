@@ -1271,7 +1271,11 @@ def _module_two_arg_func_test(name, module, f,  examples, examples2):
         )
     return func
 
+numerics = {'bool', 'float', 'int'}
+
 class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
+    numerics_only = False
+
     @classmethod
     def tearDownClass(cls):
         global _phantomjs
@@ -1340,17 +1344,23 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             substitutions=substitutions)
 
     @classmethod
-    def add_one_arg_tests(self, module, functions):
+    def add_one_arg_tests(self, module, functions, numerics_only=False):
         for func in functions:
             for datatype, examples in SAMPLE_DATA.items():
+                if numerics_only and datatype not in numerics:
+                    continue
                 name = 'test_%s_%s_%s' % (module, func, datatype)
                 small_ints = module == 'math' and func == 'factorial'
                 setattr(self, name, _module_one_arg_func_test(name, 'math', func, examples, small_ints=small_ints))
 
     @classmethod
-    def add_two_arg_tests(self, module, functions):
+    def add_two_arg_tests(self, module, functions, numerics_only=False):
         for func in functions:
             for datatype, examples in SAMPLE_DATA.items():
+                if numerics_only and datatype not in numerics:
+                    continue
                 for datatype2, examples2 in SAMPLE_DATA.items():
+                    if numerics_only and datatype2 not in numerics:
+                        continue
                     name = 'test_%s_%s_%s_%s' % (module, func, datatype, datatype2)
                     setattr(self, name, _module_two_arg_func_test(name, 'math', func, examples, examples2))
