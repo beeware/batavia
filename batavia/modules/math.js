@@ -73,13 +73,13 @@ batavia.modules.math = {
 
     copysign: function(x, y) {
         batavia.modules.math._checkFloat(y);
-        batavia.modules.math._checkFloat(x);
         var yy = y.__float__().val;
+        batavia.modules.math._checkFloat(x);
         var xx = x.__float__().val;
         if ((xx >= 0) != (yy >= 0)) {
             return x.__float__().__neg__();
         }
-        return x;
+        return x.__float__();
     },
 
     cos: function(x) {
@@ -280,8 +280,13 @@ batavia.modules.math = {
 
     fmod: function(x, y) {
         batavia.modules.math._checkFloat(y);
+        var yy = y.__float__().val;
         batavia.modules.math._checkFloat(x);
-        return new batavia.types.Float(x.__float__().val % y.__float__().val);
+        var xx = x.__float__().val;
+        if (yy === 0.0) {
+            throw new batavia.builtins.ValueError("math domain error");
+        }
+        return new batavia.types.Float(xx % yy);
     },
 
     frexp: function(x) {
@@ -465,9 +470,11 @@ batavia.modules.math = {
     },
 
     hypot: function(x, y) {
-        batavia.modules.math._checkFloat(x);
         batavia.modules.math._checkFloat(y);
-        return new batavia.types.Float(Math.hypot(x.__float__().val, y.__float__().val));
+        var yy = y.__float__().val;
+        batavia.modules.math._checkFloat(x);
+        var xx = x.__float__().val;
+        return new batavia.types.Float(Math.hypot(xx, yy));
     },
 
     isclose: function() {
@@ -563,36 +570,36 @@ batavia.modules.math = {
         if (x.__eq__(new batavia.types.Float(1.0)) && batavia.isinstance(base, batavia.types.Int) && base.val.gt(1)) {
             return new batavia.types.Float(0.0);
         }
-        var bb;
         if (typeof base !== 'undefined') {
             batavia.modules.math._checkFloat(base);
             if (base.__le__(new batavia.types.Float(0.0))) {
                 throw new batavia.builtins.ValueError("math domain error");
             }
-            bb = base.__float__().val;
-        }
-        if (typeof base !== 'undefined') {
-            batavia.modules.math._checkFloat(base);
-            bb = base.__float__().val;
-            if (bb <= 0.0) {
-                throw new batavia.builtins.ValueError("math domain error");
-            }
-        }
-        if (typeof base === 'undefined') {
-            if (batavia.isinstance(x, batavia.types.Int)) {
-                if (x.val.isZero() || x.val.isNeg()) {
+            var lg_base;
+            if (batavia.isinstance(base, batavia.types.Int)) {
+                lg_base = batavia.modules.math._log2_int(base).val;
+            } else {
+                var bb = base.__float__().val;
+                if (bb <= 0.0) {
                     throw new batavia.builtins.ValueError("math domain error");
                 }
-                if (x.__ge__(batavia.MAX_FLOAT)) {
-                    return batavia.modules.math._log2_int(x) * 0.6931471805599453;
-                }
+                lg_base = Math.log2(bb);
             }
-            return new batavia.types.Float(Math.log(x.__float__().val));
+            if (lg_base == 0.0) {
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
+            }
+            return new batavia.types.Float(batavia.modules.math.log2(x).val / lg_base);
         }
-        if (bb == 1.0) {
-            throw new batavia.builtins.ZeroDivisionError("float division by zero");
+
+        if (batavia.isinstance(x, batavia.types.Int)) {
+            if (x.val.isZero() || x.val.isNeg()) {
+                throw new batavia.builtins.ValueError("math domain error");
+            }
+            if (x.__ge__(batavia.MAX_FLOAT)) {
+                return batavia.modules.math._log2_int(x).__mul__(new batavia.types.Float(0.6931471805599453));
+            }
         }
-        return batavia.modules.math.log(x).__div__(batavia.modules.math.log(base));
+        return new batavia.types.Float(Math.log(x.__float__().val));
     },
 
     log10: function(x) {
