@@ -477,8 +477,56 @@ batavia.modules.math = {
         return new batavia.types.Float(Math.hypot(xx, yy));
     },
 
-    isclose: function() {
-        throw new batavia.builtins.NotImplementedError("math.isclose has not been implemented");
+    isclose: function(args, kwargs) {
+        if (arguments.length != 2) {
+            throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
+        }
+        if (args.length == 0) {
+            throw new batavia.builtins.TypeError("Required argument 'a' (pos 1) not found");
+        }
+        if (args.length == 1) {
+            throw new batavia.builtins.TypeError("Required argument 'b' (pos 2) not found");
+        }
+        if (args.length > 2) {
+            throw new batavia.builtins.TypeError("Function takes at most 2 positional arguments (" + args.length + " given)");
+        }
+        var rel_tol = 1e-09;
+        if ('rel_tol' in kwargs) {
+            if (!batavia.isinstance(kwargs.rel_tol, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+                throw new batavia.builtins.TypeError("a float is required");
+            }
+            rel_tol = kwargs.rel_tol.__float__().val;
+        }
+        var abs_tol = 0.0;
+        if ('abs_tol' in kwargs) {
+            if (!batavia.isinstance(kwargs.abs_tol, [batavia.types.Bool, batavia.types.Float, batavia.types.Int])) {
+                throw new batavia.builtins.TypeError("a float is required");
+            }
+            abs_tol = kwargs.abs_tol.__float__().val;
+        }
+
+        if (abs_tol < 0.0 || rel_tol < 0.0) {
+            throw new batavia.builtins.ValueError("tolerances must be non-negative");
+        }
+
+        var a = args[0].__float__().val;
+        var b = args[1].__float__().val;
+        if (a == b) {
+            return new batavia.types.Bool(true);
+        }
+        if ((a == Infinity) || (a == -Infinity) || (b == Infinity) || (b == -Infinity)) {
+            return new batavia.types.Bool(false);
+        }
+        if (isNaN(a) || isNaN(b)) {
+            return new batavia.types.Bool(false);
+        }
+        var delta = Math.abs(a - b);
+        if ((delta <= abs_tol) ||
+            (delta <= Math.abs(rel_tol * a)) ||
+            (delta <= Math.abs(rel_tol * a))) {
+            return new batavia.types.Bool(true);
+        }
+        return new batavia.types.Bool(false);
     },
 
     isfinite: function(x) {
@@ -750,6 +798,8 @@ batavia.modules.math = {
         return x.__trunc__();
     }
 };
+
+batavia.modules.math.isclose.__python__ = true;
 
 
 // docstrings taken from Python 3, which falls under this license:

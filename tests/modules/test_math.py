@@ -46,15 +46,11 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'fmod',
         'hypot',
         'gcd',
+        'isclose',
         'ldexp',
         'log',
         'pow',
     ], numerics_only=True)
-
-    TODO = [
-        'isclose',
-    ]
-
 
     not_implemented = [
         'test_math_acos_float',
@@ -209,4 +205,15 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             for exp in range(-1100, -900):
                 print(exp)
                 print(math.ldexp(1.0, exp))
+            """)
+
+    def test_isclose_kwargs(self):
+        self.assertCodeExecution("""
+            import math
+            print(math.isclose(1.0, 0.9))
+            print(math.isclose(1.0, 0.9, rel_tol=0.09))
+            print(math.isclose(1.0, 0.9, rel_tol=0.1))
+            print(math.isclose(1.0, 0.9, rel_tol=0.11))
+            print(math.isclose(1.0, 0.9, rel_tol=0.09, abs_tol=0.1))
+            print(math.isclose(1.0, 1.000000001, rel_tol=1.0, abs_tol=1.0))
             """)
