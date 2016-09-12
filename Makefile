@@ -43,6 +43,7 @@ ALL_FILES=\
     batavia/core/Generator.js \
     batavia/core/PYCFile.js \
     batavia/VirtualMachine.js \
+    batavia/modules/stdlib.js
 
 ALL_FILES_WIN=\
     batavia\batavia.js \
@@ -88,6 +89,7 @@ ALL_FILES_WIN=\
     batavia\core\Generator.js \
     batavia\core\PYCFile.js \
     batavia\VirtualMachine.js \
+    batavia\modules\stdlib.js
 
 .PHONY: all clean
 
