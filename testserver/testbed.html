@@ -255,7 +255,7 @@ function sample() {
     console.log('Run code...');
     // The first argument is the Python dotted-path of the module to run
     // The second argument is the value for sys.argv
-    vm.run('sample', [5]);
+    vm.run('sample', ['5']);
     console.log('done.');
 }
 
@@ -297,9 +297,9 @@ batavia.stderr = stdout;
     <h3>Or run some of our Python scripts</h3>
     <div class="indent_block">
         <button onclick="sample()">Run sample.py</button>
-        <button onclick="pystone(5)">Run PyStone (5 loops)</button>
-        <button onclick="pystone(500)">Run PyStone (500 loops)</button>
-        <button onclick="pystone(50000)">Run PyStone (50000 loops)</button><br />
+        <button onclick="pystone('5')">Run PyStone (5 loops)</button>
+        <button onclick="pystone('500')">Run PyStone (500 loops)</button>
+        <button onclick="pystone('50000')">Run PyStone (50000 loops)</button><br />
         <p class="warning">
             NOTE - Run Sample.py will open a new page; that's intended. The Run PyStone (50000 loops) example will take some time to complete without immediate feedback.
         </p>
