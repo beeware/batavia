@@ -22,14 +22,18 @@ batavia.types.Object = function() {
  *************************************************************************/
 
 batavia.types.Type = function() {
-    function Type(name, bases, dict) {
+    function Type(name, bases, dict, klass) {
+        this.__thisclass__ = klass;
         this.__name__ = name;
-        if (bases) {
-            this.__base__ = bases[0].prototype.__class__;
+        if (bases && batavia.isArray(bases)) {
+            this.__base__ = bases[0].__class__;
             this.__bases__ = [];
             for (var base = 0; base < bases.length; base++) {
-                this.__bases__.push(bases[base].prototype.__class__);
+                this.__bases__.push(bases[base].__class__);
             }
+        } else if (bases) {
+            this.__base__ = bases.__class__;
+            this.__bases__ = [this.__base__];
         } else if (name === 'object' && bases === undefined) {
             this.__base__ = null;
             this.__bases__ = [];

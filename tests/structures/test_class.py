@@ -46,7 +46,6 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.expectedFailure
     def test_subclass(self):
         self.assertCodeExecution("""
             class MyBase:

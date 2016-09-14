@@ -1196,8 +1196,12 @@ batavia.builtins.sum = function(args, kwargs) {
 };
 batavia.builtins.sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start.";
 
-batavia.builtins.super = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' not implemented");
+batavia.builtins.super = function(args, kwargs) {
+    if (args.length > 0) {
+        throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'super' with arguments not implemented");
+    }
+
+    return batavia.make_super(this.frame, args);
 };
 batavia.builtins.super.__doc__ = 'super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)\n';
 
