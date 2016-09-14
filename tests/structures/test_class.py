@@ -31,7 +31,6 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.expectedFailure
     def test_method_override(self):
         self.assertCodeExecution("""
             class MyObject:

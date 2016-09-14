@@ -939,8 +939,10 @@ batavia.builtins.print = function(args, kwargs) {
     args.map(function(elm) {
         if (elm === null || elm === undefined) {
             elements.push("None");
+        } else if (elm.__str__) {
+            elements.push(batavia.run_callable(elm, elm.__str__, [], {}));
         } else {
-            elements.push(elm.__str__ ? elm.__str__() : elm.toString());
+            elements.push(elm.toString());
         }
     });
     batavia.stdout(elements.join(' ') + "\n");
