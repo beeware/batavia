@@ -25,6 +25,7 @@ batavia.types.Type = function() {
     function Type(name, bases, dict, klass) {
         this.__thisclass__ = klass;
         this.__name__ = name;
+        // TODO: we're kind of sloppy about if we are using an instance of the class or the class itself. We should really think this through. Especially in mro().
         if (bases && batavia.isArray(bases)) {
             this.__base__ = bases[0].__class__;
             this.__bases__ = [];
@@ -99,4 +100,5 @@ batavia.types.Type = function() {
     return Type;
 }();
 
-batavia.types.Object.prototype.__class__ = new batavia.types.Type('object');
+batavia.types.Object.__class__ = new batavia.types.Type('object');
+batavia.types.Object.prototype.__class__ = batavia.types.Object.__class__;
