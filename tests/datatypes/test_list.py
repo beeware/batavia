@@ -154,7 +154,7 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_ge_list',
 
-        'test_gt_list',
+        # 'test_gt_list',
 
         'test_le_list',
 
