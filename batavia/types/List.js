@@ -2,7 +2,6 @@
 /*************************************************************************
  * A Python list type
  *************************************************************************/
-
 batavia.types.List = function() {
     function List() {
         if (arguments.length === 0) {
@@ -138,7 +137,39 @@ batavia.types.List = function() {
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 /* update this line to get Pythonic list > list behavior */
-                return this.valueOf() > other;
+//                return this.valueOf() > other;
+
+                // edge case where this=[]
+                if(this.valueOf().length == 0){return false}
+
+                for(var i=0; i<this.valueOf().length; i++){
+                    thisItem = this.valueOf()[i];
+                    otherItem = other.valueOf()[i];
+
+                    if(otherItem === undefined){
+                        //other ran out of items. `this` wins!
+                        return true;
+                    }
+
+                    if(thisItem.valueOf() !== otherItem.valueOf()){
+                        // ready to determine
+
+                        //try to cast otherItem in the type of thisItem and compare
+//                        new batavia.types.Int('a')
+                        try{
+                            new batavia.types.Int('a')
+                        } catch(err) {
+                            console.log("caught!")
+                        }
+
+
+                        return thisItem >= otherItem;
+                    }
+                }
+
+                //got through loop and all values were equal. Does other have more items?
+                return this.valueOf().length > other.valueOf().length
+
             } else {
                 throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()");
             }
