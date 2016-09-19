@@ -143,32 +143,15 @@ batavia.types.List = function() {
                 if(this.valueOf().length == 0){return false}
 
                 for(var i=0; i<this.valueOf().length; i++){
-                    thisItem = this.valueOf()[i];
-                    otherItem = other.valueOf()[i];
 
-                    if(otherItem === undefined){
-                        //other ran out of items. `this` wins!
-                        return true;
-                    }
+                    //other ran out of items. `this` wins!
+                    if(other[i] === undefined){return true}
+                    if(this[i].__ne__(other[i])){return this[i].__gt__(other[i])}
 
-                    if(thisItem.valueOf() !== otherItem.valueOf()){
-                        // ready to determine
-
-                        //try to cast otherItem in the type of thisItem and compare
-//                        new batavia.types.Int('a')
-                        try{
-                            new batavia.types.Int('a')
-                        } catch(err) {
-                            console.log("caught!")
-                        }
-
-
-                        return thisItem >= otherItem;
-                    }
                 }
 
-                //got through loop and all values were equal. Does other have more items?
-                return this.valueOf().length > other.valueOf().length
+                //got through loop and all values were equal. Does `this` have more items?
+                return this.length > other.length
 
             } else {
                 throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()");
