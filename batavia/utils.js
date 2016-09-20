@@ -223,7 +223,7 @@ batavia.make_class = function(args, kwargs) {
             klass.prototype[attr] = locals[attr];
         }
     }
-    klass.prototype.__class__ = new batavia.types.Type(name, bases, null, klass);
+    klass.prototype.__class__ = new batavia.types.Type(name, bases);
 
     var PyObject = function(vm, klass, name) {
         var __new__ = function(args, kwargs) {
