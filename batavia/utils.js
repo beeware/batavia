@@ -202,9 +202,24 @@ batavia.make_class = function(args, kwargs) {
             this.__init__.__call__.apply(vm, [args, kwargs]);
         }
     };
+    klass.__name__ = name;
 
+    if (bases) {
+        // load up the base attributes
+        if (batavia.isArray(bases)) {
+            throw new batavia.builtins.NotImplementedError("multiple inheritance not supported yet");
+        }
+        var base = bases.__class__;
+        for (var attr in base) {
+            if (base.hasOwnProperty(attr)) {
+                klass[attr] = base[attr];
+                klass.prototype[attr] = base[attr];
+            }
+        }
+    }
     for (var attr in locals) {
         if (locals.hasOwnProperty(attr)) {
+            klass[attr] = locals[attr];
             klass.prototype[attr] = locals[attr];
         }
     }
@@ -215,8 +230,10 @@ batavia.make_class = function(args, kwargs) {
             return new klass(vm, args, kwargs);
         };
         __new__.__python__ = true;
+        __new__.__class__ = klass;
         return __new__;
     }(this, klass, name);
+    PyObject.__class__ = klass;
 
     return PyObject;
 };
@@ -323,6 +340,40 @@ batavia.run_callable = function(self, func, posargs, namedargs) {
 
     var retval = func.apply(vm, [posargs, namedargs]);
     return retval;
+};
+
+// make a proxy object that forwards function calls to the parent class
+// TODO: forward all function calls
+// TODO: support multiple inheritance
+batavia.make_super = function(frame, args) {
+    // I guess we have to examine the stack to find out which class we are in?
+    // this seems suboptimal...
+    // what does CPython do?
+    if (args.length != 0) {
+        throw new batavia.builtins.NotImplementedError("super does not support arguments yet")
+    }
+    if (frame.f_code.co_name != '__init__') {
+        throw new batavia.builtins.NotImplementedError("super not implemented outside of __init__ yet");
+    }
+    if (frame.f_code.co_argcount == 0) {
+        throw new batavia.builtins.TypeError("no self found in super in __init__");
+    }
+    var self_name = frame.f_code.co_varnames[0];
+    var self = frame.f_locals[self_name];
+    var klass = self.__class__;
+    if (klass.__bases__.length != 1) {
+        throw new batavia.builtins.NotImplementedError("super not implemented for multiple inheritance yet");
+    }
+
+    var base = klass.__base__;
+
+    var obj = {
+        '__init__': function(args, kwargs) {
+            return batavia.run_callable(self, base.__init__, args, kwargs);
+        }
+    };
+    obj.__init__.__python__ = true;
+    return obj;
 };
 
 /************************
