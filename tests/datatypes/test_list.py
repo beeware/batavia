@@ -152,14 +152,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_floor_divide_complex',
 
-        'test_ge_list',
-
-        # 'test_gt_list',
-
-        'test_le_list',
-
-        'test_lt_list',
-
         'test_modulo_complex',
 
         'test_ne_list',
