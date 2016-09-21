@@ -139,6 +139,147 @@ class ListTests(TranspileTestCase):
             """)
 
 
+    # def test_this_empty(self):
+
+
+    def test_list_list_comparisons(self):
+
+
+        # `this` (left list) is empty.
+
+        self.assertCodeExecution("""
+        print('>>> x = []')
+        x = []
+        print('>>> y = [1,2,3]')
+        y = [1,2,3]
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        # `other` (right list) is empty
+
+        self.assertCodeExecution("""
+        print('>>> x = [1,2,3]')
+        x = [1,2,3]
+        print('>>> y = []')
+        y = []
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        # both lists are empty
+        self.assertCodeExecution("""
+        print('>>> x = []')
+        x = []
+        print('>>> y = []')
+        y = []
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        # `this` (left list) is shorter
+
+        self.assertCodeExecution("""
+        print('>>> x = [1,2]')
+        x = [1,2]
+        print('>>> y = [1,2,3]')
+        y = [1,2,3]
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        # `other` (right list) is shorter
+
+        self.assertCodeExecution("""
+        print('>>> x = [1,2,3]')
+        x = [1,2,3]
+        print('>>> y = [1,2]')
+        y = [1,2]
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        # lists have same length
+
+        # comparable items aren't equal
+
+        self.assertCodeExecution("""
+        print('>>> x = [1,2]')
+        x = [1,2]
+        print('>>> y = [1,3]')
+        y = [1,3]
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        self.assertCodeExecution("""
+        print('>>> x = [1,3]')
+        x = [1,3]
+        print('>>> y = [1,2]')
+        y = [1,2]
+        print('>>> x > y')
+        x>y
+        print('>>> x >= y')
+        x >= y
+        print('>>> x < y')
+        x < y
+        print('>>> x <= y')
+        x <= y
+        """)
+
+        # all items are equal
+
+        self.assertCodeExecution("""
+         print('>>> x = [1,2,3]')
+         x = [1,2,3]
+         print('>>> y = [1,2,3]')
+         y = [1,2,3]
+         print('>>> x > y')
+         x>y
+         print('>>> x >= y')
+         x >= y
+         print('>>> x < y')
+         x < y
+         print('>>> x <= y')
+         x <= y
+         """)
+
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
 
@@ -177,87 +318,87 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_complex',
     ]
 
-class ListComparisonTests(TranspileTestCase):
-    """
-    Tests for List [<, <=, >, >=] List
-    """
-    operators = ['>', '>=', '<', '<=']
-    # comparisons = ''
-    # for o in operators:
-    #     comparisons += '\nprint(x {} y)\n'.format(o)
-    #
-    # comparisons = "\n".join(['print(x {} y)'.format(o) for o in operators])
-
-    comparisons = """
-    print(x > y)
-    print(x >= y)
-    print(x < y)
-    print(x <= y)
-    """
-
-    def test_this_empty(self):
-        """
-        `this` (left list) is empty.
-        """
-
-        test_str = """
-        print('>>> x = []')
-        print('>>> y = [1,2,3]')
-        x = []
-        y = [1,2,3]
-        """
-        self.assertCodeExecution(test_str+self.comparisons)
-
-
-    def test_other_empty(self):
-        """
-        `other` (right list) is empty
-        """
-
-        test_str = """
-        print('>>> x = [1,2,3]')
-        print('>>> y = []')
-        x = [1,2,3]
-        y = []
-        """
-        self.assertCodeExecution(test_str+self.comparisons)
-
-    def test_this_runs_out(self):
-        """
-        `this` (left list) is shorter
-        """
-
-        test_str = """
-        print('>>> x = [1,2]')
-        print('>>> y = [1,2,3]')
-        x = [1,2]
-        y = [1,2,3]
-        """
-        self.assertCodeExecution(test_str+self.comparisons)
-
-
-    def test_other_runs_out(self):
-        """
-        `other` (right list) is shorter
-        """
-
-        test_str = """
-        print('>>> x = [1,2,3]')
-        print('>>> y = [1,2]')
-        x = [1,2,3]
-        y = [1,2]
-        """
-        self.assertCodeExecution(test_str+self.comparisons)
-
-    def test_both_empty(self):
-        """
-        both lists are empty
-        """
-
-        test_str = """
-        print('>>> x = []')
-        print('>>> y = []')
-        x = []
-        y = []
-        """
-        self.assertCodeExecution(test_str+self.comparisons)
+# class ListComparisonTests(TranspileTestCase):
+#     """
+#     Tests for List [<, <=, >, >=] List
+#     """
+#     operators = ['>', '>=', '<', '<=']
+#     # comparisons = ''
+#     # for o in operators:
+#     #     comparisons += '\nprint(x {} y)\n'.format(o)
+#     #
+#     # comparisons = "\n".join(['print(x {} y)'.format(o) for o in operators])
+#
+#     comparisons = """
+#     print(x > y)
+#     print(x >= y)
+#     print(x < y)
+#     print(x <= y)
+#     """
+#
+#     def test_this_empty(self):
+#         """
+#         `this` (left list) is empty.
+#         """
+#
+#         test_str = """
+#         print('>>> x = []')
+#         print('>>> y = [1,2,3]')
+#         x = []
+#         y = [1,2,3]
+#         """
+#         self.assertCodeExecution(test_str+self.comparisons)
+#
+#
+#     def test_other_empty(self):
+#         """
+#         `other` (right list) is empty
+#         """
+#
+#         test_str = """
+#         print('>>> x = [1,2,3]')
+#         print('>>> y = []')
+#         x = [1,2,3]
+#         y = []
+#         """
+#         self.assertCodeExecution(test_str+self.comparisons)
+#
+#     def test_this_runs_out(self):
+#         """
+#         `this` (left list) is shorter
+#         """
+#
+#         test_str = """
+#         print('>>> x = [1,2]')
+#         print('>>> y = [1,2,3]')
+#         x = [1,2]
+#         y = [1,2,3]
+#         """
+#         self.assertCodeExecution(test_str+self.comparisons)
+#
+#
+#     def test_other_runs_out(self):
+#         """
+#         `other` (right list) is shorter
+#         """
+#
+#         test_str = """
+#         print('>>> x = [1,2,3]')
+#         print('>>> y = [1,2]')
+#         x = [1,2,3]
+#         y = [1,2]
+#         """
+#         self.assertCodeExecution(test_str+self.comparisons)
+#
+#     def test_both_empty(self):
+#         """
+#         both lists are empty
+#         """
+#
+#         test_str = """
+#         print('>>> x = []')
+#         print('>>> y = []')
+#         x = []
+#         y = []
+#         """
+#         self.assertCodeExecution(test_str+self.comparisons)
