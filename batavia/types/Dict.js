@@ -272,6 +272,16 @@ batavia.types.Dict = function() {
      * Methods
      **************************************************/
 
+    Dict.prototype.get = function(key, backup) {
+        if (this.__contains__(key)) {
+            return this[key];
+        } else if (typeof backup === 'undefined') {
+            return null;
+        } else {
+            return backup;
+        }
+    };
+
     Dict.prototype.update = function(values) {
         for (var key in values) {
             if (values.hasOwnProperty(key)) {
