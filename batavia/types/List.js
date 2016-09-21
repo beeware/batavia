@@ -71,23 +71,29 @@ batavia.types.List = function() {
     List.prototype.__lt__ = function(other) {
 
 
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+        if (batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
             throw new batavia.builtins.TypeError("unorderable types: list() < " + batavia.type_name(other) + "()")
         }
 
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
-                // edge case where this=[]
-                if(this.length === 0 && other.length > 0){return true}
+                // edge case where this==[]
+                if (this.length === 0 && other.length > 0){
+                    return true;
+                }
 
-                for(var i=0; i<this.length; i++){
+                for (var i=0; i<this.length; i++){
 
                     //other ran out of items.
-                    if(other[i] === undefined){return false}
-                    if(this[i].__ne__(other[i])){return this[i].__lt__(other[i])}
+                    if (other[i] === undefined){
+                        return false;
+                    }
+                    if (this[i].__ne__(other[i])){
+                        return this[i].__lt__(other[i]);
+                    }
                 }
                 //got through loop and all values were equal. Determine by comparing length
-                return this.length < other.length
+                return this.length < other.length;
             } else {
                 throw new batavia.builtins.TypeError("unorderable types: list() < " + batavia.type_name(other) + "()");
             }
@@ -99,23 +105,29 @@ batavia.types.List = function() {
     List.prototype.__le__ = function(other) {
 
 
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+        if (batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
             throw new batavia.builtins.TypeError("unorderable types: list() <= " + batavia.type_name(other) + "()")
         }
 
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
-                // edge case where this=[]
-                if(this.length === 0 && other.length > 0){return true}
+                // edge case where this==[]
+                if (this.length === 0 && other.length > 0){
+                    return true;
+                }
 
-                for(var i=0; i<this.length; i++){
+                for (var i=0; i<this.length; i++){
 
                     //other ran out of items.
-                    if(other[i] === undefined){return false}
-                    if(this[i].__ne__(other[i])){return this[i].__le__(other[i])}
+                    if (other[i] === undefined){
+                        return false;
+                    }
+                    if (this[i].__ne__(other[i])){
+                        return this[i].__le__(other[i]);
+                    }
                 }
                 //got through loop and all values were equal. Determine by comparing length
-                return this.length <= other.length
+                return this.length <= other.length;
             } else {
                 throw new batavia.builtins.TypeError("unorderable types: list() <= " + batavia.type_name(other) + "()");
             }
@@ -154,17 +166,23 @@ batavia.types.List = function() {
 
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
-                // edge case where this=[]
-                if(this.length === 0 && other.length > 0){return false}
+                // edge case where this==[]
+                if (this.length === 0 && other.length > 0){
+                    return false;
+                }
 
                 for(var i=0; i<this.length; i++){
 
                     //other ran out of items.
-                    if(other[i] === undefined){return true}
-                    if(this[i].__ne__(other[i])){return this[i].__gt__(other[i])}
+                    if (other[i] === undefined) {
+                        return true;
+                    }
+                    if (this[i].__ne__(other[i])){
+                        return this[i].__gt__(other[i]);
+                    }
                 }
                 //got through loop and all values were equal. Determine by comparing length
-                return this.length > other.length
+                return this.length > other.length;
             } else {
                 throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()");
             }
@@ -175,23 +193,29 @@ batavia.types.List = function() {
 
     List.prototype.__ge__ = function(other) {
 
-        if(batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+        if (batavia.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
             throw new batavia.builtins.TypeError("unorderable types: list() >= " + batavia.type_name(other) + "()")
         }
 
         if (other !== null) {
             if (batavia.isinstance(other, batavia.types.List)) {
-                // edge case where this=[]
-                if(this.length === 0 && other.length > 0){return false}
+                // edge case where this==[]
+                if (this.length === 0 && other.length > 0){
+                    return false;
+                }
 
-                for(var i=0; i<this.length; i++){
+                for (var i=0; i<this.length; i++){
 
                     //other ran out of items.
-                    if(other[i] === undefined){return true}
-                    if(this[i].__ne__(other[i])){return this[i].__ge__(other[i])}
+                    if (other[i] === undefined){
+                        return true;
+                    }
+                    if (this[i].__ne__(other[i])){
+                        return this[i].__ge__(other[i]);
+                    }
                 }
                 //got through loop and all values were equal. Determine by comparing length
-                return this.length >= other.length
+                return this.length >= other.length;
             } else {
                 throw new batavia.builtins.TypeError("unorderable types: list() >= " + batavia.type_name(other) + "()");
             }
