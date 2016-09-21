@@ -15,7 +15,28 @@ String.prototype.__iter__ = function() {
 };
 
 String.prototype.__repr__ = function() {
-    return "'" + this.toString() + "'";
+    // we have to replace all non-printable characters
+    return "'" + this.toString()
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/\x7F/g, "\\x7f")
+        .replace(/[\u0000-\u001F]/g, function (match) {
+            var code = match.charCodeAt(0);
+            switch (code) {
+            case 9:
+                return "\\t";
+            case 10:
+                return "\\n";
+            case 13:
+                return "\\r";
+            default:
+                var hex = code.toString(16);
+                if (hex.length == 1) {
+                  hex = "0" + hex;
+                }
+                return "\\x" + hex;
+            }
+        }) + "'";
 };
 
 String.prototype.__str__ = function() {
@@ -387,6 +408,20 @@ String.prototype.__ixor__ = function(other) {
 String.prototype.__ior__ = function(other) {
     throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'str' and '" + batavia.type_name(other) + "'");
 
+};
+
+/**************************************************
+ * Methods
+ **************************************************/
+
+String.prototype.join = function(iter) {
+    var l = new batavia.types.List(iter);
+    for (var i = 0; i < l.length; i++) {
+        if (!batavia.isinstance(l[i], batavia.types.Str)) {
+            throw new batavia.builtins.TypeError("sequence item " + i + ": expected str instance, " + batavia.type_name(l[i]) + " found");
+        }
+    }
+    return l.join(this);
 };
 
 /**************************************************
