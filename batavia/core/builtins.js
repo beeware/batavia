@@ -35,6 +35,23 @@ batavia.builtins.__import__ = function(args, kwargs) {
     if (module === undefined) {
         module = batavia.modules.sys.modules[args[0]];
     }
+    // Check if there is a stdlib (pyc) module.
+    if (module === undefined) {
+        var payload = batavia.stdlib[args[0]];
+        if (payload) {
+            var code = batavia.modules.marshal.load_pyc(this, payload);
+            // Convert code object to module
+            var frame = this.make_frame({
+                'code': code,
+                'f_globals': args[1]
+            });
+            this.run_frame(frame);
+
+            module = new batavia.types.Module(name, frame.f_locals);
+            batavia.modules.sys.modules[name] = module;
+        }
+    }
+
     // If there still isn't a module, try loading one from the DOM.
     if (module === undefined) {
         // Load requested module
