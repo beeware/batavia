@@ -229,7 +229,6 @@ class ListTests(TranspileTestCase):
         x <= y
         """)
 
-        # lists have same length
 
         # comparable items aren't equal
 
