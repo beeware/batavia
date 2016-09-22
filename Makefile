@@ -100,7 +100,7 @@ EXTRA_FILES_WIN=\
 		batavia\modules\stdlib\this.js
 
 
-all: batavia-all.js batavia-all.min.js batavia.js batavia.min.js
+all: stdlib batavia-all.js batavia-all.min.js batavia.js batavia.min.js
 
 .PHONY: all clean stdlib
 

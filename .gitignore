@@ -10,6 +10,7 @@ _build
 distribute-*
 /batavia*.js
 /batavia*.min.js
+/batavia/modules/stdlib/*.js
 /tests/temp
 env
 .eggs/
