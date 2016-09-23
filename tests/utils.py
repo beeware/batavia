@@ -307,7 +307,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             )
             sendPhantomCommand(
                 _phantomjs,
-                "page.injectJs('../batavia.min.js')",
+                "page.injectJs('../batavia-all.min.js')",
                 success=['true', '{}'],
                 on_fail="Unable to inject Batavia"
             )

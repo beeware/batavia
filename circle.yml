@@ -2,6 +2,12 @@ machine:
   python:
     version: 3.5.1
 
+dependencies:
+  cache_directories:
+    - ouroboros
+  post:
+    - test -e ouroboros || git clone https://github.com/pybee/ouroboros.git
+
 test:
   override:
      - python setup.py test:

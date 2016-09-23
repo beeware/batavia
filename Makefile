@@ -1,5 +1,5 @@
 
-ALL_FILES=\
+BASE_FILES=\
     batavia/batavia.js \
     batavia/vendor/vendored.js \
     batavia/utils.js \
@@ -42,9 +42,9 @@ ALL_FILES=\
     batavia/core/Frame.js \
     batavia/core/Generator.js \
     batavia/core/PYCFile.js \
-    batavia/VirtualMachine.js \
+    batavia/VirtualMachine.js
 
-ALL_FILES_WIN=\
+BASE_FILES_WIN=\
     batavia\batavia.js \
     batavia\vendor\vendored.js \
     batavia\utils.js \
@@ -87,25 +87,50 @@ ALL_FILES_WIN=\
     batavia\core\Frame.js \
     batavia\core\Generator.js \
     batavia\core\PYCFile.js \
-    batavia\VirtualMachine.js \
+    batavia\VirtualMachine.js
 
-.PHONY: all clean
+EXTRA_FILES=\
+		batavia/modules/stdlib/colorsys.js \
+		batavia/modules/stdlib/copyreg.js \
+		batavia/modules/stdlib/this.js
 
-all: batavia.js batavia.min.js
+EXTRA_FILES_WIN=\
+		batavia\modules\stdlib\colorsys.js \
+		batavia\modules\stdlib\copyreg.js \
+		batavia\modules\stdlib\this.js
+
+
+all: stdlib batavia-all.js batavia-all.min.js batavia.js batavia.min.js
+
+.PHONY: all clean stdlib
+
+stdlib:
+	python compile_stdlib.py
 
 clean:
 ifeq ($(OS),Windows_NT)
-	del batavia.js batavia.min.js
+	del batavia-all.js batavia-all.min.js batavia.js batavia.min.js
 else
-	rm batavia.js batavia.min.js
+	rm batavia-all.js batavia-all.min.js batavia.js batavia.min.js
 endif
 
-batavia.js: $(ALL_FILES)
+batavia.js: $(BASE_FILES)
 ifeq ($(OS),Windows_NT)
-	type $(ALL_FILES_WIN)> batavia.js
+	type $(BASE_FILES_WIN)> batavia.js
 else
-	cat $(ALL_FILES) > batavia.js
+	cat $(BASE_FILES) > batavia.js
 endif
+
+batavia-all.js: $(EXTRA_FILES) batavia.js stdlib
+ifeq ($(OS),Windows_NT)
+	type batavia.js $(EXTRA_FILES_WIN)> batavia-all.js
+else
+	cat batavia.js $(EXTRA_FILES) > batavia-all.js
+endif
+
 
 batavia.min.js: batavia.js
 	python -m jsmin batavia.js > batavia.min.js
+
+batavia-all.min.js: batavia-all.js
+	python -m jsmin batavia-all.js > batavia-all.min.js
