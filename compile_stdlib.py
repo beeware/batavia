@@ -19,6 +19,7 @@ enabled_modules = [
     'colorsys',
     'copyreg',
     'operator',
+    'stat',
     'this',
 ]
 

@@ -28,6 +28,13 @@ class StdlibTests(TranspileTestCase):
             print("Done")
             """)
 
+    def test_stat(self):
+        # there is a bunch of extra stuff in this in the native Python 3.5 module
+        self.assertCodeExecution("""
+            import stat
+            print("Done")
+            """)
+
     def test_this(self):
         self.assertCodeExecution("""
             import this
