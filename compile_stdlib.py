@@ -15,8 +15,11 @@ import sys
 import tempfile
 
 enabled_modules = [
+    'bisect',
     'colorsys',
     'copyreg',
+    'operator',
+    'stat',
     'this',
 ]
 

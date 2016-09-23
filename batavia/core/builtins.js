@@ -28,8 +28,17 @@ batavia.builtins.__import__ = function(args, kwargs) {
         throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
     }
 
-    // First, try native modules
-    var module = batavia.modules[args[0]];
+    // First, check for builtins
+    var module;
+
+    if (args[0] == "builtins") {
+        module = batavia.builtins;
+    }
+
+    // Second, try native modules
+    if (module === undefined) {
+        module = batavia.modules[args[0]];
+    }
 
     // If there's no native module, try for a pre-loaded module.
     if (module === undefined) {
