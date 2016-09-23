@@ -961,3 +961,9 @@ class NativeImportTests(TranspileTestCase):
             third: 6 3 9
             Done.
             """)
+
+    def test_import_from_builtins_as(self):
+        self.assertCodeExecution("""
+            from builtins import abs as _abs
+            print("Done")
+            """)
