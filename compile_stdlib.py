@@ -15,6 +15,8 @@ import sys
 import tempfile
 
 enabled_modules = [
+    '_weakrefset',
+    'abc',
     'bisect',
     'colorsys',
     'copyreg',

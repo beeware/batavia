@@ -91,6 +91,8 @@ BASE_FILES_WIN=\
 
 EXTRA_FILES=\
 		batavia/modules/misc.js \
+		batavia/modules/stdlib/_weakrefset.js \
+		batavia/modules/stdlib/abc.js \
 		batavia/modules/stdlib/bisect.js \
 		batavia/modules/stdlib/colorsys.js \
 		batavia/modules/stdlib/copyreg.js \
@@ -100,6 +102,8 @@ EXTRA_FILES=\
 
 EXTRA_FILES_WIN=\
 		batavia\modules\misc.js \
+		batavia\modules\stdlib\_weakrefset.js \
+		batavia\modules\stdlib\abc.js \
 		batavia\modules\stdlib\bisect.js \
 		batavia\modules\stdlib\colorsys.js \
 		batavia\modules\stdlib\copyreg.js \
