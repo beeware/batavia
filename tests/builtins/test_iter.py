@@ -2,7 +2,12 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class IterTests(TranspileTestCase):
-    pass
+    def test_iter_bytes(self):
+        self.assertCodeExecution("""
+            print(list(iter(b"")))
+            print(list(iter(b"abcdefgh")))
+            """)
+
 
 
 class BuiltinIterFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
@@ -10,7 +15,6 @@ class BuiltinIterFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_bytearray',
-        'test_bytes',
         'test_complex',
         'test_dict',
         'test_NotImplemented',
