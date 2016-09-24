@@ -12,6 +12,9 @@ def test_module(self, name):
         """ % (name, name), run_in_function=False)
 
 class StdlibTests(TranspileTestCase):
+    def test__weakref(self):
+        test_module(self, "_weakref")
+
     def test_bisect(self):
         test_module(self, "bisect")
 
