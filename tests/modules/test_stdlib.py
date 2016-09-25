@@ -5,13 +5,22 @@ import unittest
 # do basic tests for now
 # TODO: execute complete tests for each stdlib module
 
-def test_module(self, name):
+def test_module(self, name, exclude=[]):
     self.assertCodeExecution("""
         import %s
-        print(sorted([x for x in list(dir(%s)) if not x.startswith('_')]))
-        """ % (name, name), run_in_function=False)
+        print(sorted([x for x in list(dir(%s)) if not x.startswith('_') and x not in set(%s)]))
+        """ % (name, name, repr(exclude)), run_in_function=False)
 
 class StdlibTests(TranspileTestCase):
+    def test__weakref(self):
+        test_module(self, "_weakref")
+
+    def test__weakrefset(self):
+        test_module(self, "_weakrefset")
+
+    def test_abc(self):
+        test_module(self, "abc", exclude=['ref'])
+
     def test_bisect(self):
         test_module(self, "bisect")
 
