@@ -301,7 +301,27 @@ batavia.types.Dict = function() {
                 result.push([key, this[key]]);
             }
         }
-        return result;
+        return new batavia.types.List(result);
+    };
+
+    Dict.prototype.keys = function() {
+        var result = [];
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                result.push(key);
+            }
+        }
+        return new batavia.types.List(result);
+    };
+
+    Dict.prototype.values = function() {
+        var result = [];
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                result.push(this[key]);
+            }
+        }
+        return new batavia.types.List(result);
     };
 
     return Dict;
