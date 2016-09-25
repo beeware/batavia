@@ -36,8 +36,11 @@ batavia.types.Bytes = function() {
     };
 
     Bytes.prototype.__str__ = function() {
-
         return "b'" + String.fromCharCode.apply(null, this.val) + "'";
+    };
+
+    Bytes.prototype.__iter__ = function() {
+        return new Bytes.prototype.BytesIterator(this.val);
     };
 
     /**************************************************
@@ -164,7 +167,7 @@ batavia.types.Bytes = function() {
     };
 
     Bytes.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytes.__getitem__ has not been implemented");
+        return new batavia.types.Int(this.val[batavia.builtins.int(other).valueOf()]);
     };
 
     Bytes.prototype.__lshift__ = function(other) {
@@ -247,7 +250,40 @@ batavia.types.Bytes = function() {
         return new Bytes(this.valueOf());
     };
 
+    /**************************************************
+     * Bytes Iterator
+     **************************************************/
+
+    Bytes.prototype.BytesIterator = function(data) {
+        Object.call(this);
+        this.index = 0;
+        this.data = data;
+    };
+
+    Bytes.prototype.BytesIterator.prototype = Object.create(Object.prototype);
+
+    Bytes.prototype.BytesIterator.prototype.__iter__ = function() {
+        return this;
+    };
+
+    Bytes.prototype.BytesIterator.prototype.__next__ = function() {
+        if (this.index >= this.data.length) {
+            throw new batavia.builtins.StopIteration();
+        }
+        var retval = this.data[this.index];
+        this.index++;
+        return new batavia.types.Int(retval);
+    };
+
+    Bytes.prototype.BytesIterator.prototype.__str__ = function() {
+        return "<bytes_iterator object at 0x99999999>";
+    };
+
+    Bytes.prototype.BytesIterator.prototype.constructor = Bytes.prototype.BytesIterator;
+    Bytes.prototype.BytesIterator.prototype.__class__ = new batavia.types.Type('bytes_iterator');
+
     /**************************************************/
+
 
     return Bytes;
 }();

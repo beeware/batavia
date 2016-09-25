@@ -25,7 +25,6 @@ class FilterTests(TranspileTestCase):
     def test_bool(self):
         self.assertCodeExecution(self.base_code % ("[True, False, True]", "bool(x)"), run_in_function=False)
 
-    @expectedFailure
     def test_bytearray(self):
         self.assertCodeExecution(self.base_code % ("b'123'", "x"), run_in_function=False)
 

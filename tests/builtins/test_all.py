@@ -25,7 +25,6 @@ class BuiltinAllFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     not_implemented = [
 
         'test_bytearray',
-        'test_bytes',
         'test_dict',
         'test_complex',
         'test_NotImplemented',
