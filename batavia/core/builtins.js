@@ -50,6 +50,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
         if (payload) {
             var code = batavia.modules.marshal.load_pyc(this, payload);
             // Convert code object to module
+            args[1].__name__ = args[0]
             var frame = this.make_frame({
                 'code': code,
                 'f_globals': args[1]
