@@ -16,6 +16,12 @@ The first step is to create a project directory, and clone Batavia:
     $ cd tutorial
     $ git clone https://github.com/pybee/batavia.git
 
+Batavia now requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
+
+.. code-block:: bash
+
+    $ git clone https://github.com/pybee/ouroboros.git
+
 Then create a virtual environment and install Batavia into it:
 
 .. code-block:: bash
@@ -42,6 +48,13 @@ Then create a virtual environment and install Batavia into it:
     $ conda create -n batavia
     $ source activate batavia
     $ pip install -e .
+
+Finally, you'll need to build the combined Batavia JS files:
+
+.. code-block:: bash
+
+    $ cd batavia
+    $ make
 
 Next Steps
 ----------
