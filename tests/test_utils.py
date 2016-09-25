@@ -233,3 +233,4 @@ class JavaScriptBootstrapTests(TranspileTestCase):
             Done.
             """,
         )
+

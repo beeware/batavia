@@ -4,6 +4,18 @@ import unittest
 
 
 class ListTests(TranspileTestCase):
+
+    def assertOrdering(self, col1, col2):
+        """
+        runs assertCodeExecution with col1 [<, <=, >, >=] col2
+        :param col1: array like
+        :param col2: array like
+        """
+        set_up = "print('>>> x = {col1}')\nprint('>>> y = {col2}')\n".format(col1=col1, col2=col2)
+        operators = ['>', '>=', '<', '<=']
+        comparisons = ["\nprint('>>> x {o} y')\nprint(x {o} y)\n".format(o=o) for o in operators]
+        self.assertCodeExecution(set_up + ''.join(comparisons))
+
     @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
@@ -144,140 +156,28 @@ class ListTests(TranspileTestCase):
 
     def test_list_list_comparisons(self):
 
-
         # `this` (left list) is empty.
-
-        self.assertCodeExecution("""
-        print('>>> x = []')
-        x = []
-        print('>>> y = [1,2,3]')
-        y = [1,2,3]
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
+        self.assertOrdering([], [1,2,3])
 
         # `other` (right list) is empty
-
-        self.assertCodeExecution("""
-        print('>>> x = [1,2,3]')
-        x = [1,2,3]
-        print('>>> y = []')
-        y = []
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
+        self.assertOrdering([1,2,3], [])
 
         # both lists are empty
-        self.assertCodeExecution("""
-        print('>>> x = []')
-        x = []
-        print('>>> y = []')
-        y = []
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
+        self.assertOrdering([],[])
 
         # `this` (left list) is shorter
-
-        self.assertCodeExecution("""
-        print('>>> x = [1,2]')
-        x = [1,2]
-        print('>>> y = [1,2,3]')
-        y = [1,2,3]
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
+        self.assertOrdering([1,2], [1,2,3])
 
         # `other` (right list) is shorter
-
-        self.assertCodeExecution("""
-        print('>>> x = [1,2,3]')
-        x = [1,2,3]
-        print('>>> y = [1,2]')
-        y = [1,2]
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
-
+        self.assertOrdering([1,2,3], [1,2])
 
         # comparable items aren't equal
+        self.assertOrdering([1,2], [1,3])
 
-        self.assertCodeExecution("""
-        print('>>> x = [1,2]')
-        x = [1,2]
-        print('>>> y = [1,3]')
-        y = [1,3]
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
-
-        self.assertCodeExecution("""
-        print('>>> x = [1,3]')
-        x = [1,3]
-        print('>>> y = [1,2]')
-        y = [1,2]
-        print('>>> x > y')
-        x>y
-        print('>>> x >= y')
-        x >= y
-        print('>>> x < y')
-        x < y
-        print('>>> x <= y')
-        x <= y
-        """)
+        self.assertOrdering([1,3], [1,2])
 
         # all items are equal
-
-        self.assertCodeExecution("""
-         print('>>> x = [1,2,3]')
-         x = [1,2,3]
-         print('>>> y = [1,2,3]')
-         y = [1,2,3]
-         print('>>> x > y')
-         x>y
-         print('>>> x >= y')
-         x >= y
-         print('>>> x < y')
-         x < y
-         print('>>> x <= y')
-         x <= y
-         """)
+        self.assertOrdering([1,2,3], [1,2,3])
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
@@ -316,88 +216,3 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_modulo_complex',
     ]
-
-# class ListComparisonTests(TranspileTestCase):
-#     """
-#     Tests for List [<, <=, >, >=] List
-#     """
-#     operators = ['>', '>=', '<', '<=']
-#     # comparisons = ''
-#     # for o in operators:
-#     #     comparisons += '\nprint(x {} y)\n'.format(o)
-#     #
-#     # comparisons = "\n".join(['print(x {} y)'.format(o) for o in operators])
-#
-#     comparisons = """
-#     print(x > y)
-#     print(x >= y)
-#     print(x < y)
-#     print(x <= y)
-#     """
-#
-#     def test_this_empty(self):
-#         """
-#         `this` (left list) is empty.
-#         """
-#
-#         test_str = """
-#         print('>>> x = []')
-#         print('>>> y = [1,2,3]')
-#         x = []
-#         y = [1,2,3]
-#         """
-#         self.assertCodeExecution(test_str+self.comparisons)
-#
-#
-#     def test_other_empty(self):
-#         """
-#         `other` (right list) is empty
-#         """
-#
-#         test_str = """
-#         print('>>> x = [1,2,3]')
-#         print('>>> y = []')
-#         x = [1,2,3]
-#         y = []
-#         """
-#         self.assertCodeExecution(test_str+self.comparisons)
-#
-#     def test_this_runs_out(self):
-#         """
-#         `this` (left list) is shorter
-#         """
-#
-#         test_str = """
-#         print('>>> x = [1,2]')
-#         print('>>> y = [1,2,3]')
-#         x = [1,2]
-#         y = [1,2,3]
-#         """
-#         self.assertCodeExecution(test_str+self.comparisons)
-#
-#
-#     def test_other_runs_out(self):
-#         """
-#         `other` (right list) is shorter
-#         """
-#
-#         test_str = """
-#         print('>>> x = [1,2,3]')
-#         print('>>> y = [1,2]')
-#         x = [1,2,3]
-#         y = [1,2]
-#         """
-#         self.assertCodeExecution(test_str+self.comparisons)
-#
-#     def test_both_empty(self):
-#         """
-#         both lists are empty
-#         """
-#
-#         test_str = """
-#         print('>>> x = []')
-#         print('>>> y = []')
-#         x = []
-#         y = []
-#         """
-#         self.assertCodeExecution(test_str+self.comparisons)
