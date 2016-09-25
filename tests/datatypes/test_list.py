@@ -13,7 +13,7 @@ class ListTests(TranspileTestCase):
         """
         set_up = "print('>>> x = {col1}')\nprint('>>> y = {col2}')\n".format(col1=col1, col2=col2)
         operators = ['>', '>=', '<', '<=']
-        comparisons = ["\nprint('>>> x {o} y')\nprint(x {o} y)\n".format(o=o) for o in operators]
+        comparisons = ["\nprint('>>> x {o} y')\nprint({col1} {o} {col2})\n".format(col1=col1, o=o, col2=col2) for o in operators]
         self.assertCodeExecution(set_up + ''.join(comparisons))
 
     @unittest.expectedFailure
