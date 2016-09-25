@@ -641,8 +641,35 @@ batavia.builtins.getattr = function(args) {
 };
 batavia.builtins.getattr.__doc__ = "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case.";
 
-batavia.builtins.globals = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'globals' not implemented");
+// TODO: this should be a proper dictionary
+batavia.builtins.globals = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("globals() doesn't accept keyword arguments");
+    }
+    if (args && args.length != 0) {
+        throw new batavia.builtins.TypeError('globals() takes no arguments (' + args.length + ' given)');
+    }
+    var globals = this.frame.f_globals;
+
+    // support items() iterator
+    globals.items = function() {
+        var l = [];
+        var keys = Object.keys(globals);
+        for (var i in keys) {
+            var k = keys[i];
+            // workaround until we have a proper dictionary
+            if (k == 'items') {
+              continue;
+            }
+            l.push(new batavia.types.Tuple([k, globals[k]]));
+        }
+        l = new batavia.types.List(l);
+        return l;
+    };
+    return globals;
 };
 batavia.builtins.globals.__doc__ = "globals() -> dictionary\n\nReturn the dictionary containing the current scope's global variables.";
 
