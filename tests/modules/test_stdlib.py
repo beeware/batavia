@@ -30,6 +30,13 @@ class StdlibTests(TranspileTestCase):
     def test_copyreg(self):
         test_module(self, "copyreg")
 
+    def test_token(self):
+        # our version doesn't quite sync up
+        self.assertCodeExecution("""
+            import token
+            print("Done")
+            """)
+
     def test_operator(self):
         # there is a bunch of extra stuff in this in the native Python 3.5 module
         self.assertCodeExecution("""

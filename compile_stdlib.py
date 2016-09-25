@@ -20,6 +20,7 @@ enabled_modules = [
     'bisect',
     'colorsys',
     'copyreg',
+    'token',
     'operator',
     'stat',
     'this',
