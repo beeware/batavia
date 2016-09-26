@@ -28,6 +28,12 @@ check out your fork to your own computer into a development directory:
     $ cd batavia-dev
     $ git clone git@github.com:<your github username>/batavia.git
 
+Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
+
+.. code-block:: bash
+
+    $ git clone https://github.com/pybee/ouroboros.git
+
 Then create a virtual environment and install Batavia into it:
 
 .. code-block:: bash
@@ -44,6 +50,13 @@ Then create a virtual environment and install Batavia into it:
     $ conda create -n batavia-dev
     $ source activate batavia-dev
     $ pip install -e .
+
+You'll need to build the combined Batavia JS files:
+
+.. code-block:: bash
+
+    $ cd batavia
+    $ make
 
 Lastly, you'll need to obtain and install `PhantomJS`_. PhantomJS is a
 headless browser that allows Batavia to test it's behavior in a "real"
@@ -70,7 +83,7 @@ Windows
 `Download PhantomJS <http://phantomjs.org/download.html>`__ and extract
 the .exe file into your GitHub repository.
 
-On Windows, Batavia also needs the GNU "make" utility, which you can 
+On Windows, Batavia also needs the GNU "make" utility, which you can
 find `here <http://www.equation.com/servlet/equation.cmd?fa=make>`__.
 This should likewise be extracted into your GitHub repository or
 somewhere in your PATH.
@@ -94,12 +107,12 @@ so it should be reliable.
 
 Fedora
 ~~~~~~
-Go to http://phantomjs.org/download.html and download the file for your architecuture  
+Go to http://phantomjs.org/download.html and download the file for your architecuture
 i.e. `64bit`_ or `32bit`_.
 
-.. _64bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2  
-.. _32bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2  
-Unpack the file to your prefered location and add the bin directory to your PATH environment variable.  
+.. _64bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
+.. _32bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
+Unpack the file to your prefered location and add the bin directory to your PATH environment variable.
 
 .. code-block:: bash
 
@@ -109,7 +122,7 @@ Unpack the file to your prefered location and add the bin directory to your PATH
 
 Build from sources on linux
 ~~~~~~
-Building phantomjs takes 30min to several hours. Do this only if the other methods don't work. 
+Building phantomjs takes 30min to several hours. Do this only if the other methods don't work.
 Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
 If no binary is available, check the instructions at http://phantomjs.org/build.html
 
@@ -138,7 +151,7 @@ Then compile and link phantomjs:
 .. code-block:: bash
 
 	$ python build.py
-	
+
 Raspbian/Raspberry Pi
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -189,8 +202,8 @@ You're now ready to run the test suite! From the batavia-dev/batavia directory T
 
     $ python setup.py test
 
-This will take at least 5 minutes, and can take upwards of 1.5hrs, on most modern PCs/laptops,
-and will generate around 4000 lines of console output - one line for each test that is executed.
+This will take at least 20 minutes, and can take upwards of 1.5hrs, on most modern PCs/laptops,
+and will generate around 10000 lines of console output - one line for each test that is executed.
 Each line will tell you the pass/fail status of each test - e.g.,::
 
     test_abs_not_implemented (tests.builtins.test_abs.AbsTests) ... expected failure
@@ -261,7 +274,7 @@ Troubleshooting
 
   .. code-block:: bash
 
-      $ pip install jsmin 
+      $ pip install jsmin
       $ make clean
       $ make
       $ python setup.py test
