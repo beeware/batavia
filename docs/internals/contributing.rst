@@ -28,7 +28,7 @@ check out your fork to your own computer into a development directory:
     $ cd batavia-dev
     $ git clone git@github.com:<your github username>/batavia.git
 
-Batavia now requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
+Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
 
 .. code-block:: bash
 
