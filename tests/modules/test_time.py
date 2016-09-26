@@ -33,7 +33,17 @@ class TimeTests(TranspileTestCase):
             """)
 
     def test_struct_time_valid(self):
-        # valid construction
+        """
+        valid construction
+        """
+
+        # TODO: this won't pass until the follownig types have .length return their length (currently they return undefined)
+        #     bytearray,
+        #     bytes,
+        #     dict,
+        #     frozenset,
+        #     range,
+        #     set,
 
         seed = list(range(1, 10))
         sequences = (
@@ -51,10 +61,28 @@ class TimeTests(TranspileTestCase):
         for seq in sequences:
             st = time.struct_time(seq)
             self.assertCodeExecution("""
+            print("trying with {type}")
             print('>>> import time')
             import time
             print(">>> st = time.struct_time({seq})")
             st = time.struct_time({seq})
             print('>>> st')
             print(st)
-            """.format(seq=seq))
+            """.format(type=type(seq), seq=seq))
+
+    def struct_time_invalid(self):
+        """
+        invalid construction due to bad type
+        """
+
+        bad_types = [
+            False,
+            0j,
+            filter,
+            1,
+            map,
+            None,
+            NotImplemented,
+            slice,
+            type
+        ]

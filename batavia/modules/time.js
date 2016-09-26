@@ -40,6 +40,10 @@ batavia.modules.time.struct_time = function (sequence) {
         8 	tm_isdst 	0, 1 or -1; see below
     */
 
+    console.log("type: " + batavia.type_name(sequence))
+    console.log("length: " + sequence.length)
+
+
     if (batavia.isinstance(sequence, [batavia.types.Bytearray, batavia.types.Bytes, batavia.types.Dict,
         batavia.types.FrozenSet, batavia.types.List, batavia.types.Range, batavia.types.Set, batavia.types.Str,
         batavia.types.Tuple]
