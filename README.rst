@@ -1,8 +1,21 @@
-.. image:: http://pybee.org/project/projects/bridges/batavia/batavia-72.png
-    :target: http://pybee.org/batavia
+.. image:: http://pybee.org/project/projects/bridges/batavia/batavia.png
+    :width: 72px
+    :target: https://pybee.org/batavia
 
 Batavia
 =======
+
+.. image:: https://img.shields.io/pypi/pyversions/batavia.svg
+    :target: https://pypi.python.org/pypi/batavia
+
+.. image:: https://img.shields.io/pypi/v/batavia.svg
+    :target: https://pypi.python.org/pypi/batavia
+
+.. image:: https://img.shields.io/pypi/status/batavia.svg
+    :target: https://pypi.python.org/pypi/batavia
+
+.. image:: https://img.shields.io/pypi/l/batavia.svg
+    :target: https://github.com/pybee/batavia/blob/master/LICENSE
 
 .. image:: https://travis-ci.org/pybee/batavia.svg?branch=master
     :target: https://travis-ci.org/pybee/batavia
