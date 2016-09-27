@@ -1,4 +1,4 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, adjust
 
 import unittest
 
@@ -11,9 +11,22 @@ class ListTests(TranspileTestCase):
         :param col1: array like
         :param col2: array like
         """
-        set_up = "print('>>> x = {col1}')\nprint('>>> y = {col2}')\n".format(col1=col1, col2=col2)
+
+        set_up = adjust("""
+            print('>>> x = {col1}')
+            print('>>> y = {col2}')
+        """.format(col1=col1, col2=col2))
+
         operators = ['>', '>=', '<', '<=']
-        comparisons = ["\nprint('>>> x {o} y')\nprint({col1} {o} {col2})\n".format(col1=col1, o=o, col2=col2) for o in operators]
+
+        comparisons = [
+        adjust("""
+            print('>>> x {o} y')
+            print({col1} {o} {col2})
+        """).format(col1=col1, o=o, col2=col2)
+            for o in operators
+        ]
+
         self.assertCodeExecution(set_up + ''.join(comparisons))
 
     @unittest.expectedFailure
@@ -149,10 +162,6 @@ class ListTests(TranspileTestCase):
             x = [1, 2, 3, 4, 5]
             print(x[-1:0:-1])
             """)
-
-
-    # def test_this_empty(self):
-
 
     def test_list_list_comparisons(self):
 
