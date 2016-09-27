@@ -90,7 +90,7 @@ batavia.types.Type = function() {
                 }
             } else {
                 // Primitives have no base class;
-                this__mro__ = [this];
+                this.__mro__ = [this];
             }
         }
         return this.__mro__;
