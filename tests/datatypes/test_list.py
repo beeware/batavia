@@ -1,9 +1,34 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, adjust
 
 import unittest
 
 
 class ListTests(TranspileTestCase):
+
+    def assertOrdering(self, col1, col2):
+        """
+        runs assertCodeExecution with col1 [<, <=, >, >=] col2
+        :param col1: array like
+        :param col2: array like
+        """
+
+        set_up = adjust("""
+            print('>>> x = {col1}')
+            print('>>> y = {col2}')
+        """.format(col1=col1, col2=col2))
+
+        operators = ['>', '>=', '<', '<=']
+
+        comparisons = [
+        adjust("""
+            print('>>> x {o} y')
+            print({col1} {o} {col2})
+        """).format(col1=col1, o=o, col2=col2)
+            for o in operators
+        ]
+
+        self.assertCodeExecution(set_up + ''.join(comparisons))
+
     @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
@@ -138,6 +163,30 @@ class ListTests(TranspileTestCase):
             print(x[-1:0:-1])
             """)
 
+    def test_list_list_comparisons(self):
+
+        # `this` (left list) is empty.
+        self.assertOrdering([], [1,2,3])
+
+        # `other` (right list) is empty
+        self.assertOrdering([1,2,3], [])
+
+        # both lists are empty
+        self.assertOrdering([],[])
+
+        # `this` (left list) is shorter
+        self.assertOrdering([1,2], [1,2,3])
+
+        # `other` (right list) is shorter
+        self.assertOrdering([1,2,3], [1,2])
+
+        # comparable items aren't equal
+        self.assertOrdering([1,2], [1,3])
+
+        self.assertOrdering([1,3], [1,2])
+
+        # all items are equal
+        self.assertOrdering([1,2,3], [1,2,3])
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
@@ -151,14 +200,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_floor_divide_complex',
-
-        'test_ge_list',
-
-        'test_gt_list',
-
-        'test_le_list',
-
-        'test_lt_list',
 
         'test_modulo_complex',
 
