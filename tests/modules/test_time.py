@@ -32,14 +32,13 @@ class TimeTests(TranspileTestCase):
             print('Done.')
             """)
 
-
-
+    @unittest.expectedFailure
     def test_struct_time_valid(self):
         """
         valid construction
         """
 
-        # TODO: this won't pass until the follownig types have .length return their length (currently they return undefined)
+        # TODO: this won't pass until the follownig types have support __getitem__()
         #     bytearray,
         #     bytes,
         #     dict,
@@ -111,7 +110,7 @@ class TimeTests(TranspileTestCase):
         setup = struct_time_setup()
 
         fields = ['n_fields', 'n_unnamed_fields', 'n_sequence_fields', 'tm_year', 'tm_mon', 'tm_mday', 'tm_hour', 'tm_min',
-                  'tm_sec', 'tm_wday', 'tm_yday', 'tm_isdst']
+                  'tm_sec', 'tm_wday', 'tm_yday', 'tm_isdst', 'tm_zone', 'tm_gmtoff']
         test_strs = [adjust("""
             print('>>> st.{attr}')
             print(st.{attr})

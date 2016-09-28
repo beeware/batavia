@@ -55,18 +55,28 @@ batavia.modules.time.struct_time = function (sequence) {
         this.n_unnamed_fields = 0;
         this.n_sequence_fields = 9;
 
-        //TODO
-        //tm_gmtoff
+        // types that support indexing
+        if (batavia.isinstance(sequence), [batavia.types.Bytearray, batavia.types.Bytes, batavia.types.List,
+        batavia.types.Range, batavia.types.Str, batavia.types.Tuple]){
 
+           this.push.apply(this, sequence.slice(0,9));  // only first 9 elements accepted for __getitem__
 
-        this.push.apply(this, sequence.slice(0,9));  // only first 9 elements accepted for __getitem__
-
-        var attrs = [ 'tm_year', 'tm_mon', 'tm_mday', 'tm_hour', 'tm_min', 'tm_sec', 'tm_wday', 'tm_yday', 'tm_isdst',
+            var attrs = [ 'tm_year', 'tm_mon', 'tm_mday', 'tm_hour', 'tm_min', 'tm_sec', 'tm_wday', 'tm_yday', 'tm_isdst',
             'tm_zone', 'tm_gmtoff']
 
-        for (var i=0; i<attrs.length; i++){
-            this[attrs[i]] = sequence[i];
+            for (var i=0; i<attrs.length; i++){
+                this[attrs[i]] = sequence[i];
+            }
+
+        // TODO: need to support these types
+        } else if (batavia.isinstance(sequence), batavia.types.Dict){
+            throw new batavia.builtins.NotImplementedError("not implemented for "+ batavia.type_name(sequence)+".")
+
+        } else if (batavia.isinstance(sequence), [batavia.types.FrozenSet, batavia.types.Set]) {
+            throw new batavia.builtins.NotImplementedError("not implemented for "+ batavia.type_name(sequence)+".")
         }
+
+
 
     } else {
         //some other, unacceptable type
