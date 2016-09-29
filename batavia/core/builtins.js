@@ -666,8 +666,26 @@ batavia.builtins.hasattr = function(args) {
 };
 batavia.builtins.hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)';
 
-batavia.builtins.hash = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'hash' not implemented");
+batavia.builtins.hash = function(args) {
+    if (args.length !== 1) {
+        throw new batavia.builtins.TypeError("hash() takes exactly one argument (" + args.length + " given)");
+    }
+    var arg = args[0];
+    // None
+    if (arg === null) {
+        return 278918143;
+    }
+    if (batavia.isinstance(arg, [batavia.types.Bytearray, batavia.types.Dict, batavia.types.JSDict, batavia.types.List, batavia.types.Set, batavia.types.Slice])) {
+        throw new batavia.builtins.TypeError("unhashable type: '" + batavia.type_name(arg) + "'");
+    }
+    if (typeof arg.__hash__ !== 'undefined') {
+        return arg.__hash__();
+    }
+    // Use JS toString() to do a simple default hash, for now.
+    // (This is similar to how JS objects work.)
+    return new batavia.types.Str(arg.toString()).__hash__();
+
+
 };
 batavia.builtins.hash.__doc__ = 'hash(object) -> integer\n\nReturn a hash value for the object.  Two objects with the same value have\nthe same hash value.  The reverse is not necessarily true, but likely.';
 
