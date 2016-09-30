@@ -493,7 +493,7 @@ batavia.builtins.dict = function(args, kwargs) {
         for (i = 0; i < args[0].length; i++) {
             var sub_array = args[0][i];
             if (sub_array.length === 2) {
-                dict[sub_array[0]] = sub_array[1];
+                dict.__setitem__(sub_array[0], sub_array[1]);
             }
         }
         return dict;
@@ -694,9 +694,15 @@ batavia.builtins.hasattr = function(args) {
 };
 batavia.builtins.hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)';
 
-batavia.builtins.hash = function(args) {
-    if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("hash() takes exactly one argument (" + args.length + " given)");
+batavia.builtins.hash = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("hash() doesn't accept keyword arguments");
+    }
+    if (!args || args.length != 1) {
+        throw new batavia.builtins.TypeError('hash() expected exactly 1 argument (' + args.length + ' given)');
     }
     var arg = args[0];
     // None
@@ -707,13 +713,11 @@ batavia.builtins.hash = function(args) {
         throw new batavia.builtins.TypeError("unhashable type: '" + batavia.type_name(arg) + "'");
     }
     if (typeof arg.__hash__ !== 'undefined') {
-        return arg.__hash__();
+        return batavia.run_callable(arg, arg.__hash__, [], null);
     }
     // Use JS toString() to do a simple default hash, for now.
     // (This is similar to how JS objects work.)
     return new batavia.types.Str(arg.toString()).__hash__();
-
-
 };
 batavia.builtins.hash.__doc__ = 'hash(object) -> integer\n\nReturn a hash value for the object.  Two objects with the same value have\nthe same hash value.  The reverse is not necessarily true, but likely.';
 
@@ -812,6 +816,11 @@ batavia.builtins.iter = function(args, kwargs) {
         throw new batavia.builtins.TypeError("iter() expected at most 2 arguments, got 3");
     }
     var iterobj = args[0];
+    if (iterobj !== null && typeof iterobj === 'object' && !iterobj.__class__) {
+        // this is a plain JS object, wrap it in a JSDict
+        iterobj = new batavia.types.JSDict(iterobj);
+    }
+
     if (iterobj !== null && iterobj.__iter__) {
         //needs to work for __iter__ in JS impl (e.g. Map/Filter) and python ones
         return batavia.run_callable(iterobj, iterobj.__iter__, [], null);

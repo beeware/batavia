@@ -17,7 +17,7 @@ batavia.types.JSDict = function() {
      * Javascript compatibility methods
      **************************************************/
 
-    JSDict.prototype.toString = function () {
+    JSDict.prototype.toString = function() {
         return this.__str__();
     };
 
@@ -33,7 +33,7 @@ batavia.types.JSDict = function() {
         return this.__str__();
     };
 
-    JSDict.prototype.__str__ = function () {
+    JSDict.prototype.__str__ = function() {
         var result = "{", values = [];
         for (var key in this) {
             if (this.hasOwnProperty(key)) {
@@ -132,19 +132,19 @@ batavia.types.JSDict = function() {
      **************************************************/
 
     JSDict.prototype.__pos__ = function() {
-        return new Dict(+this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary +: 'jsdict'");
     };
 
     JSDict.prototype.__neg__ = function() {
-        return new Dict(-this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary -: 'jsdict'");
     };
 
     JSDict.prototype.__not__ = function() {
-        return new Dict(!this.valueOf());
+        return this.__bool__().__not__();
     };
 
     JSDict.prototype.__invert__ = function() {
-        return new Dict(~this.valueOf());
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'jsdict'");
     };
 
     /**************************************************
@@ -152,7 +152,7 @@ batavia.types.JSDict = function() {
      **************************************************/
 
     JSDict.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + batavia.type_name(other) + "'");
     };
 
     JSDict.prototype.__div__ = function(other) {
@@ -160,20 +160,20 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'dict' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'jsdict' and '" + batavia.type_name(other) + "'");
     };
 
     JSDict.prototype.__truediv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'dict' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'jsdict' and '" + batavia.type_name(other) + "'");
     };
 
     JSDict.prototype.__mul__ = function(other) {
         if (batavia.isinstance(other, [
                 batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                 batavia.types.JSDict, batavia.types.Int, batavia.types.NoneType])) {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'dict' and '" + batavia.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'jsdict' and '" + batavia.type_name(other) + "'");
         } else {
-            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'dict'");
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'jsdict'");
         }
     };
 
@@ -182,19 +182,15 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.__add__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'dict' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'jsdict' and '" + batavia.type_name(other) + "'");
     };
 
     JSDict.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'dict' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'jsdict' and '" + batavia.type_name(other) + "'");
     };
 
-    JSDict.prototype.__getitem__ = function(other) {
-        var value = this[other];
-        if (value === undefined) {
-            throw new batavia.builtins.KeyError(other === null ? 'None': other.__str__());
-        }
-        return value;
+    JSDict.prototype.__setitem__ = function(key, value) {
+        this[key] = value;
     };
 
     JSDict.prototype.__lshift__ = function(other) {
@@ -206,7 +202,7 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.__and__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'dict' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'jsdict' and '" + batavia.type_name(other) + "'");
     };
 
     JSDict.prototype.__xor__ = function(other) {
@@ -269,6 +265,21 @@ batavia.types.JSDict = function() {
         throw new batavia.builtins.NotImplementedError("Dict.__ior__ has not been implemented");
     };
 
+    JSDict.prototype.__getitem__ = function(other) {
+        var value = this[other];
+        if (value === undefined) {
+            throw new batavia.builtins.KeyError(other === null ? 'None': other.__str__());
+        }
+        return value;
+    };
+
+    JSDict.prototype.__delitem__ = function(key) {
+        if (!this.__contains__(key)) {
+            throw new batavia.builtins.KeyError(key === null ? 'None': key);
+        }
+        delete this[key];
+    };
+
     /**************************************************
      * Methods
      **************************************************/
@@ -277,7 +288,7 @@ batavia.types.JSDict = function() {
         if (this.__contains__(key)) {
             return this[key];
         } else if (typeof backup === 'undefined') {
-            return null;
+            throw new batavia.builtins.KeyError(key === null ? 'None': key);
         } else {
             return backup;
         }
@@ -292,14 +303,14 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.copy = function() {
-        return new Dict(this);
+        return new JSDict(this);
     };
 
     JSDict.prototype.items = function() {
-        var result = [];
+        var result = new batavia.types.List();
         for (var key in this) {
             if (this.hasOwnProperty(key)) {
-                result.push([key, this[key]]);
+                result.append(new batavia.types.Tuple([key, this[key]]));
             }
         }
         return result;
@@ -315,6 +326,10 @@ batavia.types.JSDict = function() {
         return new batavia.types.List(result);
     };
 
+    JSDict.prototype.__iter__ = function() {
+        return this.keys().__iter__();
+    };
+
     JSDict.prototype.values = function() {
         var result = [];
         for (var key in this) {
@@ -323,6 +338,12 @@ batavia.types.JSDict = function() {
             }
         }
         return new batavia.types.List(result);
+    };
+
+    JSDict.prototype.clear = function() {
+        for (var key in this) {
+            delete this[key];
+        }
     };
 
     return JSDict;
