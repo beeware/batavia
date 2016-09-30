@@ -9,6 +9,7 @@ BASE_FILES=\
     batavia/types/Bytes.js \
     batavia/types/Code.js \
     batavia/types/Complex.js \
+    batavia/types/JSDict.js \
     batavia/types/Dict.js \
     batavia/types/DictView.js \
     batavia/types/Ellipsis.js \
@@ -54,6 +55,7 @@ BASE_FILES_WIN=\
     batavia\types\Bytes.js \
     batavia\types\Code.js \
     batavia\types\Complex.js \
+    batavia\types\JSDict.js \
     batavia\types\Dict.js \
     batavia\types\DictView.js \
     batavia\types\Ellipsis.js \
@@ -77,7 +79,7 @@ BASE_FILES_WIN=\
     batavia\modules\dom.js \
     batavia\modules\marshal.js \
     batavia\modules\inspect.js \
-    batavia/modules/math.js \
+    batavia\modules\math.js \
     batavia\modules\sys.js \
     batavia\modules\time.js \
     batavia\core\Block.js \

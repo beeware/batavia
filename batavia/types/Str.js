@@ -468,3 +468,18 @@ String.prototype.__setattr__ = function (name, val) {
         throw new batavia.builtins.AttributeError("'str' object attribute '" + name + "' is read-only");
     }
 };
+
+// Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
+// and http://www.cse.yorku.ca/~oz/hash.html.
+//
+// CPython returns signed 64-bit integers. But, JS is awful at 64-bit integers,
+// so we return signed 32-bit integers. This shouldn't be a problem, since
+// technically we can just return 0 and everything should still work :P
+String.prototype.__hash__ = function() {
+    // |0 is used to ensure that we return signed 32-bit integers
+    var h = 5381|0;
+    for (var i = 0; i < this.length; i++) {
+        h = ((h * 33)|0) ^ this[i];
+    }
+    return new batavia.types.Int(h);
+};

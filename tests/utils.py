@@ -398,7 +398,11 @@ def cleanse_javascript(input, substitutions):
     if substitutions:
         for to_value, from_values in substitutions.items():
             for from_value in from_values:
-                out = out.replace(from_value, to_value)
+                # check for regex
+                if hasattr(from_value, 'pattern'):
+                    out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
+                else:
+                    out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
     return out
@@ -434,7 +438,11 @@ def cleanse_python(input, substitutions):
     if substitutions:
         for to_value, from_values in substitutions.items():
             for from_value in from_values:
-                out = out.replace(from_value, to_value)
+                # check for regex
+                if hasattr(from_value, 'pattern'):
+                    out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
+                else:
+                    out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
     return out
@@ -1116,13 +1124,14 @@ def _builtin_test(test_name, operation, examples):
             f_values=self.functions,
             operation=operation,
             format=self.format,
-            substitutions=SAMPLE_SUBSTITUTIONS
+            substitutions=self.substitutions
         )
     return func
 
 
 class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
+    substitutions = SAMPLE_SUBSTITUTIONS
 
     @classmethod
     def tearDownClass(cls):
