@@ -312,7 +312,7 @@ batavia.types.Int = function() {
                 throw new batavia.builtins.MemoryError("");
             }
             result = new batavia.types.List();
-            for (i = 0; i < this.valueOf(); i++) {
+            for (var i = 0; i < this.valueOf(); i++) {
                 result.extend(other);
             }
             return result;

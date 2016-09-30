@@ -471,7 +471,7 @@ batavia.builtins.dict = function(args, kwargs) {
         }
     } else {
         // iterate through array to find any errors
-        for (i = 0; i < args[0].length; i++) {
+        for (var i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number or bool in an iterable throws different error
                 if (batavia.isinstance(args[0][i], [batavia.types.Bool, batavia.types.Int])) {
@@ -490,7 +490,7 @@ batavia.builtins.dict = function(args, kwargs) {
     // passing a list as argument
     if (args.length === 1) {
         var dict = new batavia.types.Dict();
-        for (i = 0; i < args[0].length; i++) {
+        for (var i = 0; i < args[0].length; i++) {
             var sub_array = args[0][i];
             if (sub_array.length === 2) {
                 dict.__setitem__(sub_array[0], sub_array[1]);
@@ -541,7 +541,7 @@ batavia.builtins.enumerate = function(args, kwargs) {
     }
     var result = [];
     var values = args[0];
-    for (i = 0; i < values.length; i++) {
+    for (var i = 0; i < values.length; i++) {
         result.push([i, values[i]]);
     }
     // FIXME this should return a generator, not list

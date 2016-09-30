@@ -412,7 +412,7 @@ batavia.modules.math = {
             var den = 1.0;
 
             var z = y - 1;
-            for (i = 0; i < 8; i++) {
+            for (var i = 0; i < 8; i++) {
                 num = (num + p[i]) * z;
                 den = den * z + q[i];
             }
@@ -426,7 +426,7 @@ batavia.modules.math = {
                 result /= (y - 1.0);
             } else {
                 // Use the identity gamma(z+n) = z*(z+1)* ... *(z+n-1)*gamma(z)
-                for (i = 0; i < n; i++) {
+                for (var i = 0; i < n; i++) {
                     result *= y++;
                 }
            }

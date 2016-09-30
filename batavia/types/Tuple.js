@@ -187,7 +187,7 @@ batavia.types.Tuple = function() {
     Tuple.prototype.__mul__ = function(other) {
         if (batavia.isinstance(other, batavia.types.Int)) {
             result = new List();
-            for (i = 0; i < other.valueOf(); i++) {
+            for (var i = 0; i < other.valueOf(); i++) {
                 result.extend(this);
             }
             return result;
@@ -211,11 +211,11 @@ batavia.types.Tuple = function() {
 			throw new batavia.builtins.TypeError('can only concatenate tuple (not "' + batavia.type_name(other) + '") to tuple')
 		} else {
 			result = new Tuple();
-			for (i=0; i < this.length; i++){
+			for (var i = 0; i < this.length; i++){
 				result.push(this[i]);
 			}
 
-			for (i=0; i < other.length; i++){
+			for (var i = 0; i < other.length; i++){
 				result.push(other[i]);
 			}
 
