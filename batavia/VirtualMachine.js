@@ -1357,12 +1357,16 @@ batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
 
 batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     var items = this.popn(3);
-    items[1][items[2]] = items[0];
+    if (items[1].__setitem__) {
+        items[1].__setitem__(items[2], items[0]);
+    } else {
+        items[1][items[2]] = items[0];
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
-    delete items[1][items[0]];
+    items[1].__delitem__(items[0]);
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
@@ -1417,7 +1421,11 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
         case batavia.BATAVIA_MAGIC_35a0:
         case batavia.BATAVIA_MAGIC_34:
             var items = this.popn(3);
-            items[0].__setitem__(items[2], items[1]);
+            if (items[0].__setitem__) {
+                items[0].__setitem__(items[2], items[1]);
+            } else {
+                items[0][items[2]] = items[1];
+            }
             this.push(items[0]);
 
             return;
