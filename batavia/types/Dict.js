@@ -71,7 +71,6 @@ batavia.types.Dict = function() {
             var h = hash.int32() & new_mask;
             while (!isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask;
-                return;
             }
             new_keys[h] = key;
             new_values[h] = value;
@@ -317,7 +316,7 @@ batavia.types.Dict = function() {
 
             h = (h + 1) & this.mask;
             if (h == (hash.int32() & this.mask)) {
-                // we have looped, we'll rehash
+                // we have looped, we'll rehash (should be impossible)
                 this._increase_size();
                 h = hash.int32() & this.mask;
             }
@@ -434,7 +433,7 @@ batavia.types.Dict = function() {
      **************************************************/
 
     Dict.prototype.get = function(key, backup) {
-        var i = this._find_index(other);
+        var i = this._find_index(key);
         if (i !== null) {
             return this.data_values[i];
         } else if (typeof backup === 'undefined') {
@@ -456,7 +455,7 @@ batavia.types.Dict = function() {
         batavia.iter_for_each(updates, function(val) {
             var pieces = new batavia.types.Tuple(val);
             if (pieces.length != 2) {
-                throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + piece.length + "; 2 is required");
+                throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + pieces.length + "; 2 is required");
             }
             var key = pieces[0];
             var value = pieces[1];
