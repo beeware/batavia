@@ -2,28 +2,16 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class GlobalsTests(TranspileTestCase):
-    pass
+    def test_globals(self):
+        self.assertCodeExecution("""
+            # make sure we can get and modify globals
+            print('x' not in globals())
+            globals()['x'] = 1
+            print('x' in globals())
+            print(globals()['x'])
+            print(x)
+            """)
 
 
 class BuiltinGlobalsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["globals"]
-
-    not_implemented = [
-        'test_bool',
-        'test_bytearray',
-        'test_bytes',
-        'test_class',
-        'test_complex',
-        'test_dict',
-        'test_float',
-        'test_frozenset',
-        'test_int',
-        'test_list',
-        'test_None',
-        'test_NotImplemented',
-        'test_range',
-        'test_set',
-        'test_slice',
-        'test_str',
-        'test_tuple',
-    ]
