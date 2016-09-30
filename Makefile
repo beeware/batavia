@@ -96,6 +96,7 @@ EXTRA_FILES=\
 		batavia/modules/stdlib/bisect.js \
 		batavia/modules/stdlib/colorsys.js \
 		batavia/modules/stdlib/copyreg.js \
+		batavia/modules/stdlib/token.js \
 		batavia/modules/stdlib/operator.js \
 		batavia/modules/stdlib/stat.js \
 		batavia/modules/stdlib/this.js
@@ -107,6 +108,7 @@ EXTRA_FILES_WIN=\
 		batavia\modules\stdlib\bisect.js \
 		batavia\modules\stdlib\colorsys.js \
 		batavia\modules\stdlib\copyreg.js \
+		batavia\modules\stdlib\token.js \
 		batavia\modules\stdlib\operator.js \
 		batavia\modules\stdlib\stat.js \
 		batavia\modules\stdlib\this.js
