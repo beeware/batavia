@@ -78,7 +78,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 frame = this.make_frame({
                     'code': code,
                     'f_globals': args[1],
-                    'f_locals': new batavia.types.Dict(),
+                    'f_locals': new batavia.types.JSDict(),
                 });
                 this.run_frame(frame);
 
@@ -99,7 +99,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                     frame = this.make_frame({
                         'code': code,
                         'f_globals': args[1],
-                        'f_locals': new batavia.types.Dict(),
+                        'f_locals': new batavia.types.JSDict(),
                     });
                     this.run_frame(frame);
 

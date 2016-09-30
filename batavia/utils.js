@@ -251,7 +251,7 @@ batavia.make_callable = function(func) {
             'code': func.__code__,
             'callargs': callargs,
             'f_globals': func.__globals__,
-            'f_locals': locals || new batavia.types.Dict()
+            'f_locals': locals || new batavia.types.JSDict()
         });
 
         if (func.__code__.co_flags & batavia.modules.dis.CO_GENERATOR) {
