@@ -616,6 +616,9 @@ batavia.builtins.frozenset = function(args, kwargs) {
     if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
     }
+    if (!args || args.length == 0) {
+        return new batavia.types.FrozenSet();
+    }
     return new batavia.types.FrozenSet(args[0]);
 };
 batavia.builtins.frozenset.__doc__ = 'frozenset() -> empty frozenset object\nfrozenset(iterable) -> frozenset object\n\nBuild an immutable unordered collection of unique elements.';
@@ -853,7 +856,7 @@ batavia.builtins.license = function() {
 batavia.builtins.license.__doc__ = 'license()\n\nPrompt printing the license text, a list of contributors, and the copyright notice';
 
 batavia.builtins.list = function(args) {
-    if (args.length === 0) {
+    if (!args || args.length === 0) {
       return new batavia.types.List();
     }
     return new batavia.types.List(args[0]);
@@ -932,8 +935,8 @@ batavia.builtins.object = function() {
 batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring.
 
 batavia.builtins.oct = function(args) {
-    if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
+    if (!args || args.length !== 1) {
+        throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + (args ? args.length : 0) + " given)");
     }
     var value = args[0];
     if (batavia.isinstance(value, batavia.types.Int)) {
@@ -973,6 +976,9 @@ batavia.builtins.ord.__doc__ = 'ord(c) -> integer\n\nReturn the integer ordinal 
 
 batavia.builtins.pow = function(args) {
     var x, y, z;
+    if (!args) {
+      throw new batavia.builtins.TypeError("pow expected at least 2 arguments, got 0");
+    }
     if (args.length === 2) {
         x = args[0];
         y = args[1];
@@ -1092,6 +1098,9 @@ batavia.builtins.reversed.__doc__ = 'reversed(sequence) -> reverse iterator over
 
 batavia.builtins.round = function(args) {
     var p = 0; // Precision
+    if (!args) {
+      throw new batavia.builtins.TypeError("Required argument 'number' (pos 1) not found");
+    }
     if (args.length == 2) {
         p = args[1];
     }
@@ -1117,6 +1126,9 @@ batavia.builtins.set = function(args,kwargs) {
     }
     if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
+    }
+    if (!args || args.length == 0) {
+        return new batavia.types.Set();
     }
     return new batavia.types.Set(args[0]);
 };
