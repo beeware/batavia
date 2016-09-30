@@ -653,7 +653,7 @@ batavia.modules.marshal = {
         case batavia.modules.marshal.TYPE_SET:
         case batavia.modules.marshal.TYPE_FROZENSET:
             n = batavia.modules.marshal.read_int32(vm, p);
-            console.log.info('TYPE_FROZENSET ' + n);
+            // console.log.info('TYPE_FROZENSET ' + n);
             if (vm.PyErr_Occurred()) {
                 break;
             }
