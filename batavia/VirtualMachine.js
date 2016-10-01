@@ -1366,7 +1366,11 @@ batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
 
 batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
-    items[1].__delitem__(items[0]);
+    if (items[1].__delitem__) {
+        items[1].__delitem__(items[0]);
+    } else {
+        delete items[1][items[0]];
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
