@@ -1,4 +1,4 @@
-from ..utils import TranspileTestCase
+from ..utils import TranspileTestCase, adjust
 
 import unittest
 
@@ -35,17 +35,13 @@ class TimeTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_struct_time_valid(self):
         """
         valid construction
         """
 
-        # TODO: this won't pass until bytearay is iterable
-
         seed = list(range(1, 10))
         sequences = (
-            bytearray(seed),
             bytes(seed),
             dict(zip(seed, seed)),
             frozenset(seed),
@@ -56,17 +52,39 @@ class TimeTests(TranspileTestCase):
             tuple(seed)
         )
 
-        for seq in sequences:
-            self.assertCodeExecution(struct_time_setup(seq))
+        setup= adjust("""
+        print('>>> import time')
+        import time
+        """)
+        sequence_tests = [struct_time_setup(seq) for seq in sequences]
+        test_str = ''.join(sequence_tests)
+        self.assertCodeExecution(test_str)
+
+    @unittest.expectedFailure
+    def test_struct_time_bad_types(self):
+        """
+        currently bytearray will break the constructor
+        """
+
+        setup = adjust("""
+        print('>>> import time')
+        import time
+        """)
+        test_str = setup + adjust(struct_time_setup(bytearray([1]*9)))
+        self.assertCodeExecution(test_str)
 
     def test_struct_time_valid_lengths(self):
         """
         length 9, 10, 11 are acceptable
         """
 
-        for size in range(9, 12):
-            test_str = struct_time_setup([1] * size)
-            self.assertCodeExecution(test_str)
+        setup= adjust("""
+        print('>>> import time')
+        import time
+        """)
+        sequence_tests = [struct_time_setup([1] * size) for size in range(9, 12)]
+        test_str = ''.join(sequence_tests)
+        self.assertCodeExecution(test_str)
 
     def test_struct_time_invalid(self):
         """
@@ -81,8 +99,13 @@ class TimeTests(TranspileTestCase):
             NotImplemented
         ]
 
-        for t in bad_types:
-            self.assertCodeExecution(struct_time_setup(t))
+        setup= adjust("""
+        print('>>> import time')
+        import time
+        """)
+        sequence_tests = [struct_time_setup(seq) for seq in bad_types]
+        test_str = ''.join(sequence_tests)
+        self.assertCodeExecution(test_str)
 
 
     def test_struct_time_too_short(self):
@@ -163,8 +186,6 @@ def struct_time_setup(seq = [1] * 9):
 
     test_str = adjust("""
     print("constructing struct_time with {type_name}")
-    print('>>> import time')
-    import time
     print(">>> st = time.struct_time({seq})")
     st = time.struct_time({seq})
     print('>>> st')
