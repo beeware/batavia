@@ -27,8 +27,15 @@ class DictTests(TranspileTestCase):
             print(x)
             """)
 
+        # normal key
         self.assertCodeExecution("""
             x = {'a': 1}
+            print(x)
+            """)
+
+        # keys with the same string representation
+        self.assertCodeExecution("""
+            x = {1: 2, '1': 1}
             print(x)
             """)
 
@@ -50,7 +57,6 @@ class DictTests(TranspileTestCase):
             print(x['c'])
             """, run_in_function=False)
 
-    @unittest.expectedFailure
     def test_clear(self):
         # Clear a dictionary
         self.assertCodeExecution("""
@@ -157,13 +163,6 @@ class DictTests(TranspileTestCase):
 
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
-
-    not_implemented = [
-        'test_unary_positive',
-        'test_unary_negative',
-        'test_unary_not',
-        'test_unary_invert',
-    ]
 
 
 class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -300,22 +299,15 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_rshift_str',
         'test_rshift_tuple',
 
-        'test_subscr_bool',
         'test_subscr_bytearray',
-        'test_subscr_bytes',
         'test_subscr_class',
-        'test_subscr_complex',
         'test_subscr_dict',
-        'test_subscr_float',
-        'test_subscr_frozenset',
         'test_subscr_None',
         'test_subscr_NotImplemented',
-        'test_subscr_int',
         'test_subscr_list',
         'test_subscr_range',
         'test_subscr_set',
         'test_subscr_slice',
-        'test_subscr_tuple',
 
         'test_xor_bool',
         'test_xor_bytearray',

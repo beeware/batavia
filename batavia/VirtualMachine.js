@@ -502,7 +502,7 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
         var payload = this.loader(tag);
         var code = batavia.modules.marshal.load_pyc(this, payload);
 
-        var callargs = new batavia.types.Dict();
+        var callargs = new batavia.types.JSDict();
         for (var i = 0, l = args.length; i < l; i++) {
             callargs[code.co_varnames[i]] = args[i];
         }
@@ -623,9 +623,9 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
-        f_locals = new batavia.types.Dict();
+        f_locals = new batavia.types.JSDict();
     } else {
-        f_globals = f_locals = new batavia.types.Dict({
+        f_globals = f_locals = new batavia.types.JSDict({
             '__builtins__': batavia.builtins,
             '__name__': '__main__',
             '__doc__': null,
@@ -1187,13 +1187,13 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
         } if (items[1].__contains__) {
             result = items[1].__contains__(items[0]);
         } else {
-            result = items[0] in items[1];
+            result = (items[0] in items[1]);
         }
     } else if (opnum === 7) {
         if (items[1] === null) {  // x not in None
-            result = !batavia.types.NoneType.__contains__(items[0]);
+            result = batavia.types.NoneType.__contains__(items[0]).__not__();
         } else if (items[1].__contains__) {
-            result = !items[1].__contains__(items[0]);
+            result = items[1].__contains__(items[0]).__not__();
         } else {
             result = !(items[0] in items[1]);
         }
@@ -1357,12 +1357,20 @@ batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
 
 batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     var items = this.popn(3);
-    items[1][items[2]] = items[0];
+    if (items[1].__setitem__) {
+        items[1].__setitem__(items[2], items[0]);
+    } else {
+        items[1][items[2]] = items[0];
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
-    delete items[1][items[0]];
+    if (items[1].__delitem__) {
+        items[1].__delitem__(items[0]);
+    } else {
+        delete items[1][items[0]];
+    }
 };
 
 batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
@@ -1384,13 +1392,13 @@ batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
     switch (batavia.BATAVIA_MAGIC) {
         case batavia.BATAVIA_MAGIC_35:
             var items = this.popn(size * 2);
-            var obj = {};
+            var dict = new batavia.types.Dict();
 
             for (var i = 0; i < items.length; i += 2) {
-                obj[items[i]] = items[i + 1];
+                dict.__setitem__(items[i], items[i + 1]);
             }
 
-            this.push(new batavia.types.Dict(obj));
+            this.push(dict);
 
             return;
 
@@ -1417,7 +1425,11 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
         case batavia.BATAVIA_MAGIC_35a0:
         case batavia.BATAVIA_MAGIC_34:
             var items = this.popn(3);
-            items[0][items[2]] = items[1];
+            if (items[0].__setitem__) {
+                items[0].__setitem__(items[2], items[1]);
+            } else {
+                items[0][items[2]] = items[1];
+            }
             this.push(items[0]);
 
             return;
@@ -1775,7 +1787,7 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     //https://docs.python.org/3/library/dis.html#opcode-CALL_FUNCTION
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
-    var namedargs = new batavia.types.Dict();
+    var namedargs = new batavia.types.JSDict();
     for (var i = 0; i < lenKw; i++) {
         var items = this.popn(2);
         namedargs[items[0]] = items[1];

@@ -78,7 +78,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 frame = this.make_frame({
                     'code': code,
                     'f_globals': args[1],
-                    'f_locals': new batavia.types.Dict(),
+                    'f_locals': new batavia.types.JSDict(),
                 });
                 this.run_frame(frame);
 
@@ -99,7 +99,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                     frame = this.make_frame({
                         'code': code,
                         'f_globals': args[1],
-                        'f_locals': new batavia.types.Dict(),
+                        'f_locals': new batavia.types.JSDict(),
                     });
                     this.run_frame(frame);
 
@@ -471,7 +471,7 @@ batavia.builtins.dict = function(args, kwargs) {
         }
     } else {
         // iterate through array to find any errors
-        for (i = 0; i < args[0].length; i++) {
+        for (var i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number or bool in an iterable throws different error
                 if (batavia.isinstance(args[0][i], [batavia.types.Bool, batavia.types.Int])) {
@@ -490,10 +490,10 @@ batavia.builtins.dict = function(args, kwargs) {
     // passing a list as argument
     if (args.length === 1) {
         var dict = new batavia.types.Dict();
-        for (i = 0; i < args[0].length; i++) {
+        for (var i = 0; i < args[0].length; i++) {
             var sub_array = args[0][i];
             if (sub_array.length === 2) {
-                dict[sub_array[0]] = sub_array[1];
+                dict.__setitem__(sub_array[0], sub_array[1]);
             }
         }
         return dict;
@@ -541,7 +541,7 @@ batavia.builtins.enumerate = function(args, kwargs) {
     }
     var result = [];
     var values = args[0];
-    for (i = 0; i < values.length; i++) {
+    for (var i = 0; i < values.length; i++) {
         result.push([i, values[i]]);
     }
     // FIXME this should return a generator, not list
@@ -615,6 +615,9 @@ batavia.builtins.frozenset = function(args, kwargs) {
     }
     if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
+    }
+    if (!args || args.length == 0) {
+        return new batavia.types.FrozenSet();
     }
     return new batavia.types.FrozenSet(args[0]);
 };
@@ -694,9 +697,15 @@ batavia.builtins.hasattr = function(args) {
 };
 batavia.builtins.hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)';
 
-batavia.builtins.hash = function(args) {
-    if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("hash() takes exactly one argument (" + args.length + " given)");
+batavia.builtins.hash = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("hash() doesn't accept keyword arguments");
+    }
+    if (!args || args.length != 1) {
+        throw new batavia.builtins.TypeError('hash() expected exactly 1 argument (' + args.length + ' given)');
     }
     var arg = args[0];
     // None
@@ -707,13 +716,11 @@ batavia.builtins.hash = function(args) {
         throw new batavia.builtins.TypeError("unhashable type: '" + batavia.type_name(arg) + "'");
     }
     if (typeof arg.__hash__ !== 'undefined') {
-        return arg.__hash__();
+        return batavia.run_callable(arg, arg.__hash__, [], null);
     }
     // Use JS toString() to do a simple default hash, for now.
     // (This is similar to how JS objects work.)
     return new batavia.types.Str(arg.toString()).__hash__();
-
-
 };
 batavia.builtins.hash.__doc__ = 'hash(object) -> integer\n\nReturn a hash value for the object.  Two objects with the same value have\nthe same hash value.  The reverse is not necessarily true, but likely.';
 
@@ -812,6 +819,11 @@ batavia.builtins.iter = function(args, kwargs) {
         throw new batavia.builtins.TypeError("iter() expected at most 2 arguments, got 3");
     }
     var iterobj = args[0];
+    if (iterobj !== null && typeof iterobj === 'object' && !iterobj.__class__) {
+        // this is a plain JS object, wrap it in a JSDict
+        iterobj = new batavia.types.JSDict(iterobj);
+    }
+
     if (iterobj !== null && iterobj.__iter__) {
         //needs to work for __iter__ in JS impl (e.g. Map/Filter) and python ones
         return batavia.run_callable(iterobj, iterobj.__iter__, [], null);
@@ -844,7 +856,7 @@ batavia.builtins.license = function() {
 batavia.builtins.license.__doc__ = 'license()\n\nPrompt printing the license text, a list of contributors, and the copyright notice';
 
 batavia.builtins.list = function(args) {
-    if (args.length === 0) {
+    if (!args || args.length === 0) {
       return new batavia.types.List();
     }
     return new batavia.types.List(args[0]);
@@ -923,8 +935,8 @@ batavia.builtins.object = function() {
 batavia.builtins.object.__doc__ = "The most base type"; // Yes, that's the entire docstring.
 
 batavia.builtins.oct = function(args) {
-    if (args.length !== 1) {
-        throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + args.length + " given)");
+    if (!args || args.length !== 1) {
+        throw new batavia.builtins.TypeError("oct() takes exactly one argument (" + (args ? args.length : 0) + " given)");
     }
     var value = args[0];
     if (batavia.isinstance(value, batavia.types.Int)) {
@@ -964,6 +976,9 @@ batavia.builtins.ord.__doc__ = 'ord(c) -> integer\n\nReturn the integer ordinal 
 
 batavia.builtins.pow = function(args) {
     var x, y, z;
+    if (!args) {
+      throw new batavia.builtins.TypeError("pow expected at least 2 arguments, got 0");
+    }
     if (args.length === 2) {
         x = args[0];
         y = args[1];
@@ -1083,6 +1098,9 @@ batavia.builtins.reversed.__doc__ = 'reversed(sequence) -> reverse iterator over
 
 batavia.builtins.round = function(args) {
     var p = 0; // Precision
+    if (!args) {
+      throw new batavia.builtins.TypeError("Required argument 'number' (pos 1) not found");
+    }
     if (args.length == 2) {
         p = args[1];
     }
@@ -1108,6 +1126,9 @@ batavia.builtins.set = function(args,kwargs) {
     }
     if (args && args.length > 1) {
         throw new batavia.builtins.TypeError("set expected at most 1 arguments, got " + args.length);
+    }
+    if (!args || args.length == 0) {
+        return new batavia.types.Set();
     }
     return new batavia.types.Set(args[0]);
 };

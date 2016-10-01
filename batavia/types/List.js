@@ -274,7 +274,7 @@ batavia.types.List = function() {
             if(other <= 0) {
                 return result;
             } else {
-                for (i = 0; i < other; i++) {
+                for (var i = 0; i < other; i++) {
                     result.extend(this);
                 }
                 return result;
@@ -297,11 +297,11 @@ batavia.types.List = function() {
     List.prototype.__add__ = function(other) {
         if (batavia.isinstance(other, batavia.types.List)) {
             result = new List();
-                for (i=0; i < this.length; i++){
+                for (var i = 0; i < this.length; i++) {
                     result.push(this[i]);
                 }
 
-                for (i=0; i < other.length; i++){
+                for (var i = 0; i < other.length; i++) {
                     result.push(other[i]);
                 }
 
