@@ -179,14 +179,7 @@ class TimeTests(TranspileTestCase):
 
     # TESTS FOR MKTIME
     def test_mktime(self):
-
-        test_str = adjust("""
-        print('>>> import time')
-        import time
-        print('>>> time.mktime((1970, 1, 1, 0,0,0,0,0,0))')
-        print(time.mktime((1970, 1, 1, 0,0,0,0,0,0)))
-        """)
-        self.assertCodeExecution(test_str)
+        self.assertCodeExecution(mktime_setup())
 
 
 def struct_time_setup(seq = [1] * 9):
@@ -204,3 +197,18 @@ def struct_time_setup(seq = [1] * 9):
     """).format(type_name=type(seq), seq=seq)
 
     return test_str
+
+def mktime_setup(seq = struct_time(1970, 1, 1, 0,0,0,0,0,0)):
+    """
+    :param seq: a struct_time instance
+    :return: a test_string to call mktime from a struct_time instance
+    """
+
+    test_str = adjust("""
+    print(">>> st = time.struct_time({seq})")
+    st = time.struct_time({seq})
+    print(">>> time.mktime({seq})")
+    print(time.mktime({seq}))
+    """).format(seq=seq)
+    #
+    # return test_str
