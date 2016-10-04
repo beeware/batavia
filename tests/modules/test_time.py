@@ -177,6 +177,17 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(adjust(test_str))
 
+    # TESTS FOR MKTIME
+    def test_mktime(self):
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.mktime((1970, 1, 1, 0,0,0,0,0,0))')
+        print(time.mktime((1970, 1, 1, 0,0,0,0,0,0)))
+        """)
+        self.assertCodeExecution(test_str)
+
 
 def struct_time_setup(seq = [1] * 9):
     """

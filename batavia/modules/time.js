@@ -104,4 +104,17 @@ batavia.modules.time.struct_time.prototype.__repr__ = function(){
     return this.__str__()
 }
 
+batavia.modules.time.mktime = function(sequence){
+    // documentation: https://docs.python.org/3/library/time.html#time.mktime
+    var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0).getTime() / 1000;
+
+    if (seconds === Math.floor(seconds)){
+        // need special handling when a number with no decimal places is returned
+        return parseFloat(seconds).toFixed(1);
+    } else {
+        return seconds;
+    }
+
+}
+
 //TODO __reduce__
