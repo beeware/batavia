@@ -6,7 +6,7 @@ batavia.types.SetIterator = function (data) {
     Object.call(this);
     this.index = 0;
     this.data = data;
-    this.keys = Object.keys(data);
+    this.keys = data.data.keys();
 };
 
 batavia.types.SetIterator.prototype = Object.create(Object.prototype);
@@ -16,9 +16,8 @@ batavia.types.SetIterator.prototype.__next__ = function() {
     if (key === undefined) {
         throw new batavia.builtins.StopIteration();
     }
-    var retval = this.data[key];
     this.index++;
-    return retval;
+    return key;
 };
 
 batavia.types.SetIterator.prototype.__str__ = function() {
