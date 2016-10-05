@@ -795,6 +795,9 @@ SAMPLE_SUBSTITUTIONS = {
         "{'c', 'a', 'b'}",
         "{'c', 'b', 'a'}",
     ],
+    "{'1', 1}": [
+        "{1, '1'}",
+    ],
     # Normalize dictionary ordering
     "{'a': 1, 'c': 2.3456, 'd': 'another'}": [
         "{'a': 1, 'd': 'another', 'c': 2.3456}",

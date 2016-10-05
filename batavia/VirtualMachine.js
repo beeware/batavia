@@ -38,10 +38,11 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
     var vm = this;
     this.dispatch_table = batavia.modules.dis.opname.map(function(opname, opcode) {
         var operator_name, operator;
+        var iop = new batavia.types.Int(opcode);
 
         if (opcode == batavia.modules.dis.NOP) {
             return function() {};
-        } else if (opcode in batavia.modules.dis.unary_ops) {
+        } else if (batavia.modules.dis.unary_ops.__contains__(iop).valueOf()) {
             operator_name = opname.slice(6);
             switch (operator_name) {
                 case "POSITIVE":
@@ -91,7 +92,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                 default:
                     throw new batavia.builtins.BataviaError("Unknown unary operator " + operator_name);
             }
-        } else if (opcode in batavia.modules.dis.binary_ops) {
+        } else if (batavia.modules.dis.binary_ops.__contains__(iop).valueOf()) {
             operator_name = opname.slice(7);
             switch (operator_name) {
                 case 'POWER':
@@ -240,7 +241,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                 default:
                     throw new batavia.builtins.BataviaError("Unknown binary operator " + operator_name);
             }
-        } else if (opcode in batavia.modules.dis.inplace_ops) {
+        } else if (batavia.modules.dis.inplace_ops.__contains__(iop).valueOf()) {
             operator_name = opname.slice(8);
             switch (operator_name) {
                 case 'FLOOR_DIVIDE':
@@ -748,23 +749,24 @@ batavia.VirtualMachine.prototype.unpack_code = function(code) {
             var hi = code.co_code.val[pos++];
             var intArg = lo | (hi << 8) | extra;
             extra = 0; // use extended arg if present
+            var iop = new batavia.types.Int(opcode);
 
-            if (opcode in batavia.modules.dis.hasconst) {
+            if (batavia.modules.dis.hasconst.__contains__(iop).valueOf()) {
                 args = [code.co_consts[intArg]];
-            } else if (opcode in batavia.modules.dis.hasfree) {
+            } else if (batavia.modules.dis.hasfree.__contains__(iop).valueOf()) {
                 if (intArg < code.co_cellvars.length) {
                     args = [code.co_cellvars[intArg]];
                 } else {
                     var_idx = intArg - code.co_cellvars.length;
                     args = [code.co_freevars[var_idx]];
                 }
-            } else if (opcode in batavia.modules.dis.hasname) {
+            } else if (batavia.modules.dis.hasname.__contains__(iop).valueOf()) {
                 args = [code.co_names[intArg]];
-            } else if (opcode in batavia.modules.dis.hasjrel) {
+            } else if (batavia.modules.dis.hasjrel.__contains__(iop).valueOf()) {
                 args = [pos + intArg];
-            } else if (opcode in batavia.modules.dis.hasjabs) {
+            } else if (batavia.modules.dis.hasjabs.__contains__(iop).valueOf()) {
                 args = [intArg];
-            } else if (opcode in batavia.modules.dis.haslocal) {
+            } else if (batavia.modules.dis.haslocal.__contains__(iop).valueOf()) {
                 args = [code.co_varnames[intArg]];
             } else {
                 args = [intArg];

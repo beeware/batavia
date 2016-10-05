@@ -30,17 +30,17 @@ batavia.modules.dis = {
 
     def_unary_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
-        batavia.modules.dis.unary_ops.add(op);
+        batavia.modules.dis.unary_ops.add(new batavia.types.Int(op));
     },
 
     def_binary_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
-        batavia.modules.dis.binary_ops.add(op);
+        batavia.modules.dis.binary_ops.add(new batavia.types.Int(op));
     },
 
     def_inplace_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
-        batavia.modules.dis.inplace_ops.add(op);
+        batavia.modules.dis.inplace_ops.add(new batavia.types.Int(op));
     },
 
     // def_slice_op: function(name, op) {
@@ -50,17 +50,17 @@ batavia.modules.dis = {
 
     name_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
-        batavia.modules.dis.hasname.add(op);
+        batavia.modules.dis.hasname.add(new batavia.types.Int(op));
     },
 
     jrel_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
-        batavia.modules.dis.hasjrel.add(op);
+        batavia.modules.dis.hasjrel.add(new batavia.types.Int(op));
     },
 
     jabs_op: function(name, op) {
         batavia.modules.dis.def_op(name, op);
-        batavia.modules.dis.hasjabs.add(op);
+        batavia.modules.dis.hasjabs.add(new batavia.types.Int(op));
     },
 
     init: function() {
@@ -151,7 +151,7 @@ batavia.modules.dis = {
         batavia.modules.dis.name_op('STORE_GLOBAL', 97);     // ""
         batavia.modules.dis.name_op('DELETE_GLOBAL', 98);    // ""
         batavia.modules.dis.def_op('LOAD_CONST', 100);       // Index in const list
-        batavia.modules.dis.hasconst.add(100);
+        batavia.modules.dis.hasconst.add(new batavia.types.Int(100));
         batavia.modules.dis.name_op('LOAD_NAME', 101);       // Index in name list
         batavia.modules.dis.def_op('BUILD_TUPLE', 102);      // Number of tuple items
         batavia.modules.dis.def_op('BUILD_LIST', 103);       // Number of list items
@@ -159,7 +159,7 @@ batavia.modules.dis = {
         batavia.modules.dis.def_op('BUILD_MAP', 105);        // Number of dict entries (upto 255)
         batavia.modules.dis.name_op('LOAD_ATTR', 106);       // Index in name list
         batavia.modules.dis.def_op('COMPARE_OP', 107);       // Comparison operator
-        batavia.modules.dis.hascompare.add(107);
+        batavia.modules.dis.hascompare.add(new batavia.types.Int(107));
         batavia.modules.dis.name_op('IMPORT_NAME', 108);     // Index in name list
         batavia.modules.dis.name_op('IMPORT_FROM', 109);     // Index in name list
 
@@ -178,33 +178,33 @@ batavia.modules.dis = {
         batavia.modules.dis.jrel_op('SETUP_FINALLY', 122);   // ""
 
         batavia.modules.dis.def_op('LOAD_FAST', 124);        // Local variable number
-        batavia.modules.dis.haslocal.add(124);
+        batavia.modules.dis.haslocal.add(new batavia.types.Int(124));
         batavia.modules.dis.def_op('STORE_FAST', 125);       // Local variable number
-        batavia.modules.dis.haslocal.add(125);
+        batavia.modules.dis.haslocal.add(new batavia.types.Int(125));
         batavia.modules.dis.def_op('DELETE_FAST', 126);      // Local variable number
-        batavia.modules.dis.haslocal.add(126);
+        batavia.modules.dis.haslocal.add(new batavia.types.Int(126));
 
         batavia.modules.dis.def_op('RAISE_VARARGS', 130);    // Number of raise arguments (1, 2, or 3);
         batavia.modules.dis.def_op('CALL_FUNCTION', 131);    // #args + (#kwargs << 8);
-        batavia.modules.dis.hasnargs.add(131);
+        batavia.modules.dis.hasnargs.add(new batavia.types.Int(131));
         batavia.modules.dis.def_op('MAKE_FUNCTION', 132);    // Number of args with default values
         batavia.modules.dis.def_op('BUILD_SLICE', 133);      // Number of items
         batavia.modules.dis.def_op('MAKE_CLOSURE', 134);
         batavia.modules.dis.def_op('LOAD_CLOSURE', 135);
-        batavia.modules.dis.hasfree.add(135);
+        batavia.modules.dis.hasfree.add(new batavia.types.Int(135));
         batavia.modules.dis.def_op('LOAD_DEREF', 136);
-        batavia.modules.dis.hasfree.add(136);
+        batavia.modules.dis.hasfree.add(new batavia.types.Int(136));
         batavia.modules.dis.def_op('STORE_DEREF', 137);
-        batavia.modules.dis.hasfree.add(137);
+        batavia.modules.dis.hasfree.add(new batavia.types.Int(137));
         batavia.modules.dis.def_op('DELETE_DEREF', 138);
-        batavia.modules.dis.hasfree.add(138);
+        batavia.modules.dis.hasfree.add(new batavia.types.Int(138));
 
         batavia.modules.dis.def_op('CALL_FUNCTION_VAR', 140);     // #args + (#kwargs << 8);
-        batavia.modules.dis.hasnargs.add(140);
+        batavia.modules.dis.hasnargs.add(new batavia.types.Int(140));
         batavia.modules.dis.def_op('CALL_FUNCTION_KW', 141);      // #args + (#kwargs << 8);
-        batavia.modules.dis.hasnargs.add(141);
+        batavia.modules.dis.hasnargs.add(new batavia.types.Int(141));
         batavia.modules.dis.def_op('CALL_FUNCTION_VAR_KW', 142);  // #args + (#kwargs << 8);
-        batavia.modules.dis.hasnargs.add(142);
+        batavia.modules.dis.hasnargs.add(new batavia.types.Int(142));
 
         batavia.modules.dis.jrel_op('SETUP_WITH', 143);
 
@@ -213,7 +213,7 @@ batavia.modules.dis = {
         batavia.modules.dis.def_op('MAP_ADD', 147);
 
         batavia.modules.dis.def_op('LOAD_CLASSDEREF', 148);
-        batavia.modules.dis.hasfree.add(148);
+        batavia.modules.dis.hasfree.add(new batavia.types.Int(148));
 
         batavia.modules.dis.def_op('EXTENDED_ARG', 144);
         batavia.modules.dis.EXTENDED_ARG = 144;
