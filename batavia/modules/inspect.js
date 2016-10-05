@@ -404,7 +404,7 @@ batavia.modules.inspect = {
 
         for (var kw in named) {
             if (named.hasOwnProperty(kw)) {
-                if (!(kw in possible_kwargs)) {
+                if (!possible_kwargs.__contains__(new batavia.types.Str(kw)).valueOf()) {
                     if (!func.argspec.varkw) {
                         throw new batavia.builtins.TypeError("%s() got an unexpected keyword argument %r" %
                                     (func.__name__, kw));
