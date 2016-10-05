@@ -795,8 +795,16 @@ SAMPLE_SUBSTITUTIONS = {
         "{'c', 'a', 'b'}",
         "{'c', 'b', 'a'}",
     ],
-    "{'1', 1}": [
-        "{1, '1'}",
+    "{3, 4, 5}": [
+        "{3, 5, 4}",
+        "{4, 3, 5}",
+        "{4, 5, 3}",
+        "{5, 3, 4}",
+        "{5, 4, 3}",
+    ],
+    "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}": [
+        # otherwise we have to generate 3628800 permutations
+        re.compile(r'\{(?:[1-9]|10)(?:, (?:[1-9]|10)){9}\}'),
     ],
     # Normalize dictionary ordering
     "{'a': 1, 'c': 2.3456, 'd': 'another'}": [

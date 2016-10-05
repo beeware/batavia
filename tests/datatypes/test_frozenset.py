@@ -35,7 +35,6 @@ class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_bytes',
         'test_gt_class',
         'test_gt_complex',
-        'test_gt_float',
         'test_gt_NotImplemented',
         'test_gt_set',
         'test_gt_slice',
