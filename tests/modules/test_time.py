@@ -1,5 +1,6 @@
-from ..utils import TranspileTestCase, adjust
+from ..utils import TranspileTestCase, adjust, SAMPLE_DATA
 
+from time import struct_time, mktime
 import unittest
 
 
@@ -181,6 +182,35 @@ class TimeTests(TranspileTestCase):
     def test_mktime(self):
         self.assertCodeExecution(mktime_setup())
 
+    def test_mktime_bad_input(self):
+        """
+        TypeError: Tuple or struct_time argument required
+        """
+
+        bad_types=[
+
+
+        ]
+
+
+    def test_mktime_non_integer_types(self):
+
+        strange_types = [
+            True,
+            bytearray
+
+        ]
+
+        tests = [ mktime_setup( (1970, t, 1, 2, 0, 0, 0, 0, 0) ) for t in strange_types]
+        test_str = ''.join(tests)
+
+        self.assertCodeExecution(test_str)
+        # seq = (1970, .5, 1,2,0,0,0,0,0)
+        # st = struct_time(seq)
+        # test_str = mktime_setup(seq)
+        # self.assertCodeExecution(test_str)
+
+    def
 
 def struct_time_setup(seq = [1] * 9):
     """
@@ -198,17 +228,17 @@ def struct_time_setup(seq = [1] * 9):
 
     return test_str
 
-def mktime_setup(seq = struct_time(1970, 1, 1, 0,0,0,0,0,0)):
+def mktime_setup(seq = (1970, 1, 1, 0,0,0,0,0,0) ):
     """
-    :param seq: a struct_time instance
-    :return: a test_string to call mktime from a struct_time instance
+    :param seq: a tuple
+    :return: a test_string to call mktime based on seq
     """
-
     test_str = adjust("""
+    import time
     print(">>> st = time.struct_time({seq})")
     st = time.struct_time({seq})
-    print(">>> time.mktime({seq})")
-    print(time.mktime({seq}))
+    print(">>> time.mktime(st)")
+    print(time.mktime(st))
     """).format(seq=seq)
-    #
-    # return test_str
+
+    return test_str

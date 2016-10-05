@@ -105,15 +105,30 @@ batavia.modules.time.struct_time.prototype.__repr__ = function(){
 }
 
 batavia.modules.time.mktime = function(sequence){
+    // sequence: struct_time like
     // documentation: https://docs.python.org/3/library/time.html#time.mktime
-    var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0).getTime() / 1000;
 
-    if (seconds === Math.floor(seconds)){
-        // need special handling when a number with no decimal places is returned
-        return parseFloat(seconds).toFixed(1);
-    } else {
-        return seconds;
-    }
+    //can't be a float:
+//        throw new batavia.builtins.TypeError("integer argument expected, got float")
+
+    // try to convert to int, throw error if fail:
+//        throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")")
+
+
+//    // all items must be integers
+//    for (var i in sequence){
+//        var item = sequence[i]
+//        if (batavia.isinstance(item, batavia.types.Float)){
+//            throw new batavia.builtins.TypeError("integer argument expected, got float")
+//        }
+//        if (batavia.isinstance(item, [batavia.types.Str])) {
+//            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")")
+//        }
+//    }
+
+    var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5],
+        0).getTime() / 1000;
+    return seconds;
 
 }
 
