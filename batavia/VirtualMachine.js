@@ -840,47 +840,6 @@ batavia.VirtualMachine.prototype.unwind_block = function(block) {
 };
 
 /*
- * Parse 1 - 3 bytes of bytecode into
- * an instruction and optionally arguments.
- */
-batavia.VirtualMachine.prototype.parse_byte_and_args = function() {
-    var operation = {
-        'opoffset': this.frame.f_lasti,
-        'opcode': this.frame.f_code.co_code[this.frame.f_lasti],
-        'args': []
-    };
-    var dis = batavia.modules.dis;
-    this.frame.f_lasti += 1;
-    if (operation.opcode >= dis.HAVE_ARGUMENT) {
-        var arg = this.frame.f_code.co_code.slice(this.frame.f_lasti, this.frame.f_lasti + 2);
-        this.frame.f_lasti += 2;
-        var intArg = arg[0] + (arg[1] << 8);
-        if (operation.opcode in dis.hasconst) {
-            operation.args = [this.frame.f_code.co_consts[intArg]];
-        } else if (operation.opcode in dis.hasfree) {
-            if (intArg < this.frame.f_code.co_cellvars.length) {
-                operation.args = [this.frame.f_code.co_cellvars[intArg]];
-            } else {
-                var_idx = intArg - this.frame.f_code.co_cellvars.length;
-                operation.args = [this.frame.f_code.co_freevars[var_idx]];
-            }
-        } else if (operation.opcode in dis.hasname) {
-            operation.args = [this.frame.f_code.co_names[intArg]];
-        } else if (operation.opcode in dis.hasjrel) {
-            operation.args = [this.frame.f_lasti + intArg];
-        } else if (operation.opcode in dis.hasjabs) {
-            operation.args = [intArg];
-        } else if (operation.opcode in dis.haslocal) {
-            operation.args = [this.frame.f_code.co_varnames[intArg]];
-        } else {
-            operation.args = [intArg];
-        }
-    }
-
-    return operation;
-};
-
-/*
  * Log arguments, block stack, and data stack for each opcode.
  */
 batavia.VirtualMachine.prototype.log = function(opcode) {
