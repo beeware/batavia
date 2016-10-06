@@ -108,27 +108,31 @@ batavia.modules.time.mktime = function(sequence){
     // sequence: struct_time like
     // documentation: https://docs.python.org/3/library/time.html#time.mktime
 
-    //can't be a float:
-//        throw new batavia.builtins.TypeError("integer argument expected, got float")
 
-    // try to convert to int, throw error if fail:
-//        throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")")
+    if (!batavia.isinstance(sequence, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
+        throw new batavia.builtins.TypeError("Tuple or struct_time argument required")
+    }
 
+    // all items must be integers
+    for (var i in sequence){
+        var item = sequence[i]
+        if (batavia.isinstance(item, batavia.types.Float)){
+            throw new batavia.builtins.TypeError("integer argument expected, got float")
+        }
+        else if (!batavia.isinstance(item, batavia.types.Int)) {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")")
+        }
+    }
 
-//    // all items must be integers
-//    for (var i in sequence){
-//        var item = sequence[i]
-//        if (batavia.isinstance(item, batavia.types.Float)){
-//            throw new batavia.builtins.TypeError("integer argument expected, got float")
-//        }
-//        if (batavia.isinstance(item, [batavia.types.Str])) {
-//            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")")
-//        }
+    //earliest possible date on my Mac
+    //(1901, 12, 13, 15, 45, 52, 0, 0, 0)
+//    if (sequence < batavia.types.Tuple([1901, 12, 13, 15, 45, 52, 0, 0, 0])){
+//        throw new batavia.builtins.OverflowError("mktime argument out of range")
 //    }
 
-    var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5],
-        0).getTime() / 1000;
-    return seconds;
+
+    var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0).getTime() / 1000;
+    return seconds.toFixed(1);
 
 }
 
