@@ -31,6 +31,7 @@ BASE_FILES=\
     batavia/types/Str.js \
     batavia/types/Tuple.js \
 		batavia/modules/base64.js \
+    batavia/modules/_compile.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
     batavia/modules/marshal.js \
@@ -79,6 +80,7 @@ BASE_FILES_WIN=\
     batavia\types\Str.js \
     batavia\types\Tuple.js \
 		batavia\modules\base64.js \
+    batavia\modules\_compile.js \
     batavia\modules\dis.js \
     batavia\modules\dom.js \
     batavia\modules\marshal.js \
