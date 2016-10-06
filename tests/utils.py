@@ -819,6 +819,15 @@ SAMPLE_SUBSTITUTIONS = {
         "('another', 2.3456, 1)",
         "(2.3456, 'another', 1)",
     ],
+    # Normalize dictionary keys to list ordering
+    "['c', 'd', 'a']": [
+        "['a', 'c', 'd']",
+        "['a', 'd', 'c']",
+        "['c', 'a', 'd']",
+        "['c', 'd', 'a']",
+        "['d', 'a', 'c']",
+        "['d', 'c', 'a']",
+    ],
     # Normalize precision error
     "-0.00000265358979335273": ["-2.65358979335273e-6",],
     "-0.0000026535897933527304": ["-2.6535897933527304e-6",],
