@@ -29,6 +29,7 @@ BASE_FILES=\
     batavia/types/FrozenSet.js \
     batavia/types/Str.js \
     batavia/types/Tuple.js \
+    batavia/modules/_compile.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
     batavia/modules/marshal.js \
@@ -75,6 +76,7 @@ BASE_FILES_WIN=\
     batavia\types\FrozenSet.js \
     batavia\types\Str.js \
     batavia\types\Tuple.js \
+    batavia\modules\_compile.js \
     batavia\modules\dis.js \
     batavia\modules\dom.js \
     batavia\modules\marshal.js \
