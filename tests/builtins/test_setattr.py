@@ -9,6 +9,7 @@ class BuiltinSetattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["setattr"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

@@ -179,7 +179,7 @@ batavia.builtins.abs = function(args, kwargs) {
         throw new batavia.builtins.TypeError("abs() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('abs() takes exactly one argument (' + args.length + ' given)');
     }
 
     var value = args[0];
@@ -758,7 +758,9 @@ batavia.builtins.int = function(args, kwargs) {
 
     var base = 10;
     var value = 0;
-    if (args && args.length === 1) {
+    if (!args || args.length === 0) {
+        return new batavia.types.Int(0);
+    } else if (args && args.length === 1) {
         value = args[0];
         if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
             return value.__int__();

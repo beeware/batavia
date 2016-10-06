@@ -9,6 +9,7 @@ class BuiltinAsciiFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["ascii"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

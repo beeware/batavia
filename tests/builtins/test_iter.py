@@ -14,6 +14,7 @@ class BuiltinIterFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["iter"]
 
     not_implemented = [
+        'test_noargs',
         'test_bytearray',
         'test_complex',
         'test_dict',

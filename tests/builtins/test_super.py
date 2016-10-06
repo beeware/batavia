@@ -9,6 +9,7 @@ class BuiltinSuperFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["super"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

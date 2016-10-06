@@ -1202,6 +1202,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
 
     for datatype, examples in SAMPLE_DATA.items():
         vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
+        vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
 
 
 def _builtin_twoarg_test(test_name, operation, examples1, examples2):
