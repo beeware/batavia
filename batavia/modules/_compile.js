@@ -123,6 +123,7 @@ batavia.modules._compile = {
     var NT_OFFSET =		256;
 
     var TABSIZE = 8;
+    var MAXINDENT = 100;
 
     batavia.modules._compile.EOF = EOF;
     batavia.modules._compile.E_OK = E_OK;
@@ -476,7 +477,7 @@ batavia.modules._compile = {
         /* Stuff for checking on different tab sizes */
         this.altwarning = 0;     /* Issue warning if alternate tabs don't match */
         this.alterror = 0;       /* Issue error if alternate tabs don't match */
-        this.alttabsize = 0;     /* Alternate tab spacing */
+        this.alttabsize = 1;     /* Alternate tab spacing */
         this.altindstack = [];         /* Stack of alternate indents */
         /* Stuff for PEP 0263 */
         this.decoding_state = null;
@@ -506,7 +507,7 @@ batavia.modules._compile = {
         var c;
         var p_start = null;
         var p_end = null;
-        var continue_processing = true;
+        tok.continue_processing = true;
 
         // nothing left to process
         if (tok.cur >= tok.buf.length) {
@@ -514,7 +515,7 @@ batavia.modules._compile = {
         }
 
         var process_line = function() {
-            continue_processing = false;
+            tok.continue_processing = false;
             tok.start = null;
             tok.blankline = 0;
 
@@ -548,11 +549,11 @@ batavia.modules._compile = {
                     if (col == tok.indstack[tok.indent]) {
                         // No change
                         if (altcol != tok.altindstack[tok.indent]) {
-                            if (tok.indenterror())
+                            if (tok.indenterror()) {
                                 return [ERRORTOKEN, tok.cur, tok.cur, 1];
+                            }
                         }
-                    }
-                    else if (col > tok.indstack[tok.indent]) {
+                    } else if (col > tok.indstack[tok.indent]) {
                         /* Indent -- always one */
                         if (tok.indent + 1 >= MAXINDENT) {
                             tok.done = E_TOODEEP;
@@ -560,8 +561,9 @@ batavia.modules._compile = {
                             return [ERRORTOKEN, tok.cur, tok.cur, 2];
                         }
                         if (altcol <= tok.altindstack[tok.indent]) {
-                            if (tok.indenterror())
+                            if (tok.indenterror()) {
                                 return [ERRORTOKEN, tok.cur, tok.cur, 3];
+                            }
                         }
                         tok.pendin++;
                         tok.indstack[++tok.indent] = col;
@@ -588,15 +590,14 @@ batavia.modules._compile = {
 
             tok.start = tok.cur;
 
-            /* Return pending indents/dedents */
+            // Return pending indents/dedents
             if (tok.pendin != 0) {
                 if (tok.pendin < 0) {
                     tok.pendin++;
-                    return [DEDENT, p_start, p_end];
-                }
-                else {
+                    return [DEDENT, tok.start, tok.cur];
+                } else {
                     tok.pendin--;
-                    return [INDENT. p_start, p_end];
+                    return [INDENT, tok.start, tok.cur];
                 }
             }
 
@@ -608,8 +609,8 @@ batavia.modules._compile = {
                 && tok.async_def_nl
                 /* Current indentation level is less than where
                    the async function was defined */
-                && tok.async_def_indent >= tok.indent)
-            {
+                && tok.async_def_indent >= tok.indent) {
+
                 tok.async_def = 0;
                 tok.async_def_indent = 0;
                 tok.async_def_nl = 0;
@@ -619,7 +620,7 @@ batavia.modules._compile = {
       };
 
       var result;
-      while (continue_processing) {
+      while (tok.continue_processing) {
           result = process_line();
       }
       result[0] = batavia.modules._compile.TOKEN_NAMES[result[0]];
@@ -660,9 +661,9 @@ batavia.modules._compile = {
        // Newline
        if (c == '\n') {
            tok.atbol = 1;
-           if (tok.ret || tok.level > 0) {
+           if (tok.level > 0) {
                // process next line
-               continue_processing = true;
+               tok.continue_processing = true;
                return null;
            }
            tok.cont_line = 0;
