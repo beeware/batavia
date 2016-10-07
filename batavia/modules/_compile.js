@@ -31,89 +31,374 @@ batavia.modules._compile = {
     }
 };
 
-/* Token types */
-batavia.modules._compile.ENDMARKER =	0;
-batavia.modules._compile.NAME =		1;
-batavia.modules._compile.NUMBER =		2;
-batavia.modules._compile.STRING =		3;
-batavia.modules._compile.NEWLINE =		4;
-batavia.modules._compile.INDENT =		5;
-batavia.modules._compile.DEDENT =		6;
-batavia.modules._compile.LPAR =		7;
-batavia.modules._compile.RPAR =		8;
-batavia.modules._compile.LSQB =		9;
-batavia.modules._compile.RSQB =		10;
-batavia.modules._compile.COLON =		11;
-batavia.modules._compile.COMMA =		12;
-batavia.modules._compile.SEMI =		13;
-batavia.modules._compile.PLUS =		14;
-batavia.modules._compile.MINUS =		15;
-batavia.modules._compile.STAR =		16;
-batavia.modules._compile.SLASH =		17;
-batavia.modules._compile.VBAR =		18;
-batavia.modules._compile.AMPER =		19;
-batavia.modules._compile.LESS =		20;
-batavia.modules._compile.GREATER =		21;
-batavia.modules._compile.EQUAL =		22;
-batavia.modules._compile.DOT =		23;
-batavia.modules._compile.PERCENT =		24;
-batavia.modules._compile.LBRACE =		25;
-batavia.modules._compile.RBRACE =		26;
-batavia.modules._compile.EQEQUAL =		27;
-batavia.modules._compile.NOTEQUAL =	28;
-batavia.modules._compile.LESSEQUAL =	29;
-batavia.modules._compile.GREATEREQUAL =	30;
-batavia.modules._compile.TILDE =		31;
-batavia.modules._compile.CIRCUMFLEX =	32;
-batavia.modules._compile.LEFTSHIFT =	33;
-batavia.modules._compile.RIGHTSHIFT =	34;
-batavia.modules._compile.DOUBLESTAR =	35;
-batavia.modules._compile.PLUSEQUAL =	36;
-batavia.modules._compile.MINEQUAL =	37;
-batavia.modules._compile.STAREQUAL =	38;
-batavia.modules._compile.SLASHEQUAL =	39;
-batavia.modules._compile.PERCENTEQUAL =	40;
-batavia.modules._compile.AMPEREQUAL =	41;
-batavia.modules._compile.VBAREQUAL =	42;
-batavia.modules._compile.CIRCUMFLEXEQUAL =	43;
-batavia.modules._compile.LEFTSHIFTEQUAL =	44;
-batavia.modules._compile.RIGHTSHIFTEQUAL =	45;
-batavia.modules._compile.DOUBLESTAREQUAL =	46;
-batavia.modules._compile.DOUBLESLASH =	47;
-batavia.modules._compile.DOUBLESLASHEQUAL = 48;
-batavia.modules._compile.AT =              49;
-batavia.modules._compile.ATEQUAL =		50;
-batavia.modules._compile.RARROW =          51;
-batavia.modules._compile.ELLIPSIS =        52;
-/* Don't forget to update the table _PyParser_TokenNames in tokenizer.c! */
-batavia.modules._compile.OP =		53;
-batavia.modules._compile.AWAIT =		54;
-batavia.modules._compile.ASYNC =		55;
-batavia.modules._compile.ERRORTOKEN =	56;
-batavia.modules._compile.N_TOKENS =	57;
-
-/* Special definitions for cooperation with parser */
-batavia.modules._compile.NT_OFFSET =		256;
-
+// modeled closely after tokenizer.c.
 (function() {
-    var Tokenizer = function() {
+    /* Error codes passed around between file input, tokenizer, parser and
+       interpreter.  This is necessary so we can turn them into Python
+       exceptions at a higher level.  Note that some errors have a
+       slightly different meaning when passed from the tokenizer to the
+       parser than when passed from the parser to the interpreter; e.g.
+       the parser only returns E_EOF when it hits EOF immediately, and it
+       never returns E_OK. */
+
+    var EOF = -1;
+    var E_OK =		10;	/* No error */
+    var E_EOF =		11;	/* End Of File */
+    var E_INTR =		12;	/* Interrupted */
+    var E_TOKEN =		13;	/* Bad token */
+    var E_SYNTAX =	14;	/* Syntax error */
+    var E_NOMEM =		15;	/* Ran out of memory */
+    var E_DONE =		16;	/* Parsing complete */
+    var E_ERROR =		17;	/* Execution error */
+    var E_TABSPACE =	18;	/* Inconsistent mixing of tabs and spaces */
+    var E_OVERFLOW =      19;	/* Node had too many children */
+    var E_TOODEEP =	20;	/* Too many indentation levels */
+    var E_DEDENT =	21;	/* No matching outer block for dedent */
+    var E_DECODE =	22;	/* Error in decoding into Unicode */
+    var E_EOFS =		23;	/* EOF in triple-quoted string */
+    var E_EOLS =		24;	/* EOL in single-quoted string */
+    var E_LINECONT =	25;	/* Unexpected characters after a line continuation */
+    var E_IDENTIFIER =    26;      /* Invalid characters in identifier */
+    var E_BADSINGLE =	27;	/* Ill-formed single statement input */
+
+    /* Token types */
+    var ENDMARKER =	0;
+    var NAME =		1;
+    var NUMBER =		2;
+    var STRING =		3;
+    var NEWLINE =		4;
+    var INDENT =		5;
+    var DEDENT =		6;
+    var LPAR =		7;
+    var RPAR =		8;
+    var LSQB =		9;
+    var RSQB =		10;
+    var COLON =		11;
+    var COMMA =		12;
+    var SEMI =		13;
+    var PLUS =		14;
+    var MINUS =		15;
+    var STAR =		16;
+    var SLASH =		17;
+    var VBAR =		18;
+    var AMPER =		19;
+    var LESS =		20;
+    var GREATER =		21;
+    var EQUAL =		22;
+    var DOT =		23;
+    var PERCENT =		24;
+    var LBRACE =		25;
+    var RBRACE =		26;
+    var EQEQUAL =		27;
+    var NOTEQUAL =	28;
+    var LESSEQUAL =	29;
+    var GREATEREQUAL =	30;
+    var TILDE =		31;
+    var CIRCUMFLEX =	32;
+    var LEFTSHIFT =	33;
+    var RIGHTSHIFT =	34;
+    var DOUBLESTAR =	35;
+    var PLUSEQUAL =	36;
+    var MINEQUAL =	37;
+    var STAREQUAL =	38;
+    var SLASHEQUAL =	39;
+    var PERCENTEQUAL =	40;
+    var AMPEREQUAL =	41;
+    var VBAREQUAL =	42;
+    var CIRCUMFLEXEQUAL =	43;
+    var LEFTSHIFTEQUAL =	44;
+    var RIGHTSHIFTEQUAL =	45;
+    var DOUBLESTAREQUAL =	46;
+    var DOUBLESLASH =	47;
+    var DOUBLESLASHEQUAL = 48;
+    var AT =              49;
+    var ATEQUAL =		50;
+    var RARROW =          51;
+    var ELLIPSIS =        52;
+    var OP =		53;
+    var AWAIT =		54;
+    var ASYNC =		55;
+    var ERRORTOKEN =	56;
+    var N_TOKENS =	57;
+    var NT_OFFSET =		256;
+
+
+    batavia.modules._compile.EOF = EOF;
+    batavia.modules._compile.E_OK = E_OK;
+    batavia.modules._compile.E_EOF = E_EOF;
+    batavia.modules._compile.E_INTR = E_INTR;
+    batavia.modules._compile.E_TOKEN = E_TOKEN;
+    batavia.modules._compile.E_SYNTAX = E_SYNTAX;
+    batavia.modules._compile.E_NOMEM = E_NOMEM;
+    batavia.modules._compile.E_DONE = E_DONE;
+    batavia.modules._compile.E_ERROR = E_ERROR;
+    batavia.modules._compile.E_TABSPACE = E_TABSPACE;
+    batavia.modules._compile.E_OVERFLOW = E_OVERFLOW;
+    batavia.modules._compile.E_TOODEEP = E_TOODEEP;
+    batavia.modules._compile.E_DEDENT = E_DEDENT;
+    batavia.modules._compile.E_DECODE = E_DECODE;
+    batavia.modules._compile.E_EOFS = E_EOFS;
+    batavia.modules._compile.E_EOLS = E_EOLS;
+    batavia.modules._compile.E_LINECONT = E_LINECONT;
+    batavia.modules._compile.E_IDENTIFIER = E_IDENTIFIER;
+    batavia.modules._compile.E_BADSINGLE = E_BADSINGLE;
+    batavia.modules._compile.ENDMARKER = ENDMARKER;
+    batavia.modules._compile.NAME = NAME;
+    batavia.modules._compile.NUMBER = NUMBER;
+    batavia.modules._compile.STRING = STRING;
+    batavia.modules._compile.NEWLINE = NEWLINE;
+    batavia.modules._compile.INDENT = INDENT;
+    batavia.modules._compile.DEDENT = DEDENT;
+    batavia.modules._compile.LPAR = LPAR;
+    batavia.modules._compile.RPAR = RPAR;
+    batavia.modules._compile.LSQB = LSQB;
+    batavia.modules._compile.RSQB = RSQB;
+    batavia.modules._compile.COLON = COLON;
+    batavia.modules._compile.COMMA = COMMA;
+    batavia.modules._compile.SEMI = SEMI;
+    batavia.modules._compile.PLUS = PLUS;
+    batavia.modules._compile.MINUS = MINUS;
+    batavia.modules._compile.STAR = STAR;
+    batavia.modules._compile.SLASH = SLASH;
+    batavia.modules._compile.VBAR = VBAR;
+    batavia.modules._compile.AMPER = AMPER;
+    batavia.modules._compile.LESS = LESS;
+    batavia.modules._compile.GREATER = GREATER;
+    batavia.modules._compile.EQUAL = EQUAL;
+    batavia.modules._compile.DOT = DOT;
+    batavia.modules._compile.PERCENT = PERCENT;
+    batavia.modules._compile.LBRACE = LBRACE;
+    batavia.modules._compile.RBRACE = RBRACE;
+    batavia.modules._compile.EQEQUAL = EQEQUAL;
+    batavia.modules._compile.NOTEQUAL = NOTEQUAL;
+    batavia.modules._compile.LESSEQUAL = LESSEQUAL;
+    batavia.modules._compile.GREATEREQUAL = GREATEREQUAL;
+    batavia.modules._compile.TILDE = TILDE;
+    batavia.modules._compile.CIRCUMFLEX = CIRCUMFLEX;
+    batavia.modules._compile.LEFTSHIFT = LEFTSHIFT;
+    batavia.modules._compile.RIGHTSHIFT = RIGHTSHIFT;
+    batavia.modules._compile.DOUBLESTAR = DOUBLESTAR;
+    batavia.modules._compile.PLUSEQUAL = PLUSEQUAL;
+    batavia.modules._compile.MINEQUAL = MINEQUAL;
+    batavia.modules._compile.STAREQUAL = STAREQUAL;
+    batavia.modules._compile.SLASHEQUAL = SLASHEQUAL;
+    batavia.modules._compile.PERCENTEQUAL = PERCENTEQUAL;
+    batavia.modules._compile.AMPEREQUAL = AMPEREQUAL;
+    batavia.modules._compile.VBAREQUAL = VBAREQUAL;
+    batavia.modules._compile.CIRCUMFLEXEQUAL = CIRCUMFLEXEQUAL;
+    batavia.modules._compile.LEFTSHIFTEQUAL = LEFTSHIFTEQUAL;
+    batavia.modules._compile.RIGHTSHIFTEQUAL = RIGHTSHIFTEQUAL;
+    batavia.modules._compile.DOUBLESTAREQUAL = DOUBLESTAREQUAL;
+    batavia.modules._compile.DOUBLESLASH = DOUBLESLASH;
+    batavia.modules._compile.DOUBLESLASHEQUAL = DOUBLESLASHEQUAL;
+    batavia.modules._compile.AT = AT;
+    batavia.modules._compile.ATEQUAL = ATEQUAL;
+    batavia.modules._compile.RARROW = RARROW;
+    batavia.modules._compile.ELLIPSIS = ELLIPSIS;
+    batavia.modules._compile.OP = OP;
+    batavia.modules._compile.AWAIT = AWAIT;
+    batavia.modules._compile.ASYNC = ASYNC;
+    batavia.modules._compile.ERRORTOKEN = ERRORTOKEN;
+    batavia.modules._compile.N_TOKENS = N_TOKENS;
+    batavia.modules._compile.NT_OFFSET = NT_OFFSET;
+
+    var is_potential_identifier_start = function(c) {
+        return (c >= 'a' && c <= 'z')
+               || (c >= 'A' && c <= 'Z')
+               || c == '_'
+               || (c >= 128);
+    };
+
+    var is_potential_identifier_char = function(c) {
+        return (c >= 'a' && c <= 'z')
+               || (c >= 'A' && c <= 'Z')
+               || (c >= '0' && c <= '9')
+               || c == '_'
+               || (c >= 128);
+    };
+
+    var isdigit = function(c) {
+        return c >= '0' && c <= '9';
+    };
+
+
+    var PyToken_OneChar = function(c) {
+        switch (c) {
+        case '(':           return LPAR;
+        case ')':           return RPAR;
+        case '[':           return LSQB;
+        case ']':           return RSQB;
+        case ':':           return COLON;
+        case ',':           return COMMA;
+        case ';':           return SEMI;
+        case '+':           return PLUS;
+        case '-':           return MINUS;
+        case '*':           return STAR;
+        case '/':           return SLASH;
+        case '|':           return VBAR;
+        case '&':           return AMPER;
+        case '<':           return LESS;
+        case '>':           return GREATER;
+        case '=':           return EQUAL;
+        case '.':           return DOT;
+        case '%':           return PERCENT;
+        case '{':           return LBRACE;
+        case '}':           return RBRACE;
+        case '^':           return CIRCUMFLEX;
+        case '~':           return TILDE;
+        case '@':           return AT;
+        default:            return OP;
+        }
+    };
+
+    var PyToken_TwoChars = function(c1, c2) {
+        switch (c1) {
+        case '=':
+            switch (c2) {
+            case '=':               return EQEQUAL;
+            }
+            break;
+        case '!':
+            switch (c2) {
+            case '=':               return NOTEQUAL;
+            }
+            break;
+        case '<':
+            switch (c2) {
+            case '>':               return NOTEQUAL;
+            case '=':               return LESSEQUAL;
+            case '<':               return LEFTSHIFT;
+            }
+            break;
+        case '>':
+            switch (c2) {
+            case '=':               return GREATEREQUAL;
+            case '>':               return RIGHTSHIFT;
+            }
+            break;
+        case '+':
+            switch (c2) {
+            case '=':               return PLUSEQUAL;
+            }
+            break;
+        case '-':
+            switch (c2) {
+            case '=':               return MINEQUAL;
+            case '>':               return RARROW;
+            }
+            break;
+        case '*':
+            switch (c2) {
+            case '*':               return DOUBLESTAR;
+            case '=':               return STAREQUAL;
+            }
+            break;
+        case '/':
+            switch (c2) {
+            case '/':               return DOUBLESLASH;
+            case '=':               return SLASHEQUAL;
+            }
+            break;
+        case '|':
+            switch (c2) {
+            case '=':               return VBAREQUAL;
+            }
+            break;
+        case '%':
+            switch (c2) {
+            case '=':               return PERCENTEQUAL;
+            }
+            break;
+        case '&':
+            switch (c2) {
+            case '=':               return AMPEREQUAL;
+            }
+            break;
+        case '^':
+            switch (c2) {
+            case '=':               return CIRCUMFLEXEQUAL;
+            }
+            break;
+        case '@':
+            switch (c2) {
+            case '=':               return ATEQUAL;
+            }
+            break;
+        }
+        return OP;
+    };
+
+    var PyToken_ThreeChars = function(c1, c2, c3) {
+        switch (c1) {
+        case '<':
+            switch (c2) {
+            case '<':
+                switch (c3) {
+                case '=':
+                    return LEFTSHIFTEQUAL;
+                }
+                break;
+            }
+            break;
+        case '>':
+            switch (c2) {
+            case '>':
+                switch (c3) {
+                case '=':
+                    return RIGHTSHIFTEQUAL;
+                }
+                break;
+            }
+            break;
+        case '*':
+            switch (c2) {
+            case '*':
+                switch (c3) {
+                case '=':
+                    return DOUBLESTAREQUAL;
+                }
+                break;
+            }
+            break;
+        case '/':
+            switch (c2) {
+            case '/':
+                switch (c3) {
+                case '=':
+                    return DOUBLESLASHEQUAL;
+                }
+                break;
+            }
+            break;
+        case '.':
+            switch (c2) {
+            case '.':
+                switch (c3) {
+                case '.':
+                    return ELLIPSIS;
+                }
+                break;
+            }
+            break;
+        }
+        return OP;
+    };
+
+    var Tokenizer = function(str) {
         /* Input state; buf <= cur <= inp <= end */
         /* NB an entire line is held in the buffer */
-        this.buf = null;          /* Input buffer, or NULL; malloc'ed if fp != NULL */
-        this.cur = null;          /* Next character in buffer */
-        this.inp = null;          /* End of data in buffer */
-        this.end = null;          /* End of input buffer if buf != NULL */
+        this.buf = str.split('');          /* Input buffer, or NULL; malloc'ed if fp != NULL */
+        this.cur = 0;          /* Next character in buffer */
+        this.inp = str.length;          /* End of data in buffer */
+        this.end = str.length;          /* End of input buffer if buf != NULL */
         this.start = null;        /* Start of current token if not NULL */
-        this.done = null;           /* E_OK normally, E_EOF at EOF, otherwise error code */
+        this.done = E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
         /* NB If done != E_OK, cur must be == inp!!! */
-        this.fp = null;           /* Rest of input; NULL if tokenizing a string */
         this.tabsize = 0;        /* Tab spacing */
         this.indent = 0;         /* Current indentation index */
         this.indstack = [];      /* Stack of indents */
         this.atbol = 0;          /* Nonzero if at begin of new line */
         this.pendin = 0;         /* Pending indents (if > 0) or dedents (if < 0) */
-        this.prompt = null;          /* For interactive prompting */
-        this.nextprompt = null;
         this.lineno = 0;         /* Current line number */
         this.level = 0;          /* () [] {} Parentheses nesting level */
                 /* Used to allow free continuations inside them */
@@ -141,15 +426,15 @@ batavia.modules._compile.NT_OFFSET =		256;
                                  NEWLINE token after it. */
     };
 
+    Tokenizer.prototype.__class__ = new batavia.types.Type('Tokenizer');
+
 
     // Get next token, after space stripping etc.
-    // modeled closely after tokenizer.c: tok_get
-    Token.prototype.get_token = function(str, p_start, p_end) {
+    Tokenizer.prototype.get_token = function(str) {
         var tok = this;
         var c;
-        var nonascii;
-        p_start = null;
-        p_end = null;
+        var p_start = null;
+        var p_end = null;
         var continue_processing = true;
 
         var process_line = function() {
@@ -163,7 +448,7 @@ batavia.modules._compile.NT_OFFSET =		256;
                 var altcol = 0;
                 tok.atbol = 0;
                 for (;;) {
-                    c = tok_nextc(tok);
+                    c = tok.tok_nextc();
                     if (c == ' ') {
                         col++, altcol++;
                     } else if (c == '\t') {
@@ -177,7 +462,7 @@ batavia.modules._compile.NT_OFFSET =		256;
                         break;
                     }
                 }
-                tok_backup(tok, c);
+                tok.tok_backup(c);
                 if (c == '#' || c == '\n') {
                     //  Lines with only whitespace and/or comments
                     //  shouldn't affect the indentation and are
@@ -197,7 +482,7 @@ batavia.modules._compile.NT_OFFSET =		256;
                         // No change
                         if (altcol != tok.altindstack[tok.indent]) {
                             if (indenterror(tok))
-                                return ERRORTOKEN;
+                                return [ERRORTOKEN, p_start, p_end];
                         }
                     }
                     else if (col > tok.indstack[tok.indent]) {
@@ -205,11 +490,11 @@ batavia.modules._compile.NT_OFFSET =		256;
                         if (tok.indent + 1 >= MAXINDENT) {
                             tok.done = E_TOODEEP;
                             tok.cur = tok.inp;
-                            return ERRORTOKEN;
+                            return [ERRORTOKEN, p_start, p_end];
                         }
                         if (altcol <= tok.altindstack[tok.indent]) {
                             if (indenterror(tok))
-                                return ERRORTOKEN;
+                                return [ERRORTOKEN, p_start, p_end];
                         }
                         tok.pendin++;
                         tok.indstack[++tok.indent] = col;
@@ -224,11 +509,11 @@ batavia.modules._compile.NT_OFFSET =		256;
                         if (col != tok.indstack[tok.indent]) {
                             tok.done = E_DEDENT;
                             tok.cur = tok.inp;
-                            return ERRORTOKEN;
+                            return [ERRORTOKEN, p_start, p_end];
                         }
                         if (altcol != tok.altindstack[tok.indent]) {
                             if (indenterror(tok))
-                                return ERRORTOKEN;
+                                return [ERRORTOKEN, p_start, p_end];
                         }
                     }
                 }
@@ -240,11 +525,11 @@ batavia.modules._compile.NT_OFFSET =		256;
             if (tok.pendin != 0) {
                 if (tok.pendin < 0) {
                     tok.pendin++;
-                    return DEDENT;
+                    return [DEDENT, p_start, p_end];
                 }
                 else {
                     tok.pendin--;
-                    return INDENT;
+                    return [INDENT. p_start, p_end];
                 }
             }
 
@@ -263,7 +548,7 @@ batavia.modules._compile.NT_OFFSET =		256;
                 tok.async_def_nl = 0;
             }
 
-        tok.again();
+            return tok.again();
       };
 
       var result;
@@ -274,10 +559,14 @@ batavia.modules._compile.NT_OFFSET =		256;
   };
 
   Tokenizer.prototype.again = function() {
+       var tok = this;
+       var c;
        tok.start = null;
+       var p_start = null;
+       var p_end = null;
        // Skip spaces
        do {
-           c = tok_nextc(tok);
+           c = tok.tok_nextc();
        } while (c == ' ' || c == '\t' || c == '\014');
 
        // Set start of current token
@@ -286,17 +575,17 @@ batavia.modules._compile.NT_OFFSET =		256;
        // Skip comment
        if (c == '#') {
            while (c != EOF && c != '\n') {
-               c = tok_nextc(tok);
+               c = tok.tok_nextc();
            }
        }
 
        // Check for EOF and errors now
        if (c == EOF) {
-           return tok.done == E_EOF ? ENDMARKER : ERRORTOKEN;
+           return [tok.done == E_EOF ? ENDMARKER : ERRORTOKEN, null, null];
        }
 
        // Identifier (most frequent token!)
-       nonascii = 0;
+       var nonascii = 0;
        if (is_potential_identifier_start(c)) {
            // Process b"", r"", u"", br"" and rb""
            var saw_b = 0;
@@ -317,21 +606,20 @@ batavia.modules._compile.NT_OFFSET =		256;
                    saw_f = 1;
                else
                    break;
-               c = tok_nextc(tok);
+               c = tok.tok_nextc();
                if (c == '"' || c == '\'') {
-                   tok.letter_quote();
+                   return tok.letter_quote(c);
                }
-
            }
            while (is_potential_identifier_char(c)) {
                if (c >= 128) {
                    nonascii = 1;
                }
-               c = tok_nextc(tok);
+               c = tok.tok_nextc();
            }
-           tok_backup(tok, c);
+           tok.tok_backup(c);
            if (nonascii && !verify_identifier(tok)) {
-               return ERRORTOKEN;
+               return [ERRORTOKEN, p_start, p_end];
            }
            p_start = tok.start;
            p_end = tok.cur;
@@ -367,12 +655,12 @@ batavia.modules._compile.NT_OFFSET =		256;
                           returning 'async' NAME token, we return ASYNC. */
                        tok.async_def_indent = tok.indent;
                        tok.async_def = 1;
-                       return ASYNC;
+                       return [ASYNC, p_start, p_end];
                    }
                }
            }
 
-           return NAME;
+           return [NAME, p_start, p_end];
        }
 
        // Newline
@@ -381,7 +669,7 @@ batavia.modules._compile.NT_OFFSET =		256;
            if (blankline || tok.level > 0) {
                // process next line
                continue_processing = true;
-               return null;
+               return null;;
            }
            p_start = tok.start;
            p_end = tok.cur - 1; // Leave '\n' out of the string
@@ -391,27 +679,27 @@ batavia.modules._compile.NT_OFFSET =		256;
                // we've encountered a NEWLINE after its signature.
                tok.async_def_nl = 1;
            }
-           return NEWLINE;
+           return [NEWLINE, p_start, p_end];
        }
 
        // Period or number starting with period?
        if (c == '.') {
-           c = tok_nextc(tok);
+           c = tok.tok_nextc();
            if (isdigit(c)) {
-               tok_backup(tok, c);
-               return fraction();
+               tok.tok_backup(c);
+               return fraction(c);
            } else if (c == '.') {
-               c = tok_nextc(tok);
+               c = tok.tok_nextc();
                if (c == '.') {
                    p_start = tok.start;
                    p_end = tok.cur;
-                   return ELLIPSIS;
+                   return [ELLIPSIS, p_start, p_end];
                } else {
-                   tok_backup(tok, c);
+                   tok.tok_backup(c);
                }
-               tok_backup(tok, '.');
+               tok.tok_backup('.');
            } else {
-               tok_backup(tok, c);
+               tok.tok_backup(c);
            }
            p_start = tok.start;
            p_end = tok.cur;
@@ -422,42 +710,42 @@ batavia.modules._compile.NT_OFFSET =		256;
        if (isdigit(c)) {
            if (c == '0') {
                // Hex, octal or binary -- maybe.
-               c = tok_nextc(tok);
+               c = tok.tok_nextc();
                if (c == 'x' || c == 'X') {
 
                    // Hex
-                   c = tok_nextc(tok);
+                   c = tok.tok_nextc();
                    if (!isxdigit(c)) {
                        tok.done = E_TOKEN;
-                       tok_backup(tok, c);
-                       return ERRORTOKEN;
+                       tok.tok_backup(c);
+                       return [ERRORTOKEN, p_start, p_end];
                    }
                    do {
-                       c = tok_nextc(tok);
+                       c = tok.tok_nextc();
                    } while (isxdigit(c));
                }
                else if (c == 'o' || c == 'O') {
                    // Octal
-                   c = tok_nextc(tok);
+                   c = tok.tok_nextc();
                    if (c < '0' || c >= '8') {
                        tok.done = E_TOKEN;
-                       tok_backup(tok, c);
-                       return ERRORTOKEN;
+                       tok.tok_backup(c);
+                       return [ERRORTOKEN, p_start, p_end];
                    }
                    do {
-                       c = tok_nextc(tok);
+                       c = tok.tok_nextc();
                    } while ('0' <= c && c < '8');
                }
                else if (c == 'b' || c == 'B') {
                    // Binary
-                   c = tok_nextc(tok);
+                   c = tok.tok_nextc();
                    if (c != '0' && c != '1') {
                        tok.done = E_TOKEN;
-                       tok_backup(tok, c);
-                       return ERRORTOKEN;
+                       tok.tok_backup(c);
+                       return [ERRORTOKEN, p_start, p_end];
                    }
                    do {
-                       c = tok_nextc(tok);
+                       c = tok.tok_nextc();
                    } while (c == '0' || c == '1');
                }
                else {
@@ -465,46 +753,49 @@ batavia.modules._compile.NT_OFFSET =		256;
                    // maybe old-style octal; c is first char of it
                    // in any case, allow '0' as a literal
                    while (c == '0')
-                       c = tok_nextc(tok);
+                       c = tok.tok_nextc();
                    while (isdigit(c)) {
                        nonzero = 1;
-                       c = tok_nextc(tok);
+                       c = tok.tok_nextc();
                    }
                    if (c == '.') {
-                       return fraction();
+                       return fraction(c);
                    } else if (c == 'e' || c == 'E') {
-                       return tok.exponent();
+                       return tok.exponent(c);
                    } else if (c == 'j' || c == 'J') {
                        return tok.imaginary();
                    } else if (nonzero) {
                        tok.done = E_TOKEN;
-                       tok_backup(tok, c);
-                       return ERRORTOKEN;
+                       tok.tok_backup(c);
+                       return [ERRORTOKEN, p_start, p_end];
                    }
                }
            }
            else {
                // Decimal
                do {
-                   c = tok_nextc(tok);
+                   c = tok.tok_nextc();
                } while (isdigit(c));
                tok.fraction();
            }
-           tok_backup(tok, c);
+           tok.tok_backup(c);
            p_start = tok.start;
            p_end = tok.cur;
            return [NUMBER, p_start, p_end];
        }
 
-     tok.letter_quote();
+     var result = tok.letter_quote(c);
+     if (result != null) {
+         return result;
+     }
 
      // Line continuation
      if (c == '\\') {
-         c = tok_nextc(tok);
+         c = tok.tok_nextc();
          if (c != '\n') {
              tok.done = E_LINECONT;
              tok.cur = tok.inp;
-             return ERRORTOKEN;
+             return [ERRORTOKEN, p_start, p_end];
          }
          tok.cont_line = 1;
          return tok.again(); // Read next line
@@ -512,21 +803,21 @@ batavia.modules._compile.NT_OFFSET =		256;
 
      // Check for two-character token
      {
-         var c2 = tok_nextc(tok);
+         var c2 = tok.tok_nextc();
          var token = PyToken_TwoChars(c, c2);
          if (token != OP) {
-             var c3 = tok_nextc(tok);
+             var c3 = tok.tok_nextc();
              var token3 = PyToken_ThreeChars(c, c2, c3);
              if (token3 != OP) {
                  token = token3;
              } else {
-                 tok_backup(tok, c3);
+                 tok.tok_backup(c3);
              }
              p_start = tok.start;
              p_end = tok.cur;
              return [token, p_start, p_end];
          }
-         tok_backup(tok, c2);
+         tok.tok_backup(c2);
      }
 
      // Keep track of parentheses nesting level
@@ -549,7 +840,8 @@ batavia.modules._compile.NT_OFFSET =		256;
      return [PyToken_OneChar(c), p_start, p_end];
   };
 
-  Tokenizer.prototype.get_token_letter_quote = function() {
+  Tokenizer.prototype.letter_quote = function(c) {
+      var tok = this;
       // String
       if (c == '\'' || c == '"') {
           var quote = c;
@@ -557,9 +849,9 @@ batavia.modules._compile.NT_OFFSET =		256;
           var end_quote_size = 0;
 
           // Find the quote size and start of string
-          c = tok_nextc(tok);
+          c = tok.tok_nextc();
           if (c == quote) {
-              c = tok_nextc(tok);
+              c = tok.tok_nextc();
               if (c == quote) {
                   quote_size = 3;
               } else {
@@ -567,12 +859,12 @@ batavia.modules._compile.NT_OFFSET =		256;
               }
           }
           if (c != quote) {
-              tok_backup(tok, c);
+              tok.tok_backup(c);
           }
 
           // Get rest of string
           while (end_quote_size != quote_size) {
-              c = tok_nextc(tok);
+              c = tok.tok_nextc();
               if (c == EOF) {
                   if (quote_size == 3) {
                       tok.done = E_EOFS;
@@ -580,19 +872,19 @@ batavia.modules._compile.NT_OFFSET =		256;
                       tok.done = E_EOLS;
                   }
                   tok.cur = tok.inp;
-                  return ERRORTOKEN;
+                  return [ERRORTOKEN, p_start, p_end];
               }
               if (quote_size == 1 && c == '\n') {
                   tok.done = E_EOLS;
                   tok.cur = tok.inp;
-                  return ERRORTOKEN;
+                  return [ERRORTOKEN, p_start, p_end];
               }
               if (c == quote) {
                   end_quote_size += 1;
               } else {
                   end_quote_size = 0;
                   if (c == '\\') {
-                      c = tok_nextc(tok);  // skip escaped char
+                      c = tok.tok_nextc();  // skip escaped char
                   }
               }
           }
@@ -601,15 +893,17 @@ batavia.modules._compile.NT_OFFSET =		256;
           p_end = tok.cur;
           return [STRING, p_start, p_end];
       }
+      return null;
   };
 
-  Tokenizer.prototype.fraction = function() {
+  Tokenizer.prototype.fraction = function(c) {
+      var tok = this;
       var e;
       // Accept floating point numbers.
       if (c == '.') {
             // Fraction
             do {
-                c = tok_nextc(tok);
+                c = tok.tok_nextc();
             } while (isdigit(c));
         }
         if (c == 'e' || c == 'E') {
@@ -617,53 +911,136 @@ batavia.modules._compile.NT_OFFSET =		256;
         }
         if (c == 'j' || c == 'J') {
             /* Imaginary part */
-            c = tok_nextc(tok);
+            c = tok.tok_nextc();
         }
 
-      tok_backup(tok, c);
+      tok.tok_backup(c);
       p_start = tok.start;
       p_end = tok.cur;
       return [NUMBER, p_start, p_end];
   };
 
-  Tokenizer.prototype.exponent = function() {
+  Tokenizer.prototype.exponent = function(c) {
+      var tok = this;
       var e = c;
       /* Exponent part */
-      c = tok_nextc(tok);
+      c = tok.tok_nextc();
       if (c == '+' || c == '-') {
-          c = tok_nextc(tok);
+          c = tok.tok_nextc();
           if (!isdigit(c)) {
               tok.done = [E_TOKEN, p_start, p_end];
-              tok_backup(tok, c);
+              tok.tok_backup(c);
               return [ERRORTOKEN, p_start, p_end];
           }
       } else if (!isdigit(c)) {
-          tok_backup(tok, c);
-          tok_backup(tok, e);
+          tok.tok_backup(c);
+          tok.tok_backup(e);
           p_start = tok.start;
           p_end = tok.cur;
           return [NUMBER, p_start, p_end];
       }
       do {
-          c = tok_nextc(tok);
+          c = tok.tok_nextc();
       } while (isdigit(c));
 
       if (c == 'j' || c == 'J')
           return tok.imaginary();
 
-      tok_backup(tok, c);
+      tok.tok_backup(c);
       p_start = tok.start;
       p_end = tok.cur;
       return [NUMBER, p_start, p_end];
   };
 
   Tokenizer.prototype.imaginary = function() {
-      c = tok_nextc(tok);
-      tok_backup(tok, c);
+      var tok = this;
+      var c = tok.tok_nextc();
+      tok.tok_backup(c);
       p_start = tok.start;
       p_end = tok.cur;
       return [NUMBER, p_start, p_end];
   };
+
+
+  Tokenizer.prototype.tok_nextc = function() {
+    var tok = this;
+
+    for (;;) {
+        if (tok.cur != tok.inp) {
+            return tok.buf[tok.cur++]; /* Fast path */
+        }
+        if (tok.done != E_OK) {
+            return EOF;
+        }
+        var done = 0;
+        var cur = 0;
+        var pt = null;
+        if (tok.start == null) {
+            if (tok.buf == null) {
+                tok.buf = new Array(BUFSIZ);
+                tok.end = BUFSIZ;
+            }
+            if (decoding_fgets(tok.buf, tok.end,
+                      tok) == null) {
+                if (!tok.decoding_erred)
+                    tok.done = E_EOF;
+                done = 1;
+            } else {
+                tok.done = E_OK;
+                tok.inp = strchr(tok.buf, '\0');
+                done = tok.inp[-1] == '\n';
+            }
+        } else {
+            cur = tok.cur;
+            tok.done = E_OK;
+        }
+        tok.lineno++;
+        /* Read until '\n' or EOF */
+        while (!done) {
+            var curstart = (tok.start == null) ? -1 :
+                      tok.start;
+            var curvalid = tok.inp;
+            tok.cur = cur;
+            tok.line_start = tok.cur;
+            tok.inp = curvalid;
+            tok.start = curstart < 0 ? null : curstart;
+            tok.inp = tok.buf.length - 1;
+            done = tok.buf[tok.inp - 1] == '\n';
+            break;
+        }
+        if (tok.buf != null) {
+            tok.cur = cur;
+            tok.line_start = tok.cur;
+            /* replace "\r\n" with "\n" */
+            /* For Mac leave the \r, giving a syntax error */
+            pt = tok.inp - 2;
+            if (pt >= 0 && tok.buf[pt] == '\r') {
+                tok.buf[pt++] = '\n';
+                tok.buf[pt] = '\0';
+                tok.inp = pt;
+            }
+        }
+        if (tok.done != E_OK) {
+            tok.cur = tok.inp;
+            return EOF;
+        }
+    }
+    /*NOTREACHED*/
+  };
+
+  /* Back-up one character */
+  Tokenizer.prototype.tok_backup = function(c) {
+      var tok = this;
+      if (c != EOF) {
+          if (--tok.cur < 0) {
+              throw new batavia.types.BatavieError("tok_backup: beginning of buffer");
+          }
+          if (tok.buf[tok.cur] != c) {
+              tok[tok.cur] = c;
+          }
+      }
+  };
+
 
   batavia.modules._compile.Tokenizer = Tokenizer;
 })();
