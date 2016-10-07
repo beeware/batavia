@@ -430,12 +430,17 @@ batavia.modules._compile = {
 
 
     // Get next token, after space stripping etc.
-    Tokenizer.prototype.get_token = function(str) {
+    Tokenizer.prototype.get_token = function() {
         var tok = this;
         var c;
         var p_start = null;
         var p_end = null;
         var continue_processing = true;
+
+        // nothing left to process
+        if (tok.cur >= tok.buf.length) {
+            return null;
+        }
 
         var process_line = function() {
             continue_processing = false;
@@ -687,7 +692,7 @@ batavia.modules._compile = {
            c = tok.tok_nextc();
            if (isdigit(c)) {
                tok.tok_backup(c);
-               return fraction(c);
+               return tok.fraction(c);
            } else if (c == '.') {
                c = tok.tok_nextc();
                if (c == '.') {
@@ -712,7 +717,6 @@ batavia.modules._compile = {
                // Hex, octal or binary -- maybe.
                c = tok.tok_nextc();
                if (c == 'x' || c == 'X') {
-
                    // Hex
                    c = tok.tok_nextc();
                    if (!isxdigit(c)) {
@@ -752,14 +756,15 @@ batavia.modules._compile = {
                    var nonzero = 0;
                    // maybe old-style octal; c is first char of it
                    // in any case, allow '0' as a literal
-                   while (c == '0')
-                       c = tok.tok_nextc();
+                   while (c == '0') {
+                      c = tok.tok_nextc();
+                   }
                    while (isdigit(c)) {
                        nonzero = 1;
                        c = tok.tok_nextc();
                    }
                    if (c == '.') {
-                       return fraction(c);
+                       return tok.fraction(c);
                    } else if (c == 'e' || c == 'E') {
                        return tok.exponent(c);
                    } else if (c == 'j' || c == 'J') {
@@ -770,13 +775,12 @@ batavia.modules._compile = {
                        return [ERRORTOKEN, p_start, p_end];
                    }
                }
-           }
-           else {
+           } else {
                // Decimal
                do {
                    c = tok.tok_nextc();
                } while (isdigit(c));
-               tok.fraction();
+               return tok.fraction(c);
            }
            tok.tok_backup(c);
            p_start = tok.start;
@@ -901,18 +905,18 @@ batavia.modules._compile = {
       var e;
       // Accept floating point numbers.
       if (c == '.') {
-            // Fraction
-            do {
-                c = tok.tok_nextc();
-            } while (isdigit(c));
-        }
-        if (c == 'e' || c == 'E') {
-            return tok.exponent();
-        }
-        if (c == 'j' || c == 'J') {
-            /* Imaginary part */
-            c = tok.tok_nextc();
-        }
+          // Fraction
+          do {
+              c = tok.tok_nextc();
+          } while (isdigit(c));
+      }
+      if (c == 'e' || c == 'E') {
+          return tok.exponent();
+      }
+      if (c == 'j' || c == 'J') {
+          /* Imaginary part */
+          c = tok.tok_nextc();
+      }
 
       tok.tok_backup(c);
       p_start = tok.start;
@@ -928,28 +932,25 @@ batavia.modules._compile = {
       if (c == '+' || c == '-') {
           c = tok.tok_nextc();
           if (!isdigit(c)) {
-              tok.done = [E_TOKEN, p_start, p_end];
+              tok.done = E_TOKEN;
               tok.tok_backup(c);
-              return [ERRORTOKEN, p_start, p_end];
+              return [ERRORTOKEN, tok.start, tok.end];
           }
       } else if (!isdigit(c)) {
           tok.tok_backup(c);
           tok.tok_backup(e);
-          p_start = tok.start;
-          p_end = tok.cur;
-          return [NUMBER, p_start, p_end];
+          return [NUMBER, tok.start, tok.end];
       }
       do {
           c = tok.tok_nextc();
       } while (isdigit(c));
 
-      if (c == 'j' || c == 'J')
+      if (c == 'j' || c == 'J') {
           return tok.imaginary();
+      }
 
       tok.tok_backup(c);
-      p_start = tok.start;
-      p_end = tok.cur;
-      return [NUMBER, p_start, p_end];
+      return [NUMBER, tok.start, tok.cur];
   };
 
   Tokenizer.prototype.imaginary = function() {
@@ -1008,17 +1009,15 @@ batavia.modules._compile = {
             done = tok.buf[tok.inp - 1] == '\n';
             break;
         }
-        if (tok.buf != null) {
-            tok.cur = cur;
-            tok.line_start = tok.cur;
-            /* replace "\r\n" with "\n" */
-            /* For Mac leave the \r, giving a syntax error */
-            pt = tok.inp - 2;
-            if (pt >= 0 && tok.buf[pt] == '\r') {
-                tok.buf[pt++] = '\n';
-                tok.buf[pt] = '\0';
-                tok.inp = pt;
-            }
+        tok.cur = cur;
+        tok.line_start = tok.cur;
+        /* replace "\r\n" with "\n" */
+        /* For Mac leave the \r, giving a syntax error */
+        pt = tok.inp - 2;
+        if (pt >= 0 && tok.buf[pt] == '\r') {
+            tok.buf[pt++] = '\n';
+            tok.buf[pt] = '\0';
+            tok.inp = pt;
         }
         if (tok.done != E_OK) {
             tok.cur = tok.inp;
