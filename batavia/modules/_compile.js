@@ -122,6 +122,7 @@ batavia.modules._compile = {
     var N_TOKENS =	57;
     var NT_OFFSET =		256;
 
+    var TABSIZE = 8;
 
     batavia.modules._compile.EOF = EOF;
     batavia.modules._compile.E_OK = E_OK;
@@ -142,6 +143,7 @@ batavia.modules._compile = {
     batavia.modules._compile.E_LINECONT = E_LINECONT;
     batavia.modules._compile.E_IDENTIFIER = E_IDENTIFIER;
     batavia.modules._compile.E_BADSINGLE = E_BADSINGLE;
+
     batavia.modules._compile.ENDMARKER = ENDMARKER;
     batavia.modules._compile.NAME = NAME;
     batavia.modules._compile.NUMBER = NUMBER;
@@ -201,6 +203,67 @@ batavia.modules._compile = {
     batavia.modules._compile.ERRORTOKEN = ERRORTOKEN;
     batavia.modules._compile.N_TOKENS = N_TOKENS;
     batavia.modules._compile.NT_OFFSET = NT_OFFSET;
+
+    batavia.modules._compile.TOKEN_NAMES = {};
+    batavia.modules._compile.TOKEN_NAMES[ENDMARKER] = "ENDMARKER";
+    batavia.modules._compile.TOKEN_NAMES[NAME] = "NAME";
+    batavia.modules._compile.TOKEN_NAMES[NUMBER] = "NUMBER";
+    batavia.modules._compile.TOKEN_NAMES[STRING] = "STRING";
+    batavia.modules._compile.TOKEN_NAMES[NEWLINE] = "NEWLINE";
+    batavia.modules._compile.TOKEN_NAMES[INDENT] = "INDENT";
+    batavia.modules._compile.TOKEN_NAMES[DEDENT] = "DEDENT";
+    batavia.modules._compile.TOKEN_NAMES[LPAR] = "LPAR";
+    batavia.modules._compile.TOKEN_NAMES[RPAR] = "RPAR";
+    batavia.modules._compile.TOKEN_NAMES[LSQB] = "LSQB";
+    batavia.modules._compile.TOKEN_NAMES[RSQB] = "RSQB";
+    batavia.modules._compile.TOKEN_NAMES[COLON] = "COLON";
+    batavia.modules._compile.TOKEN_NAMES[COMMA] = "COMMA";
+    batavia.modules._compile.TOKEN_NAMES[SEMI] = "SEMI";
+    batavia.modules._compile.TOKEN_NAMES[PLUS] = "PLUS";
+    batavia.modules._compile.TOKEN_NAMES[MINUS] = "MINUS";
+    batavia.modules._compile.TOKEN_NAMES[STAR] = "STAR";
+    batavia.modules._compile.TOKEN_NAMES[SLASH] = "SLASH";
+    batavia.modules._compile.TOKEN_NAMES[VBAR] = "VBAR";
+    batavia.modules._compile.TOKEN_NAMES[AMPER] = "AMPER";
+    batavia.modules._compile.TOKEN_NAMES[LESS] = "LESS";
+    batavia.modules._compile.TOKEN_NAMES[GREATER] = "GREATER";
+    batavia.modules._compile.TOKEN_NAMES[EQUAL] = "EQUAL";
+    batavia.modules._compile.TOKEN_NAMES[DOT] = "DOT";
+    batavia.modules._compile.TOKEN_NAMES[PERCENT] = "PERCENT";
+    batavia.modules._compile.TOKEN_NAMES[LBRACE] = "LBRACE";
+    batavia.modules._compile.TOKEN_NAMES[RBRACE] = "RBRACE";
+    batavia.modules._compile.TOKEN_NAMES[EQEQUAL] = "EQEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[NOTEQUAL] = "NOTEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[LESSEQUAL] = "LESSEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[GREATEREQUAL] = "GREATEREQUAL";
+    batavia.modules._compile.TOKEN_NAMES[TILDE] = "TILDE";
+    batavia.modules._compile.TOKEN_NAMES[CIRCUMFLEX] = "CIRCUMFLEX";
+    batavia.modules._compile.TOKEN_NAMES[LEFTSHIFT] = "LEFTSHIFT";
+    batavia.modules._compile.TOKEN_NAMES[RIGHTSHIFT] = "RIGHTSHIFT";
+    batavia.modules._compile.TOKEN_NAMES[DOUBLESTAR] = "DOUBLESTAR";
+    batavia.modules._compile.TOKEN_NAMES[PLUSEQUAL] = "PLUSEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[MINEQUAL] = "MINEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[STAREQUAL] = "STAREQUAL";
+    batavia.modules._compile.TOKEN_NAMES[SLASHEQUAL] = "SLASHEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[PERCENTEQUAL] = "PERCENTEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[AMPEREQUAL] = "AMPEREQUAL";
+    batavia.modules._compile.TOKEN_NAMES[VBAREQUAL] = "VBAREQUAL";
+    batavia.modules._compile.TOKEN_NAMES[CIRCUMFLEXEQUAL] = "CIRCUMFLEXEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[LEFTSHIFTEQUAL] = "LEFTSHIFTEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[RIGHTSHIFTEQUAL] = "RIGHTSHIFTEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[DOUBLESTAREQUAL] = "DOUBLESTAREQUAL";
+    batavia.modules._compile.TOKEN_NAMES[DOUBLESLASH] = "DOUBLESLASH";
+    batavia.modules._compile.TOKEN_NAMES[DOUBLESLASHEQUAL] = "DOUBLESLASHEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[AT] = "AT";
+    batavia.modules._compile.TOKEN_NAMES[ATEQUAL] = "ATEQUAL";
+    batavia.modules._compile.TOKEN_NAMES[RARROW] = "RARROW";
+    batavia.modules._compile.TOKEN_NAMES[ELLIPSIS] = "ELLIPSIS";
+    batavia.modules._compile.TOKEN_NAMES[OP] = "OP";
+    batavia.modules._compile.TOKEN_NAMES[AWAIT] = "AWAIT";
+    batavia.modules._compile.TOKEN_NAMES[ASYNC] = "ASYNC";
+    batavia.modules._compile.TOKEN_NAMES[ERRORTOKEN] = "ERRORTOKEN";
+    batavia.modules._compile.TOKEN_NAMES[N_TOKENS] = "N_TOKENS";
+    batavia.modules._compile.TOKEN_NAMES[NT_OFFSET] = "NT_OFFSET";
 
     var is_potential_identifier_start = function(c) {
         return (c >= 'a' && c <= 'z')
@@ -384,9 +447,17 @@ batavia.modules._compile = {
         return OP;
     };
 
+    var preprocess_string = function(str) {
+        str = str.replace(/\s+$/, '');
+        str = str.replace(/\r\n/, '\n');
+        str = str.replace(/\r/, '\n');
+        return str;
+    };
+
     var Tokenizer = function(str) {
         /* Input state; buf <= cur <= inp <= end */
         /* NB an entire line is held in the buffer */
+        str = preprocess_string(str);
         this.buf = str.split('');          /* Input buffer, or NULL; malloc'ed if fp != NULL */
         this.cur = 0;          /* Next character in buffer */
         this.inp = str.length;          /* End of data in buffer */
@@ -394,9 +465,9 @@ batavia.modules._compile = {
         this.start = null;        /* Start of current token if not NULL */
         this.done = E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
         /* NB If done != E_OK, cur must be == inp!!! */
-        this.tabsize = 0;        /* Tab spacing */
+        this.tabsize = TABSIZE;        /* Tab spacing */
         this.indent = 0;         /* Current indentation index */
-        this.indstack = [];      /* Stack of indents */
+        this.indstack = [0];      /* Stack of indents */
         this.atbol = 0;          /* Nonzero if at begin of new line */
         this.pendin = 0;         /* Pending indents (if > 0) or dedents (if < 0) */
         this.lineno = 0;         /* Current line number */
@@ -445,7 +516,7 @@ batavia.modules._compile = {
         var process_line = function() {
             continue_processing = false;
             tok.start = null;
-            var blanklinke = 0;
+            tok.blankline = 0;
 
             // Get indentation level
             if (tok.atbol) {
@@ -469,25 +540,16 @@ batavia.modules._compile = {
                 }
                 tok.tok_backup(c);
                 if (c == '#' || c == '\n') {
-                    //  Lines with only whitespace and/or comments
-                    //  shouldn't affect the indentation and are
-                    //  not passed to the parser as NEWLINE tokens,
-                    //  except *totally* empty lines in interactive
-                    //  mode, which signal the end of a command group. */
-                    if (col == 0 && c == '\n' && tok.prompt != null) {
-                        blankline = 0; // Let it through
-                    } else {
-                        blankline = 1; // Ignore completely
-                    }
+                    tok.blankline = 1; // Ignore completely
                     //  We can't jump back right here since we still
-                    //  may need to skip to the end of a comment */
+                    //  may need to skip to the end of a comment
                 }
-                if (!blankline && tok.level == 0) {
+                if (!tok.blankline && tok.level == 0) {
                     if (col == tok.indstack[tok.indent]) {
                         // No change
                         if (altcol != tok.altindstack[tok.indent]) {
-                            if (indenterror(tok))
-                                return [ERRORTOKEN, p_start, p_end];
+                            if (tok.indenterror())
+                                return [ERRORTOKEN, tok.cur, tok.cur, 1];
                         }
                     }
                     else if (col > tok.indstack[tok.indent]) {
@@ -495,11 +557,11 @@ batavia.modules._compile = {
                         if (tok.indent + 1 >= MAXINDENT) {
                             tok.done = E_TOODEEP;
                             tok.cur = tok.inp;
-                            return [ERRORTOKEN, p_start, p_end];
+                            return [ERRORTOKEN, tok.cur, tok.cur, 2];
                         }
                         if (altcol <= tok.altindstack[tok.indent]) {
-                            if (indenterror(tok))
-                                return [ERRORTOKEN, p_start, p_end];
+                            if (tok.indenterror())
+                                return [ERRORTOKEN, tok.cur, tok.cur, 3];
                         }
                         tok.pendin++;
                         tok.indstack[++tok.indent] = col;
@@ -514,11 +576,11 @@ batavia.modules._compile = {
                         if (col != tok.indstack[tok.indent]) {
                             tok.done = E_DEDENT;
                             tok.cur = tok.inp;
-                            return [ERRORTOKEN, p_start, p_end];
+                            return [ERRORTOKEN, tok.cur, tok.cur, 4];
                         }
                         if (altcol != tok.altindstack[tok.indent]) {
-                            if (indenterror(tok))
-                                return [ERRORTOKEN, p_start, p_end];
+                            if (tok.indenterror())
+                                return [ERRORTOKEN, tok.cur, tok.cur, 5];
                         }
                     }
                 }
@@ -539,7 +601,7 @@ batavia.modules._compile = {
             }
 
             if (tok.async_def
-                && !blankline
+                && !tok.blankline
                 && tok.level == 0
                 /* There was a NEWLINE after ASYNC DEF,
                    so we're past the signature. */
@@ -560,6 +622,7 @@ batavia.modules._compile = {
       while (continue_processing) {
           result = process_line();
       }
+      result[0] = batavia.modules._compile.TOKEN_NAMES[result[0]];
       return result;
   };
 
@@ -586,105 +649,30 @@ batavia.modules._compile = {
 
        // Check for EOF and errors now
        if (c == EOF) {
-           return [tok.done == E_EOF ? ENDMARKER : ERRORTOKEN, null, null];
+           return [tok.done == E_EOF ? ENDMARKER : ERRORTOKEN, null, null, 5];
        }
 
        // Identifier (most frequent token!)
-       var nonascii = 0;
        if (is_potential_identifier_start(c)) {
-           // Process b"", r"", u"", br"" and rb""
-           var saw_b = 0;
-           var saw_r = 0;
-           var saw_u = 0;
-           var saw_f = 0;
-           while (1) {
-               if (!(saw_b || saw_u || saw_f) && (c == 'b' || c == 'B'))
-                   saw_b = 1;
-               // Since this is a backwards compatibility support literal we don't
-               //   want to support it in arbitrary order like byte literals.
-               else if (!(saw_b || saw_u || saw_r || saw_f) && (c == 'u' || c == 'U'))
-                   saw_u = 1;
-               // ur"" and ru"" are not supported
-               else if (!(saw_r || saw_u) && (c == 'r' || c == 'R'))
-                   saw_r = 1;
-               else if (!(saw_f || saw_b || saw_u) && (c == 'f' || c == 'F'))
-                   saw_f = 1;
-               else
-                   break;
-               c = tok.tok_nextc();
-               if (c == '"' || c == '\'') {
-                   return tok.letter_quote(c);
-               }
-           }
-           while (is_potential_identifier_char(c)) {
-               if (c >= 128) {
-                   nonascii = 1;
-               }
-               c = tok.tok_nextc();
-           }
-           tok.tok_backup(c);
-           if (nonascii && !verify_identifier(tok)) {
-               return [ERRORTOKEN, p_start, p_end];
-           }
-           p_start = tok.start;
-           p_end = tok.cur;
-
-           // async/await parsing block.
-           if (tok.cur - tok.start == 5) {
-               // Current token length is 5.
-               if (tok.async_def) {
-                   // We're inside an 'async def' function.
-                   if (memcmp(tok.start, "async", 5) == 0)
-                       return ASYNC;
-                   if (memcmp(tok.start, "await", 5) == 0)
-                       return AWAIT;
-               }
-               else if (memcmp(tok.start, "async", 5) == 0) {
-                   // The current token is 'async'.
-                   // Look ahead one token.
-
-                   var ahead_tok = new Tokenizer();
-                   var ahead_tok_start = null;
-                   var ahead_tok_end = null;
-                   var ahead_tok_kind = 0;
-
-                   memcpy(ahead_tok, tok, sizeof(ahead_tok));
-                   ahead_tok_kind = tok_get(ahead_tok, ahead_tok_start,
-                                            ahead_tok_end);
-
-                   if (ahead_tok_kind == NAME
-                       && ahead_tok.cur - ahead_tok.start == 3
-                       && memcmp(ahead_tok.start, "def", 3) == 0)
-                   {
-                       /* The next token is going to be 'def', so instead of
-                          returning 'async' NAME token, we return ASYNC. */
-                       tok.async_def_indent = tok.indent;
-                       tok.async_def = 1;
-                       return [ASYNC, p_start, p_end];
-                   }
-               }
-           }
-
-           return [NAME, p_start, p_end];
+           return tok.parse_identifier(c);
        }
 
        // Newline
        if (c == '\n') {
            tok.atbol = 1;
-           if (blankline || tok.level > 0) {
+           if (tok.ret || tok.level > 0) {
                // process next line
                continue_processing = true;
-               return null;;
+               return null;
            }
-           p_start = tok.start;
-           p_end = tok.cur - 1; // Leave '\n' out of the string
            tok.cont_line = 0;
            if (tok.async_def) {
                // We're somewhere inside an 'async def' function, and
                // we've encountered a NEWLINE after its signature.
                tok.async_def_nl = 1;
            }
-           return [NEWLINE, p_start, p_end];
+           // Leave '\n' out of the string
+           return [NEWLINE, tok.start, tok.cur - 1];
        }
 
        // Period or number starting with period?
@@ -722,7 +710,7 @@ batavia.modules._compile = {
                    if (!isxdigit(c)) {
                        tok.done = E_TOKEN;
                        tok.tok_backup(c);
-                       return [ERRORTOKEN, p_start, p_end];
+                       return [ERRORTOKEN, p_start, p_end, 6];
                    }
                    do {
                        c = tok.tok_nextc();
@@ -734,7 +722,7 @@ batavia.modules._compile = {
                    if (c < '0' || c >= '8') {
                        tok.done = E_TOKEN;
                        tok.tok_backup(c);
-                       return [ERRORTOKEN, p_start, p_end];
+                       return [ERRORTOKEN, p_start, p_end, 7];
                    }
                    do {
                        c = tok.tok_nextc();
@@ -746,7 +734,7 @@ batavia.modules._compile = {
                    if (c != '0' && c != '1') {
                        tok.done = E_TOKEN;
                        tok.tok_backup(c);
-                       return [ERRORTOKEN, p_start, p_end];
+                       return [ERRORTOKEN, p_start, p_end, 8];
                    }
                    do {
                        c = tok.tok_nextc();
@@ -772,7 +760,7 @@ batavia.modules._compile = {
                    } else if (nonzero) {
                        tok.done = E_TOKEN;
                        tok.tok_backup(c);
-                       return [ERRORTOKEN, p_start, p_end];
+                       return [ERRORTOKEN, tok.start, tok.cur, 8];
                    }
                }
            } else {
@@ -799,30 +787,28 @@ batavia.modules._compile = {
          if (c != '\n') {
              tok.done = E_LINECONT;
              tok.cur = tok.inp;
-             return [ERRORTOKEN, p_start, p_end];
+             return [ERRORTOKEN, p_start, p_end, 9];
          }
          tok.cont_line = 1;
          return tok.again(); // Read next line
      }
 
      // Check for two-character token
-     {
-         var c2 = tok.tok_nextc();
-         var token = PyToken_TwoChars(c, c2);
-         if (token != OP) {
-             var c3 = tok.tok_nextc();
-             var token3 = PyToken_ThreeChars(c, c2, c3);
-             if (token3 != OP) {
-                 token = token3;
-             } else {
-                 tok.tok_backup(c3);
-             }
-             p_start = tok.start;
-             p_end = tok.cur;
-             return [token, p_start, p_end];
+     var c2 = tok.tok_nextc();
+     var token = PyToken_TwoChars(c, c2);
+     if (token != OP) {
+         var c3 = tok.tok_nextc();
+         var token3 = PyToken_ThreeChars(c, c2, c3);
+         if (token3 != OP) {
+             token = token3;
+         } else {
+             tok.tok_backup(c3);
          }
-         tok.tok_backup(c2);
+         p_start = tok.start;
+         p_end = tok.cur;
+         return [token, p_start, p_end];
      }
+     tok.tok_backup(c2);
 
      // Keep track of parentheses nesting level
      switch (c) {
@@ -842,6 +828,84 @@ batavia.modules._compile = {
      p_start = tok.start;
      p_end = tok.cur;
      return [PyToken_OneChar(c), p_start, p_end];
+  };
+
+  Tokenizer.prototype.parse_identifier = function(c) {
+    var tok = this;
+    var nonascii = 0;
+    // Process b"", r"", u"", br"" and rb""
+    var saw_b = 0;
+    var saw_r = 0;
+    var saw_u = 0;
+    var saw_f = 0;
+    while (1) {
+        if (!(saw_b || saw_u || saw_f) && (c == 'b' || c == 'B'))
+            saw_b = 1;
+        // Since this is a backwards compatibility support literal we don't
+        //   want to support it in arbitrary order like byte literals.
+        else if (!(saw_b || saw_u || saw_r || saw_f) && (c == 'u' || c == 'U'))
+            saw_u = 1;
+        // ur"" and ru"" are not supported
+        else if (!(saw_r || saw_u) && (c == 'r' || c == 'R'))
+            saw_r = 1;
+        else if (!(saw_f || saw_b || saw_u) && (c == 'f' || c == 'F'))
+            saw_f = 1;
+        else
+            break;
+        c = tok.tok_nextc();
+        if (c == '"' || c == '\'') {
+            return tok.letter_quote(c);
+        }
+    }
+    while (is_potential_identifier_char(c)) {
+        if (c >= 128) {
+            nonascii = 1;
+        }
+        c = tok.tok_nextc();
+    }
+    tok.tok_backup(c);
+    if (nonascii && !verify_identifier(tok)) {
+        return [ERRORTOKEN, p_start, p_end, 10];
+    }
+
+      // async/await parsing block.
+     //  if (tok.cur - tok.start == 5) {
+     //      // Current token length is 5.
+     //      var word = tok.buf.slice(tok.start, tok.start + 5).join('');
+     //      if (tok.async_def) {
+     //          // We're inside an 'async def' function.
+     //          if (word == "async") {
+     //              return [ASYNC, tok.start, tok.cur];
+     //          } else if (word == "await") {
+     //              return [AWAIT, tok.start, tok.cur];
+     //          }
+     //      } else if (word == "async") {
+     //          // The current token is 'async'.
+     //          // Look ahead one token.
+      //
+     //          var ahead_tok = new Tokenizer();
+     //          var ahead_tok_start = null;
+     //          var ahead_tok_end = null;
+     //          var ahead_tok_kind = 0;
+      //
+     //          memcpy(ahead_tok, tok, sizeof(ahead_tok));
+     //          ahead_tok_kind = tok_get(ahead_tok, ahead_tok_start,
+     //                                   ahead_tok_end);
+      //
+     //          if (ahead_tok_kind == NAME
+     //              && ahead_tok.cur - ahead_tok.start == 3
+     //              && memcmp(ahead_tok.start, "def", 3) == 0)
+     //          {
+     //              /* The next token is going to be 'def', so instead of
+     //                 returning 'async' NAME token, we return ASYNC. */
+     //              tok.async_def_indent = tok.indent;
+     //              tok.async_def = 1;
+     //              return [ASYNC, p_start, p_end];
+     //          }
+     //      }
+     //  }
+
+      return [NAME, tok.start, tok.cur];
   };
 
   Tokenizer.prototype.letter_quote = function(c) {
@@ -876,12 +940,12 @@ batavia.modules._compile = {
                       tok.done = E_EOLS;
                   }
                   tok.cur = tok.inp;
-                  return [ERRORTOKEN, p_start, p_end];
+                  return [ERRORTOKEN, p_start, p_end, 11];
               }
               if (quote_size == 1 && c == '\n') {
                   tok.done = E_EOLS;
                   tok.cur = tok.inp;
-                  return [ERRORTOKEN, p_start, p_end];
+                  return [ERRORTOKEN, p_start, p_end, 11];
               }
               if (c == quote) {
                   end_quote_size += 1;
@@ -934,7 +998,7 @@ batavia.modules._compile = {
           if (!isdigit(c)) {
               tok.done = E_TOKEN;
               tok.tok_backup(c);
-              return [ERRORTOKEN, tok.start, tok.end];
+              return [ERRORTOKEN, tok.start, tok.end, 15];
           }
       } else if (!isdigit(c)) {
           tok.tok_backup(c);
@@ -966,64 +1030,66 @@ batavia.modules._compile = {
   Tokenizer.prototype.tok_nextc = function() {
     var tok = this;
 
-    for (;;) {
-        if (tok.cur != tok.inp) {
-            return tok.buf[tok.cur++]; /* Fast path */
-        }
-        if (tok.done != E_OK) {
-            return EOF;
-        }
-        var done = 0;
-        var cur = 0;
-        var pt = null;
-        if (tok.start == null) {
-            if (tok.buf == null) {
-                tok.buf = new Array(BUFSIZ);
-                tok.end = BUFSIZ;
-            }
-            if (decoding_fgets(tok.buf, tok.end,
-                      tok) == null) {
-                if (!tok.decoding_erred)
-                    tok.done = E_EOF;
-                done = 1;
-            } else {
-                tok.done = E_OK;
-                tok.inp = strchr(tok.buf, '\0');
-                done = tok.inp[-1] == '\n';
-            }
-        } else {
-            cur = tok.cur;
-            tok.done = E_OK;
-        }
-        tok.lineno++;
-        /* Read until '\n' or EOF */
-        while (!done) {
-            var curstart = (tok.start == null) ? -1 :
-                      tok.start;
-            var curvalid = tok.inp;
-            tok.cur = cur;
-            tok.line_start = tok.cur;
-            tok.inp = curvalid;
-            tok.start = curstart < 0 ? null : curstart;
-            tok.inp = tok.buf.length - 1;
-            done = tok.buf[tok.inp - 1] == '\n';
-            break;
-        }
-        tok.cur = cur;
-        tok.line_start = tok.cur;
-        /* replace "\r\n" with "\n" */
-        /* For Mac leave the \r, giving a syntax error */
-        pt = tok.inp - 2;
-        if (pt >= 0 && tok.buf[pt] == '\r') {
-            tok.buf[pt++] = '\n';
-            tok.buf[pt] = '\0';
-            tok.inp = pt;
-        }
-        if (tok.done != E_OK) {
-            tok.cur = tok.inp;
-            return EOF;
-        }
+    if (tok.cur != tok.inp) {
+        return tok.buf[tok.cur++]; /* Fast path */
     }
+    return EOF;
+
+    // for (;;) {
+    //     if (tok.cur != tok.inp) {
+    //         return tok.buf[tok.cur++]; /* Fast path */
+    //     }
+    //     if (tok.done != E_OK) {
+    //         return EOF;
+    //     }
+    //     var done = 0;
+    //     var cur = tok.cur;
+    //     var pt = null;
+        // if (tok.start == null) {
+        //     if (decoding_fgets(tok.buf, tok.end,
+        //               tok) == null) {
+        //         if (!tok.decoding_erred)
+        //             tok.done = E_EOF;
+        //         done = 1;
+        //     } else {
+        //         tok.done = E_OK;
+        //         tok.inp = strchr(tok.buf, '\0');
+        //         done = tok.inp[-1] == '\n';
+        //     }
+        // } else {
+            // cur = tok.cur;
+            // tok.done = E_OK;
+        // }
+        // tok.lineno++;
+        // console.log("on line", tok.lineno);
+        // /* Read until '\n' or EOF */
+        // while (!done) {
+        //     var curstart = (tok.start == null) ? -1 :
+        //               tok.start;
+        //     var curvalid = tok.inp;
+        //     tok.cur = cur;
+        //     tok.line_start = tok.cur;
+        //     tok.inp = curvalid;
+        //     tok.start = curstart < 0 ? null : curstart;
+        //     tok.inp = tok.buf.length - 1;
+        //     done = tok.buf[tok.inp - 1] == '\n';
+        //     break;
+        // }
+        // tok.cur = cur;
+        // tok.line_start = tok.cur;
+        // /* replace "\r\n" with "\n" */
+        // /* For Mac leave the \r, giving a syntax error */
+        // pt = tok.inp - 2;
+        // if (pt >= 0 && tok.buf[pt] == '\r') {
+        //     tok.buf[pt++] = '\n';
+        //     tok.buf[pt] = '\0';
+        //     tok.inp = pt;
+        // }
+        // if (tok.done != E_OK) {
+        //     tok.cur = tok.inp;
+        //     return EOF;
+        // }
+    // }
     /*NOTREACHED*/
   };
 
@@ -1038,6 +1104,19 @@ batavia.modules._compile = {
               tok[tok.cur] = c;
           }
       }
+  };
+
+  Tokenizer.prototype.indenterror = function() {
+      var tok = this;
+      if (tok.alterror) {
+          tok.done = E_TABSPACE;
+          tok.cur = tok.inp;
+          return 1;
+      }
+      if (tok.altwarning) {
+          console.log(tok.filename + ": inconsistent use of tabs and spaces in indentation"); tok.altwarning = 0;
+      }
+      return 0;
   };
 
 

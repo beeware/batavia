@@ -187,6 +187,8 @@ def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fa
         if len(out) > 1 and out[-1] == '':
             out.pop()
 
+        out = [o.rstrip() for o in out] # trim trailing whitespace
+
         return '\n'.join(out).replace('\n\n', '\n') + '\n'
     else:
         # print("PHANTOMJS READY")
