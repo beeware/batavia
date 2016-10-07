@@ -575,7 +575,7 @@ class TranspileTestCase(TestCase):
                 except FileExistsError:
                     pass
 
-                for mod, payload in js.items():
+                for mod, payload in (js or {}).items():
                     with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
                         jsfile.write(adjust(payload))
 
@@ -614,7 +614,7 @@ class TranspileTestCase(TestCase):
                 except FileExistsError:
                     pass
 
-                for mod, payload in js.items():
+                for mod, payload in (js or {}).items():
                     with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
                         jsfile.write(adjust(payload))
 
