@@ -108,32 +108,44 @@ batavia.modules.time.mktime = function(sequence){
     // sequence: struct_time like
     // documentation: https://docs.python.org/3/library/time.html#time.mktime
 
+    //Validations
+    if (arguments.length != 1){
+        throw new batavia.builtins.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)")
+    }
 
     if (!batavia.isinstance(sequence, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
         throw new batavia.builtins.TypeError("Tuple or struct_time argument required")
     }
 
+    if (sequence.length !== 9){
+        throw new batavia.builtins.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)")
+    }
+
     // all items must be integers
-    for (var i in sequence){
+    for (var i=0; i<sequence.length; i++){
         var item = sequence[i]
         if (batavia.isinstance(item, batavia.types.Float)){
             throw new batavia.builtins.TypeError("integer argument expected, got float")
         }
-        else if (!batavia.isinstance(item, batavia.types.Int)) {
+        else if (!batavia.isinstance(item, [batavia.types.Int])){
             throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")")
         }
     }
 
-    //earliest possible date on my Mac
-    //(1901, 12, 13, 15, 45, 52, 0, 0, 0)
-//    if (sequence < batavia.types.Tuple([1901, 12, 13, 15, 45, 52, 0, 0, 0])){
-//        throw new batavia.builtins.OverflowError("mktime argument out of range")
-//    }
+    /* TODO
+    phantomjs interprets a 2 digit year as being in the 20th century not the first. Example:
 
+    phantomjs> new Date(70, 01, 01, 0, 0, 0, 0, 0).getTime()
+    2696400000
+    phantomjs> new Date(1970, 01, 01, 0, 0, 0, 0, 0).getTime()
+    2696400000     //wat
+
+    If handed a 2 digit year, should the function:
+        1. assume its in the 20th century,
+        2. throw some kind of error
+        3. do something else?
+    */
 
     var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0).getTime() / 1000;
     return seconds.toFixed(1);
-
 }
-
-//TODO __reduce__

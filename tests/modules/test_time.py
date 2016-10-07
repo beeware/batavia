@@ -1,6 +1,4 @@
 from ..utils import TranspileTestCase, adjust, SAMPLE_DATA
-
-from time import struct_time, mktime
 import unittest
 
 
@@ -180,6 +178,9 @@ class TimeTests(TranspileTestCase):
 
     # TESTS FOR MKTIME
     def test_mktime(self):
+        """
+        tests the happy path for the mktime constructor
+        """
 
         seq = (1970,1,1,0,0,0,0,0,0)
 
@@ -188,21 +189,20 @@ class TimeTests(TranspileTestCase):
         import time
         print('>>> seq = {seq}')
         seq = {seq}
-        print(">>> time.mktime(seq)")
+        print(">>> time.mktime({seq})")
         print(time.mktime(seq))
         #################################
-        print('>>> seq = time.struct_time({seq})')
+        print(">>> seq = time.struct_time({seq})")
         seq = time.struct_time({seq})
         print(">>> time.mktime(seq)")
         print(time.mktime(seq))
-        """).format(seq=seq)
+        """).format(seq=str(seq))
 
         self.assertCodeExecution(test_str)
 
     def test_mktime_bad_input(self):
         """
-        when the argument passed is not tuple or struct_time. This error is thrown
-        expected error TypeError: Tuple or struct_time argument required
+        When the argument passed is not tuple or struct_time.
         """
 
         seed = (1970,1,1,0,0,0,0,0,0)
@@ -233,46 +233,56 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
-    # def test_mktime_overflow(self):
-    #     """
-    #     argument is too small or large and throws this error:
-    #     OverflowError: mktime argument out of range
-    #
-    #     :return:
-    #     """
-    #
-    #     test_str = adjust("""
-    #     print('>>> import time')
-    #     import time
-    #     """)
-    #
-    #     sequences = [
-    #         (1901, 12, 13, 0, 0, 0, 0, 0, 0),
-    #
-    #     ]
-
     def test_mktime_non_integer_types(self):
         """
-        tests behavior when non integer types are part of the sequence passed
+        Tests behavior when non integer types are part of the sequence passed
         """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
 
         strange_types = [ SAMPLE_DATA[type][0] for type in SAMPLE_DATA if type != 'int' ]
 
         tests = [ mktime_setup( str((1970, t, 1, 2, 0, 0, 0, 0, 0)) ) for t in strange_types]
-        test_str = ''.join(tests)
+        test_str += ''.join(tests)
 
         self.assertCodeExecution(test_str)
 
     def test_mktime_seq_wrong_length(self):
         """
-        sequence has the wrong length
+        Sequence has the wrong length
         """
 
-    @unittest.expectedFailure
-    def test_mktime_nonint_types_broken(self):
+        seq = (1970,1,1,0,0,0,0,0)  # length=8
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        test_str += mktime_setup(seq)
+        print(test_str)
+        self.assertCodeExecution(test_str)
+
+    def test_mktime_wrong_arg_count(self):
         """
-        non integer types that will break
+        Called with the wrong number of args
         """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.mktime()')
+        print(time.mktime())
+        ############################
+        print('>>> time.mktime(1,2)')
+        print(time.mktime(1,2))
+        """)
+
+        self.assertCodeExecution(test_str)
+
 
 def struct_time_setup(seq = [1] * 9):
     """
