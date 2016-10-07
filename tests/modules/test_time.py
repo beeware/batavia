@@ -284,6 +284,22 @@ class TimeTests(TranspileTestCase):
         self.assertCodeExecution(test_str)
 
 
+    def test_mktime_overflow_error(self):
+        """
+        tests OverflowError on dates earlier than an arbitrarily defined date
+        for now this is defined as 1900-01-01
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        years = (-1970, 70, 1899, 1900, 1901, 2016)
+        sequences = [mktime_setup(str((year,) + (0,) * 8)) for year in years]
+        test_str += ''.join(sequences)
+        self.assertCodeExecution(test_str)
+
 def struct_time_setup(seq = [1] * 9):
     """
     returns a string to set up a struct_time with seq the struct_time constructor
