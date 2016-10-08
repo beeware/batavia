@@ -32,6 +32,7 @@ BASE_FILES=\
     batavia/modules/_compile/_compile.js \
     batavia/modules/_compile/bitset.js \
     batavia/modules/_compile/grammar.js \
+    batavia/modules/_compile/parser.js \
     batavia/modules/_compile/tokenizer.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
@@ -82,6 +83,7 @@ BASE_FILES_WIN=\
     batavia\modules\_compile\_compile.js \
     batavia\modules\_compile\bitset.js \
     batavia\modules\_compile\grammar.js \
+    batavia\modules\_compile\parser.js \
     batavia\modules\_compile\tokenizer.js \
     batavia\modules\dis.js \
     batavia\modules\dom.js \
