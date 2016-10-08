@@ -31,7 +31,13 @@ BASE_FILES=\
     batavia/types/Str.js \
     batavia/types/Tuple.js \
 		batavia/modules/base64.js \
-    batavia/modules/_compile.js \
+    batavia/modules/_compile/_compile.js \
+    ast/Python-ast.js \
+    batavia/modules/_compile/bitset.js \
+    batavia/modules/_compile/grammar.js \
+    ast/graminit.js \
+    batavia/modules/_compile/parser.js \
+    batavia/modules/_compile/tokenizer.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
     batavia/modules/marshal.js \
@@ -80,7 +86,13 @@ BASE_FILES_WIN=\
     batavia\types\Str.js \
     batavia\types\Tuple.js \
 		batavia\modules\base64.js \
-    batavia\modules\_compile.js \
+    batavia\modules\_compile\_compile.js \
+    ast\Python-ast.js \
+    batavia\modules\_compile\bitset.js \
+    batavia\modules\_compile\grammar.js \
+    ast\graminit.js \
+    batavia\modules\_compile\parser.js \
+    batavia\modules\_compile\tokenizer.js \
     batavia\modules\dis.js \
     batavia\modules\dom.js \
     batavia\modules\marshal.js \
@@ -125,6 +137,12 @@ EXTRA_FILES_WIN=\
 all: stdlib batavia-all.js batavia-all.min.js batavia.js batavia.min.js
 
 .PHONY: all clean stdlib
+
+ast/Python-ast.js: ast/Python.asdl ast/asdl_js.py ast/asdl.py
+	python ast/asdl_js.py -c ast/ ast/Python.asdl
+
+ast/graminit.js: ast/graminit.c ast/grammar_convert.py
+	python ast/grammar_convert.py > ast/graminit.js
 
 stdlib:
 	python compile_stdlib.py
