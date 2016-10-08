@@ -1,3 +1,48 @@
+var Label = function() {
+    this.lb_type = 0;
+    this.lb_str = '';
+};
+
+var EMPTY = 0;		/* Label number 0 is by definition the empty label */
+
+/* An arc from one state to another */
+var Arc = function() {
+    this.a_lbl = 0; /* Label of this arc */
+    this.a_arrow = 0;	/* State where this arc goes to */
+};
+
+/* A state in a DFA */
+
+var State = function() {
+    this.s_narcs = 0;
+    this.s_arc = [];	/* Array of arcs */
+    /* Optional accelerators */
+    this.s_lower = 0;	/* Lowest label index */
+    this.s_upper = 0;	/* Highest label index */
+    this*s_accel = 0;	/* Accelerator */
+    this.s_accept = 0;	/* Nonzero for accepting state */
+};
+
+
+var DFA = function() {
+    this.d_type = 0;	/* Non-terminal this represents */
+    this.d_name = '';	/* For printing */
+    this.d_initial = 0;	/* Initial state */
+    this.d_nstates = 0;
+    this.d_state = [];	/* Array of states */
+    this.d_first = null; // bitset
+};
+
+
+var Grammar = function() {
+    this.g_ndfas = 0;
+    this.g_dfa = [];		/* Array of DFAs */
+    this.g_ll = 0;
+    this.g_start = 0;	/* Start symbol of the grammar */
+    this.g_accel = 0;	/* Set if accelerators present */
+};
+
+
 /*
  * Python compiler internals.
  */
@@ -15,7 +60,12 @@ batavia.modules._compile = {
         throw new batavia.builtins.NotImplementedError("_compile.ast_check is not implemented yet");
     },
     compile_string_object: function(str, filename, compile_mode, cf, optimize) {
-        throw new batavia.builtins.NotImplementedError("_compile.compile_string_object is not implemented yet");
+          var co = null;
+          var mod = null;
+          var arena = batavia.modules._compile.new_arena();
+          mod = batavia.modules._compile.ast_from_string_object(str, filename, start, flags, arena);
+          co = batavia.modules._compile.ast_compile_object(mod, filename, flags, optimize, arena);
+          return co;
     },
     new_arena: function() {
         throw new batavia.builtins.NotImplementedError("_compile.new_arena is not implemented yet");
@@ -28,6 +78,191 @@ batavia.modules._compile = {
     },
     ast_compile_object: function(mod, filename, cf, optimize, arena) {
         throw new batavia.builtins.NotImplementedError("_compile.ast_compile_object is not implemented yet");
+    },
+    ast_from_string_object: function(str, filename, start, flags, arena) {
+      var mod = null;
+      var localflags = null;
+      var err = null;
+      var iflags = 0; //PARSER_FLAGS(flags);
+
+      var n = batavia.builtins._compile.parse_string_object(s, filename,
+                                           _PyParser_Grammar, start, err,
+                                           iflags);
+      if (flags == null) {
+          localflags.cf_flags = 0;
+          flags = localflags;
+      }
+      if (n) {
+          flags.cf_flags |= iflags & PyCF_MASK;
+          mod = batavia.builtins._compile.ast_from_node_object(n, flags, filename, arena);
+      }
+      else {
+          err_input(err);
+          mod = null;
+      }
+      return mod;
+    },
+
+    parse_string_object: function(s, filename, grammar, start, err, iflags) {
+        var tok = null;
+        var exec_input = start == file_input;
+
+        if (initerr(err_ret, filename) < 0)
+            return null;
+
+        if (flags & PyPARSE_IGNORE_COOKIE)
+            tok = PyTokenizer_FromUTF8(s, exec_input);
+        else
+            tok = PyTokenizer_FromString(s, exec_input);
+        if (tok == null) {
+            err_ret.error = PyErr_Occurred() ? E_DECODE : E_NOMEM;
+            return null;
+        }
+
+        tok.filename = err_ret.filename;
+        return batavia.builtins._compile.parsetok(tok, grammar, start, err_ret, flags);
+    },
+
+    parsetok: function(tok, g, start, err_ret, flags) {
+        var ps = null;
+        var n = null;
+        var started = 0;
+
+        ps = batavia.builtins._compile.new_parser(g, start);
+
+        for (;;) {
+            var a, b;
+            var type;
+            var len;
+            var str;
+            var col_offset;
+
+            var result = tok.get_token();
+            type = result[0];
+            a = result[1];
+            b = result[2];
+            if (type == ERRORTOKEN) {
+                err_ret.error = tok.done;
+                break;
+            }
+            if (type == ENDMARKER && started) {
+                type = NEWLINE; /* Add an extra newline */
+                started = 0;
+                /* Add the right number of dedent tokens,
+                   except if a certain flag is given --
+                   codeop.py uses this. */
+                if (tok.indent &&
+                    !(*flags & PyPARSE_DONT_IMPLY_DEDENT))
+                {
+                    tok.pendin = -tok.indent;
+                    tok.indent = 0;
+                }
+            }
+            else
+                started = 1;
+            len = b - a; /* XXX this may compute null - null */
+            str = PyObject_MALLOC(len + 1);
+            if (len > 0)
+                strncpy(str, a, len);
+            str[len] = '\0';
+
+            if (a >= tok.line_start)
+                col_offset = Py_SAFE_DOWNCAST(a - tok.line_start,
+                                              Py_intptr_t, int);
+            else
+                col_offset = -1;
+
+            if ((err_ret.error =
+                 PyParser_AddToken(ps, (int)type, str,
+                                   tok.lineno, col_offset,
+                                   &(err_ret.expected))) != E_OK) {
+                if (err_ret.error != E_DONE) {
+                    PyObject_FREE(str);
+                    err_ret.token = type;
+                }
+                break;
+            }
+        }
+
+        if (err_ret.error == E_DONE) {
+            n = ps->p_tree;
+            ps->p_tree = null;
+
+            /* Check that the source for a single input statement really
+               is a single statement by looking at what is left in the
+               buffer after parsing.  Trailing whitespace and comments
+               are OK.  */
+            if (start == single_input) {
+                char *cur = tok.cur;
+                char c = *tok.cur;
+
+                for (;;) {
+                    while (c == ' ' || c == '\t' || c == '\n' || c == '\014')
+                        c = *++cur;
+
+                    if (!c)
+                        break;
+
+                    if (c != '#') {
+                        err_ret.error = E_BADSINGLE;
+                        PyNode_Free(n);
+                        n = null;
+                        break;
+                    }
+
+                    /* Suck up comment. */
+                    while (c && c != '\n')
+                        c = *++cur;
+                }
+            }
+        }
+        else
+            n = null;
+
+        PyParser_Delete(ps);
+
+        if (n == null) {
+            if (tok.done == E_EOF)
+                err_ret.error = E_EOF;
+            err_ret.lineno = tok.lineno;
+            if (tok.buf != null) {
+                size_t len;
+                assert(tok.cur - tok.buf < INT_MAX);
+                err_ret.offset = (int)(tok.cur - tok.buf);
+                len = tok.inp - tok.buf;
+                err_ret.text = (char *) PyObject_MALLOC(len + 1);
+                if (err_ret.text != null) {
+                    if (len > 0)
+                        strncpy(err_ret.text, tok.buf, len);
+                    err_ret.text[len] = '\0';
+                }
+            }
+        } else if (tok.encoding != null) {
+            /* 'nodes->n_str' uses PyObject_*, while 'tok.encoding' was
+             * allocated using PyMem_
+             */
+            node* r = PyNode_New(encoding_decl);
+            if (r)
+                r->n_str = PyObject_MALLOC(strlen(tok.encoding)+1);
+            if (!r || !r->n_str) {
+                err_ret.error = E_NOMEM;
+                if (r)
+                    PyObject_FREE(r);
+                n = null;
+                goto done;
+            }
+            strcpy(r->n_str, tok.encoding);
+            PyMem_FREE(tok.encoding);
+            tok.encoding = null;
+            r->n_nchildren = 1;
+            r->n_child = n;
+            n = r;
+        }
+
+    done:
+        PyTokenizer_Free(tok);
+
+        return n;
     }
 };
 
@@ -459,11 +694,11 @@ batavia.modules._compile = {
         /* Input state; buf <= cur <= inp <= end */
         /* NB an entire line is held in the buffer */
         str = preprocess_string(str);
-        this.buf = str.split('');          /* Input buffer, or NULL; malloc'ed if fp != NULL */
+        this.buf = str.split('');          /* Input buffer, or null; malloc'ed if fp != null */
         this.cur = 0;          /* Next character in buffer */
         this.inp = str.length;          /* End of data in buffer */
-        this.end = str.length;          /* End of input buffer if buf != NULL */
-        this.start = null;        /* Start of current token if not NULL */
+        this.end = str.length;          /* End of input buffer if buf != null */
+        this.start = null;        /* Start of current token if not null */
         this.done = E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
         /* NB If done != E_OK, cur must be == inp!!! */
         this.tabsize = TABSIZE;        /* Tab spacing */
