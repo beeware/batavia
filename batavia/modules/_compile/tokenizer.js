@@ -8,6 +8,7 @@
 var types = require('../../types')
 var builtins = require('../../builtins')
 
+// modeled closely after tokenizer.c.
 var tokenizer = {
     'EOF': -1,
     'E_OK': 10,    /* No error */
@@ -29,8 +30,7 @@ var tokenizer = {
     'E_IDENTIFIER': 26,    /* Invalid characters in identifier */
     'E_BADSINGLE': 27,    /* Ill-formed single statement input */
 
-// modeled closely after tokenizer.c.
-/* Token types */
+    /* Token types */
     'ENDMARKER': 0,
     'NAME': 1,
     'NUMBER': 2,
