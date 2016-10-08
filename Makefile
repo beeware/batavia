@@ -29,6 +29,7 @@ BASE_FILES=\
     batavia/types/FrozenSet.js \
     batavia/types/Str.js \
     batavia/types/Tuple.js \
+		ast/Python-ast.js \
     batavia/modules/_compile/_compile.js \
     batavia/modules/_compile/bitset.js \
     batavia/modules/_compile/grammar.js \
@@ -80,6 +81,7 @@ BASE_FILES_WIN=\
     batavia\types\FrozenSet.js \
     batavia\types\Str.js \
     batavia\types\Tuple.js \
+		ast\Python-ast.js \
     batavia\modules\_compile\_compile.js \
     batavia\modules\_compile\bitset.js \
     batavia\modules\_compile\grammar.js \
@@ -129,6 +131,9 @@ EXTRA_FILES_WIN=\
 all: stdlib batavia-all.js batavia-all.min.js batavia.js batavia.min.js
 
 .PHONY: all clean stdlib
+
+ast/Python-ast.js: ast/Python.asdl ast/asdl_js.py ast/asdl.py
+	python ast/asdl_js.py -c ast/ ast/Python.asdl
 
 stdlib:
 	python compile_stdlib.py
