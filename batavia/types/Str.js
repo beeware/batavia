@@ -469,6 +469,18 @@ String.prototype.__setattr__ = function (name, val) {
     }
 };
 
+String.prototype.upper = function() {
+    return this.toUpperCase();
+};
+
+String.prototype.lower = function() {
+    return this.toLowerCase();
+};
+
+String.prototype.capitalize = function() {
+    return this.slice(0, 1).toUpperCase() + this.slice(1, this.length);
+};
+
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
 // and http://www.cse.yorku.ca/~oz/hash.html.
 //
