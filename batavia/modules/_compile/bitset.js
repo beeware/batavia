@@ -1,5 +1,7 @@
 batavia.bitset = {};
 
+(function() {
+
 var BitSet = function(nbits) {
     this.bits = new Array(Math.floor((nbits + 7) / 8));
     this.len = nbits;
@@ -38,3 +40,5 @@ BitSet.prototype.mergebitset = function(bs2, nbits) {
 };
 
 batavia.bitset.BitSet = BitSet;
+
+})();
