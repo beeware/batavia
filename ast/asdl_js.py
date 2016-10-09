@@ -6,7 +6,7 @@ import os, sys
 import asdl
 
 TABSIZE = 4
-MAX_COL = 80
+MAX_COL = 120
 
 def get_js_type(name):
     """Return a string for the JS name of the type.
@@ -156,7 +156,7 @@ class StructVisitor(EmitVisitor):
 
         emit("enum _%(name)s_kind {" + ", ".join(enum) + "};")
 
-        emit("struct _%(name)s {")
+        emit("var _%(name)s {")
         emit("enum _%(name)s_kind kind;", depth + 1)
         emit("union {", depth + 1)
         for t in sum.types:
@@ -186,14 +186,14 @@ class StructVisitor(EmitVisitor):
         self.emit("var %(name)s;" % locals(), depth)
 
     def visitProduct(self, product, name, depth):
-        self.emit("struct _%(name)s {" % locals(), depth)
+        self.emit("var _%(name)s  = function() {" % locals(), depth)
         for f in product.fields:
             self.visit(f, depth + 1)
         for field in product.attributes:
             # rudimentary attribute handling
             type = str(field.type)
             assert type in asdl.builtin_types, type
-            self.emit("%s %s;" % (type, field.name), depth + 1);
+            self.emit("this.%s = null;" % (field.name), depth + 1);
         self.emit("};", depth)
         self.emit("", depth)
 
@@ -258,9 +258,9 @@ class PrototypeVisitor(EmitVisitor):
         margs = "a0"
         for i in range(1, len(args)+1):
             margs += ", a%d" % i
-        self.emit("#define %s(%s) _Py_%s(%s)" % (name, margs, name, margs), 0,
+        self.emit("# define %s(%s) _Py_%s(%s)" % (name, margs, name, margs), 0,
                 reflow=False)
-        self.emit("%s _Py_%s(%s);" % (ctype, name, argstr), False)
+        self.emit("# %s _Py_%s(%s);" % (ctype, name, argstr), False)
 
     def visitProduct(self, prod, name):
         self.emit_function(name, get_js_type(name),
@@ -356,7 +356,7 @@ class Obj2ModVisitor(PickleVisitor):
         format = "PyErr_Format(PyExc_TypeError, \"%s\", obj);"
         self.emit(format % error, 1, reflow=False)
         self.emit("return 1;", 1)
-        self.emit("}", 0)
+        self.emit("};", 0)
         self.emit("", 0)
 
     def simpleSum(self, sum, name):
@@ -434,7 +434,7 @@ class Obj2ModVisitor(PickleVisitor):
         args.extend([a.name for a in prod.attributes])
         self.emit("out = %s(%s);" % (name, self.buildArgs(args)), 1)
         self.emit("return 0;", 1)
-        self.emit("}", 0)
+        self.emit("};", 0)
         self.emit("", 0)
 
     def visitFieldDeclaration(self, field, name, sum=None, prod=None, depth=0):
@@ -655,15 +655,17 @@ AST_object.prototype.reduce = function(unused) {
     return Py_BuildValue("O()", Py_TYPE(self));
 };
 
-var ast_type_methods = [
-    ["__reduce__", ast_type_reduce, METH_NOARGS, null],
-    [null],
-];
+var make_type = function(type, base, fields) {
+    var fnames = new batavia.types.Tuple(fields);
+    return new batavia.types.Type('Tokenizer', base, fields);
+};
 
-var ast_type_getsets = [
-    ["__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict],
-    [ null ],
-];
+var add_attributes = function(type, attrs) {
+    var l = new batavia.types.Tuple(attrs);
+    type._attributes = l;
+};
+
+
 
 batavia.modules.ast = {};
 batavia.modules.ast.AST_object = AST_object;
@@ -738,11 +740,8 @@ var obj2ast_int = function(obj) {
 
 var add_ast_fields = function() {
     var empty_tuple = new batavia.types.Tuple();
-    var d = null;
-    d = AST_type; // .tp_dict;
-    empty_tuple =
-    d.__setitem__("_fields", empty_tuple);
-    d.__setitem__("_attributes", empty_tuple);
+    AST_object._fields = empty_tuple;
+    AST_object._attributed = empty_tuple;
 };
 
 var exists_not_none = function(obj, id) {
@@ -757,38 +756,38 @@ var exists_not_none = function(obj, id) {
 """, 0, reflow=False)
 
         self.emit("var init_types = function() {",0)
-        self.emit("var initialized = 0; // needs to be static", 1)
-        self.emit("if (initialized) return 1;", 1)
+        self.emit("if (this.initialized) return 1;", 1)
         self.emit("if (add_ast_fields() < 0) return 0;", 1)
         for dfn in mod.dfns:
             self.visit(dfn)
         self.emit("initialized = 1;", 1)
         self.emit("return 1;", 1);
-        self.emit("}", 0)
+        self.emit("};", 0)
+        self.emit("init_types.initialized = 0;", 0)
 
     def visitProduct(self, prod, name):
         if prod.fields:
             fields = name+"_fields"
         else:
             fields = "null"
-        self.emit('%s_type = make_type("%s", AST_type, %s, %d);' %
-                        (name, name, fields, len(prod.fields)), 1)
+        self.emit('%s_type.prototype.__class__ = make_type("%s", AST_object, %s);' %
+                        (name, name, fields), 1)
         self.emit("if (!%s_type) return 0;" % name, 1)
         if prod.attributes:
-            self.emit("if (!add_attributes(%s_type, %s_attributes, %d)) return 0;" %
-                            (name, name, len(prod.attributes)), 1)
+            self.emit("add_attributes(%s_type, %s_attributes);" %
+                            (name, name), 1)
         else:
-            self.emit("if (!add_attributes(%s_type, null, 0)) return 0;" % name, 1)
+            self.emit("add_attributes(%s_type, null, 0);" % name, 1)
 
     def visitSum(self, sum, name):
-        self.emit('%s_type = make_type("%s", AST_type, null, 0);' %
+        self.emit('%s_type.prototype.__class__ = make_type("%s", AST_object, null);' %
                   (name, name), 1)
         self.emit("if (!%s_type) return 0;" % name, 1)
         if sum.attributes:
-            self.emit("if (!add_attributes(%s_type, %s_attributes, %d)) return 0;" %
+            self.emit("add_attributes(%s_type, %s_attributes, %d);" %
                             (name, name, len(sum.attributes)), 1)
         else:
-            self.emit("if (!add_attributes(%s_type, null, 0)) return 0;" % name, 1)
+            self.emit("add_attributes(%s_type, null, 0);" % name, 1)
         simple = is_simple(sum)
         for t in sum.types:
             self.visitConstructor(t, name, simple)
@@ -798,8 +797,8 @@ var exists_not_none = function(obj, id) {
             fields = cons.name+"_fields"
         else:
             fields = "null"
-        self.emit('%s_type = make_type("%s", %s_type, %s, %d);' %
-                            (cons.name, cons.name, name, fields, len(cons.fields)), 1)
+        self.emit('%s_type.prototype.__class__ = make_type("%s", %s_type, %s);' %
+                            (cons.name, cons.name, name, fields), 1)
         self.emit("if (!%s_type) return 0;" % cons.name, 1)
         if simple:
             self.emit("%s_singleton = PyType_GenericNew(%s_type, null, null);" %
@@ -811,7 +810,7 @@ class ASTModuleVisitor(PickleVisitor):
 
     def visitModule(self, mod):
         self.emit("function _astmodule() {", 0)
-        self.emit('  "this._ast = null;"', 0)
+        self.emit("this._ast = null;", 1)
         self.emit("};", 0)
         self.emit("var PyInit__ast = function() {", 0)
         self.emit("var m = null;", 1)
@@ -820,13 +819,13 @@ class ASTModuleVisitor(PickleVisitor):
         self.emit('m = PyModule_Create(_astmodule);', 1)
         self.emit("if (!m) return null;", 1)
         self.emit("d = PyModule_GetDict(m);", 1)
-        self.emit('if (PyDict_SetItemString(d, "AST", AST_type) < 0) return null;', 1)
+        self.emit('if (PyDict_SetItemString(d, "AST", AST_object) < 0) return null;', 1)
         self.emit('if (PyModule_AddIntMacro(m, PyCF_ONLY_AST) < 0)', 1)
         self.emit("return null;", 2)
         for dfn in mod.dfns:
             self.visit(dfn)
         self.emit("return m;", 1)
-        self.emit("}", 0)
+        self.emit("};", 0)
 
     def visitProduct(self, prod, name):
         self.addObj(name)
@@ -884,7 +883,7 @@ class ObjVisitor(PickleVisitor):
 
     def func_end(self):
         self.emit("return result;", 1)
-        self.emit("}", 0)
+        self.emit("};", 0)
         self.emit("", 0)
 
     def visitSum(self, sum, name):
@@ -916,7 +915,7 @@ class ObjVisitor(PickleVisitor):
         self.emit(code, 3, reflow=False)
         self.emit("return null;", 3)
         self.emit("}", 1)
-        self.emit("}", 0)
+        self.emit("};", 0)
 
     def visitProduct(self, prod, name):
         self.func_begin(name)
@@ -989,8 +988,9 @@ class PartingShots(StaticVisitor):
 
     CODE = """
 var PyAST_mod2obj = function(t) {
-    if (!init_types())
+    if (!init_types()) {
         return null;
+    }
     return ast2obj_mod(t);
 };
 
@@ -1014,17 +1014,21 @@ var PyAST_obj2mod = function(ast, mode) {
     if (!isinstance) {
         throw new batavia.builtins.TypeError("expected " + req_name[mode] + " node, got " + Py_TYPE(ast).tp_name);
     }
-    if (obj2ast_mod(ast, res) != 0)
+    if (obj2ast_mod(ast, res) != 0) {
         return null;
-    else
+    } else {
         return res;
-}
-
-var PyAST_Check = function(obj) {
-    if (!init_types())
-        return -1;
-    return PyObject_IsInstance(obj, AST_type);
+    }
 };
+
+var ast_check = function(obj) {
+    if (!init_types()) {
+        return -1;
+    }
+    return batavia.isinstance(obj, AST_object);
+};
+
+batavia.modules.ast.ast_check = ast_check;
 
 }); // don't execute the module yet until it works better
 """

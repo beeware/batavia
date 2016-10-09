@@ -25,8 +25,8 @@ batavia.modules._compile = {
     single_input: function() {
         throw new batavia.builtins.NotImplementedError("_compile.single_input is not implemented yet");
     },
-    ast_check: function() {
-        throw new batavia.builtins.NotImplementedError("_compile.ast_check is not implemented yet");
+    ast_check: function(obj) {
+        return batavia.modules.ast.ast_check(obj);
     },
     compile_string_object: function(str, filename, compile_mode, cf, optimize) {
           var co = null;
@@ -196,5 +196,9 @@ batavia.modules._compile = {
         }
 
         return n;
-    }
+    },
+
+    Py_single_input: new batavia.types.Int(256),
+    Py_file_input: new batavia.types.Int(257),
+    Py_eval_input: new batavia.types.Int(258)
 };

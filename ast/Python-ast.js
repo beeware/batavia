@@ -542,15 +542,17 @@ AST_object.prototype.reduce = function(unused) {
     return Py_BuildValue("O()", Py_TYPE(self));
 };
 
-var ast_type_methods = [
-    ["__reduce__", ast_type_reduce, METH_NOARGS, null],
-    [null],
-];
+var make_type = function(type, base, fields) {
+    var fnames = new batavia.types.Tuple(fields);
+    return new batavia.types.Type('Tokenizer', base, fields);
+};
 
-var ast_type_getsets = [
-    ["__dict__", PyObject_GenericGetDict, PyObject_GenericSetDict],
-    [ null ],
-];
+var add_attributes = function(type, attrs) {
+    var l = new batavia.types.Tuple(attrs);
+    type._attributes = l;
+};
+
+
 
 batavia.modules.ast = {};
 batavia.modules.ast.AST_object = AST_object;
@@ -625,11 +627,8 @@ var obj2ast_int = function(obj) {
 
 var add_ast_fields = function() {
     var empty_tuple = new batavia.types.Tuple();
-    var d = null;
-    d = AST_type; // .tp_dict;
-    empty_tuple =
-    d.__setitem__("_fields", empty_tuple);
-    d.__setitem__("_attributes", empty_tuple);
+    AST_object._fields = empty_tuple;
+    AST_object._attributed = empty_tuple;
 };
 
 var exists_not_none = function(obj, id) {
@@ -643,333 +642,324 @@ var exists_not_none = function(obj, id) {
 };
 
 var init_types = function() {
-    var initialized = 0; // needs to be static
-    if (initialized) return 1;
+    if (this.initialized) return 1;
     if (add_ast_fields() < 0) return 0;
-    mod_type = make_type("mod", AST_type, null, 0);
+    mod_type.prototype.__class__ = make_type("mod", AST_object, null);
     if (!mod_type) return 0;
-    if (!add_attributes(mod_type, null, 0)) return 0;
-    Module_type = make_type("Module", mod_type, Module_fields, 1);
+    add_attributes(mod_type, null, 0);
+    Module_type.prototype.__class__ = make_type("Module", mod_type, Module_fields);
     if (!Module_type) return 0;
-    Interactive_type = make_type("Interactive", mod_type, Interactive_fields,
-                                 1);
+    Interactive_type.prototype.__class__ = make_type("Interactive", mod_type, Interactive_fields);
     if (!Interactive_type) return 0;
-    Expression_type = make_type("Expression", mod_type, Expression_fields, 1);
+    Expression_type.prototype.__class__ = make_type("Expression", mod_type, Expression_fields);
     if (!Expression_type) return 0;
-    Suite_type = make_type("Suite", mod_type, Suite_fields, 1);
+    Suite_type.prototype.__class__ = make_type("Suite", mod_type, Suite_fields);
     if (!Suite_type) return 0;
-    stmt_type = make_type("stmt", AST_type, null, 0);
+    stmt_type.prototype.__class__ = make_type("stmt", AST_object, null);
     if (!stmt_type) return 0;
-    if (!add_attributes(stmt_type, stmt_attributes, 2)) return 0;
-    FunctionDef_type = make_type("FunctionDef", stmt_type, FunctionDef_fields,
-                                 5);
+    add_attributes(stmt_type, stmt_attributes, 2);
+    FunctionDef_type.prototype.__class__ = make_type("FunctionDef", stmt_type, FunctionDef_fields);
     if (!FunctionDef_type) return 0;
-    AsyncFunctionDef_type = make_type("AsyncFunctionDef", stmt_type,
-                                      AsyncFunctionDef_fields, 5);
+    AsyncFunctionDef_type.prototype.__class__ = make_type("AsyncFunctionDef", stmt_type, AsyncFunctionDef_fields);
     if (!AsyncFunctionDef_type) return 0;
-    ClassDef_type = make_type("ClassDef", stmt_type, ClassDef_fields, 5);
+    ClassDef_type.prototype.__class__ = make_type("ClassDef", stmt_type, ClassDef_fields);
     if (!ClassDef_type) return 0;
-    Return_type = make_type("Return", stmt_type, Return_fields, 1);
+    Return_type.prototype.__class__ = make_type("Return", stmt_type, Return_fields);
     if (!Return_type) return 0;
-    Delete_type = make_type("Delete", stmt_type, Delete_fields, 1);
+    Delete_type.prototype.__class__ = make_type("Delete", stmt_type, Delete_fields);
     if (!Delete_type) return 0;
-    Assign_type = make_type("Assign", stmt_type, Assign_fields, 2);
+    Assign_type.prototype.__class__ = make_type("Assign", stmt_type, Assign_fields);
     if (!Assign_type) return 0;
-    AugAssign_type = make_type("AugAssign", stmt_type, AugAssign_fields, 3);
+    AugAssign_type.prototype.__class__ = make_type("AugAssign", stmt_type, AugAssign_fields);
     if (!AugAssign_type) return 0;
-    For_type = make_type("For", stmt_type, For_fields, 4);
+    For_type.prototype.__class__ = make_type("For", stmt_type, For_fields);
     if (!For_type) return 0;
-    AsyncFor_type = make_type("AsyncFor", stmt_type, AsyncFor_fields, 4);
+    AsyncFor_type.prototype.__class__ = make_type("AsyncFor", stmt_type, AsyncFor_fields);
     if (!AsyncFor_type) return 0;
-    While_type = make_type("While", stmt_type, While_fields, 3);
+    While_type.prototype.__class__ = make_type("While", stmt_type, While_fields);
     if (!While_type) return 0;
-    If_type = make_type("If", stmt_type, If_fields, 3);
+    If_type.prototype.__class__ = make_type("If", stmt_type, If_fields);
     if (!If_type) return 0;
-    With_type = make_type("With", stmt_type, With_fields, 2);
+    With_type.prototype.__class__ = make_type("With", stmt_type, With_fields);
     if (!With_type) return 0;
-    AsyncWith_type = make_type("AsyncWith", stmt_type, AsyncWith_fields, 2);
+    AsyncWith_type.prototype.__class__ = make_type("AsyncWith", stmt_type, AsyncWith_fields);
     if (!AsyncWith_type) return 0;
-    Raise_type = make_type("Raise", stmt_type, Raise_fields, 2);
+    Raise_type.prototype.__class__ = make_type("Raise", stmt_type, Raise_fields);
     if (!Raise_type) return 0;
-    Try_type = make_type("Try", stmt_type, Try_fields, 4);
+    Try_type.prototype.__class__ = make_type("Try", stmt_type, Try_fields);
     if (!Try_type) return 0;
-    Assert_type = make_type("Assert", stmt_type, Assert_fields, 2);
+    Assert_type.prototype.__class__ = make_type("Assert", stmt_type, Assert_fields);
     if (!Assert_type) return 0;
-    Import_type = make_type("Import", stmt_type, Import_fields, 1);
+    Import_type.prototype.__class__ = make_type("Import", stmt_type, Import_fields);
     if (!Import_type) return 0;
-    ImportFrom_type = make_type("ImportFrom", stmt_type, ImportFrom_fields, 3);
+    ImportFrom_type.prototype.__class__ = make_type("ImportFrom", stmt_type, ImportFrom_fields);
     if (!ImportFrom_type) return 0;
-    Global_type = make_type("Global", stmt_type, Global_fields, 1);
+    Global_type.prototype.__class__ = make_type("Global", stmt_type, Global_fields);
     if (!Global_type) return 0;
-    Nonlocal_type = make_type("Nonlocal", stmt_type, Nonlocal_fields, 1);
+    Nonlocal_type.prototype.__class__ = make_type("Nonlocal", stmt_type, Nonlocal_fields);
     if (!Nonlocal_type) return 0;
-    Expr_type = make_type("Expr", stmt_type, Expr_fields, 1);
+    Expr_type.prototype.__class__ = make_type("Expr", stmt_type, Expr_fields);
     if (!Expr_type) return 0;
-    Pass_type = make_type("Pass", stmt_type, null, 0);
+    Pass_type.prototype.__class__ = make_type("Pass", stmt_type, null);
     if (!Pass_type) return 0;
-    Break_type = make_type("Break", stmt_type, null, 0);
+    Break_type.prototype.__class__ = make_type("Break", stmt_type, null);
     if (!Break_type) return 0;
-    Continue_type = make_type("Continue", stmt_type, null, 0);
+    Continue_type.prototype.__class__ = make_type("Continue", stmt_type, null);
     if (!Continue_type) return 0;
-    expr_type = make_type("expr", AST_type, null, 0);
+    expr_type.prototype.__class__ = make_type("expr", AST_object, null);
     if (!expr_type) return 0;
-    if (!add_attributes(expr_type, expr_attributes, 2)) return 0;
-    BoolOp_type = make_type("BoolOp", expr_type, BoolOp_fields, 2);
+    add_attributes(expr_type, expr_attributes, 2);
+    BoolOp_type.prototype.__class__ = make_type("BoolOp", expr_type, BoolOp_fields);
     if (!BoolOp_type) return 0;
-    BinOp_type = make_type("BinOp", expr_type, BinOp_fields, 3);
+    BinOp_type.prototype.__class__ = make_type("BinOp", expr_type, BinOp_fields);
     if (!BinOp_type) return 0;
-    UnaryOp_type = make_type("UnaryOp", expr_type, UnaryOp_fields, 2);
+    UnaryOp_type.prototype.__class__ = make_type("UnaryOp", expr_type, UnaryOp_fields);
     if (!UnaryOp_type) return 0;
-    Lambda_type = make_type("Lambda", expr_type, Lambda_fields, 2);
+    Lambda_type.prototype.__class__ = make_type("Lambda", expr_type, Lambda_fields);
     if (!Lambda_type) return 0;
-    IfExp_type = make_type("IfExp", expr_type, IfExp_fields, 3);
+    IfExp_type.prototype.__class__ = make_type("IfExp", expr_type, IfExp_fields);
     if (!IfExp_type) return 0;
-    Dict_type = make_type("Dict", expr_type, Dict_fields, 2);
+    Dict_type.prototype.__class__ = make_type("Dict", expr_type, Dict_fields);
     if (!Dict_type) return 0;
-    Set_type = make_type("Set", expr_type, Set_fields, 1);
+    Set_type.prototype.__class__ = make_type("Set", expr_type, Set_fields);
     if (!Set_type) return 0;
-    ListComp_type = make_type("ListComp", expr_type, ListComp_fields, 2);
+    ListComp_type.prototype.__class__ = make_type("ListComp", expr_type, ListComp_fields);
     if (!ListComp_type) return 0;
-    SetComp_type = make_type("SetComp", expr_type, SetComp_fields, 2);
+    SetComp_type.prototype.__class__ = make_type("SetComp", expr_type, SetComp_fields);
     if (!SetComp_type) return 0;
-    DictComp_type = make_type("DictComp", expr_type, DictComp_fields, 3);
+    DictComp_type.prototype.__class__ = make_type("DictComp", expr_type, DictComp_fields);
     if (!DictComp_type) return 0;
-    GeneratorExp_type = make_type("GeneratorExp", expr_type,
-                                  GeneratorExp_fields, 2);
+    GeneratorExp_type.prototype.__class__ = make_type("GeneratorExp", expr_type, GeneratorExp_fields);
     if (!GeneratorExp_type) return 0;
-    Await_type = make_type("Await", expr_type, Await_fields, 1);
+    Await_type.prototype.__class__ = make_type("Await", expr_type, Await_fields);
     if (!Await_type) return 0;
-    Yield_type = make_type("Yield", expr_type, Yield_fields, 1);
+    Yield_type.prototype.__class__ = make_type("Yield", expr_type, Yield_fields);
     if (!Yield_type) return 0;
-    YieldFrom_type = make_type("YieldFrom", expr_type, YieldFrom_fields, 1);
+    YieldFrom_type.prototype.__class__ = make_type("YieldFrom", expr_type, YieldFrom_fields);
     if (!YieldFrom_type) return 0;
-    Compare_type = make_type("Compare", expr_type, Compare_fields, 3);
+    Compare_type.prototype.__class__ = make_type("Compare", expr_type, Compare_fields);
     if (!Compare_type) return 0;
-    Call_type = make_type("Call", expr_type, Call_fields, 3);
+    Call_type.prototype.__class__ = make_type("Call", expr_type, Call_fields);
     if (!Call_type) return 0;
-    Num_type = make_type("Num", expr_type, Num_fields, 1);
+    Num_type.prototype.__class__ = make_type("Num", expr_type, Num_fields);
     if (!Num_type) return 0;
-    Str_type = make_type("Str", expr_type, Str_fields, 1);
+    Str_type.prototype.__class__ = make_type("Str", expr_type, Str_fields);
     if (!Str_type) return 0;
-    FormattedValue_type = make_type("FormattedValue", expr_type,
-                                    FormattedValue_fields, 3);
+    FormattedValue_type.prototype.__class__ = make_type("FormattedValue", expr_type, FormattedValue_fields);
     if (!FormattedValue_type) return 0;
-    JoinedStr_type = make_type("JoinedStr", expr_type, JoinedStr_fields, 1);
+    JoinedStr_type.prototype.__class__ = make_type("JoinedStr", expr_type, JoinedStr_fields);
     if (!JoinedStr_type) return 0;
-    Bytes_type = make_type("Bytes", expr_type, Bytes_fields, 1);
+    Bytes_type.prototype.__class__ = make_type("Bytes", expr_type, Bytes_fields);
     if (!Bytes_type) return 0;
-    NameConstant_type = make_type("NameConstant", expr_type,
-                                  NameConstant_fields, 1);
+    NameConstant_type.prototype.__class__ = make_type("NameConstant", expr_type, NameConstant_fields);
     if (!NameConstant_type) return 0;
-    Ellipsis_type = make_type("Ellipsis", expr_type, null, 0);
+    Ellipsis_type.prototype.__class__ = make_type("Ellipsis", expr_type, null);
     if (!Ellipsis_type) return 0;
-    Constant_type = make_type("Constant", expr_type, Constant_fields, 1);
+    Constant_type.prototype.__class__ = make_type("Constant", expr_type, Constant_fields);
     if (!Constant_type) return 0;
-    Attribute_type = make_type("Attribute", expr_type, Attribute_fields, 3);
+    Attribute_type.prototype.__class__ = make_type("Attribute", expr_type, Attribute_fields);
     if (!Attribute_type) return 0;
-    Subscript_type = make_type("Subscript", expr_type, Subscript_fields, 3);
+    Subscript_type.prototype.__class__ = make_type("Subscript", expr_type, Subscript_fields);
     if (!Subscript_type) return 0;
-    Starred_type = make_type("Starred", expr_type, Starred_fields, 2);
+    Starred_type.prototype.__class__ = make_type("Starred", expr_type, Starred_fields);
     if (!Starred_type) return 0;
-    Name_type = make_type("Name", expr_type, Name_fields, 2);
+    Name_type.prototype.__class__ = make_type("Name", expr_type, Name_fields);
     if (!Name_type) return 0;
-    List_type = make_type("List", expr_type, List_fields, 2);
+    List_type.prototype.__class__ = make_type("List", expr_type, List_fields);
     if (!List_type) return 0;
-    Tuple_type = make_type("Tuple", expr_type, Tuple_fields, 2);
+    Tuple_type.prototype.__class__ = make_type("Tuple", expr_type, Tuple_fields);
     if (!Tuple_type) return 0;
-    expr_context_type = make_type("expr_context", AST_type, null, 0);
+    expr_context_type.prototype.__class__ = make_type("expr_context", AST_object, null);
     if (!expr_context_type) return 0;
-    if (!add_attributes(expr_context_type, null, 0)) return 0;
-    Load_type = make_type("Load", expr_context_type, null, 0);
+    add_attributes(expr_context_type, null, 0);
+    Load_type.prototype.__class__ = make_type("Load", expr_context_type, null);
     if (!Load_type) return 0;
     Load_singleton = PyType_GenericNew(Load_type, null, null);
     if (!Load_singleton) return 0;
-    Store_type = make_type("Store", expr_context_type, null, 0);
+    Store_type.prototype.__class__ = make_type("Store", expr_context_type, null);
     if (!Store_type) return 0;
     Store_singleton = PyType_GenericNew(Store_type, null, null);
     if (!Store_singleton) return 0;
-    Del_type = make_type("Del", expr_context_type, null, 0);
+    Del_type.prototype.__class__ = make_type("Del", expr_context_type, null);
     if (!Del_type) return 0;
     Del_singleton = PyType_GenericNew(Del_type, null, null);
     if (!Del_singleton) return 0;
-    AugLoad_type = make_type("AugLoad", expr_context_type, null, 0);
+    AugLoad_type.prototype.__class__ = make_type("AugLoad", expr_context_type, null);
     if (!AugLoad_type) return 0;
     AugLoad_singleton = PyType_GenericNew(AugLoad_type, null, null);
     if (!AugLoad_singleton) return 0;
-    AugStore_type = make_type("AugStore", expr_context_type, null, 0);
+    AugStore_type.prototype.__class__ = make_type("AugStore", expr_context_type, null);
     if (!AugStore_type) return 0;
     AugStore_singleton = PyType_GenericNew(AugStore_type, null, null);
     if (!AugStore_singleton) return 0;
-    Param_type = make_type("Param", expr_context_type, null, 0);
+    Param_type.prototype.__class__ = make_type("Param", expr_context_type, null);
     if (!Param_type) return 0;
     Param_singleton = PyType_GenericNew(Param_type, null, null);
     if (!Param_singleton) return 0;
-    slice_type = make_type("slice", AST_type, null, 0);
+    slice_type.prototype.__class__ = make_type("slice", AST_object, null);
     if (!slice_type) return 0;
-    if (!add_attributes(slice_type, null, 0)) return 0;
-    Slice_type = make_type("Slice", slice_type, Slice_fields, 3);
+    add_attributes(slice_type, null, 0);
+    Slice_type.prototype.__class__ = make_type("Slice", slice_type, Slice_fields);
     if (!Slice_type) return 0;
-    ExtSlice_type = make_type("ExtSlice", slice_type, ExtSlice_fields, 1);
+    ExtSlice_type.prototype.__class__ = make_type("ExtSlice", slice_type, ExtSlice_fields);
     if (!ExtSlice_type) return 0;
-    Index_type = make_type("Index", slice_type, Index_fields, 1);
+    Index_type.prototype.__class__ = make_type("Index", slice_type, Index_fields);
     if (!Index_type) return 0;
-    boolop_type = make_type("boolop", AST_type, null, 0);
+    boolop_type.prototype.__class__ = make_type("boolop", AST_object, null);
     if (!boolop_type) return 0;
-    if (!add_attributes(boolop_type, null, 0)) return 0;
-    And_type = make_type("And", boolop_type, null, 0);
+    add_attributes(boolop_type, null, 0);
+    And_type.prototype.__class__ = make_type("And", boolop_type, null);
     if (!And_type) return 0;
     And_singleton = PyType_GenericNew(And_type, null, null);
     if (!And_singleton) return 0;
-    Or_type = make_type("Or", boolop_type, null, 0);
+    Or_type.prototype.__class__ = make_type("Or", boolop_type, null);
     if (!Or_type) return 0;
     Or_singleton = PyType_GenericNew(Or_type, null, null);
     if (!Or_singleton) return 0;
-    operator_type = make_type("operator", AST_type, null, 0);
+    operator_type.prototype.__class__ = make_type("operator", AST_object, null);
     if (!operator_type) return 0;
-    if (!add_attributes(operator_type, null, 0)) return 0;
-    Add_type = make_type("Add", operator_type, null, 0);
+    add_attributes(operator_type, null, 0);
+    Add_type.prototype.__class__ = make_type("Add", operator_type, null);
     if (!Add_type) return 0;
     Add_singleton = PyType_GenericNew(Add_type, null, null);
     if (!Add_singleton) return 0;
-    Sub_type = make_type("Sub", operator_type, null, 0);
+    Sub_type.prototype.__class__ = make_type("Sub", operator_type, null);
     if (!Sub_type) return 0;
     Sub_singleton = PyType_GenericNew(Sub_type, null, null);
     if (!Sub_singleton) return 0;
-    Mult_type = make_type("Mult", operator_type, null, 0);
+    Mult_type.prototype.__class__ = make_type("Mult", operator_type, null);
     if (!Mult_type) return 0;
     Mult_singleton = PyType_GenericNew(Mult_type, null, null);
     if (!Mult_singleton) return 0;
-    MatMult_type = make_type("MatMult", operator_type, null, 0);
+    MatMult_type.prototype.__class__ = make_type("MatMult", operator_type, null);
     if (!MatMult_type) return 0;
     MatMult_singleton = PyType_GenericNew(MatMult_type, null, null);
     if (!MatMult_singleton) return 0;
-    Div_type = make_type("Div", operator_type, null, 0);
+    Div_type.prototype.__class__ = make_type("Div", operator_type, null);
     if (!Div_type) return 0;
     Div_singleton = PyType_GenericNew(Div_type, null, null);
     if (!Div_singleton) return 0;
-    Mod_type = make_type("Mod", operator_type, null, 0);
+    Mod_type.prototype.__class__ = make_type("Mod", operator_type, null);
     if (!Mod_type) return 0;
     Mod_singleton = PyType_GenericNew(Mod_type, null, null);
     if (!Mod_singleton) return 0;
-    Pow_type = make_type("Pow", operator_type, null, 0);
+    Pow_type.prototype.__class__ = make_type("Pow", operator_type, null);
     if (!Pow_type) return 0;
     Pow_singleton = PyType_GenericNew(Pow_type, null, null);
     if (!Pow_singleton) return 0;
-    LShift_type = make_type("LShift", operator_type, null, 0);
+    LShift_type.prototype.__class__ = make_type("LShift", operator_type, null);
     if (!LShift_type) return 0;
     LShift_singleton = PyType_GenericNew(LShift_type, null, null);
     if (!LShift_singleton) return 0;
-    RShift_type = make_type("RShift", operator_type, null, 0);
+    RShift_type.prototype.__class__ = make_type("RShift", operator_type, null);
     if (!RShift_type) return 0;
     RShift_singleton = PyType_GenericNew(RShift_type, null, null);
     if (!RShift_singleton) return 0;
-    BitOr_type = make_type("BitOr", operator_type, null, 0);
+    BitOr_type.prototype.__class__ = make_type("BitOr", operator_type, null);
     if (!BitOr_type) return 0;
     BitOr_singleton = PyType_GenericNew(BitOr_type, null, null);
     if (!BitOr_singleton) return 0;
-    BitXor_type = make_type("BitXor", operator_type, null, 0);
+    BitXor_type.prototype.__class__ = make_type("BitXor", operator_type, null);
     if (!BitXor_type) return 0;
     BitXor_singleton = PyType_GenericNew(BitXor_type, null, null);
     if (!BitXor_singleton) return 0;
-    BitAnd_type = make_type("BitAnd", operator_type, null, 0);
+    BitAnd_type.prototype.__class__ = make_type("BitAnd", operator_type, null);
     if (!BitAnd_type) return 0;
     BitAnd_singleton = PyType_GenericNew(BitAnd_type, null, null);
     if (!BitAnd_singleton) return 0;
-    FloorDiv_type = make_type("FloorDiv", operator_type, null, 0);
+    FloorDiv_type.prototype.__class__ = make_type("FloorDiv", operator_type, null);
     if (!FloorDiv_type) return 0;
     FloorDiv_singleton = PyType_GenericNew(FloorDiv_type, null, null);
     if (!FloorDiv_singleton) return 0;
-    unaryop_type = make_type("unaryop", AST_type, null, 0);
+    unaryop_type.prototype.__class__ = make_type("unaryop", AST_object, null);
     if (!unaryop_type) return 0;
-    if (!add_attributes(unaryop_type, null, 0)) return 0;
-    Invert_type = make_type("Invert", unaryop_type, null, 0);
+    add_attributes(unaryop_type, null, 0);
+    Invert_type.prototype.__class__ = make_type("Invert", unaryop_type, null);
     if (!Invert_type) return 0;
     Invert_singleton = PyType_GenericNew(Invert_type, null, null);
     if (!Invert_singleton) return 0;
-    Not_type = make_type("Not", unaryop_type, null, 0);
+    Not_type.prototype.__class__ = make_type("Not", unaryop_type, null);
     if (!Not_type) return 0;
     Not_singleton = PyType_GenericNew(Not_type, null, null);
     if (!Not_singleton) return 0;
-    UAdd_type = make_type("UAdd", unaryop_type, null, 0);
+    UAdd_type.prototype.__class__ = make_type("UAdd", unaryop_type, null);
     if (!UAdd_type) return 0;
     UAdd_singleton = PyType_GenericNew(UAdd_type, null, null);
     if (!UAdd_singleton) return 0;
-    USub_type = make_type("USub", unaryop_type, null, 0);
+    USub_type.prototype.__class__ = make_type("USub", unaryop_type, null);
     if (!USub_type) return 0;
     USub_singleton = PyType_GenericNew(USub_type, null, null);
     if (!USub_singleton) return 0;
-    cmpop_type = make_type("cmpop", AST_type, null, 0);
+    cmpop_type.prototype.__class__ = make_type("cmpop", AST_object, null);
     if (!cmpop_type) return 0;
-    if (!add_attributes(cmpop_type, null, 0)) return 0;
-    Eq_type = make_type("Eq", cmpop_type, null, 0);
+    add_attributes(cmpop_type, null, 0);
+    Eq_type.prototype.__class__ = make_type("Eq", cmpop_type, null);
     if (!Eq_type) return 0;
     Eq_singleton = PyType_GenericNew(Eq_type, null, null);
     if (!Eq_singleton) return 0;
-    NotEq_type = make_type("NotEq", cmpop_type, null, 0);
+    NotEq_type.prototype.__class__ = make_type("NotEq", cmpop_type, null);
     if (!NotEq_type) return 0;
     NotEq_singleton = PyType_GenericNew(NotEq_type, null, null);
     if (!NotEq_singleton) return 0;
-    Lt_type = make_type("Lt", cmpop_type, null, 0);
+    Lt_type.prototype.__class__ = make_type("Lt", cmpop_type, null);
     if (!Lt_type) return 0;
     Lt_singleton = PyType_GenericNew(Lt_type, null, null);
     if (!Lt_singleton) return 0;
-    LtE_type = make_type("LtE", cmpop_type, null, 0);
+    LtE_type.prototype.__class__ = make_type("LtE", cmpop_type, null);
     if (!LtE_type) return 0;
     LtE_singleton = PyType_GenericNew(LtE_type, null, null);
     if (!LtE_singleton) return 0;
-    Gt_type = make_type("Gt", cmpop_type, null, 0);
+    Gt_type.prototype.__class__ = make_type("Gt", cmpop_type, null);
     if (!Gt_type) return 0;
     Gt_singleton = PyType_GenericNew(Gt_type, null, null);
     if (!Gt_singleton) return 0;
-    GtE_type = make_type("GtE", cmpop_type, null, 0);
+    GtE_type.prototype.__class__ = make_type("GtE", cmpop_type, null);
     if (!GtE_type) return 0;
     GtE_singleton = PyType_GenericNew(GtE_type, null, null);
     if (!GtE_singleton) return 0;
-    Is_type = make_type("Is", cmpop_type, null, 0);
+    Is_type.prototype.__class__ = make_type("Is", cmpop_type, null);
     if (!Is_type) return 0;
     Is_singleton = PyType_GenericNew(Is_type, null, null);
     if (!Is_singleton) return 0;
-    IsNot_type = make_type("IsNot", cmpop_type, null, 0);
+    IsNot_type.prototype.__class__ = make_type("IsNot", cmpop_type, null);
     if (!IsNot_type) return 0;
     IsNot_singleton = PyType_GenericNew(IsNot_type, null, null);
     if (!IsNot_singleton) return 0;
-    In_type = make_type("In", cmpop_type, null, 0);
+    In_type.prototype.__class__ = make_type("In", cmpop_type, null);
     if (!In_type) return 0;
     In_singleton = PyType_GenericNew(In_type, null, null);
     if (!In_singleton) return 0;
-    NotIn_type = make_type("NotIn", cmpop_type, null, 0);
+    NotIn_type.prototype.__class__ = make_type("NotIn", cmpop_type, null);
     if (!NotIn_type) return 0;
     NotIn_singleton = PyType_GenericNew(NotIn_type, null, null);
     if (!NotIn_singleton) return 0;
-    comprehension_type = make_type("comprehension", AST_type,
-                                   comprehension_fields, 3);
+    comprehension_type.prototype.__class__ = make_type("comprehension", AST_object, comprehension_fields);
     if (!comprehension_type) return 0;
-    if (!add_attributes(comprehension_type, null, 0)) return 0;
-    excepthandler_type = make_type("excepthandler", AST_type, null, 0);
+    add_attributes(comprehension_type, null, 0);
+    excepthandler_type.prototype.__class__ = make_type("excepthandler", AST_object, null);
     if (!excepthandler_type) return 0;
-    if (!add_attributes(excepthandler_type, excepthandler_attributes, 2))
-        return 0;
-    ExceptHandler_type = make_type("ExceptHandler", excepthandler_type,
-                                   ExceptHandler_fields, 3);
+    add_attributes(excepthandler_type, excepthandler_attributes, 2);
+    ExceptHandler_type.prototype.__class__ = make_type("ExceptHandler", excepthandler_type, ExceptHandler_fields);
     if (!ExceptHandler_type) return 0;
-    arguments_type = make_type("arguments", AST_type, arguments_fields, 6);
+    arguments_type.prototype.__class__ = make_type("arguments", AST_object, arguments_fields);
     if (!arguments_type) return 0;
-    if (!add_attributes(arguments_type, null, 0)) return 0;
-    arg_type = make_type("arg", AST_type, arg_fields, 2);
+    add_attributes(arguments_type, null, 0);
+    arg_type.prototype.__class__ = make_type("arg", AST_object, arg_fields);
     if (!arg_type) return 0;
-    if (!add_attributes(arg_type, arg_attributes, 2)) return 0;
-    keyword_type = make_type("keyword", AST_type, keyword_fields, 2);
+    add_attributes(arg_type, arg_attributes);
+    keyword_type.prototype.__class__ = make_type("keyword", AST_object, keyword_fields);
     if (!keyword_type) return 0;
-    if (!add_attributes(keyword_type, null, 0)) return 0;
-    alias_type = make_type("alias", AST_type, alias_fields, 2);
+    add_attributes(keyword_type, null, 0);
+    alias_type.prototype.__class__ = make_type("alias", AST_object, alias_fields);
     if (!alias_type) return 0;
-    if (!add_attributes(alias_type, null, 0)) return 0;
-    withitem_type = make_type("withitem", AST_type, withitem_fields, 2);
+    add_attributes(alias_type, null, 0);
+    withitem_type.prototype.__class__ = make_type("withitem", AST_object, withitem_fields);
     if (!withitem_type) return 0;
-    if (!add_attributes(withitem_type, null, 0)) return 0;
+    add_attributes(withitem_type, null, 0);
     initialized = 1;
     return 1;
-}
+};
+init_types.initialized = 0;
 
 
 var Module = function(body) {
@@ -1000,8 +990,7 @@ var Suite = function(body) {
     return p;
 }
 
-var FunctionDef = function(name, args, body, decorator_list, returns, lineno,
-                           col_offset) {
+var FunctionDef = function(name, args, body, decorator_list, returns, lineno, col_offset) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for FunctionDef");
@@ -1021,8 +1010,7 @@ var FunctionDef = function(name, args, body, decorator_list, returns, lineno,
     return p;
 }
 
-var AsyncFunctionDef = function(name, args, body, decorator_list, returns,
-                                lineno, col_offset) {
+var AsyncFunctionDef = function(name, args, body, decorator_list, returns, lineno, col_offset) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for AsyncFunctionDef");
@@ -1042,8 +1030,7 @@ var AsyncFunctionDef = function(name, args, body, decorator_list, returns,
     return p;
 }
 
-var ClassDef = function(name, bases, keywords, body, decorator_list, lineno,
-                        col_offset) {
+var ClassDef = function(name, bases, keywords, body, decorator_list, lineno, col_offset) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for ClassDef");
@@ -1543,8 +1530,7 @@ var Str = function(s, lineno, col_offset) {
     return p;
 }
 
-var FormattedValue = function(value, conversion, format_spec, lineno,
-                              col_offset) {
+var FormattedValue = function(value, conversion, format_spec, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for FormattedValue");
@@ -1762,8 +1748,7 @@ var ExceptHandler = function(type, name, body, lineno, col_offset) {
     return p;
 }
 
-var arguments = function(args, vararg, kwonlyargs, kw_defaults, kwarg,
-                         defaults) {
+var arguments = function(args, vararg, kwonlyargs, kw_defaults, kwarg, defaults) {
     p.args = args;
     p.vararg = vararg;
     p.kwonlyargs = kwonlyargs;
@@ -1859,7 +1844,7 @@ var ast2obj_mod = function(_o) {
         break;
     }
     return result;
-}
+};
 
 var ast2obj_stmt = function(_o) {
     var o = _o;
@@ -2196,7 +2181,7 @@ var ast2obj_stmt = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_col_offset, value) < 0)
         return null;
     return result;
-}
+};
 
 var ast2obj_expr = function(_o) {
     var o = _o;
@@ -2342,8 +2327,7 @@ var ast2obj_expr = function(_o) {
         if (!value) return null;
         if (_PyObject_SetAttrId(result, PyId_elt, value) == -1)
             return null;
-        value = ast2obj_list(o.v.GeneratorExp.generators,
-                             ast2obj_comprehension);
+        value = ast2obj_list(o.v.GeneratorExp.generators, ast2obj_comprehension);
         if (!value) return null;
         if (_PyObject_SetAttrId(result, PyId_generators, value) == -1)
             return null;
@@ -2568,7 +2552,7 @@ var ast2obj_expr = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_col_offset, value) < 0)
         return null;
     return result;
-}
+};
 
 var ast2obj_expr_context = function(o) {
     switch(o) {
@@ -2589,7 +2573,7 @@ var ast2obj_expr_context = function(o) {
             PyErr_Format(PyExc_SystemError, "unknown expr_context found");
             return null;
     }
-}
+};
 var ast2obj_slice = function(_o) {
     var o = _o;
     var result = null;
@@ -2633,7 +2617,7 @@ var ast2obj_slice = function(_o) {
         break;
     }
     return result;
-}
+};
 
 var ast2obj_boolop = function(o) {
     switch(o) {
@@ -2646,7 +2630,7 @@ var ast2obj_boolop = function(o) {
             PyErr_Format(PyExc_SystemError, "unknown boolop found");
             return null;
     }
-}
+};
 var ast2obj_operator = function(o) {
     switch(o) {
         case Add:
@@ -2680,7 +2664,7 @@ var ast2obj_operator = function(o) {
             PyErr_Format(PyExc_SystemError, "unknown operator found");
             return null;
     }
-}
+};
 var ast2obj_unaryop = function(o) {
     switch(o) {
         case Invert:
@@ -2696,7 +2680,7 @@ var ast2obj_unaryop = function(o) {
             PyErr_Format(PyExc_SystemError, "unknown unaryop found");
             return null;
     }
-}
+};
 var ast2obj_cmpop = function(o) {
     switch(o) {
         case Eq:
@@ -2724,7 +2708,7 @@ var ast2obj_cmpop = function(o) {
             PyErr_Format(PyExc_SystemError, "unknown cmpop found");
             return null;
     }
-}
+};
 var ast2obj_comprehension = function(_o) {
     var o = _o;
     var result = null;
@@ -2748,7 +2732,7 @@ var ast2obj_comprehension = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_ifs, value) == -1)
         return null;
     return result;
-}
+};
 
 var ast2obj_excepthandler = function(_o) {
     var o = _o;
@@ -2785,7 +2769,7 @@ var ast2obj_excepthandler = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_col_offset, value) < 0)
         return null;
     return result;
-}
+};
 
 var ast2obj_arguments = function(_o) {
     var o = _o;
@@ -2822,7 +2806,7 @@ var ast2obj_arguments = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_defaults, value) == -1)
         return null;
     return result;
-}
+};
 
 var ast2obj_arg = function(_o) {
     var o = _o;
@@ -2851,7 +2835,7 @@ var ast2obj_arg = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_col_offset, value) < 0)
         return null;
     return result;
-}
+};
 
 var ast2obj_keyword = function(_o) {
     var o = _o;
@@ -2872,7 +2856,7 @@ var ast2obj_keyword = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_value, value) == -1)
         return null;
     return result;
-}
+};
 
 var ast2obj_alias = function(_o) {
     var o = _o;
@@ -2893,7 +2877,7 @@ var ast2obj_alias = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_asname, value) == -1)
         return null;
     return result;
-}
+};
 
 var ast2obj_withitem = function(_o) {
     var o = _o;
@@ -2914,7 +2898,7 @@ var ast2obj_withitem = function(_o) {
     if (_PyObject_SetAttrId(result, PyId_optional_vars, value) == -1)
         return null;
     return result;
-}
+};
 
 
 var obj2ast_mod = function(obj) {
@@ -3056,7 +3040,7 @@ var obj2ast_mod = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of mod, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_stmt = function(obj) {
     var isinstance;
@@ -3182,8 +3166,7 @@ var obj2ast_stmt = function(obj) {
         } else {
             returns = null;
         }
-        out = FunctionDef(name, args, body, decorator_list, returns, lineno,
-                          col_offset);
+        out = FunctionDef(name, args, body, decorator_list, returns, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3278,8 +3261,7 @@ var obj2ast_stmt = function(obj) {
         } else {
             returns = null;
         }
-        out = AsyncFunctionDef(name, args, body, decorator_list, returns,
-                               lineno, col_offset);
+        out = AsyncFunctionDef(name, args, body, decorator_list, returns, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3401,8 +3383,7 @@ var obj2ast_stmt = function(obj) {
             throw new batavia.builtins.TypeError("required field \"decorator_list\" missing from ClassDef");
             return 1;
         }
-        out = ClassDef(name, bases, keywords, body, decorator_list, lineno,
-                       col_offset);
+        out = ClassDef(name, bases, keywords, body, decorator_list, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4379,7 +4360,7 @@ var obj2ast_stmt = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of stmt, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_expr = function(obj) {
     var isinstance;
@@ -5209,8 +5190,7 @@ var obj2ast_expr = function(obj) {
         } else {
             format_spec = null;
         }
-        out = FormattedValue(value, conversion, format_spec, lineno,
-                             col_offset);
+        out = FormattedValue(value, conversion, format_spec, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5582,7 +5562,7 @@ var obj2ast_expr = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of expr, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_expr_context = function(obj) {
     var isinstance;
@@ -5638,7 +5618,7 @@ var obj2ast_expr_context = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of expr_context, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_slice = function(obj) {
     var isinstance;
@@ -5752,7 +5732,7 @@ var obj2ast_slice = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of slice, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_boolop = function(obj) {
     var isinstance;
@@ -5776,7 +5756,7 @@ var obj2ast_boolop = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of boolop, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_operator = function(obj) {
     var isinstance;
@@ -5888,7 +5868,7 @@ var obj2ast_operator = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of operator, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_unaryop = function(obj) {
     var isinstance;
@@ -5928,7 +5908,7 @@ var obj2ast_unaryop = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of unaryop, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_cmpop = function(obj) {
     var isinstance;
@@ -6016,7 +5996,7 @@ var obj2ast_cmpop = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of cmpop, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_comprehension = function(obj) {
     var tmp = null;
@@ -6072,7 +6052,7 @@ var obj2ast_comprehension = function(obj) {
     }
     out = comprehension(target, iter, ifs);
     return 0;
-}
+};
 
 var obj2ast_excepthandler = function(obj) {
     var isinstance;
@@ -6167,7 +6147,7 @@ var obj2ast_excepthandler = function(obj) {
 
     PyErr_Format(PyExc_TypeError, "expected some sort of excepthandler, but got %R", obj);
     return 1;
-}
+};
 
 var obj2ast_arguments = function(obj) {
     var tmp = null;
@@ -6296,7 +6276,7 @@ var obj2ast_arguments = function(obj) {
     }
     out = arguments(args, vararg, kwonlyargs, kw_defaults, kwarg, defaults);
     return 0;
-}
+};
 
 var obj2ast_arg = function(obj) {
     var tmp = null;
@@ -6350,7 +6330,7 @@ var obj2ast_arg = function(obj) {
     }
     out = arg(arg, annotation, lineno, col_offset);
     return 0;
-}
+};
 
 var obj2ast_keyword = function(obj) {
     var tmp = null;
@@ -6380,7 +6360,7 @@ var obj2ast_keyword = function(obj) {
     }
     out = keyword(arg, value);
     return 0;
-}
+};
 
 var obj2ast_alias = function(obj) {
     var tmp = null;
@@ -6410,7 +6390,7 @@ var obj2ast_alias = function(obj) {
     }
     out = alias(name, asname);
     return 0;
-}
+};
 
 var obj2ast_withitem = function(obj) {
     var tmp = null;
@@ -6440,11 +6420,11 @@ var obj2ast_withitem = function(obj) {
     }
     out = withitem(context_expr, optional_vars);
     return 0;
-}
+};
 
 
 function _astmodule() {
-  "this._ast = null;"
+    this._ast = null;
 };
 var PyInit__ast = function() {
     var m = null;
@@ -6453,20 +6433,17 @@ var PyInit__ast = function() {
     m = PyModule_Create(_astmodule);
     if (!m) return null;
     d = PyModule_GetDict(m);
-    if (PyDict_SetItemString(d, "AST", AST_type) < 0) return null;
+    if (PyDict_SetItemString(d, "AST", AST_object) < 0) return null;
     if (PyModule_AddIntMacro(m, PyCF_ONLY_AST) < 0)
         return null;
     if (PyDict_SetItemString(d, "mod", mod_type) < 0) return null;
     if (PyDict_SetItemString(d, "Module", Module_type) < 0) return null;
-    if (PyDict_SetItemString(d, "Interactive", Interactive_type) < 0) return
-        null;
+    if (PyDict_SetItemString(d, "Interactive", Interactive_type) < 0) return null;
     if (PyDict_SetItemString(d, "Expression", Expression_type) < 0) return null;
     if (PyDict_SetItemString(d, "Suite", Suite_type) < 0) return null;
     if (PyDict_SetItemString(d, "stmt", stmt_type) < 0) return null;
-    if (PyDict_SetItemString(d, "FunctionDef", FunctionDef_type) < 0) return
-        null;
-    if (PyDict_SetItemString(d, "AsyncFunctionDef", AsyncFunctionDef_type) < 0)
-        return null;
+    if (PyDict_SetItemString(d, "FunctionDef", FunctionDef_type) < 0) return null;
+    if (PyDict_SetItemString(d, "AsyncFunctionDef", AsyncFunctionDef_type) < 0) return null;
     if (PyDict_SetItemString(d, "ClassDef", ClassDef_type) < 0) return null;
     if (PyDict_SetItemString(d, "Return", Return_type) < 0) return null;
     if (PyDict_SetItemString(d, "Delete", Delete_type) < 0) return null;
@@ -6500,8 +6477,7 @@ var PyInit__ast = function() {
     if (PyDict_SetItemString(d, "ListComp", ListComp_type) < 0) return null;
     if (PyDict_SetItemString(d, "SetComp", SetComp_type) < 0) return null;
     if (PyDict_SetItemString(d, "DictComp", DictComp_type) < 0) return null;
-    if (PyDict_SetItemString(d, "GeneratorExp", GeneratorExp_type) < 0) return
-        null;
+    if (PyDict_SetItemString(d, "GeneratorExp", GeneratorExp_type) < 0) return null;
     if (PyDict_SetItemString(d, "Await", Await_type) < 0) return null;
     if (PyDict_SetItemString(d, "Yield", Yield_type) < 0) return null;
     if (PyDict_SetItemString(d, "YieldFrom", YieldFrom_type) < 0) return null;
@@ -6509,12 +6485,10 @@ var PyInit__ast = function() {
     if (PyDict_SetItemString(d, "Call", Call_type) < 0) return null;
     if (PyDict_SetItemString(d, "Num", Num_type) < 0) return null;
     if (PyDict_SetItemString(d, "Str", Str_type) < 0) return null;
-    if (PyDict_SetItemString(d, "FormattedValue", FormattedValue_type) < 0)
-        return null;
+    if (PyDict_SetItemString(d, "FormattedValue", FormattedValue_type) < 0) return null;
     if (PyDict_SetItemString(d, "JoinedStr", JoinedStr_type) < 0) return null;
     if (PyDict_SetItemString(d, "Bytes", Bytes_type) < 0) return null;
-    if (PyDict_SetItemString(d, "NameConstant", NameConstant_type) < 0) return
-        null;
+    if (PyDict_SetItemString(d, "NameConstant", NameConstant_type) < 0) return null;
     if (PyDict_SetItemString(d, "Ellipsis", Ellipsis_type) < 0) return null;
     if (PyDict_SetItemString(d, "Constant", Constant_type) < 0) return null;
     if (PyDict_SetItemString(d, "Attribute", Attribute_type) < 0) return null;
@@ -6523,8 +6497,7 @@ var PyInit__ast = function() {
     if (PyDict_SetItemString(d, "Name", Name_type) < 0) return null;
     if (PyDict_SetItemString(d, "List", List_type) < 0) return null;
     if (PyDict_SetItemString(d, "Tuple", Tuple_type) < 0) return null;
-    if (PyDict_SetItemString(d, "expr_context", expr_context_type) < 0) return
-        null;
+    if (PyDict_SetItemString(d, "expr_context", expr_context_type) < 0) return null;
     if (PyDict_SetItemString(d, "Load", Load_type) < 0) return null;
     if (PyDict_SetItemString(d, "Store", Store_type) < 0) return null;
     if (PyDict_SetItemString(d, "Del", Del_type) < 0) return null;
@@ -6568,24 +6541,22 @@ var PyInit__ast = function() {
     if (PyDict_SetItemString(d, "IsNot", IsNot_type) < 0) return null;
     if (PyDict_SetItemString(d, "In", In_type) < 0) return null;
     if (PyDict_SetItemString(d, "NotIn", NotIn_type) < 0) return null;
-    if (PyDict_SetItemString(d, "comprehension", comprehension_type) < 0)
-        return null;
-    if (PyDict_SetItemString(d, "excepthandler", excepthandler_type) < 0)
-        return null;
-    if (PyDict_SetItemString(d, "ExceptHandler", ExceptHandler_type) < 0)
-        return null;
+    if (PyDict_SetItemString(d, "comprehension", comprehension_type) < 0) return null;
+    if (PyDict_SetItemString(d, "excepthandler", excepthandler_type) < 0) return null;
+    if (PyDict_SetItemString(d, "ExceptHandler", ExceptHandler_type) < 0) return null;
     if (PyDict_SetItemString(d, "arguments", arguments_type) < 0) return null;
     if (PyDict_SetItemString(d, "arg", arg_type) < 0) return null;
     if (PyDict_SetItemString(d, "keyword", keyword_type) < 0) return null;
     if (PyDict_SetItemString(d, "alias", alias_type) < 0) return null;
     if (PyDict_SetItemString(d, "withitem", withitem_type) < 0) return null;
     return m;
-}
+};
 
 
 var PyAST_mod2obj = function(t) {
-    if (!init_types())
+    if (!init_types()) {
         return null;
+    }
     return ast2obj_mod(t);
 };
 
@@ -6609,17 +6580,21 @@ var PyAST_obj2mod = function(ast, mode) {
     if (!isinstance) {
         throw new batavia.builtins.TypeError("expected " + req_name[mode] + " node, got " + Py_TYPE(ast).tp_name);
     }
-    if (obj2ast_mod(ast, res) != 0)
+    if (obj2ast_mod(ast, res) != 0) {
         return null;
-    else
+    } else {
         return res;
-}
-
-var PyAST_Check = function(obj) {
-    if (!init_types())
-        return -1;
-    return PyObject_IsInstance(obj, AST_type);
+    }
 };
+
+var ast_check = function(obj) {
+    if (!init_types()) {
+        return -1;
+    }
+    return batavia.isinstance(obj, AST_object);
+};
+
+batavia.modules.ast.ast_check = ast_check;
 
 }); // don't execute the module yet until it works better
 

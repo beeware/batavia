@@ -380,13 +380,14 @@ batavia.builtins.classmethod.__doc__ = 'classmethod(function) -> method\n\nConve
 
 
 batavia.builtins.compile = function(args, kwargs) {
-    var module = args[0];
-    var source = args[1];
-    var filename = args[2];
-    var mode = args[3];
-    var flags = args[4];
+    var source = args[0];
+    var filename = args[1];
+    var mode = args[2];
+    var flags = args[3];
     var cf = null; // compiler flags
-    var start = [Py_file_input, Py_eval_input, Py_single_input];
+    var start = [batavia.modules._compile.Py_file_input,
+                 batavia.modules._compile.Py_eval_input,
+                 batavia.modules._compile.Py_single_input];
 
     var compile_mode;
     if (mode == "exec") {
@@ -399,7 +400,7 @@ batavia.builtins.compile = function(args, kwargs) {
         throw new batavia.builtins.ValueError("compile() mode must be 'exec', 'eval' or 'single'");
     }
 
-    var ast_check = batavia.modules._compile(source);
+    var ast_check = batavia.modules._compile.ast_check(source);
     if (ast_check < 0) {
         return null;
     }
