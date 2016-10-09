@@ -408,18 +408,14 @@ batavia.builtins.compile = function(args, kwargs) {
         return batavia.modules._compile.compile_string_object(source, filename, start[compile_mode], cf, optimize);
     }
     // parse the AST
-    var arena = batavia.modules._compile.new_arena();
-    if (arena == null) {
-        return null;
-    }
-    var mod = batavia.modules._compile.ast_obj2mod(source, arena, compile_mode);
+    var mod = batavia.modules._compile.ast_obj2mod(source, compile_mode);
     if (mod == null) {
         return null;
     }
     if (!batavia.modules._compile.ast_validate(mod)) {
         return null;
     }
-    return batavia.modules._compile.ast_compile_object(mod, filename, cf, optimize, arena);
+    return batavia.modules._compile.ast_compile_object(mod, filename, cf, optimize);
 };
 batavia.builtins.compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified.";
 

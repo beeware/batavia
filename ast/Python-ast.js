@@ -579,53 +579,43 @@ var ast2obj_int = function(b) {
 
 /* Conversion Python -> AST */
 
-var obj2ast_singleton = function(obj, arena) {
+var obj2ast_singleton = function(obj) {
     if (obj != null && !batavia.isinstance(obj, batavia.types.Bool)) {
         throw new batavia.builtins.ValueError("AST singleton must be True, False, or None");
     }
     return obj;
 };
 
-var obj2ast_object = function(obj, arena) {
-    if (obj) {
-        if (PyArena_AddPyObject(arena, obj) < 0) {
-            return null;
-        }
-    }
+var obj2ast_object = function(obj) {
     return obj;
 };
 
-var obj2ast_constant = function(obj, arena) {
-    if (obj) {
-        if (PyArena_AddPyObject(arena, obj) < 0) {
-            return null;
-        }
-    }
+var obj2ast_constant = function(obj) {
     return obj;
 };
 
-var obj2ast_identifier = function(obj, arena) {
+var obj2ast_identifier = function(obj) {
     if (!batavia.isinstance(obj, batavia.types.Str) && obj != null) {
         throw new batavia.builtins.TypeError("AST identifier must be of type str");
     }
-    return obj2ast_object(obj, arena);
+    return obj2ast_object(obj);
 };
 
-var obj2ast_string = function(obj, arena) {
+var obj2ast_string = function(obj) {
     if (!batavia.isinstance(obj, [batavia.types.Bytes, batavia.types.Str])) {
         throw new batavia.builtins.TypeError("AST string must be of type str");
     }
-    return obj2ast_object(obj, arena);
+    return obj2ast_object(obj);
 }
 
-var obj2ast_bytes = function(obj, arena) {
+var obj2ast_bytes = function(obj) {
     if (!batavia.isinstance(obj, batavia.types.Bytes)) {
         throw new batavia.builtins.TypeError("AST bytes must be of type bytes");
     }
-    return obj2ast_object(obj, arena);
+    return obj2ast_object(obj);
 };
 
-var obj2ast_int = function(obj, arena) {
+var obj2ast_int = function(obj) {
     if (!batavia.isinstance(obj, [batavia.types.Int])) {
         throw new batavia.builtins.ValueError("invalid integer value: ", obj);
     }
@@ -981,53 +971,36 @@ var init_types = function() {
 }
 
 
-var Module = function(body, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Module = function(body) {
     p.kind = Module_kind;
     p.v.Module.body = body;
     return p;
 }
 
-var Interactive = function(body, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Interactive = function(body) {
     p.kind = Interactive_kind;
     p.v.Interactive.body = body;
     return p;
 }
 
-var Expression = function(body, arena) {
-    var p;
+var Expression = function(body) {
     if (!body) {
         throw new batavia.builtins.ValueError(
                         "field body is required for Expression");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Expression_kind;
     p.v.Expression.body = body;
     return p;
 }
 
-var Suite = function(body, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Suite = function(body) {
     p.kind = Suite_kind;
     p.v.Suite.body = body;
     return p;
 }
 
 var FunctionDef = function(name, args, body, decorator_list, returns, lineno,
-                           col_offset, arena) {
-    var p;
+                           col_offset) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for FunctionDef");
@@ -1036,9 +1009,6 @@ var FunctionDef = function(name, args, body, decorator_list, returns, lineno,
         throw new batavia.builtins.ValueError(
                         "field args is required for FunctionDef");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = FunctionDef_kind;
     p.v.FunctionDef.name = name;
     p.v.FunctionDef.args = args;
@@ -1051,8 +1021,7 @@ var FunctionDef = function(name, args, body, decorator_list, returns, lineno,
 }
 
 var AsyncFunctionDef = function(name, args, body, decorator_list, returns,
-                                lineno, col_offset, arena) {
-    var p;
+                                lineno, col_offset) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for AsyncFunctionDef");
@@ -1061,9 +1030,6 @@ var AsyncFunctionDef = function(name, args, body, decorator_list, returns,
         throw new batavia.builtins.ValueError(
                         "field args is required for AsyncFunctionDef");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = AsyncFunctionDef_kind;
     p.v.AsyncFunctionDef.name = name;
     p.v.AsyncFunctionDef.args = args;
@@ -1076,15 +1042,11 @@ var AsyncFunctionDef = function(name, args, body, decorator_list, returns,
 }
 
 var ClassDef = function(name, bases, keywords, body, decorator_list, lineno,
-                        col_offset, arena) {
-    var p;
+                        col_offset) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for ClassDef");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = ClassDef_kind;
     p.v.ClassDef.name = name;
     p.v.ClassDef.bases = bases;
@@ -1096,11 +1058,7 @@ var ClassDef = function(name, bases, keywords, body, decorator_list, lineno,
     return p;
 }
 
-var Return = function(value, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Return = function(value, lineno, col_offset) {
     p.kind = Return_kind;
     p.v.Return.value = value;
     p.lineno = lineno;
@@ -1108,11 +1066,7 @@ var Return = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var Delete = function(targets, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Delete = function(targets, lineno, col_offset) {
     p.kind = Delete_kind;
     p.v.Delete.targets = targets;
     p.lineno = lineno;
@@ -1120,15 +1074,11 @@ var Delete = function(targets, lineno, col_offset, arena) {
     return p;
 }
 
-var Assign = function(targets, value, lineno, col_offset, arena) {
-    var p;
+var Assign = function(targets, value, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Assign");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Assign_kind;
     p.v.Assign.targets = targets;
     p.v.Assign.value = value;
@@ -1137,8 +1087,7 @@ var Assign = function(targets, value, lineno, col_offset, arena) {
     return p;
 }
 
-var AugAssign = function(target, op, value, lineno, col_offset, arena) {
-    var p;
+var AugAssign = function(target, op, value, lineno, col_offset) {
     if (!target) {
         throw new batavia.builtins.ValueError(
                         "field target is required for AugAssign");
@@ -1151,9 +1100,6 @@ var AugAssign = function(target, op, value, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field value is required for AugAssign");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = AugAssign_kind;
     p.v.AugAssign.target = target;
     p.v.AugAssign.op = op;
@@ -1163,8 +1109,7 @@ var AugAssign = function(target, op, value, lineno, col_offset, arena) {
     return p;
 }
 
-var For = function(target, iter, body, orelse, lineno, col_offset, arena) {
-    var p;
+var For = function(target, iter, body, orelse, lineno, col_offset) {
     if (!target) {
         throw new batavia.builtins.ValueError(
                         "field target is required for For");
@@ -1173,9 +1118,6 @@ var For = function(target, iter, body, orelse, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field iter is required for For");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = For_kind;
     p.v.For.target = target;
     p.v.For.iter = iter;
@@ -1186,8 +1128,7 @@ var For = function(target, iter, body, orelse, lineno, col_offset, arena) {
     return p;
 }
 
-var AsyncFor = function(target, iter, body, orelse, lineno, col_offset, arena) {
-    var p;
+var AsyncFor = function(target, iter, body, orelse, lineno, col_offset) {
     if (!target) {
         throw new batavia.builtins.ValueError(
                         "field target is required for AsyncFor");
@@ -1196,9 +1137,6 @@ var AsyncFor = function(target, iter, body, orelse, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field iter is required for AsyncFor");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = AsyncFor_kind;
     p.v.AsyncFor.target = target;
     p.v.AsyncFor.iter = iter;
@@ -1209,15 +1147,11 @@ var AsyncFor = function(target, iter, body, orelse, lineno, col_offset, arena) {
     return p;
 }
 
-var While = function(test, body, orelse, lineno, col_offset, arena) {
-    var p;
+var While = function(test, body, orelse, lineno, col_offset) {
     if (!test) {
         throw new batavia.builtins.ValueError(
                         "field test is required for While");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = While_kind;
     p.v.While.test = test;
     p.v.While.body = body;
@@ -1227,15 +1161,11 @@ var While = function(test, body, orelse, lineno, col_offset, arena) {
     return p;
 }
 
-var If = function(test, body, orelse, lineno, col_offset, arena) {
-    var p;
+var If = function(test, body, orelse, lineno, col_offset) {
     if (!test) {
         throw new batavia.builtins.ValueError(
                         "field test is required for If");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = If_kind;
     p.v.If.test = test;
     p.v.If.body = body;
@@ -1245,11 +1175,7 @@ var If = function(test, body, orelse, lineno, col_offset, arena) {
     return p;
 }
 
-var With = function(items, body, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var With = function(items, body, lineno, col_offset) {
     p.kind = With_kind;
     p.v.With.items = items;
     p.v.With.body = body;
@@ -1258,11 +1184,7 @@ var With = function(items, body, lineno, col_offset, arena) {
     return p;
 }
 
-var AsyncWith = function(items, body, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var AsyncWith = function(items, body, lineno, col_offset) {
     p.kind = AsyncWith_kind;
     p.v.AsyncWith.items = items;
     p.v.AsyncWith.body = body;
@@ -1271,11 +1193,7 @@ var AsyncWith = function(items, body, lineno, col_offset, arena) {
     return p;
 }
 
-var Raise = function(exc, cause, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Raise = function(exc, cause, lineno, col_offset) {
     p.kind = Raise_kind;
     p.v.Raise.exc = exc;
     p.v.Raise.cause = cause;
@@ -1284,12 +1202,7 @@ var Raise = function(exc, cause, lineno, col_offset, arena) {
     return p;
 }
 
-var Try = function(body, handlers, orelse, finalbody, lineno, col_offset,
-                   arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Try = function(body, handlers, orelse, finalbody, lineno, col_offset) {
     p.kind = Try_kind;
     p.v.Try.body = body;
     p.v.Try.handlers = handlers;
@@ -1300,15 +1213,11 @@ var Try = function(body, handlers, orelse, finalbody, lineno, col_offset,
     return p;
 }
 
-var Assert = function(test, msg, lineno, col_offset, arena) {
-    var p;
+var Assert = function(test, msg, lineno, col_offset) {
     if (!test) {
         throw new batavia.builtins.ValueError(
                         "field test is required for Assert");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Assert_kind;
     p.v.Assert.test = test;
     p.v.Assert.msg = msg;
@@ -1317,11 +1226,7 @@ var Assert = function(test, msg, lineno, col_offset, arena) {
     return p;
 }
 
-var Import = function(names, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Import = function(names, lineno, col_offset) {
     p.kind = Import_kind;
     p.v.Import.names = names;
     p.lineno = lineno;
@@ -1329,11 +1234,7 @@ var Import = function(names, lineno, col_offset, arena) {
     return p;
 }
 
-var ImportFrom = function(module, names, level, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var ImportFrom = function(module, names, level, lineno, col_offset) {
     p.kind = ImportFrom_kind;
     p.v.ImportFrom.module = module;
     p.v.ImportFrom.names = names;
@@ -1343,11 +1244,7 @@ var ImportFrom = function(module, names, level, lineno, col_offset, arena) {
     return p;
 }
 
-var Global = function(names, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Global = function(names, lineno, col_offset) {
     p.kind = Global_kind;
     p.v.Global.names = names;
     p.lineno = lineno;
@@ -1355,11 +1252,7 @@ var Global = function(names, lineno, col_offset, arena) {
     return p;
 }
 
-var Nonlocal = function(names, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Nonlocal = function(names, lineno, col_offset) {
     p.kind = Nonlocal_kind;
     p.v.Nonlocal.names = names;
     p.lineno = lineno;
@@ -1367,15 +1260,11 @@ var Nonlocal = function(names, lineno, col_offset, arena) {
     return p;
 }
 
-var Expr = function(value, lineno, col_offset, arena) {
-    var p;
+var Expr = function(value, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Expr");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Expr_kind;
     p.v.Expr.value = value;
     p.lineno = lineno;
@@ -1383,48 +1272,32 @@ var Expr = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var Pass = function(lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Pass = function(lineno, col_offset) {
     p.kind = Pass_kind;
     p.lineno = lineno;
     p.col_offset = col_offset;
     return p;
 }
 
-var Break = function(lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Break = function(lineno, col_offset) {
     p.kind = Break_kind;
     p.lineno = lineno;
     p.col_offset = col_offset;
     return p;
 }
 
-var Continue = function(lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Continue = function(lineno, col_offset) {
     p.kind = Continue_kind;
     p.lineno = lineno;
     p.col_offset = col_offset;
     return p;
 }
 
-var BoolOp = function(op, values, lineno, col_offset, arena) {
-    var p;
+var BoolOp = function(op, values, lineno, col_offset) {
     if (!op) {
         throw new batavia.builtins.ValueError(
                         "field op is required for BoolOp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = BoolOp_kind;
     p.v.BoolOp.op = op;
     p.v.BoolOp.values = values;
@@ -1433,8 +1306,7 @@ var BoolOp = function(op, values, lineno, col_offset, arena) {
     return p;
 }
 
-var BinOp = function(left, op, right, lineno, col_offset, arena) {
-    var p;
+var BinOp = function(left, op, right, lineno, col_offset) {
     if (!left) {
         throw new batavia.builtins.ValueError(
                         "field left is required for BinOp");
@@ -1447,9 +1319,6 @@ var BinOp = function(left, op, right, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field right is required for BinOp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = BinOp_kind;
     p.v.BinOp.left = left;
     p.v.BinOp.op = op;
@@ -1459,8 +1328,7 @@ var BinOp = function(left, op, right, lineno, col_offset, arena) {
     return p;
 }
 
-var UnaryOp = function(op, operand, lineno, col_offset, arena) {
-    var p;
+var UnaryOp = function(op, operand, lineno, col_offset) {
     if (!op) {
         throw new batavia.builtins.ValueError(
                         "field op is required for UnaryOp");
@@ -1469,9 +1337,6 @@ var UnaryOp = function(op, operand, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field operand is required for UnaryOp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = UnaryOp_kind;
     p.v.UnaryOp.op = op;
     p.v.UnaryOp.operand = operand;
@@ -1480,8 +1345,7 @@ var UnaryOp = function(op, operand, lineno, col_offset, arena) {
     return p;
 }
 
-var Lambda = function(args, body, lineno, col_offset, arena) {
-    var p;
+var Lambda = function(args, body, lineno, col_offset) {
     if (!args) {
         throw new batavia.builtins.ValueError(
                         "field args is required for Lambda");
@@ -1490,9 +1354,6 @@ var Lambda = function(args, body, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field body is required for Lambda");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Lambda_kind;
     p.v.Lambda.args = args;
     p.v.Lambda.body = body;
@@ -1501,8 +1362,7 @@ var Lambda = function(args, body, lineno, col_offset, arena) {
     return p;
 }
 
-var IfExp = function(test, body, orelse, lineno, col_offset, arena) {
-    var p;
+var IfExp = function(test, body, orelse, lineno, col_offset) {
     if (!test) {
         throw new batavia.builtins.ValueError(
                         "field test is required for IfExp");
@@ -1515,9 +1375,6 @@ var IfExp = function(test, body, orelse, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field orelse is required for IfExp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = IfExp_kind;
     p.v.IfExp.test = test;
     p.v.IfExp.body = body;
@@ -1527,11 +1384,7 @@ var IfExp = function(test, body, orelse, lineno, col_offset, arena) {
     return p;
 }
 
-var Dict = function(keys, values, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Dict = function(keys, values, lineno, col_offset) {
     p.kind = Dict_kind;
     p.v.Dict.keys = keys;
     p.v.Dict.values = values;
@@ -1540,11 +1393,7 @@ var Dict = function(keys, values, lineno, col_offset, arena) {
     return p;
 }
 
-var Set = function(elts, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Set = function(elts, lineno, col_offset) {
     p.kind = Set_kind;
     p.v.Set.elts = elts;
     p.lineno = lineno;
@@ -1552,15 +1401,11 @@ var Set = function(elts, lineno, col_offset, arena) {
     return p;
 }
 
-var ListComp = function(elt, generators, lineno, col_offset, arena) {
-    var p;
+var ListComp = function(elt, generators, lineno, col_offset) {
     if (!elt) {
         throw new batavia.builtins.ValueError(
                         "field elt is required for ListComp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = ListComp_kind;
     p.v.ListComp.elt = elt;
     p.v.ListComp.generators = generators;
@@ -1569,15 +1414,11 @@ var ListComp = function(elt, generators, lineno, col_offset, arena) {
     return p;
 }
 
-var SetComp = function(elt, generators, lineno, col_offset, arena) {
-    var p;
+var SetComp = function(elt, generators, lineno, col_offset) {
     if (!elt) {
         throw new batavia.builtins.ValueError(
                         "field elt is required for SetComp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = SetComp_kind;
     p.v.SetComp.elt = elt;
     p.v.SetComp.generators = generators;
@@ -1586,8 +1427,7 @@ var SetComp = function(elt, generators, lineno, col_offset, arena) {
     return p;
 }
 
-var DictComp = function(key, value, generators, lineno, col_offset, arena) {
-    var p;
+var DictComp = function(key, value, generators, lineno, col_offset) {
     if (!key) {
         throw new batavia.builtins.ValueError(
                         "field key is required for DictComp");
@@ -1596,9 +1436,6 @@ var DictComp = function(key, value, generators, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field value is required for DictComp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = DictComp_kind;
     p.v.DictComp.key = key;
     p.v.DictComp.value = value;
@@ -1608,15 +1445,11 @@ var DictComp = function(key, value, generators, lineno, col_offset, arena) {
     return p;
 }
 
-var GeneratorExp = function(elt, generators, lineno, col_offset, arena) {
-    var p;
+var GeneratorExp = function(elt, generators, lineno, col_offset) {
     if (!elt) {
         throw new batavia.builtins.ValueError(
                         "field elt is required for GeneratorExp");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = GeneratorExp_kind;
     p.v.GeneratorExp.elt = elt;
     p.v.GeneratorExp.generators = generators;
@@ -1625,15 +1458,11 @@ var GeneratorExp = function(elt, generators, lineno, col_offset, arena) {
     return p;
 }
 
-var Await = function(value, lineno, col_offset, arena) {
-    var p;
+var Await = function(value, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Await");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Await_kind;
     p.v.Await.value = value;
     p.lineno = lineno;
@@ -1641,11 +1470,7 @@ var Await = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var Yield = function(value, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Yield = function(value, lineno, col_offset) {
     p.kind = Yield_kind;
     p.v.Yield.value = value;
     p.lineno = lineno;
@@ -1653,15 +1478,11 @@ var Yield = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var YieldFrom = function(value, lineno, col_offset, arena) {
-    var p;
+var YieldFrom = function(value, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for YieldFrom");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = YieldFrom_kind;
     p.v.YieldFrom.value = value;
     p.lineno = lineno;
@@ -1669,15 +1490,11 @@ var YieldFrom = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var Compare = function(left, ops, comparators, lineno, col_offset, arena) {
-    var p;
+var Compare = function(left, ops, comparators, lineno, col_offset) {
     if (!left) {
         throw new batavia.builtins.ValueError(
                         "field left is required for Compare");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Compare_kind;
     p.v.Compare.left = left;
     p.v.Compare.ops = ops;
@@ -1687,15 +1504,11 @@ var Compare = function(left, ops, comparators, lineno, col_offset, arena) {
     return p;
 }
 
-var Call = function(func, args, keywords, lineno, col_offset, arena) {
-    var p;
+var Call = function(func, args, keywords, lineno, col_offset) {
     if (!func) {
         throw new batavia.builtins.ValueError(
                         "field func is required for Call");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Call_kind;
     p.v.Call.func = func;
     p.v.Call.args = args;
@@ -1705,15 +1518,11 @@ var Call = function(func, args, keywords, lineno, col_offset, arena) {
     return p;
 }
 
-var Num = function(n, lineno, col_offset, arena) {
-    var p;
+var Num = function(n, lineno, col_offset) {
     if (!n) {
         throw new batavia.builtins.ValueError(
                         "field n is required for Num");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Num_kind;
     p.v.Num.n = n;
     p.lineno = lineno;
@@ -1721,15 +1530,11 @@ var Num = function(n, lineno, col_offset, arena) {
     return p;
 }
 
-var Str = function(s, lineno, col_offset, arena) {
-    var p;
+var Str = function(s, lineno, col_offset) {
     if (!s) {
         throw new batavia.builtins.ValueError(
                         "field s is required for Str");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Str_kind;
     p.v.Str.s = s;
     p.lineno = lineno;
@@ -1738,15 +1543,11 @@ var Str = function(s, lineno, col_offset, arena) {
 }
 
 var FormattedValue = function(value, conversion, format_spec, lineno,
-                              col_offset, arena) {
-    var p;
+                              col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for FormattedValue");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = FormattedValue_kind;
     p.v.FormattedValue.value = value;
     p.v.FormattedValue.conversion = conversion;
@@ -1756,11 +1557,7 @@ var FormattedValue = function(value, conversion, format_spec, lineno,
     return p;
 }
 
-var JoinedStr = function(values, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var JoinedStr = function(values, lineno, col_offset) {
     p.kind = JoinedStr_kind;
     p.v.JoinedStr.values = values;
     p.lineno = lineno;
@@ -1768,15 +1565,11 @@ var JoinedStr = function(values, lineno, col_offset, arena) {
     return p;
 }
 
-var Bytes = function(s, lineno, col_offset, arena) {
-    var p;
+var Bytes = function(s, lineno, col_offset) {
     if (!s) {
         throw new batavia.builtins.ValueError(
                         "field s is required for Bytes");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Bytes_kind;
     p.v.Bytes.s = s;
     p.lineno = lineno;
@@ -1784,15 +1577,11 @@ var Bytes = function(s, lineno, col_offset, arena) {
     return p;
 }
 
-var NameConstant = function(value, lineno, col_offset, arena) {
-    var p;
+var NameConstant = function(value, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for NameConstant");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = NameConstant_kind;
     p.v.NameConstant.value = value;
     p.lineno = lineno;
@@ -1800,26 +1589,18 @@ var NameConstant = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var Ellipsis = function(lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Ellipsis = function(lineno, col_offset) {
     p.kind = Ellipsis_kind;
     p.lineno = lineno;
     p.col_offset = col_offset;
     return p;
 }
 
-var Constant = function(value, lineno, col_offset, arena) {
-    var p;
+var Constant = function(value, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Constant");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Constant_kind;
     p.v.Constant.value = value;
     p.lineno = lineno;
@@ -1827,8 +1608,7 @@ var Constant = function(value, lineno, col_offset, arena) {
     return p;
 }
 
-var Attribute = function(value, attr, ctx, lineno, col_offset, arena) {
-    var p;
+var Attribute = function(value, attr, ctx, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Attribute");
@@ -1841,9 +1621,6 @@ var Attribute = function(value, attr, ctx, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field ctx is required for Attribute");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Attribute_kind;
     p.v.Attribute.value = value;
     p.v.Attribute.attr = attr;
@@ -1853,8 +1630,7 @@ var Attribute = function(value, attr, ctx, lineno, col_offset, arena) {
     return p;
 }
 
-var Subscript = function(value, slice, ctx, lineno, col_offset, arena) {
-    var p;
+var Subscript = function(value, slice, ctx, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Subscript");
@@ -1867,9 +1643,6 @@ var Subscript = function(value, slice, ctx, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field ctx is required for Subscript");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Subscript_kind;
     p.v.Subscript.value = value;
     p.v.Subscript.slice = slice;
@@ -1879,8 +1652,7 @@ var Subscript = function(value, slice, ctx, lineno, col_offset, arena) {
     return p;
 }
 
-var Starred = function(value, ctx, lineno, col_offset, arena) {
-    var p;
+var Starred = function(value, ctx, lineno, col_offset) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Starred");
@@ -1889,9 +1661,6 @@ var Starred = function(value, ctx, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field ctx is required for Starred");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Starred_kind;
     p.v.Starred.value = value;
     p.v.Starred.ctx = ctx;
@@ -1900,8 +1669,7 @@ var Starred = function(value, ctx, lineno, col_offset, arena) {
     return p;
 }
 
-var Name = function(id, ctx, lineno, col_offset, arena) {
-    var p;
+var Name = function(id, ctx, lineno, col_offset) {
     if (!id) {
         throw new batavia.builtins.ValueError(
                         "field id is required for Name");
@@ -1910,9 +1678,6 @@ var Name = function(id, ctx, lineno, col_offset, arena) {
         throw new batavia.builtins.ValueError(
                         "field ctx is required for Name");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Name_kind;
     p.v.Name.id = id;
     p.v.Name.ctx = ctx;
@@ -1921,15 +1686,11 @@ var Name = function(id, ctx, lineno, col_offset, arena) {
     return p;
 }
 
-var List = function(elts, ctx, lineno, col_offset, arena) {
-    var p;
+var List = function(elts, ctx, lineno, col_offset) {
     if (!ctx) {
         throw new batavia.builtins.ValueError(
                         "field ctx is required for List");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = List_kind;
     p.v.List.elts = elts;
     p.v.List.ctx = ctx;
@@ -1938,15 +1699,11 @@ var List = function(elts, ctx, lineno, col_offset, arena) {
     return p;
 }
 
-var Tuple = function(elts, ctx, lineno, col_offset, arena) {
-    var p;
+var Tuple = function(elts, ctx, lineno, col_offset) {
     if (!ctx) {
         throw new batavia.builtins.ValueError(
                         "field ctx is required for Tuple");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Tuple_kind;
     p.v.Tuple.elts = elts;
     p.v.Tuple.ctx = ctx;
@@ -1955,11 +1712,7 @@ var Tuple = function(elts, ctx, lineno, col_offset, arena) {
     return p;
 }
 
-var Slice = function(lower, upper, step, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var Slice = function(lower, upper, step) {
     p.kind = Slice_kind;
     p.v.Slice.lower = lower;
     p.v.Slice.upper = upper;
@@ -1967,32 +1720,23 @@ var Slice = function(lower, upper, step, arena) {
     return p;
 }
 
-var ExtSlice = function(dims, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var ExtSlice = function(dims) {
     p.kind = ExtSlice_kind;
     p.v.ExtSlice.dims = dims;
     return p;
 }
 
-var Index = function(value, arena) {
-    var p;
+var Index = function(value) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for Index");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.kind = Index_kind;
     p.v.Index.value = value;
     return p;
 }
 
-var comprehension = function(target, iter, ifs, arena) {
-    var p;
+var comprehension = function(target, iter, ifs) {
     if (!target) {
         throw new batavia.builtins.ValueError(
                         "field target is required for comprehension");
@@ -2001,20 +1745,13 @@ var comprehension = function(target, iter, ifs, arena) {
         throw new batavia.builtins.ValueError(
                         "field iter is required for comprehension");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.target = target;
     p.iter = iter;
     p.ifs = ifs;
     return p;
 }
 
-var ExceptHandler = function(type, name, body, lineno, col_offset, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+var ExceptHandler = function(type, name, body, lineno, col_offset) {
     p.kind = ExceptHandler_kind;
     p.v.ExceptHandler.type = type;
     p.v.ExceptHandler.name = name;
@@ -2025,11 +1762,7 @@ var ExceptHandler = function(type, name, body, lineno, col_offset, arena) {
 }
 
 var arguments = function(args, vararg, kwonlyargs, kw_defaults, kwarg,
-                         defaults, arena) {
-    var p;
-    p = new PyArena(arena);
-    if (!p)
-        return null;
+                         defaults) {
     p.args = args;
     p.vararg = vararg;
     p.kwonlyargs = kwonlyargs;
@@ -2039,15 +1772,11 @@ var arguments = function(args, vararg, kwonlyargs, kw_defaults, kwarg,
     return p;
 }
 
-var arg = function(arg, annotation, lineno, col_offset, arena) {
-    var p;
+var arg = function(arg, annotation, lineno, col_offset) {
     if (!arg) {
         throw new batavia.builtins.ValueError(
                         "field arg is required for arg");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.arg = arg;
     p.annotation = annotation;
     p.lineno = lineno;
@@ -2055,43 +1784,31 @@ var arg = function(arg, annotation, lineno, col_offset, arena) {
     return p;
 }
 
-var keyword = function(arg, value, arena) {
-    var p;
+var keyword = function(arg, value) {
     if (!value) {
         throw new batavia.builtins.ValueError(
                         "field value is required for keyword");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.arg = arg;
     p.value = value;
     return p;
 }
 
-var alias = function(name, asname, arena) {
-    var p;
+var alias = function(name, asname) {
     if (!name) {
         throw new batavia.builtins.ValueError(
                         "field name is required for alias");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.name = name;
     p.asname = asname;
     return p;
 }
 
-var withitem = function(context_expr, optional_vars, arena) {
-    var p;
+var withitem = function(context_expr, optional_vars) {
     if (!context_expr) {
         throw new batavia.builtins.ValueError(
                         "field context_expr is required for withitem");
     }
-    p = new PyArena(arena);
-    if (!p)
-        return null;
     p.context_expr = context_expr;
     p.optional_vars = optional_vars;
     return p;
@@ -3199,7 +2916,7 @@ var ast2obj_withitem = function(_o) {
 }
 
 
-var obj2ast_mod = function(obj, arena) {
+var obj2ast_mod = function(obj) {
     var isinstance;
 
     var tmp = null;
@@ -3226,11 +2943,11 @@ var obj2ast_mod = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3239,7 +2956,7 @@ var obj2ast_mod = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"body\" missing from Module");
             return 1;
         }
-        out = Module(body, arena);
+        out = Module(body);
         if (out == null) return 1;
         return 0;
     }
@@ -3261,11 +2978,11 @@ var obj2ast_mod = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3274,7 +2991,7 @@ var obj2ast_mod = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"body\" missing from Interactive");
             return 1;
         }
-        out = Interactive(body, arena);
+        out = Interactive(body);
         if (out == null) return 1;
         return 0;
     }
@@ -3289,14 +3006,14 @@ var obj2ast_mod = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_body);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, body, arena);
+            res = obj2ast_expr(tmp, body);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"body\" missing from Expression");
             return 1;
         }
-        out = Expression(body, arena);
+        out = Expression(body);
         if (out == null) return 1;
         return 0;
     }
@@ -3318,11 +3035,11 @@ var obj2ast_mod = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3331,7 +3048,7 @@ var obj2ast_mod = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"body\" missing from Suite");
             return 1;
         }
-        out = Suite(body, arena);
+        out = Suite(body);
         if (out == null) return 1;
         return 0;
     }
@@ -3340,7 +3057,7 @@ var obj2ast_mod = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_stmt = function(obj, arena) {
+var obj2ast_stmt = function(obj) {
     var isinstance;
 
     var tmp = null;
@@ -3355,7 +3072,7 @@ var obj2ast_stmt = function(obj, arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_lineno);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, lineno, arena);
+        res = obj2ast_int(tmp, lineno);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -3366,7 +3083,7 @@ var obj2ast_stmt = function(obj, arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_col_offset);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, col_offset, arena);
+        res = obj2ast_int(tmp, col_offset);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -3388,7 +3105,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_name);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, name, arena);
+            res = obj2ast_identifier(tmp, name);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3399,7 +3116,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_args);
             if (tmp == null) return 1;
-            res = obj2ast_arguments(tmp, args, arena);
+            res = obj2ast_arguments(tmp, args);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3417,11 +3134,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3441,11 +3158,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            decorator_list = _Py_asdl_seq_new(len, arena);
+            decorator_list = _Py_asdl_seq_new(len);
             if (decorator_list == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(decorator_list, i, value);
             }
@@ -3458,14 +3175,14 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_returns);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, returns, arena);
+            res = obj2ast_expr(tmp, returns);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             returns = null;
         }
         out = FunctionDef(name, args, body, decorator_list, returns, lineno,
-                          col_offset, arena);
+                          col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3484,7 +3201,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_name);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, name, arena);
+            res = obj2ast_identifier(tmp, name);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3495,7 +3212,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_args);
             if (tmp == null) return 1;
-            res = obj2ast_arguments(tmp, args, arena);
+            res = obj2ast_arguments(tmp, args);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3513,11 +3230,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3537,11 +3254,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            decorator_list = _Py_asdl_seq_new(len, arena);
+            decorator_list = _Py_asdl_seq_new(len);
             if (decorator_list == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(decorator_list, i, value);
             }
@@ -3554,14 +3271,14 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_returns);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, returns, arena);
+            res = obj2ast_expr(tmp, returns);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             returns = null;
         }
         out = AsyncFunctionDef(name, args, body, decorator_list, returns,
-                               lineno, col_offset, arena);
+                               lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3580,7 +3297,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_name);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, name, arena);
+            res = obj2ast_identifier(tmp, name);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3598,11 +3315,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            bases = _Py_asdl_seq_new(len, arena);
+            bases = _Py_asdl_seq_new(len);
             if (bases == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(bases, i, value);
             }
@@ -3622,11 +3339,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            keywords = _Py_asdl_seq_new(len, arena);
+            keywords = _Py_asdl_seq_new(len);
             if (keywords == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_keyword(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_keyword(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(keywords, i, value);
             }
@@ -3646,11 +3363,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3670,11 +3387,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            decorator_list = _Py_asdl_seq_new(len, arena);
+            decorator_list = _Py_asdl_seq_new(len);
             if (decorator_list == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(decorator_list, i, value);
             }
@@ -3684,7 +3401,7 @@ var obj2ast_stmt = function(obj, arena) {
             return 1;
         }
         out = ClassDef(name, bases, keywords, body, decorator_list, lineno,
-                       col_offset, arena);
+                       col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3699,13 +3416,13 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             value = null;
         }
-        out = Return(value, lineno, col_offset, arena);
+        out = Return(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3727,11 +3444,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            targets = _Py_asdl_seq_new(len, arena);
+            targets = _Py_asdl_seq_new(len);
             if (targets == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(targets, i, value);
             }
@@ -3740,7 +3457,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"targets\" missing from Delete");
             return 1;
         }
-        out = Delete(targets, lineno, col_offset, arena);
+        out = Delete(targets, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3763,11 +3480,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            targets = _Py_asdl_seq_new(len, arena);
+            targets = _Py_asdl_seq_new(len);
             if (targets == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(targets, i, value);
             }
@@ -3780,14 +3497,14 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from Assign");
             return 1;
         }
-        out = Assign(targets, value, lineno, col_offset, arena);
+        out = Assign(targets, value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3804,7 +3521,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_target);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, target, arena);
+            res = obj2ast_expr(tmp, target);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3815,7 +3532,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_op);
             if (tmp == null) return 1;
-            res = obj2ast_operator(tmp, op, arena);
+            res = obj2ast_operator(tmp, op);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3826,14 +3543,14 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from AugAssign");
             return 1;
         }
-        out = AugAssign(target, op, value, lineno, col_offset, arena);
+        out = AugAssign(target, op, value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3851,7 +3568,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_target);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, target, arena);
+            res = obj2ast_expr(tmp, target);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3862,7 +3579,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_iter);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, iter, arena);
+            res = obj2ast_expr(tmp, iter);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3880,11 +3597,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3904,11 +3621,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            orelse = _Py_asdl_seq_new(len, arena);
+            orelse = _Py_asdl_seq_new(len);
             if (orelse == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(orelse, i, value);
             }
@@ -3917,7 +3634,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"orelse\" missing from For");
             return 1;
         }
-        out = For(target, iter, body, orelse, lineno, col_offset, arena);
+        out = For(target, iter, body, orelse, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -3935,7 +3652,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_target);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, target, arena);
+            res = obj2ast_expr(tmp, target);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3946,7 +3663,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_iter);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, iter, arena);
+            res = obj2ast_expr(tmp, iter);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -3964,11 +3681,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -3988,11 +3705,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            orelse = _Py_asdl_seq_new(len, arena);
+            orelse = _Py_asdl_seq_new(len);
             if (orelse == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(orelse, i, value);
             }
@@ -4001,7 +3718,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"orelse\" missing from AsyncFor");
             return 1;
         }
-        out = AsyncFor(target, iter, body, orelse, lineno, col_offset, arena);
+        out = AsyncFor(target, iter, body, orelse, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4018,7 +3735,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_test);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, test, arena);
+            res = obj2ast_expr(tmp, test);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4036,11 +3753,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -4060,11 +3777,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            orelse = _Py_asdl_seq_new(len, arena);
+            orelse = _Py_asdl_seq_new(len);
             if (orelse == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(orelse, i, value);
             }
@@ -4073,7 +3790,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"orelse\" missing from While");
             return 1;
         }
-        out = While(test, body, orelse, lineno, col_offset, arena);
+        out = While(test, body, orelse, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4090,7 +3807,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_test);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, test, arena);
+            res = obj2ast_expr(tmp, test);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4108,11 +3825,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -4132,11 +3849,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            orelse = _Py_asdl_seq_new(len, arena);
+            orelse = _Py_asdl_seq_new(len);
             if (orelse == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(orelse, i, value);
             }
@@ -4145,7 +3862,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"orelse\" missing from If");
             return 1;
         }
-        out = If(test, body, orelse, lineno, col_offset, arena);
+        out = If(test, body, orelse, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4168,11 +3885,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            items = _Py_asdl_seq_new(len, arena);
+            items = _Py_asdl_seq_new(len);
             if (items == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_withitem(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_withitem(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(items, i, value);
             }
@@ -4192,11 +3909,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -4205,7 +3922,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"body\" missing from With");
             return 1;
         }
-        out = With(items, body, lineno, col_offset, arena);
+        out = With(items, body, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4228,11 +3945,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            items = _Py_asdl_seq_new(len, arena);
+            items = _Py_asdl_seq_new(len);
             if (items == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_withitem(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_withitem(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(items, i, value);
             }
@@ -4252,11 +3969,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -4265,7 +3982,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"body\" missing from AsyncWith");
             return 1;
         }
-        out = AsyncWith(items, body, lineno, col_offset, arena);
+        out = AsyncWith(items, body, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4281,7 +3998,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_exc);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, exc, arena);
+            res = obj2ast_expr(tmp, exc);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4291,13 +4008,13 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_cause);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, cause, arena);
+            res = obj2ast_expr(tmp, cause);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             cause = null;
         }
-        out = Raise(exc, cause, lineno, col_offset, arena);
+        out = Raise(exc, cause, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4322,11 +4039,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -4346,11 +4063,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            handlers = _Py_asdl_seq_new(len, arena);
+            handlers = _Py_asdl_seq_new(len);
             if (handlers == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_excepthandler(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_excepthandler(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(handlers, i, value);
             }
@@ -4370,11 +4087,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            orelse = _Py_asdl_seq_new(len, arena);
+            orelse = _Py_asdl_seq_new(len);
             if (orelse == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(orelse, i, value);
             }
@@ -4394,11 +4111,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            finalbody = _Py_asdl_seq_new(len, arena);
+            finalbody = _Py_asdl_seq_new(len);
             if (finalbody == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(finalbody, i, value);
             }
@@ -4407,7 +4124,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"finalbody\" missing from Try");
             return 1;
         }
-        out = Try(body, handlers, orelse, finalbody, lineno, col_offset, arena);
+        out = Try(body, handlers, orelse, finalbody, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4423,7 +4140,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_test);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, test, arena);
+            res = obj2ast_expr(tmp, test);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4434,13 +4151,13 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_msg);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, msg, arena);
+            res = obj2ast_expr(tmp, msg);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             msg = null;
         }
-        out = Assert(test, msg, lineno, col_offset, arena);
+        out = Assert(test, msg, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4462,11 +4179,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            names = _Py_asdl_seq_new(len, arena);
+            names = _Py_asdl_seq_new(len);
             if (names == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_alias(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_alias(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(names, i, value);
             }
@@ -4475,7 +4192,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"names\" missing from Import");
             return 1;
         }
-        out = Import(names, lineno, col_offset, arena);
+        out = Import(names, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4492,7 +4209,7 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_module);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, module, arena);
+            res = obj2ast_identifier(tmp, module);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4509,11 +4226,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            names = _Py_asdl_seq_new(len, arena);
+            names = _Py_asdl_seq_new(len);
             if (names == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_alias(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_alias(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(names, i, value);
             }
@@ -4526,13 +4243,13 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_level);
             if (tmp == null) return 1;
-            res = obj2ast_int(tmp, level, arena);
+            res = obj2ast_int(tmp, level);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             level = 0;
         }
-        out = ImportFrom(module, names, level, lineno, col_offset, arena);
+        out = ImportFrom(module, names, level, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4554,11 +4271,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            names = _Py_asdl_seq_new(len, arena);
+            names = _Py_asdl_seq_new(len);
             if (names == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_identifier(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_identifier(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(names, i, value);
             }
@@ -4567,7 +4284,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"names\" missing from Global");
             return 1;
         }
-        out = Global(names, lineno, col_offset, arena);
+        out = Global(names, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4589,11 +4306,11 @@ var obj2ast_stmt = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            names = _Py_asdl_seq_new(len, arena);
+            names = _Py_asdl_seq_new(len);
             if (names == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_identifier(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_identifier(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(names, i, value);
             }
@@ -4602,7 +4319,7 @@ var obj2ast_stmt = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"names\" missing from Nonlocal");
             return 1;
         }
-        out = Nonlocal(names, lineno, col_offset, arena);
+        out = Nonlocal(names, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4617,14 +4334,14 @@ var obj2ast_stmt = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from Expr");
             return 1;
         }
-        out = Expr(value, lineno, col_offset, arena);
+        out = Expr(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4634,7 +4351,7 @@ var obj2ast_stmt = function(obj, arena) {
     }
     if (isinstance) {
 
-        out = Pass(lineno, col_offset, arena);
+        out = Pass(lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4644,7 +4361,7 @@ var obj2ast_stmt = function(obj, arena) {
     }
     if (isinstance) {
 
-        out = Break(lineno, col_offset, arena);
+        out = Break(lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4654,7 +4371,7 @@ var obj2ast_stmt = function(obj, arena) {
     }
     if (isinstance) {
 
-        out = Continue(lineno, col_offset, arena);
+        out = Continue(lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4663,7 +4380,7 @@ var obj2ast_stmt = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_expr = function(obj, arena) {
+var obj2ast_expr = function(obj) {
     var isinstance;
 
     var tmp = null;
@@ -4678,7 +4395,7 @@ var obj2ast_expr = function(obj, arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_lineno);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, lineno, arena);
+        res = obj2ast_int(tmp, lineno);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -4689,7 +4406,7 @@ var obj2ast_expr = function(obj, arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_col_offset);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, col_offset, arena);
+        res = obj2ast_int(tmp, col_offset);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -4708,7 +4425,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_op);
             if (tmp == null) return 1;
-            res = obj2ast_boolop(tmp, op, arena);
+            res = obj2ast_boolop(tmp, op);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4726,11 +4443,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            values = _Py_asdl_seq_new(len, arena);
+            values = _Py_asdl_seq_new(len);
             if (values == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(values, i, value);
             }
@@ -4739,7 +4456,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"values\" missing from BoolOp");
             return 1;
         }
-        out = BoolOp(op, values, lineno, col_offset, arena);
+        out = BoolOp(op, values, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4756,7 +4473,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_left);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, left, arena);
+            res = obj2ast_expr(tmp, left);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4767,7 +4484,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_op);
             if (tmp == null) return 1;
-            res = obj2ast_operator(tmp, op, arena);
+            res = obj2ast_operator(tmp, op);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4778,14 +4495,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_right);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, right, arena);
+            res = obj2ast_expr(tmp, right);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"right\" missing from BinOp");
             return 1;
         }
-        out = BinOp(left, op, right, lineno, col_offset, arena);
+        out = BinOp(left, op, right, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4801,7 +4518,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_op);
             if (tmp == null) return 1;
-            res = obj2ast_unaryop(tmp, op, arena);
+            res = obj2ast_unaryop(tmp, op);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4812,14 +4529,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_operand);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, operand, arena);
+            res = obj2ast_expr(tmp, operand);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"operand\" missing from UnaryOp");
             return 1;
         }
-        out = UnaryOp(op, operand, lineno, col_offset, arena);
+        out = UnaryOp(op, operand, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4835,7 +4552,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_args);
             if (tmp == null) return 1;
-            res = obj2ast_arguments(tmp, args, arena);
+            res = obj2ast_arguments(tmp, args);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4846,14 +4563,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_body);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, body, arena);
+            res = obj2ast_expr(tmp, body);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"body\" missing from Lambda");
             return 1;
         }
-        out = Lambda(args, body, lineno, col_offset, arena);
+        out = Lambda(args, body, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4870,7 +4587,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_test);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, test, arena);
+            res = obj2ast_expr(tmp, test);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4881,7 +4598,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_body);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, body, arena);
+            res = obj2ast_expr(tmp, body);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -4892,14 +4609,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_orelse);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, orelse, arena);
+            res = obj2ast_expr(tmp, orelse);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"orelse\" missing from IfExp");
             return 1;
         }
-        out = IfExp(test, body, orelse, lineno, col_offset, arena);
+        out = IfExp(test, body, orelse, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4922,11 +4639,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            keys = _Py_asdl_seq_new(len, arena);
+            keys = _Py_asdl_seq_new(len);
             if (keys == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(keys, i, value);
             }
@@ -4946,11 +4663,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            values = _Py_asdl_seq_new(len, arena);
+            values = _Py_asdl_seq_new(len);
             if (values == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(values, i, value);
             }
@@ -4959,7 +4676,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"values\" missing from Dict");
             return 1;
         }
-        out = Dict(keys, values, lineno, col_offset, arena);
+        out = Dict(keys, values, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -4981,11 +4698,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            elts = _Py_asdl_seq_new(len, arena);
+            elts = _Py_asdl_seq_new(len);
             if (elts == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(elts, i, value);
             }
@@ -4994,7 +4711,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"elts\" missing from Set");
             return 1;
         }
-        out = Set(elts, lineno, col_offset, arena);
+        out = Set(elts, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5010,7 +4727,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_elt);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, elt, arena);
+            res = obj2ast_expr(tmp, elt);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5028,11 +4745,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            generators = _Py_asdl_seq_new(len, arena);
+            generators = _Py_asdl_seq_new(len);
             if (generators == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(generators, i, value);
             }
@@ -5041,7 +4758,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"generators\" missing from ListComp");
             return 1;
         }
-        out = ListComp(elt, generators, lineno, col_offset, arena);
+        out = ListComp(elt, generators, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5057,7 +4774,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_elt);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, elt, arena);
+            res = obj2ast_expr(tmp, elt);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5075,11 +4792,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            generators = _Py_asdl_seq_new(len, arena);
+            generators = _Py_asdl_seq_new(len);
             if (generators == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(generators, i, value);
             }
@@ -5088,7 +4805,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"generators\" missing from SetComp");
             return 1;
         }
-        out = SetComp(elt, generators, lineno, col_offset, arena);
+        out = SetComp(elt, generators, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5105,7 +4822,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_key);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, key, arena);
+            res = obj2ast_expr(tmp, key);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5116,7 +4833,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5134,11 +4851,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            generators = _Py_asdl_seq_new(len, arena);
+            generators = _Py_asdl_seq_new(len);
             if (generators == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(generators, i, value);
             }
@@ -5147,7 +4864,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"generators\" missing from DictComp");
             return 1;
         }
-        out = DictComp(key, value, generators, lineno, col_offset, arena);
+        out = DictComp(key, value, generators, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5163,7 +4880,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_elt);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, elt, arena);
+            res = obj2ast_expr(tmp, elt);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5181,11 +4898,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            generators = _Py_asdl_seq_new(len, arena);
+            generators = _Py_asdl_seq_new(len);
             if (generators == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_comprehension(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(generators, i, value);
             }
@@ -5194,7 +4911,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"generators\" missing from GeneratorExp");
             return 1;
         }
-        out = GeneratorExp(elt, generators, lineno, col_offset, arena);
+        out = GeneratorExp(elt, generators, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5209,14 +4926,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from Await");
             return 1;
         }
-        out = Await(value, lineno, col_offset, arena);
+        out = Await(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5231,13 +4948,13 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             value = null;
         }
-        out = Yield(value, lineno, col_offset, arena);
+        out = Yield(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5252,14 +4969,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from YieldFrom");
             return 1;
         }
-        out = YieldFrom(value, lineno, col_offset, arena);
+        out = YieldFrom(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5276,7 +4993,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_left);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, left, arena);
+            res = obj2ast_expr(tmp, left);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5294,11 +5011,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            ops = _Py_asdl_int_seq_new(len, arena);
+            ops = _Py_asdl_int_seq_new(len);
             if (ops == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_cmpop(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_cmpop(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(ops, i, value);
             }
@@ -5318,11 +5035,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            comparators = _Py_asdl_seq_new(len, arena);
+            comparators = _Py_asdl_seq_new(len);
             if (comparators == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(comparators, i, value);
             }
@@ -5331,7 +5048,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"comparators\" missing from Compare");
             return 1;
         }
-        out = Compare(left, ops, comparators, lineno, col_offset, arena);
+        out = Compare(left, ops, comparators, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5348,7 +5065,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_func);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, func, arena);
+            res = obj2ast_expr(tmp, func);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5366,11 +5083,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            args = _Py_asdl_seq_new(len, arena);
+            args = _Py_asdl_seq_new(len);
             if (args == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(args, i, value);
             }
@@ -5390,11 +5107,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            keywords = _Py_asdl_seq_new(len, arena);
+            keywords = _Py_asdl_seq_new(len);
             if (keywords == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_keyword(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_keyword(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(keywords, i, value);
             }
@@ -5403,7 +5120,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"keywords\" missing from Call");
             return 1;
         }
-        out = Call(func, args, keywords, lineno, col_offset, arena);
+        out = Call(func, args, keywords, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5418,14 +5135,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_n);
             if (tmp == null) return 1;
-            res = obj2ast_object(tmp, n, arena);
+            res = obj2ast_object(tmp, n);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"n\" missing from Num");
             return 1;
         }
-        out = Num(n, lineno, col_offset, arena);
+        out = Num(n, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5440,14 +5157,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_s);
             if (tmp == null) return 1;
-            res = obj2ast_string(tmp, s, arena);
+            res = obj2ast_string(tmp, s);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"s\" missing from Str");
             return 1;
         }
-        out = Str(s, lineno, col_offset, arena);
+        out = Str(s, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5464,7 +5181,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5475,7 +5192,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_conversion);
             if (tmp == null) return 1;
-            res = obj2ast_int(tmp, conversion, arena);
+            res = obj2ast_int(tmp, conversion);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5485,14 +5202,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_format_spec);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, format_spec, arena);
+            res = obj2ast_expr(tmp, format_spec);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             format_spec = null;
         }
         out = FormattedValue(value, conversion, format_spec, lineno,
-                             col_offset, arena);
+                             col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5514,11 +5231,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            values = _Py_asdl_seq_new(len, arena);
+            values = _Py_asdl_seq_new(len);
             if (values == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(values, i, value);
             }
@@ -5527,7 +5244,7 @@ var obj2ast_expr = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"values\" missing from JoinedStr");
             return 1;
         }
-        out = JoinedStr(values, lineno, col_offset, arena);
+        out = JoinedStr(values, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5542,14 +5259,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_s);
             if (tmp == null) return 1;
-            res = obj2ast_bytes(tmp, s, arena);
+            res = obj2ast_bytes(tmp, s);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"s\" missing from Bytes");
             return 1;
         }
-        out = Bytes(s, lineno, col_offset, arena);
+        out = Bytes(s, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5564,14 +5281,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_singleton(tmp, value, arena);
+            res = obj2ast_singleton(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from NameConstant");
             return 1;
         }
-        out = NameConstant(value, lineno, col_offset, arena);
+        out = NameConstant(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5581,7 +5298,7 @@ var obj2ast_expr = function(obj, arena) {
     }
     if (isinstance) {
 
-        out = Ellipsis(lineno, col_offset, arena);
+        out = Ellipsis(lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5596,14 +5313,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_constant(tmp, value, arena);
+            res = obj2ast_constant(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from Constant");
             return 1;
         }
-        out = Constant(value, lineno, col_offset, arena);
+        out = Constant(value, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5620,7 +5337,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5631,7 +5348,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_attr);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, attr, arena);
+            res = obj2ast_identifier(tmp, attr);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5642,14 +5359,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_ctx);
             if (tmp == null) return 1;
-            res = obj2ast_expr_context(tmp, ctx, arena);
+            res = obj2ast_expr_context(tmp, ctx);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"ctx\" missing from Attribute");
             return 1;
         }
-        out = Attribute(value, attr, ctx, lineno, col_offset, arena);
+        out = Attribute(value, attr, ctx, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5666,7 +5383,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5677,7 +5394,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_slice);
             if (tmp == null) return 1;
-            res = obj2ast_slice(tmp, slice, arena);
+            res = obj2ast_slice(tmp, slice);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5688,14 +5405,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_ctx);
             if (tmp == null) return 1;
-            res = obj2ast_expr_context(tmp, ctx, arena);
+            res = obj2ast_expr_context(tmp, ctx);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"ctx\" missing from Subscript");
             return 1;
         }
-        out = Subscript(value, slice, ctx, lineno, col_offset, arena);
+        out = Subscript(value, slice, ctx, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5711,7 +5428,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5722,14 +5439,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_ctx);
             if (tmp == null) return 1;
-            res = obj2ast_expr_context(tmp, ctx, arena);
+            res = obj2ast_expr_context(tmp, ctx);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"ctx\" missing from Starred");
             return 1;
         }
-        out = Starred(value, ctx, lineno, col_offset, arena);
+        out = Starred(value, ctx, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5745,7 +5462,7 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_id);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, id, arena);
+            res = obj2ast_identifier(tmp, id);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5756,14 +5473,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_ctx);
             if (tmp == null) return 1;
-            res = obj2ast_expr_context(tmp, ctx, arena);
+            res = obj2ast_expr_context(tmp, ctx);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"ctx\" missing from Name");
             return 1;
         }
-        out = Name(id, ctx, lineno, col_offset, arena);
+        out = Name(id, ctx, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5786,11 +5503,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            elts = _Py_asdl_seq_new(len, arena);
+            elts = _Py_asdl_seq_new(len);
             if (elts == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(elts, i, value);
             }
@@ -5803,14 +5520,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_ctx);
             if (tmp == null) return 1;
-            res = obj2ast_expr_context(tmp, ctx, arena);
+            res = obj2ast_expr_context(tmp, ctx);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"ctx\" missing from List");
             return 1;
         }
-        out = List(elts, ctx, lineno, col_offset, arena);
+        out = List(elts, ctx, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5833,11 +5550,11 @@ var obj2ast_expr = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            elts = _Py_asdl_seq_new(len, arena);
+            elts = _Py_asdl_seq_new(len);
             if (elts == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(elts, i, value);
             }
@@ -5850,14 +5567,14 @@ var obj2ast_expr = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_ctx);
             if (tmp == null) return 1;
-            res = obj2ast_expr_context(tmp, ctx, arena);
+            res = obj2ast_expr_context(tmp, ctx);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"ctx\" missing from Tuple");
             return 1;
         }
-        out = Tuple(elts, ctx, lineno, col_offset, arena);
+        out = Tuple(elts, ctx, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -5866,7 +5583,7 @@ var obj2ast_expr = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_expr_context = function(obj, arena) {
+var obj2ast_expr_context = function(obj) {
     var isinstance;
 
     isinstance = batavia.isinstance(obj, Load_type);
@@ -5922,7 +5639,7 @@ var obj2ast_expr_context = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_slice = function(obj, arena) {
+var obj2ast_slice = function(obj) {
     var isinstance;
 
     var tmp = null;
@@ -5944,7 +5661,7 @@ var obj2ast_slice = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_lower);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, lower, arena);
+            res = obj2ast_expr(tmp, lower);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5954,7 +5671,7 @@ var obj2ast_slice = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_upper);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, upper, arena);
+            res = obj2ast_expr(tmp, upper);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -5964,13 +5681,13 @@ var obj2ast_slice = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_step);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, step, arena);
+            res = obj2ast_expr(tmp, step);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             step = null;
         }
-        out = Slice(lower, upper, step, arena);
+        out = Slice(lower, upper, step);
         if (out == null) return 1;
         return 0;
     }
@@ -5992,11 +5709,11 @@ var obj2ast_slice = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            dims = _Py_asdl_seq_new(len, arena);
+            dims = _Py_asdl_seq_new(len);
             if (dims == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_slice(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_slice(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(dims, i, value);
             }
@@ -6005,7 +5722,7 @@ var obj2ast_slice = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"dims\" missing from ExtSlice");
             return 1;
         }
-        out = ExtSlice(dims, arena);
+        out = ExtSlice(dims);
         if (out == null) return 1;
         return 0;
     }
@@ -6020,14 +5737,14 @@ var obj2ast_slice = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_value);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, value, arena);
+            res = obj2ast_expr(tmp, value);
             if (res != 0) return 1;
             tmp.clear();
         } else {
             throw new batavia.builtins.TypeError("required field \"value\" missing from Index");
             return 1;
         }
-        out = Index(value, arena);
+        out = Index(value);
         if (out == null) return 1;
         return 0;
     }
@@ -6036,7 +5753,7 @@ var obj2ast_slice = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_boolop = function(obj, arena) {
+var obj2ast_boolop = function(obj) {
     var isinstance;
 
     isinstance = batavia.isinstance(obj, And_type);
@@ -6060,7 +5777,7 @@ var obj2ast_boolop = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_operator = function(obj, arena) {
+var obj2ast_operator = function(obj) {
     var isinstance;
 
     isinstance = batavia.isinstance(obj, Add_type);
@@ -6172,7 +5889,7 @@ var obj2ast_operator = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_unaryop = function(obj, arena) {
+var obj2ast_unaryop = function(obj) {
     var isinstance;
 
     isinstance = batavia.isinstance(obj, Invert_type);
@@ -6212,7 +5929,7 @@ var obj2ast_unaryop = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_cmpop = function(obj, arena) {
+var obj2ast_cmpop = function(obj) {
     var isinstance;
 
     isinstance = batavia.isinstance(obj, Eq_type);
@@ -6300,7 +6017,7 @@ var obj2ast_cmpop = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_comprehension = function(obj,arena) {
+var obj2ast_comprehension = function(obj) {
     var tmp = null;
     var target;
     var iter;
@@ -6310,7 +6027,7 @@ var obj2ast_comprehension = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_target);
         if (tmp == null) return 1;
-        res = obj2ast_expr(tmp, target, arena);
+        res = obj2ast_expr(tmp, target);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6321,7 +6038,7 @@ var obj2ast_comprehension = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_iter);
         if (tmp == null) return 1;
-        res = obj2ast_expr(tmp, iter, arena);
+        res = obj2ast_expr(tmp, iter);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6339,11 +6056,11 @@ var obj2ast_comprehension = function(obj,arena) {
             return 1;
         }
         len = PyList_GET_SIZE(tmp);
-        ifs = _Py_asdl_seq_new(len, arena);
+        ifs = _Py_asdl_seq_new(len);
         if (ifs == null) return 1;
         for (i = 0; i < len; i++) {
             var value;
-            res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+            res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
             if (res != 0) return 1;
             asdl_seq_SET(ifs, i, value);
         }
@@ -6352,11 +6069,11 @@ var obj2ast_comprehension = function(obj,arena) {
         throw new batavia.builtins.TypeError("required field \"ifs\" missing from comprehension");
         return 1;
     }
-    out = comprehension(target, iter, ifs, arena);
+    out = comprehension(target, iter, ifs);
     return 0;
 }
 
-var obj2ast_excepthandler = function(obj, arena) {
+var obj2ast_excepthandler = function(obj) {
     var isinstance;
 
     var tmp = null;
@@ -6371,7 +6088,7 @@ var obj2ast_excepthandler = function(obj, arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_lineno);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, lineno, arena);
+        res = obj2ast_int(tmp, lineno);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6382,7 +6099,7 @@ var obj2ast_excepthandler = function(obj, arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_col_offset);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, col_offset, arena);
+        res = obj2ast_int(tmp, col_offset);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6402,7 +6119,7 @@ var obj2ast_excepthandler = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_type);
             if (tmp == null) return 1;
-            res = obj2ast_expr(tmp, type, arena);
+            res = obj2ast_expr(tmp, type);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -6412,7 +6129,7 @@ var obj2ast_excepthandler = function(obj, arena) {
             var res;
             tmp = _PyObject_GetAttrId(obj, PyId_name);
             if (tmp == null) return 1;
-            res = obj2ast_identifier(tmp, name, arena);
+            res = obj2ast_identifier(tmp, name);
             if (res != 0) return 1;
             tmp.clear();
         } else {
@@ -6429,11 +6146,11 @@ var obj2ast_excepthandler = function(obj, arena) {
                 return 1;
             }
             len = PyList_GET_SIZE(tmp);
-            body = _Py_asdl_seq_new(len, arena);
+            body = _Py_asdl_seq_new(len);
             if (body == null) return 1;
             for (i = 0; i < len; i++) {
                 var value;
-                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value, arena);
+                res = obj2ast_stmt(PyList_GET_ITEM(tmp, i), value);
                 if (res != 0) return 1;
                 asdl_seq_SET(body, i, value);
             }
@@ -6442,7 +6159,7 @@ var obj2ast_excepthandler = function(obj, arena) {
             throw new batavia.builtins.TypeError("required field \"body\" missing from ExceptHandler");
             return 1;
         }
-        out = ExceptHandler(type, name, body, lineno, col_offset, arena);
+        out = ExceptHandler(type, name, body, lineno, col_offset);
         if (out == null) return 1;
         return 0;
     }
@@ -6451,7 +6168,7 @@ var obj2ast_excepthandler = function(obj, arena) {
     return 1;
 }
 
-var obj2ast_arguments = function(obj,arena) {
+var obj2ast_arguments = function(obj) {
     var tmp = null;
     var args;
     var vararg;
@@ -6471,11 +6188,11 @@ var obj2ast_arguments = function(obj,arena) {
             return 1;
         }
         len = PyList_GET_SIZE(tmp);
-        args = _Py_asdl_seq_new(len, arena);
+        args = _Py_asdl_seq_new(len);
         if (args == null) return 1;
         for (i = 0; i < len; i++) {
             var value;
-            res = obj2ast_arg(PyList_GET_ITEM(tmp, i), value, arena);
+            res = obj2ast_arg(PyList_GET_ITEM(tmp, i), value);
             if (res != 0) return 1;
             asdl_seq_SET(args, i, value);
         }
@@ -6488,7 +6205,7 @@ var obj2ast_arguments = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_vararg);
         if (tmp == null) return 1;
-        res = obj2ast_arg(tmp, vararg, arena);
+        res = obj2ast_arg(tmp, vararg);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6505,11 +6222,11 @@ var obj2ast_arguments = function(obj,arena) {
             return 1;
         }
         len = PyList_GET_SIZE(tmp);
-        kwonlyargs = _Py_asdl_seq_new(len, arena);
+        kwonlyargs = _Py_asdl_seq_new(len);
         if (kwonlyargs == null) return 1;
         for (i = 0; i < len; i++) {
             var value;
-            res = obj2ast_arg(PyList_GET_ITEM(tmp, i), value, arena);
+            res = obj2ast_arg(PyList_GET_ITEM(tmp, i), value);
             if (res != 0) return 1;
             asdl_seq_SET(kwonlyargs, i, value);
         }
@@ -6529,11 +6246,11 @@ var obj2ast_arguments = function(obj,arena) {
             return 1;
         }
         len = PyList_GET_SIZE(tmp);
-        kw_defaults = _Py_asdl_seq_new(len, arena);
+        kw_defaults = _Py_asdl_seq_new(len);
         if (kw_defaults == null) return 1;
         for (i = 0; i < len; i++) {
             var value;
-            res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+            res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
             if (res != 0) return 1;
             asdl_seq_SET(kw_defaults, i, value);
         }
@@ -6546,7 +6263,7 @@ var obj2ast_arguments = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_kwarg);
         if (tmp == null) return 1;
-        res = obj2ast_arg(tmp, kwarg, arena);
+        res = obj2ast_arg(tmp, kwarg);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6563,11 +6280,11 @@ var obj2ast_arguments = function(obj,arena) {
             return 1;
         }
         len = PyList_GET_SIZE(tmp);
-        defaults = _Py_asdl_seq_new(len, arena);
+        defaults = _Py_asdl_seq_new(len);
         if (defaults == null) return 1;
         for (i = 0; i < len; i++) {
             var value;
-            res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value, arena);
+            res = obj2ast_expr(PyList_GET_ITEM(tmp, i), value);
             if (res != 0) return 1;
             asdl_seq_SET(defaults, i, value);
         }
@@ -6576,12 +6293,11 @@ var obj2ast_arguments = function(obj,arena) {
         throw new batavia.builtins.TypeError("required field \"defaults\" missing from arguments");
         return 1;
     }
-    out = arguments(args, vararg, kwonlyargs, kw_defaults, kwarg, defaults,
-                    arena);
+    out = arguments(args, vararg, kwonlyargs, kw_defaults, kwarg, defaults);
     return 0;
 }
 
-var obj2ast_arg = function(obj,arena) {
+var obj2ast_arg = function(obj) {
     var tmp = null;
     var arg;
     var annotation;
@@ -6592,7 +6308,7 @@ var obj2ast_arg = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_arg);
         if (tmp == null) return 1;
-        res = obj2ast_identifier(tmp, arg, arena);
+        res = obj2ast_identifier(tmp, arg);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6603,7 +6319,7 @@ var obj2ast_arg = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_annotation);
         if (tmp == null) return 1;
-        res = obj2ast_expr(tmp, annotation, arena);
+        res = obj2ast_expr(tmp, annotation);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6613,7 +6329,7 @@ var obj2ast_arg = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_lineno);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, lineno, arena);
+        res = obj2ast_int(tmp, lineno);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6624,18 +6340,18 @@ var obj2ast_arg = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_col_offset);
         if (tmp == null) return 1;
-        res = obj2ast_int(tmp, col_offset, arena);
+        res = obj2ast_int(tmp, col_offset);
         if (res != 0) return 1;
         tmp.clear();
     } else {
         throw new batavia.builtins.TypeError("required field \"col_offset\" missing from arg");
         return 1;
     }
-    out = arg(arg, annotation, lineno, col_offset, arena);
+    out = arg(arg, annotation, lineno, col_offset);
     return 0;
 }
 
-var obj2ast_keyword = function(obj,arena) {
+var obj2ast_keyword = function(obj) {
     var tmp = null;
     var arg;
     var value;
@@ -6644,7 +6360,7 @@ var obj2ast_keyword = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_arg);
         if (tmp == null) return 1;
-        res = obj2ast_identifier(tmp, arg, arena);
+        res = obj2ast_identifier(tmp, arg);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6654,18 +6370,18 @@ var obj2ast_keyword = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_value);
         if (tmp == null) return 1;
-        res = obj2ast_expr(tmp, value, arena);
+        res = obj2ast_expr(tmp, value);
         if (res != 0) return 1;
         tmp.clear();
     } else {
         throw new batavia.builtins.TypeError("required field \"value\" missing from keyword");
         return 1;
     }
-    out = keyword(arg, value, arena);
+    out = keyword(arg, value);
     return 0;
 }
 
-var obj2ast_alias = function(obj,arena) {
+var obj2ast_alias = function(obj) {
     var tmp = null;
     var name;
     var asname;
@@ -6674,7 +6390,7 @@ var obj2ast_alias = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_name);
         if (tmp == null) return 1;
-        res = obj2ast_identifier(tmp, name, arena);
+        res = obj2ast_identifier(tmp, name);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6685,17 +6401,17 @@ var obj2ast_alias = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_asname);
         if (tmp == null) return 1;
-        res = obj2ast_identifier(tmp, asname, arena);
+        res = obj2ast_identifier(tmp, asname);
         if (res != 0) return 1;
         tmp.clear();
     } else {
         asname = null;
     }
-    out = alias(name, asname, arena);
+    out = alias(name, asname);
     return 0;
 }
 
-var obj2ast_withitem = function(obj,arena) {
+var obj2ast_withitem = function(obj) {
     var tmp = null;
     var context_expr;
     var optional_vars;
@@ -6704,7 +6420,7 @@ var obj2ast_withitem = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_context_expr);
         if (tmp == null) return 1;
-        res = obj2ast_expr(tmp, context_expr, arena);
+        res = obj2ast_expr(tmp, context_expr);
         if (res != 0) return 1;
         tmp.clear();
     } else {
@@ -6715,13 +6431,13 @@ var obj2ast_withitem = function(obj,arena) {
         var res;
         tmp = _PyObject_GetAttrId(obj, PyId_optional_vars);
         if (tmp == null) return 1;
-        res = obj2ast_expr(tmp, optional_vars, arena);
+        res = obj2ast_expr(tmp, optional_vars);
         if (res != 0) return 1;
         tmp.clear();
     } else {
         optional_vars = null;
     }
-    out = withitem(context_expr, optional_vars, arena);
+    out = withitem(context_expr, optional_vars);
     return 0;
 }
 
@@ -6873,7 +6589,7 @@ var PyAST_mod2obj = function(t) {
 };
 
 /* mode is 0 for "exec", 1 for "eval" and 2 for "single" input */
-var PyAST_obj2mod = function(ast, arena, mode) {
+var PyAST_obj2mod = function(ast, mode) {
     var res;
     var req_type = [null, null, null];
     var req_name = ["Module", "Expression", "Interactive"];
@@ -6892,7 +6608,7 @@ var PyAST_obj2mod = function(ast, arena, mode) {
     if (!isinstance) {
         throw new batavia.builtins.TypeError("expected " + req_name[mode] + " node, got " + Py_TYPE(ast).tp_name);
     }
-    if (obj2ast_mod(ast, res, arena) != 0)
+    if (obj2ast_mod(ast, res) != 0)
         return null;
     else
         return res;

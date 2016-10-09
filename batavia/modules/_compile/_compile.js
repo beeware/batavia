@@ -31,24 +31,20 @@ batavia.modules._compile = {
     compile_string_object: function(str, filename, compile_mode, cf, optimize) {
           var co = null;
           var mod = null;
-          var arena = batavia.modules._compile.new_arena();
-          mod = batavia.modules._compile.ast_from_string_object(str, filename, start, flags, arena);
-          co = batavia.modules._compile.ast_compile_object(mod, filename, flags, optimize, arena);
+          mod = batavia.modules._compile.ast_from_string_object(str, filename, start, flags);
+          co = batavia.modules._compile.ast_compile_object(mod, filename, flags, optimize);
           return co;
     },
-    new_arena: function() {
-        throw new batavia.builtins.NotImplementedError("_compile.new_arena is not implemented yet");
-    },
-    ast_obj2mod: function(source, arena, compile_mode) {
+    ast_obj2mod: function(source, compile_mode) {
         throw new batavia.builtins.NotImplementedError("_compile.ast_obj2mod is not implemented yet");
     },
     ast_validate: function(mod) {
         throw new batavia.builtins.NotImplementedError("_compile.ast_validate is not implemented yet");
     },
-    ast_compile_object: function(mod, filename, cf, optimize, arena) {
+    ast_compile_object: function(mod, filename, cf, optimize) {
         throw new batavia.builtins.NotImplementedError("_compile.ast_compile_object is not implemented yet");
     },
-    ast_from_string_object: function(str, filename, start, flags, arena) {
+    ast_from_string_object: function(str, filename, start, flags) {
       var mod = null;
       var localflags = null;
       var err = null;
@@ -63,7 +59,7 @@ batavia.modules._compile = {
       }
       if (n) {
           flags.cf_flags |= iflags & PyCF_MASK;
-          mod = batavia.builtins._compile.ast_from_node_object(n, flags, filename, arena);
+          mod = batavia.builtins._compile.ast_from_node_object(n, flags, filename);
       } else {
           err_input(err);
           mod = null;

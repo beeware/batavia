@@ -253,9 +253,8 @@ class PrototypeVisitor(EmitVisitor):
         if args:
             argstr = ", ".join(["%s" % aname
                                 for _, aname, opt in args])
-            argstr += ", arena"
         else:
-            argstr = "arena"
+            argstr = ""
         margs = "a0"
         for i in range(1, len(args)+1):
             margs += ", a%d" % i
@@ -278,12 +277,7 @@ class FunctionVisitor(PrototypeVisitor):
             self.emit(s, depth, reflow)
         argstr = ", ".join(["%s" % aname
                             for _, aname, opt in args + attrs])
-        if argstr:
-            argstr += ", arena"
-        else:
-            argstr = "arena"
         emit("var %s = function(%s) {" % (name, argstr))
-        emit("var p;", 1)
         for argtype, argname, opt in args:
             if not opt and argtype != "int":
                 emit("if (!%s) {" % argname, 1)
@@ -293,9 +287,6 @@ class FunctionVisitor(PrototypeVisitor):
                      2, reflow=False)
                 emit('}', 1)
 
-        emit("p = new PyArena(arena);", 1);
-        emit("if (!p)", 1)
-        emit("return null;", 2)
         if union:
             self.emit_body_union(name, args, attrs)
         else:
@@ -354,7 +345,7 @@ class Obj2ModPrototypeVisitor(PickleVisitor):
 class Obj2ModVisitor(PickleVisitor):
     def funcHeader(self, name):
         ctype = get_js_type(name)
-        self.emit("var obj2ast_%s = function(obj, arena) {" % (name), 0)
+        self.emit("var obj2ast_%s = function(obj) {" % (name), 0)
         self.emit("var isinstance;", 1)
         self.emit("", 0)
 
@@ -383,7 +374,7 @@ class Obj2ModVisitor(PickleVisitor):
         self.sumTrailer(name)
 
     def buildArgs(self, fields):
-        return ", ".join(fields + ["arena"])
+        return ", ".join(fields)
 
     def complexSum(self, sum, name):
         self.funcHeader(name)
@@ -428,7 +419,7 @@ class Obj2ModVisitor(PickleVisitor):
 
     def visitProduct(self, prod, name):
         ctype = get_js_type(name)
-        self.emit("var obj2ast_%s = function(obj,arena) {" % (name), 0)
+        self.emit("var obj2ast_%s = function(obj) {" % (name), 0)
         self.emit("var tmp = null;", 1)
         for f in prod.fields:
             self.visitFieldDeclaration(f, name, prod=prod, depth=1)
@@ -490,19 +481,19 @@ class Obj2ModVisitor(PickleVisitor):
             self.emit("}", depth+1)
             self.emit("len = PyList_GET_SIZE(tmp);", depth+1)
             if self.isSimpleType(field):
-                self.emit("%s = _Py_asdl_int_seq_new(len, arena);" % field.name, depth+1)
+                self.emit("%s = _Py_asdl_int_seq_new(len);" % field.name, depth+1)
             else:
-                self.emit("%s = _Py_asdl_seq_new(len, arena);" % field.name, depth+1)
+                self.emit("%s = _Py_asdl_seq_new(len);" % field.name, depth+1)
             self.emit("if (%s == null) return 1;" % field.name, depth+1)
             self.emit("for (i = 0; i < len; i++) {", depth+1)
             self.emit("var value;", depth+2)
-            self.emit("res = obj2ast_%s(PyList_GET_ITEM(tmp, i), value, arena);" %
+            self.emit("res = obj2ast_%s(PyList_GET_ITEM(tmp, i), value);" %
                       field.type, depth+2, reflow=False)
             self.emit("if (res != 0) return 1;", depth+2)
             self.emit("asdl_seq_SET(%s, i, value);" % field.name, depth+2)
             self.emit("}", depth+1)
         else:
-            self.emit("res = obj2ast_%s(tmp, %s, arena);" %
+            self.emit("res = obj2ast_%s(tmp, %s);" %
                       (field.type, field.name), depth+1)
             self.emit("if (res != 0) return 1;", depth+1)
 
@@ -702,53 +693,43 @@ var ast2obj_int = function(b) {
 
 /* Conversion Python -> AST */
 
-var obj2ast_singleton = function(obj, arena) {
+var obj2ast_singleton = function(obj) {
     if (obj != null && !batavia.isinstance(obj, batavia.types.Bool)) {
         throw new batavia.builtins.ValueError("AST singleton must be True, False, or None");
     }
     return obj;
 };
 
-var obj2ast_object = function(obj, arena) {
-    if (obj) {
-        if (PyArena_AddPyObject(arena, obj) < 0) {
-            return null;
-        }
-    }
+var obj2ast_object = function(obj) {
     return obj;
 };
 
-var obj2ast_constant = function(obj, arena) {
-    if (obj) {
-        if (PyArena_AddPyObject(arena, obj) < 0) {
-            return null;
-        }
-    }
+var obj2ast_constant = function(obj) {
     return obj;
 };
 
-var obj2ast_identifier = function(obj, arena) {
+var obj2ast_identifier = function(obj) {
     if (!batavia.isinstance(obj, batavia.types.Str) && obj != null) {
         throw new batavia.builtins.TypeError("AST identifier must be of type str");
     }
-    return obj2ast_object(obj, arena);
+    return obj2ast_object(obj);
 };
 
-var obj2ast_string = function(obj, arena) {
+var obj2ast_string = function(obj) {
     if (!batavia.isinstance(obj, [batavia.types.Bytes, batavia.types.Str])) {
         throw new batavia.builtins.TypeError("AST string must be of type str");
     }
-    return obj2ast_object(obj, arena);
+    return obj2ast_object(obj);
 }
 
-var obj2ast_bytes = function(obj, arena) {
+var obj2ast_bytes = function(obj) {
     if (!batavia.isinstance(obj, batavia.types.Bytes)) {
         throw new batavia.builtins.TypeError("AST bytes must be of type bytes");
     }
-    return obj2ast_object(obj, arena);
+    return obj2ast_object(obj);
 };
 
-var obj2ast_int = function(obj, arena) {
+var obj2ast_int = function(obj) {
     if (!batavia.isinstance(obj, [batavia.types.Int])) {
         throw new batavia.builtins.ValueError("invalid integer value: ", obj);
     }
@@ -1014,7 +995,7 @@ var PyAST_mod2obj = function(t) {
 };
 
 /* mode is 0 for "exec", 1 for "eval" and 2 for "single" input */
-var PyAST_obj2mod = function(ast, arena, mode) {
+var PyAST_obj2mod = function(ast, mode) {
     var res;
     var req_type = [null, null, null];
     var req_name = ["Module", "Expression", "Interactive"];
@@ -1033,7 +1014,7 @@ var PyAST_obj2mod = function(ast, arena, mode) {
     if (!isinstance) {
         throw new batavia.builtins.TypeError("expected " + req_name[mode] + " node, got " + Py_TYPE(ast).tp_name);
     }
-    if (obj2ast_mod(ast, res, arena) != 0)
+    if (obj2ast_mod(ast, res) != 0)
         return null;
     else
         return res;
