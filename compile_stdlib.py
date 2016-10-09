@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 """
-Convert ouroborous modules to JavaScripted pyc files that we can load.
+Convert ouroboros modules to JavaScripted pyc files that we can load.
 """
 
-# TODO: we should just import ourborous and generate the pycs from there
+# TODO: we should just import ourboros and generate the pycs from there
 
 import base64
 import glob
