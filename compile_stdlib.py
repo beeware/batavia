@@ -6,6 +6,7 @@ Convert ouroboros modules to JavaScripted pyc files that we can load.
 
 # TODO: we should just import ourboros and generate the pycs from there
 
+import argparse
 import base64
 import glob
 import os
@@ -14,7 +15,14 @@ import py_compile
 import sys
 import tempfile
 
-enabled_modules = [
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('modules', metavar='module', nargs='*',
+                    help='source modules to compile')
+parser.add_argument('--source', help='location of the ouroboros source files')
+
+args = parser.parse_args()
+
+enabled_modules = args.modules or [
     '_weakrefset',
     'abc',
     'bisect',
@@ -27,7 +35,9 @@ enabled_modules = [
 ]
 
 # find the ouroboros directory
-if os.path.exists('ouroboros'):
+if args.source is not None:
+    ouroboros = args.source
+elif os.path.exists('ouroboros'):
     ouroboros = 'ouroboros'
 elif os.path.exists('../ouroboros'):
     ouroboros = '../ouroboros'
