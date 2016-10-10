@@ -2,7 +2,7 @@ var ErrorDetail = function(filename) {
     this.error = E_OK;
     this.lineno = 0;
     this.offset = 0;
-    this.text = NULL;
+    this.text = null;
     this.token = -1;
     this.expected = -1;
     if (filename) {
@@ -68,12 +68,12 @@ batavia.modules._compile = {
     },
 
     parse_string_object: function(s, filename, grammar, start, err, iflags) {
-        var exec_input = start == file_input;
+        var exec_input = start.__eq__(batavia.modules._compile.Py_file_input).valueOf();
         var err_ret = new ErrorDetail(filename);
 
-        var tok = new Tokenizer(s, exec_input);
+        var tok = new batavia.modules._compile.Tokenizer(s, exec_input);
         tok.filename = err_ret.filename;
-        return batavia.modules._compile.parsetok(tok, grammar, start, err_ret, flags);
+        return batavia.modules._compile.parsetok(tok, grammar, start, err_ret, iflags);
     },
 
     parsetok: function(tok, g, start, err_ret, flags) {

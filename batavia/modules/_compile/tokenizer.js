@@ -1,6 +1,3 @@
-// modeled closely after tokenizer.c.
-(function() {
-
 /* Error codes passed around between file input, tokenizer, parser and
    interpreter.  This is necessary so we can turn them into Python
    exceptions at a higher level.  Note that some errors have a
@@ -28,6 +25,10 @@ var E_EOLS =		24;	/* EOL in single-quoted string */
 var E_LINECONT =	25;	/* Unexpected characters after a line continuation */
 var E_IDENTIFIER =    26;      /* Invalid characters in identifier */
 var E_BADSINGLE =	27;	/* Ill-formed single statement input */
+
+
+// modeled closely after tokenizer.c.
+(function() {
 
 /* Token types */
 var ENDMARKER =	0;
