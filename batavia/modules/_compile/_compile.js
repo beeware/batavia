@@ -77,29 +77,24 @@ batavia.modules._compile = {
     },
 
     parsetok: function(tok, g, start, err_ret, flags) {
-        var ps = null;
         var n = null;
         var started = 0;
 
-        ps = batavia.modules._compile.new_parser(g, start);
+        var ps = new Parser(g, start);
 
         for (;;) {
-            var a, b;
-            var type;
-            var len;
-            var str;
-            var col_offset;
-
             var result = tok.get_token();
-            type = result[0];
-            a = result[1];
-            b = result[2];
-            if (type == ERRORTOKEN) {
+            var type = result[0];
+            var a = result[1];
+            var b = result[2];
+
+            if (type == batavia.modules._compile.ERRORTOKEN) {
                 err_ret.error = tok.done;
                 break;
             }
-            if (type == ENDMARKER && started) {
-                type = NEWLINE; /* Add an extra newline */
+
+            if (type == batavia.modules._compile.ENDMARKER && started) {
+                type = batavia.modules._compile.NEWLINE; /* Add an extra newline */
                 started = 0;
                 /* Add the right number of dedent tokens,
                    except if a certain flag is given --
@@ -108,32 +103,33 @@ batavia.modules._compile = {
                     tok.pendin = -tok.indent;
                     tok.indent = 0;
                 }
-            }
-            else
+            } else {
                 started = 1;
-            len = b - a; /* XXX this may compute null - null */
-            str = '';
+            }
+            var len = b - a;
+            var str = '';
             if (len > 0) {
               str = tok.buf.slice(a, b);
             }
             str += '\0';
 
+            var col_offset;
             if (a >= tok.line_start) {
                 col_offset = a - tok.line_start;
             } else {
                 col_offset = -1;
             }
 
-            err_ret.error = ps.AddToken(type, str, tok.lineno, col_offset, err_ret.expected)
-            if (err_ret.error != E_OK) {
-                if (err_ret.error != E_DONE) {
+            err_ret.error = ps.add_token(type, str, tok.lineno, col_offset, err_ret.expected)
+            if (err_ret.error != batavia.modules._compile.E_OK) {
+                if (err_ret.error != batavia.modules._compile.E_DONE) {
                     err_ret.token = type;
                 }
                 break;
             }
         }
 
-        if (err_ret.error == E_DONE) {
+        if (err_ret.error == batavia.modules._compile.E_DONE) {
             n = ps.p_tree;
             ps.p_tree = null;
 
@@ -155,7 +151,7 @@ batavia.modules._compile = {
                     }
 
                     if (c != '#') {
-                        err_ret.error = E_BADSINGLE;
+                        err_ret.error = batavia.modules._compile.E_BADSINGLE;
                         n = null;
                         break;
                     }
@@ -171,8 +167,8 @@ batavia.modules._compile = {
         }
 
         if (n == null) {
-            if (tok.done == E_EOF) {
-                err_ret.error = E_EOF;
+            if (tok.done == batavia.modules._compile.E_EOF) {
+                err_ret.error = batavia.modules._compile.E_EOF;
             }
             err_ret.lineno = tok.lineno;
             var len;
@@ -187,7 +183,7 @@ batavia.modules._compile = {
             /* 'nodes->n_str' uses PyObject_*, while 'tok.encoding' was
              * allocated using PyMem_
              */
-            var r = PyNode_New(encoding_decl);
+            var r = new batavia.modules._compile.Node(encoding_decl);
             r.n_str = tok.encoding;
             tok.encoding = null;
             r.n_nchildren = 1;

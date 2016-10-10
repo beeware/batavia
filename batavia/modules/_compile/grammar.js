@@ -39,3 +39,7 @@ var Grammar = function(dfas, labels) {
     this.g_dfa = dfas;		/* Array of DFAs */
     this.g_ll = labels;
 };
+
+Grammar.prototype.findDFA = function(type) {
+    return this.g_dfa[type - batavia.modules._compile.NT_OFFSET];
+};

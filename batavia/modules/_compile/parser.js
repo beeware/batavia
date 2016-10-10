@@ -1,3 +1,10 @@
+var Node = function(type) {
+    this.n_type = type;
+    this.n_str = null;
+    this.n_lineno = 0;
+    this.n_child = null;
+};
+
 var StackEntry = function() {
     this.s_state = 0;	/* State in current DFA */
   	this.s_dfa = null;		/* Current DFA */
@@ -23,7 +30,7 @@ Stack.prototype.push = function(dfa, parent) {
         return E_NOMEM;
     }
     top = --this.s_top;
-    top.s_dfa = d;
+    top.s_dfa = dfa;
     top.s_parent = parent;
     top.s_state = 0;
     return 0;
@@ -51,9 +58,9 @@ Stack.prototype.shift = function(type, str, newstate, lineno, col_offset) {
 var Parser = function(g, start) {
   	this.p_stack = new Stack();	/* Stack of parser states */
   	this.p_grammar = g;	/* Grammar to use */
-  	this.p_tree = new_node(start);	/* Top of parse tree */
+  	this.p_tree = new Node(start);	/* Top of parse tree */
 
-    this.p_stack.push(PyGrammar_FindDFA(g, start), ps.p_tree);
+    this.p_stack.push(g.findDFA(start), this.p_tree);
 };
 
 Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_ret) {
@@ -84,10 +91,9 @@ Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_re
             if (x != -1) {
                 if (x & (1<<7)) {
                     /* Push non-terminal */
-                    var nt = (x >> 8) + NT_OFFSET;
+                    var nt = (x >> 8) + batavia.modules._compile.NT_OFFSET;
                     var arrow = x & ((1<<7)-1);
-                    var d1 = PyGrammar_FindDFA(
-                        ps.p_grammar, nt);
+                    var d1 = ps.p_grammar.findDFA(nt);
                     if ((err = ps.p_stack.push(nt, d1,
                         arrow, lineno, col_offset)) > 0) {
                         // D(printf(" MemError: push\n"));
@@ -115,11 +121,11 @@ Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_re
                     ps.p_stack.pop();
                     if (ps.p_stack.empty()) {
                         // D(printf("  ACCEPT.\n"));
-                        return E_DONE;
+                        return batavia.modules._compile.E_DONE;
                     }
                     d = ps.p_stack.s_base[s_top].s_dfa;
                 }
-                return E_OK;
+                return batavia.modules._compile.E_OK;
             }
         }
 
@@ -129,7 +135,7 @@ Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_re
             // D(printf(" Pop ...\n"));
             if (ps.p_stack.empty()) {
                 // D(printf(" Error: bottom of stack.\n"));
-                return E_SYNTAX;
+                return batavia.modules._compile.E_SYNTAX;
             }
             continue;
         }
@@ -145,6 +151,6 @@ Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_re
             else
                 expected_ret = -1;
         }
-        return E_SYNTAX;
+        return batavia.modules._compile.E_SYNTAX;
     }
 };
