@@ -394,3 +394,45 @@ batavia.iter_for_each = function(iterobj, callback) {
         }
     }
 };
+
+batavia.js2py = function(arg) {
+    if (batavia.isArray(arg)) {
+        // recurse
+        var arr = new batavia.types.List();
+        for (var i = 0; i < arg.length; i++) {
+            arr.append(batavia.js2py(arg[i]));
+        }
+        return arr;
+    }
+
+    switch (typeof arg) {
+        case 'boolean':
+            return arg;
+        case 'number':
+            if (Number.isInteger(arg)) {
+                return new batavia.types.Int(arg);
+            } else {
+              return new batavia.types.Float(arg);
+            }
+        case 'string':
+            return new batavia.types.Str(arg);
+        case 'object':
+            if (arg === null || arg === batavia.types.NoneType) {
+                return null;
+            } else if (arg.__class__ != null && arg.__class__.__name__) {
+                // already a Python object
+                return arg;
+            } else {
+                // this is a generic object; turn it into a dictionary
+                var dict = new batavia.types.Dict();
+                for (var k in arg) {
+                    if (arg.hasOwnProperty(k)) {
+                        dict[batavia.js2py(k)] = batavia.js2py(arg[k])
+                    }
+                }
+                return dict;
+            }
+        default:
+            throw new batavia.builtins.BataviaError("Unknown type " + (typeof arg));
+    }
+}

@@ -4,6 +4,11 @@ import unittest
 
 
 class SetTests(TranspileTestCase):
+    def test_set_of_ints_and_strs(self):
+        self.assertCodeExecution("""
+            print(set([1, "1"]))
+        """)
+
     @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
@@ -296,7 +301,6 @@ class InplaceSetOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_bytes',
         'test_and_class',
         'test_and_complex',
-        'test_and_frozenset',
         'test_and_NotImplemented',
 
         'test_eq_bool',

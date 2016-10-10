@@ -1,30 +1,16 @@
 
 /*************************************************************************
- * A Python FrozenSet type
+ * A Python FrozenSet type, with an underlying Dict.
  *************************************************************************/
 
 batavia.types.FrozenSet = function() {
     function FrozenSet(args, kwargs) {
-        Object.call(this);
+        this.data = new batavia.types.Dict();
         if (args) {
-            // Fast-path for native Array objects.
-            if (batavia.isArray(args)) {
-                for (var i = 0; i < args.length; i++) {
-                    this[args[i]] = args[i];
-                }
-            } else if (batavia.isinstance(args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
-                var iterobj = batavia.builtins.iter([args], null);
-                var self = this;
-                batavia.iter_for_each(iterobj, function(val) {
-                    self[val] = val;
-                });
-            } else {
-                throw new batavia.builtins.TypeError("'" + batavia.type_name(args) + "' object is not iterable");
-            }
+            this._update(args);
         }
     }
 
-    FrozenSet.prototype = Object.create(batavia.types.Object.prototype);
     FrozenSet.prototype.__class__ = new batavia.types.Type('frozenset');
 
     /**************************************************
@@ -40,7 +26,7 @@ batavia.types.FrozenSet = function() {
      **************************************************/
 
     FrozenSet.prototype.__bool__ = function() {
-        return Object.keys(this).length > 0;
+        return this.data.__bool__();
     };
 
     FrozenSet.prototype.__iter__ = function() {
@@ -52,18 +38,13 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__str__ = function() {
-        if (Object.keys(this).length == 0) {
+        var keys = this.data.keys();
+        if (keys.length == 0) {
             return "frozenset()";
         }
-        var result = "frozenset({", values = [];
-        for (var key in this) {
-            if (this.hasOwnProperty(key)) {
-                values.push(batavia.builtins.repr([this[key]], null));
-            }
-        }
-        result += values.join(', ');
-        result += "})";
-        return result;
+        return "frozenset({" +
+            keys.map(function(x) { return x.__repr__(); }).join(", ") +
+            "})";
     };
 
     /**************************************************
@@ -106,13 +87,13 @@ batavia.types.FrozenSet = function() {
         if (!batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])) {
             return new batavia.types.Bool(false);
         }
-        if (Object.keys(this).length != Object.keys(other).length) {
+        if (this.data.keys().length != other.data.keys().length) {
             return new batavia.types.Bool(false);
         }
         var iterobj = batavia.builtins.iter([this], null);
         var equal = true;
         batavia.iter_for_each(iterobj, function(val) {
-            equal = equal && other.__contains__(val);
+            equal = equal && other.__contains__(val).valueOf();
         });
 
         return new batavia.types.Bool(equal);
@@ -129,12 +110,12 @@ batavia.types.FrozenSet = function() {
                         batavia.types.List, batavia.types.Int, batavia.types.Range,
                         batavia.types.Str, batavia.types.Tuple
                     ])) {
-                throw new batavia.builtins.TypeError("unorderable types: set() > " + batavia.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: frozenset() > " + batavia.type_name(other) + "()");
             } else {
                 return this.valueOf() > other.valueOf();
             }
         } else {
-            throw new batavia.builtins.TypeError("unorderable types: set() > NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: frozenset() > NoneType()");
         }
     };
 
@@ -145,17 +126,17 @@ batavia.types.FrozenSet = function() {
                         batavia.types.List, batavia.types.Int, batavia.types.Range,
                         batavia.types.Str, batavia.types.Tuple
                     ])) {
-                throw new batavia.builtins.TypeError("unorderable types: set() >= " + batavia.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: frozenset() >= " + batavia.type_name(other) + "()");
             } else {
                 return this.valueOf() >= other.valueOf();
             }
         } else {
-            throw new batavia.builtins.TypeError("unorderable types: set() >= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: frozenset() >= NoneType()");
         }
     };
 
     FrozenSet.prototype.__contains__ = function(other) {
-        return this.hasOwnProperty(other) && this[other].__eq__(other);
+        return this.data.__contains__(other);
     };
 
 
@@ -196,7 +177,7 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__add__ = function(other) {
-    throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__sub__ = function(other) {
@@ -220,7 +201,7 @@ batavia.types.FrozenSet = function() {
             var both = [];
             var iterobj = batavia.builtins.iter([this], null);
             batavia.iter_for_each(iterobj, function(val) {
-                if (other.__contains__(val)) {
+                if (other.__contains__(val).valueOf()) {
                     both.push(val);
                 }
             });
@@ -235,6 +216,23 @@ batavia.types.FrozenSet = function() {
 
     FrozenSet.prototype.__or__ = function(other) {
         throw new batavia.builtins.NotImplementedError("FrozenSet.__or__ has not been implemented");
+    };
+
+    /**************************************************
+     * Methods
+     **************************************************/
+
+    FrozenSet.prototype._update = function(args) {
+        var new_args = batavia.js2py(args);
+        if (batavia.isinstance(new_args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
+            var iterobj = batavia.builtins.iter([new_args], null);
+            var self = this;
+            batavia.iter_for_each(iterobj, function(val) {
+                self.data.__setitem__(val, val);
+            });
+        } else {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(new_args) + "' object is not iterable");
+        }
     };
 
     /**************************************************/

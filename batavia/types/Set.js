@@ -1,17 +1,16 @@
 
 /*************************************************************************
- * A Python Set type
+ * A Python Set type, with an underlying Dict.
  *************************************************************************/
 
 batavia.types.Set = function() {
     function Set(args, kwargs) {
-        Object.call(this);
+        this.data = new batavia.types.Dict();
         if (args) {
             this.update(args);
         }
     }
 
-    Set.prototype = Object.create(Object.prototype);
     Set.prototype.__class__ = new batavia.types.Type('set');
 
     /**************************************************
@@ -27,7 +26,7 @@ batavia.types.Set = function() {
      **************************************************/
 
     Set.prototype.__bool__ = function() {
-        return Object.keys(this).length > 0;
+        return this.data.__bool__();
     };
 
     Set.prototype.__iter__ = function() {
@@ -39,18 +38,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__str__ = function() {
-        if (Object.keys(this).length == 0) {
+        var keys = this.data.keys();
+        if (keys.length == 0) {
             return "set()";
         }
-        var result = "{", values = [];
-        for (var key in this) {
-            if (this.hasOwnProperty(key)) {
-                values.push(batavia.builtins.repr([this[key]], null));
-            }
-        }
-        result += values.join(', ');
-        result += "}";
-        return result;
+        return "{" + keys.map(function(x) { return x.__repr__(); }).join(", ") + "}";
     };
 
     /**************************************************
@@ -93,13 +85,13 @@ batavia.types.Set = function() {
         if (!batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])) {
             return new batavia.types.Bool(false);
         }
-        if (Object.keys(this).length != Object.keys(other).length) {
+        if (this.data.keys().length != other.data.keys().length) {
             return new batavia.types.Bool(false);
         }
         var iterobj = batavia.builtins.iter([this], null);
         var equal = true;
         batavia.iter_for_each(iterobj, function(val) {
-            equal = equal && other.__contains__(val);
+            equal = equal && other.__contains__(val).valueOf();
         });
 
         return new batavia.types.Bool(equal);
@@ -142,7 +134,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__contains__ = function(other) {
-        return this.valueOf().hasOwnProperty(other);
+        return this.data.__contains__(other);
     };
 
 
@@ -207,7 +199,7 @@ batavia.types.Set = function() {
             var both = [];
             var iterobj = batavia.builtins.iter([this], null);
             batavia.iter_for_each(iterobj, function(val) {
-                if (other.__contains__(val)) {
+                if (other.__contains__(val).valueOf()) {
                     both.push(val);
                 }
             });
@@ -273,15 +265,15 @@ batavia.types.Set = function() {
             throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for &=: 'set' and '" + batavia.type_name(other) + "'");
         }
-        if (batavia.isinstance(other, batavia.types.Set)) {
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])) {
             var intersection = new Set();
-            for (var key in this) {
-                if (this.hasOwnProperty(key)) {
-                    if (other.hasOwnProperty(key)) {
-                        intersection.add(other[key]);
-                    }
+            var iterobj = batavia.builtins.iter([this], null);
+            var self = this;
+            batavia.iter_for_each(iterobj, function(val) {
+                if (other.__contains__(val).valueOf()) {
+                    intersection.add(val);
                 }
-            }
+            });
             return intersection;
         }
         throw new batavia.builtins.NotImplementedError(
@@ -300,12 +292,8 @@ batavia.types.Set = function() {
      * Methods
      **************************************************/
 
-    /* Preserve the original objects as values when adding to the set;
-     * JS object keys are coerced to string.
-     */
-
     Set.prototype.add = function(v) {
-        this[v] = v;
+        this.data.__setitem__(v, v);
     };
 
     Set.prototype.copy = function() {
@@ -313,23 +301,19 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.remove = function(v) {
-        delete this[v];
+        this.data.__delitem__(v);
     };
 
     Set.prototype.update = function(args) {
-        // Fast-path for native Array objects.
-        if (batavia.isArray(args)) {
-            for (var i = 0; i < args.length; i++) {
-                this[args[i]] = args[i];
-            }
-        } else if (batavia.isinstance(args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
-            var iterobj = batavia.builtins.iter([args], null);
+        var new_args = batavia.js2py(args);
+        if (batavia.isinstance(new_args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
+            var iterobj = batavia.builtins.iter([new_args], null);
             var self = this;
             batavia.iter_for_each(iterobj, function(val) {
-                self[val] = val;
+                self.data.__setitem__(val, val);
             });
         } else {
-            throw new batavia.builtins.TypeError("'" + batavia.type_name(args) + "' object is not iterable");
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(new_args) + "' object is not iterable");
         }
     };
 

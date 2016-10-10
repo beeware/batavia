@@ -10,7 +10,7 @@ batavia.types.Code = function() {
         this.co_consts = kwargs.consts || [];
         this.co_names = kwargs.names || [];
         this.co_varnames = kwargs.varnames || [];
-        this.co_freevars = kwargs.freevars || 0;
+        this.co_freevars = kwargs.freevars || [];
         this.co_cellvars = kwargs.cellvars || [];
         // co_cell2arg
         this.co_filename = kwargs.filename || '<string>';
