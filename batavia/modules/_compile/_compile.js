@@ -31,8 +31,8 @@ batavia.modules._compile = {
     compile_string_object: function(str, filename, compile_mode, cf, optimize) {
           var co = null;
           var mod = null;
-          mod = batavia.modules._compile.ast_from_string_object(str, filename, start, flags);
-          co = batavia.modules._compile.ast_compile_object(mod, filename, flags, optimize);
+          mod = batavia.modules._compile.ast_from_string_object(str, filename, compile_mode, cf);
+          co = batavia.modules._compile.ast_compile_object(mod, filename, cf, optimize);
           return co;
     },
     ast_obj2mod: function(source, compile_mode) {
@@ -50,7 +50,7 @@ batavia.modules._compile = {
       var err = null;
       var iflags = 0;
 
-      var n = batavia.builtins._compile.parse_string_object(s, filename,
+      var n = batavia.modules._compile.parse_string_object(str, filename,
                                            _PyParser_Grammar, start, err,
                                            iflags);
       if (flags == null) {
@@ -59,7 +59,7 @@ batavia.modules._compile = {
       }
       if (n) {
           flags.cf_flags |= iflags & PyCF_MASK;
-          mod = batavia.builtins._compile.ast_from_node_object(n, flags, filename);
+          mod = batavia.modules._compile.ast_from_node_object(n, flags, filename);
       } else {
           err_input(err);
           mod = null;
@@ -73,7 +73,7 @@ batavia.modules._compile = {
 
         var tok = new Tokenizer(s, exec_input);
         tok.filename = err_ret.filename;
-        return batavia.builtins._compile.parsetok(tok, grammar, start, err_ret, flags);
+        return batavia.modules._compile.parsetok(tok, grammar, start, err_ret, flags);
     },
 
     parsetok: function(tok, g, start, err_ret, flags) {
@@ -81,7 +81,7 @@ batavia.modules._compile = {
         var n = null;
         var started = 0;
 
-        ps = batavia.builtins._compile.new_parser(g, start);
+        ps = batavia.modules._compile.new_parser(g, start);
 
         for (;;) {
             var a, b;

@@ -656,12 +656,12 @@ AST_object.prototype.reduce = function(unused) {
 };
 
 var make_type = function(type, base, fields) {
-    var fnames = new batavia.types.Tuple(fields);
+    var fnames = new batavia.types.Tuple(fields || []);
     return new batavia.types.Type('Tokenizer', base, fields);
 };
 
 var add_attributes = function(type, attrs) {
-    var l = new batavia.types.Tuple(attrs);
+    var l = new batavia.types.Tuple(attrs || []);
     type._attributes = l;
 };
 
@@ -801,7 +801,7 @@ var exists_not_none = function(obj, id) {
                             (cons.name, cons.name, name, fields), 1)
         self.emit("if (!%s_type) return 0;" % cons.name, 1)
         if simple:
-            self.emit("%s_singleton = PyType_GenericNew(%s_type, null, null);" %
+            self.emit("%s_singleton = new %s_type();" %
                              (cons.name, cons.name), 1)
             self.emit("if (!%s_singleton) return 0;" % cons.name, 1)
 
