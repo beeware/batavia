@@ -1,21 +1,23 @@
-var Label = function() {
-    this.lb_type = 0;
-    this.lb_str = '';
+var Label = function(type, str) {
+    this.lb_type = type;
+    this.lb_str = str;
 };
 
 var EMPTY = 0;		/* Label number 0 is by definition the empty label */
 
 /* An arc from one state to another */
-var Arc = function() {
-    this.a_lbl = 0; /* Label of this arc */
-    this.a_arrow = 0;	/* State where this arc goes to */
+var Arc = function(label, arrow) {
+    if (label == "EMPTY") {
+        label = EMPTY;
+    }
+    this.a_lbl = label; /* Label of this arc */
+    this.a_arrow = arrow;	/* State where this arc goes to */
 };
 
 /* A state in a DFA */
 
-var State = function() {
-    this.s_narcs = 0;
-    this.s_arc = [];	/* Array of arcs */
+var State = function(arcs) {
+    this.s_arc = arcs;	/* Array of arcs */
     /* Optional accelerators */
     this.s_lower = 0;	/* Lowest label index */
     this.s_upper = 0;	/* Highest label index */
@@ -24,20 +26,16 @@ var State = function() {
 };
 
 
-var DFA = function() {
-    this.d_type = 0;	/* Non-terminal this represents */
-    this.d_name = '';	/* For printing */
-    this.d_initial = 0;	/* Initial state */
-    this.d_nstates = 0;
-    this.d_state = [];	/* Array of states */
-    this.d_first = null; // bitset
+var DFA = function(type, name, initial, states, first) {
+    this.d_type = type;	/* Non-terminal this represents */
+    this.d_name = name;	/* For printing */
+    this.d_initial = initial;	/* Initial state */
+    this.d_state = states;	/* Array of states */
+    this.d_first = first; // bitset
 };
 
 
-var Grammar = function() {
-    this.g_ndfas = 0;
-    this.g_dfa = [];		/* Array of DFAs */
-    this.g_ll = 0;
-    this.g_start = 0;	/* Start symbol of the grammar */
-    this.g_accel = 0;	/* Set if accelerators present */
+var Grammar = function(dfas, labels) {
+    this.g_dfa = dfas;		/* Array of DFAs */
+    this.g_ll = labels;
 };

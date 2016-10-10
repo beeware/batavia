@@ -6596,6 +6596,6 @@ var ast_check = function(obj) {
 
 batavia.modules.ast.ast_check = ast_check;
 
-}); // don't execute the module yet until it works better
+}()); // don't execute the module yet until it works better
 
 
