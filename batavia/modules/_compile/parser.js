@@ -154,3 +154,30 @@ Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_re
         return batavia.modules._compile.E_SYNTAX;
     }
 };
+
+Parser.prototype.classify = function(type, str) {
+    var g = this.p_grammar;
+
+    if (type == batavia.modules._compile.NAME) {
+        for (var i = 0; i < g.g_ll.length; i++) {
+            var l = g.g_ll[i];
+            if (l.lb_type != batavia.modules._compile.NAME || l.lb_str == null ||
+                l.lb_str != str) {
+                continue;
+            }
+            // D(printf("It's a keyword\n"));
+            return n - i;
+        }
+    }
+
+    for (var i = 0; i < g.g_ll.length; i++) {
+        var l = g.g_ll[i];
+        if (l.lb_type == type && l.lb_str == null) {
+            // D(printf("It's a token we know\n"));
+            return n - i;
+        }
+    }
+
+    // D(printf("Illegal token\n"));
+    return -1;
+};
