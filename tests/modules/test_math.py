@@ -46,7 +46,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'fmod',
         'hypot',
         'gcd',
-        'isclose',
+        # 'isclose', # not until CPython 3.5+
         'ldexp',
         'log',
         'pow',
