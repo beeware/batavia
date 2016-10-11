@@ -17,7 +17,7 @@ instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
-have Python 3.4, and have virtualenv available for use.
+have `Python 3.4 </intro/localpython>`_, and have virtualenv available for use.
 
 Start by forking Batavia into your own Github repository; then
 check out your fork to your own computer into a development directory:
