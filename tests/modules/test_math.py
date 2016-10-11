@@ -45,7 +45,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'copysign',
         'fmod',
         'hypot',
-        'gcd',
+        # 'gcd', # not until CPython 3.5+
         # 'isclose', # not until CPython 3.5+
         'ldexp',
         'log',
@@ -76,8 +76,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         self.assertCodeExecution("""
             import math
             print(math.e)
-            print(math.inf)
-            print(math.nan)
+            # print(math.inf) # Not until CPython 3.5
+            # print(math.nan) # Not until CPython 3.5
             print(math.pi)
             """)
 
@@ -130,9 +130,9 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.frexp.__doc__)
         print(math.fsum.__doc__)
         print(math.gamma.__doc__)
-        print(math.gcd.__doc__)
+        # print(math.gcd.__doc__) # Not until CPython 3.5
         print(math.hypot.__doc__)
-        print(math.isclose.__doc__)
+        # print(math.isclose.__doc__) # Not until CPython 3.5
         print(math.isfinite.__doc__)
         print(math.isinf.__doc__)
         print(math.isnan.__doc__)
@@ -207,13 +207,14 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
                 print(math.ldexp(1.0, exp))
             """)
 
-    def test_isclose_kwargs(self):
-        self.assertCodeExecution("""
-            import math
-            print(math.isclose(1.0, 0.9))
-            print(math.isclose(1.0, 0.9, rel_tol=0.09))
-            print(math.isclose(1.0, 0.9, rel_tol=0.1))
-            print(math.isclose(1.0, 0.9, rel_tol=0.11))
-            print(math.isclose(1.0, 0.9, rel_tol=0.09, abs_tol=0.1))
-            print(math.isclose(1.0, 1.000000001, rel_tol=1.0, abs_tol=1.0))
-            """)
+    # not until CPython 3.5+
+    # def test_isclose_kwargs(self):
+    #     self.assertCodeExecution("""
+    #         import math
+    #         print(math.isclose(1.0, 0.9))
+    #         print(math.isclose(1.0, 0.9, rel_tol=0.09))
+    #         print(math.isclose(1.0, 0.9, rel_tol=0.1))
+    #         print(math.isclose(1.0, 0.9, rel_tol=0.11))
+    #         print(math.isclose(1.0, 0.9, rel_tol=0.09, abs_tol=0.1))
+    #         print(math.isclose(1.0, 1.000000001, rel_tol=1.0, abs_tol=1.0))
+    #         """)
