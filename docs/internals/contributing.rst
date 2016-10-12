@@ -26,7 +26,7 @@ check out your fork to your own computer into a development directory:
 
     $ mkdir batavia-dev
     $ cd batavia-dev
-    $ git clone git@github.com:<your github username>/batavia.git
+    $ git clone https://github.com:<your github username>/batavia.git
 
 Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
 
@@ -140,7 +140,7 @@ Then download and install phantomjs:
 
 .. code-block:: bash
 
-	$ git clone git://github.com/ariya/phantomjs.git
+	$ git clone https://github.com/ariya/phantomjs.git
 	$ cd phantomjs
 	$ git checkout 2.1.1
 	$ git submodule init
