@@ -137,6 +137,14 @@ batavia.modules.time.mktime = function(sequence){
         }
     }
 
-    var seconds =  new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0).getTime() / 1000;
+    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0)
+
+    if (isNaN(date)){
+        // date is too large per ECMA specs
+        // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+        throw new batavia.builtins.OverflowError("signed integer is greater than maximum")
+    }
+
+    var seconds = date.getTime() / 1000;
     return seconds.toFixed(1);
 }

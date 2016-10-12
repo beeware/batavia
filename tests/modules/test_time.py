@@ -182,7 +182,7 @@ class TimeTests(TranspileTestCase):
         tests the happy path for the mktime constructor
         """
 
-        seq = (1970,1,1,0,0,0,0,0,0)
+        seq = (1970, 1, 1, 0, 0, 0, 0, 0, 0)
 
         test_str = adjust("""
         print('>>> import time')
@@ -200,14 +200,64 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    def test_mktime_args(self):
+        """
+        alter arguments 0-6 one by one
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+        seed = [1970, 1, 1, 0, 0, 0, 0, 0, -1]
+        for i in range(7):
+            seq = seed[:]
+            if i == 0:
+                seq[i] = 1999    # change the year
+            else:
+                seq[i] = 5  # change something else
+                if i == 1:
+                    seq[8] = 1  # change dst value if needed
+
+            test_str += mktime_setup(str(tuple(seq)))
+
+        self.assertCodeExecution(test_str)
+
+
+    def test_mktime_dst(self):
+        """
+        tests with each month of the year
+        """
+
+        seed = [1970, 1, 1, 0, 0, 0, 0, 0, -1]
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+        for month in range(1, 13):
+            seq = seed[:]
+            seq[1] = month
+            if month <= 3 or month == 12:
+                seq[8] = 0  # dst off
+            else:
+                seq[8] = 1  # dst on
+            test_str += adjust("""
+            print('trying month {}')
+            """.format(month))
+            test_str += mktime_setup(str(tuple(seq)))
+
+        self.assertCodeExecution(test_str)
+
+
     def test_mktime_bad_input(self):
         """
         When the argument passed is not tuple or struct_time.
         """
 
-        seed = (1970,1,1,0,0,0,0,0,0)
+        seed = (1970, 1, 1, 0, 0, 0, 0, 0, 0)
 
-        data = [
+        data = (
             False,
             1j,
             {key: key for key in seed},
@@ -221,7 +271,7 @@ class TimeTests(TranspileTestCase):
             '123456789',
             None,
             NotImplemented
-        ]
+        )
 
         test_str = adjust("""
         print('>>> import time')
@@ -243,9 +293,9 @@ class TimeTests(TranspileTestCase):
         import time
         """)
 
-        strange_types = [ SAMPLE_DATA[type][0] for type in SAMPLE_DATA if type != 'int' ]
+        strange_types = [SAMPLE_DATA[type][0] for type in SAMPLE_DATA if type != 'int']
 
-        tests = [ mktime_setup( str((1970, t, 1, 2, 0, 0, 0, 0, 0)) ) for t in strange_types]
+        tests = [ mktime_setup(str((1970, t, 1, 2, 0, 0, 0, 0, 0))) for t in strange_types]
         test_str += ''.join(tests)
 
         self.assertCodeExecution(test_str)
@@ -255,15 +305,14 @@ class TimeTests(TranspileTestCase):
         Sequence has the wrong length
         """
 
-        seq = (1970,1,1,0,0,0,0,0)  # length=8
+        seq = (1970, 1, 1, 0, 0, 0, 0, 0)  # length == 8
 
         test_str = adjust("""
         print('>>> import time')
         import time
         """)
 
-        test_str += mktime_setup(seq)
-        print(test_str)
+        test_str += mktime_setup(str(seq))
         self.assertCodeExecution(test_str)
 
     def test_mktime_wrong_arg_count(self):
@@ -283,13 +332,41 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
-    @unittest.expectedFailure
-    def test_mktime_overflow_error(self):
+    def test_mktime_too_early(self):
         """
-        tests OverflowError on dates earlier than an arbitrarily defined date
-        for now this is defined as 1900-01-01
+        tests OverflowError on dates earlier than an arbitrarily defined date 1900-01-01
 
-        currently this can't be garuneteed to pass because it doesn't not account for behavior across platforms.
+        Because the CPython implementation of mktime varies across platforms, this likely won't match behavior
+        regarding the smallest possible year that can be entered.
+        """
+
+        set_up = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        bad_years = (-1970, 70, 1899)
+
+        for year in bad_years:
+            test_str = set_up + mktime_setup(str((year,) + (0,) * 8))
+
+            # NOTE: because each example will raise an error, a new VM must be used for each example.
+            self.assertJavaScriptExecution(test_str,
+                                           js={},
+                                           run_in_function=False,
+                                           out="""
+                >>> import time
+                >>> time.mktime(({}, 0, 0, 0, 0, 0, 0, 0, 0))
+                ### EXCEPTION ###
+                OverflowError: mktime argument out of range
+                    test.py:4
+                """.format(year))
+
+    def test_mktime_too_late(self):
+        """
+        tests that the year given is too large. mktime will fail when the date passed to the javascript Date constructor
+        is too large per ECMA spec
+        source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
 
         test_str = adjust("""
@@ -297,10 +374,56 @@ class TimeTests(TranspileTestCase):
         import time
         """)
 
-        years = (-1970, 70, 1899, 1900, 1901, 2016)
-        sequences = [mktime_setup(str((year,) + (0,) * 8)) for year in years]
+        seed = [275760, 9, 0, 0, 0, 0, 0, 0, -1]
+
+        for day in range(12, 14):
+            seq = seed[:]
+            seq[2] = day
+            test_str += mktime_setup(str(tuple(seq)))
+
+        # test_str += mktime_setup(str((275760, 9, 13, 0, 0, 0, 0, 0, 0)))
+
+        print(test_str)
+
+        self.assertJavaScriptExecution(test_str,
+                                       js={},
+                                       run_in_function=False,
+                                       out="""
+        >>> import time
+        >>> time.mktime((275760, 9, 12, 0, 0, 0, 0, 0, -1))
+        8639999928000.0
+        >>> time.mktime((275760, 9, 13, 0, 0, 0, 0, 0, -1))
+        ### EXCEPTION ###
+        OverflowError: signed integer is greater than maximum
+            test.py:6
+        """)
+
+
+    def test_mktime_no_overflow_error(self):
+        """
+        years that will not throw an OverflowError
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        good_years = (1900, 1970, 2016)
+        sequences = [mktime_setup(str((year,) + (0,) * 8)) for year in good_years]
+
         test_str += ''.join(sequences)
-        self.assertCodeExecution(test_str)
+        self.assertJavaScriptExecution(test_str,
+                                       js={},
+                                       out="""
+            >>> import time
+            >>> time.mktime((1900, 0, 0, 0, 0, 0, 0, 0, 0))
+            -2211735600.0
+            >>> time.mktime((1970, 0, 0, 0, 0, 0, 0, 0, 0))
+            -2746800.0
+            >>> time.mktime((2016, 0, 0, 0, 0, 0, 0, 0, 0))
+            1448859600.0
+            """)
 
 def struct_time_setup(seq = [1] * 9):
     """
