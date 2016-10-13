@@ -257,8 +257,52 @@ batavia.builtins.any = function(args, kwargs) {
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
-batavia.builtins.ascii = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'ascii' not implemented");
+batavia.builtins.ascii = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("ascii() doesn't accept keyword arguments");
+    }
+    if (!args || args.length !== 1) {
+        throw new batavia.builtins.TypeError('ascii() takes exactly 1 argument (' + args.length + ' given)');
+    }
+
+    function to_ascii(string) {
+        // https://mathiasbynens.be/notes/javascript-encoding
+        var ascii = '';
+        for (var i = 0; i < string.length ; ++i) {
+            var codepoint = string.charCodeAt(i);
+            if (codepoint >= 0xD800 && codepoint <= 0xDBFF) {
+                // Surrogate pairs
+                i++; // Look at next codepoint half
+                var high = codepoint;
+                var low = string.charCodeAt(i);
+                var pad = '\\U00000000';
+                codepoint = (high - 0xD800) * 0x400 + low - 0xDC00 + 0x10000;
+                codepoint = codepoint.toString(16);
+                codepoint = pad.substring(0, pad.length - codepoint.length) + codepoint
+            } else if (codepoint >= 0x100) {
+                var pad = '\\u0000';
+                codepoint = codepoint.toString(16);
+                codepoint = pad.substring(0, pad.length - codepoint.length) + codepoint
+            } else if (codepoint <= 0x1f || codepoint >= 0x7f) {
+                var pad = '\\x00';
+                codepoint = codepoint.toString(16);
+                codepoint = pad.substring(0, pad.length - codepoint.length) + codepoint
+            } else {
+                codepoint = string.charAt(i);
+            }
+            ascii += codepoint;
+        }
+        return ascii;
+    }
+
+    if (args[0] === null) {
+        return 'None';
+    } else {
+        return to_ascii(args[0].__repr__());
+    }
 };
 
 batavia.builtins.bin = function(args, kwargs) {
