@@ -2,6 +2,7 @@
 BASE_FILES=\
     batavia/batavia.js \
     batavia/vendor/vendored.js \
+    batavia/vendor/vendored_config.js \
     batavia/utils.js \
     batavia/types/Type.js \
     batavia/types/Bool.js \
@@ -48,6 +49,7 @@ BASE_FILES=\
 BASE_FILES_WIN=\
     batavia\batavia.js \
     batavia\vendor\vendored.js \
+    batavia\vendor\vendored_config.js \
     batavia\utils.js \
     batavia\types\Type.js \
     batavia\types\Bool.js \
