@@ -9,5 +9,6 @@ class BuiltinDelattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["delattr"]
 
     not_implemented = [
+        'test_noargs',
         'test_None',
     ]

@@ -9,6 +9,7 @@ class BuiltinMemoryviewFunctionTests(BuiltinFunctionTestCase, TranspileTestCase)
     functions = ["memoryview"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

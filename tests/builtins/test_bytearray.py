@@ -9,6 +9,7 @@ class BuiltinBytearrayFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["bytearray"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_class',

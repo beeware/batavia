@@ -9,6 +9,7 @@ class BuiltinClassmethodFunctionTests(BuiltinFunctionTestCase, TranspileTestCase
     functions = ["classmethod"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

@@ -9,6 +9,7 @@ class BuiltinCompileFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["compile"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

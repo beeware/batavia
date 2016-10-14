@@ -12,6 +12,7 @@ class BuiltinStrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["str"]
 
     not_implemented = [
+        'test_noargs',
         'test_class',
         'test_NotImplemented',
         'test_range',

@@ -9,6 +9,7 @@ class BuiltinDivmodFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["divmod"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',
