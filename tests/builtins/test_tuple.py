@@ -13,7 +13,6 @@ class BuiltinTupleFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     not_implemented = [
         'test_bytearray',
         'test_complex',
-        'test_dict',
         'test_NotImplemented',
         'test_range',
     ]
