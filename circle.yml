@@ -1,6 +1,6 @@
 machine:
   python:
-    version: 3.5.1
+    version: 3.4.4
 
 dependencies:
   cache_directories:

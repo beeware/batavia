@@ -36,7 +36,7 @@ class DictTests(TranspileTestCase):
         # keys with the same string representation
         self.assertCodeExecution("""
             x = {1: 2, '1': 1}
-            print(x)
+            print(sorted(x.items()))
             """)
 
     def test_getitem(self):

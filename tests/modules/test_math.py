@@ -1,3 +1,6 @@
+import sys
+from unittest import skipUnless
+
 from ..utils import ModuleFunctionTestCase, TranspileTestCase
 
 class MathTests(ModuleFunctionTestCase, TranspileTestCase):
@@ -45,12 +48,16 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'copysign',
         'fmod',
         'hypot',
-        'gcd',
-        'isclose',
         'ldexp',
         'log',
         'pow',
     ], numerics_only=True)
+
+    if sys.version_info >= (3, 5):
+        ModuleFunctionTestCase.add_two_arg_tests('math', [
+            'gcd',
+            'isclose',
+        ], numerics_only=True)
 
     not_implemented = [
         'test_math_acos_float',
@@ -76,9 +83,15 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         self.assertCodeExecution("""
             import math
             print(math.e)
+            print(math.pi)
+            """)
+
+    @skipUnless(sys.version_info >= (3, 5), reason="Need CPython 3.5")
+    def test_constants_35(self):
+        self.assertCodeExecution("""
+            import math
             print(math.inf)
             print(math.nan)
-            print(math.pi)
             """)
 
     def test_erf(self):
@@ -130,9 +143,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.frexp.__doc__)
         print(math.fsum.__doc__)
         print(math.gamma.__doc__)
-        print(math.gcd.__doc__)
         print(math.hypot.__doc__)
-        print(math.isclose.__doc__)
         print(math.isfinite.__doc__)
         print(math.isinf.__doc__)
         print(math.isnan.__doc__)
@@ -152,6 +163,15 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.tanh.__doc__)
         print(math.trunc.__doc__)
         """)
+
+    @skipUnless(sys.version_info >= (3, 5), reason="Need CPython 3.5")
+    def test_docstrings_35(self):
+        self.assertCodeExecution("""
+        import math
+        print(math.gcd.__doc__)
+        print(math.isclose.__doc__)
+        """)
+
 
     def test_big_log(self):
         self.assertCodeExecution("""
@@ -207,6 +227,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
                 print(math.ldexp(1.0, exp))
             """)
 
+    @skipUnless(sys.version_info >= (3, 5), reason="Need CPython 3.5")
     def test_isclose_kwargs(self):
         self.assertCodeExecution("""
             import math
