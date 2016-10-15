@@ -106,14 +106,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_floor_divide_complex',
 
-        'test_ge_frozenset',
-
-        'test_gt_frozenset',
-
-        'test_le_frozenset',
-
-        'test_lt_frozenset',
-
         'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',

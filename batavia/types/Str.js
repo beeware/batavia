@@ -54,7 +54,8 @@ String.prototype.__lt__ = function(other) {
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
                     batavia.types.Bytearray, batavia.types.Bytes, batavia.types.Type,
                     batavia.types.Complex, batavia.types.NotImplementedType,
-                    batavia.types.Range, batavia.types.Set, batavia.types.Slice
+                    batavia.types.Range, batavia.types.Set, batavia.types.Slice,
+                    batavia.types.FrozenSet
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() < " + batavia.type_name(other) + "()");
         } else {
@@ -72,7 +73,7 @@ String.prototype.__le__ = function(other) {
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
                     batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
                     batavia.types.Type, batavia.types.Complex, batavia.types.NotImplementedType,
-                    batavia.types.Range, batavia.types.Slice
+                    batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() <= " + batavia.type_name(other) + "()");
         } else {
@@ -103,6 +104,7 @@ String.prototype.__ne__ = function(other) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple
+
                 ])) {
             return true;
         } else {
@@ -121,7 +123,7 @@ String.prototype.__gt__ = function(other) {
                     batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
                     batavia.types.Type, batavia.types.Complex,
                     batavia.types.NotImplementedType, batavia.types.Range,
-                    batavia.types.Slice
+                    batavia.types.Slice, batavia.types.FrozenSet
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() > " + batavia.type_name(other) + "()");
         } else {
@@ -139,7 +141,7 @@ String.prototype.__ge__ = function(other) {
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
                     batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
                     batavia.types.Type, batavia.types.Complex, batavia.types.NotImplementedType,
-                    batavia.types.Range, batavia.types.Slice
+                    batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet
 
                 ])) {
             throw new batavia.builtins.TypeError("unorderable types: str() >= " + batavia.type_name(other) + "()");
