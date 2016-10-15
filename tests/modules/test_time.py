@@ -369,30 +369,30 @@ class TimeTests(TranspileTestCase):
         source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
 
-        test_str = adjust("""
+        seed = [275760, 9, 0, 0, 0, 0, 0, 0, 1]
+        set_up = adjust("""
         print('>>> import time')
         import time
         """)
 
-        seed = [275760, 9, 0, 0, 0, 0, 0, 0, 1]
-
         for day in range(12, 14):
             seq = seed[:]
             seq[2] = day
-            test_str += mktime_setup(str(tuple(seq)))
+            same = day == 13 # do we expect the JS output to be equal?
+            test_str = set_up + mktime_setup(str(tuple(seq)))
 
-        self.assertJavaScriptExecution(test_str,
-                                       js={},
-                                       run_in_function=False,
-                                       out="""
-        >>> import time
-        >>> time.mktime((275760, 9, 12, 0, 0, 0, 0, 0, 1))
-        8639999928000.0
-        >>> time.mktime((275760, 9, 13, 0, 0, 0, 0, 0, 1))
-        ### EXCEPTION ###
-        OverflowError: signed integer is greater than maximum
-            test.py:6
-        """)
+            # need to compare each example individually
+            self.assertJavaScriptExecution(test_str,
+                                           js={},
+                                           run_in_function=False,
+                                           same=same,
+                                           out="""
+            >>> import time
+            >>> time.mktime((275760, 9, {}, 0, 0, 0, 0, 0, 1))
+            ### EXCEPTION ###
+            OverflowError: signed integer is greater than maximum
+                test.py:4
+            """.format(day))
 
 
     def test_mktime_no_overflow_error(self):
@@ -400,26 +400,27 @@ class TimeTests(TranspileTestCase):
         years that will not throw an OverflowError
         """
 
-        test_str = adjust("""
+        set_up = adjust("""
         print('>>> import time')
         import time
         """)
 
         good_years = (1900, 1970, 2016)
-        sequences = [mktime_setup(str((year, 1, 1, 0, 0, 0, 0, 0, 0))) for year in good_years]
+        for year in good_years:
+            seq = (year, 1, 1, 0, 0, 0, 0, 0, 0)
+            test_str  = set_up + mktime_setup(str(seq))
 
-        test_str += ''.join(sequences)
-        self.assertJavaScriptExecution(test_str,
-                                       js={},
-                                       out="""
-            >>> import time
-            >>> time.mktime((1900, 1, 1, 0, 0, 0, 0, 0, 0))
-            -2208970800.0
-            >>> time.mktime((1970, 1, 1, 0, 0, 0, 0, 0, 0))
-            18000
-            >>> time.mktime((2016, 1, 1, 0, 0, 0, 0, 0, 0))
-            1451624400.0
-            """)
+            # need to compare each example individually
+            self.assertJavaScriptExecution(test_str,
+                                           js={},
+                                           run_in_function=False,
+                                           same=False,
+                                           out="""
+            >>> time.mktime(({}, 1, 1, 0, 0, 0, 0, 0, 0))
+            ### EXCEPTION ###
+            OverflowError: signed integer is greater than maximum
+                test.py:4
+            """.format(year))
 
 def struct_time_setup(seq = [1] * 9):
     """
