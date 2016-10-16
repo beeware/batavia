@@ -1,3 +1,4 @@
+from time import gmtime, localtime
 from ..utils import TranspileTestCase, adjust, SAMPLE_DATA
 import unittest
 
@@ -369,16 +370,18 @@ class TimeTests(TranspileTestCase):
         source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
 
-        seed = [275760, 9, 0, 0, 0, 0, 0, 0, 1]
+        hour = 24 + localtime().tm_hour - gmtime().tm_hour
+
+        seed = [275760, 9, 12, hour, 0, 0, 0, 0, 1] # the max date that can be computed.
         set_up = adjust("""
         print('>>> import time')
         import time
         """)
 
-        for day in range(12, 14):
+        for second in range(0, 2):
             seq = seed[:]
-            seq[2] = day
-            same = day == 13 # do we expect the JS output to be equal?
+            seq[5] = second
+            same = second == 1 # do we expect an error?
             test_str = set_up + mktime_setup(str(tuple(seq)))
 
             # need to compare each example individually
@@ -388,11 +391,11 @@ class TimeTests(TranspileTestCase):
                                            same=same,
                                            out="""
             >>> import time
-            >>> time.mktime((275760, 9, {}, 0, 0, 0, 0, 0, 1))
+            >>> time.mktime((275760, 9, 12, {hour}, 0, {second}, 0, 0, 1))
             ### EXCEPTION ###
             OverflowError: signed integer is greater than maximum
                 test.py:4
-            """.format(day))
+            """.format(hour=hour, second=second))
 
 
     def test_mktime_no_overflow_error(self):
