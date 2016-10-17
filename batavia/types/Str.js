@@ -191,7 +191,11 @@ String.prototype.__div__ = function(other) {
 };
 
 String.prototype.__floordiv__ = function(other) {
-    throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'str' and '" + batavia.type_name(other) + "'");
+    if (batavia.isinstance(other, [batavia.types.Complex])){
+        throw new batavia.builtins.TypeError("can't take floor of complex number.")
+    } else {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'str' and '" + batavia.type_name(other) + "'");
+    }
 };
 
 String.prototype.__truediv__ = function(other) {
@@ -235,6 +239,9 @@ String.prototype.__sub__ = function(other) {
 };
 
 String.prototype.__getitem__ = function(index) {
+    if (batavia.isinstance(index, batavia.types.Bool)) {
+        index = index.__int__();
+    }
     if (batavia.isinstance(index, batavia.types.Int)) {
         var idx = index.int32();
         if (idx < 0) {
