@@ -9,7 +9,7 @@ class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
         self.assertCodeExecution("""
             import base64
 
-            print(base64.b64encode(b'Foo'))
+            print(base64.b64encode(b'Foo9'))
             """)
 
     def test_b64decode(self):
