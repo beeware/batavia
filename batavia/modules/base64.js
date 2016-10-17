@@ -11,6 +11,9 @@ batavia.modules.base64 = {
 
 	b64decode: function(data){
 		var foo = batavia.types.Str(data).slice(2, -1)
+		if (foo.length % 4 !== 0){
+			throw new batavia.builtins.ValueError("Incorrect padding");
+		}
 		return "b'" + new batavia.types.Str(window.atob(foo)) + "'";
 	},
 
