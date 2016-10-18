@@ -106,8 +106,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
     not_implemented = [
-        'test_add_complex',
-
         'test_floor_divide_complex',
 
         'test_modulo_complex',
