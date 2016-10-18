@@ -5,8 +5,8 @@ class HexTests(TranspileTestCase):
     def test_hex(self):
         self.assertCodeExecution("""
             print(hex(15))
-            hex(3735928559)
-            print(hex(373592855937359285593735928559373592855937359285593735928559))
+            print(hex(3735928559))
+            print(hex(0xb2594c0a7500649c618b365c0663d9d8556be9784939edb663267c0a8288))
             """)
 
 
