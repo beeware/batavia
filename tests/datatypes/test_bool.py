@@ -68,21 +68,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_lshift_int',
 
-        'test_lt_bytearray',
-        'test_lt_bytes',
-        'test_lt_class',
-        'test_lt_complex',
-        'test_lt_dict',
-        'test_lt_frozenset',
-        'test_lt_list',
-        'test_lt_None',
-        'test_lt_NotImplemented',
-        'test_lt_range',
-        'test_lt_set',
-        'test_lt_slice',
-        'test_lt_str',
-        'test_lt_tuple',
-
         'test_modulo_bool',
         'test_modulo_complex',
         'test_modulo_float',
@@ -94,8 +79,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_list',
         'test_multiply_str',
         'test_multiply_tuple',
-
-        'test_ne_str',
 
         'test_power_bytearray',
         'test_power_bytes',
