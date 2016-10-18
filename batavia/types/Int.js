@@ -265,6 +265,8 @@ batavia.types.Int = function() {
             } else {
                 throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
+        } else if (batavia.isinstance(other, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't take floor of complex number.");
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'int' and '" + batavia.type_name(other) + "'");
         }
