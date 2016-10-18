@@ -64,12 +64,9 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
     not_implemented = [
-        'test_floor_divide_complex',
-
         'test_ge_bytearray',
         'test_ge_bytes',
         'test_ge_class',
-        'test_ge_complex',
         'test_ge_frozenset',
 
         'test_gt_bytearray',
