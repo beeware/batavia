@@ -33,13 +33,9 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_eq_str',
 
-        'test_floor_divide_class',
         'test_floor_divide_complex',
         'test_floor_divide_float',
-        'test_floor_divide_frozenset',
         'test_floor_divide_int',
-        'test_floor_divide_None',
-        'test_floor_divide_NotImplemented',
 
         'test_ge_bytearray',
         'test_ge_bytes',
