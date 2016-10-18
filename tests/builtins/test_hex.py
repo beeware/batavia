@@ -2,7 +2,12 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class HexTests(TranspileTestCase):
-    pass
+    def test_hex(self):
+        self.assertCodeExecution("""
+            print(hex(15))
+            hex(3735928559)
+            print(hex(373592855937359285593735928559373592855937359285593735928559))
+            """)
 
 
 class BuiltinHexFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
