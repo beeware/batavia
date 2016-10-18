@@ -51,9 +51,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_str',
         'test_floor_divide_tuple',
 
-        'test_ge_bytearray',
-        'test_ge_bytes',
-        'test_ge_class',
         'test_ge_complex',
         'test_ge_dict',
         'test_ge_frozenset',
@@ -63,7 +60,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ge_range',
         'test_ge_set',
         'test_ge_slice',
-        'test_ge_str',
         'test_ge_tuple',
 
         'test_gt_bytearray',

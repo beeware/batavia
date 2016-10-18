@@ -291,6 +291,20 @@ Boolean.prototype.__or__ = function(other) {
     }
 };
 
+Boolean.prototype.__ge__ = function(other) {
+    if (batavia.isinstance(other, [
+                batavia.types.Bytes, batavia.types.Bytearray, batavia.types.Type,
+                batavia.types.Str
+            ])) {
+        throw new batavia.builtins.TypeError("unorderable types: bool() >= " + batavia.type_name(other) + "()");
+    } else if (batavia.isinstance(other, batavia.types.Bool)) {
+        return new Boolean((this.valueOf() ? 1 : 0) | (other.valueOf() ? 1 : 0));
+    } else {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");
+    }
+};
+
+
 /**************************************************
  * Inplace operators
  **************************************************/
