@@ -54,10 +54,12 @@ batavia.modules.base64 = {
 	bytes_types: function(){},
 	decode: function(){},
 	decodebytes: function(){},
-	decodestring: function(){},
+	decodestring: function(data){
+		return this.b64decode(data);
+	},
 	encode: function(){},
 	encodebytes: function(){},
-	encodestring: function(){},
+	encodestring: function(data){},
 	main: function(){},
 	re: function(){},
 	standard_b64decode: function(){},
