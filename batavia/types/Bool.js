@@ -298,15 +298,7 @@ Boolean.prototype.__ge__ = function(other) {
         return this.__int__().__ge__(other);
     } else if (batavia.isinstance(other, batavia.types.Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) >= (other.valueOf() ? 1 : 0));
-    } else if (batavia.isinstance(other, [
-                batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                batavia.types.Int, batavia.types.JSDict, batavia.types.List,
-                batavia.types.NoneType, batavia.types.Tuple, batavia.types.Slice,
-                batavia.types.Bytes, batavia.types.Bytearray, batavia.types.Type,
-                batavia.types.Str, batavia.types.Set, batavia.types.Range,
-                batavia.types.FrozenSet, batavia.types.Complex,
-                batavia.types.NotImplementedType
-            ])) {
+    } else if (batavia.isbatavianinstance(other)) {
         throw new batavia.builtins.TypeError("unorderable types: bool() >= " + batavia.type_name(other) + "()");
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");
@@ -320,15 +312,7 @@ Boolean.prototype.__le__ = function(other) {
         return this.__int__().__le__(other);
     } else if (batavia.isinstance(other, batavia.types.Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) <= (other.valueOf() ? 1 : 0));
-    } else if (batavia.isinstance(other, [
-                batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                batavia.types.Int, batavia.types.JSDict, batavia.types.List,
-                batavia.types.NoneType, batavia.types.Tuple, batavia.types.Slice,
-                batavia.types.Bytes, batavia.types.Bytearray, batavia.types.Type,
-                batavia.types.Str, batavia.types.Set, batavia.types.Range,
-                batavia.types.FrozenSet, batavia.types.Complex,
-                batavia.types.NotImplementedType
-            ])) {
+    } else if (batavia.isbatavianinstance(other)) {
         throw new batavia.builtins.TypeError("unorderable types: bool() <= " + batavia.type_name(other) + "()");
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");
