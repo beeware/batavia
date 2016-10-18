@@ -66,21 +66,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_str',
         'test_gt_tuple',
 
-        'test_le_bytearray',
-        'test_le_bytes',
-        'test_le_class',
-        'test_le_complex',
-        'test_le_dict',
-        'test_le_frozenset',
-        'test_le_list',
-        'test_le_None',
-        'test_le_NotImplemented',
-        'test_le_range',
-        'test_le_set',
-        'test_le_slice',
-        'test_le_str',
-        'test_le_tuple',
-
         'test_lshift_int',
 
         'test_lt_bytearray',
