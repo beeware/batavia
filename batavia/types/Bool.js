@@ -162,7 +162,7 @@ Boolean.prototype.__floordiv__ = function(other) {
             return new batavia.types.Float(roundedVal);
         }
     } else {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'bool' and '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'bool' and '" + batavia.type_name(other) + "'");
     }
 };
 
