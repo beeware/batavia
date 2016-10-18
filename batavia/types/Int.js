@@ -78,7 +78,7 @@ batavia.types.Int = function() {
                         batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
                         batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
                         batavia.types.Range, batavia.types.Set, batavia.types.Slice,
-                        batavia.types.Bytes
+                        batavia.types.Bytes, batavia.types.Bytearray
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
             } else if (batavia.isinstance(other, batavia.types.Bool)) {
