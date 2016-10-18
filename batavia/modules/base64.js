@@ -5,8 +5,14 @@ batavia.modules.base64 = {
 	__package__: "",
 
 	b64encode: function(data){
-		var foo = batavia.types.Str(data).slice(2, -1)
-		return "b'" + new batavia.types.Str(window.btoa(foo)) + "'";
+		var foo = batavia.types.Str(data).slice(2, -1);
+		var encode = window.btoa(foo);
+		var bytes = [];
+		for (var i = 0; i < encode.length; i ++) {
+			var code = encode.charCodeAt(i);
+			bytes = bytes.concat([code]);
+		};
+		return new batavia.types.Bytes(bytes)
 	},
 
 	b64decode: function(data){
@@ -14,7 +20,13 @@ batavia.modules.base64 = {
 		if (foo.length % 4 !== 0){
 			throw new batavia.builtins.ValueError("Incorrect padding");
 		}
-		return "b'" + new batavia.types.Str(window.atob(foo)) + "'";
+		var encode = window.atob(foo);
+		var bytes = [];
+		for (var i = 0; i < encode.length; i ++) {
+			var code = encode.charCodeAt(i);
+			bytes = bytes.concat([code]);
+		};
+		return new batavia.types.Bytes(bytes);
 	},
 
 	_a85chars: function(){},
