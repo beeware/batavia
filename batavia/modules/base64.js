@@ -54,10 +54,12 @@ batavia.modules.base64 = {
 	bytes_types: function(){},
 	decode: function(){},
 	decodebytes: function(){},
-	decodestring: function(){},
+	decodestring: function(data){
+		return this.b64decode(data);
+	},
 	encode: function(){},
 	encodebytes: function(){},
-	encodestring: function(){},
+	encodestring: function(data){},
 	main: function(){},
 	re: function(){},
 	standard_b64decode: function(){},
@@ -74,8 +76,16 @@ batavia.modules.base64 = {
 		};
 		return new batavia.types.Bytes(bytes)
 	},
-	urlsafe_b64encode: function(){},
-
+	urlsafe_b64encode: function(data){
+		var data_str = String.fromCharCode.apply(null, data.val)
+		var encode = window.btoa(data_str);
+		var bytes = [];
+		for (var i = 0; i < encode.length; i ++) {
+			var code = encode.charCodeAt(i);
+			bytes = bytes.concat([code]);
+		};
+		return new batavia.types.Bytes(bytes);
+	},
 };
 
 batavia.modules.base64.b64encode.__doc__ = "Decode the Base64 encoded bytes-like object or ASCII string s.\n\nOptional altchars must be a bytes-like object or ASCII string of length 2\n    which specifies the alternative alphabet used instead of the '+' and '/'\n    characters.\n\n    The result is returned as a bytes object.  A binascii.Error is raised if\n    s is incorrectly padded.\n\n    If validate is False (the default), characters that are neither in the\n    normal base-64 alphabet nor the alternative alphabet are discarded prior\n    to the padding check.  If validate is True, these non-alphabet characters\n    in the input result in a binascii.Error.\n    "
