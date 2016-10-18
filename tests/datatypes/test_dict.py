@@ -37,7 +37,7 @@ class DictTests(TranspileTestCase):
         self.assertCodeExecution("""
             x = {1: 2, '1': 1}
             print(sorted(x.items()))
-            """)
+            """, substitutions={'str() < int()': ['int() < str()']})
 
     def test_getitem(self):
         # Simple existent key
