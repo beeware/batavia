@@ -357,6 +357,14 @@ batavia.types.Int = function() {
                 result.__add__(other);
             }
             return result;
+        } else if (batavia.isinstance(other, batavia.types.Complex)) {
+            if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+                throw new batavia.builtins.OverflowError("int too large to convert to float");
+            }
+            else {
+                return new batavia.types.Complex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber());
+            }
+
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'int' and '" + batavia.type_name(other) + "'");
         }
@@ -394,6 +402,12 @@ batavia.types.Int = function() {
             return this.__float__().__add__(other);
         } else if (batavia.isinstance(other, batavia.types.Bool)) {
             return new Int(this.val.add(other.valueOf() ? 1 : 0));
+        } else if (batavia.isinstance(other, batavia.types.Complex)) {
+            if (this.__float__() > batavia.MAX_FLOAT || this.__float__() < batavia.MIN_FLOAT) {
+                throw new batavia.builtins.OverflowError("int too large to convert to float");
+            } else {
+                return new batavia.types.Complex(this.val.add(other.real).toNumber(), other.imag);
+            }
         } else {
             throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'int' and '" + batavia.type_name(other) + "'");
         }
