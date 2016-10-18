@@ -5,8 +5,8 @@ batavia.modules.base64 = {
 	__package__: "",
 
 	b64encode: function(data){
-		var foo = batavia.types.Str(data).slice(2, -1);
-		var encode = window.btoa(foo);
+		var data_str = String.fromCharCode.apply(null, data.val)
+		var encode = window.btoa(data_str);
 		var bytes = [];
 		for (var i = 0; i < encode.length; i ++) {
 			var code = encode.charCodeAt(i);
@@ -16,11 +16,11 @@ batavia.modules.base64 = {
 	},
 
 	b64decode: function(data){
-		var foo = batavia.types.Str(data).slice(2, -1)
-		if (foo.length % 4 !== 0){
+		var data_str = String.fromCharCode.apply(null, data.val)
+		if (data_str.length % 4 !== 0){
 			throw new batavia.builtins.ValueError("Incorrect padding");
 		}
-		var encode = window.atob(foo);
+		var encode = window.atob(data_str);
 		var bytes = [];
 		for (var i = 0; i < encode.length; i ++) {
 			var code = encode.charCodeAt(i);
@@ -64,7 +64,16 @@ batavia.modules.base64 = {
 	standard_b64encode: function(){},
 	struct: function(){},
 	test: function(){},
-	urlsafe_b64decode: function(){},
+	urlsafe_b64decode: function(data){
+		var data_str = String.fromCharCode.apply(null, data.val)
+		var encode = window.atob(data_str);
+		var bytes = [];
+		for (var i = 0; i < encode.length; i ++) {
+			var code = encode.charCodeAt(i);
+			bytes = bytes.concat([code]);
+		};
+		return new batavia.types.Bytes(bytes)
+	},
 	urlsafe_b64encode: function(){},
 
 };

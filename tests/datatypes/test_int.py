@@ -66,12 +66,9 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_complex',
 
-        'test_floor_divide_complex',
-
         'test_ge_bytearray',
         'test_ge_bytes',
         'test_ge_class',
-        'test_ge_complex',
         'test_ge_frozenset',
 
         'test_gt_bytearray',

@@ -15,52 +15,71 @@ import py_compile
 import sys
 import tempfile
 
-parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('modules', metavar='module', nargs='*',
-                    help='source modules to compile')
-parser.add_argument('--source', help='location of the ouroboros source files')
 
-args = parser.parse_args()
+def parse_args():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('modules', metavar='module', nargs='*',
+                        help='source modules to compile')
+    parser.add_argument('--source', help='location of the ouroboros source files')
 
-enabled_modules = args.modules or [
-    '_weakrefset',
-    'abc',
-    'bisect',
-    'colorsys',
-    'copyreg',
-    'token',
-    'operator',
-    'stat',
-    'this',
-]
+    args = parser.parse_args()
 
-# find the ouroboros directory
-if args.source is not None:
-    ouroboros = args.source
-elif os.path.exists('ouroboros'):
-    ouroboros = 'ouroboros'
-elif os.path.exists('../ouroboros'):
-    ouroboros = '../ouroboros'
-else:
-    exit("'ouroboros' folder must be present here or in the parent directory to compile stdlib")
+    enabled_modules = args.modules or [
+        '_weakrefset',
+        'abc',
+        'bisect',
+        'colorsys',
+        'copyreg',
+        'token',
+        'operator',
+        'stat',
+        'this',
+    ]
 
-for module in enabled_modules:
-    module_fname = os.path.join(ouroboros, 'ouroboros', module + '.py')
-    if not os.path.exists(module_fname):
-        exit("Could not find file for module " + module)
-    outfile = os.path.join('batavia', 'modules', 'stdlib', module + '.js')
-    print("Compiling %s to %s" % (module_fname, outfile))
-    fp = tempfile.NamedTemporaryFile(delete=False)
-    fp.close()
-    try:
-        py_compile.compile(module_fname, cfile=fp.name)
-        with open(fp.name, 'rb') as fin:
-            pyc = fin.read()
-    finally:
-        # make sure we delete the file
-        os.unlink(fp.name)
+    # find the ouroboros directory
+    ouroboros_not_found_msg = "'ouroboros' folder must be present here or in the parent directory to compile stdlib" 
 
-    with open(outfile, 'w') as fout:
-        fout.write("batavia.stdlib['" + module + "'] = '")
-        fout.write(base64.b64encode(pyc).decode('utf8'))
-        fout.write("';\n")
+    if args.source is not None:
+        if not os.path.exists(args.source):
+            exit("{} directory doesn't exist".format(args.source)) 
+        ouroboros = args.source
+    elif os.path.exists('ouroboros'):
+        ouroboros = 'ouroboros'
+    elif os.path.exists('../ouroboros'):
+        ouroboros = '../ouroboros'
+    else:
+        exit("'ouroboros' folder must be present here or in the parent directory to compile stdlib")
+
+    return ouroboros, enabled_modules
+
+
+def compile_stdlib(ouroboros, enabled_modules):
+    for module in enabled_modules:
+        module_fname = os.path.join(ouroboros, 'ouroboros', module + '.py')
+        if not os.path.exists(module_fname):
+            exit("Could not find file for module " + module)
+        outfile = os.path.join('batavia', 'modules', 'stdlib', module + '.js')
+        print("Compiling %s to %s" % (module_fname, outfile))
+        fp = tempfile.NamedTemporaryFile(delete=False)
+        fp.close()
+        try:
+            py_compile.compile(module_fname, cfile=fp.name)
+            with open(fp.name, 'rb') as fin:
+                pyc = fin.read()
+        finally:
+            # make sure we delete the file
+            os.unlink(fp.name)
+
+        with open(outfile, 'w') as fout:
+            fout.write("batavia.stdlib['" + module + "'] = '")
+            fout.write(base64.b64encode(pyc).decode('utf8'))
+            fout.write("';\n")
+
+
+def main():
+    ouroboros, enabled_modules = parse_args()
+    compile_stdlib(ouroboros, enabled_modules)
+
+
+if __name__ == '__main__':
+    main()
