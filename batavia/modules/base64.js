@@ -65,7 +65,16 @@ batavia.modules.base64 = {
 	struct: function(){},
 	test: function(){},
 	urlsafe_b64decode: function(){},
-	urlsafe_b64encode: function(){},
+	urlsafe_b64encode: function(data){
+		var foo = String.fromCharCode.apply(null, data.val);		
+		var encode = window.btoa(foo);
+		var bytes = [];
+		for (var i = 0; i < encode.length; i ++) {
+			var code = encode.charCodeAt(i);
+			bytes = bytes.concat([code]);
+		};
+		return new batavia.types.Bytes(bytes)
+	},
 
 };
 
