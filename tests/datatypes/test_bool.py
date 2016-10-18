@@ -29,12 +29,10 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
-
         'test_add_complex',
 
         'test_eq_str',
 
-        'test_floor_divide_bytearray',
         'test_floor_divide_bytes',
         'test_floor_divide_class',
         'test_floor_divide_complex',

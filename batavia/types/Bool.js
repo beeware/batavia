@@ -161,6 +161,9 @@ Boolean.prototype.__floordiv__ = function(other) {
         } else {
             return new batavia.types.Float(roundedVal);
         }
+    }
+    else if (batavia.isinstance(other, batavia.types.Bytearray)) {
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'bool' and 'bytearray'");
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'bool' and '" + batavia.type_name(other) + "'");
     }
