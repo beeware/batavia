@@ -51,6 +51,28 @@ Boolean.prototype.__ne__ = function(other) {
 };
 
 Boolean.prototype.__gt__ = function(other) {
+
+  var invalid_types = [
+    batavia.types.Bytearray,
+    batavia.types.Bytes,
+    batavia.types.Complex,
+    batavia.types.Dict,
+    batavia.types.FrozenSet,
+    batavia.types.List,
+    batavia.types.NoneType,
+    batavia.types.NotImplementedType,
+    batavia.types.Range,
+    batavia.types.Set,
+    batavia.types.Slice,
+    batavia.types.Str,
+    batavia.types.Tuple,
+    batavia.types.Type,
+  ];
+
+  if (batavia.isinstance(other, invalid_types)) {
+      throw new batavia.builtins.TypeError('unorderable types: bool() > ' + batavia.type_name(other) + '()');
+    }
+
     return this.valueOf() > other;
 };
 
