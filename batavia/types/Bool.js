@@ -350,7 +350,10 @@ Boolean.prototype.__lt__ = function(other) {
     } else if (batavia.isinstance(other, batavia.types.Int)) {
         return this.__int__().__lt__(other);
     } else if (batavia.isinstance(other, batavia.types.Bool)) {
-        return new Boolean((this.valueOf() ? 1 : 0) < (other.valueOf() ? 1 : 0));
+        int_one = new batavia.types.Int(1);
+        int_zero= new batavia.types.Int(0);
+
+        return (this.valueOf() ? int_one : int_zero) < (other.valueOf() ? int_one : int_zero);
     } else if (batavia.isbatavianinstance(other)) {
         throw new batavia.builtins.TypeError("unorderable types: bool() < " + batavia.type_name(other) + "()");
     } else {
