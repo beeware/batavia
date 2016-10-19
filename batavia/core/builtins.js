@@ -744,8 +744,9 @@ batavia.builtins.id = function() {
 batavia.builtins.id.__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)';
 
 
-batavia.builtins.input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
+batavia.builtins.input = function(prompt_text) {
+    var user_input = prompt(prompt_text);
+    return user_input;
 };
 batavia.builtins.input.__doc__ = 'input([prompt]) -> string\n\nRead a string from standard input.  The trailing newline is stripped.\nIf the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.\nOn Unix, GNU readline is used if enabled.  The prompt string, if given,\nis printed without a trailing newline before reading.';
 
