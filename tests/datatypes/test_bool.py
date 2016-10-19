@@ -29,42 +29,13 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
-
         'test_add_complex',
 
         'test_eq_str',
 
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_class',
         'test_floor_divide_complex',
-        'test_floor_divide_dict',
         'test_floor_divide_float',
-        'test_floor_divide_frozenset',
         'test_floor_divide_int',
-        'test_floor_divide_list',
-        'test_floor_divide_None',
-        'test_floor_divide_NotImplemented',
-        'test_floor_divide_range',
-        'test_floor_divide_set',
-        'test_floor_divide_slice',
-        'test_floor_divide_str',
-        'test_floor_divide_tuple',
-
-        'test_gt_bytearray',
-        'test_gt_bytes',
-        'test_gt_class',
-        'test_gt_complex',
-        'test_gt_dict',
-        'test_gt_frozenset',
-        'test_gt_list',
-        'test_gt_None',
-        'test_gt_NotImplemented',
-        'test_gt_range',
-        'test_gt_set',
-        'test_gt_slice',
-        'test_gt_str',
-        'test_gt_tuple',
 
         'test_lshift_int',
 
