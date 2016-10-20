@@ -629,6 +629,16 @@ batavia.modules.math = {
             return batavia.modules.math._log2_int(x).__div__(batavia.modules.math._log2_int(base));
         }
 
+        // special case if x is bool it should behave like integer
+        if (batavia.isinstance(x, batavia.types.Bool)) {
+            x = x.valueOf() ? new batavia.types.Int(1) : new batavia.types.Int(0);
+        }
+
+        // special base is bool it should behave like integer
+        if (batavia.isinstance(base, batavia.types.Bool)) {
+            base = base.valueOf() ? new batavia.types.Int(1) : new batavia.types.Int(0);
+        }
+
         batavia.modules.math._checkFloat(x);
         if (x.__le__(new batavia.types.Float(0.0))) {
             throw new batavia.builtins.ValueError("math domain error");

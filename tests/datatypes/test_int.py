@@ -77,11 +77,8 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_bytearray',
         'test_le_bytes',
         'test_le_class',
-        'test_le_complex',
         'test_le_frozenset',
 
-        'test_lt_bytearray',
-        'test_lt_bytes',
         'test_lt_class',
         'test_lt_complex',
         'test_lt_frozenset',
@@ -105,12 +102,14 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
     not_implemented = [
+        'test_multiply_complex',
         'test_floor_divide_complex',
 
         'test_modulo_complex',
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
+        'test_multiply_complex',
 
         'test_power_complex',
         'test_power_float',
