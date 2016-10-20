@@ -1,7 +1,7 @@
 from ..utils import ModuleFunctionTestCase, TranspileTestCase
 
 
-class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
+class RandomTests(ModuleFunctionTestCase, TranspileTestCase):
     def test_BPF(self):
         self.assertCodeExecution("""
             import random
