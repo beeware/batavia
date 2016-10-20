@@ -112,7 +112,7 @@ class RandomTests(ModuleFunctionTestCase, TranspileTestCase):
     def test_randint(self):
         self.assertCodeExecution("""
             import random
-            foo = random.randint(0, 5)
+            a = random.randint(0, 5)
             print(a >= 0)
             print(a <= 5)
             """)
@@ -120,7 +120,7 @@ class RandomTests(ModuleFunctionTestCase, TranspileTestCase):
     def test_random(self):
         self.assertCodeExecution("""
             import random
-            foo = random.random()
+            a = random.random()
             print(a >= 0)
             print(a < 1)
             """)
