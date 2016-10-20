@@ -45,6 +45,18 @@ batavia.isinstance = function(obj, type) {
     }
 };
 
+batavia.isbatavianinstance = function(obj) {
+    return batavia.isinstance(obj, [
+        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+        batavia.types.Int, batavia.types.JSDict, batavia.types.List,
+        batavia.types.NoneType, batavia.types.Tuple, batavia.types.Slice,
+        batavia.types.Bytes, batavia.types.Bytearray, batavia.types.Type,
+        batavia.types.Str, batavia.types.Set, batavia.types.Range,
+        batavia.types.FrozenSet, batavia.types.Complex,
+        batavia.types.NotImplementedType
+    ]);
+}
+
 batavia.type_name = function(arg) {
     var type_name;
 
