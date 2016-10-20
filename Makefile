@@ -30,12 +30,13 @@ BASE_FILES=\
     batavia/types/FrozenSet.js \
     batavia/types/Str.js \
     batavia/types/Tuple.js \
-		batavia/modules/base64.js \
+    batavia/modules/base64.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
     batavia/modules/marshal.js \
     batavia/modules/inspect.js \
     batavia/modules/math.js \
+    batavia/modules/random.js \
     batavia/modules/sys.js \
     batavia/modules/time.js \
     batavia/core/Block.js \
@@ -78,12 +79,13 @@ BASE_FILES_WIN=\
     batavia\types\FrozenSet.js \
     batavia\types\Str.js \
     batavia\types\Tuple.js \
-		batavia\modules\base64.js \
+    batavia\modules\base64.js \
     batavia\modules\dis.js \
     batavia\modules\dom.js \
     batavia\modules\marshal.js \
     batavia\modules\inspect.js \
     batavia\modules\math.js \
+    batavia\modules\random.js \
     batavia\modules\sys.js \
     batavia\modules\time.js \
     batavia\core\Block.js \
