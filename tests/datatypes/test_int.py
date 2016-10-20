@@ -78,7 +78,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_bytearray',
         'test_le_bytes',
         'test_le_class',
-        'test_le_complex',
         'test_le_frozenset',
 
         'test_lt_class',
