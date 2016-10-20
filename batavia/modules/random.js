@@ -58,7 +58,7 @@ batavia.modules.random = {
     },
 
     randint: function(lower, upper) {
-        return Math.round((Math.random() * (upper - lower)) + lower);
+        return Math.ceil((Math.random() * (upper - lower)) + lower);
     },
 
     random: function() {
