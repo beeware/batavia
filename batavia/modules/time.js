@@ -148,3 +148,34 @@ batavia.modules.time.mktime = function(sequence){
     var seconds = date.getTime() / 1000;
     return seconds.toFixed(1);
 }
+
+batavia.modules.time.gmtime = function(seconds){
+    // https://docs.python.org/3/library/time.html#time.gmtime
+
+    if (seconds === undefined) {
+        var now = new Date();
+
+        var methods = ["FullYear", "Month", "Date", "Hours", "Minutes", "Seconds", "Day"]; // does not cover tm_yday and tm_isdst
+
+        //TODO month and day of week need to be shifted by 1
+
+        var sequence = methods.map(function(item, idx){
+            return now["getUTC"+item]()
+        })
+
+        // add day of year
+        var firstOfYear = new Date(now.getFullYear(), 0, 0);
+        var diff = now - firstOfYear;
+        var oneDay = 1000 * 60 * 60 * 24;
+        var dayOfYear = Math.floor(diff / oneDay) + 1;
+        sequence.push(dayOfYear);
+
+        sequence.push(0)  // dst for UTC, always off
+
+        return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
+
+    } else {
+        var date = new Date(seconds * 1000)
+    }
+
+}

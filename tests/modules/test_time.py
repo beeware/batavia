@@ -425,6 +425,24 @@ class TimeTests(TranspileTestCase):
                 test.py:4
             """.format(year))
 
+
+    def test_gmtime_no_arg(self):
+        """
+        test for gmtime with no arugment
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.gmtime()')
+        print(time.gmtime())
+        """)
+
+        # TODO currently assertCodeExecution has a delay between when JS and Python execution. The returned values here
+        # TODO will be off by a few seconds.
+        self.assertCodeExecution(test_str)
+
+
 def struct_time_setup(seq = [1] * 9):
     """
     returns a string to set up a struct_time with seq the struct_time constructor
