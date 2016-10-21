@@ -237,7 +237,7 @@ batavia.builtins.all = function(args, kwargs) {
         }
     }
 
-    return true;
+    return new batavia.types.Bool(true);
 };
 batavia.builtins.all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.';
 
@@ -271,7 +271,6 @@ batavia.builtins.any = function(args, kwargs) {
             throw err;
         }
     }
-
     return false;
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
@@ -298,7 +297,7 @@ batavia.builtins.bin = function(args, kwargs) {
             "'" + batavia.type_name(obj) + "' object cannot be interpreted as an integer");
     }
 
-    return "0b" + obj.toString(2);
+    return new batavia.types.Str("0b" + obj.toString(2));
 };
 batavia.builtins.bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   ";
 
@@ -310,17 +309,17 @@ batavia.builtins.bool = function(args, kwargs) {
         throw new batavia.builtins.TypeError("bool() doesn't accept keyword arguments");
     }
     if (!args || args.length === 0) {
-        return false;
+        return new batavia.types.Bool(false);
     } else if (args.length != 1) {
         throw new batavia.builtins.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
     if (args[0] === null) {
-        return batavia.types.NoneType.__bool__();
+        return new batavia.types.NoneType.__bool__();
     } else if (args[0].__bool__) {
         return args[0].__bool__();
     } else {
-        return !!(args[0].valueOf());
+        return new batavia.types.Bool((!!args[0].valueOf()));
     }
 };
 batavia.builtins.bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nIn CPython, the builtins True and False are the only two instances of the class bool.\nAlso in CPython, the class bool is a subclass of the class int, and cannot be subclassed.\nBatavia implements booleans as a native Javascript Boolean, enhanced with additional __dunder__ methods.\n"Integer-ness" of booleans is faked via batavia.builtins.Bool\'s __int__ method.';
@@ -354,9 +353,108 @@ batavia.builtins.bytearray = function(args, kwargs) {
 batavia.builtins.bytearray.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer';
 
 batavia.builtins.bytes = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'bytes' not implemented");
+
+//    bytes(iterable_of_ints) -> bytes
+//    bytes(string, encoding[, errors]) -> bytes
+//    bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
+//    bytes(int) -> bytes object of size given by the parameter initialized with null bytes
+//    bytes() -> empty bytes object
+
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError("Batavia calling convention not used.");
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("<fn>() doesn't accept keyword arguments.");
+    }
+
+    if (args.length == 0) {
+        //    bytes() -> empty bytes object
+        return new batavia.types.Bytes(batavia.vendored.buffer.Buffer.alloc(0));
+    } else if (args.length == 1) {
+        var arg = args[0];
+        if (arg === null) {
+            throw new batavia.builtins.TypeError("'NoneType' object is not iterable");
+        } else if (batavia.isinstance(arg, batavia.types.Int)) {
+            // bytes(int) -> bytes array of size given by the parameter initialized with null bytes
+            // Batavia ints are BigNumbers, so we need to unpack the value from the BigNumber Array.
+            // We throw OverflowError when we find a RangeError, so implementation dependent
+            var bignumsign = arg.val.s;
+            var bignumarray = arg.val.c;
+            var bignumexp = arg.val.e;
+            var too_large = false;
+            if (bignumsign == -1) {
+                throw new batavia.builtins.ValueError(
+                    "negative count"
+                );
+            }
+            else if (bignumarray.length > 1 || bignumexp != 0) {
+                too_large = true;
+            } else{
+                var byteslength = bignumarray[0];
+                try {
+                    var bytesbuffer = batavia.vendored.buffer.Buffer.alloc(byteslength);
+                } catch (e) {
+                    if (e.name === 'RangeError') { too_large = true; }
+                }
+            }
+            if (too_large) {
+                throw new batavia.builtins.OverflowError("byte string is too large");
+            } else {
+                return new batavia.types.Bytes(bytesbuffer);
+            }
+        } else if (batavia.isinstance(arg, batavia.types.Bool)) {
+            // Python bool is subclassed from int, but Batavia's Boolean is a fake int:
+            return new batavia.builtins.bytes([arg.__int__()], []);
+        } else if (batavia.isinstance(arg, batavia.types.Bytes)) {
+            // bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
+            return new batavia.types.Bytes(batavia.vendored.buffer.Buffer.from(arg.val));
+            // (we actually ignore python's bytearray/buffer/memoryview (not JS buffer)
+            // let's make that a late-stage TODO)
+        } else if (batavia.isinstance(arg, batavia.types.Bytearray)) {
+            // byte(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+            // but bytearrray is still not implemented, so...
+            throw new batavia.builtins.NotImplementedError(
+                "Not implemented"
+            );
+        } else if (batavia.isinstance(arg, batavia.types.Str )){
+            throw new batavia.builtins.TypeError("string argument without an encoding");
+        // is the argument iterable and not a Str, Bytes, Bytearray (dealt with above)?
+        } else if (arg.__iter__ !== undefined) {
+            // bytearray(iterable_of_ints) -> bytearray
+            // we have an iterable (iter is not undefined) that's not a string(nor a Bytes/Bytearray)
+            // build a JS array of numbers while validating inputs are all int
+            var buffer_args = [];
+            var iterobj = batavia.builtins.iter([arg], null);
+            batavia.iter_for_each(iterobj, function(val){
+                if (batavia.isinstance(val, batavia.types.Int) && (0 <= val) && (val <= 255)){
+                    buffer_args.push(val);
+                } else if (batavia.isinstance(val, batavia.types.Bool)) {
+                    buffer_args.push(val ? 1 : 0);
+                } else {
+                    if (!batavia.isinstance(val, batavia.types.Int)) {
+                        throw new batavia.builtins.TypeError(
+                            "'" + batavia.type_name(val) + "' object cannot be interpreted as an integer");
+                    } else {
+                        throw new batavia.builtins.ValueError('bytes must be in range(0, 256)');
+                    }
+                }
+            });
+            return new batavia.types.Bytes(batavia.vendored.buffer.Buffer.from(buffer_args));
+        } else {
+            // the argument is not one of the special cases, and not an iterable, so...
+            throw new batavia.builtins.TypeError(
+            //    "'" + batavia.type_name(val) + "' object is not iterable");
+            "'" + batavia.type_name(arg) + "' object is not iterable");
+        }
+    } else if (args.length >= 2 && args.length <= 3) {
+        //    bytes(string, encoding[, errors]) -> bytes
+        //    we delegate to str.encode(encoding, errors)
+        //    we need to rewrap the first argument because somehow it's coming unwrapped!
+        wrapped_string = new batavia.types.Str(args[0]);
+        return wrapped_string.encode(args[1], args[2]);
+    }
 };
+
 batavia.builtins.bytes.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer';
 
 batavia.builtins.callable = function(args, kwargs) {
@@ -370,9 +468,9 @@ batavia.builtins.callable = function(args, kwargs) {
         throw new batavia.builtins.TypeError('callable() expected exactly 1 argument (' + args.length + ' given)');
     }
     if (typeof(args[0]) === "function" || (args[0] && args[0].__call__)) {
-        return true;
+        return new batavia.types.Bool(true);
     } else {
-        return false;
+        return new batavia.types.Bool(false);
     }
 };
 batavia.builtins.callable.__doc__ = 'callable(object) -> bool\n\nReturn whether the object is callable (i.e., some kind of function).\nNote that classes are callable, as are instances of classes with a\n__call__() method.';
@@ -382,12 +480,14 @@ batavia.builtins.chr = function(args, kwargs) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new batavia.builtins.TypeError("char() doesn't accept keyword arguments");
+        throw new batavia.builtins.TypeError("chr() takes no keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError('char() expected exactly 1 argument (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('chr() takes exactly 1 argument (' + args.length + ' given)');
     }
-    return String.fromCharCode(args[0]);
+    return new batavia.types.Str(String.fromCharCode(args[0]));
+    // After tests pass, let's try saving one object creation
+    // return new batavia.types.Str.fromCharCode(args[0]);
 };
 batavia.builtins.chr.__doc__ = 'chr(i) -> Unicode character\n\nReturn a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.';
 
@@ -446,7 +546,9 @@ batavia.builtins.delattr = function(args, kwargs) {
             if (batavia.builtins.getattr(args)) {
                 delete args[0][args[1]];
                 // False returned by bool(delattr(...)) in the success case
-                return false;
+                // TODO (JC): this is wrong, because delattr() returns None
+                // TODO       ask where/how to set up a failing test before fixing
+                return new batavia.types.Bool(false);
             }
         } catch (err) {
             // This is maybe unecessary, but matches the error thrown by python 3.5.1 in this case
@@ -515,7 +617,7 @@ batavia.builtins.dict = function(args, kwargs) {
                 dict.__setitem__(sub_array[0], sub_array[1]);
             }
         }
-        return dict;
+        return new batavia.types.Dict(dict);
     }
 };
 batavia.builtins.dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
@@ -547,7 +649,8 @@ batavia.builtins.divmod = function(args, kwargs) {
 
     div = Math.floor(args[0]/args[1]);
     rem = args[0] % args[1];
-    return new batavia.types.Tuple([div, rem]);
+    return new batavia.types.Tuple([new batavia.types.Int(div),
+                                    new batavia.types.Int(rem)]);
 };
 batavia.builtins.divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod == x.';
 
@@ -579,7 +682,7 @@ batavia.builtins.exec = function() {
 batavia.builtins.exec.__doc__ = 'exec(object[, globals[, locals]])\n\nRead and execute code from an object, which can be a string or a code\nobject.\nThe globals and locals are dictionaries, defaulting to the current\nglobals and locals.  If only globals is given, locals defaults to it.';
 
 batavia.builtins.filter = function(args, kwargs) {
-    if (arguments.length != 2) {
+    if (args.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
@@ -594,7 +697,7 @@ batavia.builtins.float = function(args) {
         throw new batavia.builtins.TypeError("float() takes at most 1 argument (" + args.length + " given)");
     }
     if (args.length === 0) {
-        return 0.0;
+        return new batavia.types.Float(0.0);
     }
 
     var value = args[0];
@@ -816,7 +919,7 @@ batavia.builtins.isinstance = function(args, kwargs) {
         throw new batavia.builtins.TypeError("isinstance expected 2 arguments, got " + args.length);
     }
 
-    return batavia.isinstance(args[0], args[1]);
+    return new batavia.types.Bool(batavia.isinstance(args[0], args[1]));
 };
 batavia.builtins.isinstance.__doc__ = "isinstance(object, class-or-type-or-tuple) -> bool\n\nReturn whether an object is an instance of a class or of a subclass thereof.\nWith a type as second argument, return whether that is the object's type.\nThe form using a tuple, isinstance(x, (A, B, ...)), is a shortcut for\nisinstance(x, A) or isinstance(x, B) or ... (etc.).";
 
@@ -1425,7 +1528,7 @@ batavia.builtins.vars.__doc__ = 'vars([object]) -> dictionary\n\nWithout argumen
 
 batavia.builtins.zip = function(args, undefined) {
     if (args === undefined) {
-        return [];
+        return new batavia.types.List();
     }
 
     var minLen = Math.min.apply(null, args.map(function (element) {
@@ -1434,10 +1537,10 @@ batavia.builtins.zip = function(args, undefined) {
 
 
     if (minLen === 0) {
-        return [];
+        return new batavia.types.List();
     }
 
-    var result = [];
+    var result = new batavia.types.List();
     for(var i = 0; i < minLen; i++) {
         var sequence = [];
         for(var iterableObj = 0; iterableObj < args.length; iterableObj++) {

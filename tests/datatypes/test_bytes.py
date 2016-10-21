@@ -20,11 +20,70 @@ class BytesTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_init(self):
         self.assertCodeExecution("""
-            x = 'bytes("Ramón de España", 'utf-8')'
-            print(x) 
+            x = bytes("Ramón de España", 'utf-8')
+            print(x)
+            """)
+
+        self.assertCodeExecution("""
+            x = byes("Clive James", 'ascii')
+            print(x)
+            """)
+
+    @unittest.expectedFailure
+    def test_init_encode_error(self):
+        # test with accents can't be encoded with ascii,
+        # should raise UnicodeEncodeError
+        self.assertCodeExecution("""
+            x = bytes("Ramón de España", 'ascii')
+            print(x)
+            """)
+
+    def test_equality_properly(self):
+        # testing something against itself not enough for buffer.Buffer
+        # we need two separate values which are equivalent
+        # see http://paste.ubuntu.com/23358563/
+        self.assertCodeExecution("""
+            utf8_ints = bytes([82, 97, 109, 195, 179, 110, 32, 100, 101, 32,
+                               69, 115, 112, 97, 195, 177, 97])
+            utf8_string = bytes("Ramón de España", "utf-8")
+            print(utf8_ints)
+            print(utf8_string)
+            print(utf8_int == utf8_string)
+            """)
+
+    def test_decode(self):
+        self.assertCodeExecution("""
+            print("Encoded with utf-8")
+            x = bytes([82, 97, 109, 195, 179, 110, 32, 100, 101, 32, 69, 115, 112, 97, 195, 177, 97])
+            print(x.decode('utf-8'))
+            """)
+
+        self.assertCodeExecution("""
+            print("Encoded with iso-latin1")
+            x = bytes([82, 97, 109, 243, 110, 32, 100, 101, 32, 69, 115, 112, 97, 241, 97])
+            print(x.decode('latin-1'))
+            """)
+
+        self.assertCodeExecution("""
+            print("Encoded with ascii")
+            x = b'Clive James'
+            print(x.decode('ascii'))
+            """)
+
+    @unittest.expectedFailure
+    def test_decode_error(self):
+        self.assertCodeExecution("""
+            # encoded with utf_8
+            x = bytes([82, 97, 109, 195, 179, 110, 32, 100, 101, 32, 69, 115, 112, 97, 195, 177, 97])
+            print(x.decode('ascii'))
+            """)
+
+        self.assertCodeExecution("""
+            // encoded with latin_1
+            x = bytes([82, 97, 109, 243, 110, 32, 100, 101, 32, 69, 115, 112, 97, 241, 97])
+            print(x.decode('utf-8'))
             """)
 
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
@@ -78,7 +137,7 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_and_str',
         'test_and_tuple',
 
-        'test_eq_bytes',
+        'test_eq_bytearray',
 
         'test_floor_divide_bool',
         'test_floor_divide_bytearray',
@@ -98,56 +157,11 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_str',
         'test_floor_divide_tuple',
 
-        'test_ge_bool',
-        'test_ge_bytes',
-        'test_ge_class',
-        'test_ge_complex',
-        'test_ge_dict',
-        'test_ge_float',
-        'test_ge_frozenset',
-        'test_ge_int',
-        'test_ge_list',
-        'test_ge_None',
-        'test_ge_NotImplemented',
-        'test_ge_range',
-        'test_ge_set',
-        'test_ge_slice',
-        'test_ge_str',
-        'test_ge_tuple',
+        'test_ge_bytearray',
 
-        'test_gt_bool',
-        'test_gt_bytes',
-        'test_gt_class',
-        'test_gt_complex',
-        'test_gt_dict',
-        'test_gt_float',
-        'test_gt_frozenset',
-        'test_gt_int',
-        'test_gt_list',
-        'test_gt_None',
-        'test_gt_NotImplemented',
-        'test_gt_range',
-        'test_gt_set',
-        'test_gt_slice',
-        'test_gt_str',
-        'test_gt_tuple',
+        'test_gt_bytearray',
 
-        'test_lt_bool',
-        'test_lt_bytes',
-        'test_lt_class',
-        'test_lt_complex',
-        'test_lt_dict',
-        'test_lt_float',
-        'test_lt_frozenset',
-        'test_lt_int',
-        'test_lt_list',
-        'test_lt_None',
-        'test_lt_NotImplemented',
-        'test_lt_range',
-        'test_lt_set',
-        'test_lt_slice',
-        'test_lt_str',
-        'test_lt_tuple',
+        'test_lt_bytearray',
 
         'test_lshift_bool',
         'test_lshift_bytearray',
@@ -167,22 +181,7 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lshift_str',
         'test_lshift_tuple',
 
-        'test_le_bool',
-        'test_le_bytes',
-        'test_le_class',
-        'test_le_complex',
-        'test_le_dict',
-        'test_le_float',
-        'test_le_frozenset',
-        'test_le_int',
-        'test_le_list',
-        'test_le_None',
-        'test_le_NotImplemented',
-        'test_le_range',
-        'test_le_set',
-        'test_le_slice',
-        'test_le_str',
-        'test_le_tuple',
+        'test_le_bytearray',
 
         'test_modulo_bool',
         'test_modulo_bytearray',
@@ -205,7 +204,7 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_bool',
         'test_multiply_int',
 
-        'test_ne_bytes',
+        'test_ne_bytearray',
 
         'test_or_bool',
         'test_or_bytearray',
