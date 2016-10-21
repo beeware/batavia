@@ -425,7 +425,7 @@ class TimeTests(TranspileTestCase):
                 test.py:4
             """.format(year))
 
-
+    @unittest.expectedFailure
     def test_gmtime_no_arg(self):
         """
         test for gmtime with no arugment
@@ -441,6 +441,23 @@ class TimeTests(TranspileTestCase):
         # TODO currently assertCodeExecution has a delay between when JS and Python execution. The returned values here
         # TODO will be off by a few seconds.
         self.assertCodeExecution(test_str)
+
+    def test_gmtime_with_arg(self):
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.gmtime(1000)')
+        print(time.gmtime(1000))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_gmtime_arg_out_of_range(self):
+        """
+        args passed is too small or large
+        :return:
+        """
 
 
 def struct_time_setup(seq = [1] * 9):
