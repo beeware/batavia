@@ -1161,10 +1161,16 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         vars()['test_or_%s' % datatype] = _inplace_test('test_or_%s' % datatype, 'x |= y', examples)
 
 
-def _builtin_test(test_name, operation, examples):
+def _builtin_test(test_name, operation, examples, small_ints=False):
     def func(self):
+        # bytes() gives implementation-dependent errors for sizes > 2**64,
+        # we'll skip testing with those values rather than cargo-culting
+        # the exact same exceptions
+        actuals = examples
+        if self.small_ints and test_name.endswith('_int'):
+            actuals = [x for x in examples if abs(int(x)) < 8192]
         self.assertBuiltinFunction(
-            x_values=examples,
+            x_values=actuals,
             f_values=self.functions,
             operation=operation,
             format=self.format,
@@ -1176,6 +1182,7 @@ def _builtin_test(test_name, operation, examples):
 class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
     substitutions = SAMPLE_SUBSTITUTIONS
+    small_ints = False
 
     @classmethod
     def tearDownClass(cls):
@@ -1220,7 +1227,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
 
     for datatype, examples in SAMPLE_DATA.items():
         vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
-        vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
+    vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
 
 
 def _builtin_twoarg_test(test_name, operation, examples1, examples2):
@@ -1258,10 +1265,10 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
         # filter out very large integers for some operations so as not
         # to crash CPython
         data = [(f, x, y) for f, x, y in data if not
-            (f == 'pow' and
-             x.lstrip('-').isdigit() and
-             y.lstrip('-').isdigit() and
-             (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
+                (f == 'pow' and
+                 x.lstrip('-').isdigit() and
+                 y.lstrip('-').isdigit() and
+                 (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
 
         self.assertCodeExecution(
             '##################################################\n'.join(
