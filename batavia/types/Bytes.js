@@ -285,7 +285,26 @@ batavia.types.Bytes = function() {
         return new Bytes(this.valueOf());
     };
 
-    Bytes.prototype.decode = function(encoding) {};
+    Bytes.prototype.decode = function(encoding, errors) {
+        if (errors !== undefined) {
+            return new batavia.builtins.NotImplementedError(
+                "'errors' parameter of String.encode not implemented"
+            );
+        }
+        encoding = encoding.toLowerCase();
+        var encs = batavia.TEXT_ENCODINGS;
+        if (encs.ascii.indexOf(encoding) !== -1) {
+            return this.val.toString('ascii');
+        } else if (encs.latin_1.indexOf(encoding) !== -1) {
+            return this.val.toString('latin1');
+        } else if (encs.utf_8.indexOf(encoding) !== -1) {
+            return this.val.toString('utf8');
+        } else {
+            return new batavia.builtins.NotImplementedError(
+                "encoding not implemented or incorrect encoding"
+            );
+        }
+    };
 
     /**************************************************
      * Bytes Iterator

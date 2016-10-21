@@ -490,27 +490,21 @@ String.prototype.encode = function(encoding, errors) {
         );
     }
     encoding = encoding.toLowerCase();
-    var ascii = ['ascii', '646', 'us-ascii'];
-    var latin_1 = ['latin_1', 'latin-1', 'iso-8859-1', 'iso8859-1', '8859',
-                   'cp819', 'latin', 'latin1', 'L1']
-    var utf_8 = ['utf_8', 'utf-8', 'utf8', 'u8', 'UTF'];
-    if (ascii.indexOf(encoding) !== -1) {
+    var encs = batavia.TEXT_ENCODINGS;
+    if (encs.ascii.indexOf(encoding) !== -1) {
         return new batavia.types.Bytes(
             batavia.vendored.buffer.Buffer.from(this.valueOf(), 'ascii'));
-    } else if (latin_1.indexOf(encoding) !== -1) {
+    } else if (encs.latin_1.indexOf(encoding) !== -1) {
         return new batavia.types.Bytes(
             batavia.vendored.buffer.Buffer.from(this.valueOf(), 'latin1'));
-    } else if (utf_8.indexOf(encoding) !== -1) {
+    } else if (encs.utf_8.indexOf(encoding) !== -1) {
         return new batavia.types.Bytes(
             batavia.vendored.buffer.Buffer.from(this.valueOf(), 'utf8'));
     } else {
         return new batavia.builtins.NotImplementedError(
             "encoding not implemented or incorrect encoding"
-            );
+        );
     }
-
-
-
 };
 
 String.prototype.startswith = function (str) {

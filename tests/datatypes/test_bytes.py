@@ -27,6 +27,11 @@ class BytesTests(TranspileTestCase):
             """)
 
         self.assertCodeExecution("""
+            x = bytes("Ramón de España", 'latin-1')
+            print(x)
+            """)
+
+        self.assertCodeExecution("""
             x = byes("Clive James", 'ascii')
             print(x)
             """)

@@ -443,3 +443,15 @@ batavia.js2py = function(arg) {
             throw new batavia.builtins.BataviaError("Unknown type " + (typeof arg));
     }
 }
+
+/************************
+ *  Reusable Constants
+ ************************/
+
+batavia.TEXT_ENCODINGS = {
+    ascii : ['ascii', '646', 'us-ascii'],
+    latin_1 : ['latin_1', 'latin-1', 'iso-8859-1', 'iso8859-1', '8859',
+               'cp819', 'latin', 'latin1', 'L1'],
+    utf_8 : ['utf_8', 'utf-8', 'utf8', 'u8', 'UTF']
+};
+
