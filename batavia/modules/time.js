@@ -104,4 +104,47 @@ batavia.modules.time.struct_time.prototype.__repr__ = function(){
     return this.__str__()
 }
 
-//TODO __reduce__
+batavia.modules.time.mktime = function(sequence){
+    // sequence: struct_time like
+    // documentation: https://docs.python.org/3/library/time.html#time.mktime
+
+    //Validations
+    if (arguments.length != 1){
+        throw new batavia.builtins.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
+    }
+
+    if (!batavia.isinstance(sequence, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
+        throw new batavia.builtins.TypeError("Tuple or struct_time argument required");
+    }
+
+    if (sequence.length !== 9){
+        throw new batavia.builtins.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)");
+    }
+
+    if (sequence[0] < 1900){
+        // because the earliest possible date is system dependant, use an arbitrary cut off for now.
+        throw new batavia.builtins.OverflowError("mktime argument out of range");
+    }
+
+    // all items must be integers
+    for (var i=0; i<sequence.length; i++){
+        var item = sequence[i];
+        if (batavia.isinstance(item, batavia.types.Float)){
+            throw new batavia.builtins.TypeError("integer argument expected, got float")
+        }
+        else if (!batavia.isinstance(item, [batavia.types.Int])){
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")");
+        }
+    }
+
+    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0)
+
+    if (isNaN(date)){
+        // date is too large per ECMA specs
+        // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+        throw new batavia.builtins.OverflowError("signed integer is greater than maximum")
+    }
+
+    var seconds = date.getTime() / 1000;
+    return seconds.toFixed(1);
+}

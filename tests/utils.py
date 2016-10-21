@@ -553,7 +553,7 @@ class TranspileTestCase(TestCase):
             self, code, out,
             extra_code=None, js=None,
             run_in_global=True, run_in_function=True,
-            args=None, substitutions=None):
+            args=None, substitutions=None, same=True):
         "Run code under JavaScript and check the output is as expected"
         self.maxDiff = None
         #==================================================
@@ -599,8 +599,11 @@ class TranspileTestCase(TestCase):
             # normalized format for exceptions, floats etc.
             js_out = cleanse_javascript(js_out, substitutions)
 
-            # Confirm that the output of the JavaScript code is the same as the Python code.
-            self.assertEqual(js_out, py_out, 'Global context')
+            # Compare the output of the JavaScript code with the Python code.
+            if same:
+                self.assertEqual(js_out, py_out, 'Global context')
+            else:
+                self.assertNotEqual(js_out, py_out, 'Global context')
 
         #==================================================
         # Pass 2 - run the code in a function's context
@@ -638,8 +641,11 @@ class TranspileTestCase(TestCase):
             # normalized format for exceptions, floats etc.
             js_out = cleanse_javascript(js_out, substitutions)
 
-            # Confirm that the output of the JavaScript code is the same as the Python code.
-            self.assertEqual(js_out, py_out, 'Function context')
+            # Compare the output of the JavaScript code with the Python code.
+            if same:
+                self.assertEqual(js_out, py_out, 'Function context')
+            else:
+                self.assertNotEqual(js_out, py_out, 'Function context')
 
 
 class NotImplementedToExpectedFailure:
