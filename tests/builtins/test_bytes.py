@@ -11,8 +11,4 @@ class BuiltinBytesFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_bytearray',
-        'test_complex',
-        'test_frozenset',
-        'test_range',
-        'test_set'
     ]

@@ -9,7 +9,6 @@ class BuiltinOctFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["oct"]
 
     not_implemented = [
-        'test_noargs',
         'test_bytearray',
         'test_bytes',
         'test_class',
