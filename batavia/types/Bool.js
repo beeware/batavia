@@ -323,7 +323,7 @@ Boolean.prototype.__ge__ = function(other) {
         return this.__int__().__ge__(other);
     } else if (batavia.isinstance(other, batavia.types.Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) >= (other.valueOf() ? 1 : 0));
-    } else if (batavia.isbatavianinstance(other)) {
+    } else if (batavia.isbataviainstance(other)) {
         throw new batavia.builtins.TypeError("unorderable types: bool() >= " + batavia.type_name(other) + "()");
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");
@@ -337,7 +337,7 @@ Boolean.prototype.__le__ = function(other) {
         return this.__int__().__le__(other);
     } else if (batavia.isinstance(other, batavia.types.Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) <= (other.valueOf() ? 1 : 0));
-    } else if (batavia.isbatavianinstance(other)) {
+    } else if (batavia.isbataviainstance(other)) {
         throw new batavia.builtins.TypeError("unorderable types: bool() <= " + batavia.type_name(other) + "()");
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");
@@ -354,7 +354,7 @@ Boolean.prototype.__lt__ = function(other) {
         int_zero= new batavia.types.Int(0);
 
         return (this.valueOf() ? int_one : int_zero) < (other.valueOf() ? int_one : int_zero);
-    } else if (batavia.isbatavianinstance(other)) {
+    } else if (batavia.isbataviainstance(other)) {
         throw new batavia.builtins.TypeError("unorderable types: bool() < " + batavia.type_name(other) + "()");
     } else {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'bool' and '" + batavia.type_name(other) + "'");

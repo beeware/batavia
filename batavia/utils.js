@@ -45,7 +45,7 @@ batavia.isinstance = function(obj, type) {
     }
 };
 
-batavia.isbatavianinstance = function(obj) {
+batavia.isbataviainstance = function(obj) {
     return batavia.isinstance(obj, [
         batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
         batavia.types.Int, batavia.types.JSDict, batavia.types.List,
