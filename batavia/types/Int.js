@@ -74,19 +74,14 @@ batavia.types.Int = function() {
 
     Int.prototype.__lt__ = function(other) {
         if (other !== null) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
-                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Set, batavia.types.Slice,
-                        batavia.types.Bytes, batavia.types.Bytearray
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
-            } else if (batavia.isinstance(other, batavia.types.Bool)) {
+            if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.lt(other ? 1 : 0);
             } else if (batavia.isinstance(other, batavia.types.Int)) {
                 return this.val.lt(other.val);
-            } else {
+            } else if (batavia.isinstance(other, batavia.types.Float)) {
                 return this.val.lt(other.valueOf());
+            } else {
+                throw new batavia.builtins.TypeError("unorderable types: int() < " + batavia.type_name(other) + "()");
             }
         } else {
             throw new batavia.builtins.TypeError("unorderable types: int() < NoneType()");
