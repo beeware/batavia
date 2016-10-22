@@ -181,11 +181,7 @@ batavia.types.Dict = function() {
 
     Dict.prototype.__ge__ = function(other) {
          if (other !== null) {
-             if (batavia.isinstance(other, [
-                         batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                         batavia.types.Int, batavia.types.JSDict, batavia.types.List,
-                         batavia.types.NoneType, batavia.types.Str, batavia.types.Tuple
-                    ])) {
+             if (batavia.isbataviainstance(other)) {
                  throw new batavia.builtins.TypeError("unorderable types: dict() >= " + batavia.type_name(other) + "()");
              } else {
                  return this.valueOf() >= other.valueOf();

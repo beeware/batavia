@@ -174,25 +174,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_floor_divide_complex',
 
-        'test_ge_bytearray',
-        'test_ge_bytes',
-        'test_ge_class',
-        'test_ge_complex',
-        'test_ge_frozenset',
-        'test_ge_NotImplemented',
-        'test_ge_range',
-        'test_ge_set',
-        'test_ge_slice',
-
-        'test_gt_bytearray',
-        'test_gt_bytes',
-        'test_gt_class',
-        'test_gt_complex',
-        'test_gt_frozenset',
-        'test_gt_NotImplemented',
-        'test_gt_range',
-        'test_gt_slice',
-
         'test_lshift_bool',
         'test_lshift_bytearray',
         'test_lshift_bytes',
