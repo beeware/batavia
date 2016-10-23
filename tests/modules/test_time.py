@@ -110,14 +110,12 @@ class TimeTests(TranspileTestCase):
         test_str = ''.join(sequence_tests)
         self.assertCodeExecution(test_str)
 
-
     def test_struct_time_too_short(self):
         """
         sequence less than length 9 is passed
         should raise an index error
         """
         self.assertCodeExecution(struct_time_setup([1]*8))
-
 
     def test_struct_time_too_long(self):
         """
@@ -227,7 +225,6 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
-
     def test_mktime_dst(self):
         """
         tests with each month of the year
@@ -252,7 +249,6 @@ class TimeTests(TranspileTestCase):
             test_str += mktime_setup(str(tuple(seq)))
 
         self.assertCodeExecution(test_str)
-
 
     def test_mktime_bad_input(self):
         """
@@ -400,7 +396,6 @@ class TimeTests(TranspileTestCase):
                 test.py:4
             """.format(hour=hour, second=second))
 
-
     def test_mktime_no_overflow_error(self):
         """
         years that will not throw an OverflowError
@@ -428,6 +423,7 @@ class TimeTests(TranspileTestCase):
                 test.py:4
             """.format(year))
 
+    # TESTS FOR GMTIME
     def test_gmtime_no_arg(self):
         """
         test for gmtime with no arugment
@@ -504,7 +500,6 @@ class TimeTests(TranspileTestCase):
         for t_str in test_strs:
             self.assertCodeExecution(t_str)
 
-
     def test_gmtime_argument_range(self):
         """
         tests for values exceding +- 8640000000000000 (limit for JS)
@@ -554,6 +549,7 @@ def struct_time_setup(seq = [1] * 9):
     """).format(type_name=type(seq), seq=seq)
 
     return test_str
+
 
 def mktime_setup(seq):
     """
