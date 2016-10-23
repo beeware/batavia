@@ -113,7 +113,7 @@ batavia.modules.time.mktime = function(sequence){
         throw new batavia.builtins.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
     }
 
-    if (!batavia.isinstance(seconds, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
+    if (!batavia.isinstance(sequence, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
         throw new batavia.builtins.TypeError("Tuple or struct_time argument required");
     }
 
@@ -157,23 +157,24 @@ batavia.modules.time.gmtime = function(seconds){
         throw new batavia.builtins.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
     }
 
-    // catching bad types
-    if (batavia.isinstance(seconds, [batavia.types.Complex])){
-        throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
+    if (arguments.length == 1) {
+        // catching bad types
+        if (batavia.isinstance(seconds, [batavia.types.Complex])){
+            throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
 
-    } else if (!(batavia.isinstance(seconds, [batavia.types.Int, batavia.types.Float, batavia.types.Bool]))) {
-        throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(seconds) + ")")
-    }
+        } else if (!(batavia.isinstance(seconds, [batavia.types.Int, batavia.types.Float, batavia.types.Bool]))) {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(seconds) + ")")
+        }
 
-    if (seconds === undefined) {
-        var date = new Date();
-    } else {
         var date = new Date(seconds * 1000)
         if (isNaN(date)){
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
             throw new batavia.builtins.OSError("Value too large to be stored in data type")
         }
+
+    } else if (seconds === undefined){
+        var date = new Date();
     }
 
     var sequence = [date.getUTCFullYear(),
