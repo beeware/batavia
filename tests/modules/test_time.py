@@ -551,7 +551,7 @@ def struct_time_setup(seq = [1] * 9):
     :param seq: a valid sequence
     """
 
-    test_str = adjust("""
+    test_str = adjust("""   
     print("constructing struct_time with {type_name}")
     print(">>> st = time.struct_time({seq})")
     st = time.struct_time({seq})
