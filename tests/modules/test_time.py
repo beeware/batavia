@@ -452,7 +452,7 @@ class TimeTests(TranspileTestCase):
             runAsPython(test_dir, test_str)
         ]
 
-        raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of a struct_time
+        raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
 
         # regex to parse struct_time
         match_str = 'time\.struct_time\(tm_year=(?P<year>-?\d{1,4}), tm_mon=(?P<mon>-?\d{1,2}), tm_mday=(?P<mday>-?\d{1,2}), tm_hour=(?P<hour>-?\d{1,2}), tm_min=(?P<min>-?\d{1,2}), tm_sec=(?P<sec>-?\d{1,2}), tm_wday=(?P<wday>-?\d{1}), tm_yday=(?P<yday>-?\d{1,4}), tm_isdst=(?P<isdst>-?\d{1})\)'
@@ -460,10 +460,10 @@ class TimeTests(TranspileTestCase):
         times = []
         for raw in raw_times:
             match = re.search(match_str, raw)
-            attrs = [ int(match.group(i)) for i in range(1, 10) ] # grab each attr from struct_tine
+            attrs = [int(match.group(i)) for i in range(1, 10)]   # grab each attr from struct_tine
             times.append(mktime(tuple(attrs)))
 
-        self.assertAlmostEqual(times[0], times[1], delta=2)  # times prouced should be within 2 seconds of each other
+        self.assertAlmostEqual(times[0], times[1], delta=2)  # times should be within 2 seconds of each other
 
     def test_gmtime_with_arg(self):
 
@@ -510,14 +510,8 @@ class TimeTests(TranspileTestCase):
         tests for values exceding +- 8640000000000000 (limit for JS)
         """
 
-        limit_abs = 8640000000000000
+        limit_abs = 8640000000000000 / 1000
 
-        # test_strs = [adjust("""
-        # print('>>> import time')
-        # import time
-        # print('>>> time.gmtime({seconds})')
-        # print(time.gmtime({seconds}))
-        # """.format(seconds=(factor * limit_abs)) for factor in range(1)) ]
         for adder in range(2):
             for factor in [-1, 1]:
                 seconds = factor * (limit_abs + adder)
@@ -551,7 +545,7 @@ def struct_time_setup(seq = [1] * 9):
     :param seq: a valid sequence
     """
 
-    test_str = adjust("""   
+    test_str = adjust("""
     print("constructing struct_time with {type_name}")
     print(">>> st = time.struct_time({seq})")
     st = time.struct_time({seq})

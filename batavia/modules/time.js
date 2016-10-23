@@ -157,7 +157,6 @@ batavia.modules.time.gmtime = function(seconds){
         throw new batavia.builtins.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
     }
 
-
     // catching bad types
     if (batavia.isinstance(seconds, [batavia.types.Complex])){
         throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
