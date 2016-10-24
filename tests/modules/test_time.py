@@ -502,7 +502,7 @@ class TimeTests(TranspileTestCase):
 
     def test_gmtime_argument_range(self):
         """
-        tests for values exceding +- 8640000000000000 (limit for JS)
+        tests for values exceding +- 8640000000000000 ms (limit for JS)
         """
 
         limit_abs = 8640000000000000 / 1000
@@ -518,9 +518,6 @@ class TimeTests(TranspileTestCase):
                     """.format(seconds=seconds))
 
                 throws_error = adder == 1
-                print(adder)
-                print(seconds)
-                print(throws_error)
                 self.assertJavaScriptExecution(test_str,
                                                js={},
                                                run_in_function=False,
