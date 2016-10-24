@@ -148,3 +148,52 @@ batavia.modules.time.mktime = function(sequence){
     var seconds = date.getTime() / 1000;
     return seconds.toFixed(1);
 }
+
+batavia.modules.time.gmtime = function(seconds){
+    // https://docs.python.org/3/library/time.html#time.gmtime
+
+    // 0-1 arguments allowed
+    if (arguments.length > 1){
+        throw new batavia.builtins.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
+    }
+
+    if (arguments.length == 1) {
+        // catching bad types
+        if (batavia.isinstance(seconds, [batavia.types.Complex])){
+            throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
+
+        } else if (!(batavia.isinstance(seconds, [batavia.types.Int, batavia.types.Float, batavia.types.Bool]))) {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(seconds) + ")")
+        }
+
+        var date = new Date(seconds * 1000)
+        if (isNaN(date)){
+            // date is too large per ECMA specs
+            // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+            throw new batavia.builtins.OSError("Value too large to be stored in data type")
+        }
+
+    } else if (seconds === undefined){
+        var date = new Date();
+    }
+
+    var sequence = [date.getUTCFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds(),
+    date.getUTCDay() -1
+    ]
+
+    // add day of year
+    var firstOfYear = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    var diff = date - firstOfYear;
+    var oneDay = 1000 * 60 * 60 * 24;
+    var dayOfYear = Math.floor(diff / oneDay);
+    sequence.push(dayOfYear + 1);
+
+    sequence.push(0)  // dst for UTC, always off
+
+    return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
+}

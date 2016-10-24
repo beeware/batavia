@@ -1,9 +1,12 @@
-from time import gmtime, localtime
-from ..utils import TranspileTestCase, adjust, SAMPLE_DATA
+import os
+import re
+from time import gmtime, localtime, mktime
+from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsJavaScript, runAsPython
 import unittest
 
 
 class TimeTests(TranspileTestCase):
+
     @unittest.expectedFailure
     def test_time(self):
         self.assertCodeExecution("""
@@ -107,14 +110,12 @@ class TimeTests(TranspileTestCase):
         test_str = ''.join(sequence_tests)
         self.assertCodeExecution(test_str)
 
-
     def test_struct_time_too_short(self):
         """
         sequence less than length 9 is passed
         should raise an index error
         """
         self.assertCodeExecution(struct_time_setup([1]*8))
-
 
     def test_struct_time_too_long(self):
         """
@@ -224,7 +225,6 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
-
     def test_mktime_dst(self):
         """
         tests with each month of the year
@@ -249,7 +249,6 @@ class TimeTests(TranspileTestCase):
             test_str += mktime_setup(str(tuple(seq)))
 
         self.assertCodeExecution(test_str)
-
 
     def test_mktime_bad_input(self):
         """
@@ -397,7 +396,6 @@ class TimeTests(TranspileTestCase):
                 test.py:4
             """.format(hour=hour, second=second))
 
-
     def test_mktime_no_overflow_error(self):
         """
         years that will not throw an OverflowError
@@ -425,6 +423,114 @@ class TimeTests(TranspileTestCase):
                 test.py:4
             """.format(year))
 
+    # TESTS FOR GMTIME
+    def test_gmtime_no_arg(self):
+        """
+        test for gmtime with no arugment
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.gmtime()')
+        print(time.gmtime())
+        """)
+
+        # set up a test directory
+        test_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
+        try:
+            os.mkdir(test_dir)
+        except FileExistsError:
+            pass
+        # run as both JS and Python
+        outputs = [
+            runAsJavaScript(test_dir, test_str, js={}),
+            runAsPython(test_dir, test_str)
+        ]
+        print(outputs)
+        raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
+
+        # regex to parse struct_time
+        match_str = 'time\.struct_time\(tm_year=(?P<year>-?\d{1,4}), tm_mon=(?P<mon>-?\d{1,2}), tm_mday=(?P<mday>-?\d{1,2}), tm_hour=(?P<hour>-?\d{1,2}), tm_min=(?P<min>-?\d{1,2}), tm_sec=(?P<sec>-?\d{1,2}), tm_wday=(?P<wday>-?\d{1}), tm_yday=(?P<yday>-?\d{1,4}), tm_isdst=(?P<isdst>-?\d{1})\)'
+
+        times = []
+        for raw in raw_times:
+            match = re.search(match_str, raw)
+            attrs = [int(match.group(i)) for i in range(1, 10)]   # grab each attr from struct_tine
+            times.append(mktime(tuple(attrs)))
+
+        self.assertAlmostEqual(times[0], times[1], delta=2)  # times should be within 2 seconds of each other
+
+    def test_gmtime_with_arg(self):
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.gmtime(1000)')
+        print(time.gmtime(1000))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_gmtime_too_many_args(self):
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.gmtime(1,2)')
+        print(time.gmtime(1,2))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_gmtime_bad_type(self):
+        """
+        only int or float allowed
+        """
+
+        bad_types = [SAMPLE_DATA[t][0] for t in SAMPLE_DATA if t not in ['int', 'float', 'None']]
+
+        test_strs = [adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.gmtime({item})')
+        print(time.gmtime({item}))
+        """.format(item=item)) for item in bad_types]
+
+        for t_str in test_strs:
+            self.assertCodeExecution(t_str)
+
+    def test_gmtime_argument_range(self):
+        """
+        tests for values exceding +- 8640000000000000 ms (limit for JS)
+        """
+
+        limit_abs = 8640000000000000 / 1000
+
+        for adder in range(2):
+            for factor in [-1, 1]:
+                seconds = factor * (limit_abs + adder)
+                test_str = adjust("""
+                    print('>>> import time')
+                    import time
+                    print('>>> time.gmtime({seconds})')
+                    print(time.gmtime({seconds}))
+                    """.format(seconds=seconds))
+
+                throws_error = adder == 1
+                self.assertJavaScriptExecution(test_str,
+                                               js={},
+                                               run_in_function=False,
+                                               same=throws_error,   # when exceeding the limit, expect an error
+                                               out=adjust("""
+                >>> import time
+                >>> time.gmtime({seconds})
+                ### EXCEPTION ###
+                OSError: Value too large to be stored in data type
+                    test.py:4
+                """).format(seconds=seconds))
+
+
 def struct_time_setup(seq = [1] * 9):
     """
     returns a string to set up a struct_time with seq the struct_time constructor
@@ -440,6 +546,7 @@ def struct_time_setup(seq = [1] * 9):
     """).format(type_name=type(seq), seq=seq)
 
     return test_str
+
 
 def mktime_setup(seq):
     """
