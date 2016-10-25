@@ -898,10 +898,31 @@ batavia.builtins.max = function(args, kwargs) {
         throw new batavia.builtins.TypeError("max() doesn't accept keyword arguments");
     }
     if (!args || args.length === 0) {
-        throw new batavia.builtins.TypeError('max() expected at least 1 argument, got ' + args.length);
+        throw new batavia.builtins.TypeError('max expected 1 arguments, got ' + args.length);
     }
 
-    return Math.max.apply(null, args[0]);
+    if (args.length > 1) {
+        var list = batavia.builtins.tuple([args], null);
+    } else if (batavia.isinstance(args[0], [
+                batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
+                batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
+                batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet,
+                batavia.types.Str
+            ])) {
+        var list = batavia.builtins.tuple([args[0]], null);
+    } else {
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+    }
+    if (list.length === 0) {
+        throw new batavia.builtins.ValueError("max() arg is an empty sequence");
+    }
+    var result = list[0];
+    for(var i = 1; i < list.length; i++) {
+        if(list[i].__gt__(result)) {
+            result = list[i];
+        }
+    }
+    return result;
 };
 batavia.builtins.max.__doc__ = "max(iterable, *[, default=obj, key=func]) -> value\nmax(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its biggest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the largest argument.";
 
@@ -918,10 +939,31 @@ batavia.builtins.min = function(args, kwargs) {
         throw new batavia.builtins.TypeError("min() doesn't accept keyword arguments");
     }
     if (!args || args.length === 0) {
-        throw new batavia.builtins.TypeError('min() expected at least 1 argument, got ' + args.length);
+        throw new batavia.builtins.TypeError('min expected 1 arguments, got ' + args.length);
     }
 
-    return Math.min.apply(null, args[0]);
+    if (args.length > 1) {
+        var list = batavia.builtins.tuple([args], null);
+    } else if (batavia.isinstance(args[0], [
+                batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
+                batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
+                batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet,
+                batavia.types.Str
+            ])) {
+        var list = batavia.builtins.tuple([args[0]], null);
+    } else {
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+    }
+    if (list.length === 0) {
+        throw new batavia.builtins.ValueError("min() arg is an empty sequence");
+    }
+    var result = list[0];
+    for(var i = 1; i < list.length; i++) {
+        if(list[i].__lt__(result)) {
+            result = list[i];
+        }
+    }
+    return result;
 };
 batavia.builtins.min.__doc__ = "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.";
 

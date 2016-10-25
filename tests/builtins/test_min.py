@@ -8,23 +8,43 @@ class MinTests(TranspileTestCase):
 class BuiltinMinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["min"]
 
+    def test_arguments(self):
+        self.assertCodeExecution("""
+            print(max(1, 2, 4, 55))
+            """)
+
+    def test_set(self):
+        self.assertCodeExecution("""
+            x = set()
+            print(min(x))
+            """)
+
+        self.assertCodeExecution("""
+            x = {1, 2, 3, 4, 5}
+            print(min(x))
+            """)
+
+        self.assertCodeExecution("""
+            x = {"abb", "bvs", "csd", "dfd", "ere"}
+            print(min(x))
+            """)
+
+    def test_frozenset(self):
+        self.assertCodeExecution("""
+            x = frozenset()
+            print(min(x))
+            """)
+
+        self.assertCodeExecution("""
+            x = frozenset((1, 2, 3, 4, 5))
+            print(min(x))
+            """)
+
+        self.assertCodeExecution("""
+            x = frozenset(("abb", "bvs", "csd", "dfd", "ere"))
+            print(min(x))
+            """)
+
     not_implemented = [
-        'test_noargs',
-        'test_bool',
-        'test_bytearray',
-        'test_bytes',
-        'test_class',
-        'test_complex',
-        'test_dict',
-        'test_float',
-        'test_frozenset',
-        'test_int',
-        'test_list',
-        'test_None',
-        'test_NotImplemented',
-        'test_range',
-        'test_set',
-        'test_slice',
-        'test_str',
-        'test_tuple',
+        'test_bytearray'
     ]
