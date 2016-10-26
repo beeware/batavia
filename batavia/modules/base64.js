@@ -4,9 +4,20 @@ batavia.modules.base64 = {
 	__file__: "base64.js",
 	__package__: "",
 
-	b64encode: function(data){
-		var data_str = String.fromCharCode.apply(null, data.val)
+	b64encode: function(data, altchars){
+		altchars = altchars || 0;
+		if (altchars !== 0) {
+			altchars = String.fromCharCode.apply(null, altchars.val)
+		};
+		var data_str = String.fromCharCode.apply(null, data.val);
 		var encode = window.btoa(data_str);
+		if (altchars === 0) {
+		} else if (altchars.length === 2) {
+			encode = encode.replace(/[+]/, altchars[0]);
+			encode = encode.replace(/[/]/, altchars[1]);
+		} else {
+			throw new batavia.builtins.ValueError("Incorrect value for altchars");
+		}
 		var bytes = [];
 		for (var i = 0; i < encode.length; i ++) {
 			var code = encode.charCodeAt(i);
@@ -15,12 +26,26 @@ batavia.modules.base64 = {
 		return new batavia.types.Bytes(bytes)
 	},
 
-	b64decode: function(data){
+	b64decode: function(data, altchars, validate) {
+		altchars = altchars || 0;
+		validate = validate && true;
 		var data_str = String.fromCharCode.apply(null, data.val)
+		var encode = window.atob(data_str);
+		if (altchars !== 0) {
+			altchars = String.fromCharCode.apply(null, altchars.val)
+		};
+		if (altchars === 0) {
+		} else if (altchars.length === 2) {
+			encode = encode.replace(/altchars[0]/, '+');
+			encode = encode.replace(/altchars[1]/, '/');
+		} else {
+			throw new batavia.builtins.ValueError("Incorrect value for altchars")
+		}
+		if (validate && !/[a-zA-Z0-9+/]*={0,2}$/.exec(encode)) {
+			throw new batavia.builtins.ValueError("Non-base64 digit found")}
 		if (data_str.length % 4 !== 0){
 			throw new batavia.builtins.ValueError("Incorrect padding");
 		}
-		var encode = window.atob(data_str);
 		var bytes = [];
 		for (var i = 0; i < encode.length; i ++) {
 			var code = encode.charCodeAt(i);
@@ -62,13 +87,19 @@ batavia.modules.base64 = {
 	encodestring: function(data){},
 	main: function(){},
 	re: function(){},
-	standard_b64decode: function(){},
-	standard_b64encode: function(){},
+	standard_b64decode: function(data){
+		return this.b64decode(data);
+	},
+	standard_b64encode: function(data){
+		return this.b64encode(data);
+	},
 	struct: function(){},
 	test: function(){},
 	urlsafe_b64decode: function(data){
 		var data_str = String.fromCharCode.apply(null, data.val)
 		var encode = window.atob(data_str);
+		encode = encode.replace(/[-]/, '+');
+		encode = encode.replace(/[_]/, '/');
 		var bytes = [];
 		for (var i = 0; i < encode.length; i ++) {
 			var code = encode.charCodeAt(i);
@@ -79,6 +110,8 @@ batavia.modules.base64 = {
 	urlsafe_b64encode: function(data){
 		var data_str = String.fromCharCode.apply(null, data.val)
 		var encode = window.btoa(data_str);
+		encode = encode.replace(/[+]/, '-');
+		encode = encode.replace(/[/]/, '_');
 		var bytes = [];
 		for (var i = 0; i < encode.length; i ++) {
 			var code = encode.charCodeAt(i);
