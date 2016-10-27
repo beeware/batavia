@@ -248,4 +248,5 @@ batavia.modules.time.localtime = function(seconds){
     sequence.push(Number(isDST))
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
+
 }
