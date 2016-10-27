@@ -197,3 +197,17 @@ batavia.modules.time.gmtime = function(seconds){
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
 }
+
+batavia.modules.time.gmtime = function(seconds){
+    // https://docs.python.org/3.0/library/time.html#time.localtime
+
+    var baseTime = batavia.modules.time.gmtime(seconds);
+
+    // construct this as a JS Date to get tz offset
+    var seconds = batavia.modules.time.mktime(baseTime);
+    var d = new Date(seconds / 1000);
+    var tzOffset = d.getTimezoneOffset();
+
+    var localSeconds = seconds - (tzOffset / 60);
+    return batavia.modules.time.gmtime(localSeconds);
+}
