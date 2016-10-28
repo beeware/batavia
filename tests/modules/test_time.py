@@ -472,6 +472,23 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    def test_gmtime_dst(self):
+        """
+        test all months to demonstrate dst is not messing with things
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        test_str += ''.join([adjust("""
+        print('>>> time.gmtime({seq})')
+        time.gmtime({seq})
+        """.format(seq=str((2016, month, 1, 0, 0, 0, 0, 0, -1)))) for month in range(1,13)])
+
+        self.assertCodeExecution(test_str)
+
     def test_gmtime_too_many_args(self):
 
         test_str = adjust("""
@@ -578,6 +595,23 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    def test_localtime_dst(self):
+        """
+        test all months to ensure dst works as expected
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        test_str += ''.join([adjust("""
+        print('>>> time.localtime({seq})')
+        time.localtime({seq})
+        """.format(seq=str((2016, month, 1, 0, 0, 0, 0, 0, -1)))) for month in range(1,13)])
+
+        self.assertCodeExecution(test_str)
+
     def test_localtime_too_many_args(self):
 
         test_str = adjust("""
@@ -635,7 +669,6 @@ class TimeTests(TranspileTestCase):
                 OSError: Value too large to be stored in data type
                     test.py:4
                 """).format(seconds=seconds))
-
 
 
 def struct_time_setup(seq = [1] * 9):
