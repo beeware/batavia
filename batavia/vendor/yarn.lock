@@ -19,3 +19,13 @@ ieee754@^1.1.4:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.8.tgz#be33d40ac10ef1926701f6f08a2d86fbfd1ad3e4"
 
+moment, "moment@>= 2.6.0":
+  version "2.15.2"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.15.2.tgz#1bfdedf6a6e345f322fe956d5df5bd08a8ce84dc"
+
+moment-timezone@^0.5.7:
+  version "0.5.7"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.7.tgz#1305bcada16f046dbbc7ac89abf66effff886cb5"
+  dependencies:
+    moment ">= 2.6.0"
+

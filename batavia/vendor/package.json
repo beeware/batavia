@@ -11,7 +11,9 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "bignumber.js": "^2.4.0",
-    "buffer": "^5.0.0"
+    "buffer": "^5.0.0",
+    "moment": "^2.15.2",
+    "moment-timezone": "^0.5.7"
   },
   "scripts": {
     "vendor": "browserify dependencies.js --standalone batavia.vendored > vendored.js"
