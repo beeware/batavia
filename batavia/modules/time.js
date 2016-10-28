@@ -146,7 +146,7 @@ batavia.modules.time.mktime = function(sequence){
     }
 
     var seconds = date.getTime() / 1000;
-    return seconds.toFixed(1);
+    return Number(seconds.toFixed(1));
 }
 
 batavia.modules.time.gmtime = function(seconds){
@@ -248,5 +248,4 @@ batavia.modules.time.localtime = function(seconds){
     sequence.push(Number(isDST))
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
-
 }
