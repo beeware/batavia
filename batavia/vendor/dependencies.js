@@ -8,5 +8,7 @@ module.exports = {
     // as first-class vendored libs
     base64: require('base64-js'),
     ieee754: require('ieee754'),
+    moment: require('moment'),
+    moment_timezone: require('moment-timezone')
 }
 
