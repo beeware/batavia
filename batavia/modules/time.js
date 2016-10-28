@@ -146,7 +146,7 @@ batavia.modules.time.mktime = function(sequence){
     }
 
     var seconds = date.getTime() / 1000;
-    return seconds.toFixed(1);
+    return Number(seconds.toFixed(1));
 }
 
 batavia.modules.time.gmtime = function(seconds){
@@ -198,16 +198,40 @@ batavia.modules.time.gmtime = function(seconds){
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
 }
 
-batavia.modules.time.gmtime = function(seconds){
+batavia.modules.time.localtime = function(seconds){
     // https://docs.python.org/3.0/library/time.html#time.localtime
 
-    var baseTime = batavia.modules.time.gmtime(seconds);
+
+    if (seconds === undefined) {
+        var baseTime = batavia.modules.time.gmtime();
+        var baseSeconds = batavia.modules.time.mktime(baseTime);
+
+    } else {
+//        var baseTime = batavia.modules.time.gmtime(baseSeconds);
+        var baseSeconds = seconds;
+    }
+
+
+    var now = new Date();
+    var tzOffset = now.getTimezoneOffset()
+
+    var localSeconds = baseSeconds - (tzOffset * 60 * 2)
+    return batavia.modules.time.gmtime(localSeconds);
+
+    var localTime = baseTime.slice();
+    localTime[3] -= offsetHours;
+    localTime[4] -= offsetMinutes;
+
+    return localTime
 
     // construct this as a JS Date to get tz offset
-    var seconds = batavia.modules.time.mktime(baseTime);
-    var d = new Date(seconds / 1000);
-    var tzOffset = d.getTimezoneOffset();
+//    var seconds = batavia.modules.time.mktime(baseTime);
+//    return seconds
+//    var utcTime = new Date(seconds * 1000);     //ahead by 4 hours (for me on EST)
+//    var tzOffset = utcTime.getTimezoneOffset();
 
-    var localSeconds = seconds - (tzOffset / 60);
-    return batavia.modules.time.gmtime(localSeconds);
+//    return new batavia.modules.time.struct_time(new batavia.types.Tuple(localSequence));
+
+//    var localSeconds = seconds - (tzOffset * 60);
+//    return batavia.modules.time.gmtime(localSeconds);
 }
