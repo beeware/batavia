@@ -53,6 +53,7 @@ Adding a new dependency to Batavia
 
 In this example, we're going to add a new dependency: the `bignumber.js` library.
 
+1. From the root of your Batavia project: `cd batavia/vendoring`
 1. Find the right name for the library! This is as true for JavaScript as it is
    for Python. In the present case, there are several libraries with similar names,
    and we want the one registered on npm as `bignumber.js`, not `big-number` nor `bignumber`.
