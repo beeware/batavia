@@ -198,9 +198,9 @@ batavia.modules.time.gmtime = function(seconds){
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
 }
 
-batavia.modules.time.gmtime = function(seconds){
+batavia.modules.time.localtime = function(seconds){
     // https://docs.python.org/3.0/library/time.html#time.localtime
-    
+
     // 0-1 arguments allowed
     if (arguments.length > 1){
         throw new batavia.builtins.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
@@ -248,5 +248,4 @@ batavia.modules.time.gmtime = function(seconds){
     sequence.push(Number(isDST))
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
-
 }
