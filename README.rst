@@ -32,51 +32,25 @@ Javascript. With Batavia, you can run Python bytecode in your browser.
 It honors Python 3.4.4+ syntax and conventions, and let's you
 reference objects and classes defined natively in JavaScript.
 
-Getting Started
+Quick Start
 ---------------
 
-Getting a working local copy of Batavia requires a few steps: getting a copy of
-the Batavia code, and the ouroboros dependency within a virtual environment.
+(For a more detailed setup, please see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_
 
-You'll need to have Pyhton 3.4 available for Batavia to work. Instructions on
-how to set this up are `on our Environment setup guide
-<http://pybee.org/contributing/first-time/setup/>`_. 
+Batavia requires a Python 3.4 installation, a copy of `Ouroboros <https://github.com/pybee/ouroboros>`_, and a virtualenv to run it all in. 
 
-Setup a `pybee` folder to store everything::
+Clone the code repos:: 
 
    $ mkdir pybee
    $ cd pybee
-
-Get a copy of the Batavia code by running a :code:`git clone`::
-
    $ git clone https://github.com/pybee/batavia
-
-Batavia requires a copy of Ouroboros (the Python standard library, written in
-Python) to build, so we also need to clone that::
-
    $ git clone https://github.com/pybee/ouroboros
 
-Then, we need to create a virtual environment, and install Batavia into it.
-
- * For Linux, MacOS::
+Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_)::
 
    $ virtualenv venv
    $ . venv/bin/activate
    $ cd batavia
-   $ pip install -e .
-
- * For Windows::
-
-   > virtualenv --python=c:\python34\python.exe env
-   > cd env\Scripts
-   > activate
-   > pip install -e .
-
- * For Anaconda users::
-
-   $ cd batavia
-   $ conda create -n batavia
-   $ source activate batavia
    $ pip install -e .
 
 And finally, run the :code:`make` script to generate the combined Batavia JavaScript files::
@@ -92,13 +66,10 @@ Your final setup should end up looking like this::
 
 You now have a working Batavia environment!
 
-Tutorial
---------
+Python in the Browser
+----------------------
 
-Once you've setup your environment, you can have some fun with `the first
-tutorial`_, and try out running Python in your browser.
-
-.. _the first tutorial: https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html
+Once you've setup your environment, you can have some fun with `running Python in your browser <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-1.html>`_
 
 Documentation
 -------------
