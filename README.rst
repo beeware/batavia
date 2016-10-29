@@ -57,15 +57,6 @@ And finally, run the :code:`make` script to generate the combined Batavia JavaSc
 
    $ make
 
-Your final setup should end up looking like this:: 
-
-  _ pybee
-    \_ batavia
-    \_ ouroboros
-    \_ venv
-
-You now have a working Batavia environment!
-
 Python in the Browser
 ----------------------
 
