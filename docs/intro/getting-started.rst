@@ -1,63 +1,67 @@
 Getting Started
 ===============
 
-In this guide we will walk you through setting up your Batavia environment for
-development and testing. We will assume that you have a working Python 3.4,
-and use virtualenv.
+_A copy of this documentation also appears in the Batavia `README <https://github.com/pybee/batavia#getting-started>`_
 
-Get a copy of Batavia
----------------------
+Getting a working local copy of Batavia requires a few steps: getting a copy of
+the Batavia code, and the ouroboros dependency within a virtual environment.
 
-The first step is to create a project directory, and clone Batavia:
+You'll need to have Pyhton 3.4 available for Batavia to work. Instructions on
+how to set this up are `on our Environment setup guide
+<http://pybee.org/contributing/first-time/setup/>`_. 
 
-.. code-block:: bash
+Setup a `pybee` folder to store everything::
 
-    $ mkdir tutorial
-    $ cd tutorial
-    $ git clone https://github.com/pybee/batavia.git
+   $ mkdir pybee
+   $ cd pybee
 
-Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
+Get a copy of the Batavia code by running a :code:`git clone`::
 
-.. code-block:: bash
+   $ git clone https://github.com/pybee/batavia
 
-    $ git clone https://github.com/pybee/ouroboros.git
+Batavia requires a copy of Ouroboros (the Python standard library, written in
+Python) to build, so we also need to clone that::
 
-Then create a virtual environment and install Batavia into it:
+   $ git clone https://github.com/pybee/ouroboros
 
-.. code-block:: bash
+Then, we need to create a virtual environment, and install Batavia into it.
 
-    $ virtualenv -p $(which python3) env
-    $ . env/bin/activate
-    $ cd batavia
-    $ pip install -e .
+ * For Linux, MacOS::
 
-*On Windows*
+   $ virtualenv venv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
 
-.. code-block:: doscon
+ * For Windows::
 
-    > virtualenv --python=c:\python34\python.exe env
-    > cd env\Scripts
-    > activate
-    > pip install -e .
+   > virtualenv --python=c:\python34\python.exe env
+   > cd env\Scripts
+   > activate
+   > pip install -e .
 
-*For those using anaconda*:
+ * For Anaconda users::
 
-.. code-block:: bash
+   $ cd batavia
+   $ conda create -n batavia
+   $ source activate batavia
+   $ pip install -e .
 
-    $ cd batavia
-    $ conda create -n batavia
-    $ source activate batavia
-    $ pip install -e .
+And finally, run the :code:`make` script to generate the combined Batavia JavaScript files::
 
-Finally, you'll need to build the combined Batavia JS files:
+   $ make
 
-.. code-block:: bash
+Your final setup should end up looking like this:: 
 
-    $ cd batavia
-    $ make
+  _ pybee
+    \_ batavia
+    \_ ouroboros
+    \_ venv
+
+You now have a working Batavia environment!
 
 Next Steps
 ----------
 
-You now have a working Batavia environment, so you can :doc:`start the first
-tutorial </tutorials/tutorial-0>`.
+Next, we can `start the first tutorial </tutorials/tutorial-0>`, and try out
+running Python in your browser.

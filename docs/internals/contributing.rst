@@ -109,6 +109,7 @@ so it should be reliable.
 
 Fedora
 ~~~~~~
+
 Go to http://phantomjs.org/download.html and download the file for your architecuture
 i.e. `64bit`_ or `32bit`_.
 
@@ -124,7 +125,8 @@ Unpack the file to your prefered location and add the bin directory to your PATH
 
 
 Build from sources on linux
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Building phantomjs takes 30min to several hours. Do this only if the other methods don't work.
 Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
 If no binary is available, check the instructions at http://phantomjs.org/build.html
@@ -217,6 +219,7 @@ way (``expected failure``). These outcomes are what you expect to see. If you
 see any lines that end ``FAIL``, ``ERROR``, or ``unexpected success``, then
 you've found a problem. If this happens, at the end of the test run, you’ll
 also see a summary of the cause of those problems.
+
 If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
@@ -271,14 +274,29 @@ More details on how to add newer JS dependencies as you need them can be found i
 Troubleshooting
 ---------------
 
-- For Homebrew users, check that your installed version of phantomjs is 2.1.1
-    + $ brew list phantomjs
+- For Homebrew users, check that your installed version of phantomjs is 2.1.1::
+
+    $ brew list phantomjs
 
 - If you get an failure message saying `AssertionError: Unable to inject Batavia: false`, make sure there are contents in `batavia.min.js`. If the file is empty, run the following commands and run the test suite again:
 
   .. code-block:: bash
 
-      $ pip install jsmin
-      $ make clean
-      $ make
-      $ python setup.py test
+    $ pip install jsmin
+    $ make clean
+    $ make
+    $ python setup.py test
+
+- If you copied the main Batavia code a while ago, please make sure your forked branch is up to date with the original branch. To do this:
+
+  - set your upstream remote::
+
+    $ git remote add upstream https://github.com/pybee/batavia.git
+
+  - make sure you have the latest changes from upstream::
+
+    $ git fetch upstream
+
+  - rebase your **master** branch to **upstream** before pushing to GitHub and submitting a pull request::
+
+    $ git rebase upstream/master

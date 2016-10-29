@@ -32,21 +32,81 @@ Javascript. With Batavia, you can run Python bytecode in your browser.
 It honors Python 3.4.4+ syntax and conventions, and let's you
 reference objects and classes defined natively in JavaScript.
 
+Getting Started
+---------------
+
+Getting a working local copy of Batavia requires a few steps: getting a copy of
+the Batavia code, and the ouroboros dependency within a virtual environment.
+
+You'll need to have Pyhton 3.4 available for Batavia to work. Instructions on
+how to set this up are `on our Environment setup guide
+<http://pybee.org/contributing/first-time/setup/>`_. 
+
+Setup a `pybee` folder to store everything::
+
+   $ mkdir pybee
+   $ cd pybee
+
+Get a copy of the Batavia code by running a :code:`git clone`::
+
+   $ git clone https://github.com/pybee/batavia
+
+Batavia requires a copy of Ouroboros (the Python standard library, written in
+Python) to build, so we also need to clone that::
+
+   $ git clone https://github.com/pybee/ouroboros
+
+Then, we need to create a virtual environment, and install Batavia into it.
+
+ * For Linux, MacOS::
+
+   $ virtualenv venv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
+
+ * For Windows::
+
+   > virtualenv --python=c:\python34\python.exe env
+   > cd env\Scripts
+   > activate
+   > pip install -e .
+
+ * For Anaconda users::
+
+   $ cd batavia
+   $ conda create -n batavia
+   $ source activate batavia
+   $ pip install -e .
+
+And finally, run the :code:`make` script to generate the combined Batavia JavaScript files::
+
+   $ make
+
+Your final setup should end up looking like this:: 
+
+  _ pybee
+    \_ batavia
+    \_ ouroboros
+    \_ venv
+
+You now have a working Batavia environment!
+
 Tutorial
 --------
 
-To take Batavia for a spin, run through the `Getting Started guide`_.
+Once you've setup your environment, you can have some fun with `the first
+tutorial`_, and try out running Python in your browser.
 
-Then have some fun with `the first tutorial`_, and try out running Python in
-your browser.
-
-.. _Getting Started guide: https://batavia.readthedocs.io/en/latest/intro/getting-started.html
 .. _the first tutorial: https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html
 
 Documentation
 -------------
 
-Documentation for Batavia can be found on `Read The Docs`_.
+Documentation for Batavia can be found on `Read The Docs`_, including:
+
+ * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
+ * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
 
 Community
 ---------
@@ -60,34 +120,6 @@ Batavia is part of the `BeeWare suite`_. You can talk to the community through:
 We foster a welcoming and respectful community as described in our
 `BeeWare Community Code of Conduct`_.
 
-Why "Batavia?"
---------------
-
-On 27 October, 1628, *Commandeur* Francisco Pelsaert took command of the
-*Batavia*, and with 340 passengers and crew, set sail from Texel.
-
-Their destination? The Spice Islands - or more specifically, island of Java
-in the Dutch East Indies (now part of Indonesia).
-
-**The Batavia was... a Java ship (rimshot!).**
-
-Interestingly, during the voyage, Ariaen Jacobsz and *onderkoopman* Jeronimus
-Cornelisz incited a mutiny, because they didn't want to go to Java - they
-wanted to escape to start a new life somewhere else. As a result of the
-mutiny, on 4 June 1629, the Batavia ran aground on Morning Reef, part of the
-Houtman Abrolhos, about 450km North of Perth, Western Australia, where this
-project was conceived.
-
-The `full story of the Batavia`_ is known to most Western Australian
-schoolchildren, and is a harrowing tale of intrigue, savagery, and murder. *It
-serves as a reminder of what can happen when you force people to go to Java*
-:-)
-
-The wreck of the Batavia was recovered in the 1970s, and now stands in the
-`shipwrecks gallery of the Western Australian Maritime Museum`_.
-
-.. _full story of the Batavia: https://en.wikipedia.org/wiki/Batavia_(ship)
-.. _shipwrecks gallery of the Western Australian Maritime Museum: http://museum.wa.gov.au/museums/shipwrecks
 
 Issues
 ------
@@ -99,33 +131,11 @@ Contributing
 
 If you'd like to contribute to Batavia development, our `guide for first time contributors`_ will help you get started.
 
-If you want to contribute code, please `fork the code`_ and
-`submit a pull request`_.
-
-Before submitting a pull request, please make sure your forked branch is up
-to date with the original branch. To do this:
-
-- set your upstream remote::
-
-    $ git remote add upstream https://github.com/pybee/batavia.git
-
-- make sure you have the latest changes from upstream::
-
-    $ git fetch upstream
-
-- rebase your **master** branch to **upstream** before pushing to GitHub
-  and submitting a pull request::
-
-    $ git rebase upstream/master
-
 
 .. _BeeWare suite: http://pybee.org
 .. _Read The Docs: https://batavia.readthedocs.io
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
 .. _pybee/general: https://gitter.im/pybee/general
 .. _BeeWare Community Code of Conduct: http://pybee.org/community/behavior/
 .. _log them on Github: https://github.com/pybee/batavia/issues
-.. _fork the code: https://github.com/pybee/batavia
-.. _submit a pull request: https://github.com/pybee/batavia/pulls
-.. _guide for first time contributors: https://github.com/pybee/batavia/wiki/Your-first-Batavia-contribution
+.. _guide for first time contributors: http://batavia.readthedocs.io/en/latest/internals/contributing.html
