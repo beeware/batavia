@@ -3,7 +3,6 @@ import re
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 from .. utils import SAMPLE_SUBSTITUTIONS
 
-
 class MaxTests(TranspileTestCase):
     pass
 
@@ -20,6 +19,12 @@ class BuiltinMaxFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         ]
     })
 
+    def test_default_kwarg(self):
+        self.assertCodeExecution("""
+            print(max([], default=123))
+            print(max([], default="empty"))
+            print(max([1, 2, 3], default="empty"))
+            """)
 
     not_implemented = [
         'test_bytearray'

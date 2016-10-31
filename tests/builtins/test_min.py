@@ -19,6 +19,13 @@ class BuiltinMinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         ]
     })
 
+    def test_default_kwarg(self):
+        self.assertCodeExecution("""
+            print(min([], default=123))
+            print(min([], default="empty"))
+            print(min([1, 2, 3], default="empty"))
+            """)
+
     not_implemented = [
         'test_bytearray'
     ]
