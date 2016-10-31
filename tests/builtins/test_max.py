@@ -1,4 +1,7 @@
+import re
+
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+from .. utils import SAMPLE_SUBSTITUTIONS
 
 
 class MaxTests(TranspileTestCase):
@@ -7,43 +10,16 @@ class MaxTests(TranspileTestCase):
 
 class BuiltinMaxFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["max"]
+    substitutions = SAMPLE_SUBSTITUTIONS.copy()
+    substitutions.update({
+        # Set/Frozenset ordering can be different in cPython and Batavia
+        # This means we get TypeErrors on different types when finding max value
+        # in sets composed from different types
+        "<class 'TypeError'>": [
+            re.compile(r"unorderable types: .* > .*"),
+        ]
+    })
 
-    def test_arguments(self):
-        self.assertCodeExecution("""
-            print(max(1, 2, 4, 55))
-            """)
-
-    def test_set(self):
-        self.assertCodeExecution("""
-            x = set()
-            print(max(x))
-            """)
-
-        self.assertCodeExecution("""
-            x = {1, 2, 3, 4, 5}
-            print(max(x))
-            """)
-
-        self.assertCodeExecution("""
-            x = {"abb", "bvs", "csd", "dfd", "ere"}
-            print(max(x))
-            """)
-
-    def test_frozenset(self):
-        self.assertCodeExecution("""
-            x = frozenset()
-            print(max(x))
-            """)
-
-        self.assertCodeExecution("""
-            x = frozenset((1, 2, 3, 4, 5))
-            print(max(x))
-            """)
-
-        self.assertCodeExecution("""
-            x = frozenset(("abb", "bvs", "csd", "dfd", "ere"))
-            print(max(x))
-            """)
 
     not_implemented = [
         'test_bytearray'
