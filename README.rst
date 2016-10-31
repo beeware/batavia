@@ -35,7 +35,7 @@ reference objects and classes defined natively in JavaScript.
 Quick Start
 ---------------
 
-(For a more detailed setup, please see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_
+(For a more detailed setup, please see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_)
 
 Batavia requires a Python 3.4 installation, a copy of `Ouroboros <https://github.com/pybee/ouroboros>`_, and a virtualenv to run it all in. 
 
@@ -60,15 +60,21 @@ And finally, run the :code:`make` script to generate the combined Batavia JavaSc
 Python in the Browser
 ----------------------
 
-Once you've setup your environment, you can have some fun with `running Python in your browser <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-1.html>`_
+To run Batavia in the browser::
+
+    $ cd testserver
+    $ pip install -r requirements.txt
+    $ ./manage.py runserver
+
+then open a web browser at localhost:8080.
 
 Documentation
 -------------
 
 Documentation for Batavia can be found on `Read The Docs`_, including:
 
- * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
- * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
+* `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
+* `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
 
 Community
 ---------
