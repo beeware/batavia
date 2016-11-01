@@ -9,6 +9,7 @@ class BuiltinRangeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["range"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

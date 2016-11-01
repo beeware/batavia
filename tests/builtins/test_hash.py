@@ -12,3 +12,7 @@ class BuiltinHashFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     substitutions = {
         '0': [re.compile(r'^-?\d+$'),],
     }
+
+    not_implemented = [
+        'test_noargs',
+    ]

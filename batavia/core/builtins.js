@@ -179,7 +179,7 @@ batavia.builtins.abs = function(args, kwargs) {
         throw new batavia.builtins.TypeError("abs() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError('abs() expected exactly 1 argument (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('abs() takes exactly one argument (' + args.length + ' given)');
     }
 
     var value = args[0];
@@ -732,8 +732,9 @@ batavia.builtins.help.__doc__ = 'In Python, this is a wrapper around pydoc.help.
 batavia.builtins.hex = function(args) {
     if (args.length !== 1) {
         throw new batavia.builtins.TypeError("hex() takes exactly one argument (" + args.length + " given)");
-    }
-    return "0x" + args[0].toString(16);
+    };
+    var int = args[0].val
+    return "0x" + int.toString(16);
 };
 batavia.builtins.hex.__doc__ = "hex(number) -> string\n\nReturn the hexadecimal representation of an integer.\n\n   >>> hex(3735928559)\n   '0xdeadbeef'\n";
 
@@ -743,8 +744,9 @@ batavia.builtins.id = function() {
 batavia.builtins.id.__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)';
 
 
-batavia.builtins.input = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'input' not implemented");
+batavia.builtins.input = function(prompt_text) {
+    var user_input = prompt(prompt_text);
+    return user_input;
 };
 batavia.builtins.input.__doc__ = 'input([prompt]) -> string\n\nRead a string from standard input.  The trailing newline is stripped.\nIf the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.\nOn Unix, GNU readline is used if enabled.  The prompt string, if given,\nis printed without a trailing newline before reading.';
 
@@ -758,7 +760,9 @@ batavia.builtins.int = function(args, kwargs) {
 
     var base = 10;
     var value = 0;
-    if (args && args.length === 1) {
+    if (!args || args.length === 0) {
+        return new batavia.types.Int(0);
+    } else if (args && args.length === 1) {
         value = args[0];
         if (batavia.isinstance(value, [batavia.types.Int, batavia.types.Bool])) {
             return value.__int__();

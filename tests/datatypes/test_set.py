@@ -7,7 +7,7 @@ class SetTests(TranspileTestCase):
     def test_set_of_ints_and_strs(self):
         self.assertCodeExecution("""
             print(set([1, "1"]))
-        """)
+            """, substitutions={"{1, '1'}": ["{'1', 1}"]})
 
     @unittest.expectedFailure
     def test_setattr(self):

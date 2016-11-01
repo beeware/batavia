@@ -55,13 +55,15 @@ batavia.types.Range = function() {
         Object.call(this);
         this.data = data;
         this.index = this.data.start.valueOf();
+        this.step = this.data.step.valueOf();
     };
 
     Range.prototype.RangeIterator.prototype = Object.create(Object.prototype);
 
     Range.prototype.RangeIterator.prototype.__next__ = function() {
         var retval = this.index;
-        if (this.index < this.data.stop) {
+        if ((this.step > 0 && this.index < this.data.stop) ||
+            (this.step < 0 && this.index > this.data.stop)) {
             this.index = this.index + this.data.step;
             return new batavia.types.Int(retval);
         }

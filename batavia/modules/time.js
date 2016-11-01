@@ -104,4 +104,96 @@ batavia.modules.time.struct_time.prototype.__repr__ = function(){
     return this.__str__()
 }
 
-//TODO __reduce__
+batavia.modules.time.mktime = function(sequence){
+    // sequence: struct_time like
+    // documentation: https://docs.python.org/3/library/time.html#time.mktime
+
+    //Validations
+    if (arguments.length != 1){
+        throw new batavia.builtins.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
+    }
+
+    if (!batavia.isinstance(sequence, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
+        throw new batavia.builtins.TypeError("Tuple or struct_time argument required");
+    }
+
+    if (sequence.length !== 9){
+        throw new batavia.builtins.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)");
+    }
+
+    if (sequence[0] < 1900){
+        // because the earliest possible date is system dependant, use an arbitrary cut off for now.
+        throw new batavia.builtins.OverflowError("mktime argument out of range");
+    }
+
+    // all items must be integers
+    for (var i=0; i<sequence.length; i++){
+        var item = sequence[i];
+        if (batavia.isinstance(item, batavia.types.Float)){
+            throw new batavia.builtins.TypeError("integer argument expected, got float")
+        }
+        else if (!batavia.isinstance(item, [batavia.types.Int])){
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")");
+        }
+    }
+
+    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0)
+
+    if (isNaN(date)){
+        // date is too large per ECMA specs
+        // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+        throw new batavia.builtins.OverflowError("signed integer is greater than maximum")
+    }
+
+    var seconds = date.getTime() / 1000;
+    return seconds.toFixed(1);
+}
+
+batavia.modules.time.gmtime = function(seconds){
+    // https://docs.python.org/3/library/time.html#time.gmtime
+
+    // 0-1 arguments allowed
+    if (arguments.length > 1){
+        throw new batavia.builtins.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
+    }
+
+    if (arguments.length == 1) {
+        // catching bad types
+        if (batavia.isinstance(seconds, [batavia.types.Complex])){
+            throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
+
+        } else if (!(batavia.isinstance(seconds, [batavia.types.Int, batavia.types.Float, batavia.types.Bool]))) {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(seconds) + ")")
+        }
+
+        var date = new Date(seconds * 1000)
+        if (isNaN(date)){
+            // date is too large per ECMA specs
+            // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+            throw new batavia.builtins.OSError("Value too large to be stored in data type")
+        }
+
+    } else if (seconds === undefined){
+        var date = new Date();
+    }
+
+    var sequence = [date.getUTCFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate(),
+    date.getUTCHours(),
+    date.getUTCMinutes(),
+    date.getUTCSeconds(),
+    date.getUTCDay() -1
+    ]
+
+    // add day of year
+    var firstOfYear = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+    var diff = date - firstOfYear;
+    var oneDay = 1000 * 60 * 60 * 24;
+    var dayOfYear = Math.floor(diff / oneDay);
+    sequence.push(dayOfYear + 1);
+
+    sequence.push(0)  // dst for UTC, always off
+
+    return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
+}

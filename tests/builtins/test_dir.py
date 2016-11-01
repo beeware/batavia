@@ -9,6 +9,7 @@ class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["dir"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

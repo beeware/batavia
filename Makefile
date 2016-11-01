@@ -2,6 +2,7 @@
 BASE_FILES=\
     batavia/batavia.js \
     batavia/vendor/vendored.js \
+    batavia/vendor/vendored_config.js \
     batavia/utils.js \
     batavia/types/Type.js \
     batavia/types/Bool.js \
@@ -29,6 +30,7 @@ BASE_FILES=\
     batavia/types/FrozenSet.js \
     batavia/types/Str.js \
     batavia/types/Tuple.js \
+		batavia/modules/base64.js \
     batavia/modules/dis.js \
     batavia/modules/dom.js \
     batavia/modules/marshal.js \
@@ -48,6 +50,7 @@ BASE_FILES=\
 BASE_FILES_WIN=\
     batavia\batavia.js \
     batavia\vendor\vendored.js \
+    batavia\vendor\vendored_config.js \
     batavia\utils.js \
     batavia\types\Type.js \
     batavia\types\Bool.js \
@@ -75,6 +78,7 @@ BASE_FILES_WIN=\
     batavia\types\FrozenSet.js \
     batavia\types\Str.js \
     batavia\types\Tuple.js \
+		batavia\modules\base64.js \
     batavia\modules\dis.js \
     batavia\modules\dom.js \
     batavia\modules\marshal.js \

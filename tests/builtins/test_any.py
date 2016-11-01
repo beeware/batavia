@@ -9,6 +9,7 @@ class BuiltinAnyFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["any"]
 
     not_implemented = [
+        'test_noargs',
         'test_bool',
         'test_bytes',
         'test_class',

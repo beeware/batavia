@@ -553,7 +553,7 @@ class TranspileTestCase(TestCase):
             self, code, out,
             extra_code=None, js=None,
             run_in_global=True, run_in_function=True,
-            args=None, substitutions=None):
+            args=None, substitutions=None, same=True):
         "Run code under JavaScript and check the output is as expected"
         self.maxDiff = None
         #==================================================
@@ -599,8 +599,11 @@ class TranspileTestCase(TestCase):
             # normalized format for exceptions, floats etc.
             js_out = cleanse_javascript(js_out, substitutions)
 
-            # Confirm that the output of the JavaScript code is the same as the Python code.
-            self.assertEqual(js_out, py_out, 'Global context')
+            # Compare the output of the JavaScript code with the Python code.
+            if same:
+                self.assertEqual(js_out, py_out, 'Global context')
+            else:
+                self.assertNotEqual(js_out, py_out, 'Global context')
 
         #==================================================
         # Pass 2 - run the code in a function's context
@@ -638,8 +641,11 @@ class TranspileTestCase(TestCase):
             # normalized format for exceptions, floats etc.
             js_out = cleanse_javascript(js_out, substitutions)
 
-            # Confirm that the output of the JavaScript code is the same as the Python code.
-            self.assertEqual(js_out, py_out, 'Function context')
+            # Compare the output of the JavaScript code with the Python code.
+            if same:
+                self.assertEqual(js_out, py_out, 'Function context')
+            else:
+                self.assertNotEqual(js_out, py_out, 'Function context')
 
 
 class NotImplementedToExpectedFailure:
@@ -845,6 +851,15 @@ SAMPLE_SUBSTITUTIONS = {
         "['d', 'a', 'c']",
         "['d', 'c', 'a']",
     ],
+    # Normalize dictionary keys to tuple ordering
+    "('c', 'd', 'a')": [
+        "('a', 'c', 'd')",
+        "('a', 'd', 'c')",
+        "('c', 'a', 'd')",
+        "('c', 'd', 'a')",
+        "('d', 'a', 'c')",
+        "('d', 'c', 'a')",
+    ],
     # Normalize precision error
     "-0.00000265358979335273": ["-2.65358979335273e-6",],
     "-0.0000026535897933527304": ["-2.6535897933527304e-6",],
@@ -924,6 +939,8 @@ SAMPLE_SUBSTITUTIONS = {
     "7.327471962526033e-15": ["7.357847917974392e-15",],
     "7.8769230769230765": ["7.876923076923077",],
     "832.5494247791539": ["832.549424779154",],
+    "18446744073709552000": ["1.8446744073709552e+19",],
+    "9223372036854776000": ["9.223372036854776e+18",],
 }
 
 
@@ -1202,6 +1219,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
 
     for datatype, examples in SAMPLE_DATA.items():
         vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
+        vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
 
 
 def _builtin_twoarg_test(test_name, operation, examples1, examples2):

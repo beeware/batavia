@@ -103,17 +103,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
     not_implemented = [
-
-        'test_floor_divide_complex',
-
-        'test_ge_frozenset',
-
-        'test_gt_frozenset',
-
-        'test_le_frozenset',
-
-        'test_lt_frozenset',
-
         'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',
@@ -131,8 +120,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_slice',
         'test_modulo_str',
         'test_modulo_tuple',
-
-        'test_subscr_bool',
     ]
 
 
