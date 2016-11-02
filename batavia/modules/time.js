@@ -1,3 +1,6 @@
+var moment = require('moment'),
+var moment_timezone = require('moment-timezone')
+
 
 batavia.modules.time = {
     _startTime: new Date().getTime(),
@@ -205,7 +208,7 @@ batavia.modules.time.localtime = function(seconds){
     if (arguments.length > 1){
         throw new batavia.builtins.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
     }
-
+f
     if (arguments.length == 1) {
         // catching bad types
         if (batavia.isinstance(seconds, [batavia.types.Complex])){
@@ -243,8 +246,8 @@ batavia.modules.time.localtime = function(seconds){
     sequence.push(dayOfYear + 1);
 
     // is DST in effect
-    var tz = batavia.vendored.moment.tz.guess()
-    var isDST = batavia.vendored.moment(date.getTime()).tz(tz).isDST()
+    var tz = moment.tz.guess()
+    var isDST = moment(date.getTime()).tz(tz).isDST()
     sequence.push(Number(isDST))
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
