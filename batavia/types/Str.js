@@ -10,6 +10,10 @@ String.prototype.__class__ = new batavia.types.Type('str');
  * Type conversions
  **************************************************/
 
+String.prototype.__bool__ = function() {
+    return this.length > 0;
+};
+
 String.prototype.__iter__ = function() {
     return new String.prototype.StrIterator(this);
 };
@@ -43,6 +47,17 @@ String.prototype.__str__ = function() {
     return this.toString();
 };
 
+/**************************************************
+ * Attribute manipulation
+ **************************************************/
+
+String.prototype.__getattr__ = function(attr) {
+    throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
+},
+
+String.prototype.__setattr__ = function(attr, value) {
+    throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
+},
 /**************************************************
  * Comparison operators
  **************************************************/
@@ -170,7 +185,6 @@ String.prototype.__neg__ = function() {
 };
 
 String.prototype.__not__ = function() {
-
     return this.length == 0;
 };
 
