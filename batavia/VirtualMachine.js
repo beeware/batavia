@@ -1251,6 +1251,12 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
+    if (obj.__getattr__ == undefined) {
+        val = obj[attr];
+    } else {
+        obj.__getattr__(attr);
+    }
+
     var val = obj[attr];
     if (val instanceof batavia.types.Function) {
         // If this is a Python function, we need to know the current

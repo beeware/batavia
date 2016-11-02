@@ -19,6 +19,18 @@ batavia.types.NoneType = {
     },
 
     /**************************************************
+     * Attribute manipulation
+     **************************************************/
+
+    __getattr__: function(attr) {
+        throw new batavia.builtins.AttributeError("'NoneType' object has no attribute '" + attr + "'");
+    },
+
+    __setattr__: function(attr, value) {
+        throw new batavia.builtins.AttributeError("'NoneType' object has no attribute '" + attr + "'");
+    },
+
+    /**************************************************
      * Comparison operators
      **************************************************/
 
@@ -189,4 +201,5 @@ batavia.types.NoneType = {
     __ior__: function(other) {
         throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + batavia.type_name(other) + "'");
     }
+
 };

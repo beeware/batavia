@@ -1381,5 +1381,5 @@ for (var fn in batavia.builtins) {
     batavia.builtins[fn].__python__ = true;
 }
 
-batavia.builtins.None = null;
+batavia.builtins.None = batavia.types.NoneType;
 batavia.builtins.NotImplemented = new batavia.types.NotImplementedType();
