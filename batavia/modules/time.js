@@ -1,6 +1,5 @@
-var moment = require('moment'),
+var moment = require('moment')
 var moment_timezone = require('moment-timezone')
-
 
 batavia.modules.time = {
     _startTime: new Date().getTime(),
