@@ -1067,7 +1067,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
-        throw new batavia.builtins.NameError("local variable '" + name + "' referenced before assignment");
+        throw new batavia.builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment");
     }
     this.push(val);
 };

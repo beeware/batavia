@@ -77,8 +77,13 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 // Convert code object to module
                 frame = this.make_frame({
                     'code': code,
-                    'f_globals': args[1],
-                    'f_locals': new batavia.types.JSDict(),
+                    'f_globals': new batavia.types.JSDict({
+                        '__builtins__': batavia.builtins,
+                        '__name__': name,
+                        '__doc__': null,
+                        '__package__': null,
+                    }),  // args[1],
+                    'f_locals': null  // #new batavia.types.JSDict(),
                 });
                 this.run_frame(frame);
 
@@ -98,8 +103,13 @@ batavia.builtins.__import__ = function(args, kwargs) {
                     // Convert code object to module
                     frame = this.make_frame({
                         'code': code,
-                        'f_globals': args[1],
-                        'f_locals': new batavia.types.JSDict(),
+                        'f_globals': new batavia.types.JSDict({
+                            '__builtins__': batavia.builtins,
+                            '__name__': name,
+                            '__doc__': null,
+                            '__package__': sub_module,
+                        }),  // args[1],
+                        'f_locals': null  //new batavia.types.JSDict(),
                     });
                     this.run_frame(frame);
 
