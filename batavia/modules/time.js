@@ -1,7 +1,3 @@
-var moment = require('moment')
-var moment_timezone = require('moment-timezone')
-
-
 batavia.modules.time = {
     _startTime: new Date().getTime(),
     clock: function() {
@@ -246,8 +242,8 @@ f
     sequence.push(dayOfYear + 1);
 
     // is DST in effect
-    var tz = moment.tz.guess()
-    var isDST = moment(date.getTime()).tz(tz).isDST()
+    var tz = batavia.vendored.moment.tz.guess()
+    var isDST = batavia.vendored.moment(date.getTime()).tz(tz).isDST()
     sequence.push(Number(isDST))
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
