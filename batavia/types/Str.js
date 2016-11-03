@@ -52,7 +52,10 @@ String.prototype.__str__ = function() {
  **************************************************/
 
 String.prototype.__getattr__ = function(attr) {
-    throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
+    if (this[attr] === undefined) {
+        throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
+    }
+    return this[attr];
 },
 
 String.prototype.__setattr__ = function(attr, value) {

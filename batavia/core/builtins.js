@@ -122,7 +122,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 }
             }
 
-            if (args[3] === null) {
+            if (args[3] === batavia.builtins.None) {
                 // import <mod>
                 module = root_module;
             } else if (args[3][0] === "*") {
@@ -139,7 +139,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 for (var sn = 0; sn < args[3].length; sn++) {
                     name = args[3][sn];
                     if (sub_module[name] === undefined) {
-                        batavia.builtins.__import__.apply(this, [[sub_module.__name__ + '.' + name, this.frame.f_globals, null, null, null], null]);
+                        batavia.builtins.__import__.apply(this, [[sub_module.__name__ + '.' + name, this.frame.f_globals, null, batavia.builtins.None, null], null]);
                     }
                     module[name] = sub_module[name];
                 }
@@ -157,7 +157,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 batavia.modules.sys.modules[name] = sub_module;
             }
 
-            if (args[3] === null) {
+            if (args[3] === batavia.builtins.None) {
                 // import <mod>
                 module = root_module;
             } else if (args[3][0] === "*") {

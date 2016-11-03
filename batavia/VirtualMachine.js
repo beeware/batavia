@@ -1579,7 +1579,7 @@ batavia.VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
 
 batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
     var exc_type = this.pop();
-    if (exc_type === null) {
+    if (exc_type === batavia.builtins.None) {
         why = null;
     } else {
         value = this.pop();
