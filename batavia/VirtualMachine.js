@@ -1251,7 +1251,7 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
-    if (obj.__getattr__ == undefined) {
+    if (obj.__getattr__ === undefined) {
         val = obj[attr];
     } else {
         obj.__getattr__(attr);
@@ -1308,7 +1308,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    if (items[1].__setattr__ == undefined) {
+    if (items[1].__setattr__ === undefined) {
         items[1][name] = items[0];
     } else {
         items[1].__setattr__(name, items[0]);
