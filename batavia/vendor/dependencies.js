@@ -8,5 +8,7 @@ module.exports = {
     // as first-class vendored libs
     base64: require('base64-js'),
     ieee754: require('ieee754'),
+    // lazy loading this module as it will break testing environment if loaded eagerly.
+    moment: function() { if (moment == null) { return require('moment'); } return moment; }
 }
 
