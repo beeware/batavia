@@ -136,7 +136,7 @@ batavia.modules.time.mktime = function(sequence){
         }
     }
 
-    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0)
+    var date = batavia.vendored.moment(new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0))
 
     if (isNaN(date)){
         // date is too large per ECMA specs
@@ -144,7 +144,7 @@ batavia.modules.time.mktime = function(sequence){
         throw new batavia.builtins.OverflowError("signed integer is greater than maximum")
     }
 
-    var seconds = date.getTime() / 1000;
+    var seconds = date.unix();
     return seconds.toFixed(1);
 }
 
@@ -204,7 +204,7 @@ batavia.modules.time.localtime = function(seconds){
     if (arguments.length > 1){
         throw new batavia.builtins.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
     }
-f
+
     if (arguments.length == 1) {
         // catching bad types
         if (batavia.isinstance(seconds, [batavia.types.Complex])){
