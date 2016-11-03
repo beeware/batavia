@@ -1254,10 +1254,9 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     if (obj.__getattr__ === undefined) {
         val = obj[attr];
     } else {
-        obj.__getattr__(attr);
+        val = obj.__getattr__(attr);
     }
 
-    var val = obj[attr];
     if (val instanceof batavia.types.Function) {
         // If this is a Python function, we need to know the current
         // context - if it's an attribute of an object (rather than
@@ -1501,21 +1500,34 @@ batavia.VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
-    if (val.__bool__()) {
+    var bool_value;
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__()
+    }
+
+    if (!val) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop();
-    if (!val.__bool__()) {
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__();
+    }
+
+    if (!val) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
-    if (val.__bool__()) {
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__()
+    }
+
+    if (val) {
         this.jump(jump);
     } else {
         this.pop();
@@ -1524,7 +1536,11 @@ batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top();
-    if (!val.__bool__()) {
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__();
+    }
+
+    if (!val) {
         this.jump(jump);
     } else {
         this.pop();
