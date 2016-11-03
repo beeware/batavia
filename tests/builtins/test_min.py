@@ -1,5 +1,7 @@
-from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+import re
 
+from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+from .. utils import SAMPLE_SUBSTITUTIONS
 
 class MinTests(TranspileTestCase):
     pass
@@ -7,24 +9,23 @@ class MinTests(TranspileTestCase):
 
 class BuiltinMinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["min"]
+    substitutions = SAMPLE_SUBSTITUTIONS.copy()
+    substitutions.update({
+        # Set/Frozenset ordering can be different in cPython and Batavia
+        # This means we get TypeErrors on different types when finding max value
+        # in sets composed from different types
+        "<class 'TypeError'>": [
+            re.compile(r"unorderable types: .* < .*"),
+        ]
+    })
+
+    def test_default_kwarg(self):
+        self.assertCodeExecution("""
+            print(min([], default=123))
+            print(min([], default="empty"))
+            print(min([1, 2, 3], default="empty"))
+            """)
 
     not_implemented = [
-        'test_noargs',
-        'test_bool',
-        'test_bytearray',
-        'test_bytes',
-        'test_class',
-        'test_complex',
-        'test_dict',
-        'test_float',
-        'test_frozenset',
-        'test_int',
-        'test_list',
-        'test_None',
-        'test_NotImplemented',
-        'test_range',
-        'test_set',
-        'test_slice',
-        'test_str',
-        'test_tuple',
+        'test_bytearray'
     ]
