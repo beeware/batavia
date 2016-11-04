@@ -35,7 +35,7 @@ batavia.types.Type = function() {
             this.__base__ = bases.__class__;
             this.__bases__ = [this.__base__];
         } else if (name === 'object' && bases === undefined) {
-            this.__base__ = null;
+            this.__base__ = batavia.builtins.None;
             this.__bases__ = [];
         } else {
             this.__base__ = batavia.types.Object.prototype.__class__;

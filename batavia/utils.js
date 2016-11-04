@@ -71,7 +71,7 @@ batavia.type_name = function(arg) {
             type_name = 'str';
             break;
         case 'object':
-            if (arg === null || arg === batavia.types.NoneType) {
+            if (arg === null || arg === batavia.builtins.None) {
                 type_name = 'NoneType';
             } else if (arg.__class__ != null && arg.__class__.__name__) {
                 type_name = arg.__class__.__name__;
