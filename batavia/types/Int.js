@@ -73,7 +73,7 @@ batavia.types.Int = function() {
      **************************************************/
 
     Int.prototype.__lt__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.lt(other ? 1 : 0);
             } else if (batavia.isinstance(other, batavia.types.Int)) {
@@ -89,7 +89,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__le__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.lte(other ? 1 : 0);
             } else if (batavia.isinstance(other, batavia.types.Int)) {
@@ -119,7 +119,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__gt__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.gt(other ? 1 : 0);
             } else if (batavia.isinstance(other, batavia.types.Int)) {
@@ -136,7 +136,7 @@ batavia.types.Int = function() {
     };
 
     Int.prototype.__ge__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.Bool)) {
                 return this.val.gte(other ? 1 : 0);
             } else if (batavia.isinstance(other, batavia.types.Int)) {

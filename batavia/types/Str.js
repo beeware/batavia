@@ -66,7 +66,7 @@ String.prototype.__setattr__ = function(attr, value) {
  **************************************************/
 
 String.prototype.__lt__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -85,7 +85,7 @@ String.prototype.__lt__ = function(other) {
 };
 
 String.prototype.__le__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -103,7 +103,7 @@ String.prototype.__le__ = function(other) {
 };
 
 String.prototype.__eq__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple
@@ -118,7 +118,7 @@ String.prototype.__eq__ = function(other) {
 };
 
 String.prototype.__ne__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple
@@ -134,7 +134,7 @@ String.prototype.__ne__ = function(other) {
 };
 
 String.prototype.__gt__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -153,7 +153,7 @@ String.prototype.__gt__ = function(other) {
 };
 
 String.prototype.__ge__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,

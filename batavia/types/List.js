@@ -75,7 +75,7 @@ batavia.types.List = function() {
             throw new batavia.builtins.TypeError("unorderable types: list() < " + batavia.type_name(other) + "()")
         }
 
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
@@ -109,7 +109,7 @@ batavia.types.List = function() {
             throw new batavia.builtins.TypeError("unorderable types: list() <= " + batavia.type_name(other) + "()")
         }
 
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
@@ -164,7 +164,7 @@ batavia.types.List = function() {
             throw new batavia.builtins.TypeError("unorderable types: list() > " + batavia.type_name(other) + "()")
         }
 
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
@@ -197,7 +197,7 @@ batavia.types.List = function() {
             throw new batavia.builtins.TypeError("unorderable types: list() >= " + batavia.type_name(other) + "()")
         }
 
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){

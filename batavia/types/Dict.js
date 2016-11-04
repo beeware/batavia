@@ -135,7 +135,7 @@ batavia.types.Dict = function() {
      **************************************************/
 
     Dict.prototype.__lt__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isbataviainstance(other)) {
                  throw new batavia.builtins.TypeError("unorderable types: dict() < " + batavia.type_name(other) + "()");
              } else {
@@ -148,7 +148,7 @@ batavia.types.Dict = function() {
     };
 
     Dict.prototype.__le__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isbataviainstance(other)) {
                  throw new batavia.builtins.TypeError("unorderable types: dict() <= " + batavia.type_name(other) + "()");
              } else {
@@ -168,7 +168,7 @@ batavia.types.Dict = function() {
     };
 
     Dict.prototype.__gt__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isbataviainstance(other)) {
                  throw new batavia.builtins.TypeError("unorderable types: dict() > " + batavia.type_name(other) + "()");
              } else {
@@ -180,7 +180,7 @@ batavia.types.Dict = function() {
     };
 
     Dict.prototype.__ge__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isbataviainstance(other)) {
                  throw new batavia.builtins.TypeError("unorderable types: dict() >= " + batavia.type_name(other) + "()");
              } else {
