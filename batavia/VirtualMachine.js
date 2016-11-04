@@ -1505,7 +1505,7 @@ batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
         val = val.__bool__()
     }
 
-    if (!val) {
+    if (val) {
         this.jump(jump);
     }
 };
