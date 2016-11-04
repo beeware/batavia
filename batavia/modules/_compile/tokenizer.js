@@ -480,7 +480,7 @@ Tokenizer.prototype.get_token = function() {
 
     // nothing left to process
     if (tok.cur >= tok.buf.length) {
-        return null;
+        return batavia.builtins.None;
     }
 
     var process_line = function() {
@@ -619,7 +619,7 @@ Tokenizer.prototype.again = function() {
 
    // Check for EOF and errors now
    if (c == EOF) {
-       return [tok.done == E_EOF ? ENDMARKER : ERRORTOKEN, null, null, 5];
+       return [tok.done == E_EOF ? ENDMARKER : ERRORTOKEN, batavia.builtins.None, batavia.builtins.None, 5];
    }
 
    // Identifier (most frequent token!)
@@ -633,7 +633,7 @@ Tokenizer.prototype.again = function() {
        if (tok.level > 0) {
            // process next line
            tok.continue_processing = true;
-           return null;
+           return batavia.builtins.None;
        }
        tok.cont_line = 0;
        if (tok.async_def) {
@@ -747,7 +747,7 @@ Tokenizer.prototype.again = function() {
    }
 
  var result = tok.letter_quote(c);
- if (result != null) {
+ if (result !== batavia.builtins.None) {
      return result;
  }
 
@@ -931,7 +931,7 @@ Tokenizer.prototype.letter_quote = function(c) {
       p_end = tok.cur;
       return [STRING, p_start, p_end];
   }
-  return null;
+  return batavia.builtins.None;
 };
 
 Tokenizer.prototype.fraction = function(c) {

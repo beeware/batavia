@@ -9,7 +9,7 @@ def testTokenize(self, source, expected):
         tok = _compile.Tokenizer(s)
         for i in range(10000):
           t = tok.get_token()
-          if str(t) == 'None': # BUG: None comparison seems to fail
+          if t is None:
             break
           token, a, b = str(t).split(",")
           print(i, token, s[int(a):int(b)])
