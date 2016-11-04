@@ -33,12 +33,7 @@ batavia.isinstance = function(obj, type) {
             case 'string':
                 return type === batavia.types.Str;
             case 'object':
-                if (type === null || type === batavia.types.NoneType) {
-                    return obj === null;
-                } else {
-                    return obj instanceof type;
-                }
-                break;
+                return obj instanceof type;
             default:
                 return false;
         }

@@ -18,11 +18,11 @@ batavia.types.NoneType = function() {
     };
 
     NoneType.prototype.__repr__ = function() {
-        return "<class 'NoneType'>";
+        return "None";
     };
 
     NoneType.prototype.__str__ = function() {
-        return "<class 'NoneType'>";
+        return "None";
     };
 
     /**************************************************
@@ -50,11 +50,11 @@ batavia.types.NoneType = function() {
     };
 
     NoneType.prototype.__eq__ = function(other) {
-        return other === null;
+        return other === this;
     };
 
     NoneType.prototype.__ne__ = function(other) {
-        return other !== null;
+        return other !== this;
     };
 
     NoneType.prototype.__gt__ = function(other) {

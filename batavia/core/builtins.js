@@ -833,12 +833,12 @@ batavia.builtins.iter = function(args, kwargs) {
         throw new batavia.builtins.TypeError("iter() expected at most 2 arguments, got 3");
     }
     var iterobj = args[0];
-    if (iterobj !== null && typeof iterobj === 'object' && !iterobj.__class__) {
+    if (iterobj !== batavia.builtins.None && typeof iterobj === 'object' && !iterobj.__class__) {
         // this is a plain JS object, wrap it in a JSDict
         iterobj = new batavia.types.JSDict(iterobj);
     }
 
-    if (iterobj !== null && iterobj.__iter__) {
+    if (iterobj !== batavia.builtins.None && iterobj.__iter__) {
         //needs to work for __iter__ in JS impl (e.g. Map/Filter) and python ones
         return batavia.run_callable(iterobj, iterobj.__iter__, [], null);
     } else {
@@ -909,14 +909,14 @@ batavia.builtins.max = function(args, kwargs) {
     }
 
     if (args.length > 1) {
-        var list = batavia.builtins.tuple([args], null);
+        var list = batavia.builtins.tuple([args], batavia.builtins.None);
     } else if (batavia.isinstance(args[0], [
                 batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
                 batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
                 batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet,
                 batavia.types.Str
             ])) {
-        var list = batavia.builtins.tuple([args[0]], null);
+        var list = batavia.builtins.tuple([args[0]], batavia.builtins.None);
     } else {
         throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
