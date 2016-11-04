@@ -349,7 +349,7 @@ batavia.modules.marshal = {
             break;
 
         case batavia.modules.marshal.TYPE_NONE:
-            retval = null;
+            retval = batavia.builtins.None;
             // console.log.info('TYPE_NONE ' + retval);
             break;
 

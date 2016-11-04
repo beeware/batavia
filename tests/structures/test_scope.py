@@ -13,7 +13,6 @@ class ScopeTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_local_scope(self):
         self.assertCodeExecution("""
             x = 1
@@ -47,7 +46,6 @@ class ScopeTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @unittest.expectedFailure
     def test_class_scope(self):
         self.assertCodeExecution("""
             x = 1
@@ -66,3 +64,29 @@ class ScopeTests(TranspileTestCase):
 
             print('Done.')
             """, run_in_function=False)
+
+    def test_module_globals(self):
+        self.assertCodeExecution(
+            """
+            from example import do_first
+
+            do_first('hello')
+
+            print("Done.")
+            """,
+            extra_code={
+                'example':
+                    """
+                    print("Initializing the example module")
+                    c = 42
+
+                    def do_second(x):
+                        print("The second thing...", x)
+                        print("The value of c is", c)
+
+                    def do_first(x):
+                        print("The first thing...", x)
+                        do_second(x)
+
+                    """,
+            })

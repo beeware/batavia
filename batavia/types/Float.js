@@ -79,7 +79,7 @@ batavia.types.Float = function() {
      **************************************************/
 
     Float.prototype.__lt__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
                         batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
@@ -95,7 +95,7 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__le__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
                         batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
@@ -130,7 +130,7 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__gt__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
                         batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
@@ -146,7 +146,7 @@ batavia.types.Float = function() {
     };
 
     Float.prototype.__ge__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
                         batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,

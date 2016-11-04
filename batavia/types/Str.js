@@ -10,6 +10,10 @@ String.prototype.__class__ = new batavia.types.Type('str');
  * Type conversions
  **************************************************/
 
+String.prototype.__bool__ = function() {
+    return this.length > 0;
+};
+
 String.prototype.__iter__ = function() {
     return new String.prototype.StrIterator(this);
 };
@@ -44,11 +48,25 @@ String.prototype.__str__ = function() {
 };
 
 /**************************************************
+ * Attribute manipulation
+ **************************************************/
+
+String.prototype.__getattr__ = function(attr) {
+    if (this[attr] === undefined) {
+        throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
+    }
+    return this[attr];
+},
+
+String.prototype.__setattr__ = function(attr, value) {
+    throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
+},
+/**************************************************
  * Comparison operators
  **************************************************/
 
 String.prototype.__lt__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -67,7 +85,7 @@ String.prototype.__lt__ = function(other) {
 };
 
 String.prototype.__le__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -85,7 +103,7 @@ String.prototype.__le__ = function(other) {
 };
 
 String.prototype.__eq__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple
@@ -100,7 +118,7 @@ String.prototype.__eq__ = function(other) {
 };
 
 String.prototype.__ne__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple
@@ -116,7 +134,7 @@ String.prototype.__ne__ = function(other) {
 };
 
 String.prototype.__gt__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -135,7 +153,7 @@ String.prototype.__gt__ = function(other) {
 };
 
 String.prototype.__ge__ = function(other) {
-    if (other !== null) {
+    if (other !== batavia.builtins.None) {
         if (batavia.isinstance(other, [
                     batavia.types.Bool, batavia.types.Int, batavia.types.Float,
                     batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
@@ -170,7 +188,6 @@ String.prototype.__neg__ = function() {
 };
 
 String.prototype.__not__ = function() {
-
     return this.length == 0;
 };
 

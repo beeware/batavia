@@ -50,7 +50,7 @@ batavia.types.Set = function() {
      **************************************************/
 
     Set.prototype.__lt__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                         batavia.types.List, batavia.types.Int, batavia.types.Range,
@@ -66,7 +66,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__le__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                         batavia.types.List, batavia.types.Int, batavia.types.Range,
@@ -102,7 +102,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__gt__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                         batavia.types.List, batavia.types.Int, batavia.types.Range,
@@ -118,7 +118,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__ge__ = function(other) {
-        if (other !== null) {
+        if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
                         batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                         batavia.types.List, batavia.types.Int, batavia.types.Range,
@@ -257,10 +257,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__iand__ = function(other) {
-        if (other === null || batavia.isinstance(other, [
+        if (batavia.isinstance(other, [
                 batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                 batavia.types.List, batavia.types.Int, batavia.types.Range,
-                batavia.types.Slice, batavia.types.Str, batavia.types.Tuple
+                batavia.types.Slice, batavia.types.Str, batavia.types.Tuple,
+                batavia.types.NoneType
             ])) {
             throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for &=: 'set' and '" + batavia.type_name(other) + "'");

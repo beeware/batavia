@@ -11,7 +11,7 @@ batavia.core.Frame = function(kwargs) {
     if (this.f_back) {
         this.f_builtins = this.f_back.f_builtins;
     } else {
-        this.f_builtins = this.f_locals['__builtins__'];
+        this.f_builtins = this.f_globals['__builtins__'];
         if (this.f_builtins.hasOwnProperty('__dict__')) {
             this.f_builtins = this.f_builtins.__dict__;
         }

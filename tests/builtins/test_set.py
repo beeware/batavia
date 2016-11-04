@@ -13,7 +13,6 @@ class BuiltinSetFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_bytearray',
         'test_bytes',
         'test_dict',
-        'test_None',
         'test_range',
         'test_str',
         'test_tuple',

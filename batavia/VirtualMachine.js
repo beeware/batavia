@@ -1067,7 +1067,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
-        throw new batavia.builtins.NameError("local variable '" + name + "' referenced before assignment");
+        throw new batavia.builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment");
     }
     this.push(val);
 };
@@ -1251,7 +1251,12 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 
 batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
-    var val = obj[attr];
+    if (obj.__getattr__ === undefined) {
+        val = obj[attr];
+    } else {
+        val = obj.__getattr__(attr);
+    }
+
     if (val instanceof batavia.types.Function) {
         // If this is a Python function, we need to know the current
         // context - if it's an attribute of an object (rather than
@@ -1302,7 +1307,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    if (items[1].__setattr__ == undefined) {
+    if (items[1].__setattr__ === undefined) {
         items[1][name] = items[0];
     } else {
         items[1].__setattr__(name, items[0]);
@@ -1495,21 +1500,34 @@ batavia.VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
-    if (val.__bool__()) {
+    var bool_value;
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__()
+    }
+
+    if (val) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop();
-    if (!val.__bool__()) {
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__();
+    }
+
+    if (!val) {
         this.jump(jump);
     }
 };
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
-    if (val.__bool__()) {
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__()
+    }
+
+    if (val) {
         this.jump(jump);
     } else {
         this.pop();
@@ -1518,7 +1536,11 @@ batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
 
 batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top();
-    if (!val.__bool__()) {
+    if (val.__bool__ !== undefined) {
+        val = val.__bool__();
+    }
+
+    if (!val) {
         this.jump(jump);
     } else {
         this.pop();
@@ -1573,7 +1595,7 @@ batavia.VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
 
 batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
     var exc_type = this.pop();
-    if (exc_type === null) {
+    if (exc_type === batavia.builtins.None) {
         why = null;
     } else {
         value = this.pop();

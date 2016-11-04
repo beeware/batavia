@@ -50,7 +50,7 @@ batavia.types.JSDict = function() {
      **************************************************/
 
     JSDict.prototype.__lt__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isinstance(other, [
                          batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                          batavia.types.Int, batavia.types.JSDict, batavia.types.List,
@@ -67,7 +67,7 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.__le__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isinstance(other, [
                          batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                          batavia.types.Int, batavia.types.JSDict, batavia.types.List,
@@ -91,7 +91,7 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.__gt__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isinstance(other, [
                          batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                          batavia.types.Int, batavia.types.JSDict, batavia.types.List,
@@ -108,7 +108,7 @@ batavia.types.JSDict = function() {
     };
 
     JSDict.prototype.__ge__ = function(other) {
-         if (other !== null) {
+         if (other !== batavia.builtins.None) {
              if (batavia.isinstance(other, [
                          batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
                          batavia.types.Int, batavia.types.JSDict, batavia.types.List,

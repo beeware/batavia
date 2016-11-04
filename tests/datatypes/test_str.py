@@ -4,6 +4,23 @@ import unittest
 
 
 class StrTests(TranspileTestCase):
+    def test_truthiness(self):
+        self.assertCodeExecution("""
+            x = "A string"
+            if x:
+                print("x is True")
+            else:
+                print("x is False")
+
+            y = ""
+            if y:
+                print("y is True")
+            else:
+                print("y is False")
+
+            print('Done.')
+            """)
+
     def test_setattr(self):
         self.assertCodeExecution("""
             x = "Hello, world"
@@ -11,7 +28,6 @@ class StrTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = "Hello, world"
