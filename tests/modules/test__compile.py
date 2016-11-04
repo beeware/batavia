@@ -9,20 +9,13 @@ def testTokenize(self, source, expected):
         tok = _compile.Tokenizer(s)
         for i in range(10000):
           t = tok.get_token()
-          if t is None:
+          if str(t) == 'None': # BUG: None comparison seems to fail
             break
           token, a, b = str(t).split(",")
           print(i, token, s[int(a):int(b)])
         """ % repr(source), expected)
 
 class CompileTests(TranspileTestCase):
-
-    def test_compile(self):
-        self.assertJavaScriptExecution("""
-            src = 'x = 1'
-            print(compile(src, 'testing.py', 'single', 0))
-            """, "")
-
     def test_basic_tokenize(self):
         testTokenize(self, "x = 1; fun.w3 -= 14.0e4j",
             """
