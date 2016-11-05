@@ -8,21 +8,21 @@ You'll need to have Python 3.4 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
 <http://pybee.org/contributing/first-time/setup/>`_. 
 
-Setup a `pybee` folder to store everything::
+1. Setup a `pybee` folder to store everything::
 
    $ mkdir pybee
    $ cd pybee
 
-Get a copy of the Batavia code by running a :code:`git clone`::
+2. Get a copy of the Batavia code by running a :code:`git clone`::
 
    $ git clone https://github.com/pybee/batavia
 
-Batavia requires a copy of Ouroboros (the Python standard library, written in
+3. Batavia requires a copy of Ouroboros (the Python standard library, written in
 Python) to build, so we also need to clone that::
 
    $ git clone https://github.com/pybee/ouroboros
 
-Then, we need to create a virtual environment, and install Batavia into it.
+4. We'll need to create a virtual environment, and install Batavia into it.
 
  * For Linux, MacOS::
 
@@ -45,7 +45,7 @@ Then, we need to create a virtual environment, and install Batavia into it.
    $ source activate batavia
    $ pip install -e .
 
-And finally, run the :code:`make` script to generate the combined Batavia JavaScript files::
+5. Run the :code:`make` script to generate the combined Batavia JavaScript files::
 
    $ make
 

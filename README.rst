@@ -35,75 +35,79 @@ reference objects and classes defined natively in JavaScript.
 Quick Start
 ---------------
 
-(For a more detailed setup, please see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_)
+Prerequisites
+~~~~~~~~~~~~~~
 
-Batavia requires a Python 3.4 installation, a copy of `Ouroboros <https://github.com/pybee/ouroboros>`_, and a virtualenv to run it all in. 
+Batavia requires a Python 3.4 installation, and a virtualenv to run it all in.
 
-Clone the code repos:: 
+Check the `Setting up your environment
+<http://pybee.org/contributing/first-time/setup/>`_ for configuration help.
+
+
+Downloading and Installing
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Clone the code repos:: 
 
    $ mkdir pybee
    $ cd pybee
    $ git clone https://github.com/pybee/batavia
    $ git clone https://github.com/pybee/ouroboros
 
-Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_)::
+2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_)::
 
    $ virtualenv venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
 
-And finally, run the :code:`make` script to generate the combined Batavia JavaScript files::
+3. Run the :code:`make` script to generate the combined Batavia JavaScript files::
 
    $ make
 
-Python in the Browser
-----------------------
+For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_
 
-To run Batavia in the browser::
+
+Running Batavia in the browser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After you have setup the local installation of Batavia, you can now run Python in the browser::
 
     $ cd testserver
     $ pip install -r requirements.txt
     $ ./manage.py runserver
 
-then open a web browser at localhost:8080.
+then open a web browser at `http://localhost:8080 <http://localhost:8080>`_
+
+For more detailed instructions, see the `Python In The Browser <http://batavia.readthedocs.io/en/latest/tutorials/tutorial-1.html>`_ guide.
 
 Documentation
 -------------
 
-Documentation for Batavia can be found on `Read The Docs`_, including:
+`Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
 
+* `Project Internals <http://batavia.readthedocs.io/en/latest/internals/index.html>`_
+* `Tutorials <http://batavia.readthedocs.io/en/latest/tutorials/index.html>`_
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
 
-Community
----------
 
-Batavia is part of the `BeeWare suite`_. You can talk to the community through:
-
-* `@pybeeware on Twitter`_
-
-* The `pybee/general`_ channel on Gitter.
-
-We foster a welcoming and respectful community as described in our
-`BeeWare Community Code of Conduct`_.
-
-
-Issues
-------
-
-If you experience problems with Batavia, `log them on GitHub`_.
 
 Contributing
 ------------
 
-If you'd like to contribute to Batavia development, our `guide for first time contributors`_ will help you get started.
+If you'd like to contribute to Batavia development, our `guide for first time contributors <http://batavia.readthedocs.io/en/latest/internals/contributing.html>`_ will help you get started.
 
+If you experience problems with Batavia, `log them on GitHub <https://github.com/pybee/batavia/issues>`_.
 
-.. _BeeWare suite: http://pybee.org
-.. _Read The Docs: https://batavia.readthedocs.io
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _pybee/general: https://gitter.im/pybee/general
-.. _BeeWare Community Code of Conduct: http://pybee.org/community/behavior/
-.. _log them on Github: https://github.com/pybee/batavia/issues
-.. _guide for first time contributors: http://batavia.readthedocs.io/en/latest/internals/contributing.html
+Community
+---------
+
+Batavia is part of the `BeeWare suite <http://pybee.org>`_. You can talk to the community through:
+
+* `@pybeeware on Twitter <https://twitter.com/pybeeware>`_
+
+* The `pybee/general <https://gitter.im/pybee/general>`_ channel on Gitter.
+
+We foster a welcoming and respectful community as described in our
+`BeeWare Community Code of Conduct <http://pybee.org/community/behavior/>`_.
