@@ -2,6 +2,7 @@
 
 import base64
 import contextlib
+import gc
 from io import StringIO
 import importlib
 import os
@@ -456,6 +457,13 @@ def cleanse_python(input, substitutions):
 
 
 class TranspileTestCase(TestCase):
+
+    def setUpClass():
+        gc.enable()
+
+    def tearDownClass():
+        gc.collect()
+
     def assertCodeExecution(
             self, code,
             message=None,
@@ -656,6 +664,13 @@ class TranspileTestCase(TestCase):
 
 
 class NotImplementedToExpectedFailure:
+
+    def setUpClass():
+        gc.enable()
+
+    def tearDownClass():
+        gc.collect()
+
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
         # when the test case runs.
