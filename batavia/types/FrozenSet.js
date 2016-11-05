@@ -70,9 +70,11 @@ batavia.types.FrozenSet = function() {
     FrozenSet.prototype.__le__ = function(other) {
         if (other !== batavia.builtins.None) {
             if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
+                        batavia.types.Bool, batavia.types.Bytearray, batavia.types.Bytes,
+                        batavia.types.Complex, batavia.types.Dict, batavia.types.Float,
+                        batavia.types.List, batavia.types.Int, batavia.types.NotImplementedType,
+                        batavia.types.Range, batavia.types.Slice, batavia.types.Str,
+                        batavia.types.Tuple
                     ])) {
                 throw new batavia.builtins.TypeError("unorderable types: frozenset() <= " + batavia.type_name(other) + "()");
             } else {

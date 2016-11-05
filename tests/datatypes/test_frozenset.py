@@ -28,13 +28,8 @@ class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_gt_class',
         'test_gt_set',
 
-        'test_le_bytearray',
-        'test_le_bytes',
         'test_le_class',
-        'test_le_complex',
-        'test_le_NotImplemented',
         'test_le_set',
-        'test_le_slice',
 
         'test_lshift_bool',
         'test_lshift_bytearray',
