@@ -217,7 +217,7 @@ way (``expected failure``). These outcomes are what you expect to see. If you
 see any lines that end ``FAIL``, ``ERROR``, or ``unexpected success``, then
 you've found a problem. If this happens, at the end of the test run, you’ll
 also see a summary of the cause of those problems.
- If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
+If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
 make sure the test suite is always in a passing state. If you *do* get any
