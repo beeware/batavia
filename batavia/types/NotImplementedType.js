@@ -30,10 +30,6 @@ batavia.types.NotImplementedType = function() {
         return this.valueOf().length !== 0;
     };
 
-    NotImplementedType.prototype.__iter__ = function() {
-        return new NotImplementedType.prototype.NotImplementedIterator(this);
-    };
-
     NotImplementedType.prototype.__repr__ = function() {
         return this.__str__();
     };
