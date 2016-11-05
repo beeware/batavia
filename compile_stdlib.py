@@ -37,8 +37,6 @@ def parse_args():
     ]
 
     # find the ouroboros directory
-    ouroboros_not_found_msg = "'ouroboros' folder must be present here or in the parent directory to compile stdlib"
-
     if os.path.exists('./node_modules/ouroboros'):
         ouroboros = './node_modules/ouroboros'
     else:
