@@ -157,11 +157,15 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__div__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__div__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'frozenset' and '" + batavia.type_name(other) + "'");
+        if (batavia.isinstance(other, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't take floor of complex number.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'frozenset' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     FrozenSet.prototype.__truediv__ = function(other) {

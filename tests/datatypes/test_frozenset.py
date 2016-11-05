@@ -21,7 +21,6 @@ class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'frozenset'
 
     not_implemented = [
-        'test_floor_divide_complex',
 
         'test_ge_bytearray',
         'test_ge_bytes',
