@@ -33,7 +33,7 @@ Then create a virtual environment and install Batavia into it:
 
 *On Windows*
 
-.. code-block:: doscom
+.. code-block:: doscon
 
     > virtualenv --python=c:\python34\python.exe env
     > cd env\Scripts
