@@ -224,9 +224,16 @@ batavia.builtins.all = function(args, kwargs) {
         throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
     }
 
-    for (var i = 0; i < args[0].length; i++) {
-        if (!args[0][i]) {
-           return false;
+    var iterobj = args[0].__iter__()
+    try {
+        while (true) {
+            var next = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+            var bool_next = batavia.run_callable(next, next.__bool__, [], null)
+            if (!bool_next) return false
+        }
+    } catch (err) {
+        if (!(err instanceof batavia.builtins.StopIteration)) {
+            throw err;
         }
     }
 

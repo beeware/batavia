@@ -21,7 +21,3 @@ class AllTests(TranspileTestCase):
 
 class BuiltinAllFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["all"]
-
-    not_implemented = [
-        'test_range',
-    ]
