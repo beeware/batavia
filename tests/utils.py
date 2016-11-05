@@ -391,7 +391,10 @@ def cleanse_javascript(input, substitutions):
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
-    out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    try:
+        out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    except:
+        pass
     out = JS_FLOAT_ROUND.sub('\\1', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
