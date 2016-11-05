@@ -1,0 +1,26 @@
+{
+  "name": "batavia",
+  "version": "3.4.0-dev1",
+  "description": "A Javascript implementation of the Python virtual machine.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pybee/batavia.git"
+  },
+  "keywords": [
+    "python"
+  ],
+  "author": "Russell Keith-Magee",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/pybee/batavia/issues"
+  },
+  "homepage": "https://github.com/pybee/batavia#readme"
+}
