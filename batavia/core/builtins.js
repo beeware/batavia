@@ -267,8 +267,26 @@ batavia.builtins.any = function(args, kwargs) {
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
-batavia.builtins.ascii = function() {
-    throw new batavia.builtins.NotImplementedError("Builtin Batavia function 'ascii' not implemented");
+batavia.builtins.ascii = function(args) {
+    var repr_string = args[0];
+    var ascii_string = "";
+    for (var i = 0; i < args[0].length; i++) {
+      console.log(repr_string[i]);
+      var char_code = repr_string[i].charCodeAt();
+      var hex_code = char_code.toString(16);
+      if (char_code < 127) {
+        current_character = repr_string[i];
+      } else if (char_code < 256) {
+        current_character = "\\\\x" + "0".repeat(2 - hex_code.length) + hex_code;
+      } else if (char_code < 65536) {
+        current_character = "\\\\u" + "0".repeat(4 - hex_code.length) + hex_code;
+      } else if (char_code < 1114112){
+        current_character = "\\\\U" + "0".repeat(8 - hex_code.length) + hex_code;
+      }
+      ascii_string += current_character;
+  }
+    console.log(ascii_string); 
+    return ascii_string;
 };
 
 batavia.builtins.bin = function(args, kwargs) {
