@@ -46,6 +46,7 @@ Then create a virtual environment and install Batavia into it:
 *For those using anaconda*:
 
 .. code-block:: bash
+
     $ cd batavia
     $ conda create -n batavia-dev
     $ source activate batavia-dev
