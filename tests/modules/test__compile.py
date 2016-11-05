@@ -19,16 +19,16 @@ class CompileTests(TranspileTestCase):
     def test_basic_tokenize(self):
         testTokenize(self, "x = 1; fun.w3 -= 14.0e4j",
             """
-            0 NAME x
-            1 EQUAL =
-            2 NUMBER 1
-            3 SEMI ;
-            4 NAME fun
-            5 DOT .
-            6 NAME w3
-            7 MINEQUAL -=
-            8 NUMBER 14.0e4j
-            """)
+0 NAME x
+1 EQUAL =
+2 NUMBER 1
+3 SEMI ;
+4 NAME fun
+5 DOT .
+6 NAME w3
+7 MINEQUAL -=
+8 NUMBER 14.0e4j
+""")
 
     def test_multiline_tokenize(self):
         testTokenize(self, '''
