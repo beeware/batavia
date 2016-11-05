@@ -159,7 +159,7 @@ batavia.types.FrozenSet = function() {
      **************************************************/
 
     FrozenSet.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__div__ = function(other) {
@@ -179,11 +179,26 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__mul__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + batavia.type_name(other) + "'");
+        if (other !== batavia.builtins.None) {
+            if (batavia.isinstance(other, [
+                batavia.types.Bytearray, batavia.types.Bytes, batavia.types.List,
+                batavia.types.Str, batavia.types.Tuple
+            ])) {
+                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'frozenset'");
+            } else {
+                throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'frozenset' and '" + batavia.type_name(other) + "'");
+            }
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'frozenset' and 'NoneType'");
+        }
     };
 
     FrozenSet.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__mod__ has not been implemented");
+        if (batavia.isinstance(other, batavia.types.Complex)){
+            throw new batavia.builtins.TypeError("can't mod complex numbers.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'frozenset' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     FrozenSet.prototype.__add__ = function(other) {
@@ -199,11 +214,11 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__lshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__rshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__and__ = function(other) {
