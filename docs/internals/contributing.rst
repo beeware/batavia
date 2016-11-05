@@ -19,14 +19,14 @@ Github fork.
 As with the getting started guide, these instructions will assume that you
 have Python 3.4, and have virtualenv available for use.
 
-Start by forking Batavia into your own Github repository; then
+Start by `forking Batavia`_ into your own Github repository; then
 check out your fork to your own computer into a development directory:
 
 .. code-block:: bash
 
     $ mkdir batavia-dev
     $ cd batavia-dev
-    $ git clone https://github.com:<your github username>/batavia.git
+    $ git clone https://github.com/<your github username>/batavia.git
 
 Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
 
@@ -38,7 +38,7 @@ Then create a virtual environment and install Batavia into it:
 
 .. code-block:: bash
 
-    $ virtualenv -p $(which python3) env
+    $ virtualenv -p $(which python3.4) env
     $ . env/bin/activate
     $ cd batavia
     $ pip install -e .
@@ -62,6 +62,7 @@ Lastly, you'll need to obtain and install `PhantomJS`_. PhantomJS is a
 headless browser that allows Batavia to test it's behavior in a "real"
 browser. Installation instructions vary between platforms.
 
+.. _forking Batavia: https://github.com/pybee/batavia/fork
 .. _PhantomJS: http://phantomjs.org
 
 OS/X
@@ -196,7 +197,7 @@ To check that PhantomJS is working, run the following:
 Running the test suite
 ----------------------
 
-You're now ready to run the test suite! From the batavia-dev/batavia directory Type:
+You're now ready to run the test suite! In the ``batavia-dev/batavia`` directory, type:
 
 .. code-block:: bash
 
@@ -218,7 +219,8 @@ also see a summary of the cause of those problems.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
 make sure the test suite is always in a passing state. If you *do* get any
-failures, errors, or unexpected successes, please check out the `troubleshooting section <#troubleshooting>`_ or get in touch, because you
+failures, errors, or unexpected successes, please check out the
+`troubleshooting section <#troubleshooting>`_ or get in touch, because you
 may have found a problem.
 
 .. _continuous integration: https://travis-ci.org/pybee/batavia
