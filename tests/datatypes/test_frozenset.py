@@ -22,13 +22,8 @@ class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
 
-        'test_ge_bytearray',
-        'test_ge_bytes',
         'test_ge_class',
-        'test_ge_complex',
-        'test_ge_NotImplemented',
         'test_ge_set',
-        'test_ge_slice',
 
         'test_gt_bytearray',
         'test_gt_bytes',
