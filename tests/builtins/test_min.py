@@ -12,7 +12,7 @@ class BuiltinMinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     substitutions = SAMPLE_SUBSTITUTIONS.copy()
     substitutions.update({
         # Set/Frozenset ordering can be different in cPython and Batavia
-        # This means we get TypeErrors on different types when finding max value
+        # This means we get TypeErrors on different types when finding min value
         # in sets composed from different types
         "<class 'TypeError'>": [
             re.compile(r"unorderable types: .* < .*"),

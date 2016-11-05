@@ -242,31 +242,33 @@ batavia.builtins.all = function(args, kwargs) {
 batavia.builtins.all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.';
 
 batavia.builtins.any = function(args, kwargs) {
+    if (args[0] === null) {
+        throw new batavia.builtins.TypeError("'NoneType' object is not iterable");
+    }
     if (arguments.length != 2) {
         throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new batavia.builtins.TypeError("any() doesn't accept keyword arguments");
     }
-    if (args.length === 0) {
-        return false;
-    }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError('any() expected exactly 0 or 1 arguments (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('any() takes exactly one argument (' + args.length + ' given)');
     }
 
-    if (batavia.isinstance(args[0], batavia.types.Tuple)) {
-      for (var i = 0; i < args[0].length; i++) {
-        if (args[0][i]) {
-           return true;
+    if(!args[0].__iter__) {
+        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+    }
+
+    var iterobj = args[0].__iter__()
+    try {
+        while (true) {
+            var next = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+            var bool_next = batavia.run_callable(next, next.__bool__, [], null)
+            if (bool_next) return true
         }
-      }
-      return false;
-    }
-
-    for (var i in args[0]) {
-        if (args[0][i]) {
-           return true;
+    } catch (err) {
+        if (!(err instanceof batavia.builtins.StopIteration)) {
+            throw err;
         }
     }
 
@@ -916,28 +918,39 @@ batavia.builtins.max = function(args, kwargs) {
     }
 
     if (args.length > 1) {
-        var list = batavia.builtins.tuple([args], batavia.builtins.None);
-    } else if (batavia.isinstance(args[0], [
-                batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
-                batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet,
-                batavia.types.Str
-            ])) {
-        var list = batavia.builtins.tuple([args[0]], batavia.builtins.None);
+        var iterobj = batavia.builtins.tuple([args], batavia.builtins.None).__iter__();
     } else {
-        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+        if(!args[0].__iter__) {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+        }
+        var iterobj = args[0].__iter__();
     }
-    if (list.length === 0) {
-        if ('default' in kwargs) {
-            return kwargs['default'];
+
+    //If iterator is empty returns arror or default value
+    try {
+        var max = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+    } catch (err) {
+        if (err instanceof batavia.builtins.StopIteration) {
+          if ('default' in kwargs) {
+              return kwargs['default'];
+          } else {
+              throw new batavia.builtins.ValueError("max() arg is an empty sequence");
+          }
         } else {
-            throw new batavia.builtins.ValueError("max() arg is an empty sequence");
+            throw err;
         }
     }
-    var max = list[0];
-    for(var i = 1; i < list.length; i++) {
-        if(list[i].__gt__(max)) {
-            max = list[i];
+
+    try {
+        while (true) {
+            var next = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+            if (next.__gt__(max)) {
+                max = next
+            }
+        }
+    } catch (err) {
+        if (!(err instanceof batavia.builtins.StopIteration)) {
+            throw err;
         }
     }
     return max;
@@ -958,28 +971,39 @@ batavia.builtins.min = function(args, kwargs) {
     }
 
     if (args.length > 1) {
-        var list = batavia.builtins.tuple([args], null);
-    } else if (batavia.isinstance(args[0], [
-                batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
-                batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet,
-                batavia.types.Str
-            ])) {
-        var list = batavia.builtins.tuple([args[0]], null);
+        var iterobj = batavia.builtins.tuple([args], batavia.builtins.None).__iter__();
     } else {
-        throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+        if(!args[0].__iter__) {
+            throw new batavia.builtins.TypeError("'" + batavia.type_name(args[0]) + "' object is not iterable");
+        }
+        var iterobj = args[0].__iter__();
     }
-    if (list.length === 0) {
-      if ('default' in kwargs) {
-          return kwargs['default'];
-      } else {
-          throw new batavia.builtins.ValueError("min() arg is an empty sequence");
-      }
+
+    //If iterator is empty returns arror or default value
+    try {
+        var min = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+    } catch (err) {
+        if (err instanceof batavia.builtins.StopIteration) {
+          if ('default' in kwargs) {
+              return kwargs['default'];
+          } else {
+              throw new batavia.builtins.ValueError("min() arg is an empty sequence");
+          }
+        } else {
+            throw err;
+        }
     }
-    var min = list[0];
-    for(var i = 1; i < list.length; i++) {
-        if(list[i].__lt__(min)) {
-            min = list[i];
+
+    try {
+        while (true) {
+            var next = batavia.run_callable(iterobj, iterobj.__next__, [], null);
+            if (next.__lt__(min)) {
+                min = next
+            }
+        }
+    } catch (err) {
+        if (!(err instanceof batavia.builtins.StopIteration)) {
+            throw err;
         }
     }
     return min;
