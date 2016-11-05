@@ -25,7 +25,3 @@ class BuiltinMinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
             print(min([], default="empty"))
             print(min([1, 2, 3], default="empty"))
             """)
-
-    not_implemented = [
-        'test_bytearray'
-    ]
