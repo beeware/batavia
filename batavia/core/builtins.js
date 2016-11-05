@@ -207,7 +207,7 @@ batavia.builtins.abs = function(args, kwargs) {
 batavia.builtins.abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
 batavia.builtins.all = function(args, kwargs) {
-    if (args[0] == null) {
+    if (args[0] === null) {
         throw new batavia.builtins.TypeError("'NoneType' object is not iterable");
     }
     if (arguments.length != 2) {
@@ -217,7 +217,7 @@ batavia.builtins.all = function(args, kwargs) {
         throw new batavia.builtins.TypeError("all() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new batavia.builtins.TypeError('all() expected exactly 0 or 1 argument (' + args.length + ' given)');
+        throw new batavia.builtins.TypeError('all() takes exactly one argument (' + args.length + ' given)');
     }
 
     if(!args[0].__iter__) {
