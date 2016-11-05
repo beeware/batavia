@@ -79,7 +79,7 @@ Alternatively, you can download the PhantomJS tarball, and put the
 .. _Homebrew: http://brew.sh
 
 Windows
-~~~~
+~~~~~~~
 
 `Download PhantomJS <http://phantomjs.org/download.html>`__ and extract
 the .exe file into your GitHub repository.
@@ -122,7 +122,7 @@ Unpack the file to your prefered location and add the bin directory to your PATH
 
 
 Build from sources on linux
-~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Building phantomjs takes 30min to several hours. Do this only if the other methods don't work.
 Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
 If no binary is available, check the instructions at http://phantomjs.org/build.html

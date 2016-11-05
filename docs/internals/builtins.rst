@@ -2,7 +2,7 @@ Built-ins
 ============
 
 General Structure
--------------
+-----------------
 
 .. code-block:: javascript
 
