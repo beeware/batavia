@@ -2,7 +2,7 @@
   "name": "batavia",
   "version": "3.4.0-dev1",
   "description": "A Javascript implementation of the Python virtual machine.",
-  "main": "index.js",
+  "main": "batavia.js",
   "directories": {
     "doc": "docs"
   },
