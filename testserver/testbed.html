@@ -244,7 +244,7 @@ DAEDABcBDQEdAgYB
 {{ othercode }}
     </script>
 
-    {% if customcode %}
+    {% if customcode and customcode.compiled %}
     <script id="batavia-customcode" type="application/python-bytecode">
 {{ customcode.compiled }}
     </script>
@@ -297,6 +297,9 @@ batavia.stderr = stdout;
     <h1>Batavia testbed</h1>
     <h3>Try running some Python in the browser</h3>
     <div class="indent_block">
+        {% if customcode and customcode.error %}
+        <div class='warning important'><pre>{{ customcode.error }}</pre></div>
+        {% endif %}
         <form method="post">
             <textarea id="text_editor" cols="80" rows="8" name="code">{{ customcode.code }}</textarea>
             <p class="warning important">
