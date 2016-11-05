@@ -1,7 +1,5 @@
 
-fixedConsoleLog = function(msg) {
-    console.log.call(console, msg);
-};
+fixedConsoleLog = console.log.bind(console);
 
 var batavia = {
     stdout: fixedConsoleLog,
