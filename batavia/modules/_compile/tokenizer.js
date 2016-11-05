@@ -998,69 +998,12 @@ Tokenizer.prototype.imaginary = function() {
 
 
 Tokenizer.prototype.tok_nextc = function() {
-var tok = this;
+    var tok = this;
 
-if (tok.cur != tok.inp) {
-    return tok.buf[tok.cur++]; /* Fast path */
-}
-return EOF;
-
-// for (;;) {
-//     if (tok.cur != tok.inp) {
-//         return tok.buf[tok.cur++]; /* Fast path */
-//     }
-//     if (tok.done != E_OK) {
-//         return EOF;
-//     }
-//     var done = 0;
-//     var cur = tok.cur;
-//     var pt = null;
-    // if (tok.start == null) {
-    //     if (decoding_fgets(tok.buf, tok.end,
-    //               tok) == null) {
-    //         if (!tok.decoding_erred)
-    //             tok.done = E_EOF;
-    //         done = 1;
-    //     } else {
-    //         tok.done = E_OK;
-    //         tok.inp = strchr(tok.buf, '\0');
-    //         done = tok.inp[-1] == '\n';
-    //     }
-    // } else {
-        // cur = tok.cur;
-        // tok.done = E_OK;
-    // }
-    // tok.lineno++;
-    // console.log("on line", tok.lineno);
-    // /* Read until '\n' or EOF */
-    // while (!done) {
-    //     var curstart = (tok.start == null) ? -1 :
-    //               tok.start;
-    //     var curvalid = tok.inp;
-    //     tok.cur = cur;
-    //     tok.line_start = tok.cur;
-    //     tok.inp = curvalid;
-    //     tok.start = curstart < 0 ? null : curstart;
-    //     tok.inp = tok.buf.length - 1;
-    //     done = tok.buf[tok.inp - 1] == '\n';
-    //     break;
-    // }
-    // tok.cur = cur;
-    // tok.line_start = tok.cur;
-    // /* replace "\r\n" with "\n" */
-    // /* For Mac leave the \r, giving a syntax error */
-    // pt = tok.inp - 2;
-    // if (pt >= 0 && tok.buf[pt] == '\r') {
-    //     tok.buf[pt++] = '\n';
-    //     tok.buf[pt] = '\0';
-    //     tok.inp = pt;
-    // }
-    // if (tok.done != E_OK) {
-    //     tok.cur = tok.inp;
-    //     return EOF;
-    // }
-// }
-/*NOTREACHED*/
+    if (tok.cur != tok.inp) {
+        return tok.buf[tok.cur++]; /* Fast path */
+    }
+    return EOF;
 };
 
 /* Back-up one character */
