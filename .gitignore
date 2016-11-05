@@ -18,5 +18,9 @@ env
 make.exe
 phantomjs.exe
 
+# JS
+node_modules/
+package/
+
 # PyCharm settings
 .idea

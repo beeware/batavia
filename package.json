@@ -4,11 +4,11 @@
   "description": "A Javascript implementation of the Python virtual machine.",
   "main": "index.js",
   "directories": {
-    "doc": "docs",
-    "test": "tests"
+    "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "make"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,15 @@
   "bugs": {
     "url": "https://github.com/pybee/batavia/issues"
   },
-  "homepage": "https://github.com/pybee/batavia#readme"
+  "homepage": "https://github.com/pybee/batavia#readme",
+  "devDependencies": {
+    "ouroboros": "3.4.0",
+    "uglifyjs": "2.4.10"
+  },
+  "files": [
+    "batavia.js",
+    "batavia.min.js",
+    "batavia-all.js",
+    "batavia-all.min.js"
+  ]
 }

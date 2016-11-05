@@ -150,7 +150,7 @@ endif
 
 
 batavia.min.js: batavia.js
-	python -m jsmin batavia.js > batavia.min.js
+	node_modules/uglifyjs/bin/uglifyjs batavia.js > batavia.min.js
 
 batavia-all.min.js: batavia-all.js
-	python -m jsmin batavia-all.js > batavia-all.min.js
+	node_modules/uglifyjs/bin/uglifyjs batavia-all.js > batavia-all.min.js
