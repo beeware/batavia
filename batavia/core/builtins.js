@@ -267,12 +267,12 @@ batavia.builtins.any = function(args, kwargs) {
 };
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
-batavia.builtins.ascii = function(args) {
-    var repr_string = args[0];
+batavia.builtins.ascii = function(args, kwargs) {
+    var repr_string = batavia.builtins.repr([args[0]], null);
     var ascii_string = "";
     var lead_surrogate = 0x0;
 
-    for (var i = 0; i < args[0].length; i++) {
+    for (var i = 0; i < repr_string.length; i++) {
       // console.log(repr_string[i]);
       var char_code = repr_string[i].charCodeAt(0);
       var combined_char_code;
