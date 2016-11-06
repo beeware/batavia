@@ -263,7 +263,19 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__or__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                both.push(val);
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                both.push(val);
+            }.bind(this));
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     /**************************************************
@@ -372,7 +384,20 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__ior__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__ior__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                both.push(val);
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                both.push(val);
+            }.bind(this));
+            this.update(both);
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     /**************************************************
