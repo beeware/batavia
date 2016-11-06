@@ -220,7 +220,16 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__getitem__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.Bool])){
+            throw new batavia.builtins.TypeError("'frozenset' object does not support indexing");
+        } else if (batavia.isinstance(other, [batavia.types.Int])){
+            if (other.val.gt(batavia.types.Int.prototype.MAX_INT.val) || other.val.lt(batavia.types.Int.prototype.MIN_INT.val)) {
+                throw new batavia.builtins.IndexError("cannot fit 'int' into an index-sized integer");
+            } else {
+                throw new batavia.builtins.TypeError("'frozenset' object does not support indexing");
+            }
+        }
+        throw new batavia.builtins.TypeError("'frozenset' object is not subscriptable");
     };
 
     FrozenSet.prototype.__lshift__ = function(other) {
