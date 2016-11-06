@@ -13,4 +13,3 @@ reference objects and classes defined natively in JavaScript.
 
    community
    faq
-   getting-started

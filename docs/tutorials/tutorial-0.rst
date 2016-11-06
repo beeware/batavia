@@ -1,175 +1,64 @@
-Tutorial 0 - Sandbox
-====================
+Tutorial 0 - Getting Started
+=============================
 
-In this tutorial, you'll get the Batavia sandbox running, and use it to run a
-really simple "Hello, world!" program written in Python.
+Getting a working local copy of Batavia requires a few steps: getting a copy of
+the Batavia code, and the ouroboros dependency within a virtual environment.
 
-Setup
------
+You'll need to have Python 3.4 available for Batavia to work. Instructions on
+how to set this up are `on our Environment setup guide
+<http://pybee.org/contributing/first-time/setup/>`_. 
 
-This tutorial assumes you've read and followed the instructions in
-:doc:`/intro/getting-started`. If you've done this, you should have:
+1. Setup a `pybee` folder to store everything::
 
-* A ``tutorial`` directory with a Batavia checkout,
-* An activated Python 3.4 virtual environment, and
-* Batavia installed in that virtual environment
+   $ mkdir pybee
+   $ cd pybee
 
-Starting the test server
-------------------------
+2. Get a copy of the Batavia code by running a :code:`git clone`::
 
-To start the test server, you'll need to be in the ``testserver`` directory under the batavia directory::
+   $ git clone https://github.com/pybee/batavia
 
-    $ cd testserver
+3. Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that::
 
-Once you're in the ``testserver`` directory, you can install the requirements
-for the test server::
+   $ git clone https://github.com/pybee/ouroboros
 
-    $ pip install -r requirements.txt
+4. We'll need to create a virtual environment, and install Batavia into it.
 
-Then you can start the test server::
+ * For Linux, MacOS::
 
-    $ ./manage.py runserver
+   $ virtualenv venv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
 
-on Windows::
+ * For Windows::
 
-    >python manage.py runserver
-    
-Now open your browser and go to `http://127.0.0.1:8000`_
+   > virtualenv --python=c:\python34\python.exe venv
+   > cd venv\Scripts
+   > activate
+   > pip install -e .
 
-.. _http://127.0.0.1:8000: http://127.0.0.1:8000
+ * For Anaconda users::
 
-You should now see a page titled "Batavia testbed" with some buttons on the left and a text box on the right.
+   $ cd batavia
+   $ conda create -n batavia
+   $ source activate batavia
+   $ pip install -e .
 
-It's alive!
------------
+5. Run the :code:`make` script to generate the combined Batavia JavaScript files::
 
-On the right hand side of the screen is a text box. This is where you can enter your
-Python code. Type the following into this text box:
+   $ make
 
-.. code-block:: python
+Your final setup should end up looking like this:: 
 
-    print("Hello World!")
+  _ pybee
+    \_ batavia
+    \_ ouroboros
+    \_ venv (if using virtualenv)
 
-Then click on the "Run code" button. The page will reload, and below the area
-on the page named "Console output", you'll see the output you'd
-expect from this Python program::
+You now have a working Batavia environment!
 
-    Hello World!
+Next Steps
+----------
 
-Congratulations! You've just run your first Python program under Javascript
-using Batavia! Now you can get a little more adventurous and try a loop. Replace
-your existing code in the text box with the following:
-
-.. code-block:: python
-
-    for i in range(0, 10):
-        print("Hello World %d!" % i)
-
-Click "Run code" again, and you should see the following on the screen in the
-console output section::
-
-    Hello World 0!
-    Hello World 1!
-    Hello World 2!
-    Hello World 3!
-    Hello World 4!
-    Hello World 5!
-    Hello World 6!
-    Hello World 7!
-    Hello World 8!
-    Hello World 9!
-
-
-What just happened?
--------------------
-
-What happened when you pressed the "Run code" button?
-
-When you clicked "Run code", your browser submitted the content of the text
-box as a HTTP ``POST`` request to the test server. The test server took that
-content, and compiled it as if it were Python code. It didn't *run* the code --
-it just compiled it to bytecode. It created the ``.pyc`` file that
-would have been produced if you had written the same code into a ``test.py`` file and
-ran ``python test.py``.
-
-Having compiled the source code into bytecode form, it then encoded the
-contents of the ``.pyc`` file into base64, and inserted that base64 string into the
-returned HTML response. If you inspect the source code for the page, you
-should see a block in the document ``<head>`` that looks something like:
-
-.. code-block:: html
-
-    <script id="batavia-customcode" type="application/python-bytecode">
-        7gwNCkIUE1cWAAAA4wAAAAAAAAAAAAAAAAIAAABAAAAAcw4AAABlAABkAACDAQABZAEAUykCegtI
-        ZWxsbyBXb3JsZE4pAdoFcHJpbnSpAHICAAAAcgIAAAD6PC92YXIvZm9sZGVycy85cC9uenY0MGxf
-        OTc0ZGRocDFoZnJjY2JwdzgwMDAwZ24vVC90bXB4amMzZXJyddoIPG1vZHVsZT4BAAAAcwAAAAA=
-    </script>
-
-That string is the base64 encoded version of the Python program you submitted.
-The browser then takes this base64 string, decodes it back into a bytestring,
-and runs it through Batavia -- a 15kb Javascript module that does the same thing
-in a browser that CPython does on the desktop: iterprets Python bytecode as a
-running program.
-
-Push the button...
-------------------
-
-You may also have noticed a set of buttons on the left hand side of the
-screen. These are some pre-canned example code, ready for testing. Try
-clicking the "Run sample.py" button. Your browser should pop
-up a new window and load the `BeeWare website`_. If you close that window and
-go back to the Batavia testbed, you should see a lot of output in the console
-section of the screen.
-
-.. _BeeWare website: http://pybee.org
-
-If you want to, you can `inspect the source code`_. One part of
-``sample.py`` that is of particular interest is the part that opens the new
-browser window:
-
-.. code-block:: python
-
-    import dom
-
-
-    print('Open a new web page...')
-    dom.window.open('http://pybee.org', '_blank')
-
-    print('Set the page title')
-    dom.document.title = 'Hello world'
-
-    print('Find an element on the page...')
-    div = dom.document.getElementById('stdout')
-
-    print('... and set of that element.')
-    div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
-
-What you should notice is that except for the ``dom`` prefix, this is the same
-API that you would use in Javascript to open a new browser window, set the
-page title, and add some text to the end of an element. The entire browser DOM
-is exposed in this way, so anything you can do in Javascript, you can do in
-Batavia.
-
-You can even use this code in the sample code window: copy and paste this code into the "run code" text box, click "Run code", and you get a popup window.
-
-.. _inspect the source code: https://github.com/pybee/batavia/blob/master/testserver/sample.py
-
-Push the *other* button...
---------------------------
-
-There are also a couple of "Run PyStone" buttons, each of which runs for a
-number of iterations. PyStone is a performance benchmark. On an average modern
-PC, the 5 loop version will be almost instantaneous; 500 loops will take less
-than a second; 50000 loops will take about 15 seconds. You can compare this with
-native performance by running the following in a Python shell::
-
-    >>> from test import pystone
-    >>> pystone.main()
-    Pystone(1.2) time for 50000 passes = 0.521687
-    This machine benchmarks at 95842.9 pystones/second
-
-You'll probably notice that Batavia is significantly slower than native
-CPython. This is to be expected -- Batavia is going through a very complex process
-to run this code. It's not overly concerning, though, as the main
-use case here is basic DOM manipulation and responding to button clicks, not
-heavy computation.
+Next, we can `setup the sandbox </tutorials/tutorial-1>`, and try out
+running Python in your browser.
