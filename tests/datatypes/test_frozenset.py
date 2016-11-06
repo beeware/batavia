@@ -28,7 +28,4 @@ class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_ge_class',
         'test_ge_set',
-
-        'test_gt_class',
-        'test_gt_set',
     ]
