@@ -151,7 +151,7 @@ batavia.types.Set = function() {
      **************************************************/
 
     Set.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__div__ = function(other) {
@@ -245,7 +245,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__ipow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__ipow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__ilshift__ = function(other) {
