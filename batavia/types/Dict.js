@@ -293,8 +293,9 @@ batavia.types.Dict = function() {
                 return;
             } else if (batavia.builtins.hash([current_key], null).__eq__(hash).valueOf() &&
                        current_key.__eq__(key).valueOf()) {
-                 this.data_keys[h] = key;
-                 this.data_values[h] = value;
+                this.data_keys[h] = key;
+                this.data_values[h] = value;
+                return;
             }
 
             h = (h + 1) & this.mask;
