@@ -302,15 +302,6 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__iand__ = function(other) {
-        if (batavia.isinstance(other, [
-                batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                batavia.types.List, batavia.types.Int, batavia.types.Range,
-                batavia.types.Slice, batavia.types.Str, batavia.types.Tuple,
-                batavia.types.NoneType
-            ])) {
-            throw new batavia.builtins.TypeError(
-                "unsupported operand type(s) for &=: 'set' and '" + batavia.type_name(other) + "'");
-        }
         if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])) {
             var intersection = new Set();
             var iterobj = batavia.builtins.iter([this], null);
@@ -322,8 +313,7 @@ batavia.types.Set = function() {
             });
             return intersection;
         }
-        throw new batavia.builtins.NotImplementedError(
-            "Set.__iand__ has not been implemented for type '" + batavia.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__ixor__ = function(other) {
