@@ -266,7 +266,19 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__or__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                both.push(val);
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                both.push(val);
+            }.bind(this));
+            return new FrozenSet(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     /**************************************************
