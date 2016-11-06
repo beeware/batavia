@@ -1,12 +1,12 @@
-Tutorial 0 - Getting Started
-=============================
+Getting Started
+===============
 
 Getting a working local copy of Batavia requires a few steps: getting a copy of
 the Batavia code, and the ouroboros dependency within a virtual environment.
 
 You'll need to have Python 3.4 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
-<http://pybee.org/contributing/first-time/setup/>`_. 
+<http://pybee.org/contributing/first-time/setup/>`_.
 
 1. Setup a `pybee` folder to store everything::
 
@@ -48,7 +48,7 @@ how to set this up are `on our Environment setup guide
 
    $ make
 
-Your final setup should end up looking like this:: 
+Your final setup should end up looking like this::
 
   _ pybee
     \_ batavia
