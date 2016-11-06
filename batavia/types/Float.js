@@ -79,6 +79,7 @@ batavia.types.Float = function() {
      **************************************************/
 
     not_comparable_to = [
+        batavia.types.Bytearray,
         batavia.types.Dict,
         batavia.types.List,
         batavia.types.NoneType,
