@@ -17,8 +17,7 @@ how to set this up are `on our Environment setup guide
 
    $ git clone https://github.com/pybee/batavia
 
-3. Batavia requires a copy of Ouroboros (the Python standard library, written in
-Python) to build, so we also need to clone that::
+3. Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that::
 
    $ git clone https://github.com/pybee/ouroboros
 
