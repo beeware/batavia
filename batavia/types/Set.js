@@ -243,7 +243,23 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__xor__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                if (!(this.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            }.bind(this));
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__or__ = function(other) {
@@ -335,7 +351,24 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__ixor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__ixor__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                if (!(this.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            }.bind(this));
+            this.update(both);
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__ior__ = function(other) {
