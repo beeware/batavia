@@ -194,7 +194,17 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__sub__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__getitem__ = function(other) {
@@ -252,7 +262,18 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__isub__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            this.update(both);
+            return new Set(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__imul__ = function(other) {
