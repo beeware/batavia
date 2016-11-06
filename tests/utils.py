@@ -391,7 +391,10 @@ def cleanse_javascript(input, substitutions):
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
-    out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    try:
+        out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    except:
+        pass
     out = JS_FLOAT_ROUND.sub('\\1', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
@@ -405,6 +408,8 @@ def cleanse_javascript(input, substitutions):
                     out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
+    # trim trailing whitespace on non-blank lines
+    out = '\n'.join(o.rstrip() for o in out.split('\n'))
     return out
 
 
@@ -445,6 +450,8 @@ def cleanse_python(input, substitutions):
                     out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
+    # trim trailing whitespace on non-blank lines
+    out = '\n'.join(o.rstrip() for o in out.split('\n'))
     return out
 
 
@@ -575,7 +582,7 @@ class TranspileTestCase(TestCase):
                 except FileExistsError:
                     pass
 
-                for mod, payload in js.items():
+                for mod, payload in (js or {}).items():
                     with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
                         jsfile.write(adjust(payload))
 
@@ -617,7 +624,7 @@ class TranspileTestCase(TestCase):
                 except FileExistsError:
                     pass
 
-                for mod, payload in js.items():
+                for mod, payload in (js or {}).items():
                     with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
                         jsfile.write(adjust(payload))
 
