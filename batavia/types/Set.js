@@ -159,7 +159,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__floordiv__ has not been implemented");
+        if (batavia.isinstance(other, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't take floor of complex number.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'set' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     Set.prototype.__truediv__ = function(other) {
@@ -221,7 +225,11 @@ batavia.types.Set = function() {
      **************************************************/
 
     Set.prototype.__ifloordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__ifloordiv__ has not been implemented");
+        if (batavia.isinstance(other, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't take floor of complex number.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'set' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     Set.prototype.__itruediv__ = function(other) {
