@@ -206,7 +206,17 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__sub__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            return new FrozenSet(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__getitem__ = function(other) {
