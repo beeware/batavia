@@ -1,5 +1,5 @@
-Built-ins
-============
+Implementing Python Built-ins in JavaScript
+===========================================
 
 General Structure
 -----------------
@@ -41,6 +41,6 @@ Copy the docstring into the doc
 
 Run the function in Python 3.4
 
-Take a guess at the implementation structure based on the other functions. 
+Take a guess at the implementation structure based on the other functions.
 
 Copy the style of the other implemented functions

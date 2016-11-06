@@ -1,5 +1,5 @@
-Deploying a Hello World application in the Batavia Sandbox
-==========================================================
+Tutorial: Deploying a Hello World application in the Batavia Sandbox
+====================================================================
 
 In this tutorial, you'll get the Batavia sandbox running, and use it to run a
 really simple "Hello, world!" program written in Python.
@@ -30,11 +30,11 @@ Starting the test server
  *  On Linux/macOS::
 
     $ ./manage.py runserver
- 
+
  * On Windows::
 
     >python manage.py runserver
-    
+
 4. Now open your browser and go to `http://localhost:8000 <http://localhost:8000>`_
 
 

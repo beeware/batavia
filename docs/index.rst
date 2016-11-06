@@ -17,8 +17,5 @@ reference objects and classes defined natively in JavaScript.
    :glob:
 
    intro/index
-   tutorials/index
-   howto/index
-   topics/index
-   reference/index
-   internals/index
+   usage/index
+   community/index
