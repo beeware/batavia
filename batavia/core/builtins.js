@@ -283,10 +283,10 @@ batavia.builtins.ascii = function(args, kwargs) {
     var lead_surrogate = 0x0;
 
     for (var i = 0; i < repr_string.length; i++) {
-      // console.log(repr_string[i]);
       var char_code = repr_string[i].charCodeAt(0);
       var combined_char_code;
       var hex_code;
+
       // if char_code is a lead surrogate, assign to variable and continue out of loop
       if (char_code > 0xd800 && char_code <= 0xd83f) {
         lead_surrogate = char_code;
@@ -301,6 +301,7 @@ batavia.builtins.ascii = function(args, kwargs) {
       } else {
         hex_code = char_code.toString(16);
       }
+
       if (char_code < 127) {
         current_character = repr_string[i];
       } else if (char_code < 256) {
@@ -312,7 +313,6 @@ batavia.builtins.ascii = function(args, kwargs) {
       }
       ascii_string += current_character;
   }
-    console.log(ascii_string); 
     return ascii_string;
 };
 
