@@ -182,7 +182,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__mod__ has not been implemented");
+        if (batavia.isinstance(other, batavia.types.Complex)){
+            throw new batavia.builtins.TypeError("can't mod complex numbers.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'set' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     Set.prototype.__add__ = function(other) {
@@ -256,7 +260,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__imod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__imod__ has not been implemented");
+        if (batavia.isinstance(other, batavia.types.Complex)){
+            throw new batavia.builtins.TypeError("can't mod complex numbers.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for %=: 'set' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     Set.prototype.__ipow__ = function(other) {
