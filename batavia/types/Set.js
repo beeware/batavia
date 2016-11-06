@@ -171,7 +171,14 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__mul__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'set' and '" + batavia.type_name(other) + "'");
+        if (batavia.isinstance(other, [
+            batavia.types.Bytearray, batavia.types.Bytes, batavia.types.List,
+            batavia.types.Str, batavia.types.Tuple
+        ])) {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'set'");
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'set' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     Set.prototype.__mod__ = function(other) {
@@ -245,7 +252,7 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__imul__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__imul__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for *=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__imod__ = function(other) {
