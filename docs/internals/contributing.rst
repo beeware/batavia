@@ -46,6 +46,7 @@ Then create a virtual environment and install Batavia into it:
 *For those using anaconda*:
 
 .. code-block:: bash
+
     $ cd batavia
     $ conda create -n batavia-dev
     $ source activate batavia-dev
@@ -79,7 +80,7 @@ Alternatively, you can download the PhantomJS tarball, and put the
 .. _Homebrew: http://brew.sh
 
 Windows
-~~~~
+~~~~~~~
 
 `Download PhantomJS <http://phantomjs.org/download.html>`__ and extract
 the .exe file into your GitHub repository.
@@ -113,6 +114,7 @@ i.e. `64bit`_ or `32bit`_.
 
 .. _64bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
 .. _32bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
+
 Unpack the file to your prefered location and add the bin directory to your PATH environment variable.
 
 .. code-block:: bash
@@ -122,7 +124,7 @@ Unpack the file to your prefered location and add the bin directory to your PATH
 
 
 Build from sources on linux
-~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Building phantomjs takes 30min to several hours. Do this only if the other methods don't work.
 Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
 If no binary is available, check the instructions at http://phantomjs.org/build.html
@@ -215,7 +217,7 @@ way (``expected failure``). These outcomes are what you expect to see. If you
 see any lines that end ``FAIL``, ``ERROR``, or ``unexpected success``, then
 you've found a problem. If this happens, at the end of the test run, you’ll
 also see a summary of the cause of those problems.
- If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
+If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
 make sure the test suite is always in a passing state. If you *do* get any

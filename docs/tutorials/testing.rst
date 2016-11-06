@@ -19,7 +19,8 @@ badge, and if it does, look at the .travis.yml file
 
 Here is a simplified sample of what the Batavia .travis.yml file looks like: 
 
-.. code-block:: yml
+.. code-block:: yaml
+
   sudo: required
   language: python
   python:
