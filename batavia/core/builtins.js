@@ -270,10 +270,27 @@ batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) 
 batavia.builtins.ascii = function(args) {
     var repr_string = args[0];
     var ascii_string = "";
+    var lead_surrogate = 0x0;
+
     for (var i = 0; i < args[0].length; i++) {
-      console.log(repr_string[i]);
-      var char_code = repr_string[i].charCodeAt();
-      var hex_code = char_code.toString(16);
+      // console.log(repr_string[i]);
+      var char_code = repr_string[i].charCodeAt(0);
+      var combined_char_code;
+      var hex_code;
+      // if char_code is a lead surrogate, assign to variable and continue out of loop
+      if (char_code > 0xd800 && char_code <= 0xd83f) {
+        lead_surrogate = char_code;
+        continue;
+      } 
+
+      // if lead_surrogate populated, calculate combined char_code; reset lead_surrogate
+      if (lead_surrogate >= 0xd800 && lead_surrogate <= 0xd83f) {
+        char_code = ((lead_surrogate - 0xD800) * 0x400) + (char_code - 0xDC00) + 0x10000;
+        hex_code = char_code.toString(16);
+        lead_surrogate = 0x0;
+      } else {
+        hex_code = char_code.toString(16);
+      }
       if (char_code < 127) {
         current_character = repr_string[i];
       } else if (char_code < 256) {
