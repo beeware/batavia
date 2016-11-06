@@ -268,6 +268,16 @@ batavia.builtins.any = function(args, kwargs) {
 batavia.builtins.any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
 batavia.builtins.ascii = function(args, kwargs) {
+    if (arguments.length != 2) {
+        throw new batavia.builtins.BataviaError('Batavia calling convention not used.');
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new batavia.builtins.TypeError("ascii() doesn't accept keyword arguments");
+    }
+    if (!args || args.length !== 1) {
+        throw new batavia.builtins.TypeError('ascii() takes exactly 1 argument (' + args.length + ' given)');
+    }
+
     var repr_string = batavia.builtins.repr([args[0]], null);
     var ascii_string = "";
     var lead_surrogate = 0x0;
