@@ -23,9 +23,3 @@ class UnaryFrozensetOperationTests(UnaryOperationTestCase, TranspileTestCase):
 
 class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'frozenset'
-
-    not_implemented = [
-
-        'test_ge_class',
-        'test_ge_set',
-    ]
