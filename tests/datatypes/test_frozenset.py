@@ -4,7 +4,11 @@ import unittest
 
 
 class FrozensetTests(TranspileTestCase):
-    pass
+    def test_creation(self):
+        self.assertCodeExecution("""
+            x = frozenset([1, 1, '1', '1'])
+            print(x)
+            """, substitutions={"{1, '1'}": ["{'1', 1}"]})
 
 
 class UnaryFrozensetOperationTests(UnaryOperationTestCase, TranspileTestCase):
