@@ -221,11 +221,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__lshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__rshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__and__ = function(other) {
@@ -302,11 +302,11 @@ batavia.types.Set = function() {
     };
 
     Set.prototype.__ilshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__ilshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__irshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Set.__irshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>=: 'set' and '" + batavia.type_name(other) + "'");
     };
 
     Set.prototype.__iand__ = function(other) {
