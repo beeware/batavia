@@ -52,19 +52,10 @@ batavia.types.FrozenSet = function() {
      **************************************************/
 
     FrozenSet.prototype.__lt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() < " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() < other.valueOf();
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() < NoneType()");
+        if (batavia.isinstance(other, [batavia.types.Set, batavia.types.FrozenSet])) {
+            return (this.data.keys().length < other.data.keys().length);
         }
+        throw new batavia.builtins.TypeError("unorderable types: frozenset() < " + batavia.type_name(other) + "()");
     };
 
     FrozenSet.prototype.__le__ = function(other) {
