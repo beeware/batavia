@@ -349,6 +349,19 @@ batavia.types.Tuple = function() {
         return new Tuple(this);
     };
 
+    Tuple.prototype.count = function(value) {
+        if (arguments.length !== 1) {
+            throw new batavia.builtins.TypeError("count() takes exactly one argument (" + arguments.length + " given)");
+        }
+        var count = 0;
+        for (var i = 0; i < this.length; ++i) {
+            if (this[i].__eq__(value)) {
+                count++;
+            }
+        }
+        return count;
+    };
+
     /**************************************************
      * Tuple Iterator
      **************************************************/

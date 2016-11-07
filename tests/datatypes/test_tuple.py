@@ -68,6 +68,33 @@ class TupleTests(TranspileTestCase):
             print(x[-10])
             """)
 
+    def test_count(self):
+        self.assertCodeExecution("""
+        x = (1, 2, 2, 3)
+        print(x.count(2))
+        print(x.count(3))
+        print(x.count(4))
+        """)
+
+        # count on empty tuple
+        self.assertCodeExecution("""
+        x = ()
+        print(x.count(1))
+        """)
+
+        # TypeError on too many or too few args
+        self.assertCodeExecution("""
+        x = (1, 2)
+        try:
+            x.count(3, 4)
+        except TypeError:
+            print("TypeError raised")
+        try:
+            x.count()
+        except TypeError:
+            print("TypeError raised")
+        """)
+
 
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
