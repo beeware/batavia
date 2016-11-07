@@ -362,6 +362,20 @@ batavia.types.Tuple = function() {
         return count;
     };
 
+    Tuple.prototype.index = function(value, start, stop) {
+        if (arguments.length < 1) {
+            throw new batavia.builtins.TypeError("index() takes at least 1 argument (" + arguments.length + " given)");
+        } else if (arguments.length > 3) {
+            throw new batavia.builtins.TypeError("index() takes at most 3 arguments (" + arguments.length + " given)");
+        }
+        for (var i = (start || 0); i < (stop || this.length); ++i) {
+            if (this[i].__eq__(value)) {
+                return i;
+            }
+        }
+        throw new batavia.builtins.ValueError("tuple.index(x): x not in tuple");
+    };
+
     /**************************************************
      * Tuple Iterator
      **************************************************/

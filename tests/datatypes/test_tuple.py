@@ -87,12 +87,42 @@ class TupleTests(TranspileTestCase):
         x = (1, 2)
         try:
             x.count(3, 4)
-        except TypeError:
-            print("TypeError raised")
+        except TypeError as e:
+            print(e)
         try:
             x.count()
-        except TypeError:
-            print("TypeError raised")
+        except TypeError as e:
+            print(e)
+        """)
+
+
+    def test_index(self):
+        self.assertCodeExecution("""
+        x = (1, 2, 2, 3)
+        print(x.index(1))
+        print(x.index(2))
+        print(x.index(3))
+        print(x.index(2, 2))
+        try:
+            x.index(4)
+        except ValueError as e:
+            print(e)
+        try:
+            x.index(2, 0, 1)
+        except ValueError as e:
+            print(e)
+        try:
+            x.index(2, 2, 1)
+        except ValueError as e:
+            print(e)
+        try:
+            x.index()
+        except TypeError as e:
+            print(e)
+        try:
+            x.index(3, 4, 5, 6)
+        except TypeError as e:
+            print(e)
         """)
 
 
