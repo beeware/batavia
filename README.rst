@@ -47,14 +47,14 @@ Check the `Setting up your environment
 Downloading and Installing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Clone the code repos:: 
+1. Clone the code repos::
 
    $ mkdir pybee
    $ cd pybee
    $ git clone https://github.com/pybee/batavia
    $ git clone https://github.com/pybee/ouroboros
 
-2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_)::
+2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_)::
 
    $ virtualenv venv
    $ . venv/bin/activate
@@ -65,7 +65,7 @@ Downloading and Installing
 
    $ make
 
-For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html>`_
+For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
 
 
 Running Batavia in the browser
@@ -79,7 +79,8 @@ After you have setup the local installation of Batavia, you can now run Python i
 
 then open a web browser at `http://localhost:8080 <http://localhost:8080>`_
 
-For more detailed instructions, see the `Python In The Browser <http://batavia.readthedocs.io/en/latest/tutorials/tutorial-1.html>`_ guide.
+For more detailed instructions, see the `Python In The Browser
+<http://batavia.readthedocs.io/en/latest/intro/tutorial-1.html>`_ guide.
 
 Documentation
 -------------
@@ -87,7 +88,7 @@ Documentation
 `Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
 
 * `Project Internals <http://batavia.readthedocs.io/en/latest/internals/index.html>`_
-* `Tutorials <http://batavia.readthedocs.io/en/latest/tutorials/index.html>`_
+* `Getting Started <http://batavia.readthedocs.io/en/latest/intro/index.html>`_
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
 
