@@ -137,17 +137,13 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__mul__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                batavia.types.Bytearray, batavia.types.Bytes, batavia.types.List,
-                batavia.types.Str, batavia.types.Tuple
-            ])) {
-                throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'frozenset'");
-            } else {
-                throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'frozenset' and '" + batavia.type_name(other) + "'");
-            }
+        if (batavia.isinstance(other, [
+            batavia.types.Bytearray, batavia.types.Bytes, batavia.types.List,
+            batavia.types.Str, batavia.types.Tuple
+        ])) {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'frozenset'");
         } else {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'frozenset' and 'NoneType'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'frozenset' and '" + batavia.type_name(other) + "'");
         }
     };
 
