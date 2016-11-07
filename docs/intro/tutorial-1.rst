@@ -8,7 +8,7 @@ Prerequisites
 --------------
 
 This tutorial assumes you've read and followed the instructions in
-:doc:`/intro/getting-started`. If you've done this, you should have:
+:doc:`/intro/index`. If you've done this, you should have:
 
 * A ``tutorial`` directory with a Batavia checkout,
 * An activated Python 3.4 virtual environment, and

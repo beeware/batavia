@@ -60,5 +60,5 @@ You now have a working Batavia environment!
 Next Steps
 ----------
 
-Next, we can `setup the sandbox </tutorials/tutorial-1>`, and try out
+Next, we can `setup the sandbox </intro/tutorial-1>`, and try out
 running Python in your browser.
