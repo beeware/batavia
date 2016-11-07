@@ -278,7 +278,7 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__and__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__xor__ = function(other) {

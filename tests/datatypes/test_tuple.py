@@ -77,24 +77,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
     not_implemented = [
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
-
         'test_floor_divide_complex',
 
         'test_ge_bool',
