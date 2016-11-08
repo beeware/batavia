@@ -1,4 +1,7 @@
+import re
+
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+from .. utils import SAMPLE_SUBSTITUTIONS
 
 
 class BytesTests(TranspileTestCase):
@@ -7,24 +10,17 @@ class BytesTests(TranspileTestCase):
 
 class BuiltinBytesFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["bytes"]
+    small_ints = True
+    substitutions = SAMPLE_SUBSTITUTIONS.copy()
+    substitutions.update({
+        # Set/Frozenset ordering can be different in cPython and Batavia
+        # This means we get TypeErrors on different types when initialising
+        # bytes objects from sets of floats and strs.
+        "<class 'TypeError'>": [
+            re.compile(r"'.*' object cannot be interpreted as an integer"),
+        ]
+    })
 
     not_implemented = [
-        'test_noargs',
-        'test_bool',
         'test_bytearray',
-        'test_bytes',
-        'test_class',
-        'test_complex',
-        'test_dict',
-        'test_float',
-        'test_frozenset',
-        'test_int',
-        'test_list',
-        'test_None',
-        'test_NotImplemented',
-        'test_range',
-        'test_set',
-        'test_slice',
-        'test_str',
-        'test_tuple',
     ]

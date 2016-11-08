@@ -511,7 +511,9 @@ batavia.modules.marshal = {
 //            retval = batavia.modules.marshal.r_string(vm, n, p);
             var contents = batavia.modules.marshal.r_string(vm, n, p);
             var split = contents.split('').map(function (b) { return b.charCodeAt(); });
-            retval = new batavia.types.Bytes(split);
+            retval = new batavia.types.Bytes(
+                new batavia.vendored.buffer.Buffer(split)
+            );
 
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
