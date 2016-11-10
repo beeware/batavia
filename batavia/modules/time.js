@@ -190,7 +190,7 @@ batavia.modules.time.gmtime = function(seconds){
     var diff = date - firstOfYear;
     var oneDay = 1000 * 60 * 60 * 24;
     var dayOfYear = Math.floor(diff / oneDay);
-    sequence.push(dayOfYear + 1);
+    sequence.push(dayOfYear + 1);   
 
     sequence.push(0)  // dst for UTC, always off
 
@@ -204,7 +204,7 @@ batavia.modules.time.localtime = function(seconds){
     if (arguments.length > 1){
         throw new batavia.builtins.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
     }
-f
+
     if (arguments.length == 1) {
         // catching bad types
         if (batavia.isinstance(seconds, [batavia.types.Complex])){
