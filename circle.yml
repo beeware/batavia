@@ -15,5 +15,5 @@ test:
     - sudo service mysql stop || true
     - sudo service postgresql stop || true
   override:
-     - python setup.py test:
+     - "python setup.py test -q":
          timeout: 60
