@@ -391,7 +391,10 @@ def cleanse_javascript(input, substitutions):
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
-    out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    try:
+        out = JS_FLOAT.sub('\\1e\\2\\3', out)
+    except:
+        pass
     out = JS_FLOAT_ROUND.sub('\\1', out)
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
@@ -405,6 +408,8 @@ def cleanse_javascript(input, substitutions):
                     out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
+    # trim trailing whitespace on non-blank lines
+    out = '\n'.join(o.rstrip() for o in out.split('\n'))
     return out
 
 
@@ -445,6 +450,8 @@ def cleanse_python(input, substitutions):
                     out = out.replace(from_value, to_value)
 
     out = out.replace('\r\n', '\n')
+    # trim trailing whitespace on non-blank lines
+    out = '\n'.join(o.rstrip() for o in out.split('\n'))
     return out
 
 
@@ -575,7 +582,7 @@ class TranspileTestCase(TestCase):
                 except FileExistsError:
                     pass
 
-                for mod, payload in js.items():
+                for mod, payload in (js or {}).items():
                     with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
                         jsfile.write(adjust(payload))
 
@@ -617,7 +624,7 @@ class TranspileTestCase(TestCase):
                 except FileExistsError:
                     pass
 
-                for mod, payload in js.items():
+                for mod, payload in (js or {}).items():
                     with open(os.path.join(test_dir, '%s.js' % mod), 'w') as jsfile:
                         jsfile.write(adjust(payload))
 
@@ -675,7 +682,8 @@ SAMPLE_DATA = {
         ],
     'bytes': [
             'b""',
-            'b"This is another string of bytes"'
+            'b"This is another string of bytes"',
+            'b"\x01\x75"', # mixing nonprintable and printable bytes
         ],
     'class': [
             'type(1)',
@@ -793,6 +801,9 @@ SAMPLE_SUBSTITUTIONS = {
         "{2.3456, 'another', 1}",
         "{'another', 1, 2.3456}",
         "{'another', 2.3456, 1}",
+    ],
+    "{2.3456, 'another'}": [
+        "{'another', 2.3456}",
     ],
     "{'1': 1, 1: 2}": [
         "{1: 2, '1': 1}",
@@ -1160,10 +1171,16 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         vars()['test_or_%s' % datatype] = _inplace_test('test_or_%s' % datatype, 'x |= y', examples)
 
 
-def _builtin_test(test_name, operation, examples):
+def _builtin_test(test_name, operation, examples, small_ints=False):
     def func(self):
+        # bytes() gives implementation-dependent errors for sizes > 2**64,
+        # we'll skip testing with those values rather than cargo-culting
+        # the exact same exceptions
+        actuals = examples
+        if self.small_ints and test_name.endswith('_int'):
+            actuals = [x for x in examples if abs(int(x)) < 8192]
         self.assertBuiltinFunction(
-            x_values=examples,
+            x_values=actuals,
             f_values=self.functions,
             operation=operation,
             format=self.format,
@@ -1175,6 +1192,7 @@ def _builtin_test(test_name, operation, examples):
 class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
     substitutions = SAMPLE_SUBSTITUTIONS
+    small_ints = False
 
     @classmethod
     def tearDownClass(cls):
@@ -1219,7 +1237,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
 
     for datatype, examples in SAMPLE_DATA.items():
         vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
-        vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
+    vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
 
 
 def _builtin_twoarg_test(test_name, operation, examples1, examples2):
@@ -1257,10 +1275,10 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
         # filter out very large integers for some operations so as not
         # to crash CPython
         data = [(f, x, y) for f, x, y in data if not
-            (f == 'pow' and
-             x.lstrip('-').isdigit() and
-             y.lstrip('-').isdigit() and
-             (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
+                (f == 'pow' and
+                 x.lstrip('-').isdigit() and
+                 y.lstrip('-').isdigit() and
+                 (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
 
         self.assertCodeExecution(
             '##################################################\n'.join(
@@ -1400,17 +1418,17 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             substitutions=substitutions)
 
     @classmethod
-    def add_one_arg_tests(self, module, functions, numerics_only=False):
+    def add_one_arg_tests(klass, module, functions, numerics_only=False):
         for func in functions:
             for datatype, examples in SAMPLE_DATA.items():
                 if numerics_only and datatype not in numerics:
                     continue
                 name = 'test_%s_%s_%s' % (module, func, datatype)
                 small_ints = module == 'math' and func == 'factorial'
-                setattr(self, name, _module_one_arg_func_test(name, 'math', func, examples, small_ints=small_ints))
+                setattr(klass, name, _module_one_arg_func_test(name, 'math', func, examples, small_ints=small_ints))
 
     @classmethod
-    def add_two_arg_tests(self, module, functions, numerics_only=False):
+    def add_two_arg_tests(klass, module, functions, numerics_only=False):
         for func in functions:
             for datatype, examples in SAMPLE_DATA.items():
                 if numerics_only and datatype not in numerics:
@@ -1419,4 +1437,4 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                     if numerics_only and datatype2 not in numerics:
                         continue
                     name = 'test_%s_%s_%s_%s' % (module, func, datatype, datatype2)
-                    setattr(self, name, _module_two_arg_func_test(name, 'math', func, examples, examples2))
+                    setattr(klass, name, _module_two_arg_func_test(name, 'math', func, examples, examples2))

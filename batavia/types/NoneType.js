@@ -14,15 +14,15 @@ batavia.types.NoneType = function() {
      **************************************************/
 
     NoneType.prototype.__bool__ = function() {
-        return false;
+        return new batavia.types.Bool(false);
     };
 
     NoneType.prototype.__repr__ = function() {
-        return "None";
+        return new batavia.types.Str("None");
     };
 
     NoneType.prototype.__str__ = function() {
-        return "None";
+        return new batavia.types.Str("None");
     };
 
     /**************************************************

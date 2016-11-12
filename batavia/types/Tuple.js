@@ -278,7 +278,7 @@ batavia.types.Tuple = function() {
     };
 
     Tuple.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Tuple.__and__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'tuple' and '" + batavia.type_name(other) + "'");
     };
 
     Tuple.prototype.__xor__ = function(other) {
@@ -347,6 +347,33 @@ batavia.types.Tuple = function() {
 
     Tuple.prototype.copy = function() {
         return new Tuple(this);
+    };
+
+    Tuple.prototype.count = function(value) {
+        if (arguments.length !== 1) {
+            throw new batavia.builtins.TypeError("count() takes exactly one argument (" + arguments.length + " given)");
+        }
+        var count = 0;
+        for (var i = 0; i < this.length; ++i) {
+            if (this[i].__eq__(value)) {
+                count++;
+            }
+        }
+        return count;
+    };
+
+    Tuple.prototype.index = function(value, start, stop) {
+        if (arguments.length < 1) {
+            throw new batavia.builtins.TypeError("index() takes at least 1 argument (" + arguments.length + " given)");
+        } else if (arguments.length > 3) {
+            throw new batavia.builtins.TypeError("index() takes at most 3 arguments (" + arguments.length + " given)");
+        }
+        for (var i = (start || 0); i < (stop || this.length); ++i) {
+            if (this[i].__eq__(value)) {
+                return i;
+            }
+        }
+        throw new batavia.builtins.ValueError("tuple.index(x): x not in tuple");
     };
 
     /**************************************************

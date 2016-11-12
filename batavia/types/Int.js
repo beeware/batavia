@@ -17,6 +17,8 @@ batavia.types.Int = function() {
 
     Int.prototype = Object.create(Object.prototype);
     Int.prototype.__class__ = new batavia.types.Type('int');
+    Int.prototype.MAX_INT = MAX_INT
+    Int.prototype.MIN_INT = MIN_INT
 
     /**************************************************
      * Javascript compatibility methods

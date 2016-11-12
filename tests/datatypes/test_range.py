@@ -26,6 +26,16 @@ class RangeTests(TranspileTestCase):
             print("x[5] = ", x[5])
             """)
 
+    @unittest.expectedFailure
+    def test_step_negative(self):
+        self.assertCodeExecution("""
+            x = range(5, 1, -2)
+            print("x[0] = ", x[0])
+            print("x[1] = ", x[1])
+            print("x[3] = ", x[3])
+            print("x[-1] = ", x[-1])
+            print("x[5] = ", x[5])
+            """)
 
 class UnaryRangeOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'range'

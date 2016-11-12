@@ -1,6 +1,6 @@
 
 /*************************************************************************
- * A Python bytes type
+ * A Python bytearray type
  *************************************************************************/
 
 batavia.types.Bytearray = function() {
@@ -28,7 +28,7 @@ batavia.types.Bytearray = function() {
      **************************************************/
 
     Bytearray.prototype.__bool__ = function() {
-        return this.size() !== 0;
+        return this.val.length > 0;
     };
 
     Bytearray.prototype.__repr__ = function() {
@@ -37,6 +37,14 @@ batavia.types.Bytearray = function() {
 
     Bytearray.prototype.__str__ = function() {
         return "bytearray(" +  this.val.toString() + ")";
+    };
+
+    Bytearray.prototype.__iter__ = function() {
+        if (this.val.__iter__) {
+            return this.val.__iter__();
+        } else {
+            return new Bytearray.prototype.BytearrayIterator(this.val);
+        }
     };
 
     /**************************************************
@@ -250,7 +258,40 @@ batavia.types.Bytearray = function() {
         return new Bytearray(this.valueOf());
     };
 
+    /**************************************************
+     * Bytearray Iterator
+     **************************************************/
+
+    Bytearray.prototype.BytearrayIterator = function(data) {
+        Object.call(this);
+        this.index = 0;
+        this.data = data;
+    };
+
+    Bytearray.prototype.BytearrayIterator.prototype = Object.create(Object.prototype);
+
+    Bytearray.prototype.BytearrayIterator.prototype.__iter__ = function() {
+        return this;
+    };
+
+    Bytearray.prototype.BytearrayIterator.prototype.__next__ = function() {
+        if (this.index >= this.data.length) {
+            throw new batavia.builtins.StopIteration();
+        }
+        var retval = this.data[this.index];
+        this.index++;
+        return new batavia.types.Int(retval);
+    };
+
+    Bytearray.prototype.BytearrayIterator.prototype.__str__ = function() {
+        return "<bytearray_iterator object at 0x99999999>";
+    };
+
+    Bytearray.prototype.BytearrayIterator.prototype.constructor = Bytearray.prototype.BytearrayIterator;
+    Bytearray.prototype.BytearrayIterator.prototype.__class__ = new batavia.types.Type('bytearray_iterator');
+
     /**************************************************/
+
 
     return Bytearray;
 }();

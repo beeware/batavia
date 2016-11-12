@@ -44,7 +44,8 @@ Here's how to install the vendoring toolchain:
      to bootstrap the rest of the installation.
   1. Install the Yarn package manager with `npm install -g yarn`. This installs it
      globally, so you will need to use `sudo` on unixy platforms like Ubuntu or
-     MacOS: `sudo npm install -g yarn`
+     MacOS: `sudo npm install -g yarn`. Alternatively, you may also install it 
+     [via your platform's native installer](https://yarnpkg.com/en/docs/install).
   1. Install browserify with `yarn global add browserify`. As above, use
      `sudo yarn global add browserify` on unix-like platforms.
 

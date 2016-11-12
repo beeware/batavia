@@ -813,7 +813,11 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
                 frame = this.last_exception.traceback[t];
                 trace.push('  File "' + frame.filename + '", line ' + frame.line + ', in ' + frame.module);
             }
-            trace.push(this.last_exception.value.name + ': ' + this.last_exception.value.toString());
+            if (this.last_exception.value.toString().length > 0) {
+                trace.push(this.last_exception.value.name + ': ' + this.last_exception.value.toString());
+            } else {
+                trace.push(this.last_exception.value.name);
+            }
             console.log(trace.join('\n'));
             this.last_exception = null;
         } else {

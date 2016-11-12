@@ -12,21 +12,24 @@ Setting up your development environment
 ---------------------------------------
 
 The process of setting up a development environment is very similar to
-the :doc:`/intro/getting-started` process. The biggest difference is that
+the :doc:`/intro/index` process. The biggest difference is that
 instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
 have Python 3.4, and have virtualenv available for use.
 
-Start by forking Batavia into your own Github repository; then
+Batavia codebase
+^^^^^^^^^^^^^^^^
+
+Start by `forking Batavia`_ into your own Github repository; then
 check out your fork to your own computer into a development directory:
 
 .. code-block:: bash
 
     $ mkdir batavia-dev
     $ cd batavia-dev
-    $ git clone https://github.com:<your github username>/batavia.git
+    $ git clone https://github.com/<your github username>/batavia.git
 
 Batavia requires a copy of Ouroboros (the Python standard library, written in Python) to build, so we also need to clone that.
 
@@ -38,7 +41,7 @@ Then create a virtual environment and install Batavia into it:
 
 .. code-block:: bash
 
-    $ virtualenv -p $(which python3) env
+    $ virtualenv -p $(which python3.4) env
     $ . env/bin/activate
     $ cd batavia
     $ pip install -e .
@@ -46,6 +49,7 @@ Then create a virtual environment and install Batavia into it:
 *For those using anaconda*:
 
 .. code-block:: bash
+
     $ cd batavia
     $ conda create -n batavia-dev
     $ source activate batavia-dev
@@ -58,14 +62,18 @@ You'll need to build the combined Batavia JS files:
     $ cd batavia
     $ make
 
+Download and Install PhantomJS
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 Lastly, you'll need to obtain and install `PhantomJS`_. PhantomJS is a
 headless browser that allows Batavia to test it's behavior in a "real"
 browser. Installation instructions vary between platforms.
 
+.. _forking Batavia: https://github.com/pybee/batavia/fork
 .. _PhantomJS: http://phantomjs.org
 
 OS/X
-~~~~
+""""""
 
 PhantomJS can be installed using `Homebrew`_. If you don't already have brew
 installed, follow the brew installation instructions, then run::
@@ -78,8 +86,7 @@ Alternatively, you can download the PhantomJS tarball, and put the
 .. _Homebrew: http://brew.sh
 
 Windows
-~~~~
-
+"""""""""
 `Download PhantomJS <http://phantomjs.org/download.html>`__ and extract
 the .exe file into your GitHub repository.
 
@@ -89,7 +96,7 @@ This should likewise be extracted into your GitHub repository or
 somewhere in your PATH.
 
 Ubuntu
-~~~~~~
+""""""""""""
 
 Unfortunately, Ubuntu 14.04 ships with PhantomJS 1.8, which is quite old, and
 has a number of significant bugs. You need to have PhantomJS >= 2.0 to run the
@@ -106,12 +113,14 @@ so it should be reliable.
 
 
 Fedora
-~~~~~~
+"""""""""""
+
 Go to http://phantomjs.org/download.html and download the file for your architecuture
 i.e. `64bit`_ or `32bit`_.
 
 .. _64bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
 .. _32bit: https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-i686.tar.bz2
+
 Unpack the file to your prefered location and add the bin directory to your PATH environment variable.
 
 .. code-block:: bash
@@ -121,7 +130,8 @@ Unpack the file to your prefered location and add the bin directory to your PATH
 
 
 Build from sources on linux
-~~~~~~
+"""""""""""""""""""""""""""
+
 Building phantomjs takes 30min to several hours. Do this only if the other methods don't work.
 Therefore, first have a look at http://phantomjs.org/download.html for prebuilds.
 If no binary is available, check the instructions at http://phantomjs.org/build.html
@@ -153,7 +163,7 @@ Then compile and link phantomjs:
 	$ python build.py
 
 Raspbian/Raspberry Pi
-~~~~~~~~~~~~~~~~~~~~~
+"""""""""""""""""""""""
 
 This has been successfully tested on Raspbian GNU/Linux 7 (wheezy), based on
 instructions from `Procrastinative Ninja`_ and `aeberhardo`_.
@@ -196,7 +206,7 @@ To check that PhantomJS is working, run the following:
 Running the test suite
 ----------------------
 
-You're now ready to run the test suite! From the batavia-dev/batavia directory Type:
+You're now ready to run the test suite! In the ``batavia-dev/batavia`` directory, type:
 
 .. code-block:: bash
 
@@ -214,11 +224,13 @@ way (``expected failure``). These outcomes are what you expect to see. If you
 see any lines that end ``FAIL``, ``ERROR``, or ``unexpected success``, then
 you've found a problem. If this happens, at the end of the test run, you’ll
 also see a summary of the cause of those problems.
- If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
+
+If you see "ERROR" press ctrl-c or cmd-c to quit the tests, and then start debugging.
 
 However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
 make sure the test suite is always in a passing state. If you *do* get any
-failures, errors, or unexpected successes, please check out the `troubleshooting section <#troubleshooting>`_ or get in touch, because you
+failures, errors, or unexpected successes, please check out the
+`troubleshooting section <#troubleshooting>`_ or get in touch, because you
 may have found a problem.
 
 .. _continuous integration: https://travis-ci.org/pybee/batavia
@@ -267,14 +279,29 @@ More details on how to add newer JS dependencies as you need them can be found i
 Troubleshooting
 ---------------
 
-- For Homebrew users, check that your installed version of phantomjs is 2.1.1
-    + $ brew list phantomjs
+- For Homebrew users, check that your installed version of phantomjs is 2.1.1::
+
+    $ brew list phantomjs
 
 - If you get an failure message saying `AssertionError: Unable to inject Batavia: false`, make sure there are contents in `batavia.min.js`. If the file is empty, run the following commands and run the test suite again:
 
   .. code-block:: bash
 
-      $ pip install jsmin
-      $ make clean
-      $ make
-      $ python setup.py test
+    $ pip install jsmin
+    $ make clean
+    $ make
+    $ python setup.py test
+
+- If you copied the main Batavia code a while ago, please make sure your forked branch is up to date with the original branch. To do this:
+
+  - set your upstream remote::
+
+    $ git remote add upstream https://github.com/pybee/batavia.git
+
+  - make sure you have the latest changes from upstream::
+
+    $ git fetch upstream
+
+  - rebase your **master** branch to **upstream** before pushing to GitHub and submitting a pull request::
+
+    $ git rebase upstream/master

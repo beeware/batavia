@@ -1,14 +1,14 @@
-Tutorial 0 - Sandbox
-====================
+Tutorial: Deploying a Hello World application in the Batavia Sandbox
+====================================================================
 
 In this tutorial, you'll get the Batavia sandbox running, and use it to run a
 really simple "Hello, world!" program written in Python.
 
-Setup
------
+Prerequisites
+--------------
 
 This tutorial assumes you've read and followed the instructions in
-:doc:`/intro/getting-started`. If you've done this, you should have:
+:doc:`/intro/index`. If you've done this, you should have:
 
 * A ``tutorial`` directory with a Batavia checkout,
 * An activated Python 3.4 virtual environment, and
@@ -17,26 +17,26 @@ This tutorial assumes you've read and followed the instructions in
 Starting the test server
 ------------------------
 
-To start the test server, you'll need to be in the ``testserver`` directory under the batavia directory::
+1. To start the test server, you'll need to be in the ``testserver`` directory under the batavia directory::
 
     $ cd testserver
 
-Once you're in the ``testserver`` directory, you can install the requirements
-for the test server::
+2. Once you're in the ``testserver`` directory, you can install the requirements for the test server::
 
     $ pip install -r requirements.txt
 
-Then you can start the test server::
+3. Then you can start the test server
+
+ *  On Linux/macOS::
 
     $ ./manage.py runserver
 
-on Windows::
+ * On Windows::
 
     >python manage.py runserver
-    
-Now open your browser and go to `http://127.0.0.1:8000`_
 
-.. _http://127.0.0.1:8000: http://127.0.0.1:8000
+4. Now open your browser and go to `http://localhost:8000 <http://localhost:8000>`_
+
 
 You should now see a page titled "Batavia testbed" with some buttons on the left and a text box on the right.
 
@@ -122,6 +122,9 @@ go back to the Batavia testbed, you should see a lot of output in the console
 section of the screen.
 
 .. _BeeWare website: http://pybee.org
+
+Inside the button
+^^^^^^^^^^^^^^^^^^
 
 If you want to, you can `inspect the source code`_. One part of
 ``sample.py`` that is of particular interest is the part that opens the new
