@@ -7,7 +7,7 @@ class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
             import base64
             print(base64.b64encode(b'foo'))
             print(type(base64.b64encode(b'foo')))
-            print(base64.b64encode(b'\xfb\xfc\xe6', b'-_'))
+            print(base64.b64encode(b'foobarbaz-_/', b'-_'))
             """)
 
     def test_b64decode(self):
@@ -38,5 +38,5 @@ class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
             import base64
             print(base64.urlsafe_b64encode(b'http://www.google.com/'))
             print(type(base64.urlsafe_b64encode(b'http://www.google.com/')))
-            print(base64.urlsafe_b64encode(b'~\x8a\x1bj\xb6\xda\xcf\xef\xdc'))
+            print(base64.urlsafe_b64encode(b'https://gitter.im/pybee/general'))
             """)
