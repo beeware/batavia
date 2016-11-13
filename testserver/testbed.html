@@ -354,7 +354,7 @@ function stdout(content) {
 
 batavia.stdout = stdout;
 
-function stdout(content) {
+function stderr(content) {
     var pre = document.getElementById('stdout');
     var err = document.createElement('span');
     err.className = "error";
@@ -362,7 +362,7 @@ function stdout(content) {
     pre.appendChild(err);
 }
 
-batavia.stderr = stdout;
+batavia.stderr = stderr;
     </script>
 
 </head>
