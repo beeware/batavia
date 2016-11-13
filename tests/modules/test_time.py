@@ -365,7 +365,7 @@ class TimeTests(TranspileTestCase):
         source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
 
-        hour = 24 + localtime().tm_hour - gmtime().tm_hour
+        hour = 24 + localtime().tm_hour - gmtime().tm_hour + 1
 
         seed = [275760, 9, 12, hour, 0, 0, 0, 0, 1] # the max date that can be computed.
         set_up = adjust("""
