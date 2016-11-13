@@ -54,16 +54,27 @@ Downloading and Installing
    $ git clone https://github.com/pybee/batavia
    $ git clone https://github.com/pybee/ouroboros
 
-2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_)::
+2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
+
+Linux/Unix/Mac::
 
    $ virtualenv venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
 
+Windows::
+
+   > virtualenv venv
+   > venv\Scripts\activate
+   > cd batavia
+   > pip install -e .
+
 3. Run the :code:`make` script to generate the combined Batavia JavaScript files::
 
    $ make
+
+NOTE some platforms do not have an alias for make, e.g. Windows with GCC may require `gmake` to be issued instead.
 
 For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
 
@@ -77,7 +88,7 @@ After you have setup the local installation of Batavia, you can now run Python i
     $ pip install -r requirements.txt
     $ ./manage.py runserver
 
-then open a web browser at `http://localhost:8080 <http://localhost:8080>`_
+then open a web browser at `http://localhost:8000 <http://localhost:8000>`_
 
 For more detailed instructions, see the `Python In The Browser
 <http://batavia.readthedocs.io/en/latest/intro/tutorial-1.html>`_ guide.
