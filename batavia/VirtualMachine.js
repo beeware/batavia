@@ -499,7 +499,7 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
 
     } catch (e) {
         if (e instanceof batavia.builtins.BataviaError) {
-            console.log(e.msg);
+            batavia.stderr(e.msg);
         } else {
             throw e;
         }
@@ -532,7 +532,7 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
 
     } catch (e) {
         if (e instanceof batavia.builtins.BataviaError) {
-            console.log(e.msg);
+            batavia.stderr(e.msg);
         } else {
             throw e;
         }
@@ -832,7 +832,7 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
             } else {
                 trace.push(this.last_exception.value.name);
             }
-            console.log(trace.join('\n'));
+            batavia.stderr(trace.join('\n'));
             this.last_exception = null;
         } else {
             throw e;

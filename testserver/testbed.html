@@ -346,13 +346,22 @@ function pystone(loops) {
     console.log('done.');
 }
 
-// Now define a stdout function that will output to the page.
+// Now define stdout and stderr functions that will output to the page.
 function stdout(content) {
     var pre = document.getElementById('stdout');
     pre.textContent = pre.textContent + content;
 }
 
 batavia.stdout = stdout;
+
+function stdout(content) {
+    var pre = document.getElementById('stdout');
+    var err = document.createElement('span');
+    err.className = "error";
+    err.textContent = content
+    pre.appendChild(err);
+}
+
 batavia.stderr = stdout;
     </script>
 
