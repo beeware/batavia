@@ -35,7 +35,6 @@ batavia.builtins.__import__ = function(args, kwargs) {
     var root_module, leaf_module;
     var code, frame, payload, n;
 
-
     // "import builtins" can be shortcut
     if (args[0] === "builtins" && args[4].int32() == 0) {
         root_module = batavia.builtins;
@@ -141,6 +140,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                     code = batavia.modules.marshal.load_pyc(this, payload.bytecode);
 
                     root_module = new batavia.types.Module(name, payload.filename, package);
+                    leaf_module = root_module;
                     batavia.modules.sys.modules[name] = root_module;
 
                     // Convert code object to module
