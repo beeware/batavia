@@ -23,7 +23,10 @@ def bytecode(sourcefile):
     except Exception as e:
         print(e)
         return {'error': str(e)}
-    return {'compiled': payload}
+    return {
+        'compiled': payload,
+        'filename': sourcefile
+    }
 
 
 def home(request):
@@ -31,10 +34,19 @@ def home(request):
         'modules': {
             'sample': bytecode('sample.py'),
             'other': bytecode('other.py'),
-            'foo': {
-                'init': bytecode('foo/__init__.py'),
-                'modulea': bytecode('foo/modulea.py'),
-                'moduleb': bytecode('foo/moduleb.py'),
+            'submodule': {
+                'init': bytecode('submodule/__init__.py'),
+                'modulea': bytecode('submodule/modulea.py'),
+                'moduleb': bytecode('submodule/moduleb.py'),
+                'modulec': bytecode('submodule/modulec.py'),
+                'moduled': {
+                    'init': bytecode('submodule/moduled/__init__.py'),
+                    'submoduled': bytecode('submodule/moduled/submoduled.py'),
+                },
+                'subsubmodule': {
+                    'init': bytecode('submodule/subsubmodule/__init__.py'),
+                    'submodulea': bytecode('submodule/subsubmodule/submodulea.py'),
+                }
             }
         }
     }

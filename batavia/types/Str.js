@@ -511,6 +511,10 @@ String.prototype.startswith = function (str) {
     return this.slice(0, str.length) === str;
 };
 
+String.prototype.endswith = function (str) {
+    return this.slice(this.length - str.length) === str;
+};
+
 String.prototype.__setattr__ = function (name, val) {
     if (this.__proto__[name] === undefined) {
         throw new batavia.builtins.AttributeError("'str' object has no attribute '" + name + "'");
