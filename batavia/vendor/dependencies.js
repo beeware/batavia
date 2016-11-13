@@ -8,5 +8,6 @@ module.exports = {
     base64: require('base64-js'),
     ieee754: require('ieee754'),
     // lazy loading this module as it might break testing environment if loaded eagerly.
-    moment: function() { if (moment == null) { return require('moment'); } return moment; }
+    moment: require('moment'),
+    moment_timezone: require('moment-timezone')
 }
