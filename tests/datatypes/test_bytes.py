@@ -55,7 +55,7 @@ class BytesTests(TranspileTestCase):
             utf8_string = bytes("Ramón de España", "utf-8")
             print(utf8_ints)
             print(utf8_string)
-            print(utf8_int == utf8_string)
+            print(utf8_ints == utf8_string)
             """)
 
     def test_decode(self):

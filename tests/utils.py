@@ -338,7 +338,11 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
                 """
                 page.evaluate(function() {
                     var vm = new batavia.VirtualMachine(function(name) {
-                        return modules[name];
+                        var payload = modules[name];
+                        if (payload === undefined) {
+                            return null;
+                        }
+                        return payload;
                     });
                     vm.run('testcase', []);
                 });

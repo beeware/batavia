@@ -33,6 +33,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
     // element in the dotted namespace. The leaf module is
     // the last element.
     var root_module, leaf_module;
+    var code, frame, payload, n;
 
 
     // "import builtins" can be shortcut
@@ -83,21 +84,23 @@ batavia.builtins.__import__ = function(args, kwargs) {
         // Now try the import.
         // Try native modules first
         root_module = batavia.modules[name];
+        leaf_module = root_module;
 
         // If there's no native module, try for a pre-loaded module.
         if (root_module === undefined) {
             root_module = batavia.modules.sys.modules[args[0]];
+            leaf_module = root_module;
         }
 
         if (root_module === undefined) {
             // Native module. Look for a name in the global
             // (window) namespace.
             root_module = window[name];
+            leaf_module = root_module;
             if (root_module) {
                 batavia.modules.sys.modules[name] = root_module;
 
-                leaf_module = root_module;
-                for (var n = 1; n < path.length; n++) {
+                for (n = 1; n < path.length; n++) {
                     name = path.slice(0, n + 1).join('.');
                     leaf_module = leaf_module[path[n]];
                     batavia.modules.sys.modules[name] = leaf_module;
@@ -107,17 +110,18 @@ batavia.builtins.__import__ = function(args, kwargs) {
 
         if (root_module === undefined) {
             // Check if there is a stdlib (pyc) module.
-            var payload = batavia.stdlib[args[0]];
+            payload = batavia.stdlib[name];
             if (payload) {
-                root_module = new batavia.types.Module(name);
+                root_module = new batavia.types.Module(name, null, name);
+                leaf_module = root_module;
                 batavia.modules.sys.modules[name] = root_module;
 
-                var code = batavia.modules.marshal.load_pyc(this, payload);
+                code = batavia.modules.marshal.load_pyc(this, payload);
                 // Convert code object to module
-                args[1].__name__ = args[0]
-                var frame = this.make_frame({
+                // args[1].__name__ = args[0]
+                frame = this.make_frame({
                     'code': code,
-                    'f_globals': args[1],
+                    'f_globals': root_module,
                     'f_locals': root_module,
                 });
                 this.run_frame(frame);
@@ -126,7 +130,8 @@ batavia.builtins.__import__ = function(args, kwargs) {
             // If there still isn't a module, try loading one from the DOM.
             if (root_module === undefined) {
                 root_module = batavia.modules.sys.modules[name];
-                var payload, code, frame;
+                leaf_module = root_module;
+                payload, code, frame;
                 if (root_module === undefined) {
                     payload = this.loader(name);
                     if (payload === null) {
@@ -148,8 +153,7 @@ batavia.builtins.__import__ = function(args, kwargs) {
                 }
             }
 
-            leaf_module = root_module;
-            for (var n = 1; n < path.length; n++) {
+            for (n = 1; n < path.length; n++) {
                 name = path.slice(0, n + 1).join('.');
 
                 var new_module = batavia.modules.sys.modules[name];
@@ -380,11 +384,11 @@ batavia.builtins.bytearray = function(args, kwargs) {
 };
 batavia.builtins.bytearray.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer';
 
-batavia.builtins.bytes = function(args, kwargs) {
-    throw new batavia.builtins.NotImplementedError(
-        "Builtin Batavia function 'bytes' not implemented");
-};
-batavia.builtins.bytes.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer';
+// batavia.builtins.bytes = function(args, kwargs) {
+//     throw new batavia.builtins.NotImplementedError(
+//         "Builtin Batavia function 'bytes' not implemented");
+// };
+// batavia.builtins.bytes.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer';
 
 batavia.builtins.callable = function(args, kwargs) {
     if (arguments.length != 2) {
