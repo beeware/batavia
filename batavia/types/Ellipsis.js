@@ -1,2 +1,6 @@
 
-batavia.types.Ellipsis = {};
+module.exports = {
+    Ellipsis: function () {
+
+    }()
+}

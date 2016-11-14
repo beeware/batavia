@@ -1,9 +1,9 @@
+var Buffer = require('buffer').Buffer;
 
 /*************************************************************************
  * Modify String to behave like a Python String
  *************************************************************************/
 
-batavia.types.Str = String;
 String.prototype.__class__ = new batavia.types.Type('str');
 
 /**************************************************
@@ -493,13 +493,13 @@ String.prototype.encode = function(encoding, errors) {
     var encs = batavia.TEXT_ENCODINGS;
     if (encs.ascii.indexOf(encoding) !== -1) {
         return new batavia.types.Bytes(
-            batavia.vendored.buffer.Buffer.from(this.valueOf(), 'ascii'));
+            Buffer.from(this.valueOf(), 'ascii'));
     } else if (encs.latin_1.indexOf(encoding) !== -1) {
         return new batavia.types.Bytes(
-            batavia.vendored.buffer.Buffer.from(this.valueOf(), 'latin1'));
+            Buffer.from(this.valueOf(), 'latin1'));
     } else if (encs.utf_8.indexOf(encoding) !== -1) {
         return new batavia.types.Bytes(
-            batavia.vendored.buffer.Buffer.from(this.valueOf(), 'utf8'));
+            Buffer.from(this.valueOf(), 'utf8'));
     } else {
         return new batavia.builtins.NotImplementedError(
             "encoding not implemented or incorrect encoding"
@@ -532,4 +532,12 @@ String.prototype.__hash__ = function() {
         h = ((h * 33)|0) ^ this[i];
     }
     return new batavia.types.Int(h);
+};
+
+/**************************************************
+ * Export the type using the Python name
+ **************************************************/
+
+module.exports = {
+    Str: String
 };

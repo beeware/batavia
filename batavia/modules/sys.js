@@ -1,4 +1,6 @@
 
-batavia.modules.sys = {
-    'modules': {}
-};
+modules.exports = {
+    'sys': {
+        'modules': {}
+    }
+}

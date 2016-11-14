@@ -8,7 +8,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepublish": "make"
+    "prepublish": "python compile_stdlib.py",
+    "build": "webpack",
+    "start": "webpack-dev-server --inline --hot"
   },
   "repository": {
     "type": "git",
@@ -27,10 +29,15 @@
     "ouroboros": "3.4.0",
     "uglifyjs": "2.4.10"
   },
+  "dev": "webpack-dev-server",
+  "dependencies": {
+    "bignumber.js": "2.4.0",
+    "buffer": "5.0.0"
+  },
   "files": [
     "batavia.js",
     "batavia.min.js",
-    "batavia-all.js",
-    "batavia-all.min.js"
+    "batavia.js.map",
+    "batavia.min.js.map"
   ]
 }

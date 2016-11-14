@@ -1,393 +1,402 @@
-/*****************************************************************
- * Root exception
- *****************************************************************/
+var Type = requires('../types/Type').Type;
 
-BaseException = function(name, msg) {
-    this.name = name;
-    this.msg = msg;
-};
+module.exports = function() {
+    var exceptions = {};
 
-batavia.builtins.BaseException = BaseException;
-batavia.builtins.BaseException.__class__ = new batavia.types.Type('BaseException', [batavia.types.Object]);
-batavia.builtins.BaseException.prototype.__class__ = batavia.builtins.BaseException.__class__;
-
-batavia.builtins.BaseException.prototype.toString = function() {
-    return this.__str__();
-};
-
-batavia.builtins.BaseException.prototype.__str__ = function() {
-    if (this.msg) {
-        return this.msg;
-    } else {
-        return '';
+    /*****************************************************************
+     * Root exception
+     *****************************************************************/
+    BaseException = function(name, msg) {
+        this.name = name;
+        this.msg = msg;
     }
-};
 
-batavia.builtins.BaseException.prototype.__repr__ = function() {
-    if (this.msg) {
-        return this.name + "(" + this.msg + ")";
-    } else {
-        return this.name + "()";
+    BaseException.__class__ = new Type('BaseException', [Object]);
+    BaseException.prototype.__class__ = BaseException.__class__;
+
+    BaseException.prototype.toString = function() {
+        return this.__str__();
     }
-};
 
-/*****************************************************************
- * Top level exceptions
- *****************************************************************/
-
-function SystemExit(msg) {
-    batavia.builtins.BaseException.call(this, 'SystemExit', msg);
-}
-batavia.builtins.SystemExit = SystemExit;
-batavia.builtins.SystemExit.prototype = Object.create(batavia.builtins.BaseException.prototype);
-batavia.builtins.SystemExit.__class__ = new batavia.types.Type('SystemExit', [batavia.builtins.BaseException]);
-batavia.builtins.SystemExit.prototype.__class__ = batavia.builtins.SystemExit.__class__;
-
-function KeyboardInterrupt(msg) {
-    batavia.builtins.BaseException.call(this, 'KeyboardInterrupt', msg);
-}
-batavia.builtins.KeyboardInterrupt = KeyboardInterrupt;
-batavia.builtins.KeyboardInterrupt.prototype = Object.create(batavia.builtins.BaseException.prototype);
-batavia.builtins.KeyboardInterrupt.__class__ = new batavia.types.Type('KeyboardInterrupt', [batavia.builtins.BaseException]);
-batavia.builtins.KeyboardInterrupt.prototype.__class__ = batavia.builtins.KeyboardInterrupt.__class__;
-
-function GeneratorExit(msg) {
-    batavia.builtins.BaseException.call(this, 'GeneratorExit', msg);
-}
-batavia.builtins.GeneratorExit = GeneratorExit;
-batavia.builtins.GeneratorExit.prototype = Object.create(batavia.builtins.BaseException.prototype);
-batavia.builtins.GeneratorExit.__class__ = new batavia.types.Type('GeneratorExit', [batavia.builtins.BaseException]);
-batavia.builtins.GeneratorExit.prototype.__class__ = batavia.builtins.GeneratorExit.__class__;
-
-function Exception(name, msg) {
-    if (arguments.length == 1) {
-        // If only one argument is provided, it will be the message.
-        batavia.builtins.BaseException.call(this, 'Exception', name);
-    } else {
-        batavia.builtins.BaseException.call(this, name, msg);
+    BaseException.prototype.__str__ = function() {
+        if (this.msg) {
+            return this.msg;
+        } else {
+            return '';
+        }
     }
-}
-batavia.builtins.Exception = Exception;
-batavia.builtins.Exception.prototype = Object.create(batavia.builtins.BaseException.prototype);
-batavia.builtins.Exception.__class__ = new batavia.types.Type('Exception', [batavia.builtins.BaseException]);
-batavia.builtins.Exception.prototype.__class__ = batavia.builtins.Exception.__class__;
 
-/*****************************************************************
- * All other exceptions
- *****************************************************************/
-
-function BataviaError(msg) {
-    batavia.builtins.Exception.call(this, 'BataviaError', msg);
-}
-batavia.builtins.BataviaError = BataviaError;
-batavia.builtins.BataviaError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.BataviaError.__class__ = new batavia.types.Type('BataviaError', [batavia.builtins.Exception]);
-batavia.builtins.BataviaError.prototype.__class__ = batavia.builtins.BataviaError.__class__;
-
-function ArithmeticError(msg) {
-    batavia.builtins.Exception.call(this, 'ArithmeticError', msg);
-}
-batavia.builtins.ArithmeticError = ArithmeticError;
-batavia.builtins.ArithmeticError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.ArithmeticError.__class__ = new batavia.types.Type('ArithmeticError', [batavia.builtins.Exception]);
-batavia.builtins.ArithmeticError.prototype.__class__ = batavia.builtins.ArithmeticError.__class__;
-
-function AssertionError(msg) {
-    batavia.builtins.Exception.call(this, 'AssertionError', msg);
-}
-batavia.builtins.AssertionError = AssertionError;
-batavia.builtins.AssertionError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.AssertionError.__class__ = new batavia.types.Type('AssertionError', [batavia.builtins.Exception]);
-batavia.builtins.AssertionError.prototype.__class__ = batavia.builtins.AssertionError.__class__;
-
-function AttributeError(msg) {
-    batavia.builtins.Exception.call(this, 'AttributeError', msg);
-}
-batavia.builtins.AttributeError = AttributeError;
-batavia.builtins.AttributeError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.AttributeError.__class__ = new batavia.types.Type('AttributeError', [batavia.builtins.Exception]);
-batavia.builtins.AttributeError.prototype.__class__ = batavia.builtins.AttributeError.__class__;
-
-function BufferError(msg) {
-    batavia.builtins.Exception.call(this, 'BufferError', msg);
-}
-batavia.builtins.BufferError = BufferError;
-batavia.builtins.BufferError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.BufferError.__class__ = new batavia.types.Type('BufferError', [batavia.builtins.Exception]);
-batavia.builtins.BufferError.prototype.__class__ = batavia.builtins.BufferError.__class__;
-
-batavia.builtins.BytesWarning = undefined;
-
-batavia.builtins.DeprecationWarning = undefined;
-
-function EOFError(msg) {
-    batavia.builtins.Exception.call(this, 'EOFError', msg);
-}
-batavia.builtins.EOFError = EOFError;
-batavia.builtins.EOFError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.EOFError.__class__ = new batavia.types.Type('EOFError', [batavia.builtins.Exception]);
-batavia.builtins.EOFError.prototype.__class__ = batavia.builtins.EOFError.__class__;
-
-function EnvironmentError(msg) {
-    batavia.builtins.Exception.call(this, 'EnvironmentError', msg);
-}
-batavia.builtins.EnvironmentError = EnvironmentError;
-batavia.builtins.EnvironmentError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.EnvironmentError.__class__ = new batavia.types.Type('EnvironmentError', [batavia.builtins.Exception]);
-batavia.builtins.EnvironmentError.prototype.__class__ = batavia.builtins.EnvironmentError.__class__;
-
-function FloatingPointError(msg) {
-    batavia.builtins.Exception.call(this, 'FloatingPointError', msg);
-}
-batavia.builtins.FloatingPointError = FloatingPointError;
-batavia.builtins.FloatingPointError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.FloatingPointError.__class__ = new batavia.types.Type('FloatingPointError', [batavia.builtins.Exception]);
-batavia.builtins.FloatingPointError.prototype.__class__ = batavia.builtins.FloatingPointError.__class__;
-
-batavia.builtins.FutureWarning = undefined;
-
-function IOError(msg) {
-    batavia.builtins.Exception.call(this, 'IOError', msg);
-}
-batavia.builtins.IOError = IOError;
-batavia.builtins.IOError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.IOError.__class__ = new batavia.types.Type('IOError', [batavia.builtins.Exception]);
-batavia.builtins.IOError.prototype.__class__ = batavia.builtins.IOError.__class__;
-
-function ImportError(msg) {
-    batavia.builtins.Exception.call(this, 'ImportError', msg);
-}
-batavia.builtins.ImportError = ImportError;
-batavia.builtins.ImportError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.ImportError.__class__ = new batavia.types.Type('ImportError', [batavia.builtins.Exception]);
-batavia.builtins.ImportError.prototype.__class__ = batavia.builtins.ImportError.__class__;
-
-batavia.builtins.ImportWarning = undefined;
-
-function IndentationError(msg) {
-    batavia.builtins.Exception.call(this, 'IndentationError', msg);
-}
-batavia.builtins.IndentationError = IndentationError;
-batavia.builtins.IndentationError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.IndentationError.__class__ = new batavia.types.Type('IndentationError', [batavia.builtins.Exception]);
-batavia.builtins.IndentationError.prototype.__class__ = batavia.builtins.IndentationError.__class__;
-
-function IndexError(msg) {
-    batavia.builtins.Exception.call(this, 'IndexError', msg);
-}
-batavia.builtins.IndexError = IndexError;
-batavia.builtins.IndexError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.IndexError.__class__ = new batavia.types.Type('IndexError', [batavia.builtins.Exception]);
-batavia.builtins.IndexError.prototype.__class__ = batavia.builtins.IndexError.__class__;
-
-function KeyError(key) {
-    var msg;
-    if (key === null) {
-        msg = "None";
-    } else if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
-        msg = key.__repr__();
-    } else {
-        msg = key.toString();
+    BaseException.prototype.__repr__ = function() {
+        if (this.msg) {
+            return this.name + "(" + this.msg + ")";
+        } else {
+            return this.name + "()";
+        }
     }
-    batavia.builtins.Exception.call(this, 'KeyError', msg);
-}
-batavia.builtins.KeyError = KeyError;
-batavia.builtins.KeyError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.KeyError.__class__ = new batavia.types.Type('KeyError', [batavia.builtins.Exception], null, KeyError);
-batavia.builtins.KeyError.prototype.__class__ = batavia.builtins.KeyError.__class__;
 
-function LookupError(msg) {
-    batavia.builtins.Exception.call(this, 'LookupError', msg);
-}
-batavia.builtins.LookupError = LookupError;
-batavia.builtins.LookupError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.LookupError.__class__ = new batavia.types.Type('LookupError', [batavia.builtins.Exception]);
-batavia.builtins.LookupError.prototype.__class__ = batavia.builtins.LookupError.__class__;
+    exceptions['BaseException'] = BaseException
 
-function MemoryError(msg) {
-    batavia.builtins.Exception.call(this, 'MemoryError', msg);
-}
-batavia.builtins.MemoryError = MemoryError;
-batavia.builtins.MemoryError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.MemoryError.__class__ = new batavia.types.Type('MemoryError', [batavia.builtins.Exception]);
-batavia.builtins.MemoryError.prototype.__class__ = batavia.builtins.MemoryError.__class__;
 
-function NameError(msg) {
-    batavia.builtins.Exception.call(this, 'NameError', msg);
-}
-batavia.builtins.NameError = NameError;
-batavia.builtins.NameError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.NameError.__class__ = new batavia.types.Type('NameError', [batavia.builtins.Exception]);
-batavia.builtins.NameError.prototype.__class__ = batavia.builtins.NameError.__class__;
+    /*****************************************************************
+     * Top level exceptions
+     *****************************************************************/
 
-function NotImplementedException(msg) {
-    batavia.builtins.Exception.call(this, 'NotImplementedException', msg);
-}
-batavia.builtins.NotImplementedException = NotImplementedException;
-batavia.builtins.NotImplementedException.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.NotImplementedException.__class__ = new batavia.types.Type('NotImplementedException', [batavia.builtins.Exception]);
-batavia.builtins.NotImplementedException.prototype.__class__ = batavia.builtins.NotImplementedException.__class__;
+    function SystemExit(msg) {
+        BaseException.call(this, 'SystemExit', msg);
+    }
+    SystemExit.prototype = Object.create(BaseException.prototype);
+    SystemExit.__class__ = new Type('SystemExit', [BaseException]);
+    SystemExit.prototype.__class__ = SystemExit.__class__;
+    exceptions['SystemExit'] = SystemExit;
 
-function NotImplementedError(msg) {
-    batavia.builtins.Exception.call(this, 'NotImplementedError', msg);
-}
-batavia.builtins.NotImplementedError = NotImplementedError;
-batavia.builtins.NotImplementedError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.NotImplementedError.__class__ = new batavia.types.Type('NotImplementedError', [batavia.builtins.Exception]);
-batavia.builtins.NotImplementedError.prototype.__class__ = batavia.builtins.NotImplementedError.__class__;
+    function KeyboardInterrupt(msg) {
+        BaseException.call(this, 'KeyboardInterrupt', msg);
+    }
+    KeyboardInterrupt.prototype = Object.create(BaseException.prototype);
+    KeyboardInterrupt.__class__ = new Type('KeyboardInterrupt', [BaseException]);
+    KeyboardInterrupt.prototype.__class__ = KeyboardInterrupt.__class__;
+    exceptions['KeyboardInterrupt'] = KeyboardInterrupt;
 
-function OSError(msg) {
-    batavia.builtins.Exception.call(this, 'OSError', msg);
-}
-batavia.builtins.OSError = OSError;
-batavia.builtins.OSError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.OSError.__class__ = new batavia.types.Type('OSError', [batavia.builtins.Exception]);
-batavia.builtins.OSError.prototype.__class__ = batavia.builtins.OSError.__class__;
+    function GeneratorExit(msg) {
+        BaseException.call(this, 'GeneratorExit', msg);
+    }
+    GeneratorExit.prototype = Object.create(BaseException.prototype);
+    GeneratorExit.__class__ = new Type('GeneratorExit', [BaseException]);
+    GeneratorExit.prototype.__class__ = GeneratorExit.__class__;
+    exceptions['GeneratorExit'] = GeneratorExit;
 
-function OverflowError(msg) {
-    batavia.builtins.Exception.call(this, 'OverflowError', msg);
-}
-batavia.builtins.OverflowError = OverflowError;
-batavia.builtins.OverflowError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.OverflowError.__class__ = new batavia.types.Type('OverflowError', [batavia.builtins.Exception]);
-batavia.builtins.OverflowError.prototype.__class__ = batavia.builtins.OverflowError.__class__;
+    function Exception(name, msg) {
+        if (arguments.length == 1) {
+            // If only one argument is provided, it will be the message.
+            BaseException.call(this, 'Exception', name);
+        } else {
+            BaseException.call(this, name, msg);
+        }
+    }
+    Exception.prototype = Object.create(BaseException.prototype);
+    Exception.__class__ = new Type('Exception', [BaseException]);
+    Exception.prototype.__class__ = Exception.__class__;
+    exceptions['Exception'] = Exception;
 
-batavia.builtins.PendingDeprecationWarning = undefined;
+    /*****************************************************************
+     * All other exceptions
+     *****************************************************************/
 
-function PolyglotError(msg) {
-    batavia.builtins.Exception.call(this, 'PolyglotError', msg);
-}
-batavia.builtins.PolyglotError = PolyglotError;
-batavia.builtins.PolyglotError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.PolyglotError.__class__ = new batavia.types.Type('PolyglotError', [batavia.builtins.Exception]);
-batavia.builtins.PolyglotError.prototype.__class__ = batavia.builtins.PolyglotError.__class__;
+    function BataviaError(msg) {
+        Exception.call(this, 'BataviaError', msg);
+    }
+    BataviaError.prototype = Object.create(Exception.prototype);
+    BataviaError.__class__ = new Type('BataviaError', [Exception]);
+    BataviaError.prototype.__class__ = BataviaError.__class__;
+    exceptions['BataviaError'] = BataviaError;
 
-function ReferenceError(msg) {
-    batavia.builtins.Exception.call(this, 'ReferenceError', msg);
-}
-batavia.builtins.ReferenceError = ReferenceError;
-batavia.builtins.ReferenceError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.ReferenceError.__class__ = new batavia.types.Type('ReferenceError', [batavia.builtins.Exception]);
-batavia.builtins.ReferenceError.prototype.__class__ = batavia.builtins.ReferenceError.__class__;
+    function ArithmeticError(msg) {
+        Exception.call(this, 'ArithmeticError', msg);
+    }
+    ArithmeticError.prototype = Object.create(Exception.prototype);
+    ArithmeticError.__class__ = new Type('ArithmeticError', [Exception]);
+    ArithmeticError.prototype.__class__ = ArithmeticError.__class__;
+    exceptions['ArithmeticError'] = ArithmeticError;
 
-function RuntimeError(msg) {
-    batavia.builtins.Exception.call(this, 'RuntimeError', msg);
-}
-batavia.builtins.RuntimeError = RuntimeError;
-batavia.builtins.RuntimeError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.RuntimeError.__class__ = new batavia.types.Type('RuntimeError', [batavia.builtins.Exception]);
-batavia.builtins.RuntimeError.prototype.__class__ = batavia.builtins.RuntimeError.__class__;
+    function AssertionError(msg) {
+        Exception.call(this, 'AssertionError', msg);
+    }
+    AssertionError.prototype = Object.create(Exception.prototype);
+    AssertionError.__class__ = new Type('AssertionError', [Exception]);
+    AssertionError.prototype.__class__ = AssertionError.__class__;
+    exceptions['AssertionError'] = AssertionError;
 
-batavia.builtins.RuntimeWarning = undefined;
+    function AttributeError(msg) {
+        Exception.call(this, 'AttributeError', msg);
+    }
+    AttributeError.prototype = Object.create(Exception.prototype);
+    AttributeError.__class__ = new Type('AttributeError', [Exception]);
+    AttributeError.prototype.__class__ = AttributeError.__class__;
+    exceptions['AttributeError'] = AttributeError;
 
-function StandardError(msg) {
-    batavia.builtins.Exception.call(this, 'StandardError', msg);
-}
-batavia.builtins.StandardError = StandardError;
-batavia.builtins.StandardError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.StandardError.__class__ = new batavia.types.Type('StandardError', [batavia.builtins.Exception]);
-batavia.builtins.StandardError.prototype.__class__ = batavia.builtins.StandardError.__class__;
+    function BufferError(msg) {
+        Exception.call(this, 'BufferError', msg);
+    }
+    BufferError.prototype = Object.create(Exception.prototype);
+    BufferError.__class__ = new Type('BufferError', [Exception]);
+    BufferError.prototype.__class__ = BufferError.__class__;
+    exceptions['BufferError'] = BufferError;
 
-function StopIteration(msg) {
-    batavia.builtins.Exception.call(this, 'StopIteration', msg);
-}
-batavia.builtins.StopIteration = StopIteration;
-batavia.builtins.StopIteration.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.StopIteration.__class__ = new batavia.types.Type('StopIteration', [batavia.builtins.Exception]);
-batavia.builtins.StopIteration.prototype.__class__ = batavia.builtins.StopIteration.__class__;
+    BytesWarning = undefined;
 
-function SyntaxError(msg) {
-    batavia.builtins.Exception.call(this, 'SyntaxError', msg);
-}
-batavia.builtins.SyntaxError = SyntaxError;
-batavia.builtins.SyntaxError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.SyntaxError.__class__ = new batavia.types.Type('SyntaxError', [batavia.builtins.Exception]);
-batavia.builtins.SyntaxError.prototype.__class__ = batavia.builtins.SyntaxError.__class__;
+    DeprecationWarning = undefined;
 
-batavia.builtins.SyntaxWarning = undefined;
+    function EOFError(msg) {
+        Exception.call(this, 'EOFError', msg);
+    }
+    EOFError.prototype = Object.create(Exception.prototype);
+    EOFError.__class__ = new Type('EOFError', [Exception]);
+    EOFError.prototype.__class__ = EOFError.__class__;
+    exceptions['EOFError'] = EOFError;
 
-function SystemError(msg) {
-    batavia.builtins.Exception.call(this, 'SystemError', msg);
-}
-batavia.builtins.SystemError = SystemError;
-batavia.builtins.SystemError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.SystemError.__class__ = new batavia.types.Type('SystemError', [batavia.builtins.Exception]);
-batavia.builtins.SystemError.prototype.__class__ = batavia.builtins.SystemError.__class__;
+    function EnvironmentError(msg) {
+        Exception.call(this, 'EnvironmentError', msg);
+    }
+    EnvironmentError.prototype = Object.create(Exception.prototype);
+    EnvironmentError.__class__ = new Type('EnvironmentError', [Exception]);
+    EnvironmentError.prototype.__class__ = EnvironmentError.__class__;
+    exceptions['EnvironmentError'] = EnvironmentError;
 
-function TabError(msg) {
-    batavia.builtins.Exception.call(this, 'TabError', msg);
-}
-batavia.builtins.TabError = TabError;
-batavia.builtins.TabError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.TabError.__class__ = new batavia.types.Type('TabError', [batavia.builtins.Exception]);
-batavia.builtins.TabError.prototype.__class__ = batavia.builtins.TabError.__class__;
+    function FloatingPointError(msg) {
+        Exception.call(this, 'FloatingPointError', msg);
+    }
+    FloatingPointError.prototype = Object.create(Exception.prototype);
+    FloatingPointError.__class__ = new Type('FloatingPointError', [Exception]);
+    FloatingPointError.prototype.__class__ = FloatingPointError.__class__;
+    exceptions['FloatingPointError'] = FloatingPointError;
 
-function TypeError(msg) {
-    batavia.builtins.Exception.call(this, 'TypeError', msg);
-}
-batavia.builtins.TypeError = TypeError;
-batavia.builtins.TypeError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.TypeError.__class__ = new batavia.types.Type('TypeError', [batavia.builtins.Exception]);
-batavia.builtins.TypeError.prototype.__class__ = batavia.builtins.TypeError.__class__;
+    FutureWarning = undefined;
 
-function UnboundLocalError(msg) {
-    batavia.builtins.Exception.call(this, 'UnboundLocalError', msg);
-}
-batavia.builtins.UnboundLocalError = UnboundLocalError;
-batavia.builtins.UnboundLocalError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.UnboundLocalError.__class__ = new batavia.types.Type('UnboundLocalError', [batavia.builtins.Exception]);
-batavia.builtins.UnboundLocalError.prototype.__class__ = batavia.builtins.UnboundLocalError.__class__;
+    function IOError(msg) {
+        Exception.call(this, 'IOError', msg);
+    }
+    IOError.prototype = Object.create(Exception.prototype);
+    IOError.__class__ = new Type('IOError', [Exception]);
+    IOError.prototype.__class__ = IOError.__class__;
+    exceptions['IOError'] = IOError;
 
-function UnicodeDecodeError(msg) {
-    batavia.builtins.Exception.call(this, 'UnicodeDecodeError', msg);
-}
-batavia.builtins.UnicodeDecodeError = UnicodeDecodeError;
-batavia.builtins.UnicodeDecodeError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.UnicodeDecodeError.__class__ = new batavia.types.Type('UnicodeDecodeError', [batavia.builtins.Exception]);
-batavia.builtins.UnicodeDecodeError.prototype.__class__ = batavia.builtins.UnicodeDecodeError.__class__;
+    function ImportError(msg) {
+        Exception.call(this, 'ImportError', msg);
+    }
+    ImportError.prototype = Object.create(Exception.prototype);
+    ImportError.__class__ = new Type('ImportError', [Exception]);
+    ImportError.prototype.__class__ = ImportError.__class__;
+    exceptions['ImportError'] = ImportError;
 
-function UnicodeEncodeError(msg) {
-    batavia.builtins.Exception.call(this, 'UnicodeEncodeError', msg);
-}
-batavia.builtins.UnicodeEncodeError = UnicodeEncodeError;
-batavia.builtins.UnicodeEncodeError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.UnicodeEncodeError.__class__ = new batavia.types.Type('UnicodeEncodeError', [batavia.builtins.Exception]);
-batavia.builtins.UnicodeEncodeError.prototype.__class__ = batavia.builtins.UnicodeEncodeError.__class__;
+    ImportWarning = undefined;
 
-function UnicodeError(msg) {
-    batavia.builtins.Exception.call(this, 'UnicodeError', msg);
-}
-batavia.builtins.UnicodeError = UnicodeError;
-batavia.builtins.UnicodeError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.UnicodeError.__class__ = new batavia.types.Type('UnicodeError', [batavia.builtins.Exception]);
-batavia.builtins.UnicodeError.prototype.__class__ = batavia.builtins.UnicodeError.__class__;
+    function IndentationError(msg) {
+        Exception.call(this, 'IndentationError', msg);
+    }
+    IndentationError.prototype = Object.create(Exception.prototype);
+    IndentationError.__class__ = new Type('IndentationError', [Exception]);
+    IndentationError.prototype.__class__ = IndentationError.__class__;
+    exceptions['IndentationError'] = IndentationError;
 
-function UnicodeTranslateError(msg) {
-    batavia.builtins.Exception.call(this, 'UnicodeTranslateError', msg);
-}
-batavia.builtins.UnicodeTranslateError = UnicodeTranslateError;
-batavia.builtins.UnicodeTranslateError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.UnicodeTranslateError.__class__ = new batavia.types.Type('UnicodeTranslateError', [batavia.builtins.Exception]);
-batavia.builtins.UnicodeTranslateError.prototype.__class__ = batavia.builtins.UnicodeTranslateError.__class__;
+    function IndexError(msg) {
+        Exception.call(this, 'IndexError', msg);
+    }
+    IndexError.prototype = Object.create(Exception.prototype);
+    IndexError.__class__ = new Type('IndexError', [Exception]);
+    IndexError.prototype.__class__ = IndexError.__class__;
+    exceptions['IndexError'] = IndexError;
 
-batavia.builtins.UnicodeWarning = undefined;
+    function KeyError(key) {
+        var msg;
+        if (key === null) {
+            msg = "None";
+        } else if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
+            msg = key.__repr__();
+        } else {
+            msg = key.toString();
+        }
+        Exception.call(this, 'KeyError', msg);
+    }
+    KeyError.prototype = Object.create(Exception.prototype);
+    KeyError.__class__ = new Type('KeyError', [Exception], null, KeyError);
+    KeyError.prototype.__class__ = KeyError.__class__;
+    exceptions['KeyError'] = KeyError;
 
-batavia.builtins.UserWarning = undefined;
+    function LookupError(msg) {
+        Exception.call(this, 'LookupError', msg);
+    }
+    LookupError.prototype = Object.create(Exception.prototype);
+    LookupError.__class__ = new Type('LookupError', [Exception]);
+    LookupError.prototype.__class__ = LookupError.__class__;
+    exceptions['LookupError'] = LookupError;
 
-function ValueError(msg) {
-    batavia.builtins.Exception.call(this, 'ValueError', msg);
-}
-batavia.builtins.ValueError = ValueError;
-batavia.builtins.ValueError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.ValueError.__class__ = new batavia.types.Type('ValueError', [batavia.builtins.Exception]);
-batavia.builtins.ValueError.prototype.__class__ = batavia.builtins.ValueError.__class__;
+    function MemoryError(msg) {
+        Exception.call(this, 'MemoryError', msg);
+    }
+    MemoryError.prototype = Object.create(Exception.prototype);
+    MemoryError.__class__ = new Type('MemoryError', [Exception]);
+    MemoryError.prototype.__class__ = MemoryError.__class__;
+    exceptions['MemoryError'] = MemoryError;
 
-batavia.builtins.Warning = undefined;
+    function NameError(msg) {
+        Exception.call(this, 'NameError', msg);
+    }
+    NameError.prototype = Object.create(Exception.prototype);
+    NameError.__class__ = new Type('NameError', [Exception]);
+    NameError.prototype.__class__ = NameError.__class__;
+    exceptions['NameError'] = NameError;
 
-function ZeroDivisionError(msg) {
-    batavia.builtins.Exception.call(this, 'ZeroDivisionError', msg);
-}
-batavia.builtins.ZeroDivisionError = ZeroDivisionError;
-batavia.builtins.ZeroDivisionError.prototype = Object.create(batavia.builtins.Exception.prototype);
-batavia.builtins.ZeroDivisionError.__class__ = new batavia.types.Type('ZeroDivisionError', [batavia.builtins.Exception]);
-batavia.builtins.ZeroDivisionError.prototype.__class__ = batavia.builtins.ZeroDivisionError.__class__;
+    function NotImplementedException(msg) {
+        Exception.call(this, 'NotImplementedException', msg);
+    }
+    NotImplementedException.prototype = Object.create(Exception.prototype);
+    NotImplementedException.__class__ = new Type('NotImplementedException', [Exception]);
+    NotImplementedException.prototype.__class__ = NotImplementedException.__class__;
+    exceptions['NotImplementedException'] = NotImplementedException;
+
+    function NotImplementedError(msg) {
+        Exception.call(this, 'NotImplementedError', msg);
+    }
+    NotImplementedError.prototype = Object.create(Exception.prototype);
+    NotImplementedError.__class__ = new Type('NotImplementedError', [Exception]);
+    NotImplementedError.prototype.__class__ = NotImplementedError.__class__;
+    exceptions['NotImplementedError'] = NotImplementedError;
+
+    function OSError(msg) {
+        Exception.call(this, 'OSError', msg);
+    }
+    OSError.prototype = Object.create(Exception.prototype);
+    OSError.__class__ = new Type('OSError', [Exception]);
+    OSError.prototype.__class__ = OSError.__class__;
+    exceptions['OSError'] = OSError;
+
+    function OverflowError(msg) {
+        Exception.call(this, 'OverflowError', msg);
+    }
+    OverflowError.prototype = Object.create(Exception.prototype);
+    OverflowError.__class__ = new Type('OverflowError', [Exception]);
+    OverflowError.prototype.__class__ = OverflowError.__class__;
+    exceptions['OverflowError'] = OverflowError;
+
+    PendingDeprecationWarning = undefined;
+
+    function PolyglotError(msg) {
+        Exception.call(this, 'PolyglotError', msg);
+    }
+    PolyglotError.prototype = Object.create(Exception.prototype);
+    PolyglotError.__class__ = new Type('PolyglotError', [Exception]);
+    PolyglotError.prototype.__class__ = PolyglotError.__class__;
+    exceptions['PolyglotError'] = PolyglotError;
+
+    function ReferenceError(msg) {
+        Exception.call(this, 'ReferenceError', msg);
+    }
+    ReferenceError.prototype = Object.create(Exception.prototype);
+    ReferenceError.__class__ = new Type('ReferenceError', [Exception]);
+    ReferenceError.prototype.__class__ = ReferenceError.__class__;
+    exceptions['ReferenceError'] = ReferenceError;
+
+    function RuntimeError(msg) {
+        Exception.call(this, 'RuntimeError', msg);
+    }
+    RuntimeError.prototype = Object.create(Exception.prototype);
+    RuntimeError.__class__ = new Type('RuntimeError', [Exception]);
+    RuntimeError.prototype.__class__ = RuntimeError.__class__;
+    exceptions['RuntimeError'] = RuntimeError;
+
+    RuntimeWarning = undefined;
+
+    function StandardError(msg) {
+        Exception.call(this, 'StandardError', msg);
+    }
+    StandardError.prototype = Object.create(Exception.prototype);
+    StandardError.__class__ = new Type('StandardError', [Exception]);
+    StandardError.prototype.__class__ = StandardError.__class__;
+    exceptions['StandardError'] = StandardError;
+
+    function StopIteration(msg) {
+        Exception.call(this, 'StopIteration', msg);
+    }
+    StopIteration.prototype = Object.create(Exception.prototype);
+    StopIteration.__class__ = new Type('StopIteration', [Exception]);
+    StopIteration.prototype.__class__ = StopIteration.__class__;
+    exceptions['StopIteration'] = StopIteration;
+
+    function SyntaxError(msg) {
+        Exception.call(this, 'SyntaxError', msg);
+    }
+    SyntaxError.prototype = Object.create(Exception.prototype);
+    SyntaxError.__class__ = new Type('SyntaxError', [Exception]);
+    SyntaxError.prototype.__class__ = SyntaxError.__class__;
+    exceptions['SyntaxError'] = SyntaxError;
+
+    SyntaxWarning = undefined;
+
+    function SystemError(msg) {
+        Exception.call(this, 'SystemError', msg);
+    }
+    SystemError.prototype = Object.create(Exception.prototype);
+    SystemError.__class__ = new Type('SystemError', [Exception]);
+    SystemError.prototype.__class__ = SystemError.__class__;
+    exceptions['SystemError'] = SystemError;
+
+    function TabError(msg) {
+        Exception.call(this, 'TabError', msg);
+    }
+    TabError.prototype = Object.create(Exception.prototype);
+    TabError.__class__ = new Type('TabError', [Exception]);
+    TabError.prototype.__class__ = TabError.__class__;
+    exceptions['TabError'] = TabError;
+
+    function TypeError(msg) {
+        Exception.call(this, 'TypeError', msg);
+    }
+    TypeError.prototype = Object.create(Exception.prototype);
+    TypeError.__class__ = new Type('TypeError', [Exception]);
+    TypeError.prototype.__class__ = TypeError.__class__;
+    exceptions['TypeError'] = TypeError;
+
+    function UnboundLocalError(msg) {
+        Exception.call(this, 'UnboundLocalError', msg);
+    }
+    UnboundLocalError.prototype = Object.create(Exception.prototype);
+    UnboundLocalError.__class__ = new Type('UnboundLocalError', [Exception]);
+    UnboundLocalError.prototype.__class__ = UnboundLocalError.__class__;
+    exceptions['UnboundLocalError'] = UnboundLocalError;
+
+    function UnicodeDecodeError(msg) {
+        Exception.call(this, 'UnicodeDecodeError', msg);
+    }
+    UnicodeDecodeError.prototype = Object.create(Exception.prototype);
+    UnicodeDecodeError.__class__ = new Type('UnicodeDecodeError', [Exception]);
+    UnicodeDecodeError.prototype.__class__ = UnicodeDecodeError.__class__;
+    exceptions['UnicodeDecodeError'] = UnicodeDecodeError;
+
+    function UnicodeEncodeError(msg) {
+        Exception.call(this, 'UnicodeEncodeError', msg);
+    }
+    UnicodeEncodeError.prototype = Object.create(Exception.prototype);
+    UnicodeEncodeError.__class__ = new Type('UnicodeEncodeError', [Exception]);
+    UnicodeEncodeError.prototype.__class__ = UnicodeEncodeError.__class__;
+    exceptions['UnicodeEncodeError'] = UnicodeEncodeError;
+
+    function UnicodeError(msg) {
+        Exception.call(this, 'UnicodeError', msg);
+    }
+    UnicodeError.prototype = Object.create(Exception.prototype);
+    UnicodeError.__class__ = new Type('UnicodeError', [Exception]);
+    UnicodeError.prototype.__class__ = UnicodeError.__class__;
+    exceptions['UnicodeError'] = UnicodeError;
+
+    function UnicodeTranslateError(msg) {
+        Exception.call(this, 'UnicodeTranslateError', msg);
+    }
+    UnicodeTranslateError.prototype = Object.create(Exception.prototype);
+    UnicodeTranslateError.__class__ = new Type('UnicodeTranslateError', [Exception]);
+    UnicodeTranslateError.prototype.__class__ = UnicodeTranslateError.__class__;
+    exceptions['UnicodeTranslateError'] = UnicodeTranslateError;
+
+    UnicodeWarning = undefined;
+
+    UserWarning = undefined;
+
+    function ValueError(msg) {
+        Exception.call(this, 'ValueError', msg);
+    }
+    ValueError.prototype = Object.create(Exception.prototype);
+    ValueError.__class__ = new Type('ValueError', [Exception]);
+    ValueError.prototype.__class__ = ValueError.__class__;
+    exceptions['ValueError'] = ValueError;
+
+    Warning = undefined;
+
+    function ZeroDivisionError(msg) {
+        Exception.call(this, 'ZeroDivisionError', msg);
+    }
+    ZeroDivisionError.prototype = Object.create(Exception.prototype);
+    ZeroDivisionError.__class__ = new Type('ZeroDivisionError', [Exception]);
+    ZeroDivisionError.prototype.__class__ = ZeroDivisionError.__class__;
+    exceptions['ZeroDivisionError'] = ZeroDivisionError;
+
+    return exceptions;
+}()
