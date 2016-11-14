@@ -7,7 +7,7 @@ class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
             import base64
             print(base64.b64encode(b'foo'))
             print(type(base64.b64encode(b'foo')))
-            print(base64.b64encode(b'foobarbaz-_/', b'-_'))
+            print(base64.b64encode(b'\xa7/\x9b', b'-_'))
             """)
 
     def test_b64decode(self):
