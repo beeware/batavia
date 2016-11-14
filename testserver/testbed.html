@@ -305,18 +305,6 @@ DAEDABcBDQEdAgYB
 {{ customcode.compiled }}
     </script>
 
-    <!-- A native javascript module -->
-    <script>
-var example = function(mod) {
-    console.log("Now we're in the example module");
-
-    mod.some_method = function() {
-        console.log("Now we're calling a module method");
-    }
-    return mod;
-}({});
-    </script>
-
     <script>
 function customcode() {
     console.log('Create VM');
