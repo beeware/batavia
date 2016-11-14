@@ -5,6 +5,9 @@
 
 batavia.types.Bytes = function() {
     function Bytes(val) {
+        // the value is an instance of Feross's Buffer class
+        // vendored at batavia.vendored.buffer.Buffer
+        // and inserted by batavia.builtins.bytes()
         this.val = val;
     }
 
@@ -31,12 +34,39 @@ batavia.types.Bytes = function() {
         return this.val.length > 0;
     };
 
+    Bytes.prototype.__len__ = function () {
+        return new batavia.types.Int(this.val.length);
+    };
+
     Bytes.prototype.__repr__ = function() {
         return this.__str__();
     };
 
     Bytes.prototype.__str__ = function() {
-        return "b'" + String.fromCharCode.apply(null, this.val) + "'";
+        // we iterate natively in JS so as not to have to box/unbox
+        // the values from a Batavia Int, maybe premature optimisation
+        // when writing only one bytestring to a console/textarea
+        // but can't hurt when writing a lot of bytestrings on a socket
+        var stringified = "b'";
+        // var buffer_length = this.val.length
+        var buffer_length = this.__len__();
+        for (var i = 0; i < buffer_length; i++) {
+            var value = this.val[i];
+            if (value >= 32 && value <= 126) {
+                stringified += String.fromCharCode(value);
+            } else if (value >= 9 && value <= 13) {
+                stringified += {
+                    9  : "\\t",
+                    10 : "\\n",
+                    11 : "\\x0b",
+                    12 : "\\x0c",
+                    13 : "\\r"
+                }[value];
+            } else {
+                stringified += "\\x" + ("0" + value.toString(16)).slice(-2);
+            }
+        }
+        return stringified + "'";
     };
 
     Bytes.prototype.__iter__ = function() {
@@ -48,66 +78,71 @@ batavia.types.Bytes = function() {
      **************************************************/
 
     Bytes.prototype.__lt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() < other;
+        if (batavia.isinstance(other, batavia.types.Bytes)) {
+            return this.val < other.val;
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: bytes() < " + batavia.type_name(other) + "()");
         }
-        return false;
     };
 
     Bytes.prototype.__le__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() <= other;
+        if (batavia.isinstance(other, batavia.types.Bytes)) {
+            return this.val <= other.val;
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: bytes() <= " + batavia.type_name(other) + "()");
         }
-        return false;
     };
 
     Bytes.prototype.__eq__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            var val;
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float])
-                    ) {
-                return false;
-            } else {
-                return this.valueOf() === val;
-            }
+        if (batavia.isinstance(other, batavia.types.Bytes)) {
+            var equal = (this.val.compare(other.val) == 0);
+            return new batavia.types.Bool(equal);
+        } else if (batavia.isinstance (other, batavia.types.Bytearray)) {
+            throw new batavia.builtins.NotImplementedError(
+                "Comparison between bytes and bytearrays has not been implemented");
+        } else {
+            return new batavia.types.Bool(false);
         }
-        return this.valueOf() === '';
     };
 
     Bytes.prototype.__ne__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            var val;
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float])
-                    ) {
-                return true;
-            } else {
-                return this.valueOf() !== val;
-            }
-        }
-        return this.valueOf() !== '';
+        return this.__eq__(other).__not__();
     };
 
     Bytes.prototype.__gt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() > other;
+        if (batavia.isinstance(other, batavia.types.Bytes)) {
+            return this.val > other.val;
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: bytes() > " + batavia.type_name(other) + "()");
         }
-        return false;
     };
 
     Bytes.prototype.__ge__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() >= other;
+        if (batavia.isinstance(other, batavia.types.Bytes)) {
+            return this.val >= other.val;
+        } else {
+            throw new batavia.builtins.TypeError("unorderable types: bytes() >= " + batavia.type_name(other) + "()");
         }
-        return false;
     };
 
     Bytes.prototype.__contains__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf().hasOwnProperty(other);
+        var other_value = null;
+        if (batavia.isinstance(other, batavia.types.Int)) {
+            if (other >= 0 && other <= 255) {
+                other_value = parseInt(other.valueOf());
+            } else {
+                throw new batavia.builtins.ValueError(
+                    "byte must be in range (0, 256)"
+                );
+            }
+        } else if (batavia.isinstance(other, batavia.types.Bytes)) {
+            other_value = this.val;
         }
-        return false;
+        if (other_value !== null) {
+            return this.val.indexOf(other_value) !== -1;
+        } else {
+            return new batavia.types.Bool(false);
+        }
     };
 
     /**************************************************
@@ -248,6 +283,27 @@ batavia.types.Bytes = function() {
 
     Bytes.prototype.copy = function() {
         return new Bytes(this.valueOf());
+    };
+
+    Bytes.prototype.decode = function(encoding, errors) {
+        if (errors !== undefined) {
+            return new batavia.builtins.NotImplementedError(
+                "'errors' parameter of String.encode not implemented"
+            );
+        }
+        encoding = encoding.toLowerCase();
+        var encs = batavia.TEXT_ENCODINGS;
+        if (encs.ascii.indexOf(encoding) !== -1) {
+            return this.val.toString('ascii');
+        } else if (encs.latin_1.indexOf(encoding) !== -1) {
+            return this.val.toString('latin1');
+        } else if (encs.utf_8.indexOf(encoding) !== -1) {
+            return this.val.toString('utf8');
+        } else {
+            return new batavia.builtins.NotImplementedError(
+                "encoding not implemented or incorrect encoding"
+            );
+        }
     };
 
     /**************************************************

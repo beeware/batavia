@@ -1,4 +1,4 @@
-The Batavia Developer and User community
+The Batavia developer and user community
 ========================================
 
 Batavia is part of the `BeeWare suite`_. You can talk to the community through:

@@ -32,100 +32,94 @@ Javascript. With Batavia, you can run Python bytecode in your browser.
 It honors Python 3.4.4+ syntax and conventions, and let's you
 reference objects and classes defined natively in JavaScript.
 
-Tutorial
---------
+Quick Start
+---------------
 
-To take Batavia for a spin, run through the `Getting Started guide`_.
+Prerequisites
+~~~~~~~~~~~~~~
 
-Then have some fun with `the first tutorial`_, and try out running Python in
-your browser.
+Batavia requires a Python 3.4 installation, and a virtualenv to run it all in.
 
-.. _Getting Started guide: https://batavia.readthedocs.io/en/latest/intro/getting-started.html
-.. _the first tutorial: https://batavia.readthedocs.io/en/latest/tutorials/tutorial-0.html
+Check the `Setting up your environment
+<http://pybee.org/contributing/first-time/setup/>`_ for configuration help.
+
+
+Downloading and Installing
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Clone the code repos::
+
+   $ mkdir pybee
+   $ cd pybee
+   $ git clone https://github.com/pybee/batavia
+   $ git clone https://github.com/pybee/ouroboros
+
+2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
+
+Linux/Unix/Mac::
+
+   $ virtualenv venv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
+
+Windows::
+
+   > virtualenv venv
+   > venv\Scripts\activate
+   > cd batavia
+   > pip install -e .
+
+3. Run the :code:`make` script to generate the combined Batavia JavaScript files::
+
+   $ make
+
+NOTE some platforms do not have an alias for make, e.g. Windows with GCC may require `gmake` to be issued instead.
+
+For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
+
+
+Running Batavia in the browser
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+After you have setup the local installation of Batavia, you can now run Python in the browser::
+
+    $ cd testserver
+    $ pip install -r requirements.txt
+    $ ./manage.py runserver
+
+then open a web browser at `http://localhost:8000 <http://localhost:8000>`_
+
+For more detailed instructions, see the `Python In The Browser
+<http://batavia.readthedocs.io/en/latest/intro/tutorial-1.html>`_ guide.
 
 Documentation
 -------------
 
-Documentation for Batavia can be found on `Read The Docs`_.
+`Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
 
-Community
----------
+* `Project Internals <http://batavia.readthedocs.io/en/latest/internals/index.html>`_
+* `Getting Started <http://batavia.readthedocs.io/en/latest/intro/index.html>`_
+* `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
+* `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
 
-Batavia is part of the `BeeWare suite`_. You can talk to the community through:
 
-* `@pybeeware on Twitter`_
-
-* The `pybee/general`_ channel on Gitter.
-
-We foster a welcoming and respectful community as described in our
-`BeeWare Community Code of Conduct`_.
-
-Why "Batavia?"
---------------
-
-On 27 October, 1628, *Commandeur* Francisco Pelsaert took command of the
-*Batavia*, and with 340 passengers and crew, set sail from Texel.
-
-Their destination? The Spice Islands - or more specifically, island of Java
-in the Dutch East Indies (now part of Indonesia).
-
-**The Batavia was... a Java ship (rimshot!).**
-
-Interestingly, during the voyage, Ariaen Jacobsz and *onderkoopman* Jeronimus
-Cornelisz incited a mutiny, because they didn't want to go to Java - they
-wanted to escape to start a new life somewhere else. As a result of the
-mutiny, on 4 June 1629, the Batavia ran aground on Morning Reef, part of the
-Houtman Abrolhos, about 450km North of Perth, Western Australia, where this
-project was conceived.
-
-The `full story of the Batavia`_ is known to most Western Australian
-schoolchildren, and is a harrowing tale of intrigue, savagery, and murder. *It
-serves as a reminder of what can happen when you force people to go to Java*
-:-)
-
-The wreck of the Batavia was recovered in the 1970s, and now stands in the
-`shipwrecks gallery of the Western Australian Maritime Museum`_.
-
-.. _full story of the Batavia: https://en.wikipedia.org/wiki/Batavia_(ship)
-.. _shipwrecks gallery of the Western Australian Maritime Museum: http://museum.wa.gov.au/museums/shipwrecks
-
-Issues
-------
-
-If you experience problems with Batavia, `log them on GitHub`_.
 
 Contributing
 ------------
 
-If you'd like to contribute to Batavia development, our `guide for first time contributors`_ will help you get started.
+If you'd like to contribute to Batavia development, our `guide for first time contributors <http://batavia.readthedocs.io/en/latest/internals/contributing.html>`_ will help you get started.
 
-If you want to contribute code, please `fork the code`_ and
-`submit a pull request`_.
+If you experience problems with Batavia, `log them on GitHub <https://github.com/pybee/batavia/issues>`_.
 
-Before submitting a pull request, please make sure your forked branch is up
-to date with the original branch. To do this:
+Community
+---------
 
-- set your upstream remote::
+Batavia is part of the `BeeWare suite <http://pybee.org>`_. You can talk to the community through:
 
-    $ git remote add upstream https://github.com/pybee/batavia.git
+* `@pybeeware on Twitter <https://twitter.com/pybeeware>`_
 
-- make sure you have the latest changes from upstream::
+* The `pybee/general <https://gitter.im/pybee/general>`_ channel on Gitter.
 
-    $ git fetch upstream
-
-- rebase your **master** branch to **upstream** before pushing to GitHub
-  and submitting a pull request::
-
-    $ git rebase upstream/master
-
-
-.. _BeeWare suite: http://pybee.org
-.. _Read The Docs: https://batavia.readthedocs.io
-.. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
-.. _pybee/general: https://gitter.im/pybee/general
-.. _BeeWare Community Code of Conduct: http://pybee.org/community/behavior/
-.. _log them on Github: https://github.com/pybee/batavia/issues
-.. _fork the code: https://github.com/pybee/batavia
-.. _submit a pull request: https://github.com/pybee/batavia/pulls
-.. _guide for first time contributors: https://github.com/pybee/batavia/wiki/Your-first-Batavia-contribution
+We foster a welcoming and respectful community as described in our
+`BeeWare Community Code of Conduct <http://pybee.org/community/behavior/>`_.

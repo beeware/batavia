@@ -1,6 +1,4 @@
-#/usr/bin/env python
 import io
-# import re
 from setuptools import setup, find_packages
 
 

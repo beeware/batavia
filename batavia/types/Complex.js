@@ -107,10 +107,6 @@ batavia.types.Complex = function() {
         return Boolean(this.real || this.imag);
     };
 
-    Complex.prototype.__iter__ = function() {
-        return new Complex.prototype.ComplexIterator(this);
-    };
-
     Complex.prototype.__repr__ = function() {
         return this.__str__();
     };
@@ -440,31 +436,6 @@ batavia.types.Complex = function() {
                 this[values[value]] = null;
             }
         }
-    };
-
-    /**************************************************
-     * Complex Iterator
-     **************************************************/
-
-    Complex.prototype.ComplexIterator = function (data) {
-        Object.call(this);
-        this.index = 0;
-        this.data = data;
-    };
-
-    Complex.prototype.ComplexIterator.prototype = Object.create(Object.prototype);
-
-    Complex.prototype.ComplexIterator.prototype.__next__ = function() {
-        var retval = this.data[this.index];
-        if (retval === undefined) {
-            throw new batavia.builtins.StopIteration();
-        }
-        this.index++;
-        return retval;
-    };
-
-    Complex.prototype.ComplexIterator.prototype.__str__ = function() {
-        return "<set_iterator object at 0x99999999>";
     };
 
     /**************************************************/

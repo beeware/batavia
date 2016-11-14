@@ -9,7 +9,6 @@ class BuiltinFloatFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["float"]
 
     not_implemented = [
-        'test_noargs',
         'test_bytearray',
         'test_bytes',
         'test_class',

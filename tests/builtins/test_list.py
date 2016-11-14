@@ -7,9 +7,3 @@ class ListTests(TranspileTestCase):
 
 class BuiltinListFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["list"]
-
-    not_implemented = [
-        'test_bytearray',
-        'test_complex',
-        'test_NotImplemented'
-    ]

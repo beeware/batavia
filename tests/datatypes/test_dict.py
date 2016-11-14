@@ -57,6 +57,14 @@ class DictTests(TranspileTestCase):
             print(x['c'])
             """, run_in_function=False)
 
+        # Override key
+        self.assertCodeExecution("""
+            x = {'a': 1}
+            print(x)
+            x['a'] = 2
+            print(x)
+            """)
+
     def test_clear(self):
         # Clear a dictionary
         self.assertCodeExecution("""

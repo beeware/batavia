@@ -483,6 +483,30 @@ String.prototype.copy = function() {
     return this.valueOf();
 };
 
+String.prototype.encode = function(encoding, errors) {
+    if (errors !== undefined) {
+        return new batavia.builtins.NotImplementedError(
+            "'errors' parameter of String.encode not implemented"
+        );
+    }
+    encoding = encoding.toLowerCase();
+    var encs = batavia.TEXT_ENCODINGS;
+    if (encs.ascii.indexOf(encoding) !== -1) {
+        return new batavia.types.Bytes(
+            batavia.vendored.buffer.Buffer.from(this.valueOf(), 'ascii'));
+    } else if (encs.latin_1.indexOf(encoding) !== -1) {
+        return new batavia.types.Bytes(
+            batavia.vendored.buffer.Buffer.from(this.valueOf(), 'latin1'));
+    } else if (encs.utf_8.indexOf(encoding) !== -1) {
+        return new batavia.types.Bytes(
+            batavia.vendored.buffer.Buffer.from(this.valueOf(), 'utf8'));
+    } else {
+        return new batavia.builtins.NotImplementedError(
+            "encoding not implemented or incorrect encoding"
+        );
+    }
+};
+
 String.prototype.startswith = function (str) {
     return this.slice(0, str.length) === str;
 };

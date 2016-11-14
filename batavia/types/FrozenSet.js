@@ -52,35 +52,17 @@ batavia.types.FrozenSet = function() {
      **************************************************/
 
     FrozenSet.prototype.__lt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() < " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() < other.valueOf();
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() < NoneType()");
+        if (batavia.isinstance(other, [batavia.types.Set, batavia.types.FrozenSet])) {
+            return new batavia.types.Bool(this.data.keys().length < other.data.keys().length);
         }
+        throw new batavia.builtins.TypeError("unorderable types: frozenset() < " + batavia.type_name(other) + "()");
     };
 
     FrozenSet.prototype.__le__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() <= " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() <= other.valueOf();
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() <= NoneType()");
+        if (batavia.isinstance(other, [batavia.types.Set, batavia.types.FrozenSet])) {
+            return new batavia.types.Bool(this.data.keys().length <= other.data.keys().length);
         }
+        throw new batavia.builtins.TypeError("unorderable types: frozenset() <= " + batavia.type_name(other) + "()");
     };
 
     FrozenSet.prototype.__eq__ = function(other) {
@@ -104,35 +86,17 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__gt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() > " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() > other.valueOf();
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() > NoneType()");
+        if (batavia.isinstance(other, [batavia.types.Set, batavia.types.FrozenSet])) {
+            return new batavia.types.Bool(this.data.keys().length > other.data.keys().length);
         }
+        throw new batavia.builtins.TypeError("unorderable types: frozenset() > " + batavia.type_name(other) + "()");
     };
 
     FrozenSet.prototype.__ge__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() >= " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() >= other.valueOf();
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() >= NoneType()");
+        if (batavia.isinstance(other, [batavia.types.Set, batavia.types.FrozenSet])) {
+            return new batavia.types.Bool(this.data.keys().length >= other.data.keys().length);
         }
+        throw new batavia.builtins.TypeError("unorderable types: frozenset() >= " + batavia.type_name(other) + "()");
     };
 
     FrozenSet.prototype.__contains__ = function(other) {
@@ -153,15 +117,19 @@ batavia.types.FrozenSet = function() {
      **************************************************/
 
     FrozenSet.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__pow__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__div__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__div__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'frozenset' and '" + batavia.type_name(other) + "'");
+        if (batavia.isinstance(other, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't take floor of complex number.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'frozenset' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     FrozenSet.prototype.__truediv__ = function(other) {
@@ -169,11 +137,22 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__mul__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + batavia.type_name(other) + "'");
+        if (batavia.isinstance(other, [
+            batavia.types.Bytearray, batavia.types.Bytes, batavia.types.List,
+            batavia.types.Str, batavia.types.Tuple
+        ])) {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'frozenset'");
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'frozenset' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     FrozenSet.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__mod__ has not been implemented");
+        if (batavia.isinstance(other, batavia.types.Complex)){
+            throw new batavia.builtins.TypeError("can't mod complex numbers.")
+        } else {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'frozenset' and '" + batavia.type_name(other) + "'");
+        }
     };
 
     FrozenSet.prototype.__add__ = function(other) {
@@ -181,19 +160,38 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__sub__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            return new FrozenSet(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__getitem__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.Bool])){
+            throw new batavia.builtins.TypeError("'frozenset' object does not support indexing");
+        } else if (batavia.isinstance(other, [batavia.types.Int])){
+            if (other.val.gt(batavia.types.Int.prototype.MAX_INT.val) || other.val.lt(batavia.types.Int.prototype.MIN_INT.val)) {
+                throw new batavia.builtins.IndexError("cannot fit 'int' into an index-sized integer");
+            } else {
+                throw new batavia.builtins.TypeError("'frozenset' object does not support indexing");
+            }
+        }
+        throw new batavia.builtins.TypeError("'frozenset' object is not subscriptable");
     };
 
     FrozenSet.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__lshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__rshift__ has not been implemented");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__and__ = function(other) {
@@ -211,11 +209,39 @@ batavia.types.FrozenSet = function() {
     };
 
     FrozenSet.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__xor__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                if (!(other.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                if (!(this.__contains__(val).valueOf())) {
+                    both.push(val);
+                }
+            }.bind(this));
+            return new FrozenSet(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     FrozenSet.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__or__ has not been implemented");
+        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
+            var both = [];
+            var iterobj1 = batavia.builtins.iter([this], null);
+            batavia.iter_for_each(iterobj1, function(val) {
+                both.push(val);
+            });
+            var iterobj2 = batavia.builtins.iter([other], null);
+            batavia.iter_for_each(iterobj2, function(val) {
+                both.push(val);
+            }.bind(this));
+            return new FrozenSet(both);
+        }
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'frozenset' and '" + batavia.type_name(other) + "'");
     };
 
     /**************************************************
