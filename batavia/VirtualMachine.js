@@ -9,17 +9,24 @@ batavia.VirtualMachine = function(loader) {
 
     if (loader === undefined) {
         this.loader = function(name) {
+            // Find the script element with the ID matching the
+            // fully qualified module name (e.g., batavia-foo.bar.whiz)
             var element = document.getElementById('batavia-' + name);
             if (element === null) {
                 return null;
             }
 
+            // Look for the filename in the data-filename
+            // attribute of script tag.
             var filename;
             if (element.dataset) {
                 filename = element.dataset['filename'];
             } else {
                 filename = "<input>";
             }
+
+            // Strip all the whitespace out of the text content of
+            // the script tag.
             return {
                 'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, "").trim(),
                 'filename': new batavia.types.Str(filename)
