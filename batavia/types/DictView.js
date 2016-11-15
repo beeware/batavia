@@ -1,6 +1,6 @@
+var pytypes = require('./Type');
 
-module.exports = {
-    DictView: function () {
+module.exports = function () {
 
-    }()
-}
+}();
+

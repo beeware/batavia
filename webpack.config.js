@@ -8,8 +8,11 @@ module.exports = {
     devtool: 'source-map',
     output: {
         path: __dirname,
-        filename: "[name].js"
+        filename: "[name].js",
+        library: 'batavia',
+        libraryTarget: 'var'
     },
+    target: 'web',
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
             include: /\.min\.js$/,

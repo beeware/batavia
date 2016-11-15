@@ -1,6 +1,4 @@
 
-modules.exports = {
-    'sys': {
-        'modules': {}
-    }
+module.exports = {
+    'modules': {}
 }

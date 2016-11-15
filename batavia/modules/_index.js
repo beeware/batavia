@@ -4,13 +4,14 @@
  */
 
 module.exports = {
-    'base64': require('./base64').base64,
-    'dis': require('./dis').dis,
-    'dom': require('./dom').dom,
-    'inspect': require('./inspect').inspect,
-    'marshal': require('./marshal').marshal,
-    'math': require('./math').math,
-    'misc': require('./misc').misc,
-    'sys': require('./sys').sys,
-    'time': require('./time').time,
+    '_operator': require('./_operator'),
+    '_weakref': require('./_weakref'),
+    'base64': require('./base64'),
+    'dis': require('./dis'),
+    'dom': require('./dom'),
+    'inspect': require('./inspect'),
+    'marshal': require('./marshal'),
+    'math': require('./math'),
+    'sys': require('./sys'),
+    'time': require('./time'),
 }

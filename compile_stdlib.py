@@ -63,14 +63,12 @@ def compile_stdlib(ouroboros, enabled_modules):
             os.unlink(fp.name)
 
         with open(outfile, 'w') as fout:
-            fout.write("modules.export = {\n")
-            fout.write("    '" + module + "': '" + base64.b64encode(pyc).decode('utf8') + "'\n")
-            fout.write("}\n")
+            fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
 
     outfile = os.path.join('batavia', 'modules', 'stdlib', '_index.js')
     print("Compiling stdlib index %s" % outfile)
     with open(outfile, 'w') as fout:
-        fout.write("modules.export = {\n    ")
+        fout.write("module.exports = {\n    ")
         module_list = [
             "'" + module + "': require('./" + module + "')"
             for module in enabled_modules

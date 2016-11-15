@@ -1,18 +1,19 @@
+var pytypes = require('./Type');
 
-module.exports = {
-    Module: function() {
-        function Module(name, locals) {
-            this.__name__ = name;
-            for (var key in locals) {
-                if (locals.hasOwnProperty(key)) {
-                    this[key] = locals[key];
-                }
+module.exports = function() {
+    function Module(name, locals) {
+        pytypes.Object.call(init);
+
+        this.__name__ = name;
+        for (var key in locals) {
+            if (locals.hasOwnProperty(key)) {
+                this[key] = locals[key];
             }
         }
+    }
 
-        Module.prototype = Object.create(Object.prototype);
-        Module.prototype.__class__ = new batavia.types.Type('module');
+    Module.prototype = Object.create(pytypes.Object.prototype);
+    Module.prototype.__class__ = new pytypes.Type('module');
 
-        return Module;
-    }()
-};
+    return Module;
+}();

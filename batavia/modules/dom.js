@@ -5,15 +5,12 @@
  */
 
 module.exports = {
-    'dom': {
-        'window': window,
-        'parent': parent,
-        'top': top,
-        'navigator': navigator,
-        'frames': frames,
-        'location': location,
-        'history': history,
-        'document': document,
-        'batavia': batavia
-    }
+    'window': window,
+    'parent': parent,
+    'top': top,
+    'navigator': navigator,
+    'frames': frames,
+    'location': location,
+    'history': history,
+    'document': document
 }

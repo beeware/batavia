@@ -1,6 +1,5 @@
+var pytypes = require('./Type');
 
-module.exports = {
-    Ellipsis: function () {
+module.exports = function () {
 
-    }()
-}
+}();
