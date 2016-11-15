@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "python compile_stdlib.py",
-    "build": "webpack",
+    "build": "node_modules/.bin/webpack",
     "start": "webpack-dev-server --inline --hot"
   },
   "repository": {
@@ -32,7 +32,8 @@
   "dev": "webpack-dev-server",
   "dependencies": {
     "bignumber.js": "2.4.0",
-    "buffer": "5.0.0"
+    "buffer": "5.0.0",
+    "webpack": "1.13.3"
   },
   "files": [
     "batavia.js",

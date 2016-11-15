@@ -7,7 +7,6 @@ dependencies:
     - ouroboros
   override:
     - npm install
-    - npm install webpack -g
 
 test:
   pre:
