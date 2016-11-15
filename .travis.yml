@@ -5,6 +5,8 @@ python:
 
 install:
   - "pip install ."
+  - "npm install"
+  - "npm install webpack -g"
 
 script:
   - "cd docs && make dirhtml ; cd .."

@@ -5,6 +5,9 @@ machine:
 dependencies:
   cache_directories:
     - ouroboros
+  override:
+    - npm install
+    - npm install webpack -g
   post:
     - test -e ouroboros || git clone https://github.com/pybee/ouroboros.git
 
