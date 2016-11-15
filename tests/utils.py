@@ -28,8 +28,9 @@ def build_batavia():
     if _batavia_built:
         return
 
+    project_dir = os.path.dirname(os.path.dirname(__file__))
     proc = subprocess.Popen(
-        ["webpack", "--bail"],
+        [os.path.join(project_dir, "node_modules", ".bin", "webpack"), "--bail"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
