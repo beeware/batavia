@@ -5,6 +5,8 @@
    parser than when passed from the parser to the interpreter; e.g.
    the parser only returns E_EOF when it hits EOF immediately, and it
    never returns E_OK. */
+var types = require('../../types/Type');
+
 
 module.exports = function() {
     var tokenizer = {
@@ -97,65 +99,65 @@ module.exports = function() {
         'TOKEN_NAMES': {}
     };
 
-    TOKEN_NAMES[ENDMARKER] = "ENDMARKER";
-    TOKEN_NAMES[NAME] = "NAME";
-    TOKEN_NAMES[NUMBER] = "NUMBER";
-    TOKEN_NAMES[STRING] = "STRING";
-    TOKEN_NAMES[NEWLINE] = "NEWLINE";
-    TOKEN_NAMES[INDENT] = "INDENT";
-    TOKEN_NAMES[DEDENT] = "DEDENT";
-    TOKEN_NAMES[LPAR] = "LPAR";
-    TOKEN_NAMES[RPAR] = "RPAR";
-    TOKEN_NAMES[LSQB] = "LSQB";
-    TOKEN_NAMES[RSQB] = "RSQB";
-    TOKEN_NAMES[COLON] = "COLON";
-    TOKEN_NAMES[COMMA] = "COMMA";
-    TOKEN_NAMES[SEMI] = "SEMI";
-    TOKEN_NAMES[PLUS] = "PLUS";
-    TOKEN_NAMES[MINUS] = "MINUS";
-    TOKEN_NAMES[STAR] = "STAR";
-    TOKEN_NAMES[SLASH] = "SLASH";
-    TOKEN_NAMES[VBAR] = "VBAR";
-    TOKEN_NAMES[AMPER] = "AMPER";
-    TOKEN_NAMES[LESS] = "LESS";
-    TOKEN_NAMES[GREATER] = "GREATER";
-    TOKEN_NAMES[EQUAL] = "EQUAL";
-    TOKEN_NAMES[DOT] = "DOT";
-    TOKEN_NAMES[PERCENT] = "PERCENT";
-    TOKEN_NAMES[LBRACE] = "LBRACE";
-    TOKEN_NAMES[RBRACE] = "RBRACE";
-    TOKEN_NAMES[EQEQUAL] = "EQEQUAL";
-    TOKEN_NAMES[NOTEQUAL] = "NOTEQUAL";
-    TOKEN_NAMES[LESSEQUAL] = "LESSEQUAL";
-    TOKEN_NAMES[GREATEREQUAL] = "GREATEREQUAL";
-    TOKEN_NAMES[TILDE] = "TILDE";
-    TOKEN_NAMES[CIRCUMFLEX] = "CIRCUMFLEX";
-    TOKEN_NAMES[LEFTSHIFT] = "LEFTSHIFT";
-    TOKEN_NAMES[RIGHTSHIFT] = "RIGHTSHIFT";
-    TOKEN_NAMES[DOUBLESTAR] = "DOUBLESTAR";
-    TOKEN_NAMES[PLUSEQUAL] = "PLUSEQUAL";
-    TOKEN_NAMES[MINEQUAL] = "MINEQUAL";
-    TOKEN_NAMES[STAREQUAL] = "STAREQUAL";
-    TOKEN_NAMES[SLASHEQUAL] = "SLASHEQUAL";
-    TOKEN_NAMES[PERCENTEQUAL] = "PERCENTEQUAL";
-    TOKEN_NAMES[AMPEREQUAL] = "AMPEREQUAL";
-    TOKEN_NAMES[VBAREQUAL] = "VBAREQUAL";
-    TOKEN_NAMES[CIRCUMFLEXEQUAL] = "CIRCUMFLEXEQUAL";
-    TOKEN_NAMES[LEFTSHIFTEQUAL] = "LEFTSHIFTEQUAL";
-    TOKEN_NAMES[RIGHTSHIFTEQUAL] = "RIGHTSHIFTEQUAL";
-    TOKEN_NAMES[DOUBLESTAREQUAL] = "DOUBLESTAREQUAL";
-    TOKEN_NAMES[DOUBLESLASH] = "DOUBLESLASH";
-    TOKEN_NAMES[DOUBLESLASHEQUAL] = "DOUBLESLASHEQUAL";
-    TOKEN_NAMES[AT] = "AT";
-    TOKEN_NAMES[ATEQUAL] = "ATEQUAL";
-    TOKEN_NAMES[RARROW] = "RARROW";
-    TOKEN_NAMES[ELLIPSIS] = "ELLIPSIS";
-    TOKEN_NAMES[OP] = "OP";
-    TOKEN_NAMES[AWAIT] = "AWAIT";
-    TOKEN_NAMES[ASYNC] = "ASYNC";
-    TOKEN_NAMES[ERRORTOKEN] = "ERRORTOKEN";
-    TOKEN_NAMES[N_TOKENS] = "N_TOKENS";
-    TOKEN_NAMES[NT_OFFSET] = "NT_OFFSET";
+    tokenizer.TOKEN_NAMES[tokenizer.ENDMARKER] = "ENDMARKER";
+    tokenizer.TOKEN_NAMES[tokenizer.NAME] = "NAME";
+    tokenizer.TOKEN_NAMES[tokenizer.NUMBER] = "NUMBER";
+    tokenizer.TOKEN_NAMES[tokenizer.STRING] = "STRING";
+    tokenizer.TOKEN_NAMES[tokenizer.NEWLINE] = "NEWLINE";
+    tokenizer.TOKEN_NAMES[tokenizer.INDENT] = "INDENT";
+    tokenizer.TOKEN_NAMES[tokenizer.DEDENT] = "DEDENT";
+    tokenizer.TOKEN_NAMES[tokenizer.LPAR] = "LPAR";
+    tokenizer.TOKEN_NAMES[tokenizer.RPAR] = "RPAR";
+    tokenizer.TOKEN_NAMES[tokenizer.LSQB] = "LSQB";
+    tokenizer.TOKEN_NAMES[tokenizer.RSQB] = "RSQB";
+    tokenizer.TOKEN_NAMES[tokenizer.COLON] = "COLON";
+    tokenizer.TOKEN_NAMES[tokenizer.COMMA] = "COMMA";
+    tokenizer.TOKEN_NAMES[tokenizer.SEMI] = "SEMI";
+    tokenizer.TOKEN_NAMES[tokenizer.PLUS] = "PLUS";
+    tokenizer.TOKEN_NAMES[tokenizer.MINUS] = "MINUS";
+    tokenizer.TOKEN_NAMES[tokenizer.STAR] = "STAR";
+    tokenizer.TOKEN_NAMES[tokenizer.SLASH] = "SLASH";
+    tokenizer.TOKEN_NAMES[tokenizer.VBAR] = "VBAR";
+    tokenizer.TOKEN_NAMES[tokenizer.AMPER] = "AMPER";
+    tokenizer.TOKEN_NAMES[tokenizer.LESS] = "LESS";
+    tokenizer.TOKEN_NAMES[tokenizer.GREATER] = "GREATER";
+    tokenizer.TOKEN_NAMES[tokenizer.EQUAL] = "EQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.DOT] = "DOT";
+    tokenizer.TOKEN_NAMES[tokenizer.PERCENT] = "PERCENT";
+    tokenizer.TOKEN_NAMES[tokenizer.LBRACE] = "LBRACE";
+    tokenizer.TOKEN_NAMES[tokenizer.RBRACE] = "RBRACE";
+    tokenizer.TOKEN_NAMES[tokenizer.EQEQUAL] = "EQEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.NOTEQUAL] = "NOTEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.LESSEQUAL] = "LESSEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.GREATEREQUAL] = "GREATEREQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.TILDE] = "TILDE";
+    tokenizer.TOKEN_NAMES[tokenizer.CIRCUMFLEX] = "CIRCUMFLEX";
+    tokenizer.TOKEN_NAMES[tokenizer.LEFTSHIFT] = "LEFTSHIFT";
+    tokenizer.TOKEN_NAMES[tokenizer.RIGHTSHIFT] = "RIGHTSHIFT";
+    tokenizer.TOKEN_NAMES[tokenizer.DOUBLESTAR] = "DOUBLESTAR";
+    tokenizer.TOKEN_NAMES[tokenizer.PLUSEQUAL] = "PLUSEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.MINEQUAL] = "MINEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.STAREQUAL] = "STAREQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.SLASHEQUAL] = "SLASHEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.PERCENTEQUAL] = "PERCENTEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.AMPEREQUAL] = "AMPEREQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.VBAREQUAL] = "VBAREQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.CIRCUMFLEXEQUAL] = "CIRCUMFLEXEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.LEFTSHIFTEQUAL] = "LEFTSHIFTEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.RIGHTSHIFTEQUAL] = "RIGHTSHIFTEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.DOUBLESTAREQUAL] = "DOUBLESTAREQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.DOUBLESLASH] = "DOUBLESLASH";
+    tokenizer.TOKEN_NAMES[tokenizer.DOUBLESLASHEQUAL] = "DOUBLESLASHEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.AT] = "AT";
+    tokenizer.TOKEN_NAMES[tokenizer.ATEQUAL] = "ATEQUAL";
+    tokenizer.TOKEN_NAMES[tokenizer.RARROW] = "RARROW";
+    tokenizer.TOKEN_NAMES[tokenizer.ELLIPSIS] = "ELLIPSIS";
+    tokenizer.TOKEN_NAMES[tokenizer.OP] = "OP";
+    tokenizer.TOKEN_NAMES[tokenizer.AWAIT] = "AWAIT";
+    tokenizer.TOKEN_NAMES[tokenizer.ASYNC] = "ASYNC";
+    tokenizer.TOKEN_NAMES[tokenizer.ERRORTOKEN] = "ERRORTOKEN";
+    tokenizer.TOKEN_NAMES[tokenizer.N_TOKENS] = "N_TOKENS";
+    tokenizer.TOKEN_NAMES[tokenizer.NT_OFFSET] = "NT_OFFSET";
 
     var is_potential_identifier_start = function(c) {
         return (c >= 'a' && c <= 'z')
@@ -280,7 +282,7 @@ module.exports = function() {
                 }
                 break;
         }
-        return OP;
+        return tokenizer.OP;
     };
 
     var PyToken_ThreeChars = function(c1, c2, c3) {
@@ -355,7 +357,7 @@ module.exports = function() {
         this.inp = str.length;          /* End of data in buffer */
         this.end = str.length;          /* End of input buffer if buf != null */
         this.start = null;        /* Start of current token if not null */
-        this.done = E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
+        this.done = tokenizer.E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
         /* NB If done != E_OK, cur must be == inp!!! */
         this.tabsize = tokenizer.TABSIZE;        /* Tab spacing */
         this.indent = 0;         /* Current indentation index */
@@ -389,7 +391,7 @@ module.exports = function() {
                                  NEWLINE token after itokenizer. */
     };
 
-    Tokenizer.prototype.__class__ = new batavia.types.Type('Tokenizer');
+    Tokenizer.prototype.__class__ = new types.Type('Tokenizer');
     tokenizer['Tokenizer'] = Tokenizer;
 
 
@@ -589,7 +591,7 @@ module.exports = function() {
             }
             p_start = tok.start;
             p_end = tok.cur;
-            return [DOT, p_start, p_end];
+            return [tokenizer.DOT, p_start, p_end];
         }
 
         // Number
@@ -689,10 +691,10 @@ module.exports = function() {
         // Check for two-character token
         var c2 = tok.tok_nextc();
         var token = PyToken_TwoChars(c, c2);
-        if (token != OP) {
+        if (token != tokenizer.OP) {
             var c3 = tok.tok_nextc();
             var token3 = PyToken_ThreeChars(c, c2, c3);
-            if (token3 != OP) {
+            if (token3 != tokenizer.OP) {
                 token = token3;
             } else {
                 tok.tok_backup(c3);
@@ -926,7 +928,7 @@ module.exports = function() {
         if (tok.cur != tok.inp) {
             return tok.buf[tok.cur++]; /* Fast path */
         }
-        return EOF;
+        return tokenizer.EOF;
     };
 
     /* Back-up one character */

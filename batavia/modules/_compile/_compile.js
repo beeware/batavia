@@ -3,6 +3,7 @@
  */
 module.exports = function() {
     var tokenizer = require('./tokenizer');
+    var Int = require('../../types/Int');
 
     var _compile = {
         file_input: function() {
@@ -39,9 +40,9 @@ module.exports = function() {
         parsetok: function(tok, g, start, err_ret, flags) {
             throw new batavia.builtins.NotImplementedError("_compile.parsetok is not implemented yet");
         },
-        Py_single_input: new batavia.types.Int(256),
-        Py_file_input: new batavia.types.Int(257),
-        Py_eval_input: new batavia.types.Int(258)
+        Py_single_input: new Int(256),
+        Py_file_input: new Int(257),
+        Py_eval_input: new Int(258)
     }
 
     _compile['EOF'] = tokenizer.EOF;
@@ -127,4 +128,4 @@ module.exports = function() {
     _compile['Tokenizer'] = tokenizer.Tokenizer;
 
     return _compile;
-}
+}();
