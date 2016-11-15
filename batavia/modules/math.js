@@ -676,7 +676,7 @@ module.exports = function() {
                 if (x.val.isZero() || x.val.isNeg()) {
                     throw new batavia.builtins.ValueError("math domain error");
                 }
-                if (x.__ge__(batavia.types.Int.MAX_FLOAT)) {
+                if (x.__ge__(batavia.types.Int.prototype.MAX_FLOAT)) {
                     return batavia.modules.math._log2_int(x).__mul__(new batavia.types.Float(0.6931471805599453));
                 }
             }
@@ -689,7 +689,7 @@ module.exports = function() {
                 if (x.val.isZero() || x.val.isNeg()) {
                     throw new batavia.builtins.ValueError("math domain error");
                 }
-                if (x.__ge__(batavia.types.Int.MAX_FLOAT)) {
+                if (x.__ge__(batavia.types.Int.prototype.MAX_FLOAT)) {
                     return batavia.modules.math._log2_int(x) * 0.30102999566398114;
                 }
             }
