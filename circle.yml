@@ -16,5 +16,5 @@ test:
     - sudo service postgresql stop || true
     - python compile_stdlib.py
   override:
-     - "python setup.py test -q":
-         timeout: 1200
+     - "python setup.py test":
+         timeout: 60
