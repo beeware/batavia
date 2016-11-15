@@ -1,28 +1,27 @@
-var pytypes = require('./Type');
-var BigNumber = require('bignumber.js');
-
 /*************************************************************************
  * A Python int type
  *************************************************************************/
+var types = require('./Type');
+var BigNumber = require('bignumber.js');
+
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     function Int(val) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
         this.val = new BigNumber(val);
     }
 
-    Int.prototype = Object.create(pytypes.Object.prototype);
-    Int.prototype.__class__ = new pytypes.Type('int');
+    Int.prototype = Object.create(types.Object.prototype);
+    Int.prototype.__class__ = new types.Type('int');
 
-    var MIN_FLOAT = new Int("-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791");
     var REASONABLE_SHIFT = new Int("8192");
     var MAX_SHIFT = new Int("9223372036854775807");
     var MAX_INT = new Int("9223372036854775807");
     var MIN_INT = new Int("-9223372036854775808");
+    var MAX_FLOAT = new Int("179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791");
+    var MIN_FLOAT = new Int("-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791");
 
     Int.prototype.MAX_INT = MAX_INT
     Int.prototype.MIN_INT = MIN_INT
@@ -32,10 +31,10 @@ module.exports = function() {
      **************************************************/
 
     Int.prototype.int32 = function() {
-      if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-          throw new builtins.IndexError("cannot fit 'int' into an index-sized integer");
-      }
-      return parseInt(this.valueOf());
+        if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+            throw new batavia.builtins.IndexError("cannot fit 'int' into an index-sized integer");
+        }
+        return parseInt(this.valueOf());
     }
 
     Int.prototype.valueOf = function() {
@@ -63,14 +62,14 @@ module.exports = function() {
     };
 
     var can_float = function(num) {
-        return !(num.gt(utils.MAX_FLOAT.val) || num.lt(MIN_FLOAT.val));
+        return !(num.gt(MAX_FLOAT.val) || num.lt(MIN_FLOAT.val));
     };
 
     Int.prototype.__float__ = function() {
         if (!can_float(this.val)) {
-            throw new builtins.OverflowError("int too large to convert to float");
+            throw new batavia.builtins.OverflowError("int too large to convert to float");
         }
-        return new types.Float(parseFloat(this.val));
+        return new batavia.types.Float(parseFloat(this.val));
     };
 
     Int.prototype.__int__ = function() {
@@ -82,41 +81,41 @@ module.exports = function() {
      **************************************************/
 
     Int.prototype.__lt__ = function(other) {
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.Bool)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.Bool)) {
                 return this.val.lt(other ? 1 : 0);
-            } else if (utils.isinstance(other, types.Int)) {
+            } else if (utils.isinstance(other, batavia.types.Int)) {
                 return this.val.lt(other.val);
-            } else if (utils.isinstance(other, types.Float)) {
+            } else if (utils.isinstance(other, batavia.types.Float)) {
                 return this.val.lt(other.valueOf());
             } else {
-                throw new builtins.TypeError("unorderable types: int() < " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: int() < " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: int() < NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: int() < NoneType()");
         }
     };
 
     Int.prototype.__le__ = function(other) {
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.Bool)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.Bool)) {
                 return this.val.lte(other ? 1 : 0);
-            } else if (utils.isinstance(other, types.Int)) {
+            } else if (utils.isinstance(other, batavia.types.Int)) {
                 return this.val.lte(other.val);
-            } else if (utils.isinstance(other, types.Float)) {
+            } else if (utils.isinstance(other, batavia.types.Float)) {
                 return this.val.lte(other.valueOf());
             } else {
-                throw new builtins.TypeError("unorderable types: int() <= " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: int() <= " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: int() <= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: int() <= NoneType()");
         }
     };
 
     Int.prototype.__eq__ = function(other) {
-        if (utils.isinstance(other, [types.Float, types.Int])) {
+        if (utils.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
           return this.val.eq(other.val);
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
           return this.val.eq(other ? 1 : 0);
         } else {
           return false;
@@ -128,35 +127,35 @@ module.exports = function() {
     };
 
     Int.prototype.__gt__ = function(other) {
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.Bool)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.Bool)) {
                 return this.val.gt(other ? 1 : 0);
-            } else if (utils.isinstance(other, types.Int)) {
+            } else if (utils.isinstance(other, batavia.types.Int)) {
                 return this.val.gt(other.val);
-            } else if (utils.isinstance(other, types.Float)) {
+            } else if (utils.isinstance(other, batavia.types.Float)) {
                 return this.val.gt(other.valueOf());
             } else {
-                throw new builtins.TypeError("unorderable types: int() > " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: int() > " + utils.type_name(other) + "()");
             }
 
         } else {
-            throw new builtins.TypeError("unorderable types: int() > NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: int() > NoneType()");
         }
     };
 
     Int.prototype.__ge__ = function(other) {
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.Bool)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.Bool)) {
                 return this.val.gte(other ? 1 : 0);
-            } else if (utils.isinstance(other, types.Int)) {
+            } else if (utils.isinstance(other, batavia.types.Int)) {
                 return this.val.gte(other.val);
-            } else if (utils.isinstance(other, types.Float)) {
+            } else if (utils.isinstance(other, batavia.types.Float)) {
                 return this.val.gte(other.valueOf());
             } else {
-                throw new builtins.TypeError("unorderable types: int() >= " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: int() >= " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: int() >= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: int() >= NoneType()");
         }
     };
 
@@ -173,19 +172,19 @@ module.exports = function() {
     };
 
     Int.prototype.__neg__ = function() {
-        return new types.Int(this.val.neg());
+        return new batavia.types.Int(this.val.neg());
     };
 
     Int.prototype.__not__ = function() {
-        return new types.Bool(this.val.isZero());
+        return new batavia.types.Bool(this.val.isZero());
     };
 
     Int.prototype.__invert__ = function() {
-        return new types.Int(this.val.neg().sub(1));
+        return new batavia.types.Int(this.val.neg().sub(1));
     };
 
     Int.prototype.__abs__ = function() {
-        return new types.Int(this.val.abs());
+        return new batavia.types.Int(this.val.abs());
     };
 
     /**************************************************
@@ -193,18 +192,18 @@ module.exports = function() {
      **************************************************/
 
     Int.prototype.__pow__ = function(other) {
-        if (utils.isinstance(other, types.Bool)) {
+        if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
                 return this;
             } else {
-                return new types.Int(1);
+                return new batavia.types.Int(1);
             }
-        } else if (utils.isinstance(other, types.Int)) {
+        } else if (utils.isinstance(other, batavia.types.Int)) {
             if (other.val.isNegative()) {
                 return this.__float__().__pow__(other);
             } else {
                 var y = other.val.toString(2).split('');
-                var result = new BigNumber(1);
+                var result = new batavia.vendored.BigNumber(1);
                 var base = this.val.add(0);
                 while (y.length > 0) {
                   var bit = y.pop();
@@ -213,12 +212,12 @@ module.exports = function() {
                   }
                   base = base.mul(base);
                 }
-                return new types.Int(result);
+                return new batavia.types.Int(result);
             }
-        } else if (utils.isinstance(other, types.Float)) {
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             return this.__float__().__pow__(other);
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for ** or pow(): 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
@@ -227,107 +226,107 @@ module.exports = function() {
     };
 
     Int.prototype.__floordiv__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (!other.val.isZero()) {
                 var quo = this.val.div(other.val);
                 var quo_floor = quo.floor();
                 var rem = this.val.mod(other.val);
 
                 if (rem.isZero()) {
-                  return new types.Int(quo_floor);
+                  return new batavia.types.Int(quo_floor);
                 }
                 // we have a fraction leftover
                 // check if it is too small for bignumber.js to detect
                 if (quo.isInt() && quo.isNegative()) {
-                  return new types.Int(quo.sub(1));
+                  return new batavia.types.Int(quo.sub(1));
                 }
-                return new types.Int(quo_floor);
+                return new batavia.types.Int(quo_floor);
             } else {
-                throw new builtins.ZeroDivisionError("integer division or modulo by zero");
+                throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
-        } else if (utils.isinstance(other, types.Float)) {
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             var f = this.__float__();
             if (other.valueOf()) {
                 return f.__floordiv__(other);
             } else {
-                throw new builtins.ZeroDivisionError("float divmod()");
+                throw new batavia.builtins.ZeroDivisionError("float divmod()");
             }
 
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return new types.Int(this.val.floor());
+                return new batavia.types.Int(this.val.floor());
             } else {
-                throw new builtins.ZeroDivisionError("integer division or modulo by zero");
+                throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
-        } else if (utils.isinstance(other, types.Complex)) {
-            throw new builtins.TypeError("can't take floor of complex number.");
+        } else if (utils.isinstance(other, batavia.types.Complex)) {
+            throw new batavia.builtins.TypeError("can't take floor of complex number.");
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for //: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__truediv__ = function(other) {
         // if it is dividing by another int, we can allow both to be bigger than floats
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (other.val.isZero()) {
-                throw new builtins.ZeroDivisionError("division by zero");
+                throw new batavia.builtins.ZeroDivisionError("division by zero");
             }
             var result = this.val.div(other.val);
             if (!can_float(result)) {
-                throw new builtins.OverflowError("integer division result too large for a float");
+                throw new batavia.builtins.OverflowError("integer division result too large for a float");
             }
             // check for negative 0
             if (other.val.lt(0) && result.isZero()) {
-                return new types.Float(parseFloat("-0.0"));
+                return new batavia.types.Float(parseFloat("-0.0"));
             }
-            return new types.Int(result).__float__();
-        } else if (utils.isinstance(other, types.Float)) {
+            return new batavia.types.Int(result).__float__();
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             return this.__float__().__div__(other);
-        } else if (utils.isinstance(other, types.Bool)) {
-            return this.__truediv__(new types.Int(other.valueOf() ? 1 : 0));
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
+            return this.__truediv__(new batavia.types.Int(other.valueOf() ? 1 : 0));
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for /: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__mul__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
-            return new types.Int(this.val.mul(other.val));
-        } else if (utils.isinstance(other, types.Float)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
+            return new batavia.types.Int(this.val.mul(other.val));
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             return this.__float__().__mul__(other.val);
-        } else if (utils.isinstance(other, types.Bool)) {
-            return new types.Int(this.val.mul(other.valueOf() ? 1 : 0));
-        } else if (utils.isinstance(other, types.List)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
+            return new batavia.types.Int(this.val.mul(other.valueOf() ? 1 : 0));
+        } else if (utils.isinstance(other, batavia.types.List)) {
             if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-                throw new builtins.OverflowError("cannot fit 'int' into an index-sized integer");
+                throw new batavia.builtins.OverflowError("cannot fit 'int' into an index-sized integer");
             }
             if ((other.length == 0) || (this.valueOf() < 0)) {
-                return new types.List();
+                return new batavia.types.List();
             }
             if (this.valueOf() > 4294967295) {
-                throw new builtins.MemoryError("");
+                throw new batavia.builtins.MemoryError("");
             }
-            result = new types.List();
+            result = new batavia.types.List();
             for (var i = 0; i < this.valueOf(); i++) {
                 result.extend(other);
             }
             return result;
-        } else if (utils.isinstance(other, types.Str)) {
+        } else if (utils.isinstance(other, batavia.types.Str)) {
             if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-                throw new builtins.OverflowError("cannot fit 'int' into an index-sized integer");
+                throw new batavia.builtins.OverflowError("cannot fit 'int' into an index-sized integer");
             }
             if (this.val.isNegative()) {
                 return '';
             }
             var size = this.val.mul(other.length);
             if (size.gt(MAX_INT.val)) {
-                throw new builtins.OverflowError("repeated string is too long");
+                throw new batavia.builtins.OverflowError("repeated string is too long");
             }
             if (other.length == 0) {
                 return '';
             }
             if ((this.valueOf() > 4294967295) || (this.valueOf() < -4294967296)) {
-                throw new builtins.MemoryError("");
+                throw new batavia.builtins.MemoryError("");
             }
 
             result = '';
@@ -335,91 +334,91 @@ module.exports = function() {
                 result += other.valueOf();
             }
             return result;
-        } else if (utils.isinstance(other, types.Tuple)) {
+        } else if (utils.isinstance(other, batavia.types.Tuple)) {
             if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-                throw new builtins.OverflowError("cannot fit 'int' into an index-sized integer");
+                throw new batavia.builtins.OverflowError("cannot fit 'int' into an index-sized integer");
             }
             if ((other.length == 0) || (this.valueOf() < 0)) {
-                return new types.Tuple();
+                return new batavia.types.Tuple();
             }
             if (this.valueOf() > 4294967295) {
-                throw new builtins.MemoryError("");
+                throw new batavia.builtins.MemoryError("");
             }
-            result = new types.Tuple();
+            result = new batavia.types.Tuple();
             for (var i = 0; i < this.valueOf(); i++) {
                 result.__add__(other);
             }
             return result;
-        } else if (utils.isinstance(other, types.Complex)) {
+        } else if (utils.isinstance(other, batavia.types.Complex)) {
             if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-                throw new builtins.OverflowError("int too large to convert to float");
+                throw new batavia.builtins.OverflowError("int too large to convert to float");
             }
             else {
-                return new types.Complex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber());
+                return new batavia.types.Complex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber());
             }
 
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for *: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__mod__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (!other.val.isZero()) {
-                return new types.Int(this.val.mod(other.val).add(other.val).mod(other.val));
+                return new batavia.types.Int(this.val.mod(other.val).add(other.val).mod(other.val));
             } else {
-                throw new builtins.ZeroDivisionError("integer division or modulo by zero");
+                throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
-        } else if (utils.isinstance(other, types.Float)) {
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             var f = this.__float__();
             if (other.valueOf()) {
                 return f.__mod__(other);
             } else {
-                throw new builtins.ZeroDivisionError("float modulo");
+                throw new batavia.builtins.ZeroDivisionError("float modulo");
             }
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return new types.Int(0);
+                return new batavia.types.Int(0);
             } else {
-                throw new builtins.ZeroDivisionError("integer division or modulo by zero");
+                throw new batavia.builtins.ZeroDivisionError("integer division or modulo by zero");
             }
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for %: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__add__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
-            return new types.Int(this.val.add(other.val));
-        } else if (utils.isinstance(other, types.Float)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
+            return new batavia.types.Int(this.val.add(other.val));
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             return this.__float__().__add__(other);
-        } else if (utils.isinstance(other, types.Bool)) {
-            return new types.Int(this.val.add(other.valueOf() ? 1 : 0));
-        } else if (utils.isinstance(other, types.Complex)) {
-            if (this.__float__() > utils.MAX_FLOAT || this.__float__() < utils.MIN_FLOAT) {
-                throw new builtins.OverflowError("int too large to convert to float");
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
+            return new batavia.types.Int(this.val.add(other.valueOf() ? 1 : 0));
+        } else if (utils.isinstance(other, batavia.types.Complex)) {
+            if (this.__float__() > MAX_FLOAT || this.__float__() < utils.MIN_FLOAT) {
+                throw new batavia.builtins.OverflowError("int too large to convert to float");
             } else {
-                return new types.Complex(this.val.add(other.real).toNumber(), other.imag);
+                return new batavia.types.Complex(this.val.add(other.real).toNumber(), other.imag);
             }
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for +: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__sub__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
-            return new types.Int(this.val.sub(other.val));
-        } else if (utils.isinstance(other, types.Float)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
+            return new batavia.types.Int(this.val.sub(other.val));
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             return this.__float__().__sub__(other);
-        } else if (utils.isinstance(other, types.Bool)) {
-            return new types.Int(this.val.sub(other.valueOf() ? 1 : 0));
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
+            return new batavia.types.Int(this.val.sub(other.valueOf() ? 1 : 0));
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for -: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__getitem__ = function(index) {
-        throw new builtins.TypeError("'int' object is not subscriptable")
+        throw new batavia.builtins.TypeError("'int' object is not subscriptable")
     };
 
     /**************************************************
@@ -438,7 +437,7 @@ module.exports = function() {
 
     // convert a binary array back into an int
     var fromArray = function(arr) {
-        return new types.Int(new BigNumber(arr.join('') || 0, 2));
+        return new batavia.types.Int(new batavia.vendored.BigNumber(arr.join('') || 0, 2));
     };
     // return j with the sign inverted if i is negative.
     var fixSign = function(i, j) {
@@ -491,70 +490,70 @@ module.exports = function() {
     };
 
     Int.prototype.__lshift__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             // Anything beyond ~8192 bits is too inefficient to convert to a binary array
             // due to Bignumber.js.
             if (other.val.gt(REASONABLE_SHIFT.val)) {
-                throw new builtins.OverflowError("batavia: shift too large");
+                throw new batavia.builtins.OverflowError("batavia: shift too large");
             }
             if (other.val.gt(MAX_SHIFT.val)) {
-                throw new builtins.OverflowError("Python int too large to convert to C ssize_t");
+                throw new batavia.builtins.OverflowError("Python int too large to convert to C ssize_t");
             }
             if (other.valueOf() < 0) {
-                throw new builtins.ValueError("negative shift count");
+                throw new batavia.builtins.ValueError("negative shift count");
             }
             var arr = toArray(this);
             for (var i = 0; i < other.valueOf(); i++) {
                 arr.push(0);
             }
-            return fixSign(this, new types.Int(fromArray(arr)));
-        } else if (utils.isinstance(other, types.Bool)) {
+            return fixSign(this, new batavia.types.Int(fromArray(arr)));
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-              return this.__lshift__(new types.Int(1));
+              return this.__lshift__(new batavia.types.Int(1));
             } else {
               return this;
             }
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for <<: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__rshift__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (this.val.isNegative()) {
                 return this.__invert__().__rshift__(other).__invert__();
             }
             // Anything beyond ~8192 bits is too inefficient to convert to a binary array
             // due to Bignumber.js.
             if (other.val.gt(MAX_INT.val) || other.val.lt(MIN_INT.val)) {
-                throw new builtins.OverflowError("Python int too large to convert to C ssize_t");
+                throw new batavia.builtins.OverflowError("Python int too large to convert to C ssize_t");
             }
             if (other.val.gt(REASONABLE_SHIFT.val)) {
-                throw new builtins.ValueError("batavia: shift too large");
+                throw new batavia.builtins.ValueError("batavia: shift too large");
             }
             if (other.val.isNegative()) {
-                throw new builtins.ValueError("negative shift count");
+                throw new batavia.builtins.ValueError("negative shift count");
             }
             if (this.val.isZero()) {
                 return this;
             }
             var arr = toArray(this);
             if (other.val.gt(arr.length)) {
-                return new types.Int(0);
+                return new batavia.types.Int(0);
             }
             return fixSign(this, fromArray(arr.slice(0, arr.length - other.valueOf())));
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-              return this.__rshift__(new types.Int(1));
+              return this.__rshift__(new batavia.types.Int(1));
             }
             return this;
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for >>: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__and__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             var a = twos_complement(this);
             var b = twos_complement(other);
             extend(a, b, this.val.isNeg());
@@ -570,21 +569,21 @@ module.exports = function() {
             arr.reverse();
             if (this.val.isNeg() && other.val.isNeg()) {
                 arr = invert(arr);
-                return fromArray(arr).__add__(new types.Int(1)).__neg__();
+                return fromArray(arr).__add__(new batavia.types.Int(1)).__neg__();
             }
             return fromArray(arr);
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return this.__and__(new types.Int(1));
+                return this.__and__(new batavia.types.Int(1));
             }
-            return new types.Int(0);
+            return new batavia.types.Int(0);
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for &: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__xor__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (this.val.isNeg()) {
                return this.__invert__().__xor__(other).__invert__();
             }
@@ -605,23 +604,23 @@ module.exports = function() {
             }
             arr.reverse();
             return fromArray(arr);
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return this.__xor__(new types.Int(1));
+                return this.__xor__(new batavia.types.Int(1));
             }
             return this;
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for ^: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
     Int.prototype.__or__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
           if (this.val.eq(other.val)) {
               return this;
           }
           if (this.val.eq(-1) || other.val.eq(-1)) {
-              return new types.Int(-1);
+              return new batavia.types.Int(-1);
           }
           if (this.val.isZero()) {
               return other;
@@ -641,16 +640,16 @@ module.exports = function() {
           arr.reverse();
           if (this.val.isNeg() || other.val.isNeg()) {
               arr = invert(arr);
-              return fromArray(arr).__add__(new types.Int(1)).__neg__();
+              return fromArray(arr).__add__(new batavia.types.Int(1)).__neg__();
           }
           return fromArray(arr);
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
-                return this.__or__(new types.Int(1));
+                return this.__or__(new batavia.types.Int(1));
             }
             return this;
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for |: 'int' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'int' and '" + utils.type_name(other) + "'");
         }
     };
 
@@ -663,8 +662,8 @@ module.exports = function() {
         try {
             return this[f](other);
         } catch (error) {
-            if (error instanceof builtins.TypeError) {
-                throw new builtins.TypeError(
+            if (error instanceof batavia.builtins.TypeError) {
+                throw new batavia.builtins.TypeError(
                     "unsupported operand type(s) for " + operand_str + ": 'int' and '" + utils.type_name(other) + "'");
             } else {
                 throw error;
@@ -726,7 +725,7 @@ module.exports = function() {
      **************************************************/
 
     Int.prototype.copy = function() {
-        return new types.Int(this.valueOf());
+        return new batavia.types.Int(this.valueOf());
     };
 
     Int.prototype.__trunc__ = function() {

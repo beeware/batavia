@@ -1,6 +1,6 @@
 module.exports = {
-    // 'Type': require('./Type').Type,
-    // 'Object': require('./Type').Object,
+    'Type': require('./Type').Type,
+    'Object': require('./Type').Object,
 
     'Bool': require('./Bool'),
     'Bytearray': require('./Bytearray'),

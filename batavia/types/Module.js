@@ -1,8 +1,8 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 module.exports = function() {
     function Module(name, locals) {
-        pytypes.Object.call(init);
+        types.Object.call(this);
 
         this.__name__ = name;
         for (var key in locals) {
@@ -12,8 +12,8 @@ module.exports = function() {
         }
     }
 
-    Module.prototype = Object.create(pytypes.Object.prototype);
-    Module.prototype.__class__ = new pytypes.Type('module');
+    Module.prototype = Object.create(types.Object.prototype);
+    Module.prototype.__class__ = new types.Type('module');
 
     return Module;
 }();

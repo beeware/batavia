@@ -30,8 +30,6 @@
 var Buffer = require('buffer').Buffer;
 var BigNumber = require('bignumber.js');
 
-var types = require('../types/_index');
-
 
 module.exports = {
 
@@ -168,7 +166,7 @@ module.exports = {
 
         /* Sign-extension, in case short greater than 16 bits */
         x |= -(x & 0x8000);
-        return new types.Int(x);
+        return new batavia.types.Int(x);
     },
 
     read_int32: function(vm, p) {
@@ -184,13 +182,13 @@ module.exports = {
     },
 
     r_int: function(vm, p) {
-        return new types.Int(this.read_int32(vm, p));
+        return new batavia.types.Int(this.read_int32(vm, p));
     },
 
     r_long: function(vm, p) {
         var n = batavia.modules.marshal.read_int32(vm, p);
         if (n === 0) {
-          return new types.Int(0);
+          return new batavia.types.Int(0);
         }
         var negative = false;
         if (n < 0) {
@@ -207,7 +205,7 @@ module.exports = {
         if (negative) {
           num = num.neg();
         }
-        return new types.Int(num);
+        return new batavia.types.Int(num);
     },
 
     r_float: function(vm, p)
@@ -217,7 +215,6 @@ module.exports = {
         var sign;
         var e;
         var fhi, flo;
-        var incr = 1;
         var retval;
 
         /* First byte */
@@ -265,7 +262,7 @@ module.exports = {
             retval = -retval;
         }
 
-        return new types.Float(retval);
+        return new batavia.types.Float(retval);
     },
 
     /* allocate the reflist index for a new object. Return -1 on failure */
@@ -295,7 +292,6 @@ module.exports = {
      */
     r_ref_insert: function(vm, o, idx, flag, p) {
         if (o !== null && flag) { /* currently only FLAG_REF is defined */
-            var tmp = p.refs[idx];
             p.refs[idx] = o;
         }
         return o;
@@ -321,9 +317,8 @@ module.exports = {
         var retval, v;
         var idx = 0;
         var i, n;
-        var ptr;
         var type, code = batavia.modules.marshal.r_byte(vm, p);
-        var flag, is_interned = 0;
+        var flag = 0;
 
         if (code === batavia.core.PYCFile.EOF) {
             vm.PyErr_SetString(batavia.builtins.EOFError,
@@ -361,7 +356,7 @@ module.exports = {
             break;
 
         case batavia.modules.marshal.TYPE_ELLIPSIS:
-            retval = types.Ellipsis;
+            retval = new batavia.types.Ellipsis();
             // console.log.info('TYPE_ELLIPSIS');
             break;
 
@@ -397,7 +392,7 @@ module.exports = {
         case batavia.modules.marshal.TYPE_FLOAT:
             n = batavia.modules.marshal.r_byte(vm, p);
             buf = batavia.modules.marshal.r_string(vm, p, n);
-            retval = new types.Float(parseFloat(buf));
+            retval = new batavia.types.Float(parseFloat(buf));
             // console.log.info('TYPE_FLOAT ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -410,7 +405,6 @@ module.exports = {
             var sign;
             var e;
             var fhi, flo;
-            var incr = 1;
 
             /* First byte */
             sign = (buf.charCodeAt(7) >> 7) & 1;
@@ -459,7 +453,7 @@ module.exports = {
 
             // console.log.info('TYPE_BINARY_FLOAT ' + retval);
 
-            retval = new types.Float(retval);
+            retval = new batavia.types.Float(retval);
 
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -474,7 +468,7 @@ module.exports = {
                 break;
             }
             buf = batavia.modules.marshal.r_string(vm, p, n);
-            real = new types.Float(parseFloat(buf));
+            real = new batavia.types.Float(parseFloat(buf));
             n = batavia.modules.marshal.r_byte(vm, p);
             if (n == batavia.core.PYCFile.EOF) {
                 vm.PyErr_SetString(batavia.builtins.EOFError,
@@ -482,8 +476,8 @@ module.exports = {
                 break;
             }
             buf = batavia.modules.marshal.r_string(vm, p, n);
-            imag = new types.Float(parseFloat(buf));
-            retval = new types.Complex(real, imag);
+            imag = new batavia.types.Float(parseFloat(buf));
+            retval = new batavia.types.Complex(real, imag);
             // console.log.info('TYPE_COMPLEX ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -493,7 +487,7 @@ module.exports = {
         case batavia.modules.marshal.TYPE_BINARY_COMPLEX:
             real = batavia.modules.marshal.r_float(vm, p);
             imag = batavia.modules.marshal.r_float(vm, p);
-            retval = new types.Complex(real, imag);
+            retval = new batavia.types.Complex(real, imag);
             // console.log.info('TYPE_BINARY_COMPLEX ' + retval);
             if (flag) {
                 batavia.modules.marshal.r_ref(vm, retval, flag, p);
@@ -513,7 +507,7 @@ module.exports = {
 //            retval = batavia.modules.marshal.r_string(vm, n, p);
             var contents = batavia.modules.marshal.r_string(vm, n, p);
             var split = contents.split('').map(function (b) { return b.charCodeAt(); });
-            retval = new types.Bytes(
+            retval = new batavia.types.Bytes(
                 new Buffer(split)
             );
 
@@ -579,7 +573,7 @@ module.exports = {
             if (vm.PyErr_Occurred()) {
                 break;
             }
-            retval = new types.Tuple(new Array(n));
+            retval = new batavia.types.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -600,7 +594,7 @@ module.exports = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (tuple size out of range)");
                 break;
             }
-            retval = new types.Tuple(new Array(n));
+            retval = new batavia.types.Tuple(new Array(n));
 
             for (i = 0; i < n; i++) {
                 retval[i] = batavia.modules.marshal.r_object(vm, p);
@@ -621,7 +615,7 @@ module.exports = {
                 vm.PyErr_SetString(batavia.builtins.ValueError, "bad marshal data (list size out of range)");
                 break;
             }
-            retval = new types.List(new Array(n));
+            retval = new batavia.types.List(new Array(n));
             for (i = 0; i < n; i++) {
                 retval[n] = batavia.modules.marshal.r_object(vm, p);
             }
@@ -633,7 +627,7 @@ module.exports = {
 
         case batavia.modules.marshal.TYPE_DICT:
             // console.log.info('TYPE_DICT ' + n);
-            retval = types.Dict();
+            retval = new batavia.types.Dict();
             for (;;) {
                 var key, val;
                 key = r_object(p);
@@ -666,12 +660,12 @@ module.exports = {
                 break;
             }
             if (type == batavia.modules.marshal.TYPE_SET) {
-                retval = types.Set(null);
+                retval = new batavia.types.Set(null);
                 if (flag) {
                    batavia.modules.marshal.r_ref(vm, retval, flag, p);
                 }
             } else {
-                retval = types.FrozenSet(null);
+                retval = new batavia.types.FrozenSet(null);
                 /* must use delayed registration of frozensets because they must
                  * be init with a refcount of 1
                  */
@@ -733,7 +727,7 @@ module.exports = {
                 p.current_filename = filename;
             }
 
-            v = new types.Code({
+            v = new batavia.types.Code({
                 argcount: argcount,
                 kwonlyargcount: kwonlyargcount,
                 nlocals: nlocals,
@@ -808,7 +802,7 @@ module.exports = {
     load_pyc: function(vm, payload) {
         if (payload === null || payload.length === 0) {
             throw new batavia.builtins.BataviaError('Empty PYC payload');
-        } else if (payload.startsWith('ERROR:')) {
+        } else if (payload.startswith('ERROR:')) {
             throw new batavia.builtins.BataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'));
         }
         return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(atob(payload)));

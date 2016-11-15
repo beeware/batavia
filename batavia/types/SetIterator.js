@@ -1,27 +1,23 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /**************************************************
  * Set Iterator
  **************************************************/
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
-    var utils = require('../utils');
-
     SetIterator = function (data) {
-        Object.call(this);
+        types.Object.call(this);
         this.index = 0;
         this.data = data;
         this.keys = data.data.keys();
     };
 
-    SetIterator.prototype = Object.create(Object.prototype);
+    SetIterator.prototype = Object.create(types.Object.prototype);
 
     SetIterator.prototype.__next__ = function() {
         var key = this.keys[this.index];
         if (key === undefined) {
-            throw new builtins.StopIteration();
+            throw new batavia.builtins.StopIteration();
         }
         this.index++;
         return key;

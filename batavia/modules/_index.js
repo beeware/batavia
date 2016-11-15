@@ -4,6 +4,7 @@
  */
 
 module.exports = {
+    '_compile': require('./_compile/_compile'),
     '_operator': require('./_operator'),
     '_weakref': require('./_weakref'),
     'base64': require('./base64'),

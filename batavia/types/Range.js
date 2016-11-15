@@ -1,20 +1,16 @@
 /*************************************************************************
  * An implementation of range
  *************************************************************************/
-var pytypes = require('./Type');
+var types = require('./Type');
 
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
-    var utils = require('../utils');
-
     // BUG: Range supports longs.
     function Range(start, stop, step) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         this.start = start.int32();
-        this.step = new types.Int(step || 1).int32();
+        this.step = new batavia.types.Int(step || 1).int32();
 
         if (stop === undefined) {
             this.start = 0;
@@ -24,8 +20,8 @@ module.exports = function() {
         }
     }
 
-    Range.prototype = Object.create(pytypes.Object.prototype);
-    Range.prototype.__class__ = new pytypes.Type('range');
+    Range.prototype = Object.create(types.Object.prototype);
+    Range.prototype.__class__ = new types.Type('range');
 
     /**************************************************
      * Javascript compatibility methods
@@ -73,9 +69,9 @@ module.exports = function() {
         if ((this.step > 0 && this.index < this.data.stop) ||
             (this.step < 0 && this.index > this.data.stop)) {
             this.index = this.index + this.data.step;
-            return new types.Int(retval);
+            return new batavia.types.Int(retval);
         }
-        throw new builtins.StopIteration();
+        throw new batavia.builtins.StopIteration();
     };
 
     Range.prototype.RangeIterator.prototype.__str__ = function() {

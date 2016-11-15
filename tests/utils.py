@@ -29,7 +29,7 @@ def build_batavia():
         return
 
     proc = subprocess.Popen(
-        "make",
+        ["webpack", "--bail"],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
@@ -307,7 +307,7 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             )
             sendPhantomCommand(
                 _phantomjs,
-                "page.injectJs('../batavia-all.min.js')",
+                "page.injectJs('../batavia.js')",
                 success=['true', '{}'],
                 on_fail="Unable to inject Batavia"
             )

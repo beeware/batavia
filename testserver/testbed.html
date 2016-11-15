@@ -237,13 +237,13 @@ DAEDABcBDQEdAgYB
     <!-- This is a simple test script. The content comes from sample.py
          in the testserver directory -->
     <script id="batavia-sample" type="application/python-bytecode">
-{{ samplecode }}
+{{ samplecode.compiled }}
     </script>
 
     <!-- This is a second module module that can be imported. The content
          comes from other.py in the testserver directory -->
     <script id="batavia-other" type="application/python-bytecode">
-{{ othercode }}
+{{ othercode.compiled }}
     </script>
 
     {% if customcode and customcode.compiled %}

@@ -1,13 +1,13 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 
 module.exports = function() {
-    var types = require('./_index');
     var utils = require('../utils');
+
     var inspect = require('../modules/inspect');
 
     function Function(name, code, globals, defaults, closure, vm) {
-        pytypes.Object.call(this);
+        // types.Object.call(this);
 
         this.__python__ = true;
         this._vm = vm;
@@ -22,8 +22,8 @@ module.exports = function() {
             this.__doc__ = null;
         }
         this.__name__ = name || code.co_name;
-        this.__dict__ = new types.Dict();
-        this.__annotations__ = new types.Dict();
+        this.__dict__ = new batavia.types.Dict();
+        this.__annotations__ = new batavia.types.Dict();
         this.__qualname__ = this.__name__;
 
         // var kw = {
@@ -38,8 +38,8 @@ module.exports = function() {
         this.argspec = inspect.getfullargspec(this);
     }
 
-    Function.prototype = Object.create(pytypes.Object.prototype);
-    Function.prototype.__class__ = new pytypes.Type('function');
+    Function.prototype = Object.create(types.Object.prototype);
+    Function.prototype.__class__ = new types.Type('function');
 
     return Function;
 }();

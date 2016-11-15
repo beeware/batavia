@@ -29,7 +29,7 @@ module.exports = function() {
             for (i = 0; i < this.f_code.co_cellvars.length; i++) {
                 // Make a cell for the variable in our locals, or null.
                 v = this.f_code.co_cellvars[i];
-                this.cells[v] = new Cell(this.f_locals[v]);
+                this.cells[v] = new batavia.core.Cell(this.f_locals[v]);
                 if (this.f_back) {
                     this.f_back.cells[v] = this.cells[v];
                 }
@@ -44,8 +44,8 @@ module.exports = function() {
             }
             for (i = 0; i < this.f_code.co_freevars.length; i++) {
                 v = this.f_code.co_freevars[i];
-                assert(this.cells !== null);
-                assert(this.f_back.cells, "f_back.cells: " + this.f_back.cells);
+                // assert(this.cells !== null);
+                // assert(this.f_back.cells, "f_back.cells: " + this.f_back.cells);
                 this.cells[v] = this.f_back.cells[v];
             }
         }
@@ -62,7 +62,7 @@ module.exports = function() {
         // Get the current line number the frame is executing.
         // We don't keep f_lineno up to date, so calculate it based on the
         // instruction address and the line number table.
-        var lnotab = this.f_code.co_lnotab;
+        // var lnotab = this.f_code.co_lnotab;
         var byte_increments = []; //six.iterbytes(lnotab[0::2]);
         var line_increments = []; //six.iterbytes(lnotab[1::2]);
 

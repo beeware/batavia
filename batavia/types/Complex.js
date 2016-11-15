@@ -1,12 +1,10 @@
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
-var pytypes = require('./Type');
+var types = require('./Type');
 
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     // Polyfill below from
@@ -26,12 +24,12 @@ module.exports = function() {
     function part_from_str(s) {
         if (s && s.valueOf() == "-0") {
             // console.log("there");
-            return new types.Float(-0);
+            return new batavia.types.Float(-0);
         } else if (s) {
             // console.log("part_from_str: " + s);
-            return new types.Float(s);
+            return new batavia.types.Float(s);
         } else {
-            return new types.Float(0);
+            return new batavia.types.Float(0);
         }
     }
     function part_to_str(x) {
@@ -56,45 +54,45 @@ module.exports = function() {
 
     function Complex(re, im) {
         // console.log(100000, re, im);
-        if (utils.isinstance(re, types.Str)) {
+        if (utils.isinstance(re, batavia.types.Str)) {
             // console.log(1000, re, im);
             var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i;
             var match = regex.exec(re);
             if (match == null || re == "") {
-                throw new builtins.ValueError("complex() arg is a malformed string");
+                throw new batavia.builtins.ValueError("complex() arg is a malformed string");
             }
             this.real = parseFloat(part_from_str(match[1]));
             this.imag = parseFloat(part_from_str(match[3]));
             if (match[2] == '-') {
                 this.imag = -this.imag;
             }
-        } else if (!utils.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
-            throw new builtins.TypeError(
+        } else if (!utils.isinstance(re, [batavia.types.Float, batavia.types.Int, batavia.types.Bool, batavia.types.Complex])) {
+            throw new batavia.builtins.TypeError(
                 "complex() argument must be a string, a bytes-like object or a number, not '" + utils.type_name(re) + "'"
             );
-        } else if (!utils.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
-            throw new builtins.TypeError(
+        } else if (!utils.isinstance(im, [batavia.types.Float, batavia.types.Int, batavia.types.Bool, batavia.types.Complex])) {
+            throw new batavia.builtins.TypeError(
                 "complex() argument must be a string, a bytes-like object or a number, not '" + utils.type_name(im) + "'"
             );
         } else if (typeof re == 'number' && typeof im == 'number') {
             this.real = re;
             this.imag = im;
-        } else if (utils.isinstance(re, [types.Float, types.Int, types.Bool]) &&
-            utils.isinstance(im, [types.Float, types.Int, types.Bool])) {
+        } else if (utils.isinstance(re, [batavia.types.Float, batavia.types.Int, batavia.types.Bool]) &&
+            utils.isinstance(im, [batavia.types.Float, batavia.types.Int, batavia.types.Bool])) {
             // console.log(2000, re, im);
             this.real = re.__float__().valueOf();
             this.imag = im.__float__().valueOf();
-        } else if (utils.isinstance(re, types.Complex) && !im) {
+        } else if (utils.isinstance(re, batavia.types.Complex) && !im) {
             // console.log(3000, re, im);
             this.real = re.real;
             this.imag = re.imag;
         } else {
-            throw new builtins.NotImplementedError("Complex initialization from complex argument(s) has not been implemented");
+            throw new batavia.builtins.NotImplementedError("Complex initialization from complex argument(s) has not been implemented");
         }
     }
 
-    Complex.prototype = Object.create(pytypes.Object.prototype);
-    Complex.prototype.__class__ = new pytypes.Type('complex');
+    Complex.prototype = Object.create(types.Object.prototype);
+    Complex.prototype.__class__ = new types.Type('complex');
 
     /**************************************************
      * Javascript compatibility methods
@@ -129,20 +127,20 @@ module.exports = function() {
      **************************************************/
 
     Complex.prototype.__lt__ = function(other) {
-        throw new builtins.TypeError("unorderable types: complex() < " + utils.type_name(other) + "()");
+        throw new batavia.builtins.TypeError("unorderable types: complex() < " + utils.type_name(other) + "()");
     };
 
     Complex.prototype.__le__ = function(other) {
-        throw new builtins.TypeError("unorderable types: complex() <= " + utils.type_name(other) + "()");
+        throw new batavia.builtins.TypeError("unorderable types: complex() <= " + utils.type_name(other) + "()");
     };
 
     Complex.prototype.__eq__ = function(other) {
-        if (other !== null && !utils.isinstance(other, types.Str)) {
-            if (utils.isinstance(other, types.Complex)) {
+        if (other !== null && !utils.isinstance(other, batavia.types.Str)) {
+            if (utils.isinstance(other, batavia.types.Complex)) {
                 return this.real.valueOf() == other.real.valueOf() && this.imag.valueOf() == other.imag.valueOf();
             }
             var val;
-            if (utils.isinstance(other, types.Bool)) {
+            if (utils.isinstance(other, batavia.types.Bool)) {
                 val = other.valueOf() ? 1.0 : 0.0;
             } else {
                 val = other.valueOf();
@@ -157,11 +155,11 @@ module.exports = function() {
     };
 
     Complex.prototype.__gt__ = function(other) {
-        throw new builtins.TypeError("unorderable types: complex() > " + utils.type_name(other) + "()");
+        throw new batavia.builtins.TypeError("unorderable types: complex() > " + utils.type_name(other) + "()");
     };
 
     Complex.prototype.__ge__ = function(other) {
-        throw new builtins.TypeError("unorderable types: complex() >= " + utils.type_name(other) + "()");
+        throw new batavia.builtins.TypeError("unorderable types: complex() >= " + utils.type_name(other) + "()");
     };
 
 
@@ -182,11 +180,11 @@ module.exports = function() {
     };
 
     Complex.prototype.__invert__ = function() {
-        throw new builtins.TypeError("bad operand type for unary ~: 'complex'");
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'complex'");
     };
 
     Complex.prototype.__abs__ = function() {
-        return new types.Float(Math.sqrt(this.real * this.real + this.imag * this.imag));
+        return new batavia.types.Float(Math.sqrt(this.real * this.real + this.imag * this.imag));
     };
 
     /**************************************************
@@ -195,31 +193,31 @@ module.exports = function() {
 
     Complex.prototype.__pow__ = function(other) {
         // http://mathworld.wolfram.com/ComplexExponentiation.html
-        throw new builtins.NotImplementedError(
+        throw new batavia.builtins.NotImplementedError(
             "Complex.__pow__ has not been implemented yet; if you need it, you need to reevaluate your life-choices."
         );
     };
 
     function __div__(x, y, inplace) {
-        if (utils.isinstance(y, types.Int)) {
+        if (utils.isinstance(y, batavia.types.Int)) {
             if (!y.val.isZero()) {
                 return new Complex(x.real / y.__float__().val, x.imag / y.__float__().val);
             } else {
-                throw new builtins.ZeroDivisionError("complex division by zero");
+                throw new batavia.builtins.ZeroDivisionError("complex division by zero");
             }
-        } else if (utils.isinstance(y, types.Float)) {
+        } else if (utils.isinstance(y, batavia.types.Float)) {
             if (y.valueOf()) {
                 return new Complex(x.real / y.valueOf(), x.imag / y.valueOf());
             } else {
-                throw new builtins.ZeroDivisionError("complex division by zero");
+                throw new batavia.builtins.ZeroDivisionError("complex division by zero");
             }
-        } else if (utils.isinstance(y, types.Bool)) {
+        } else if (utils.isinstance(y, batavia.types.Bool)) {
             if (y.valueOf()) {
                 return new Complex(x.real, x.imag);
             } else {
-                throw new builtins.ZeroDivisionError("complex division by zero");
+                throw new batavia.builtins.ZeroDivisionError("complex division by zero");
             }
-        } else if (utils.isinstance(y, types.Complex)) {
+        } else if (utils.isinstance(y, batavia.types.Complex)) {
             var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2);
             var num_real = x.real * y.real + x.imag * y.imag;
             var num_imag = x.imag * y.real - x.real * y.imag;
@@ -227,7 +225,7 @@ module.exports = function() {
             var imag = num_imag / den;
             return new Complex(real, imag);
         } else {
-            throw new builtins.TypeError(
+            throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for /" + (inplace ? "=" : "") + ": 'complex' and '" + utils.type_name(y) + "'"
             );
         }
@@ -238,7 +236,7 @@ module.exports = function() {
     };
 
     Complex.prototype.__floordiv__ = function(other) {
-        throw new builtins.TypeError("can't take floor of complex number.");
+        throw new batavia.builtins.TypeError("can't take floor of complex number.");
     };
 
     Complex.prototype.__truediv__ = function(other) {
@@ -246,30 +244,30 @@ module.exports = function() {
     };
 
     function __mul__(x, y, inplace) {
-        if (utils.isinstance(y, types.Int)) {
+        if (utils.isinstance(y, batavia.types.Int)) {
             if (!y.val.isZero()) {
                 return new Complex(x.real * y.__float__().val, x.imag * y.__float__().val);
             } else {
                 return new Complex(0, 0);
             }
-        } else if (utils.isinstance(y, types.Float)) {
+        } else if (utils.isinstance(y, batavia.types.Float)) {
             if (y.valueOf()) {
                 return new Complex(x.real * y.valueOf(), x.imag * y.valueOf());
             } else {
                 return new Complex(0, 0);
             }
-        } else if (utils.isinstance(y, types.Bool)) {
+        } else if (utils.isinstance(y, batavia.types.Bool)) {
             if (y.valueOf()) {
                 return new Complex(x.real, x.imag);
             } else {
                 return new Complex(0, 0);
             }
-        } else if (utils.isinstance(y, types.Complex)) {
+        } else if (utils.isinstance(y, batavia.types.Complex)) {
             return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real);
-        } else if (utils.isinstance(y, [types.List, types.Str, types.Tuple])) {
-            throw new builtins.TypeError("can't multiply sequence by non-int of type 'complex'");
+        } else if (utils.isinstance(y, [batavia.types.List, batavia.types.Str, batavia.types.Tuple])) {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'complex'");
         } else {
-            throw new builtins.TypeError(
+            throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for *" + (inplace ? "=" : "") + ": 'complex' and '" + utils.type_name(y) + "'"
             );
         }
@@ -280,20 +278,20 @@ module.exports = function() {
     };
 
     Complex.prototype.__mod__ = function(other) {
-        throw new builtins.TypeError("can't mod complex numbers.");
+        throw new batavia.builtins.TypeError("can't mod complex numbers.");
     };
 
     function __add__(x, y, inplace) {
-        if (utils.isinstance(y, types.Int)) {
+        if (utils.isinstance(y, batavia.types.Int)) {
             return new Complex(x.real + y.__float__().val, x.imag);
-        } else if (utils.isinstance(y, types.Float)) {
+        } else if (utils.isinstance(y, batavia.types.Float)) {
             return new Complex(x.real + y.valueOf(), x.imag);
-        } else if (utils.isinstance(y, types.Bool)) {
+        } else if (utils.isinstance(y, batavia.types.Bool)) {
             return new Complex(x.real + (y.valueOf() ? 1.0 : 0.0), x.imag);
-        } else if (utils.isinstance(y, types.Complex)) {
+        } else if (utils.isinstance(y, batavia.types.Complex)) {
             return new Complex(x.real + y.real, x.imag + y.imag);
         } else {
-            throw new builtins.TypeError(
+            throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for +" + (inplace ? "=" : "") + ": 'complex' and '" + utils.type_name(y) + "'"
             );
         }
@@ -304,16 +302,16 @@ module.exports = function() {
     };
 
     function __sub__(x, y, inplace) {
-        if (utils.isinstance(y, types.Int)) {
+        if (utils.isinstance(y, batavia.types.Int)) {
             return new Complex(x.real - y.__float__().val, x.imag);
-        } else if (utils.isinstance(y, types.Float)) {
+        } else if (utils.isinstance(y, batavia.types.Float)) {
             return new Complex(x.real - y.valueOf(), x.imag);
-        } else if (utils.isinstance(y, types.Bool)) {
+        } else if (utils.isinstance(y, batavia.types.Bool)) {
             return new Complex(x.real - (y.valueOf() ? 1.0 : 0.0), x.imag);
-        } else if (utils.isinstance(y, types.Complex)) {
+        } else if (utils.isinstance(y, batavia.types.Complex)) {
             return new Complex(x.real - y.real, x.imag - y.imag);
         } else {
-            throw new builtins.TypeError(
+            throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for -" + (inplace ? "=" : "") + ": 'complex' and '" + utils.type_name(y) + "'"
             );
         }
@@ -324,35 +322,35 @@ module.exports = function() {
     };
 
     Complex.prototype.__getitem__ = function(other) {
-        throw new builtins.TypeError("'complex' object is not subscriptable")
+        throw new batavia.builtins.TypeError("'complex' object is not subscriptable")
     };
 
     Complex.prototype.__lshift__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for <<: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__rshift__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for >>: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__and__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for &: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__xor__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for ^: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__or__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for |: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
@@ -362,7 +360,7 @@ module.exports = function() {
      **************************************************/
 
     Complex.prototype.__ifloordiv__ = function(other) {
-        throw new builtins.TypeError("can't take floor of complex number.");
+        throw new batavia.builtins.TypeError("can't take floor of complex number.");
     };
 
     Complex.prototype.__itruediv__ = function(other) {
@@ -382,39 +380,39 @@ module.exports = function() {
     };
 
     Complex.prototype.__imod__ = function(other) {
-        throw new builtins.TypeError("can't mod complex numbers.");
+        throw new batavia.builtins.TypeError("can't mod complex numbers.");
     };
 
     Complex.prototype.__ipow__ = function(other) {
-        throw new builtins.NotImplementedError("Complex.__ipow__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Complex.__ipow__ has not been implemented");
     };
 
     Complex.prototype.__ilshift__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for <<=: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__irshift__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for >>=: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__iand__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for &=: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__ixor__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for ^=: 'complex' and '" + utils.type_name(other) + "'"
         );
     };
 
     Complex.prototype.__ior__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for |=: 'complex' and '" + utils.type_name(other) + "'"
         );
     };

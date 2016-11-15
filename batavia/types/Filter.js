@@ -1,25 +1,24 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /*************************************************************************
  * A Python filter builtin is a type
  *************************************************************************/
 
 module.exports = function() {
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     function filter(args, kwargs) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         if (args.length < 2) {
-            throw new builtins.TypeError("filter expected 2 arguments, got " + args.length);
+            throw new batavia.builtins.TypeError("filter expected 2 arguments, got " + args.length);
         }
         this._func = args[0];
         this._sequence = args[1];
     }
 
-    filter.prototype = Object.create(pytypes.Object.prototype);
-    filter.prototype.__class__ = new pytypes.Type('filter');
+    filter.prototype = Object.create(types.Object.prototype);
+    filter.prototype.__class__ = new types.Type('filter');
 
     /**************************************************
      * Javascript compatibility methods
@@ -39,11 +38,11 @@ module.exports = function() {
 
     filter.prototype.__next__ = function() {
         if (!this._iter) {
-            this._iter = builtins.iter([this._sequence], null);
+            this._iter = batavia.builtins.iter([this._sequence], null);
         }
-        if (!builtins.callable([this._func], null)) {
-            throw new builtins.TypeError(
-              builtins.type(this._func).__name__ + "' object is not callable");
+        if (!batavia.builtins.callable([this._func], null)) {
+            throw new batavia.builtins.TypeError(
+              batavia.builtins.type(this._func).__name__ + "' object is not callable");
         }
 
         var sval = false;

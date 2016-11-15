@@ -1,25 +1,24 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /*************************************************************************
  * A Python map builtin is a type
  *************************************************************************/
 
 module.exports = function() {
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     function map(args, kwargs) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         if (args.length < 2) {
-            throw new builtins.TypeError("map expected 2 arguments, got " + args.length);
+            throw new batavia.builtins.TypeError("map expected 2 arguments, got " + args.length);
         }
         this._func = args[0];
         this._sequence = args[1];
     }
 
-    map.prototype = Object.create(pytypes.Object.prototype);
-    map.prototype.__class__ = new pytypes.Type('map');
+    map.prototype = Object.create(types.Object.prototype);
+    map.prototype.__class__ = new types.Type('map');
 
     /**************************************************
      * Javascript compatibility methods
@@ -39,10 +38,10 @@ module.exports = function() {
 
     map.prototype.__next__ = function() {
         if (!this._iter) {
-            this._iter = builtins.iter([this._sequence], null);
+            this._iter = batavia.builtins.iter([this._sequence], null);
         }
-        if (!builtins.callable([this._func], null)) {
-            throw new builtins.TypeError(
+        if (!batavia.builtins.callable([this._func], null)) {
+            throw new batavia.builtins.TypeError(
               utils.type_name(this._func) + "' object is not callable");
         }
 
@@ -57,4 +56,4 @@ module.exports = function() {
     /**************************************************/
 
     return map;
-}()
+}();

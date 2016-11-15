@@ -1,25 +1,21 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /*************************************************************************
  * An implementation of slice
  *************************************************************************/
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
-    var utils = require('../utils');
-
     function Slice(kwargs) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         // BUG: slices can support arbitrary-sized arguments.
-        this.start = kwargs.start === builtins.None ? null : kwargs.start.int32();
-        this.stop = kwargs.stop === builtins.None ? null : kwargs.stop.int32();
+        this.start = kwargs.start === batavia.builtins.None ? null : kwargs.start.int32();
+        this.stop = kwargs.stop === batavia.builtins.None ? null : kwargs.stop.int32();
         this.step = (kwargs.step || 1)|0;
     }
 
-    Slice.prototype = Object.create(pytypes.Object.prototype);
-    Slice.prototype.__class__ = new pytypes.Type('slice');
+    Slice.prototype = Object.create(types.Object.prototype);
+    Slice.prototype.__class__ = new types.Type('slice');
 
     /**************************************************
      * Javascript compatibility methods

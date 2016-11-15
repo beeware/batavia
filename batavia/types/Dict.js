@@ -1,18 +1,17 @@
 /*************************************************************************
  * A Python dict type
  *************************************************************************/
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /*
  * Implementation details: we use closed hashing, open addressing,
  * with linear probing and a max load factor of 0.75.
  */
 module.exports = function() {
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     function Dict(args, kwargs) {
-        pytypes.Object.call(this);
+        batavia.types.Object.call(this);
 
         this.data_keys = [];
         this.data_values = [];
@@ -24,7 +23,7 @@ module.exports = function() {
         }
     }
 
-    Dict.prototype.__class__ = new pytypes.Type('dict');
+    Dict.prototype.__class__ = new types.Type('dict');
 
     var MAX_LOAD_FACTOR = 0.75;
     var INITIAL_SIZE = 8; // after size 0
@@ -34,19 +33,19 @@ module.exports = function() {
      */
     var EMPTY = {
         __hash__: function() {
-            return new types.Int(0);
+            return new batavia.types.Int(0);
         },
         __eq__: function(other) {
-            return new types.Bool(this === other);
+            return new batavia.types.Bool(this === other);
         }
     };
 
     var DELETED = {
         __hash__: function() {
-            return new types.Int(0);
+            return new batavia.types.Int(0);
         },
         __eq__: function(other) {
-            return new types.Bool(this === other);
+            return new batavia.types.Bool(this === other);
         }
     };
 
@@ -69,10 +68,10 @@ module.exports = function() {
         for (var i = 0; i < new_keys.length; i++) {
             new_keys[i] = EMPTY;
         }
-        utils.iter_for_each(builtins.iter([this.items()], null), function(val) {
+        utils.iter_for_each(batavia.builtins.iter([this.items()], null), function(val) {
             var key = val[0];
             var value = val[1];
-            var hash = builtins.hash([key], null);
+            var hash = batavia.builtins.hash([key], null);
             var h = hash.int32() & new_mask;
             while (!isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask;
@@ -108,13 +107,13 @@ module.exports = function() {
 
     var isDeleted = function(x) {
       return x !== null &&
-          builtins.hash([x], null).__eq__(new types.Int(0)).valueOf() &&
+          batavia.builtins.hash([x], null).__eq__(new batavia.types.Int(0)).valueOf() &&
           x.__eq__(DELETED).valueOf();
     };
 
     var isEmpty = function(x) {
         return x !== null &&
-            builtins.hash([x], null).__eq__(new types.Int(0)).valueOf() &&
+            batavia.builtins.hash([x], null).__eq__(new batavia.types.Int(0)).valueOf() &&
             x.__eq__(EMPTY).valueOf();
     };
 
@@ -128,7 +127,7 @@ module.exports = function() {
             if (isEmpty(key) || isDeleted(key)) {
                 continue;
             }
-            strings.push(builtins.repr([key], null) + ": " + builtins.repr([this.data_values[i]], null));
+            strings.push(batavia.builtins.repr([key], null) + ": " + batavia.builtins.repr([this.data_values[i]], null));
         }
         result += strings.join(", ");
         result += "}";
@@ -140,28 +139,25 @@ module.exports = function() {
      **************************************************/
 
     Dict.prototype.__lt__ = function(other) {
-         if (other !== builtins.None) {
-             if (utils.isbataviainstance(other)) {
-                 throw new builtins.TypeError("unorderable types: dict() < " + utils.type_name(other) + "()");
-             } else {
-                 return this.valueOf() < other.valueOf();
-             }
-         } else {
-             throw new builtins.TypeError("unorderable types: dict() < NoneType()");
-         }
-        return this.valueOf() < other;
+        if (other !== batavia.builtins.None) {
+            if (utils.isbataviainstance(other)) {
+                throw new batavia.builtins.TypeError("unorderable types: dict() < " + utils.type_name(other) + "()");
+            } else {
+                return this.valueOf() < other.valueOf();
+            }
+        }
+        throw new batavia.builtins.TypeError("unorderable types: dict() < NoneType()");
     };
 
     Dict.prototype.__le__ = function(other) {
-         if (other !== builtins.None) {
-             if (utils.isbataviainstance(other)) {
-                 throw new builtins.TypeError("unorderable types: dict() <= " + utils.type_name(other) + "()");
-             } else {
-                 return this.valueOf() <= other.valueOf();
-             }
-         } else {
-             throw new builtins.TypeError("unorderable types: dict() <= NoneType()");
-         }
+        if (other !== batavia.builtins.None) {
+            if (utils.isbataviainstance(other)) {
+                throw new batavia.builtins.TypeError("unorderable types: dict() <= " + utils.type_name(other) + "()");
+            } else {
+                return this.valueOf() <= other.valueOf();
+            }
+        }
+        throw new batavia.builtins.TypeError("unorderable types: dict() <= NoneType()");
     };
 
     Dict.prototype.__eq__ = function(other) {
@@ -173,26 +169,26 @@ module.exports = function() {
     };
 
     Dict.prototype.__gt__ = function(other) {
-         if (other !== builtins.None) {
+         if (other !== batavia.builtins.None) {
              if (utils.isbataviainstance(other)) {
-                 throw new builtins.TypeError("unorderable types: dict() > " + utils.type_name(other) + "()");
+                 throw new batavia.builtins.TypeError("unorderable types: dict() > " + utils.type_name(other) + "()");
              } else {
                  return this.valueOf() > other.valueOf();
              }
          } else {
-             throw new builtins.TypeError("unorderable types: dict() > NoneType()");
+             throw new batavia.builtins.TypeError("unorderable types: dict() > NoneType()");
          }
     };
 
     Dict.prototype.__ge__ = function(other) {
-         if (other !== builtins.None) {
+         if (other !== batavia.builtins.None) {
              if (utils.isbataviainstance(other)) {
-                 throw new builtins.TypeError("unorderable types: dict() >= " + utils.type_name(other) + "()");
+                 throw new batavia.builtins.TypeError("unorderable types: dict() >= " + utils.type_name(other) + "()");
              } else {
                  return this.valueOf() >= other.valueOf();
              }
          } else {
-             throw new builtins.TypeError("unorderable types: dict() >= NoneType()");
+             throw new batavia.builtins.TypeError("unorderable types: dict() >= NoneType()");
          }
     };
 
@@ -201,11 +197,11 @@ module.exports = function() {
      **************************************************/
 
     Dict.prototype.__pos__ = function() {
-        throw new builtins.TypeError("bad operand type for unary +: 'dict'");
+        throw new batavia.builtins.TypeError("bad operand type for unary +: 'dict'");
     };
 
     Dict.prototype.__neg__ = function() {
-        throw new builtins.TypeError("bad operand type for unary -: 'dict'");
+        throw new batavia.builtins.TypeError("bad operand type for unary -: 'dict'");
     };
 
     Dict.prototype.__not__ = function() {
@@ -213,7 +209,7 @@ module.exports = function() {
     };
 
     Dict.prototype.__invert__ = function() {
-        throw new builtins.TypeError("bad operand type for unary ~: 'dict'");
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'dict'");
     };
 
     /**************************************************
@@ -221,7 +217,7 @@ module.exports = function() {
      **************************************************/
 
     Dict.prototype.__pow__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + utils.type_name(other) + "'");
     };
 
     Dict.prototype.__div__ = function(other) {
@@ -229,61 +225,61 @@ module.exports = function() {
     };
 
     Dict.prototype.__floordiv__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for //: 'dict' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'dict' and '" + utils.type_name(other) + "'");
     };
 
     Dict.prototype.__truediv__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for /: 'dict' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'dict' and '" + utils.type_name(other) + "'");
     };
 
     Dict.prototype.__mul__ = function(other) {
         if (utils.isinstance(other, [
-                types.Bool, types.Dict, types.Float,
-                types.JSDict, types.Int, types.NoneType])) {
-            throw new builtins.TypeError("unsupported operand type(s) for *: 'dict' and '" + utils.type_name(other) + "'");
+                batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
+                batavia.types.JSDict, batavia.types.Int, batavia.types.NoneType])) {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'dict' and '" + utils.type_name(other) + "'");
         } else {
-            throw new builtins.TypeError("can't multiply sequence by non-int of type 'dict'");
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'dict'");
         }
     };
 
     Dict.prototype.__mod__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__mod__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__mod__ has not been implemented");
     };
 
     Dict.prototype.__add__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for +: 'dict' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'dict' and '" + utils.type_name(other) + "'");
     };
 
     Dict.prototype.__sub__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for -: 'dict' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'dict' and '" + utils.type_name(other) + "'");
     };
 
 
     Dict.prototype.__lshift__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__lshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__lshift__ has not been implemented");
     };
 
     Dict.prototype.__rshift__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__rshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__rshift__ has not been implemented");
     };
 
     Dict.prototype.__and__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for &: 'dict' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'dict' and '" + utils.type_name(other) + "'");
     };
 
     Dict.prototype.__xor__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__xor__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__xor__ has not been implemented");
     };
 
     Dict.prototype.__or__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__or__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__or__ has not been implemented");
     };
 
     Dict.prototype.__setitem__ = function(key, value) {
         if (this.size + 1 > this.data_keys.length * MAX_LOAD_FACTOR) {
             this._increase_size();
         }
-        var hash = builtins.hash([key], null);
+        var hash = batavia.builtins.hash([key], null);
         var h = hash.int32() & this.mask;
         while (true) {
             var current_key = this.data_keys[h];
@@ -296,7 +292,7 @@ module.exports = function() {
                 this.data_keys[h] = key;
                 this.data_values[h] = value;
                 return;
-            } else if (builtins.hash([current_key], null).__eq__(hash).valueOf() &&
+            } else if (batavia.builtins.hash([current_key], null).__eq__(hash).valueOf() &&
                        current_key.__eq__(key).valueOf()) {
                 this.data_keys[h] = key;
                 this.data_values[h] = value;
@@ -317,58 +313,58 @@ module.exports = function() {
      **************************************************/
 
     Dict.prototype.__ifloordiv__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__ifloordiv__ has not been implemented");
     };
 
     Dict.prototype.__itruediv__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__itruediv__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__itruediv__ has not been implemented");
     };
 
     Dict.prototype.__iadd__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__iadd__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__iadd__ has not been implemented");
     };
 
     Dict.prototype.__isub__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__isub__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__isub__ has not been implemented");
     };
 
     Dict.prototype.__imul__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__imul__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__imul__ has not been implemented");
     };
 
     Dict.prototype.__imod__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__imod__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__imod__ has not been implemented");
     };
 
     Dict.prototype.__ipow__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__ipow__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__ipow__ has not been implemented");
     };
 
     Dict.prototype.__ilshift__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__ilshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__ilshift__ has not been implemented");
     };
 
     Dict.prototype.__irshift__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__irshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__irshift__ has not been implemented");
     };
 
     Dict.prototype.__iand__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__iand__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__iand__ has not been implemented");
     };
 
     Dict.prototype.__ixor__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__ixor__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__ixor__ has not been implemented");
     };
 
     Dict.prototype.__ior__ = function(other) {
-        throw new builtins.NotImplementedError("Dict.__ior__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Dict.__ior__ has not been implemented");
     };
 
     Dict.prototype._find_index = function(other) {
         if (this.size === 0) {
             return null;
         }
-        var hash = builtins.hash([other], null);
+        var hash = batavia.builtins.hash([other], null);
         var h = hash.int32() & this.mask;
         while (true) {
             var key = this.data_keys[h];
@@ -382,7 +378,7 @@ module.exports = function() {
             if (key === null && other === null) {
                 return h;
             }
-            if (builtins.hash([key], null).__eq__(hash).valueOf() &&
+            if (batavia.builtins.hash([key], null).__eq__(hash).valueOf() &&
                 ((key === null && other === null) || key.__eq__(other).valueOf())) {
                 return h;
             }
@@ -396,13 +392,13 @@ module.exports = function() {
     };
 
     Dict.prototype.__contains__ = function(key) {
-        return new types.Bool(this._find_index(key) !== null);
+        return new batavia.types.Bool(this._find_index(key) !== null);
     };
 
     Dict.prototype.__getitem__ = function(key) {
         var i = this._find_index(key);
         if (i === null) {
-            throw new builtins.KeyError(key === null ? 'None': key);
+            throw new batavia.builtins.KeyError(key === null ? 'None': key);
         }
         return this.data_values[i];
     };
@@ -410,7 +406,7 @@ module.exports = function() {
     Dict.prototype.__delitem__ = function(key) {
         var i = this._find_index(key);
         if (i === null) {
-            throw new builtins.KeyError(key === null ? 'None': key);
+            throw new batavia.builtins.KeyError(key === null ? 'None': key);
         }
         this.data_keys[i] = DELETED;
         this.data_values[i] = null;
@@ -426,7 +422,7 @@ module.exports = function() {
         if (i !== null) {
             return this.data_values[i];
         } else if (typeof backup === 'undefined') {
-            throw new builtins.KeyError(key === null ? 'None': key);
+            throw new batavia.builtins.KeyError(key === null ? 'None': key);
         } else {
             return backup;
         }
@@ -434,17 +430,17 @@ module.exports = function() {
 
     Dict.prototype.update = function(values) {
         var updates;
-        if (utils.isinstance(values, [types.Dict, types.JSDict])) {
-            updates = builtins.iter([values.items()], null);
+        if (utils.isinstance(values, [batavia.types.Dict, batavia.types.JSDict])) {
+            updates = batavia.builtins.iter([values.items()], null);
         } else {
-            updates = builtins.iter([values], null);
+            updates = batavia.builtins.iter([values], null);
         }
         var i = 0;
         var self = this;
         utils.iter_for_each(updates, function(val) {
-            var pieces = new types.Tuple(val);
+            var pieces = new batavia.types.Tuple(val);
             if (pieces.length != 2) {
-                throw new builtins.ValueError("dictionary update sequence element #" + i + " has length " + pieces.length + "; 2 is required");
+                throw new batavia.builtins.ValueError("dictionary update sequence element #" + i + " has length " + pieces.length + "; 2 is required");
             }
             var key = pieces[0];
             var value = pieces[1];
@@ -459,20 +455,20 @@ module.exports = function() {
     };
 
     Dict.prototype.items = function() {
-        var result = new types.List();
+        var result = new batavia.types.List();
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i];
             if (isEmpty(key) || isDeleted(key)) {
                 continue;
             }
-            result.append(new types.Tuple([key, this.data_values[i]]));
+            result.append(new batavia.types.Tuple([key, this.data_values[i]]));
         }
         return result;
     };
 
     Dict.prototype.keys = function() {
-        var result = new types.List();
+        var result = new batavia.types.List();
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i];
@@ -485,11 +481,11 @@ module.exports = function() {
     };
 
     Dict.prototype.__iter__ = function() {
-        return builtins.iter([this.keys()], null);
+        return batavia.builtins.iter([this.keys()], null);
     };
 
     Dict.prototype.values = function() {
-        var result = new types.List();
+        var result = new batavia.types.List();
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i];

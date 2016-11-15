@@ -1,8 +1,8 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 module.exports = function() {
     function Code(kwargs) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         this.co_argcount = kwargs.argcount || 0;
         this.co_kwonlyargcount = kwargs.kwonlyargcount || 0;
@@ -24,8 +24,8 @@ module.exports = function() {
         // co_weakreflist
     }
 
-    Code.prototype = Object.create(pytypes.Object.prototype);
-    Code.prototype.__class__ = new pytypes.Type('code');
+    Code.prototype = Object.create(types.Object.prototype);
+    Code.prototype.__class__ = new types.Type('code');
 
     return Code;
 }();

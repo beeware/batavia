@@ -1,12 +1,10 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /*************************************************************************
  * A Python list type
  *************************************************************************/
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     function List() {
@@ -17,14 +15,14 @@ module.exports = function() {
             if (Array.isArray(arguments[0])) {
                 this.push.apply(this, arguments[0]);
             } else {
-                var iterobj = builtins.iter([arguments[0]], null);
+                var iterobj = batavia.builtins.iter([arguments[0]], null);
                 var self = this;
                 utils.iter_for_each(iterobj, function(val) {
                     self.push(val);
                 });
             }
         } else {
-            throw new builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
+            throw new batavia.builtins.TypeError('list() takes at most 1 argument (' + arguments.length + ' given)');
         }
     }
 
@@ -34,7 +32,7 @@ module.exports = function() {
 
     List.prototype = Object.create(Array_.prototype);
     List.prototype.length = 0;
-    List.prototype.__class__ = new pytypes.Type('list');
+    List.prototype.__class__ = new types.Type('list');
 
     /**************************************************
      * Javascript compatibility methods
@@ -62,7 +60,7 @@ module.exports = function() {
 
     List.prototype.__str__ = function() {
         return '[' + this.map(function(obj) {
-                return builtins.repr([obj], null);
+                return batavia.builtins.repr([obj], null);
             }).join(', ') + ']';
     };
 
@@ -77,12 +75,12 @@ module.exports = function() {
     List.prototype.__lt__ = function(other) {
 
 
-        if (utils.isinstance(other, [types.Bytes, types.Bytearray])){
-            throw new builtins.TypeError("unorderable types: list() < " + utils.type_name(other) + "()")
+        if (utils.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+            throw new batavia.builtins.TypeError("unorderable types: list() < " + utils.type_name(other) + "()")
         }
 
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.List)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
                     return true;
@@ -101,22 +99,22 @@ module.exports = function() {
                 //got through loop and all values were equal. Determine by comparing length
                 return this.length < other.length;
             } else {
-                throw new builtins.TypeError("unorderable types: list() < " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: list() < " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: list() < NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: list() < NoneType()");
         }
     };
 
     List.prototype.__le__ = function(other) {
 
 
-        if (utils.isinstance(other, [types.Bytes, types.Bytearray])){
-            throw new builtins.TypeError("unorderable types: list() <= " + utils.type_name(other) + "()")
+        if (utils.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+            throw new batavia.builtins.TypeError("unorderable types: list() <= " + utils.type_name(other) + "()")
         }
 
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.List)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
                     return true;
@@ -135,15 +133,15 @@ module.exports = function() {
                 //got through loop and all values were equal. Determine by comparing length
                 return this.length <= other.length;
             } else {
-                throw new builtins.TypeError("unorderable types: list() <= " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: list() <= " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: list() <= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: list() <= NoneType()");
         }
     };
 
     List.prototype.__eq__ = function(other) {
-        if (utils.isinstance(other, types.List)){
+        if (utils.isinstance(other, batavia.types.List)){
             // must be a list to possibly be equal
             if(this.length !== other.length){
                 // lists must have same number of items
@@ -166,12 +164,12 @@ module.exports = function() {
 
     List.prototype.__gt__ = function(other) {
 
-        if(utils.isinstance(other, [types.Bytes, types.Bytearray])){
-            throw new builtins.TypeError("unorderable types: list() > " + utils.type_name(other) + "()")
+        if(utils.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+            throw new batavia.builtins.TypeError("unorderable types: list() > " + utils.type_name(other) + "()")
         }
 
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.List)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
                     return false;
@@ -190,21 +188,21 @@ module.exports = function() {
                 //got through loop and all values were equal. Determine by comparing length
                 return this.length > other.length;
             } else {
-                throw new builtins.TypeError("unorderable types: list() > " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: list() > " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: list() > NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: list() > NoneType()");
         }
     };
 
     List.prototype.__ge__ = function(other) {
 
-        if (utils.isinstance(other, [types.Bytes, types.Bytearray])){
-            throw new builtins.TypeError("unorderable types: list() >= " + utils.type_name(other) + "()")
+        if (utils.isinstance(other, [batavia.types.Bytes, batavia.types.Bytearray])){
+            throw new batavia.builtins.TypeError("unorderable types: list() >= " + utils.type_name(other) + "()")
         }
 
-        if (other !== builtins.None) {
-            if (utils.isinstance(other, types.List)) {
+        if (other !== batavia.builtins.None) {
+            if (utils.isinstance(other, batavia.types.List)) {
                 // edge case where this==[]
                 if (this.length === 0 && other.length > 0){
                     return false;
@@ -223,10 +221,10 @@ module.exports = function() {
                 //got through loop and all values were equal. Determine by comparing length
                 return this.length >= other.length;
             } else {
-                throw new builtins.TypeError("unorderable types: list() >= " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: list() >= " + utils.type_name(other) + "()");
             }
         } else {
-            throw new builtins.TypeError("unorderable types: list() >= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: list() >= NoneType()");
         }
     };
 
@@ -239,19 +237,19 @@ module.exports = function() {
      **************************************************/
 
     List.prototype.__pos__ = function() {
-        throw new builtins.TypeError("bad operand type for unary +: 'list'")
+        throw new batavia.builtins.TypeError("bad operand type for unary +: 'list'")
     };
 
     List.prototype.__neg__ = function() {
-        throw new builtins.TypeError("bad operand type for unary -: 'list'")
+        throw new batavia.builtins.TypeError("bad operand type for unary -: 'list'")
     };
 
     List.prototype.__not__ = function() {
-        return this.length == 0;
+        return this.length === 0;
     };
 
     List.prototype.__invert__ = function() {
-        throw new builtins.TypeError("bad operand type for unary ~: 'list'")
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'list'")
     };
 
     /**************************************************
@@ -259,23 +257,23 @@ module.exports = function() {
      **************************************************/
 
     List.prototype.__pow__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__div__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for /: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__floordiv__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for //: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__truediv__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for /: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__mul__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             result = new List();
             if(other <= 0) {
                 return result;
@@ -285,23 +283,23 @@ module.exports = function() {
                 }
                 return result;
             }
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other) {
                 return this.copy();
             } else {
                 return new List();
             }
         } else {
-            throw new builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
         }
     };
 
     List.prototype.__mod__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for %: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__add__ = function(other) {
-        if (utils.isinstance(other, types.List)) {
+        if (utils.isinstance(other, batavia.types.List)) {
             result = new List();
                 for (var i = 0; i < this.length; i++) {
                     result.push(this[i]);
@@ -313,38 +311,38 @@ module.exports = function() {
 
                 return result;
         } else {
-            throw new builtins.TypeError('can only concatenate list (not "' + utils.type_name(other) + '") to list');
+            throw new batavia.builtins.TypeError('can only concatenate list (not "' + utils.type_name(other) + '") to list');
         }
     };
 
     List.prototype.__sub__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for -: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__getitem__ = function(index) {
-        if (utils.isinstance(index, types.Int)) {
+        if (utils.isinstance(index, batavia.types.Int)) {
             var idx = index.int32();
             if (idx < 0) {
                 if (-idx > this.length) {
-                    throw new builtins.IndexError("list index out of range");
+                    throw new batavia.builtins.IndexError("list index out of range");
                 } else {
                     return this[this.length + idx];
                 }
             } else {
                 if (idx >= this.length) {
-                    throw new builtins.IndexError("list index out of range");
+                    throw new batavia.builtins.IndexError("list index out of range");
                 } else {
                     return this[idx];
                 }
             }
-        } else if (utils.isinstance(index, types.Slice)) {
+        } else if (utils.isinstance(index, batavia.types.Slice)) {
             var start, stop, step;
             start = index.start === null ? undefined : index.start;
             stop = index.stop === null ? undefined : index.stop;
             step = index.step;
 
             if (step === 0) {
-                throw new builtins.ValueError("slice step cannot be zero");
+                throw new batavia.builtins.ValueError("slice step cannot be zero");
             }
 
             // clone list
@@ -381,31 +379,31 @@ module.exports = function() {
             return new List(result);
         } else {
             var msg = "list indices must be integers or slices, not ";
-            if (utils.BATAVIA_MAGIC == utils.BATAVIA_MAGIC_34) {
+            if (utils.BATAVIA_MAGIC === utils.BATAVIA_MAGIC_34) {
                 msg = "list indices must be integers, not ";
             }
-            throw new builtins.TypeError(msg + utils.type_name(index));
+            throw new batavia.builtins.TypeError(msg + utils.type_name(index));
         }
     };
 
     List.prototype.__lshift__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for <<: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__rshift__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for >>: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__and__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for &: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__xor__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for ^: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__or__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for |: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |: 'list' and '" + utils.type_name(other) + "'");
     };
 
     /**************************************************
@@ -413,31 +411,31 @@ module.exports = function() {
      **************************************************/
 
     List.prototype.__ifloordiv__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for //=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__itruediv__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for /=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__iadd__ = function(other) {
-        if(utils.isinstance(other, [types.List, types.Str,
-            types.Tuple])) {
+        if(utils.isinstance(other, [batavia.types.List, batavia.types.Str,
+            batavia.types.Tuple])) {
             for(i=0; i< other.length; i++) {
               this.push(other[i]);
             }
             return this;
         } else {
-            throw new builtins.TypeError("'" + utils.type_name(other) + "' object is not iterable");
+            throw new batavia.builtins.TypeError("'" + utils.type_name(other) + "' object is not iterable");
         }
     };
 
     List.prototype.__isub__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for -=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__imul__ = function(other) {
-        if(utils.isinstance(other, types.Int)) {
+        if(utils.isinstance(other, batavia.types.Int)) {
             if(other <= 0) {
                 return new List();
             } else {
@@ -449,39 +447,39 @@ module.exports = function() {
                 }
                 return this;
             }
-        } else if(utils.isinstance(other, types.Bool)) {
-            return other == true ? this : new List();
+        } else if(utils.isinstance(other, batavia.types.Bool)) {
+            return other === true ? this : new List();
         } else {
-            throw new builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
         }
     };
 
     List.prototype.__imod__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for %=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for %=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__ipow__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__ilshift__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for <<=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for <<=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__irshift__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for >>=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__iand__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for &=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__ixor__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for ^=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     List.prototype.__ior__ = function(other) {
-        throw new builtins.TypeError("unsupported operand type(s) for |=: 'list' and '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'list' and '" + utils.type_name(other) + "'");
     };
 
     /**************************************************
@@ -507,7 +505,7 @@ module.exports = function() {
      **************************************************/
 
     List.prototype.ListIterator = function (data) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
         this.index = 0;
         this.data = data;
     };
@@ -520,7 +518,7 @@ module.exports = function() {
 
     List.prototype.ListIterator.prototype.__next__ = function() {
         if (this.index >= this.data.length) {
-            throw new builtins.StopIteration();
+            throw new batavia.builtins.StopIteration();
         }
         var retval = this.data[this.index];
         this.index++;
@@ -532,7 +530,7 @@ module.exports = function() {
     };
 
     List.prototype.ListIterator.prototype.constructor = List.prototype.ListIterator;
-    List.prototype.ListIterator.prototype.__class__ = new pytypes.Type('list_iterator');
+    List.prototype.ListIterator.prototype.__class__ = new types.Type('list_iterator');
 
     /**************************************************/
     return List;

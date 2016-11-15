@@ -1,10 +1,8 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 module.exports = function() {
-    var builtins = require('../core/builtins');
-
     function Generator(frame, vm) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         this.vm = vm;
         this.gi_frame = frame;
@@ -13,7 +11,7 @@ module.exports = function() {
     };
 
     Generator.prototype = Object.create(Object.prototype);
-    Generator.prototype.__class__ = new pytypes.Type('generator');
+    Generator.prototype.__class__ = new types.Type('generator');
 
     Generator.prototype.__iter__ = function() {
         return this;
@@ -38,7 +36,7 @@ module.exports = function() {
         this.gi_frame.stack.push(value);
         var yieldval = this.vm.run_frame(this.gi_frame)
         if (this.finished) {
-            throw new builtins.StopIteration();
+            throw new batavia.builtins.StopIteration();
         }
         return yieldval;
     }
@@ -51,13 +49,13 @@ module.exports = function() {
         }
         var yieldval = this.vm.run_frame(this.gi_frame)
         if (this.finished) {
-            throw new builtins.StopIteration();
+            throw new batavia.builtins.StopIteration();
         }
         return yieldval;
     }
 
     Generator.prototype['close'] = function() {
-        return this['throw'](new builtins.StopIteration());
+        return this['throw'](new batavia.builtins.StopIteration());
     }
 
     return Generator;

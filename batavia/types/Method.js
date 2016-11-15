@@ -1,4 +1,4 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 module.exports = function() {
     var Function = require('./Function');
@@ -11,7 +11,8 @@ module.exports = function() {
     }
 
     Method.prototype = Object.create(Function.prototype);
-    Method.prototype.__class__ = new pytypes.Type('method');
+    Method.prototype.__class__ = new types.Type('method');
+    Method.prototype.constructor = Method;
 
     return Method;
-}()
+}();

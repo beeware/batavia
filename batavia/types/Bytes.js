@@ -1,22 +1,20 @@
 /*************************************************************************
  * A Python bytes type
  *************************************************************************/
-var pytypes = require('./Type');
+var types = require('./Type');
 
 
 module.exports = function() {
-    var types = require('./_index');
-    var builtins = require('../core/builtins');
     var utils = require('../utils');
 
     function Bytes(val) {
         // the value is an instance of Feross's Buffer class
-        pytypes.Object.call(this);
+        types.Object.call(this);
         this.val = val;
     }
 
-    Bytes.prototype = Object.create(pytypes.Object.prototype);
-    Bytes.prototype.__class__ = new pytypes.Type('bytes');
+    Bytes.prototype = Object.create(types.Object.prototype);
+    Bytes.prototype.__class__ = new types.Type('bytes');
 
     /**************************************************
      * Javascript compatibility methods
@@ -39,7 +37,7 @@ module.exports = function() {
     };
 
     Bytes.prototype.__len__ = function () {
-        return new types.Int(this.val.length);
+        return new batavia.types.Int(this.val.length);
     };
 
     Bytes.prototype.__repr__ = function() {
@@ -82,30 +80,30 @@ module.exports = function() {
      **************************************************/
 
     Bytes.prototype.__lt__ = function(other) {
-        if (utils.isinstance(other, types.Bytes)) {
+        if (utils.isinstance(other, batavia.types.Bytes)) {
             return this.val < other.val;
         } else {
-            throw new builtins.TypeError("unorderable types: bytes() < " + utils.type_name(other) + "()");
+            throw new batavia.builtins.TypeError("unorderable types: bytes() < " + utils.type_name(other) + "()");
         }
     };
 
     Bytes.prototype.__le__ = function(other) {
-        if (utils.isinstance(other, types.Bytes)) {
+        if (utils.isinstance(other, batavia.types.Bytes)) {
             return this.val <= other.val;
         } else {
-            throw new builtins.TypeError("unorderable types: bytes() <= " + utils.type_name(other) + "()");
+            throw new batavia.builtins.TypeError("unorderable types: bytes() <= " + utils.type_name(other) + "()");
         }
     };
 
     Bytes.prototype.__eq__ = function(other) {
-        if (utils.isinstance(other, types.Bytes)) {
+        if (utils.isinstance(other, batavia.types.Bytes)) {
             var equal = (this.val.compare(other.val) == 0);
-            return new types.Bool(equal);
-        } else if (utils.isinstance (other, types.Bytearray)) {
-            throw new builtins.NotImplementedError(
+            return new batavia.types.Bool(equal);
+        } else if (utils.isinstance (other, batavia.types.Bytearray)) {
+            throw new batavia.builtins.NotImplementedError(
                 "Comparison between bytes and bytearrays has not been implemented");
         } else {
-            return new types.Bool(false);
+            return new batavia.types.Bool(false);
         }
     };
 
@@ -114,38 +112,38 @@ module.exports = function() {
     };
 
     Bytes.prototype.__gt__ = function(other) {
-        if (utils.isinstance(other, types.Bytes)) {
+        if (utils.isinstance(other, batavia.types.Bytes)) {
             return this.val > other.val;
         } else {
-            throw new builtins.TypeError("unorderable types: bytes() > " + utils.type_name(other) + "()");
+            throw new batavia.builtins.TypeError("unorderable types: bytes() > " + utils.type_name(other) + "()");
         }
     };
 
     Bytes.prototype.__ge__ = function(other) {
-        if (utils.isinstance(other, types.Bytes)) {
+        if (utils.isinstance(other, batavia.types.Bytes)) {
             return this.val >= other.val;
         } else {
-            throw new builtins.TypeError("unorderable types: bytes() >= " + utils.type_name(other) + "()");
+            throw new batavia.builtins.TypeError("unorderable types: bytes() >= " + utils.type_name(other) + "()");
         }
     };
 
     Bytes.prototype.__contains__ = function(other) {
         var other_value = null;
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (other >= 0 && other <= 255) {
                 other_value = parseInt(other.valueOf());
             } else {
-                throw new builtins.ValueError(
+                throw new batavia.builtins.ValueError(
                     "byte must be in range (0, 256)"
                 );
             }
-        } else if (utils.isinstance(other, types.Bytes)) {
+        } else if (utils.isinstance(other, batavia.types.Bytes)) {
             other_value = this.val;
         }
         if (other_value !== null) {
             return this.val.indexOf(other_value) !== -1;
         } else {
-            return new types.Bool(false);
+            return new batavia.types.Bool(false);
         }
     };
 
@@ -174,59 +172,59 @@ module.exports = function() {
      **************************************************/
 
     Bytes.prototype.__pow__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__pow__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__pow__ has not been implemented");
     };
 
     Bytes.prototype.__div__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__div__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__div__ has not been implemented");
     };
 
     Bytes.prototype.__floordiv__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__floordiv__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__floordiv__ has not been implemented");
     };
 
     Bytes.prototype.__truediv__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__truediv__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__truediv__ has not been implemented");
     };
 
     Bytes.prototype.__mul__ = function(other) {
-        throw new builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
+        throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
     };
 
     Bytes.prototype.__mod__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__mod__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__mod__ has not been implemented");
     };
 
     Bytes.prototype.__add__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__add__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__add__ has not been implemented");
     };
 
     Bytes.prototype.__sub__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__sub__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__sub__ has not been implemented");
     };
 
     Bytes.prototype.__getitem__ = function(other) {
-        return new types.Int(this.val[builtins.int(other).valueOf()]);
+        return new batavia.types.Int(this.val[batavia.builtins.int(other).valueOf()]);
     };
 
     Bytes.prototype.__lshift__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__lshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__lshift__ has not been implemented");
     };
 
     Bytes.prototype.__rshift__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__rshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__rshift__ has not been implemented");
     };
 
     Bytes.prototype.__and__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__and__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__and__ has not been implemented");
     };
 
     Bytes.prototype.__xor__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__xor__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__xor__ has not been implemented");
     };
 
     Bytes.prototype.__or__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__or__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__or__ has not been implemented");
     };
 
     /**************************************************
@@ -234,51 +232,51 @@ module.exports = function() {
      **************************************************/
 
     Bytes.prototype.__ifloordiv__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__ifloordiv__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__ifloordiv__ has not been implemented");
     };
 
     Bytes.prototype.__itruediv__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__itruediv__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__itruediv__ has not been implemented");
     };
 
     Bytes.prototype.__iadd__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__iadd__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__iadd__ has not been implemented");
     };
 
     Bytes.prototype.__isub__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__isub__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__isub__ has not been implemented");
     };
 
     Bytes.prototype.__imul__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__imul__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__imul__ has not been implemented");
     };
 
     Bytes.prototype.__imod__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__imod__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__imod__ has not been implemented");
     };
 
     Bytes.prototype.__ipow__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__ipow__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__ipow__ has not been implemented");
     };
 
     Bytes.prototype.__ilshift__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__ilshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__ilshift__ has not been implemented");
     };
 
     Bytes.prototype.__irshift__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__irshift__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__irshift__ has not been implemented");
     };
 
     Bytes.prototype.__iand__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__iand__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__iand__ has not been implemented");
     };
 
     Bytes.prototype.__ixor__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__ixor__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__ixor__ has not been implemented");
     };
 
     Bytes.prototype.__ior__ = function(other) {
-        throw new builtins.NotImplementedError("Bytes.__ior__ has not been implemented");
+        throw new batavia.builtins.NotImplementedError("Bytes.__ior__ has not been implemented");
     };
 
     /**************************************************
@@ -291,12 +289,12 @@ module.exports = function() {
 
     Bytes.prototype.decode = function(encoding, errors) {
         if (errors !== undefined) {
-            return new builtins.NotImplementedError(
+            return new batavia.builtins.NotImplementedError(
                 "'errors' parameter of String.encode not implemented"
             );
         }
         encoding = encoding.toLowerCase();
-        var encs = utils.TEXT_ENCODINGS;
+        var encs = batavia.TEXT_ENCODINGS;
         if (encs.ascii.indexOf(encoding) !== -1) {
             return this.val.toString('ascii');
         } else if (encs.latin_1.indexOf(encoding) !== -1) {
@@ -304,7 +302,7 @@ module.exports = function() {
         } else if (encs.utf_8.indexOf(encoding) !== -1) {
             return this.val.toString('utf8');
         } else {
-            return new builtins.NotImplementedError(
+            return new batavia.builtins.NotImplementedError(
                 "encoding not implemented or incorrect encoding"
             );
         }
@@ -328,11 +326,11 @@ module.exports = function() {
 
     Bytes.prototype.BytesIterator.prototype.__next__ = function() {
         if (this.index >= this.data.length) {
-            throw new builtins.StopIteration();
+            throw new batavia.builtins.StopIteration();
         }
         var retval = this.data[this.index];
         this.index++;
-        return new types.Int(retval);
+        return new batavia.types.Int(retval);
     };
 
     Bytes.prototype.BytesIterator.prototype.__str__ = function() {
@@ -340,7 +338,7 @@ module.exports = function() {
     };
 
     Bytes.prototype.BytesIterator.prototype.constructor = Bytes.prototype.BytesIterator;
-    Bytes.prototype.BytesIterator.prototype.__class__ = new pytypes.Type('bytes_iterator');
+    Bytes.prototype.BytesIterator.prototype.__class__ = new types.Type('bytes_iterator');
 
     /**************************************************/
 

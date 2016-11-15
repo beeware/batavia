@@ -1,21 +1,20 @@
-var pytypes = require('./Type');
+var types = require('./Type');
 
 /*************************************************************************
  * A Python float type
  *************************************************************************/
 
 module.exports = function() {
-    var types = require('./_index');
     var utils = require('../utils');
 
     function Float(val) {
-        pytypes.Object.call(this);
+        types.Object.call(this);
 
         this.val = val;
     }
 
-    Float.prototype = Object.create(pytypes.Object.prototype);
-    Float.prototype.__class__ = new pytypes.Type('float');
+    Float.prototype = Object.create(types.Object.prototype);
+    Float.prototype.__class__ = new types.Type('float');
 
     function python_modulo(n, M) {
         return ((n % M) + M) % M;
@@ -85,43 +84,43 @@ module.exports = function() {
      **************************************************/
 
     Float.prototype.__lt__ = function(other) {
-        if (other !== builtins.None) {
+        if (other !== batavia.builtins.None) {
             if (utils.isinstance(other, [
-                        types.Dict, types.List, types.Tuple,
-                        types.NoneType, types.Str, types.NotImplementedType,
-                        types.Range, types.Set, types.Slice
+                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
+                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
+                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
                     ])) {
-                throw new builtins.TypeError("unorderable types: float() < " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: float() < " + utils.type_name(other) + "()");
             } else {
                 return this.valueOf() < other.valueOf();
             }
         } else {
-            throw new builtins.TypeError("unorderable types: float() < NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: float() < NoneType()");
         }
     };
 
     Float.prototype.__le__ = function(other) {
-        if (other !== builtins.None) {
+        if (other !== batavia.builtins.None) {
             if (utils.isinstance(other, [
-                        types.Dict, types.List, types.Tuple,
-                        types.NoneType, types.Str, types.NotImplementedType,
-                        types.Range, types.Set, types.Slice
+                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
+                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
+                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
                     ])) {
-                throw new builtins.TypeError("unorderable types: float() <= " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: float() <= " + utils.type_name(other) + "()");
             } else {
                 return this.valueOf() <= other.valueOf();
             }
         } else {
-            throw new builtins.TypeError("unorderable types: float() <= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: float() <= NoneType()");
         }
     };
 
     Float.prototype.__eq__ = function(other) {
-        if (other !== null && !utils.isinstance(other, types.Str)) {
+        if (other !== null && !utils.isinstance(other, batavia.types.Str)) {
             var val;
-            if (utils.isinstance(other, types.Bool)) {
+            if (utils.isinstance(other, batavia.types.Bool)) {
                 val = other.valueOf() ? 1.0 : 0.0;
-            } else if (utils.isinstance(other, types.Int)) {
+            } else if (utils.isinstance(other, batavia.types.Int)) {
                 val = parseFloat(other.val);
             } else {
                 val = other.valueOf();
@@ -136,34 +135,34 @@ module.exports = function() {
     };
 
     Float.prototype.__gt__ = function(other) {
-        if (other !== builtins.None) {
+        if (other !== batavia.builtins.None) {
             if (utils.isinstance(other, [
-                        types.Dict, types.List, types.Tuple,
-                        types.NoneType, types.Str, types.NotImplementedType,
-                        types.Range, types.Set, types.Slice
+                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
+                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
+                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
                     ])) {
-                throw new builtins.TypeError("unorderable types: float() > " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: float() > " + utils.type_name(other) + "()");
             } else {
                 return this.valueOf() > other.valueOf();
             }
         } else {
-            throw new builtins.TypeError("unorderable types: float() > NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: float() > NoneType()");
         }
     };
 
     Float.prototype.__ge__ = function(other) {
-        if (other !== builtins.None) {
+        if (other !== batavia.builtins.None) {
             if (utils.isinstance(other, [
-                        types.Dict, types.List, types.Tuple,
-                        types.NoneType, types.Str, types.NotImplementedType,
-                        types.Range, types.Set, types.Slice
+                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
+                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
+                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
                     ])) {
-                throw new builtins.TypeError("unorderable types: float() >= " + utils.type_name(other) + "()");
+                throw new batavia.builtins.TypeError("unorderable types: float() >= " + utils.type_name(other) + "()");
             } else {
                 return this.valueOf() >= other.valueOf();
             }
         } else {
-            throw new builtins.TypeError("unorderable types: float() >= NoneType()");
+            throw new batavia.builtins.TypeError("unorderable types: float() >= NoneType()");
         }
     };
 
@@ -188,7 +187,7 @@ module.exports = function() {
     };
 
     Float.prototype.__invert__ = function() {
-        throw new builtins.TypeError("bad operand type for unary ~: 'float'");
+        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'float'");
     };
 
     Float.prototype.__abs__ = function() {
@@ -200,16 +199,16 @@ module.exports = function() {
      **************************************************/
 
     Float.prototype.__pow__ = function(other) {
-        if (utils.isinstance(other, types.Bool)) {
+        if (utils.isinstance(other, batavia.types.Bool)) {
             return new Float(Math.pow(this.valueOf(), other.valueOf() ? 1 : 0));
-        } else if (utils.isinstance(other, [types.Float, types.Int])) {
+        } else if (utils.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
             if (this.valueOf() == 0 && other.valueOf() < 0) {
-                throw new builtins.ZeroDivisionError("0.0 cannot be raised to a negative power");
+                throw new batavia.builtins.ZeroDivisionError("0.0 cannot be raised to a negative power");
             } else {
                 return new Float(Math.pow(this.valueOf(), other.valueOf()));
             }
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for ** or pow(): 'float' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'float' and '" + utils.type_name(other) + "'");
         }
     };
 
@@ -218,144 +217,144 @@ module.exports = function() {
     };
 
     Float.prototype.__floordiv__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (!other.val.isZero()) {
                 return new Float(Math.floor(this.valueOf() / other.valueOf()));
             } else {
-                throw new builtins.ZeroDivisionError("float divmod()");
+                throw new batavia.builtins.ZeroDivisionError("float divmod()");
             }
-        } else if (utils.isinstance(other, types.Float)) {
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
                 return new Float(Math.floor(this.valueOf() / other.valueOf()));
             } else {
-                throw new builtins.ZeroDivisionError("float divmod()");
+                throw new batavia.builtins.ZeroDivisionError("float divmod()");
             }
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
                 return new Float(Math.floor(this.valueOf()));
             } else {
-                throw new builtins.ZeroDivisionError("float divmod()");
+                throw new batavia.builtins.ZeroDivisionError("float divmod()");
             }
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for //: 'float' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'float' and '" + utils.type_name(other) + "'");
         }
     };
 
     Float.prototype.__truediv__ = function(other) {
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (!other.val.isZero()) {
                 return new Float(this.valueOf() / other.valueOf());
             } else {
-                throw new builtins.ZeroDivisionError("float division by zero");
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
             }
-        } else if (utils.isinstance(other, types.Float)) {
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             if (other.valueOf()) {
                 return new Float(this.valueOf() / other.valueOf());
             } else {
-                throw new builtins.ZeroDivisionError("float division by zero");
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
             }
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
                 return new Float(this.valueOf());
             } else {
-                throw new builtins.ZeroDivisionError("float division by zero");
+                throw new batavia.builtins.ZeroDivisionError("float division by zero");
             }
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for /: 'float' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'float' and '" + utils.type_name(other) + "'");
         }
     };
 
     Float.prototype.__mul__ = function(other) {
         if (other === null) {
-            throw new builtins.TypeError("unsupported operand type(s) for *: 'float' and 'NoneType'");
-        } else if (utils.isinstance(other, types.Bool)) {
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'float' and 'NoneType'");
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             return new Float(this.valueOf() * (other.valueOf() ? 1 : 0));
-        } else if (utils.isinstance(other, [types.Float, types.Int])) {
-            return new types.Float(this.valueOf() * other.valueOf());
-        } else if (utils.isinstance(other, [types.List, types.Str, types.Tuple])) {
-            throw new builtins.TypeError("can't multiply sequence by non-int of type 'float'");
+        } else if (utils.isinstance(other, [batavia.types.Float, batavia.types.Int])) {
+            return new batavia.types.Float(this.valueOf() * other.valueOf());
+        } else if (utils.isinstance(other, [batavia.types.List, batavia.types.Str, batavia.types.Tuple])) {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'float'");
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for *: 'float' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for *: 'float' and '" + utils.type_name(other) + "'");
         }
     };
 
     Float.prototype.__mod__ = function(other) {
         /* TODO: Fix case for -0.0, which is coming out 0.0 */
-        if (utils.isinstance(other, types.Int)) {
+        if (utils.isinstance(other, batavia.types.Int)) {
             if (other.val.isZero()) {
-                throw new builtins.ZeroDivisionError("float modulo");
+                throw new batavia.builtins.ZeroDivisionError("float modulo");
             } else {
                 return new Float(python_modulo(this.valueOf(), parseFloat(other.val)));
             }
-        } else if (utils.isinstance(other, types.Float)) {
+        } else if (utils.isinstance(other, batavia.types.Float)) {
             if (other.valueOf() === 0) {
-                throw new builtins.ZeroDivisionError("float modulo");
+                throw new batavia.builtins.ZeroDivisionError("float modulo");
             } else {
                 return new Float(python_modulo(this.valueOf(), other.valueOf()));
             }
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             if (other.valueOf()) {
                 return new Float(python_modulo(this.valueOf(), other.valueOf()));
             } else {
-                throw new builtins.ZeroDivisionError("float modulo");
+                throw new batavia.builtins.ZeroDivisionError("float modulo");
             }
         } else {
-            throw new builtins.TypeError(
+            throw new batavia.builtins.TypeError(
                 "unsupported operand type(s) for %: 'float' and '" + utils.type_name(other) + "'"
             );
         }
     };
 
     Float.prototype.__add__ = function(other) {
-        if (utils.isinstance(other, [types.Int, types.Float])) {
+        if (utils.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
             return new Float(this.valueOf() + parseFloat(other.valueOf()));
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             return new Float(this.valueOf() + (other.valueOf() ? 1.0 : 0.0));
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for +: 'float' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'float' and '" + utils.type_name(other) + "'");
         }
     };
 
     Float.prototype.__sub__ = function(other) {
-        if (utils.isinstance(other, [types.Int, types.Float])) {
+        if (utils.isinstance(other, [batavia.types.Int, batavia.types.Float])) {
             return new Float(this.valueOf() - other.valueOf());
-        } else if (utils.isinstance(other, types.Bool)) {
+        } else if (utils.isinstance(other, batavia.types.Bool)) {
             return new Float(this.valueOf() - (other.valueOf() ? 1.0 : 0.0));
         } else {
-            throw new builtins.TypeError("unsupported operand type(s) for -: 'float' and '" + utils.type_name(other) + "'");
+            throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'float' and '" + utils.type_name(other) + "'");
         }
     };
 
     Float.prototype.__getitem__ = function(other) {
-        throw new builtins.TypeError("'float' object is not subscriptable")
+        throw new batavia.builtins.TypeError("'float' object is not subscriptable")
     };
 
     Float.prototype.__lshift__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for <<: 'float' and '" + utils.type_name(other) + "'"
         );
     };
 
     Float.prototype.__rshift__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for >>: 'float' and '" + utils.type_name(other) + "'"
         );
     };
 
     Float.prototype.__and__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for &: 'float' and '" + utils.type_name(other) + "'"
         );
     };
 
     Float.prototype.__xor__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for ^: 'float' and '" + utils.type_name(other) + "'"
         );
     };
 
     Float.prototype.__or__ = function(other) {
-        throw new builtins.TypeError(
+        throw new batavia.builtins.TypeError(
             "unsupported operand type(s) for |: 'float' and '" + utils.type_name(other) + "'"
         );
     };
@@ -369,8 +368,8 @@ module.exports = function() {
         try {
             return this[f](other);
         } catch (error) {
-            if (error instanceof builtins.TypeError) {
-                throw new builtins.TypeError(
+            if (error instanceof batavia.builtins.TypeError) {
+                throw new batavia.builtins.TypeError(
                     "unsupported operand type(s) for " + operator_str + ": 'float' and '" + utils.type_name(other) + "'");
             } else {
                 throw error;
@@ -395,8 +394,8 @@ module.exports = function() {
     };
 
     Float.prototype.__imul__ = function(other) {
-        if (utils.isinstance(other, [types.List, types.Str, types.Tuple])) {
-            throw new builtins.TypeError("can't multiply sequence by non-int of type 'float'");
+        if (utils.isinstance(other, [batavia.types.List, batavia.types.Str, batavia.types.Tuple])) {
+            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type 'float'");
         } else {
             return this.__call_binary_operator__('__mul__', "*=", other);
         }
@@ -439,11 +438,11 @@ module.exports = function() {
     };
 
     Float.prototype.is_integer = function() {
-        return new types.Bool(Number.isInteger(this.valueOf()));
+        return new batavia.types.Bool(Number.isInteger(this.valueOf()));
     };
 
     Float.prototype.__trunc__ = function() {
-        return new types.Int(Math.trunc(this.valueOf()));
+        return new batavia.types.Int(Math.trunc(this.valueOf()));
     };
 
     /**************************************************/
