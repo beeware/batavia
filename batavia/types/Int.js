@@ -205,7 +205,7 @@ module.exports = function() {
                 return this.__float__().__pow__(other);
             } else {
                 var y = other.val.toString(2).split('');
-                var result = new batavia.vendored.BigNumber(1);
+                var result = new BigNumber(1);
                 var base = this.val.add(0);
                 while (y.length > 0) {
                   var bit = y.pop();
@@ -439,7 +439,7 @@ module.exports = function() {
 
     // convert a binary array back into an int
     var fromArray = function(arr) {
-        return new batavia.types.Int(new batavia.vendored.BigNumber(arr.join('') || 0, 2));
+        return new batavia.types.Int(new BigNumber(arr.join('') || 0, 2));
     };
     // return j with the sign inverted if i is negative.
     var fixSign = function(i, j) {
