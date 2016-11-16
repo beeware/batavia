@@ -12,7 +12,6 @@ class ComplexTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = b'hello, world'

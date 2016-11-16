@@ -1257,6 +1257,10 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     if (obj.__getattr__ === undefined) {
         val = obj[attr];
+        if (!val) {
+            err_msg = "'"+obj.__class__.__name__+"' object has no attribute '"+attr+"'";
+            throw new batavia.builtins.AttributeError(err_msg);
+        }
     } else {
         val = obj.__getattr__(attr);
     }
@@ -1506,7 +1510,7 @@ batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
     var bool_value;
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__();
     }
 
     if (val) {
@@ -1528,7 +1532,7 @@ batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
 batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__();
     }
 
     if (val) {
@@ -1800,7 +1804,7 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 };
 
 batavia.VirtualMachine.prototype.byte_YIELD_VALUE = function() {
-    this.return_value = this.pop()
+    this.return_value = this.pop();
     return "yield";
 };
 
