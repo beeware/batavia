@@ -12,7 +12,6 @@ class FloatTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = 3.14159
