@@ -9,9 +9,6 @@ module.exports = function() {
     var sys = require('./modules/sys');
 
     var VirtualMachine = function(loader) {
-        // Initialize the bytecode module
-        dis.init();
-
         if (loader === undefined) {
             this.loader = function(name) {
                 return document.getElementById('batavia-' + name).text.replace(/(\r\n|\n|\r)/gm, "").trim();
