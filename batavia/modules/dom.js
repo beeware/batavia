@@ -5,12 +5,12 @@
  */
 
 module.exports = {
-    'window': window,
-    'parent': parent,
-    'top': top,
-    'navigator': navigator,
-    'frames': frames,
-    'location': location,
-    'history': history,
-    'document': document
+    'window': window || {},
+    'parent': parent || {},
+    'top': top || {},
+    'navigator': navigator || {},
+    'frames': frames || {},
+    'location': location || {},
+    'history': history || {},
+    'document': document || {}
 }

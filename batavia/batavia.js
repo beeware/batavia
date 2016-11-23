@@ -34,7 +34,7 @@ module.exports = function() {
         'Block': require('./core/Block'),
         'Cell': require('./core/Cell'),
         'Frame': require('./core/Frame'),
-        'PYCFile': require('./core/PYCFile').PYCFile
+        'PYCFile': require('./core/PYCFile')
     };
     batavia['types'] = require('./types/_index');
 

@@ -29,6 +29,7 @@
  *************************************************************************/
 var Buffer = require('buffer').Buffer;
 var BigNumber = require('bignumber.js');
+var base64js = require('base64-js');
 
 
 module.exports = {
@@ -805,6 +806,6 @@ module.exports = {
         } else if (payload.startswith('ERROR:')) {
             throw new batavia.builtins.BataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'));
         }
-        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(atob(payload)));
+        return batavia.modules.marshal.read_object(vm, new batavia.core.PYCFile(base64js.toByteArray(payload)));
     }
 }

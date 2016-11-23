@@ -10,7 +10,7 @@ module.exports = {
         path: __dirname,
         filename: "[name].js",
         library: 'batavia',
-        libraryTarget: 'var'
+        libraryTarget: 'umd'
     },
     target: 'web',
     plugins: [
