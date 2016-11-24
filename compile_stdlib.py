@@ -50,7 +50,7 @@ def compile_stdlib(ouroboros, enabled_modules):
         module_fname = os.path.join(ouroboros, 'ouroboros', module + '.py')
         if not os.path.exists(module_fname):
             exit("Could not find file for module " + module)
-        outfile = os.path.join('batavia', 'modules', 'stdlib', module + '.js')
+        outfile = os.path.join('batavia', 'stdlib', module + '.js')
         print("Compiling %s to %s" % (module_fname, outfile))
         fp = tempfile.NamedTemporaryFile(delete=False)
         fp.close()
@@ -65,12 +65,12 @@ def compile_stdlib(ouroboros, enabled_modules):
         with open(outfile, 'w') as fout:
             fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
 
-    outfile = os.path.join('batavia', 'modules', 'stdlib', '_index.js')
+    outfile = os.path.join('batavia', 'stdlib.js')
     print("Compiling stdlib index %s" % outfile)
     with open(outfile, 'w') as fout:
         fout.write("module.exports = {\n    ")
         module_list = [
-            "'" + module + "': require('./" + module + "')"
+            "'" + module + "': require('./stdlib/" + module + "')"
             for module in enabled_modules
         ]
         fout.write(',\n    '.join(module_list))

@@ -1,300 +1,305 @@
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
+var None = require('../core').None;
+
 /*************************************************************************
  * A Python bytearray type
  *************************************************************************/
-var types = require('./Type');
 
+function Bytearray(val) {
+    PyObject.call(this);
+    this.val = val;
+}
 
-module.exports = function() {
-    var utils = require('../utils');
+Bytearray.prototype = Object.create(PyObject.prototype);
+Bytearray.prototype.__class__ = new Type('bytearray');
+Bytearray.prototype.constructor = Bytearray;
 
-    function Bytearray(val) {
-        types.Object.call(this);
-        this.val = val;
+/**************************************************
+ * Javascript compatibility methods
+ **************************************************/
+
+Bytearray.prototype.toString = function () {
+    return this.__str__();
+};
+
+Bytearray.prototype.valueOf = function() {
+    return this.val;
+};
+
+/**************************************************
+ * Type conversions
+ **************************************************/
+
+Bytearray.prototype.__bool__ = function() {
+    return this.val.length > 0;
+};
+
+Bytearray.prototype.__repr__ = function() {
+    return this.__str__();
+};
+
+Bytearray.prototype.__str__ = function() {
+    return "bytearray(" +  this.val.toString() + ")";
+};
+
+Bytearray.prototype.__iter__ = function() {
+    if (this.val.__iter__) {
+        return this.val.__iter__();
+    } else {
+        return new Bytearray.prototype.BytearrayIterator(this.val);
     }
+};
 
-    Bytearray.prototype = Object.create(types.Object.prototype);
-    Bytearray.prototype.__class__ = new types.Type('bytearray');
+/**************************************************
+ * Comparison operators
+ **************************************************/
 
-    /**************************************************
-     * Javascript compatibility methods
-     **************************************************/
+Bytearray.prototype.__lt__ = function(other) {
+    if (other !== None) {
+        return this.valueOf() < other;
+    }
+    return false;
+};
 
-    Bytearray.prototype.toString = function () {
-        return this.__str__();
-    };
+Bytearray.prototype.__le__ = function(other) {
+    if (other !== None) {
+        return this.valueOf() <= other;
+    }
+    return false;
+};
 
-    Bytearray.prototype.valueOf = function() {
-        return this.val;
-    };
+Bytearray.prototype.__eq__ = function(other) {
+    var types = require('../types');
 
-    /**************************************************
-     * Type conversions
-     **************************************************/
-
-    Bytearray.prototype.__bool__ = function() {
-        return this.val.length > 0;
-    };
-
-    Bytearray.prototype.__repr__ = function() {
-        return this.__str__();
-    };
-
-    Bytearray.prototype.__str__ = function() {
-        return "bytearray(" +  this.val.toString() + ")";
-    };
-
-    Bytearray.prototype.__iter__ = function() {
-        if (this.val.__iter__) {
-            return this.val.__iter__();
+    if (other !== None) {
+        var val;
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float])
+                ) {
+            return false;
         } else {
-            return new Bytearray.prototype.BytearrayIterator(this.val);
+            return this.valueOf() === val;
         }
-    };
+    }
+    return this.valueOf() === '';
+};
 
-    /**************************************************
-     * Comparison operators
-     **************************************************/
-
-    Bytearray.prototype.__lt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() < other;
+Bytearray.prototype.__ne__ = function(other) {
+    if (other !== None) {
+        var val;
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float])
+                ) {
+            return true;
+        } else {
+            return this.valueOf() !== val;
         }
-        return false;
-    };
+    }
+    return this.valueOf() !== '';
+};
 
-    Bytearray.prototype.__le__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() <= other;
-        }
-        return false;
-    };
+Bytearray.prototype.__gt__ = function(other) {
+    if (other !== None) {
+        return this.valueOf() > other;
+    }
+    return false;
+};
 
-    Bytearray.prototype.__eq__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            var val;
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float])
-                    ) {
-                return false;
-            } else {
-                return this.valueOf() === val;
-            }
-        }
-        return this.valueOf() === '';
-    };
+Bytearray.prototype.__ge__ = function(other) {
+    if (other !== None) {
+        return this.valueOf() >= other;
+    }
+    return false;
+};
 
-    Bytearray.prototype.__ne__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            var val;
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float])
-                    ) {
-                return true;
-            } else {
-                return this.valueOf() !== val;
-            }
-        }
-        return this.valueOf() !== '';
-    };
+Bytearray.prototype.__contains__ = function(other) {
+    if (other !== None) {
+        return this.valueOf().hasOwnProperty(other);
+    }
+    return false;
+};
 
-    Bytearray.prototype.__gt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() > other;
-        }
-        return false;
-    };
+/**************************************************
+ * Unary operators
+ **************************************************/
 
-    Bytearray.prototype.__ge__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf() >= other;
-        }
-        return false;
-    };
+Bytearray.prototype.__pos__ = function() {
+    return new Bytearray(+this.valueOf());
+};
 
-    Bytearray.prototype.__contains__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            return this.valueOf().hasOwnProperty(other);
-        }
-        return false;
-    };
+Bytearray.prototype.__neg__ = function() {
+    return new Bytearray(-this.valueOf());
+};
 
-    /**************************************************
-     * Unary operators
-     **************************************************/
+Bytearray.prototype.__not__ = function() {
+    return new Bytearray(!this.valueOf());
+};
 
-    Bytearray.prototype.__pos__ = function() {
-        return new Bytearray(+this.valueOf());
-    };
+Bytearray.prototype.__invert__ = function() {
+    return new Bytearray(~this.valueOf());
+};
 
-    Bytearray.prototype.__neg__ = function() {
-        return new Bytearray(-this.valueOf());
-    };
+/**************************************************
+ * Binary operators
+ **************************************************/
 
-    Bytearray.prototype.__not__ = function() {
-        return new Bytearray(!this.valueOf());
-    };
+Bytearray.prototype.__pow__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__pow__ has not been implemented");
+};
 
-    Bytearray.prototype.__invert__ = function() {
-        return new Bytearray(~this.valueOf());
-    };
+Bytearray.prototype.__div__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__div__ has not been implemented");
+};
 
-    /**************************************************
-     * Binary operators
-     **************************************************/
+Bytearray.prototype.__floordiv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__floordiv__ has not been implemented");
+};
 
-    Bytearray.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__pow__ has not been implemented");
-    };
+Bytearray.prototype.__truediv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__truediv__ has not been implemented");
+};
 
-    Bytearray.prototype.__div__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__div__ has not been implemented");
-    };
+Bytearray.prototype.__mul__ = function(other) {
+    throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'");
+};
 
-    Bytearray.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__floordiv__ has not been implemented");
-    };
+Bytearray.prototype.__mod__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__mod__ has not been implemented");
+};
 
-    Bytearray.prototype.__truediv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__truediv__ has not been implemented");
-    };
+Bytearray.prototype.__add__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__add__ has not been implemented");
+};
 
-    Bytearray.prototype.__mul__ = function(other) {
-        throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
-    };
+Bytearray.prototype.__sub__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__sub__ has not been implemented");
+};
 
-    Bytearray.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__mod__ has not been implemented");
-    };
+Bytearray.prototype.__getitem__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__getitem__ has not been implemented");
+};
 
-    Bytearray.prototype.__add__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__add__ has not been implemented");
-    };
+Bytearray.prototype.__lshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__lshift__ has not been implemented");
+};
 
-    Bytearray.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__sub__ has not been implemented");
-    };
+Bytearray.prototype.__rshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__rshift__ has not been implemented");
+};
 
-    Bytearray.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__getitem__ has not been implemented");
-    };
+Bytearray.prototype.__and__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__and__ has not been implemented");
+};
 
-    Bytearray.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__lshift__ has not been implemented");
-    };
+Bytearray.prototype.__xor__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__xor__ has not been implemented");
+};
 
-    Bytearray.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__rshift__ has not been implemented");
-    };
+Bytearray.prototype.__or__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__or__ has not been implemented");
+};
 
-    Bytearray.prototype.__and__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__and__ has not been implemented");
-    };
+/**************************************************
+ * Inplace operators
+ **************************************************/
 
-    Bytearray.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__xor__ has not been implemented");
-    };
+Bytearray.prototype.__idiv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__idiv__ has not been implemented");
+};
 
-    Bytearray.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__or__ has not been implemented");
-    };
+Bytearray.prototype.__ifloordiv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__ifloordiv__ has not been implemented");
+};
 
-    /**************************************************
-     * Inplace operators
-     **************************************************/
+Bytearray.prototype.__itruediv__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__itruediv__ has not been implemented");
+};
 
-    Bytearray.prototype.__idiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__idiv__ has not been implemented");
-    };
+Bytearray.prototype.__iadd__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__iadd__ has not been implemented");
+};
 
-    Bytearray.prototype.__ifloordiv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__ifloordiv__ has not been implemented");
-    };
+Bytearray.prototype.__isub__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__isub__ has not been implemented");
+};
 
-    Bytearray.prototype.__itruediv__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__itruediv__ has not been implemented");
-    };
+Bytearray.prototype.__imul__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__imul__ has not been implemented");
+};
 
-    Bytearray.prototype.__iadd__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__iadd__ has not been implemented");
-    };
+Bytearray.prototype.__imod__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__imod__ has not been implemented");
+};
 
-    Bytearray.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__isub__ has not been implemented");
-    };
+Bytearray.prototype.__ipow__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__ipow__ has not been implemented");
+};
 
-    Bytearray.prototype.__imul__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__imul__ has not been implemented");
-    };
+Bytearray.prototype.__ilshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__ilshift__ has not been implemented");
+};
 
-    Bytearray.prototype.__imod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__imod__ has not been implemented");
-    };
+Bytearray.prototype.__irshift__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__irshift__ has not been implemented");
+};
 
-    Bytearray.prototype.__ipow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__ipow__ has not been implemented");
-    };
+Bytearray.prototype.__iand__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__iand__ has not been implemented");
+};
 
-    Bytearray.prototype.__ilshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__ilshift__ has not been implemented");
-    };
+Bytearray.prototype.__ixor__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__ixor__ has not been implemented");
+};
 
-    Bytearray.prototype.__irshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__irshift__ has not been implemented");
-    };
+Bytearray.prototype.__ior__ = function(other) {
+    throw new batavia.builtins.NotImplementedError("Bytearray.__ior__ has not been implemented");
+};
 
-    Bytearray.prototype.__iand__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__iand__ has not been implemented");
-    };
+/**************************************************
+ * Methods
+ **************************************************/
 
-    Bytearray.prototype.__ixor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__ixor__ has not been implemented");
-    };
+Bytearray.prototype.copy = function() {
+    return new Bytearray(this.valueOf());
+};
 
-    Bytearray.prototype.__ior__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("Bytearray.__ior__ has not been implemented");
-    };
+/**************************************************
+ * Bytearray Iterator
+ **************************************************/
 
-    /**************************************************
-     * Methods
-     **************************************************/
+Bytearray.prototype.BytearrayIterator = function(data) {
+    PyObject.call(this);
+    this.index = 0;
+    this.data = data;
+};
 
-    Bytearray.prototype.copy = function() {
-        return new Bytearray(this.valueOf());
-    };
+Bytearray.prototype.BytearrayIterator.prototype = Object.create(PyObject.prototype);
+Bytearray.prototype.BytearrayIterator.prototype.__class__ = new Type('bytearray_iterator');
+Bytearray.prototype.BytearrayIterator.prototype.constructor = Bytearray.prototype.BytearrayIterator;
 
-    /**************************************************
-     * Bytearray Iterator
-     **************************************************/
+Bytearray.prototype.BytearrayIterator.prototype.__iter__ = function() {
+    return this;
+};
 
-    Bytearray.prototype.BytearrayIterator = function(data) {
-        Object.call(this);
-        this.index = 0;
-        this.data = data;
-    };
+Bytearray.prototype.BytearrayIterator.prototype.__next__ = function() {
+    var types = require('../types');
 
-    Bytearray.prototype.BytearrayIterator.prototype = Object.create(Object.prototype);
+    if (this.index >= this.data.length) {
+        throw new exceptions.StopIteration();
+    }
+    var retval = this.data[this.index];
+    this.index++;
+    return new types.Int(retval);
+};
 
-    Bytearray.prototype.BytearrayIterator.prototype.__iter__ = function() {
-        return this;
-    };
+Bytearray.prototype.BytearrayIterator.prototype.__str__ = function() {
+    return "<bytearray_iterator object at 0x99999999>";
+};
 
-    Bytearray.prototype.BytearrayIterator.prototype.__next__ = function() {
-        if (this.index >= this.data.length) {
-            throw new batavia.builtins.StopIteration();
-        }
-        var retval = this.data[this.index];
-        this.index++;
-        return new batavia.types.Int(retval);
-    };
 
-    Bytearray.prototype.BytearrayIterator.prototype.__str__ = function() {
-        return "<bytearray_iterator object at 0x99999999>";
-    };
+/**************************************************
+ * Module exports
+ **************************************************/
 
-    Bytearray.prototype.BytearrayIterator.prototype.constructor = Bytearray.prototype.BytearrayIterator;
-    Bytearray.prototype.BytearrayIterator.prototype.__class__ = new types.Type('bytearray_iterator');
-
-    /**************************************************/
-
-    return Bytearray;
-}();
+module.exports = Bytearray;

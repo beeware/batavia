@@ -4,24 +4,24 @@
  */
 
 const dis = {
-  CO_GENERATOR: 32,  // flag for "this code uses yield"
+    CO_GENERATOR: 32,  // flag for "this code uses yield"
 
-  hasconst: {},
-  hasname: {},
-  hasjrel: {},
-  hasjabs: {},
-  haslocal: {},
-  hascompare: {},
-  hasfree: {},
-  hasnargs: {},
+    hasconst: {},
+    hasname: {},
+    hasjrel: {},
+    hasjabs: {},
+    haslocal: {},
+    hascompare: {},
+    hasfree: {},
+    hasnargs: {},
 
-  opmap: {},
-  opname: [],
+    opmap: {},
+    opname: [],
 
-  unary_ops: {},
-  binary_ops: {},
-  inplace_ops: {},
-  // slice_ops: {},
+    unary_ops: {},
+    binary_ops: {},
+    inplace_ops: {},
+    // slice_ops: {},
 }
 
 def_op = function(name, op) {
@@ -212,13 +212,3 @@ def_op('EXTENDED_ARG', 144);
 dis.EXTENDED_ARG = 144;
 
 module.exports = dis
-
-//
-// module.exports = function () {
-//
-//     var dis = {
-//
-//     }
-//
-//     return dis;
-// }()

@@ -1,11 +1,20 @@
-var types = require('./Type');
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
 
-module.exports = function () {
-    function Ellipsis(args, kwargs) {
-        types.Object.call(this);
-    }
+/*************************************************************************
+ * A Python ellipsis type
+ *************************************************************************/
 
-    Ellipsis.prototype.__class__ = new types.Type('ellipsis');
+function Ellipsis(args, kwargs) {
+    PyObject.call(this);
+}
 
-    return Ellipsis;
-}();
+Ellipsis.prototype = Object.create(PyObject.prototype);
+Ellipsis.prototype.__class__ = new Type('ellipsis');
+Ellipsis.prototype.constructor = Ellipsis;
+
+/**************************************************
+ * Module exports
+ **************************************************/
+
+module.exports = Ellipsis;

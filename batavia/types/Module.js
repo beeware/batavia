@@ -1,19 +1,27 @@
-var types = require('./Type');
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
 
-module.exports = function() {
-    function Module(name, locals) {
-        types.Object.call(this);
+/*************************************************************************
+ * A Python module type
+ *************************************************************************/
 
-        this.__name__ = name;
-        for (var key in locals) {
-            if (locals.hasOwnProperty(key)) {
-                this[key] = locals[key];
-            }
+function Module(name, locals) {
+    PyObject.call(this);
+
+    this.__name__ = name;
+    for (var key in locals) {
+        if (locals.hasOwnProperty(key)) {
+            this[key] = locals[key];
         }
     }
+}
 
-    Module.prototype = Object.create(types.Object.prototype);
-    Module.prototype.__class__ = new types.Type('module');
+Module.prototype = Object.create(PyObject.prototype);
+Module.prototype.__class__ = new Type('module');
+Module.prototype.constructor = Module;
 
-    return Module;
-}();
+/**************************************************
+ * Module exports
+ **************************************************/
+
+module.exports = Module;

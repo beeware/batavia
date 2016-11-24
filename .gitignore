@@ -11,7 +11,8 @@ distribute-*
 /batavia*.js
 /batavia*.min.js
 /batavia*.map
-/batavia/modules/stdlib/*.js
+/batavia/stdlib.js
+/batavia/stdlib/*.js
 /tests/temp
 env
 .eggs/

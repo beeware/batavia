@@ -1,62 +1,71 @@
-var types = require('./Type');
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
+var exceptions = require('../core').exceptions;
 
-module.exports = function() {
-    function Generator(frame, vm) {
-        types.Object.call(this);
+/*************************************************************************
+ * A Python generator type.
+ *************************************************************************/
 
-        this.vm = vm;
-        this.gi_frame = frame;
-        this.started = false;
-        this.finished = false;
-    };
+function Generator(frame, vm) {
+    PyObject.call(this);
 
-    Generator.prototype = Object.create(Object.prototype);
-    Generator.prototype.__class__ = new types.Type('generator');
+    this.vm = vm;
+    this.gi_frame = frame;
+    this.started = false;
+    this.finished = false;
+};
 
-    Generator.prototype.__iter__ = function() {
-        return this;
+Generator.prototype = Object.create(PyObject.prototype);
+Generator.prototype.__class__ = new Type('generator');
+
+Generator.prototype.__iter__ = function() {
+    return this;
+}
+
+Generator.prototype.__next__ = function() {
+    return this.send(null)
+}
+
+Generator.prototype.send = function(value) {
+    if (typeof value === 'undefined') {
+        value = null;
     }
-
-    Generator.prototype.__next__ = function() {
-        return this.send(null)
+    if (!this.started) {
+        if (value !== null) {
+            // It's illegal to send a non-None value on first call.
+            // TODO: raise a proper TypeError
+            throw 'lolnope'
+        }
+        this.started = true
     }
-
-    Generator.prototype.send = function(value) {
-        if (typeof value === 'undefined') {
-            value = null;
-        }
-        if (!this.started) {
-            if (value !== null) {
-                // It's illegal to send a non-None value on first call.
-                // TODO: raise a proper TypeError
-                throw 'lolnope'
-            }
-            this.started = true
-        }
-        this.gi_frame.stack.push(value);
-        var yieldval = this.vm.run_frame(this.gi_frame)
-        if (this.finished) {
-            throw new batavia.builtins.StopIteration();
-        }
-        return yieldval;
+    this.gi_frame.stack.push(value);
+    var yieldval = this.vm.run_frame(this.gi_frame)
+    if (this.finished) {
+        throw new exceptions.StopIteration();
     }
+    return yieldval;
+}
 
-    Generator.prototype['throw'] = function(type, value, traceback) {
-        this.vm.last_exception = {
-            'exc_type': type,
-            'value': value !== null ? value : new type(),
-            'traceback': traceback
-        }
-        var yieldval = this.vm.run_frame(this.gi_frame)
-        if (this.finished) {
-            throw new batavia.builtins.StopIteration();
-        }
-        return yieldval;
+Generator.prototype['throw'] = function(type, value, traceback) {
+    this.vm.last_exception = {
+        'exc_type': type,
+        'value': value !== null ? value : new type(),
+        'traceback': traceback
     }
-
-    Generator.prototype['close'] = function() {
-        return this['throw'](new batavia.builtins.StopIteration());
+    var yieldval = this.vm.run_frame(this.gi_frame)
+    if (this.finished) {
+        throw new exceptions.StopIteration();
     }
+    return yieldval;
+}
 
-    return Generator;
-}();
+Generator.prototype['close'] = function() {
+    return this['throw'](new exceptions.StopIteration());
+}
+
+
+/**************************************************
+ * Module exports
+ **************************************************/
+
+module.exports = Generator;

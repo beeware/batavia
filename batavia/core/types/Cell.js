@@ -17,18 +17,16 @@
  *        actual value.
  */
 
-module.exports = function() {
-    var Cell = function(value) {
-        this.contents = value;
-    };
+var Cell = function(value) {
+    this.contents = value;
+}
 
-    Cell.prototype.get = function() {
-        return this.contents;
-    };
+Cell.prototype.get = function() {
+    return this.contents;
+}
 
-    Cell.prototype.set = function(value) {
-        this.contents = value;
-    };
+Cell.prototype.set = function(value) {
+    this.contents = value;
+}
 
-    return Cell
-}();
+module.exports = Cell;

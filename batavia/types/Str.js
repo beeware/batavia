@@ -1,543 +1,576 @@
-var types = require('./Type');
 var Buffer = require('buffer').Buffer;
 
+var constants = require('../core').constants;
+var Type = require('../core').Type;
+var exceptions = require('../core').exceptions;
+var type_name = require('../core').type_name;
+var None = require('../core').None;
 
-module.exports = function() {
-    var utils = require('../utils');
+/*************************************************************************
+ * Modify String to behave like a Python String
+ *************************************************************************/
 
-    /*************************************************************************
-     * Modify String to behave like a Python String
-     *************************************************************************/
+var Str = String;
 
-    String.prototype.__class__ = new types.Type('str');
+Str.prototype.__class__ = new Type('str');
 
-    /**************************************************
-     * Type conversions
-     **************************************************/
+/**************************************************
+ * Type conversions
+ **************************************************/
 
-    String.prototype.__bool__ = function() {
-        return this.length > 0;
-    };
+Str.prototype.__bool__ = function() {
+    return this.length > 0;
+}
 
-    String.prototype.__iter__ = function() {
-        return new String.prototype.StrIterator(this);
-    };
+Str.prototype.__iter__ = function() {
+    return new Str.prototype.StrIterator(this);
+}
 
-    String.prototype.__repr__ = function() {
-        // we have to replace all non-printable characters
-        return "'" + this.toString()
-            .replace(/\\/g, "\\\\")
-            .replace(/'/g, "\\'")
-            .replace(/\x7F/g, "\\x7f")
-            .replace(/[\u0000-\u001F]/g, function (match) {
-                var code = match.charCodeAt(0);
-                switch (code) {
-                case 9:
-                    return "\\t";
-                case 10:
-                    return "\\n";
-                case 13:
-                    return "\\r";
-                default:
-                    var hex = code.toString(16);
-                    if (hex.length == 1) {
-                      hex = "0" + hex;
-                    }
-                    return "\\x" + hex;
+Str.prototype.__repr__ = function() {
+    // we have to replace all non-printable characters
+    return "'" + this.toString()
+        .replace(/\\/g, "\\\\")
+        .replace(/'/g, "\\'")
+        .replace(/\x7F/g, "\\x7f")
+        .replace(/[\u0000-\u001F]/g, function (match) {
+            var code = match.charCodeAt(0);
+            switch (code) {
+            case 9:
+                return "\\t";
+            case 10:
+                return "\\n";
+            case 13:
+                return "\\r";
+            default:
+                var hex = code.toString(16);
+                if (hex.length == 1) {
+                  hex = "0" + hex;
                 }
-            }) + "'";
-    };
-
-    String.prototype.__str__ = function() {
-        return this.toString();
-    };
-
-    /**************************************************
-     * Attribute manipulation
-     **************************************************/
-
-    String.prototype.__getattr__ = function(attr) {
-        if (this[attr] === undefined) {
-            throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
-        }
-        return this[attr];
-    },
-
-    String.prototype.__setattr__ = function(attr, value) {
-        throw new batavia.builtins.AttributeError("'str' object has no attribute '" + attr + "'");
-    },
-    /**************************************************
-     * Comparison operators
-     **************************************************/
-
-    String.prototype.__lt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                        batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                        batavia.types.Bytearray, batavia.types.Bytes, batavia.types.Type,
-                        batavia.types.Complex, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Set, batavia.types.Slice,
-                        batavia.types.FrozenSet
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: str() < " + utils.type_name(other) + "()");
-            } else {
-                return this.valueOf() < other;
+                return "\\x" + hex;
             }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: str() < NoneType()");
-        }
-    };
+        }) + "'";
+}
 
-    String.prototype.__le__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                        batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                        batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
-                        batavia.types.Type, batavia.types.Complex, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: str() <= " + utils.type_name(other) + "()");
-            } else {
-                return this.valueOf() <= other;
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: str() <= NoneType()");
-        }
-    };
+Str.prototype.__str__ = function() {
+    return this.toString();
+}
 
-    String.prototype.__eq__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                        batavia.types.List, batavia.types.Dict, batavia.types.Tuple
-                    ])) {
-                return false;
-            } else {
-                return this.valueOf() === other.valueOf();
-            }
+/**************************************************
+ * Attribute manipulation
+ **************************************************/
+
+Str.prototype.__getattr__ = function(attr) {
+    if (this[attr] === undefined) {
+        throw new exceptions.AttributeError("'str' object has no attribute '" + attr + "'");
+    }
+    return this[attr];
+},
+
+Str.prototype.__setattr__ = function(attr, value) {
+    throw new exceptions.AttributeError("'str' object has no attribute '" + attr + "'");
+},
+/**************************************************
+ * Comparison operators
+ **************************************************/
+
+Str.prototype.__lt__ = function(other) {
+    var types = require('../types');
+
+    if (other !== None) {
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float,
+                    types.List, types.Dict, types.Tuple,
+                    types.Bytearray, types.Bytes, types.Type,
+                    types.Complex, types.NotImplementedType,
+                    types.Range, types.Set, types.Slice,
+                    types.FrozenSet
+                ])) {
+            throw new exceptions.TypeError("unorderable types: str() < " + type_name(other) + "()");
         } else {
+            return this.valueOf() < other;
+        }
+    } else {
+        throw new exceptions.TypeError("unorderable types: str() < NoneType()");
+    }
+}
+
+Str.prototype.__le__ = function(other) {
+    var types = require('../types');
+
+    if (other !== None) {
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float,
+                    types.List, types.Dict, types.Tuple,
+                    types.Set, types.Bytearray, types.Bytes,
+                    types.Type, types.Complex, types.NotImplementedType,
+                    types.Range, types.Slice, types.FrozenSet
+                ])) {
+            throw new exceptions.TypeError("unorderable types: str() <= " + type_name(other) + "()");
+        } else {
+            return this.valueOf() <= other;
+        }
+    } else {
+        throw new exceptions.TypeError("unorderable types: str() <= NoneType()");
+    }
+}
+
+Str.prototype.__eq__ = function(other) {
+    var types = require('../types');
+
+    if (other !== None) {
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float,
+                    types.List, types.Dict, types.Tuple
+                ])) {
             return false;
-        }
-    };
-
-    String.prototype.__ne__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                        batavia.types.List, batavia.types.Dict, batavia.types.Tuple
-
-                    ])) {
-                return true;
-            } else {
-                return this.valueOf() !== other.valueOf();
-            }
         } else {
-            return true;
+            return this.valueOf() === other.valueOf();
         }
-    };
-
-    String.prototype.__gt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                        batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                        batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
-                        batavia.types.Type, batavia.types.Complex,
-                        batavia.types.NotImplementedType, batavia.types.Range,
-                        batavia.types.Slice, batavia.types.FrozenSet
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: str() > " + utils.type_name(other) + "()");
-            } else {
-                return this.valueOf() > other;
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: str() > NoneType()");
-        }
-    };
-
-    String.prototype.__ge__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (utils.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Int, batavia.types.Float,
-                        batavia.types.List, batavia.types.Dict, batavia.types.Tuple,
-                        batavia.types.Set, batavia.types.Bytearray, batavia.types.Bytes,
-                        batavia.types.Type, batavia.types.Complex, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Slice, batavia.types.FrozenSet
-
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: str() >= " + utils.type_name(other) + "()");
-            } else {
-                return this.valueOf() >= other;
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: str() >= NoneType()");
-        }
-    };
-
-    String.prototype.__contains__ = function(other) {
+    } else {
         return false;
-    };
+    }
+}
 
-    /**************************************************
-     * Unary operators
-     **************************************************/
+Str.prototype.__ne__ = function(other) {
+    var types = require('../types');
 
-    String.prototype.__pos__ = function() {
-        throw new batavia.builtins.TypeError("bad operand type for unary +: 'str'");
-    };
+    if (other !== None) {
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float,
+                    types.List, types.Dict, types.Tuple
 
-    String.prototype.__neg__ = function() {
-        throw new batavia.builtins.TypeError("bad operand type for unary -: 'str'");
-    };
-
-    String.prototype.__not__ = function() {
-        return this.length == 0;
-    };
-
-    String.prototype.__invert__ = function() {
-        throw new batavia.builtins.TypeError("bad operand type for unary ~: 'str'");
-    };
-
-    /**************************************************
-     * Binary operators
-     **************************************************/
-
-    String.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '"+ utils.type_name(other) + "'");
-    };
-
-    String.prototype.__div__ = function(other) {
-        return this.__truediv__(other);
-    };
-
-    String.prototype.__floordiv__ = function(other) {
-        if (utils.isinstance(other, [batavia.types.Complex])){
-            throw new batavia.builtins.TypeError("can't take floor of complex number.")
+                ])) {
+            return true;
         } else {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'str' and '" + utils.type_name(other) + "'");
+            return this.valueOf() !== other.valueOf();
         }
-    };
+    } else {
+        return true;
+    }
+}
 
-    String.prototype.__truediv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'str' and '" + utils.type_name(other) + "'");
-    };
+Str.prototype.__gt__ = function(other) {
+    var types = require('../types');
 
-    String.prototype.__mul__ = function(other) {
-        var result;
-        if (utils.isinstance(other, batavia.types.Int)) {
-            result = '';
-            for (var i = 0; i < other.valueOf(); i++) {
-                result += this.valueOf();
-            }
-            return result;
-        } else if (utils.isinstance(other, batavia.types.Bool)) {
-            result = other === true ? this.valueOf() : '';
-            return result;
+    if (other !== None) {
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float,
+                    types.List, types.Dict, types.Tuple,
+                    types.Set, types.Bytearray, types.Bytes,
+                    types.Type, types.Complex,
+                    types.NotImplementedType, types.Range,
+                    types.Slice, types.FrozenSet
+                ])) {
+            throw new exceptions.TypeError("unorderable types: str() > " + type_name(other) + "()");
         } else {
-            throw new batavia.builtins.TypeError("can't multiply sequence by non-int of type '" + utils.type_name(other) + "'");
+            return this.valueOf() > other;
         }
-    };
+    } else {
+        throw new exceptions.TypeError("unorderable types: str() > NoneType()");
+    }
+}
 
-    String.prototype.__mod__ = function(other) {
-        if (utils.isinstance(other, batavia.types.Tuple)) {
-            return utils._substitute(this, other);
+Str.prototype.__ge__ = function(other) {
+    var types = require('../types');
+
+    if (other !== None) {
+        if (types.isinstance(other, [
+                    types.Bool, types.Int, types.Float,
+                    types.List, types.Dict, types.Tuple,
+                    types.Set, types.Bytearray, types.Bytes,
+                    types.Type, types.Complex, types.NotImplementedType,
+                    types.Range, types.Slice, types.FrozenSet
+
+                ])) {
+            throw new exceptions.TypeError("unorderable types: str() >= " + type_name(other) + "()");
         } else {
-            return utils._substitute(this, [other]);
+            return this.valueOf() >= other;
         }
-    };
+    } else {
+        throw new exceptions.TypeError("unorderable types: str() >= NoneType()");
+    }
+}
 
-    String.prototype.__add__ = function(other) {
-        if (utils.isinstance(other, batavia.types.Str)) {
-            return this.valueOf() + other.valueOf();
-        } else {
-            throw new batavia.builtins.TypeError("Can't convert '" + utils.type_name(other) + "' object to str implicitly");
+Str.prototype.__contains__ = function(other) {
+    return false;
+}
+
+/**************************************************
+ * Unary operators
+ **************************************************/
+
+Str.prototype.__pos__ = function() {
+    throw new exceptions.TypeError("bad operand type for unary +: 'str'");
+}
+
+Str.prototype.__neg__ = function() {
+    throw new exceptions.TypeError("bad operand type for unary -: 'str'");
+}
+
+Str.prototype.__not__ = function() {
+    return this.length == 0;
+}
+
+Str.prototype.__invert__ = function() {
+    throw new exceptions.TypeError("bad operand type for unary ~: 'str'");
+}
+
+/**************************************************
+ * Binary operators
+ **************************************************/
+
+Str.prototype.__pow__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '"+ type_name(other) + "'");
+}
+
+Str.prototype.__div__ = function(other) {
+    return this.__truediv__(other);
+}
+
+Str.prototype.__floordiv__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [types.Complex])){
+        throw new exceptions.TypeError("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError("unsupported operand type(s) for //: 'str' and '" + type_name(other) + "'");
+    }
+}
+
+Str.prototype.__truediv__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for /: 'str' and '" + type_name(other) + "'");
+}
+
+Str.prototype.__mul__ = function(other) {
+    var types = require('../types');
+
+    var result;
+    if (types.isinstance(other, types.Int)) {
+        result = '';
+        for (var i = 0; i < other.valueOf(); i++) {
+            result += this.valueOf();
         }
-    };
+        return result;
+    } else if (types.isinstance(other, types.Bool)) {
+        result = other === true ? this.valueOf() : '';
+        return result;
+    } else {
+        throw new exceptions.TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'");
+    }
+}
 
-    String.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for -: 'str' and '" + utils.type_name(other) + "'");
-    };
+Str.prototype.__mod__ = function(other) {
+    var types = require('../types');
 
-    String.prototype.__getitem__ = function(index) {
-        if (utils.isinstance(index, batavia.types.Bool)) {
-            index = index.__int__();
-        }
-        if (utils.isinstance(index, batavia.types.Int)) {
-            var idx = index.int32();
-            if (idx < 0) {
-                if (-idx > this.length) {
-                    throw new batavia.builtins.IndexError("string index out of range");
-                } else {
-                    return this[this.length + idx];
-                }
+    if (types.isinstance(other, types.Tuple)) {
+        return utils._substitute(this, other);
+    } else {
+        return utils._substitute(this, [other]);
+    }
+}
+
+Str.prototype.__add__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, Str)) {
+        return this.valueOf() + other.valueOf();
+    } else {
+        throw new exceptions.TypeError("Can't convert '" + type_name(other) + "' object to str implicitly");
+    }
+}
+
+Str.prototype.__sub__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for -: 'str' and '" + type_name(other) + "'");
+}
+
+Str.prototype.__getitem__ = function(index) {
+    var types = require('../types');
+
+    if (types.isinstance(index, types.Bool)) {
+        index = index.__int__();
+    }
+    if (types.isinstance(index, types.Int)) {
+        var idx = index.int32();
+        if (idx < 0) {
+            if (-idx > this.length) {
+                throw new exceptions.IndexError("string index out of range");
             } else {
-                if (idx >= this.length) {
-                    throw new batavia.builtins.IndexError("string index out of range");
-                } else {
-                    return this[idx];
-                }
+                return this[this.length + idx];
             }
-        } else if (utils.isinstance(index, batavia.types.Slice)) {
-            var start, stop, step;
-            start = index.start === null ? undefined : index.start.valueOf();
-            stop = index.stop === null ? undefined : index.stop.valueOf();
-            step = index.step.valueOf();
-
-            if (step === 0) {
-                throw new batavia.builtins.ValueError("slice step cannot be zero");
-            }
-
-            // clone string
-            var result = this.valueOf();
-
-            // handle step
-            if (step === undefined || step === 1) {
-                return result.slice(start, stop);
-            } else if (step > 0) {
-                result = result.slice(start, stop);
-            } else if (step < 0) {
-                // adjust start/stop to swap inclusion/exlusion in slice
-                if (start !== undefined && start !== -1) {
-                    start = start + 1;
-                } else if (start === -1) {
-                    start = result.length;
-                }
-                if (stop !== undefined && stop !== -1) {
-                    stop = stop + 1;
-                } else if (stop === -1) {
-                    stop = result.length;
-                }
-
-                result = result.slice(stop, start).split('').reverse().join('');
-            }
-
-            var steppedResult = "";
-            for (var i = 0; i < result.length; i = i + Math.abs(step)) {
-                steppedResult += result[i];
-            }
-
-            result = steppedResult;
-
-            return result;
         } else {
-            throw new batavia.builtins.TypeError("string indices must be integers");
-        }
-    };
-
-    String.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for <<: 'str' and '" + utils.type_name(other) + "'"
-        );
-    };
-
-    String.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for >>: 'str' and '" + utils.type_name(other) + "'"
-        );
-    };
-
-    String.prototype.__and__ = function(other) {
-        throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for &: 'str' and '" + utils.type_name(other) + "'"
-        );
-    };
-
-    String.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for ^: 'str' and '" + utils.type_name(other) + "'"
-        );
-    };
-
-    String.prototype.__or__ = function(other) {
-        throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for |: 'str' and '" + utils.type_name(other) + "'"
-        );
-    };
-
-    /**************************************************
-     * Inplace operators
-     **************************************************/
-
-    String.prototype.__ifloordiv__ = function(other) {
-
-        if (utils.isinstance(other, [batavia.types.Complex])){
-            throw new batavia.builtins.TypeError("can't take floor of complex number.")
-        } else {
-            throw new batavia.builtins.TypeError("unsupported operand type(s) for //=: 'str' and '" + utils.type_name(other) + "'");
-        }
-    };
-
-    String.prototype.__itruediv__ = function(other) {
-
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for /=: 'str' and '" + utils.type_name(other) + "'");
-    };
-
-    String.prototype.__iadd__ = function(other) {
-        if (utils.isinstance(other, batavia.types.Str)) {
-            return this.valueOf() + other.valueOf();
-        } else {
-            throw new batavia.builtins.TypeError("Can't convert '" + utils.type_name(other) + "' object to str implicitly");
-        }
-    };
-
-    String.prototype.__isub__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for -=: 'str' and '" + utils.type_name(other) + "'");
-    };
-
-    String.prototype.__imul__ = function(other) {
-        return this.__mul__(other);
-
-    };
-
-    String.prototype.__imod__ = function(other) {
-        if (utils.isinstance(other, [
-                batavia.types.Bool,
-                batavia.types.Float,
-                batavia.types.FrozenSet,
-                batavia.types.Int,
-                batavia.types.NoneType,
-                batavia.types.Set,
-                batavia.types.Str,
-                batavia.types.Tuple
-            ])) {
-            throw new batavia.builtins.TypeError("not all arguments converted during string formatting");
-        } else {
-            throw new batavia.builtins.NotImplementedError("String.__imod__ has not been implemented");
-        }
-    };
-
-    String.prototype.__ipow__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + utils.type_name(other) + "'");
-
-    };
-
-    String.prototype.__ilshift__ = function(other) {
-        throw new batavia.builtins.TypeError(
-            "unsupported operand type(s) for <<=: 'str' and '" + utils.type_name(other) + "'"
-        )
-    };
-
-    String.prototype.__irshift__ = function(other) {
-
-
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for >>=: 'str' and '" + utils.type_name(other) + "'");
-    };
-
-    String.prototype.__iand__ = function(other) {
-
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for &=: 'str' and '" + utils.type_name(other) + "'");
-
-    };
-
-    String.prototype.__ixor__ = function(other) {
-
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for ^=: 'str' and '" + utils.type_name(other) + "'");
-    };
-
-    String.prototype.__ior__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for |=: 'str' and '" + utils.type_name(other) + "'");
-
-    };
-
-    /**************************************************
-     * Methods
-     **************************************************/
-
-    String.prototype.join = function(iter) {
-        var l = new batavia.types.List(iter);
-        for (var i = 0; i < l.length; i++) {
-            if (!utils.isinstance(l[i], batavia.types.Str)) {
-                throw new batavia.builtins.TypeError("sequence item " + i + ": expected str instance, " + utils.type_name(l[i]) + " found");
+            if (idx >= this.length) {
+                throw new exceptions.IndexError("string index out of range");
+            } else {
+                return this[idx];
             }
         }
-        return l.join(this);
-    };
+    } else if (types.isinstance(index, types.Slice)) {
+        var start, stop, step;
+        start = index.start === null ? undefined : index.start.valueOf();
+        stop = index.stop === null ? undefined : index.stop.valueOf();
+        step = index.step.valueOf();
 
-    /**************************************************
-     * Str Iterator
-     **************************************************/
-
-    String.prototype.StrIterator = function (data) {
-        Object.call(this);
-        this.index = 0;
-        this.data = data;
-    };
-
-    String.prototype.StrIterator.prototype = Object.create(Object.prototype);
-
-    String.prototype.StrIterator.prototype.__next__ = function() {
-        var retval = this.data[this.index];
-        if (retval === undefined) {
-            throw new batavia.builtins.StopIteration();
+        if (step === 0) {
+            throw new exceptions.ValueError("slice step cannot be zero");
         }
-        this.index++;
-        return retval;
-    };
 
-    String.prototype.StrIterator.prototype.__str__ = function() {
-        return "<str_iterator object at 0x99999999>";
-    };
+        // clone string
+        var result = this.valueOf();
 
-    /**************************************************
-     * Methods
-     **************************************************/
+        // handle step
+        if (step === undefined || step === 1) {
+            return result.slice(start, stop);
+        } else if (step > 0) {
+            result = result.slice(start, stop);
+        } else if (step < 0) {
+            // adjust start/stop to swap inclusion/exlusion in slice
+            if (start !== undefined && start !== -1) {
+                start = start + 1;
+            } else if (start === -1) {
+                start = result.length;
+            }
+            if (stop !== undefined && stop !== -1) {
+                stop = stop + 1;
+            } else if (stop === -1) {
+                stop = result.length;
+            }
 
-    String.prototype.copy = function() {
-        return this.valueOf();
-    };
-
-    String.prototype.encode = function(encoding, errors) {
-        if (errors !== undefined) {
-            return new batavia.builtins.NotImplementedError(
-                "'errors' parameter of String.encode not implemented"
-            );
+            result = result.slice(stop, start).split('').reverse().join('');
         }
-        encoding = encoding.toLowerCase();
-        var encs = batavia.TEXT_ENCODINGS;
-        if (encs.ascii.indexOf(encoding) !== -1) {
-            return new batavia.types.Bytes(
-                Buffer.from(this.valueOf(), 'ascii'));
-        } else if (encs.latin_1.indexOf(encoding) !== -1) {
-            return new batavia.types.Bytes(
-                Buffer.from(this.valueOf(), 'latin1'));
-        } else if (encs.utf_8.indexOf(encoding) !== -1) {
-            return new batavia.types.Bytes(
-                Buffer.from(this.valueOf(), 'utf8'));
-        } else {
-            return new batavia.builtins.NotImplementedError(
-                "encoding not implemented or incorrect encoding"
-            );
+
+        var steppedResult = "";
+        for (var i = 0; i < result.length; i = i + Math.abs(step)) {
+            steppedResult += result[i];
         }
-    };
 
-    String.prototype.startswith = function (str) {
-        return this.slice(0, str.length) === str;
-    };
+        result = steppedResult;
 
-    String.prototype.__setattr__ = function (name, val) {
-        if (this.__proto__[name] === undefined) {
-            throw new batavia.builtins.AttributeError("'str' object has no attribute '" + name + "'");
-        } else {
-            throw new batavia.builtins.AttributeError("'str' object attribute '" + name + "' is read-only");
+        return result;
+    } else {
+        throw new exceptions.TypeError("string indices must be integers");
+    }
+}
+
+Str.prototype.__lshift__ = function(other) {
+    throw new exceptions.TypeError(
+        "unsupported operand type(s) for <<: 'str' and '" + type_name(other) + "'"
+    );
+}
+
+Str.prototype.__rshift__ = function(other) {
+    throw new exceptions.TypeError(
+        "unsupported operand type(s) for >>: 'str' and '" + type_name(other) + "'"
+    );
+}
+
+Str.prototype.__and__ = function(other) {
+    throw new exceptions.TypeError(
+        "unsupported operand type(s) for &: 'str' and '" + type_name(other) + "'"
+    );
+}
+
+Str.prototype.__xor__ = function(other) {
+    throw new exceptions.TypeError(
+        "unsupported operand type(s) for ^: 'str' and '" + type_name(other) + "'"
+    );
+}
+
+Str.prototype.__or__ = function(other) {
+    throw new exceptions.TypeError(
+        "unsupported operand type(s) for |: 'str' and '" + type_name(other) + "'"
+    );
+}
+
+/**************************************************
+ * Inplace operators
+ **************************************************/
+
+Str.prototype.__ifloordiv__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [types.Complex])){
+        throw new exceptions.TypeError("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError("unsupported operand type(s) for //=: 'str' and '" + type_name(other) + "'");
+    }
+}
+
+Str.prototype.__itruediv__ = function(other) {
+
+    throw new exceptions.TypeError("unsupported operand type(s) for /=: 'str' and '" + type_name(other) + "'");
+}
+
+Str.prototype.__iadd__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, Str)) {
+        return this.valueOf() + other.valueOf();
+    } else {
+        throw new exceptions.TypeError("Can't convert '" + type_name(other) + "' object to str implicitly");
+    }
+}
+
+Str.prototype.__isub__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for -=: 'str' and '" + type_name(other) + "'");
+}
+
+Str.prototype.__imul__ = function(other) {
+    return this.__mul__(other);
+};
+
+Str.prototype.__imod__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [
+            types.Bool,
+            types.Float,
+            types.FrozenSet,
+            types.Int,
+            types.NoneType,
+            types.Set,
+            Str,
+            types.Tuple
+        ])) {
+        throw new exceptions.TypeError("not all arguments converted during string formatting");
+    } else {
+        throw new exceptions.NotImplementedError("str.__imod__ has not been implemented");
+    }
+}
+
+Str.prototype.__ipow__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'");
+};
+
+Str.prototype.__ilshift__ = function(other) {
+    throw new exceptions.TypeError(
+        "unsupported operand type(s) for <<=: 'str' and '" + type_name(other) + "'"
+    )
+}
+
+Str.prototype.__irshift__ = function(other) {
+
+
+    throw new exceptions.TypeError("unsupported operand type(s) for >>=: 'str' and '" + type_name(other) + "'");
+}
+
+Str.prototype.__iand__ = function(other) {
+
+    throw new exceptions.TypeError("unsupported operand type(s) for &=: 'str' and '" + type_name(other) + "'");
+};
+
+Str.prototype.__ixor__ = function(other) {
+
+    throw new exceptions.TypeError("unsupported operand type(s) for ^=: 'str' and '" + type_name(other) + "'");
+}
+
+Str.prototype.__ior__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for |=: 'str' and '" + type_name(other) + "'");
+};
+
+/**************************************************
+ * Methods
+ **************************************************/
+
+Str.prototype.join = function(iter) {
+    var types = require('../types');
+
+    var l = new types.List(iter);
+    for (var i = 0; i < l.length; i++) {
+        if (!types.isinstance(l[i], Str)) {
+            throw new exceptions.TypeError("sequence item " + i + ": expected str instance, " + type_name(l[i]) + " found");
         }
-    };
+    }
+    return l.join(this);
+}
 
-    // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
-    // and http://www.cse.yorku.ca/~oz/hash.html.
-    //
-    // CPython returns signed 64-bit integers. But, JS is awful at 64-bit integers,
-    // so we return signed 32-bit integers. This shouldn't be a problem, since
-    // technically we can just return 0 and everything should still work :P
-    String.prototype.__hash__ = function() {
-        // |0 is used to ensure that we return signed 32-bit integers
-        var h = 5381|0;
-        for (var i = 0; i < this.length; i++) {
-            h = ((h * 33)|0) ^ this[i];
-        }
-        return new batavia.types.Int(h);
-    };
+/**************************************************
+ * Str Iterator
+ **************************************************/
 
-    return String;
-}();
+Str.prototype.StrIterator = function (data) {
+    Object.call(this);
+    this.index = 0;
+    this.data = data;
+}
+
+Str.prototype.StrIterator.prototype = Object.create(Object.prototype);
+
+Str.prototype.StrIterator.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
+        throw new exceptions.StopIteration();
+    }
+    this.index++;
+    return retval;
+}
+
+Str.prototype.StrIterator.prototype.__str__ = function() {
+    return "<str_iterator object at 0x99999999>";
+}
+
+/**************************************************
+ * Methods
+ **************************************************/
+
+Str.prototype.copy = function() {
+    return this.valueOf();
+}
+
+Str.prototype.encode = function(encoding, errors) {
+    if (errors !== undefined) {
+        return new exceptions.NotImplementedError(
+            "'errors' parameter of str.encode not implemented"
+        );
+    }
+    encoding = encoding.toLowerCase();
+    var encs = constants.TEXT_ENCODINGS;
+    if (encs.ascii.indexOf(encoding) !== -1) {
+        return new types.Bytes(
+            Buffer.from(this.valueOf(), 'ascii'));
+    } else if (encs.latin_1.indexOf(encoding) !== -1) {
+        return new types.Bytes(
+            Buffer.from(this.valueOf(), 'latin1'));
+    } else if (encs.utf_8.indexOf(encoding) !== -1) {
+        return new types.Bytes(
+            Buffer.from(this.valueOf(), 'utf8'));
+    } else {
+        return new exceptions.NotImplementedError(
+            "encoding not implemented or incorrect encoding"
+        );
+    }
+}
+
+Str.prototype.startswith = function (str) {
+    return this.slice(0, str.length) === str;
+}
+
+Str.prototype.__setattr__ = function (name, val) {
+    if (this.__proto__[name] === undefined) {
+        throw new exceptions.AttributeError("'str' object has no attribute '" + name + "'");
+    } else {
+        throw new exceptions.AttributeError("'str' object attribute '" + name + "' is read-only");
+    }
+}
+
+// Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
+// and http://www.cse.yorku.ca/~oz/hash.html.
+//
+// CPython returns signed 64-bit integers. But, JS is awful at 64-bit integers,
+// so we return signed 32-bit integers. This shouldn't be a problem, since
+// technically we can just return 0 and everything should still work :P
+Str.prototype.__hash__ = function() {
+    var types = require('../types');
+
+    // |0 is used to ensure that we return signed 32-bit integers
+    var h = 5381|0;
+    for (var i = 0; i < this.length; i++) {
+        h = ((h * 33)|0) ^ this[i];
+    }
+    return new types.Int(h);
+}
+
+/**************************************************
+ * Module exports
+ **************************************************/
+
+module.exports = Str;

@@ -1,11 +1,20 @@
-var types = require('./Type');
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
 
-module.exports = function () {
-    function DictView(args, kwargs) {
-        types.Object.call(this);
-    }
+/*************************************************************************
+ * A Python dictview type
+ *************************************************************************/
 
-    DictView.prototype.__class__ = new types.Type('dictview');
+function DictView(args, kwargs) {
+    PyObject.call(this);
+}
 
-    return DictView;
-}();
+DictView.prototype = Object.create(PyObject.prototype);
+DictView.prototype.__class__ = new Type('dictview');
+DictView.prototype.constructor = DictView;
+
+/**************************************************
+ * Module exports
+ **************************************************/
+
+module.exports = DictView;
