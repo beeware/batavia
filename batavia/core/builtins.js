@@ -310,17 +310,17 @@ batavia.builtins.ascii = function(args, kwargs) {
             for (var two_index = 0; two_index < 2 - hex_code.length; two_index++) {
               zeroes += "0";
             }
-            current_character = "\\\\x" + zeroes + hex_code;
+            current_character = "\\x" + zeroes + hex_code;
         } else if (char_code < 65536) {
             for (var four_index = 0; four_index < 4 - hex_code.length; four_index++) {
               zeroes += "0";
             }
-            current_character = "\\\\u" + zeroes + hex_code;
+            current_character = "\\u" + zeroes + hex_code;
         } else if (char_code < 1114112){
             for (var eight_index = 0; eight_index < 8 - hex_code.length; eight_index++) {
               zeroes += "0";
             }
-            current_character = "\\\\U" + zeroes + hex_code;
+            current_character = "\\U" + zeroes + hex_code;
         }
         ascii_string += current_character;
     }
