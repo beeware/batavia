@@ -285,6 +285,7 @@ batavia.builtins.ascii = function(args, kwargs) {
     for (var i = 0; i < repr_string.length; i++) {
         var char_code = repr_string[i].charCodeAt(0);
         var combined_char_code;
+        var current_character;
         var hex_code;
 
         // if char_code is a lead surrogate, assign to variable and continue out of loop
