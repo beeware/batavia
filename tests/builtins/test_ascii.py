@@ -6,7 +6,7 @@ class AsciiTests(TranspileTestCase):
         self.assertCodeExecution("""
             print(ascii("aaa"))
             print(ascii("übermöhren"))
-            print(ascii("บาตาเวีย"))
+            print(ascii("バタビア"))
             print(ascii("a𓈈"))
             """)
 
