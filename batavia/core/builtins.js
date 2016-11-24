@@ -287,6 +287,7 @@ batavia.builtins.ascii = function(args, kwargs) {
         var combined_char_code;
         var current_character;
         var hex_code;
+        var zeroes = "";
 
         // if char_code is a lead surrogate, assign to variable and continue out of loop
         if (char_code > 0xd800 && char_code <= 0xd83f) {
@@ -306,11 +307,20 @@ batavia.builtins.ascii = function(args, kwargs) {
         if (char_code < 127) {
             current_character = repr_string[i];
         } else if (char_code < 256) {
-            current_character = "\\\\x" + "0".repeat(2 - hex_code.length) + hex_code;
+            for (var two_index = 0; two_index < 2 - hex_code.length; two_index++) {
+              zeroes += "0";
+            }
+            current_character = "\\\\x" + zeroes + hex_code;
         } else if (char_code < 65536) {
-            current_character = "\\\\u" + "0".repeat(4 - hex_code.length) + hex_code;
+            for (var four_index = 0; four_index < 4 - hex_code.length; four_index++) {
+              zeroes += "0";
+            }
+            current_character = "\\\\u" + zeroes + hex_code;
         } else if (char_code < 1114112){
-            current_character = "\\\\U" + "0".repeat(8 - hex_code.length) + hex_code;
+            for (var eight_index = 0; eight_index < 8 - hex_code.length; eight_index++) {
+              zeroes += "0";
+            }
+            current_character = "\\\\U" + zeroes + hex_code;
         }
         ascii_string += current_character;
     }
