@@ -129,7 +129,7 @@ var __import__ = function(args, kwargs) {
         } catch (err) {
             // Native module. Look for a name in the global
             // (window) namespace.
-            var root_module = window[name];
+            var root_module = this.loader(name);
             modules.sys.modules[name] = root_module;
 
             var sub_module = root_module;

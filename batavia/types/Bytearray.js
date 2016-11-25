@@ -88,6 +88,8 @@ Bytearray.prototype.__eq__ = function(other) {
 };
 
 Bytearray.prototype.__ne__ = function(other) {
+    var types = require('../types');
+
     if (other !== None) {
         var val;
         if (types.isinstance(other, [

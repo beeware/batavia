@@ -16,7 +16,12 @@ var sys = require('./modules/sys');
 var VirtualMachine = function(args) {
     if (args.loader === undefined) {
         this.loader = function(name) {
-            return document.getElementById('batavia-' + name).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+            var element = document.getElementById('batavia-' + name);
+            if (element !== null) {
+                return element.text.replace(/(\r\n|\n|\r)/gm, "").trim();
+            } else {
+                return window[name];
+            }
         };
     } else {
         this.loader = args.loader;

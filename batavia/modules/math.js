@@ -8,6 +8,7 @@ var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 var types = require('../types');
+var builtins = require('../builtins');
 
 var math = {
     __doc__: "",
@@ -353,7 +354,7 @@ math.frexp = function(x) {
 math.frexp.__doc__ = 'frexp(x)\n\n\nReturn the mantissa and exponent of x, as pair (m, e).\nm is a float and e is an int, such that x = m * 2.**e.\nIf x is 0, m and e are both 0.  Else 0.5 <= abs(m) < 1.0.';
 
 math.fsum = function(iterable) {
-    var iterobj = exceptions.iter([iterable], null);
+    var iterobj = builtins.iter([iterable], null);
     var sum = 0.0;
     callables.iter_for_each(iterobj, function(val) {
         if (!types.isinstance(val, [types.Bool, types.Float, types.Int])) {

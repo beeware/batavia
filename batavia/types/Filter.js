@@ -39,6 +39,8 @@ filter.prototype.__iter__ = function() {
 };
 
 filter.prototype.__next__ = function() {
+    var builtins = require('../builtins');
+
     if (!this._iter) {
         this._iter = builtins.iter([this._sequence], null);
     }

@@ -388,7 +388,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -419,7 +419,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -460,7 +460,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -496,7 +496,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -532,7 +532,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -568,7 +568,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -632,7 +632,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -696,7 +696,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -760,7 +760,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -798,7 +798,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -847,7 +847,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -891,7 +891,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.MyClass = function(x, y, z) {
@@ -933,7 +933,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.MyClass = function(x, y, z) {

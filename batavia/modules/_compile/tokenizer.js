@@ -934,7 +934,7 @@ Tokenizer.prototype.tok_backup = function(c) {
     var tok = this;
     if (c != tokenizer.EOF) {
         if (--tok.cur < 0) {
-            throw new batavia.types.BatavieError("tok_backup: beginning of buffer");
+            throw new types.BatavieError("tok_backup: beginning of buffer");
         }
         if (tok.buf[tok.cur] != c) {
             tok[tok.cur] = c;

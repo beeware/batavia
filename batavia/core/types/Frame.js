@@ -1,3 +1,4 @@
+var Cell = require('./Cell');
 
 var Frame = function(kwargs) {
     var v, i;
@@ -28,7 +29,7 @@ var Frame = function(kwargs) {
         for (i = 0; i < this.f_code.co_cellvars.length; i++) {
             // Make a cell for the variable in our locals, or null.
             v = this.f_code.co_cellvars[i];
-            this.cells[v] = new batavia.core.Cell(this.f_locals[v]);
+            this.cells[v] = new Cell(this.f_locals[v]);
             if (this.f_back) {
                 this.f_back.cells[v] = this.cells[v];
             }

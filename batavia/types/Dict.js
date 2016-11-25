@@ -45,7 +45,7 @@ var EMPTY = {
         var types = require('../types');
         return new types.Bool(this === other);
     }
-};
+}
 
 var DELETED = {
     __hash__: function() {
@@ -56,7 +56,7 @@ var DELETED = {
         var types = require('../types');
         return new types.Bool(this === other);
     }
-};
+}
 
 Dict.prototype._increase_size = function() {
     var builtins = require('../builtins');
@@ -93,7 +93,7 @@ Dict.prototype._increase_size = function() {
     this.data_keys = new_keys;
     this.data_values = new_values;
     this.mask = new_mask;
-};
+}
 
 /**************************************************
  * Javascript compatibility methods
@@ -101,7 +101,7 @@ Dict.prototype._increase_size = function() {
 
 Dict.prototype.toString = function() {
     return this.__str__();
-};
+}
 
 
 /**************************************************
@@ -110,11 +110,11 @@ Dict.prototype.toString = function() {
 
 Dict.prototype.__bool__ = function() {
     return this.size > 0;
-};
+}
 
 Dict.prototype.__repr__ = function() {
     return this.__str__();
-};
+}
 
 var isDeleted = function(x) {
     var types = require('../types');
@@ -123,7 +123,7 @@ var isDeleted = function(x) {
     return x !== null &&
         builtins.hash([x], null).__eq__(new types.Int(0)).valueOf() &&
         x.__eq__(DELETED).valueOf();
-};
+}
 
 var isEmpty = function(x) {
     var types = require('../types');
@@ -132,8 +132,7 @@ var isEmpty = function(x) {
     return x !== null &&
         builtins.hash([x], null).__eq__(new types.Int(0)).valueOf() &&
         x.__eq__(EMPTY).valueOf();
-};
-
+}
 
 Dict.prototype.__str__ = function() {
     var builtins = require('../builtins');
@@ -146,12 +145,12 @@ Dict.prototype.__str__ = function() {
         if (isEmpty(key) || isDeleted(key)) {
             continue;
         }
-        strings.push(builtins.repr([this.data_values[i]], null));
+        strings.push(builtins.repr([key], null) + ": " + builtins.repr([this.data_values[i]], null));
     }
     result += strings.join(", ");
     result += "}";
     return result;
-};
+}
 
 /**************************************************
  * Comparison operators
@@ -167,7 +166,7 @@ Dict.prototype.__lt__ = function(other) {
         }
     }
     throw new exceptions.TypeError("unorderable types: dict() < NoneType()");
-};
+}
 
 Dict.prototype.__le__ = function(other) {
     var types = require('../types');
@@ -179,15 +178,15 @@ Dict.prototype.__le__ = function(other) {
         }
     }
     throw new exceptions.TypeError("unorderable types: dict() <= NoneType()");
-};
+}
 
 Dict.prototype.__eq__ = function(other) {
     return this.valueOf() == other;
-};
+}
 
 Dict.prototype.__ne__ = function(other) {
     return this.valueOf() != other;
-};
+}
 
 Dict.prototype.__gt__ = function(other) {
     var types = require('../types');
@@ -200,7 +199,7 @@ Dict.prototype.__gt__ = function(other) {
      } else {
          throw new exceptions.TypeError("unorderable types: dict() > NoneType()");
      }
-};
+}
 
 Dict.prototype.__ge__ = function(other) {
     var types = require('../types');
@@ -213,7 +212,7 @@ Dict.prototype.__ge__ = function(other) {
      } else {
          throw new exceptions.TypeError("unorderable types: dict() >= NoneType()");
      }
-};
+}
 
 /**************************************************
  * Unary operators
@@ -221,19 +220,19 @@ Dict.prototype.__ge__ = function(other) {
 
 Dict.prototype.__pos__ = function() {
     throw new exceptions.TypeError("bad operand type for unary +: 'dict'");
-};
+}
 
 Dict.prototype.__neg__ = function() {
     throw new exceptions.TypeError("bad operand type for unary -: 'dict'");
-};
+}
 
 Dict.prototype.__not__ = function() {
     return this.__bool__().__not__();
-};
+}
 
 Dict.prototype.__invert__ = function() {
     throw new exceptions.TypeError("bad operand type for unary ~: 'dict'");
-};
+}
 
 /**************************************************
  * Binary operators
@@ -241,19 +240,19 @@ Dict.prototype.__invert__ = function() {
 
 Dict.prototype.__pow__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'");
-};
+}
 
 Dict.prototype.__div__ = function(other) {
     return this.__truediv__(other);
-};
+}
 
 Dict.prototype.__floordiv__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'");
-};
+}
 
 Dict.prototype.__truediv__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for /: 'dict' and '" + type_name(other) + "'");
-};
+}
 
 Dict.prototype.__mul__ = function(other) {
     var types = require('../types');
@@ -265,40 +264,40 @@ Dict.prototype.__mul__ = function(other) {
     } else {
         throw new exceptions.TypeError("can't multiply sequence by non-int of type 'dict'");
     }
-};
+}
 
 Dict.prototype.__mod__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__mod__ has not been implemented");
-};
+}
 
 Dict.prototype.__add__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for +: 'dict' and '" + type_name(other) + "'");
-};
+}
 
 Dict.prototype.__sub__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for -: 'dict' and '" + type_name(other) + "'");
-};
+}
 
 
 Dict.prototype.__lshift__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__lshift__ has not been implemented");
-};
+}
 
 Dict.prototype.__rshift__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__rshift__ has not been implemented");
-};
+}
 
 Dict.prototype.__and__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for &: 'dict' and '" + type_name(other) + "'");
-};
+}
 
 Dict.prototype.__xor__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__xor__ has not been implemented");
-};
+}
 
 Dict.prototype.__or__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__or__ has not been implemented");
-};
+}
 
 Dict.prototype.__setitem__ = function(key, value) {
     var builtins = require('../builtins');
@@ -333,7 +332,7 @@ Dict.prototype.__setitem__ = function(key, value) {
             h = hash.int32() & this.mask;
         }
     }
-};
+}
 
 /**************************************************
  * Inplace operators
@@ -341,51 +340,51 @@ Dict.prototype.__setitem__ = function(key, value) {
 
 Dict.prototype.__ifloordiv__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__ifloordiv__ has not been implemented");
-};
+}
 
 Dict.prototype.__itruediv__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__itruediv__ has not been implemented");
-};
+}
 
 Dict.prototype.__iadd__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__iadd__ has not been implemented");
-};
+}
 
 Dict.prototype.__isub__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__isub__ has not been implemented");
-};
+}
 
 Dict.prototype.__imul__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__imul__ has not been implemented");
-};
+}
 
 Dict.prototype.__imod__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__imod__ has not been implemented");
-};
+}
 
 Dict.prototype.__ipow__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__ipow__ has not been implemented");
-};
+}
 
 Dict.prototype.__ilshift__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__ilshift__ has not been implemented");
-};
+}
 
 Dict.prototype.__irshift__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__irshift__ has not been implemented");
-};
+}
 
 Dict.prototype.__iand__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__iand__ has not been implemented");
-};
+}
 
 Dict.prototype.__ixor__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__ixor__ has not been implemented");
-};
+}
 
 Dict.prototype.__ior__ = function(other) {
     throw new exceptions.NotImplementedError("Dict.__ior__ has not been implemented");
-};
+}
 
 Dict.prototype._find_index = function(other) {
     var builtins = require('../builtins');
@@ -418,12 +417,12 @@ Dict.prototype._find_index = function(other) {
             return null;
         }
     }
-};
+}
 
 Dict.prototype.__contains__ = function(key) {
     var types = require('../types');
     return new types.Bool(this._find_index(key) !== null);
-};
+}
 
 Dict.prototype.__getitem__ = function(key) {
     var i = this._find_index(key);
@@ -431,7 +430,7 @@ Dict.prototype.__getitem__ = function(key) {
         throw new exceptions.KeyError(key === null ? 'None': key);
     }
     return this.data_values[i];
-};
+}
 
 Dict.prototype.__delitem__ = function(key) {
     var i = this._find_index(key);
@@ -441,7 +440,7 @@ Dict.prototype.__delitem__ = function(key) {
     this.data_keys[i] = DELETED;
     this.data_values[i] = null;
     this.size--;
-};
+}
 
 /**************************************************
  * Methods
@@ -456,7 +455,7 @@ Dict.prototype.get = function(key, backup) {
     } else {
         return backup;
     }
-};
+}
 
 Dict.prototype.update = function(values) {
     var types = require('../types');
@@ -481,13 +480,15 @@ Dict.prototype.update = function(values) {
         self.__setitem__(key, value);
         i++;
     });
-};
+}
 
 Dict.prototype.copy = function() {
     return new Dict(this);
-};
+}
 
 Dict.prototype.items = function() {
+    var types = require('../types');
+
     var result = new types.List();
     for (var i = 0; i < this.data_keys.length; i++) {
         // ignore deleted or empty
@@ -498,7 +499,7 @@ Dict.prototype.items = function() {
         result.append(new types.Tuple([key, this.data_values[i]]));
     }
     return result;
-};
+}
 
 Dict.prototype.keys = function() {
     var types = require('../types');
@@ -513,12 +514,12 @@ Dict.prototype.keys = function() {
         result.append(key);
     }
     return result;
-};
+}
 
 Dict.prototype.__iter__ = function() {
     var builtins = require('../builtins');
     return builtins.iter([this.keys()], null);
-};
+}
 
 Dict.prototype.values = function() {
     var types = require('../types');
@@ -533,14 +534,14 @@ Dict.prototype.values = function() {
         result.append(this.data_values[i]);
     }
     return result;
-};
+}
 
 Dict.prototype.clear = function() {
     this.size = 0;
     this.mask = 0;
     this.data_keys = [];
     this.data_values = [];
-};
+}
 
 /**************************************************
  * Module exports

@@ -592,6 +592,8 @@ Str.prototype.copy = function() {
 }
 
 Str.prototype.encode = function(encoding, errors) {
+    var types = require('../types');
+
     if (errors !== undefined) {
         return new exceptions.NotImplementedError(
             "'errors' parameter of str.encode not implemented"

@@ -128,17 +128,18 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     return out[0].decode('utf8')
 
 
-def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None):
+def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None, python_exists=False):
     # Output source code into test directory
     assert isinstance(main_code, (str, bytes)), (
         'I have no idea how to run tests for code of type {}'
         ''.format(type(main_code))
     )
 
-    if isinstance(main_code, str):
-        py_filename = os.path.join(test_dir, 'test.py')
-        with open(py_filename, 'w', encoding='utf-8') as py_source:
-            py_source.write(adjust(main_code, run_in_function=run_in_function))
+    if not python_exists:
+        if isinstance(main_code, str):
+            py_filename = os.path.join(test_dir, 'test.py')
+            with open(py_filename, 'w', encoding='utf-8') as py_source:
+                py_source.write(adjust(main_code, run_in_function=run_in_function))
 
     modules = {}
 
@@ -157,17 +158,19 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
         for name, code in extra_code.items():
             path = name.split('.')
             path[-1] = path[-1] + '.py'
-            if len(path) != 1:
-                try:
-                    os.makedirs(os.path.join(test_dir, *path[:-1]))
-                except FileExistsError:
-                    pass
-
             py_filename = os.path.join(*path)
-            with open(py_filename, 'w') as py_source:
-                py_source.write(adjust(code))
+            if not python_exists:
+                if len(path) != 1:
+                    try:
+                        os.makedirs(os.path.join(test_dir, *path[:-1]))
+                    except FileExistsError:
+                        pass
+
+                with open(py_filename, 'w') as py_source:
+                    py_source.write(adjust(code))
 
             py_compile.compile(py_filename)
+
             with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
                 modules[name] = base64.encodebytes(compiled.read())
 
@@ -183,13 +186,18 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             name = name.rsplit('.', 1)[0]
         payload.append('    "%s": %s' % (name, output))
 
+    if js:
+        for name, code in js.items():
+            payload.append('    "%s": %s' % (name, name))
+
     with open(os.path.join(test_dir, 'test.js'), 'w') as js_file:
         js_file.write(adjust("""
             var batavia = require('../../batavia.js');
-
+            %s
             var modules = {
             %s
             };
+
 
             var vm = new batavia.VirtualMachine({
                 loader: function(name) {
@@ -198,6 +206,10 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             });
             vm.run('test', []);
             """) % (
+                '\n'.join(
+                    adjust(code)
+                    for name, code in sorted(js.items())
+                ) if js else '',
                 ',\n'.join(payload)
             )
         )
@@ -356,7 +368,8 @@ class TranspileTestCase(TestCase):
                     code,
                     extra_code=extra_code,
                     run_in_function=False,
-                    args=args
+                    args=args,
+                    python_exists=True
                 )
             except Exception as e:
                 self.fail(e)
@@ -364,6 +377,7 @@ class TranspileTestCase(TestCase):
                 # Clean up the test directory where the class file was written.
                 shutil.rmtree(test_dir)
                 # print(js_out)
+                # pass
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
@@ -402,7 +416,8 @@ class TranspileTestCase(TestCase):
                     code,
                     extra_code=extra_code,
                     run_in_function=True,
-                    args=args
+                    args=args,
+                    python_exists=True
                 )
             except Exception as e:
                 self.fail(e)
@@ -819,6 +834,9 @@ SAMPLE_SUBSTITUTIONS = {
     "832.5494247791539": ["832.549424779154",],
     "18446744073709552000": ["1.8446744073709552e+19",],
     "9223372036854776000": ["9.223372036854776e+18",],
+    "0.0032677774438977015": ["0.003267777443897702"],
+    "306.01839236861605": ["306.0183923686160505"],
+    "306.018392368616": ["306.01839236861605"],
 }
 
 

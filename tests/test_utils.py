@@ -218,7 +218,7 @@ class JavaScriptBootstrapTests(TranspileTestCase):
             """,
             js={
                 'example': """
-                example = function(mod) {
+                var example = function(mod) {
 
                     mod.myfunc = function() {
                         console.log("Hello from JavaScript function.");

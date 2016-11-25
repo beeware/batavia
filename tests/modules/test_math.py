@@ -70,9 +70,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_asin_float',
         'test_math_asin_int',
 
-        'test_math_asinh_float',
-        'test_math_asinh_int',
-
         'test_math_fsum_NotImplemented',
         'test_math_fsum_bytearray',
         'test_math_fsum_bytes',

@@ -299,6 +299,8 @@ Complex.prototype.__mod__ = function(other) {
 };
 
 function __add__(x, y, inplace) {
+    var types = require('../types');
+
     if (types.isinstance(y, types.Int)) {
         return new Complex(x.real + y.__float__().val, x.imag);
     } else if (types.isinstance(y, types.Float)) {
@@ -319,6 +321,8 @@ Complex.prototype.__add__ = function(other) {
 };
 
 function __sub__(x, y, inplace) {
+    var types = require('../types');
+
     if (types.isinstance(y, types.Int)) {
         return new Complex(x.real - y.__float__().val, x.imag);
     } else if (types.isinstance(y, types.Float)) {

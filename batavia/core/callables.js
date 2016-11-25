@@ -30,6 +30,7 @@ callables.run_callable = function(self, func, posargs, namedargs) {
     //    know the provenance of the object/function
     //    e.g. iter() called internally by types/Map.js
     //    see #2 scenario
+    var types = require('../types');
 
     //the VM should pass itself in self, but if it already blessed
     //  a method with itself on ._vm just use that.
