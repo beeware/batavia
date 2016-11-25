@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions;
+var types = require('../types');
 
 var oct = function(args) {
     if (!args || args.length !== 1) {

@@ -501,6 +501,8 @@ Dict.prototype.items = function() {
 };
 
 Dict.prototype.keys = function() {
+    var types = require('../types');
+
     var result = new types.List();
     for (var i = 0; i < this.data_keys.length; i++) {
         // ignore deleted or empty
@@ -519,6 +521,8 @@ Dict.prototype.__iter__ = function() {
 };
 
 Dict.prototype.values = function() {
+    var types = require('../types');
+
     var result = new types.List();
     for (var i = 0; i < this.data_keys.length; i++) {
         // ignore deleted or empty

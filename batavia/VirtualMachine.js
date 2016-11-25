@@ -832,8 +832,10 @@ VirtualMachine.prototype.run_code = function(kwargs) {
             }
             console.log(trace.join('\n'));
             this.last_exception = null;
+        } else {
+            throw e;
         }
-        throw e;
+        // throw e;
     }
 };
 

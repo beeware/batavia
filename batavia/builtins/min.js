@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
+var type_name = require('../core').type_name;
 var None = require('../core').None;
 var tuple = require('./tuple');
 

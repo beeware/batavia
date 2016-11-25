@@ -345,6 +345,8 @@ Bytes.prototype.BytesIterator.prototype.__iter__ = function() {
 };
 
 Bytes.prototype.BytesIterator.prototype.__next__ = function() {
+    var types = require('../types');
+
     if (this.index >= this.data.length) {
         throw new exceptions.StopIteration();
     }

@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions;
 var getattr = require('./getattr');
+var types = require('../types');
 
 var delattr = function(args, kwargs) {
     if (args) {

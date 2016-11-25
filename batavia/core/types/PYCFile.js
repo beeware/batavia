@@ -10,7 +10,12 @@ var PYCFile = function(data) {
     this.size = data.slice(8, 12);
     this.data = data.slice(12);
 
-    constants.BATAVIA_MAGIC = this.magic;
+    constants.BATAVIA_MAGIC = String.fromCharCode(
+        this.magic[0],
+        this.magic[1],
+        this.magic[2],
+        this.magic[3]
+    );
 
     // this.data = data;
     this.depth = 0;

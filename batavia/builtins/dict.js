@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions;
+var type_name = require('../core').type_name;
 var types = require('../types');
 
 var dict = function(args, kwargs) {

@@ -1,6 +1,8 @@
 var Buffer = require('buffer').Buffer;
 
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
+var type_name = require('../core').type_name;
 var types = require('../types');
 var iter = require('./iter');
 

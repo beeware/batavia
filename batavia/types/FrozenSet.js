@@ -12,7 +12,7 @@ var SetIterator = require('./SetIterator');
 function FrozenSet(args, kwargs) {
     var types = require('../types');
 
-    types.Object.call(this);
+    PyObject.call(this);
 
     this.data = new types.Dict();
     if (args) {
