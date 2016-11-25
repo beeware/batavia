@@ -57,7 +57,7 @@ JSDict.prototype.__str__ = function() {
  **************************************************/
 
 JSDict.prototype.__lt__ = function(other) {
-    var types = require('../builtins');
+    var types = require('../types');
 
     if (other !== None) {
         if (types.isinstance(other, [
@@ -74,7 +74,7 @@ JSDict.prototype.__lt__ = function(other) {
 }
 
 JSDict.prototype.__le__ = function(other) {
-    var types = require('../builtins');
+    var types = require('../types');
 
     if (other !== None) {
         if (types.isinstance(other, [
@@ -99,7 +99,7 @@ JSDict.prototype.__ne__ = function(other) {
 }
 
 JSDict.prototype.__gt__ = function(other) {
-    var types = require('../builtins');
+    var types = require('../types');
 
     if (other !== None) {
         if (types.isinstance(other, [
@@ -118,7 +118,7 @@ JSDict.prototype.__gt__ = function(other) {
 }
 
 JSDict.prototype.__ge__ = function(other) {
-    var types = require('../builtins');
+    var types = require('../types');
 
     if (other !== None) {
         if (types.isinstance(other, [
@@ -180,7 +180,7 @@ JSDict.prototype.__truediv__ = function(other) {
 }
 
 JSDict.prototype.__mul__ = function(other) {
-    var types = require('../builtins');
+    var types = require('../types');
 
     if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
@@ -321,7 +321,7 @@ JSDict.prototype.copy = function() {
 }
 
 JSDict.prototype.items = function() {
-    var types = require('../builtins');
+    var types = require('../types');
 
     var result = new types.List();
     for (var key in this) {
@@ -333,6 +333,8 @@ JSDict.prototype.items = function() {
 }
 
 JSDict.prototype.keys = function() {
+    var types = require('../types');
+
     var result = [];
     for (var key in this) {
         if (this.hasOwnProperty(key)) {
@@ -347,6 +349,8 @@ JSDict.prototype.__iter__ = function() {
 }
 
 JSDict.prototype.values = function() {
+    var types = require('../types');
+
     var result = [];
     for (var key in this) {
         if (this.hasOwnProperty(key)) {

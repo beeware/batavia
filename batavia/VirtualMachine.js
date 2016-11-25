@@ -1870,8 +1870,7 @@ VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
 //     six.exec_(stmt, globs, locs) f
 // };
 
-
-VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
+var make_class = function(args, kwargs) {
     var func = args[0];
     var name = args[1];
     var bases = kwargs.bases || args[2];
@@ -1883,13 +1882,13 @@ VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
     func.__call__.apply(this, [[], [], locals]);
 
     // Now construct the class, based on the constructed local context.
-    var klass = function(vm, args, kwargs) {
+    var unbound_pytype = function(vm, args, kwargs) {
         if (this.__init__) {
             this.__init__.__self__ = this;
             this.__init__.__call__.apply(vm, [args, kwargs]);
         }
     };
-    klass.__name__ = name;
+    unbound_pytype.__name__ = name;
 
     if (bases) {
         // load up the base attributes
@@ -1899,31 +1898,37 @@ VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
         var base = bases.__class__;
         for (var attr in base) {
             if (base.hasOwnProperty(attr)) {
-                klass[attr] = base[attr];
-                klass.prototype[attr] = base[attr];
+                unbound_pytype[attr] = base[attr];
+                unbound_pytype.prototype[attr] = base[attr];
             }
         }
     }
     for (var attr in locals) {
         if (locals.hasOwnProperty(attr)) {
-            klass[attr] = locals[attr];
-            klass.prototype[attr] = locals[attr];
+            unbound_pytype[attr] = locals[attr];
+            unbound_pytype.prototype[attr] = locals[attr];
         }
     }
-    klass.prototype.__class__ = new types.Type(name, bases);
+    unbound_pytype.prototype.__class__ = new types.Type(name, bases);
 
-    var new_class = function(vm, klass, name) {
+    var pytype = function(vm, unbound_pytype, name) {
         var __new__ = function(args, kwargs) {
-            return new klass(vm, args, kwargs);
+            return new unbound_pytype(vm, args, kwargs);
         };
         __new__.__python__ = true;
-        __new__.__class__ = klass;
+        __new__.__class__ = unbound_pytype;
         return __new__;
-    }(this, klass, name);
-    new_class.__class__ = klass;
-    new_class.__python__ = true;
+    }(this, unbound_pytype, name);
+    pytype.__class__ = unbound_pytype;
+    pytype.__python__ = true;
 
-    this.push(new_class);
+    return pytype
+}
+
+VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
+    var pytype = make_class.bind(this);
+    pytype.__python__ = true;
+    this.push(pytype);
 };
 
 VirtualMachine.prototype.byte_STORE_LOCALS = function() {

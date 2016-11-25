@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
 var types = require('../types');
 
 var hash = function(args, kwargs) {

@@ -123,7 +123,7 @@ types.js2py = function(arg) {
         // recurse
         var arr = new types.List();
         for (var i = 0; i < arg.length; i++) {
-            arr.append(callables.js2py(arg[i]));
+            arr.append(types.js2py(arg[i]));
         }
         return arr;
     }
@@ -150,7 +150,7 @@ types.js2py = function(arg) {
                 var dict = new types.Dict();
                 for (var k in arg) {
                     if (arg.hasOwnProperty(k)) {
-                        dict[callables.js2py(k)] = callables.js2py(arg[k])
+                        dict[types.js2py(k)] = types.js2py(arg[k])
                     }
                 }
                 return dict;

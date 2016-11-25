@@ -1,8 +1,11 @@
 var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
+var type_name = require('../core').type_name;
 var None = require('../core').None;
 
 var iter = function(args, kwargs) {
+    var types = require('../types');
+
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }

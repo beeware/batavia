@@ -225,34 +225,34 @@ marshal.r_float = function(vm, p)
     var retval;
 
     /* First byte */
-    sign = (buf.charCodeAt(7) >> 7) & 1;
-    e = (buf.charCodeAt(7) & 0x7F) << 4;
+    sign = (buf[7] >> 7) & 1;
+    e = (buf[7] & 0x7F) << 4;
 
     /* Second byte */
-    e |= (buf.charCodeAt(6) >> 4) & 0xF;
-    fhi = (buf.charCodeAt(6) & 0xF) << 24;
+    e |= (buf[6] >> 4) & 0xF;
+    fhi = (buf[6] & 0xF) << 24;
 
     if (e == 2047) {
         throw "can't unpack IEEE 754 special value on non-IEEE platform";
     }
 
     /* Third byte */
-    fhi |= buf.charCodeAt(5) << 16;
+    fhi |= buf[5] << 16;
 
     /* Fourth byte */
-    fhi |= buf.charCodeAt(4)  << 8;
+    fhi |= buf[4]  << 8;
 
     /* Fifth byte */
-    fhi |= buf.charCodeAt(3);
+    fhi |= buf[3];
 
     /* Sixth byte */
-    flo = buf.charCodeAt(2) << 16;
+    flo = buf[2] << 16;
 
     /* Seventh byte */
-    flo |= buf.charCodeAt(1) << 8;
+    flo |= buf[1] << 8;
 
     /* Eighth byte */
-    flo |= buf.charCodeAt(0);
+    flo |= buf[0];
 
     retval = fhi + flo / 16777216.0; /* 2**24 */
     retval /= 268435456.0; /* 2**28 */
@@ -414,34 +414,34 @@ marshal.r_object = function(vm, p) {
         var fhi, flo;
 
         /* First byte */
-        sign = (buf.charCodeAt(7) >> 7) & 1;
-        e = (buf.charCodeAt(7) & 0x7F) << 4;
+        sign = (buf[7] >> 7) & 1;
+        e = (buf[7] & 0x7F) << 4;
 
         /* Second byte */
-        e |= (buf.charCodeAt(6) >> 4) & 0xF;
-        fhi = (buf.charCodeAt(6) & 0xF) << 24;
+        e |= (buf[6] >> 4) & 0xF;
+        fhi = (buf[6] & 0xF) << 24;
 
         if (e == 2047) {
             throw "can't unpack IEEE 754 special value on non-IEEE platform";
         }
 
         /* Third byte */
-        fhi |= buf.charCodeAt(5) << 16;
+        fhi |= buf[5] << 16;
 
         /* Fourth byte */
-        fhi |= buf.charCodeAt(4)  << 8;
+        fhi |= buf[4] << 8;
 
         /* Fifth byte */
-        fhi |= buf.charCodeAt(3);
+        fhi |= buf[3];
 
         /* Sixth byte */
-        flo = buf.charCodeAt(2) << 16;
+        flo = buf[2] << 16;
 
         /* Seventh byte */
-        flo |= buf.charCodeAt(1) << 8;
+        flo |= buf[1] << 8;
 
         /* Eighth byte */
-        flo |= buf.charCodeAt(0);
+        flo |= buf[0];
 
         retval = fhi + flo / 16777216.0; /* 2**24 */
         retval /= 268435456.0; /* 2**28 */

@@ -262,6 +262,7 @@ ScreenBuffer.prototype.write = function(content) {
     this.element.textContent = this.element.textContent + content;
 }
 
+    {% if customcode %}
 function bootstrap() {
     var pyconsole = new ScreenBuffer(document.getElementById('pyconsole'));
 
@@ -274,6 +275,7 @@ function bootstrap() {
     vm.run('customcode', []);
     console.log('done.');
 }
+    {% endif %}
 
 function sample() {
     var pyconsole = new ScreenBuffer(document.getElementById('pyconsole'));
@@ -305,7 +307,11 @@ function pystone(loops) {
     </script>
 
 </head>
+{% if customcode %}
 <body onload="bootstrap();">
+{% else %}
+<body>
+{% endif %}
     <h1>Batavia testbed</h1>
     <h3>Try running some Python in the browser</h3>
     <div class="indent_block">

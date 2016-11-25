@@ -8,6 +8,8 @@ var exceptions = require('../core').exceptions;
 
 // BUG: Range supports longs.
 function Range(start, stop, step) {
+    var types = require('../types');
+
     PyObject.call(this);
 
     this.start = start.int32();
@@ -69,6 +71,8 @@ Range.prototype.RangeIterator.prototype.__class__ = new Type('range_iterator');
 Range.prototype.RangeIterator.prototype.constructor = Range.prototype.RangeIterator;
 
 Range.prototype.RangeIterator.prototype.__next__ = function() {
+    var types = require('../types');
+
     var retval = this.index;
     if ((this.step > 0 && this.index < this.data.stop) ||
         (this.step < 0 && this.index > this.data.stop)) {

@@ -127,6 +127,7 @@ var isDeleted = function(x) {
 
 var isEmpty = function(x) {
     var types = require('../types');
+    var builtins = require('../builtins');
 
     return x !== null &&
         builtins.hash([x], null).__eq__(new types.Int(0)).valueOf() &&
@@ -420,6 +421,7 @@ Dict.prototype._find_index = function(other) {
 };
 
 Dict.prototype.__contains__ = function(key) {
+    var types = require('../types');
     return new types.Bool(this._find_index(key) !== null);
 };
 

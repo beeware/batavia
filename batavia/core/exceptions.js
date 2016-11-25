@@ -76,7 +76,7 @@ exceptions.Exception.prototype.__class__ = exceptions.Exception.__class__;
  *****************************************************************/
 
 exceptions.BataviaError = function (msg) {
-    Exception.call(this, 'BataviaError', msg);
+    exceptions.Exception.call(this, 'BataviaError', msg);
 }
 exceptions.BataviaError.prototype = Object.create(exceptions.Exception.prototype);
 exceptions.BataviaError.__class__ = new Type('BataviaError', [exceptions.Exception]);
