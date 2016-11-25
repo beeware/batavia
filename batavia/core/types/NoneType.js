@@ -11,7 +11,6 @@ function NoneType() {
 
 NoneType.prototype = Object.create(PyObject.prototype);
 NoneType.prototype.__class__ = new basic_types.Type('NoneType');
-
 NoneType.prototype.__name__ = 'NoneType';
 
 /**************************************************

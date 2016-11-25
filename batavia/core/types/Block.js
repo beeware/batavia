@@ -5,4 +5,8 @@ var Block = function(type, handler, level) {
     this.level = level || 0;
 }
 
+Block.prototype.toString = function() {
+    return '<Block (level ' + this.level + ')>';
+}
+
 module.exports = Block;

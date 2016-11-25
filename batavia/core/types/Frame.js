@@ -51,11 +51,15 @@ var Frame = function(kwargs) {
     this.block_stack = [];
     this.generator = null;
 
-};
+}
+
+Frame.prototype.toString = function() {
+    return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename +' @ ' + this.f_lineno + '>';
+}
 
 Frame.prototype.__repr__ = function() {
     return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename +' @ ' + this.f_lineno + '>';
-};
+}
 
 Frame.prototype.line_number = function() {
     // Get the current line number the frame is executing.
@@ -80,6 +84,6 @@ Frame.prototype.line_number = function() {
     }
 
     return line_num;
-};
+}
 
 module.exports = Frame;

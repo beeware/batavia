@@ -29,4 +29,8 @@ Cell.prototype.set = function(value) {
     this.contents = value;
 }
 
+Cell.prototype.toString = function() {
+    return '<Cell>';
+}
+
 module.exports = Cell;

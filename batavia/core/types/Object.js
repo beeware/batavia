@@ -10,4 +10,8 @@ function PyObject(args, kwargs) {
 
 PyObject.prototype = Object.create(Object.prototype);
 
+PyObject.prototype.toString = function() {
+    return '<' + this.__class__.__name__ + ' 0x...>';
+}
+
 module.exports = PyObject;
