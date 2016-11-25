@@ -16,7 +16,6 @@ from unittest import TestCase
 
 # A state variable to determine if the test environment has been configured.
 _batavia_built = False
-_phantomjs = None
 
 
 def build_batavia():
@@ -129,71 +128,6 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     return out[0].decode('utf8')
 
 
-class PhantomJSCrash(RuntimeError):
-    pass
-
-
-def sendPhantomCommand(phantomjs, payload=None, output=None, success=None, on_fail=None):
-    if payload:
-        cmd = adjust(payload).replace('\n', '')
-        # print("<<<", cmd)
-
-        _phantomjs.stdin.write(cmd.encode('utf-8'))
-        _phantomjs.stdin.write('\n'.encode('utf-8'))
-        _phantomjs.stdin.flush()
-
-    # print("WAIT FOR PROMPT...")
-    if output is not None:
-        out = output
-    else:
-        out = []
-
-    out.append(b'')
-    while out[-1] != b"phantomjs> " and out[-1] != b'PhantomJS has crashed. ':
-        try:
-            ch = _phantomjs.stdout.read(1)
-            if ch == b'\n':
-                # print(">>>", out[-1])
-                out[-1] = out[-1].decode("utf-8")
-                out.append(b'')
-            elif ch != b'\r':
-                out[-1] += ch
-        except IOError:
-            continue
-
-    if out[-1] == 'PhantomJS has crashed. ':
-        raise PhantomJSCrash()
-
-    if payload:
-        # Drop the prompt line
-        out.pop()
-        # Get the response line
-        response = out.pop()
-        # print("COMMAND EXECUTED: ", response)
-        if success:
-            if isinstance(success, (list, tuple)):
-                if response not in success:
-                    if on_fail:
-                        raise Exception(on_fail + ": %s" % response)
-                    else:
-                        raise Exception("Didn't receive an expected response: %s" % response)
-            else:
-                if response != success:
-                    if on_fail:
-                        raise Exception(on_fail + ": %s" % response)
-                    else:
-                        raise Exception("Didn't receive the expected response: %s" % response)
-
-        # Drop a trailing blank line, if one exists.
-        if len(out) > 1 and out[-1] == '':
-            out.pop()
-
-        return '\n'.join(out).replace('\n\n', '\n') + '\n'
-    else:
-        # print("PHANTOMJS READY")
-        return None
-
-
 def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_function=False, args=None):
     # Output source code into test directory
     assert isinstance(main_code, (str, bytes)), (
@@ -215,9 +149,9 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
     if isinstance(main_code, str):
         py_compile.compile('test.py')
         with open(importlib.util.cache_from_source('test.py'), 'rb') as compiled:
-            modules['testcase'] = base64.encodebytes(compiled.read())
+            modules['test'] = base64.encodebytes(compiled.read())
     elif isinstance(main_code, bytes):
-        modules['testcase'] = main_code
+        modules['test'] = main_code
 
     if extra_code:
         for name, code in extra_code.items():
@@ -237,9 +171,6 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
                 modules[name] = base64.encodebytes(compiled.read())
 
-    # Move back to the old current working directory.
-    os.chdir(cwd)
-
     if args is None:
         args = []
 
@@ -252,103 +183,38 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
             name = name.rsplit('.', 1)[0]
         payload.append('    "%s": %s' % (name, output))
 
-    with open(os.path.join(test_dir, 'modules.js'), 'w') as js_file:
+    with open(os.path.join(test_dir, 'test.js'), 'w') as js_file:
         js_file.write(adjust("""
+            var batavia = require('../../batavia.js');
+
             var modules = {
             %s
             };
+
+            var vm = new batavia.VirtualMachine({
+                loader: function(name) {
+                    return modules[name];
+                }
+            });
+            vm.run('test', []);
             """) % (
                 ',\n'.join(payload)
             )
         )
 
-    global _phantomjs
-    out = None
-    while out is None:
-        try:
-            if _phantomjs is None:
-                build_batavia()
+    proc = subprocess.Popen(
+        ['node', 'test.js'] + args,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        # cwd=test_dir,
+    )
+    out = proc.communicate()
 
-                if _phantomjs is None:
-                    # Make sure Batavia is compiled
+    # Move back to the old current working directory.
+    os.chdir(cwd)
 
-                    # Start the phantomjs environment.
-                    _phantomjs = subprocess.Popen(
-                        ["phantomjs"],
-                        stdin=subprocess.PIPE,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        cwd=os.path.dirname(__file__),
-                    )
-                    sendPhantomCommand(_phantomjs)
-
-            sendPhantomCommand(
-                _phantomjs,
-                "var page = require('webpage').create()",
-                success='undefined',
-                on_fail="Unable to create webpage."
-            )
-
-            sendPhantomCommand(
-                _phantomjs,
-                """
-                page.onConsoleMessage = function (msg) {
-                    console.log(msg);
-                }
-                """,
-                success=['undefined', '{}'],
-                on_fail="Unable to create console redirection"
-            )
-
-            sendPhantomCommand(
-                _phantomjs,
-                "page.injectJs('polyfill.js')",
-                success=['true', '{}'],
-                on_fail="Unable to inject polyfill"
-            )
-            sendPhantomCommand(
-                _phantomjs,
-                "page.injectJs('../batavia.js')",
-                success=['true', '{}'],
-                on_fail="Unable to inject Batavia"
-            )
-            sendPhantomCommand(
-                _phantomjs,
-                "page.injectJs('%s')" % 'temp/modules.js',
-                success=['true', '{}'],
-                on_fail="Unable to inject modules"
-            )
-
-            output = []
-            if js is not None:
-                for mod, payload in sorted(js.items()):
-                    sendPhantomCommand(
-                        _phantomjs,
-                        "page.injectJs('%s.js')" % "/".join(('temp', mod)),
-                        output=output,
-                        success=['true', '{}'],
-                        on_fail="Unable to inject native module %s" % mod
-                    )
-
-            out = sendPhantomCommand(
-                _phantomjs,
-                """
-                page.evaluate(function() {
-                    var vm = new batavia.VirtualMachine(function(name) {
-                        return modules[name];
-                    });
-                    vm.run('testcase', []);
-                });
-                """,
-                output=output
-            )
-        except PhantomJSCrash:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
-
-    return out
+    return out[0].decode('utf8')
 
 
 JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
@@ -970,15 +836,6 @@ def _unary_test(test_name, operation):
 class UnaryOperationTestCase(NotImplementedToExpectedFailure):
     format = ''
 
-    @classmethod
-    def tearDownClass(cls):
-        global _phantomjs
-        if _phantomjs:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
-
     def assertUnaryOperation(self, x_values, operation, format, substitutions):
         self.assertCodeExecution(
             '##################################################\n'.join(
@@ -1030,15 +887,6 @@ def _binary_test(test_name, operation, examples, small_ints=False):
 class BinaryOperationTestCase(NotImplementedToExpectedFailure):
     format = ''
     y = 3
-
-    @classmethod
-    def tearDownClass(cls):
-        global _phantomjs
-        if _phantomjs:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
 
     def assertBinaryOperation(self, x_values, y_values, operation, format, substitutions):
         data = []
@@ -1114,15 +962,6 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
     format = ''
     y = 3
 
-    @classmethod
-    def tearDownClass(cls):
-        global _phantomjs
-        if _phantomjs:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
-
     def assertInplaceOperation(self, x_values, y_values, operation, format, substitutions):
         data = []
         for x in x_values:
@@ -1195,15 +1034,6 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
-    @classmethod
-    def tearDownClass(cls):
-        global _phantomjs
-        if _phantomjs:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
-
     def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions):
         data = []
         for f in f_values:
@@ -1256,15 +1086,6 @@ def _builtin_twoarg_test(test_name, operation, examples1, examples2):
 
 class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
-
-    @classmethod
-    def tearDownClass(cls):
-        global _phantomjs
-        if _phantomjs:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
 
     def assertBuiltinTwoargFunction(self, f_values, x_values, y_values, operation, format, substitutions):
         data = []
@@ -1350,15 +1171,6 @@ numerics = {'bool', 'float', 'int'}
 
 class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
     numerics_only = False
-
-    @classmethod
-    def tearDownClass(cls):
-        global _phantomjs
-        if _phantomjs:
-            _phantomjs.kill()
-            _phantomjs.stdin.close()
-            _phantomjs.stdout.close()
-            _phantomjs = None
 
     def assertOneArgModuleFuction(self, name, module, func, x_values, substitutions):
         self.assertCodeExecution(

@@ -9,6 +9,8 @@ var type_name = require('../core').type_name;
  *************************************************************************/
 
 function Set(args, kwargs) {
+    var types = require('../types');
+
     PyObject.call(this);
 
     this.data = new types.Dict();

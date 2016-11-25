@@ -13,13 +13,20 @@ var dis = require('./modules/dis');
 var marshal = require('./modules/marshal');
 var sys = require('./modules/sys');
 
-var VirtualMachine = function(loader) {
-    if (loader === undefined) {
+var VirtualMachine = function(args) {
+    if (args.loader === undefined) {
         this.loader = function(name) {
             return document.getElementById('batavia-' + name).text.replace(/(\r\n|\n|\r)/gm, "").trim();
         };
     } else {
-        this.loader = loader;
+        this.loader = args.loader;
+    }
+
+    if (args.stdout) {
+        sys.stdout = args.stdout;
+    }
+    if (args.stderr) {
+        sys.stderr = args.stderr;
     }
 
     // Build a table mapping opcodes to method calls
@@ -825,9 +832,8 @@ VirtualMachine.prototype.run_code = function(kwargs) {
             }
             console.log(trace.join('\n'));
             this.last_exception = null;
-        } else {
-            throw e;
         }
+        throw e;
     }
 };
 
@@ -941,7 +947,7 @@ VirtualMachine.prototype.run_frame = function(frame) {
 
     while (!why) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
-        // var opname = dis.opname[operation.opcode];
+        var opname = dis.opname[operation.opcode];
 
         // advance f_lasti to next operation. If the operation is a jump, then this
         // pointer will be overwritten during the operation's execution.

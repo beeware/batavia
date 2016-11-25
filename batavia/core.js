@@ -24,10 +24,4 @@ core['NotImplementedType'] = require('./core/types/NotImplementedType').NotImple
 core['None'] = require('./core/types/NoneType').None;
 core['NotImplemented'] = require('./core/types/NotImplementedType').NotImplemented;
 
-// Set up hooks for stdout and stderr
-core['io'] = {
-    'stdout': console.log.bind(console),
-    'stderr': console.log.bind(console)
-}
-
 module.exports = core;

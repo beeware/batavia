@@ -1,8 +1,6 @@
 machine:
   python:
     version: 3.4.4
-  pre:
-    - sudo curl --output /usr/local/bin/phantomjs https://s3.amazonaws.com/circle-downloads/phantomjs-2.1.1
 
 dependencies:
   cache_directories:

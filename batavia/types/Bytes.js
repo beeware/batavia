@@ -39,6 +39,7 @@ Bytes.prototype.__bool__ = function() {
 };
 
 Bytes.prototype.__len__ = function () {
+    var types = require('../types');
     return new types.Int(this.val.length);
 };
 

@@ -91,7 +91,7 @@ callables.run_callable = function(self, func, posargs, namedargs) {
 callables.iter_for_each = function(iterobj, callback) {
     try {
         while (true) {
-            var next = run_callable(iterobj, iterobj.__next__, [], null);
+            var next = callables.run_callable(iterobj, iterobj.__next__, [], null);
             callback(next);
         }
     } catch (err) {

@@ -6,8 +6,11 @@ var Type = require('../core').Type;
  *************************************************************************/
 
 var make_callable = function(func) {
+    var types = require('../types');
+
     var fn = function(args, kwargs, locals) {
         var inspect = require('../modules/inspect');
+        var dis = require('../modules/dis');
         var retval;
         var callargs = inspect.getcallargs(func, args, kwargs);
 
@@ -18,7 +21,7 @@ var make_callable = function(func) {
             'f_locals': locals || new types.JSDict()
         });
 
-        if (func.__code__.co_flags & modules.dis.CO_GENERATOR) {
+        if (func.__code__.co_flags & dis.CO_GENERATOR) {
             gen = new types.Generator(frame, this);
             frame.generator = gen;
             retval = gen;

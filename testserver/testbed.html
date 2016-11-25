@@ -250,22 +250,39 @@ DAEDABcBDQEdAgYB
     <script id="batavia-customcode" type="application/python-bytecode">
 {{ customcode.compiled }}
     </script>
+    {% endif %}
 
     <script>
-function customcode() {
+// Now define a stdout function that will output to the page.
+function ScreenBuffer(element) {
+    this.element = element;
+}
+
+ScreenBuffer.prototype.write = function(content) {
+    this.element.textContent = this.element.textContent + content;
+}
+
+function bootstrap() {
+    var pyconsole = new ScreenBuffer(document.getElementById('pyconsole'));
+
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine();
+    var vm = new batavia.VirtualMachine({
+        stdout: pyconsole,
+        stderr: pyconsole
+    });
     console.log('Run code...');
     vm.run('customcode', []);
     console.log('done.');
 }
-    </script>
-    {% endif %}
 
-    <script>
 function sample() {
+    var pyconsole = new ScreenBuffer(document.getElementById('pyconsole'));
+
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine();
+    var vm = new batavia.VirtualMachine({
+        stdout: pyconsole,
+        stderr: pyconsole
+    });
     console.log('Run code...');
     // The first argument is the Python dotted-path of the module to run
     // The second argument is the value for sys.argv
@@ -274,28 +291,21 @@ function sample() {
 }
 
 function pystone(loops) {
+    var pyconsole = new ScreenBuffer(document.getElementById('pyconsole'));
+
     console.log('Benchmarking...');
-    var vm = new batavia.VirtualMachine();
+    var vm = new batavia.VirtualMachine({
+        stdout: pyconsole,
+        stderr: pyconsole
+    });
     vm.run('test.pystone', [loops]);
     console.log('done.');
 }
 
-// Now define a stdout function that will output to the page.
-function stdout(content) {
-    var pre = document.getElementById('stdout');
-    pre.textContent = pre.textContent + content;
-}
-
-batavia.core.io.stdout = stdout;
-batavia.core.io.stderr = stdout;
     </script>
 
 </head>
-{% if customcode %}
-<body onload="customcode();">
-{% else %}
-<body>
-{% endif %}
+<body onload="bootstrap();">
     <h1>Batavia testbed</h1>
     <h3>Try running some Python in the browser</h3>
     <div class="indent_block">
@@ -333,7 +343,7 @@ batavia.core.io.stderr = stdout;
     </script>
     <h3>Console output</h3>
     <div class="indent_block">
-        <pre id="stdout"></pre>
+        <pre id="pyconsole"></pre>
     </div>
     <hr/>
     <h3>More about Batavia</h3>
