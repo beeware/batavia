@@ -116,4 +116,48 @@ types.issubclass = function(cls, type) {
     }
 }
 
+types.js2py = function(arg) {
+    var types = require('./types');
+
+    if (Array.isArray(arg)) {
+        // recurse
+        var arr = new types.List();
+        for (var i = 0; i < arg.length; i++) {
+            arr.append(callables.js2py(arg[i]));
+        }
+        return arr;
+    }
+
+    switch (typeof arg) {
+        case 'boolean':
+            return arg;
+        case 'number':
+            if (Number.isInteger(arg)) {
+                return new types.Int(arg);
+            } else {
+              return new types.Float(arg);
+            }
+        case 'string':
+            return new types.Str(arg);
+        case 'object':
+            if (arg === null || arg === types.NoneType) {
+                return null;
+            } else if (arg.__class__ != null && arg.__class__.__name__) {
+                // already a Python object
+                return arg;
+            } else {
+                // this is a generic object; turn it into a dictionary
+                var dict = new types.Dict();
+                for (var k in arg) {
+                    if (arg.hasOwnProperty(k)) {
+                        dict[callables.js2py(k)] = callables.js2py(arg[k])
+                    }
+                }
+                return dict;
+            }
+        default:
+            throw new exceptions.BataviaError("Unknown type " + (typeof arg));
+    }
+}
+
 module.exports = types;

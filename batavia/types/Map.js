@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 
 /*************************************************************************
@@ -48,8 +49,8 @@ map.prototype.__next__ = function() {
             type_name(this._func) + "' object is not callable");
     }
 
-    var sval = utils.run_callable(this._iter, this._iter.__next__, [], null);
-    return utils.run_callable(false, this._func, [sval], null);
+    var sval = callables.run_callable(this._iter, this._iter.__next__, [], null);
+    return callables.run_callable(false, this._func, [sval], null);
 };
 
 map.prototype.__str__ = function() {

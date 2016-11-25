@@ -356,7 +356,7 @@ Bool.prototype.__ge__ = function(other) {
         return this.__int__().__ge__(other);
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) >= (other.valueOf() ? 1 : 0));
-    } else if (utils.isbataviainstance(other)) {
+    } else if (types.isbataviainstance(other)) {
         throw new exceptions.TypeError("unorderable types: bool() >= " + type_name(other) + "()");
     } else {
         throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
@@ -372,7 +372,7 @@ Bool.prototype.__le__ = function(other) {
         return this.__int__().__le__(other);
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) <= (other.valueOf() ? 1 : 0));
-    } else if (utils.isbataviainstance(other)) {
+    } else if (types.isbataviainstance(other)) {
         throw new exceptions.TypeError("unorderable types: bool() <= " + type_name(other) + "()");
     } else {
         throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
@@ -391,7 +391,7 @@ Bool.prototype.__lt__ = function(other) {
         int_zero= new types.Int(0);
 
         return (this.valueOf() ? int_one : int_zero) < (other.valueOf() ? int_one : int_zero);
-    } else if (utils.isbataviainstance(other)) {
+    } else if (types.isbataviainstance(other)) {
         throw new exceptions.TypeError("unorderable types: bool() < " + type_name(other) + "()");
     } else {
         throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");

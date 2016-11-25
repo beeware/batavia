@@ -2,6 +2,7 @@ var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
+var callables = require('../core').callables;
 
 /*************************************************************************
  * A Python filter builtin is a type
@@ -47,8 +48,8 @@ filter.prototype.__next__ = function() {
 
     var sval = false;
     do {
-        sval = utils.run_callable(this._iter, this._iter.__next__, [], null);
-    } while (!utils.run_callable(false, this._func, [sval], null));
+        sval = callables.run_callable(this._iter, this._iter.__next__, [], null);
+    } while (!callables.run_callable(false, this._func, [sval], null));
 
     return sval;
 };

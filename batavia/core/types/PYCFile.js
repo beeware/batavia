@@ -1,5 +1,3 @@
-var base64js = require('base64-js');
-
 var constants = require('../constants');
 
 /*************************************************************************
@@ -36,7 +34,7 @@ PYCFile.prototype.getc = function() {
 
 PYCFile.prototype.fread = function(n) {
     if (this.ptr + n <= this.end) {
-        var retval = base64js.fromByteArray(this.data.slice(this.ptr, this.ptr + n));
+        var retval = this.data.slice(this.ptr, this.ptr + n);
         this.ptr += n;
         return retval;
     }

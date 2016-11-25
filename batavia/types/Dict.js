@@ -1,9 +1,9 @@
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 var None = require('../core').None;
-var iterators = require('./Iterator');
 
 /*************************************************************************
  * A Python dict type
@@ -59,6 +59,8 @@ var DELETED = {
 };
 
 Dict.prototype._increase_size = function() {
+    var builtins = require('../builtins');
+
     // increase the table size and rehash
     if (this.data_keys.length == 0) {
         this.mask = INITIAL_SIZE - 1;
@@ -77,9 +79,7 @@ Dict.prototype._increase_size = function() {
     for (var i = 0; i < new_keys.length; i++) {
         new_keys[i] = EMPTY;
     }
-    iterators.iter_for_each(iterators.iter([this.items()], null), function(val) {
-        var builtins = require('../builtins');
-
+    callables.iter_for_each(builtins.iter([this.items()], null), function(val) {
         var key = val[0];
         var value = val[1];
         var hash = builtins.hash([key], null);
@@ -157,8 +157,9 @@ Dict.prototype.__str__ = function() {
  **************************************************/
 
 Dict.prototype.__lt__ = function(other) {
-    if (other !== None) {
-        if (utils.isbataviainstance(other)) {
+    var types = require('../types');
+   if (other !== None) {
+        if (types.isbataviainstance(other)) {
             throw new exceptions.TypeError("unorderable types: dict() < " + type_name(other) + "()");
         } else {
             return this.valueOf() < other.valueOf();
@@ -168,8 +169,9 @@ Dict.prototype.__lt__ = function(other) {
 };
 
 Dict.prototype.__le__ = function(other) {
-    if (other !== None) {
-        if (utils.isbataviainstance(other)) {
+    var types = require('../types');
+   if (other !== None) {
+        if (types.isbataviainstance(other)) {
             throw new exceptions.TypeError("unorderable types: dict() <= " + type_name(other) + "()");
         } else {
             return this.valueOf() <= other.valueOf();
@@ -187,8 +189,9 @@ Dict.prototype.__ne__ = function(other) {
 };
 
 Dict.prototype.__gt__ = function(other) {
-     if (other !== None) {
-         if (utils.isbataviainstance(other)) {
+    var types = require('../types');
+    if (other !== None) {
+         if (types.isbataviainstance(other)) {
              throw new exceptions.TypeError("unorderable types: dict() > " + type_name(other) + "()");
          } else {
              return this.valueOf() > other.valueOf();
@@ -199,8 +202,9 @@ Dict.prototype.__gt__ = function(other) {
 };
 
 Dict.prototype.__ge__ = function(other) {
-     if (other !== None) {
-         if (utils.isbataviainstance(other)) {
+    var types = require('../types');
+    if (other !== None) {
+         if (types.isbataviainstance(other)) {
              throw new exceptions.TypeError("unorderable types: dict() >= " + type_name(other) + "()");
          } else {
              return this.valueOf() >= other.valueOf();
@@ -454,16 +458,17 @@ Dict.prototype.get = function(key, backup) {
 
 Dict.prototype.update = function(values) {
     var types = require('../types');
+    var builtins = require('../builtins');
 
     var updates;
     if (types.isinstance(values, [types.Dict, types.JSDict])) {
-        updates = iterators.iter([values.items()], null);
+        updates = builtins.iter([values.items()], null);
     } else {
-        updates = iterators.iter([values], null);
+        updates = builtins.iter([values], null);
     }
     var i = 0;
     var self = this;
-    iterators.iter_for_each(updates, function(val) {
+    callables.iter_for_each(updates, function(val) {
         var pieces = new types.Tuple(val);
         if (pieces.length != 2) {
             throw new exceptions.ValueError("dictionary update sequence element #" + i + " has length " + pieces.length + "; 2 is required");
@@ -507,7 +512,8 @@ Dict.prototype.keys = function() {
 };
 
 Dict.prototype.__iter__ = function() {
-    return iterators.iter([this.keys()], null);
+    var builtins = require('../builtins');
+    return builtins.iter([this.keys()], null);
 };
 
 Dict.prototype.values = function() {

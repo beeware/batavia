@@ -5,6 +5,8 @@ var Buffer = require('buffer').Buffer;
 var BigNumber = require('bignumber.js');
 
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
+var type_name = require('../core').type_name;
 var types = require('../types');
 
 var math = {
@@ -353,7 +355,7 @@ math.frexp.__doc__ = 'frexp(x)\n\n\nReturn the mantissa and exponent of x, as pa
 math.fsum = function(iterable) {
     var iterobj = exceptions.iter([iterable], null);
     var sum = 0.0;
-    utils.iter_for_each(iterobj, function(val) {
+    callables.iter_for_each(iterobj, function(val) {
         if (!types.isinstance(val, [types.Bool, types.Float, types.Int])) {
             throw new exceptions.TypeError('a float is required');
         }
@@ -478,10 +480,10 @@ math.gamma.__doc__ = 'gamma(x)\n\n\nGamma function at x.';
 
 math.gcd = function(x, y) {
     if (!types.isinstance(x, [types.Bool, types.Int])) {
-        throw new exceptions.TypeError("'" + utils.type_name(x) + "' object cannot be interpreted as an integer");
+        throw new exceptions.TypeError("'" + type_name(x) + "' object cannot be interpreted as an integer");
     }
     if (!types.isinstance(y, [types.Bool, types.Int])) {
-        throw new exceptions.TypeError("'" + utils.type_name(y) + "' object cannot be interpreted as an integer");
+        throw new exceptions.TypeError("'" + type_name(y) + "' object cannot be interpreted as an integer");
     }
     var xx = x.__trunc__().val.abs();
     var yy = y.__trunc__().val.abs();
@@ -855,7 +857,7 @@ math.trunc = function(x) {
     if (x === null) {
         throw new exceptions.TypeError("type NoneType doesn't define __trunc__ method");
     } else if (!x.__trunc__) {
-        throw new exceptions.TypeError("type " + utils.type_name(x) + " doesn't define __trunc__ method");
+        throw new exceptions.TypeError("type " + type_name(x) + " doesn't define __trunc__ method");
     }
     return x.__trunc__();
 }

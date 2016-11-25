@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 
 /*************************************************************************
@@ -87,7 +88,7 @@ Set.prototype.__eq__ = function(other) {
     }
     var iterobj = builtins.iter([this], null);
     var equal = true;
-    utils.iter_for_each(iterobj, function(val) {
+    callables.iter_for_each(iterobj, function(val) {
         equal = equal && other.__contains__(val).valueOf();
     });
 
@@ -189,7 +190,7 @@ Set.prototype.__sub__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj1 = builtins.iter([this], null);
-        utils.iter_for_each(iterobj1, function(val) {
+        callables.iter_for_each(iterobj1, function(val) {
             if (!(other.__contains__(val).valueOf())) {
                 both.push(val);
             }
@@ -229,7 +230,7 @@ Set.prototype.__and__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj = builtins.iter([this], null);
-        utils.iter_for_each(iterobj, function(val) {
+        callables.iter_for_each(iterobj, function(val) {
             if (other.__contains__(val).valueOf()) {
                 both.push(val);
             }
@@ -246,13 +247,13 @@ Set.prototype.__xor__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj1 = builtins.iter([this], null);
-        utils.iter_for_each(iterobj1, function(val) {
+        callables.iter_for_each(iterobj1, function(val) {
             if (!(other.__contains__(val).valueOf())) {
                 both.push(val);
             }
         });
         var iterobj2 = builtins.iter([other], null);
-        utils.iter_for_each(iterobj2, function(val) {
+        callables.iter_for_each(iterobj2, function(val) {
             if (!(this.__contains__(val).valueOf())) {
                 both.push(val);
             }
@@ -269,11 +270,11 @@ Set.prototype.__or__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj1 = builtins.iter([this], null);
-        utils.iter_for_each(iterobj1, function(val) {
+        callables.iter_for_each(iterobj1, function(val) {
             both.push(val);
         });
         var iterobj2 = builtins.iter([other], null);
-        utils.iter_for_each(iterobj2, function(val) {
+        callables.iter_for_each(iterobj2, function(val) {
             both.push(val);
         }.bind(this));
         return new Set(both);
@@ -310,7 +311,7 @@ Set.prototype.__isub__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj1 = builtins.iter([this], null);
-        utils.iter_for_each(iterobj1, function(val) {
+        callables.iter_for_each(iterobj1, function(val) {
             if (!(other.__contains__(val).valueOf())) {
                 both.push(val);
             }
@@ -354,7 +355,7 @@ Set.prototype.__iand__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])) {
         var intersection = new Set();
         var iterobj = builtins.iter([this], null);
-        utils.iter_for_each(iterobj, function(val) {
+        callables.iter_for_each(iterobj, function(val) {
             if (other.__contains__(val).valueOf()) {
                 intersection.add(val);
             }
@@ -371,13 +372,13 @@ Set.prototype.__ixor__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj1 = builtins.iter([this], null);
-        utils.iter_for_each(iterobj1, function(val) {
+        callables.iter_for_each(iterobj1, function(val) {
             if (!(other.__contains__(val).valueOf())) {
                 both.push(val);
             }
         });
         var iterobj2 = builtins.iter([other], null);
-        utils.iter_for_each(iterobj2, function(val) {
+        callables.iter_for_each(iterobj2, function(val) {
             if (!(this.__contains__(val).valueOf())) {
                 both.push(val);
             }
@@ -395,11 +396,11 @@ Set.prototype.__ior__ = function(other) {
     if (types.isinstance(other, [types.FrozenSet, types.Set])){
         var both = [];
         var iterobj1 = builtins.iter([this], null);
-        utils.iter_for_each(iterobj1, function(val) {
+        callables.iter_for_each(iterobj1, function(val) {
             both.push(val);
         });
         var iterobj2 = builtins.iter([other], null);
-        utils.iter_for_each(iterobj2, function(val) {
+        callables.iter_for_each(iterobj2, function(val) {
             both.push(val);
         }.bind(this));
         this.update(both);
@@ -428,11 +429,11 @@ Set.prototype.update = function(args) {
     var types = require('../types');
     var builtins = require('../builtins');
 
-    var new_args = utils.js2py(args);
+    var new_args = types.js2py(args);
     if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Str, types.Tuple])) {
         var iterobj = builtins.iter([new_args], null);
         var self = this;
-        utils.iter_for_each(iterobj, function(val) {
+        callables.iter_for_each(iterobj, function(val) {
             self.data.__setitem__(val, val);
         });
     } else {

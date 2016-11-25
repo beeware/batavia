@@ -1,4 +1,4 @@
-
+var type_name = require('../core').type_name;
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
@@ -64,7 +64,7 @@ time.struct_time = function (sequence) {
             // dict won't work until .keys() is implemented
             // bytearray won't work until .__iter__ is implemented
 
-            throw new exceptions.NotImplementedError("not implemented for "+ utils.type_name(sequence)+".")
+            throw new exceptions.NotImplementedError("not implemented for "+ type_name(sequence)+".")
 
         } else if (types.isinstance(sequence, [types.Bytes, types.FrozenSet,
             types.Set, types.Range])) {
@@ -138,7 +138,7 @@ time.mktime = function(sequence){
             throw new exceptions.TypeError("integer argument expected, got float")
         }
         else if (!types.isinstance(item, [types.Int])){
-            throw new exceptions.TypeError("an integer is required (got type " + utils.type_name(item) + ")");
+            throw new exceptions.TypeError("an integer is required (got type " + type_name(item) + ")");
         }
     }
 
@@ -165,10 +165,10 @@ time.gmtime = function(seconds){
     if (arguments.length == 1) {
         // catching bad types
         if (types.isinstance(seconds, [types.Complex])){
-            throw new exceptions.TypeError("can't convert " + utils.type_name(seconds) + " to int")
+            throw new exceptions.TypeError("can't convert " + type_name(seconds) + " to int")
 
         } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
-            throw new exceptions.TypeError("an integer is required (got type " + utils.type_name(seconds) + ")")
+            throw new exceptions.TypeError("an integer is required (got type " + type_name(seconds) + ")")
         }
 
         var date = new Date(seconds * 1000)

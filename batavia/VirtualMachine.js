@@ -1,12 +1,14 @@
 /*************************************************************************
  * Virtual Machine
  *************************************************************************/
-var utils = require('./utils');
 var types = require('./types');
 var Block = require('./core').Block;
 var builtins = require('./builtins');
 var Frame = require('./core').Frame;
 var constants = require('./core').constants;
+var exceptions = require('./core').exceptions;
+var callables = require('./core').callables;
+var io = require('./core').io;
 var dis = require('./modules/dis');
 var marshal = require('./modules/marshal');
 var sys = require('./modules/sys');
@@ -1244,7 +1246,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[0] !== items[1];
                 break;
             case 10:  // exception match
-                result = utils.issubclass(items[0], items[1]);
+                result = types.issubclass(items[0], items[1]);
                 break;
             default:
                 throw new builtins.BataviaError('Unknown operator ' + opnum);
@@ -1458,7 +1460,7 @@ VirtualMachine.prototype.byte_MAP_ADD = function(count) {
 };
 
 VirtualMachine.prototype.byte_PRINT_EXPR = function() {
-    utils.stdout(this.pop());
+    io.stdout(this.pop());
 };
 
 VirtualMachine.prototype.byte_PRINT_ITEM = function() {
@@ -1485,14 +1487,14 @@ VirtualMachine.prototype.print_item = function(item, to) {
     // if (to === undefined) {
     //     to = sys.stdout;  // FIXME - the to value is ignored.
     // }
-    utils.stdout(item);
+    io.stdout(item);
 };
 
 VirtualMachine.prototype.print_newline = function(to) {
     // if (to === undefined) {
     //     to = sys.stdout;  // FIXME - the to value is ignored.
     // }
-    utils.stdout("");
+    io.stdout("");
 };
 
 VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
@@ -1669,7 +1671,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
 VirtualMachine.prototype.byte_POP_EXCEPT = function() {
     var block = this.pop_block();
     if (block.type !== 'except-handler') {
-        throw new utils.exception.BataviaError("popped block is not an except handler");
+        throw new exceptions.BataviaError("popped block is not an except handler");
     }
     this.unwind_block(block);
 };
@@ -1786,7 +1788,7 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 
     var func = this.pop();
     // frame = this.frame
-    var retval = utils.run_callable(this, func, posargs, namedargs);
+    var retval = callables.run_callable(this, func, posargs, namedargs);
     this.push(retval);
 };
 
@@ -1862,10 +1864,60 @@ VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
 //     six.exec_(stmt, globs, locs) f
 // };
 
+
 VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
-    var make_class = utils.make_class.bind(this);
-    make_class.__python__ = true;
-    this.push(make_class);
+    var func = args[0];
+    var name = args[1];
+    var bases = kwargs.bases || args[2];
+    // var metaclass = kwargs.metaclass || args[3];
+    // var kwds = kwargs.kwds || args[4] || [];
+
+    // Create a locals context, and run the class function in it.
+    var locals = new types.Dict();
+    func.__call__.apply(this, [[], [], locals]);
+
+    // Now construct the class, based on the constructed local context.
+    var klass = function(vm, args, kwargs) {
+        if (this.__init__) {
+            this.__init__.__self__ = this;
+            this.__init__.__call__.apply(vm, [args, kwargs]);
+        }
+    };
+    klass.__name__ = name;
+
+    if (bases) {
+        // load up the base attributes
+        if (Array.isArray(bases)) {
+            throw new exceptions.NotImplementedError("multiple inheritance not supported yet");
+        }
+        var base = bases.__class__;
+        for (var attr in base) {
+            if (base.hasOwnProperty(attr)) {
+                klass[attr] = base[attr];
+                klass.prototype[attr] = base[attr];
+            }
+        }
+    }
+    for (var attr in locals) {
+        if (locals.hasOwnProperty(attr)) {
+            klass[attr] = locals[attr];
+            klass.prototype[attr] = locals[attr];
+        }
+    }
+    klass.prototype.__class__ = new types.Type(name, bases);
+
+    var new_class = function(vm, klass, name) {
+        var __new__ = function(args, kwargs) {
+            return new klass(vm, args, kwargs);
+        };
+        __new__.__python__ = true;
+        __new__.__class__ = klass;
+        return __new__;
+    }(this, klass, name);
+    new_class.__class__ = klass;
+    new_class.__python__ = true;
+
+    this.push(new_class);
 };
 
 VirtualMachine.prototype.byte_STORE_LOCALS = function() {

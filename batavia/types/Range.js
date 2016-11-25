@@ -1,5 +1,6 @@
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
+var exceptions = require('../core').exceptions;
 
 /*************************************************************************
  * An implementation of range
@@ -74,7 +75,7 @@ Range.prototype.RangeIterator.prototype.__next__ = function() {
         this.index = this.index + this.data.step;
         return new types.Int(retval);
     }
-    throw new batavia.builtins.StopIteration();
+    throw new exceptions.StopIteration();
 }
 
 Range.prototype.RangeIterator.prototype.__str__ = function() {

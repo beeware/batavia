@@ -426,7 +426,7 @@ Int.prototype.__add__ = function(other) {
     } else if (types.isinstance(other, types.Bool)) {
         return new Int(this.val.add(other.valueOf() ? 1 : 0));
     } else if (types.isinstance(other, types.Complex)) {
-        if (this.__float__() > MAX_FLOAT || this.__float__() < utils.MIN_FLOAT) {
+        if (this.__float__() > MAX_FLOAT || this.__float__() < MIN_FLOAT) {
             throw new exceptions.OverflowError("int too large to convert to float");
         } else {
             return new types.Complex(this.val.add(other.real).toNumber(), other.imag);

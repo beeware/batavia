@@ -147,7 +147,7 @@ Bytes.prototype.__contains__ = function(other) {
         if (other >= 0 && other <= 255) {
             other_value = parseInt(other.valueOf());
         } else {
-            throw new batavia.builtins.ValueError(
+            throw new exceptions.ValueError(
                 "byte must be in range (0, 256)"
             );
         }
@@ -345,7 +345,7 @@ Bytes.prototype.BytesIterator.prototype.__iter__ = function() {
 
 Bytes.prototype.BytesIterator.prototype.__next__ = function() {
     if (this.index >= this.data.length) {
-        throw new batavia.builtins.StopIteration();
+        throw new exceptions.StopIteration();
     }
     var retval = this.data[this.index];
     this.index++;

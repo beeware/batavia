@@ -2,6 +2,7 @@ var constants = require('../core').constants;
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 
 /*************************************************************************
@@ -21,7 +22,7 @@ function Tuple(length){
             var builtins = require('../builtins');
             var iterobj = builtins.iter([arguments[0]], null);
             var self = this;
-            utils.iter_for_each(iterobj, function(val) {
+            callables.iter_for_each(iterobj, function(val) {
                 self.push(val);
             });
         }

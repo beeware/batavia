@@ -513,10 +513,7 @@ marshal.r_object = function(vm, p) {
         }
 //            retval = marshal.r_string(vm, n, p);
         var contents = marshal.r_string(vm, n, p);
-        var split = contents.split('').map(function (b) { return b.charCodeAt(); });
-        retval = new types.Bytes(
-            new Buffer(split)
-        );
+        retval = new types.Bytes(new Buffer(contents));
 
         if (flag) {
             marshal.r_ref(vm, retval, flag, p);
@@ -532,7 +529,11 @@ marshal.r_object = function(vm, p) {
                 "EOF read where object expected");
             break;
         }
-        retval = marshal.r_string(vm, n, p);
+        retval = "";
+        data = marshal.r_string(vm, n, p);
+        for (i = 0; i < data.length; i++) {
+            retval += String.fromCharCode(data[i]);
+        }
 
         if (flag) {
             marshal.r_ref(vm, retval, flag, p);
@@ -548,7 +549,11 @@ marshal.r_object = function(vm, p) {
                 "EOF read where object expected");
             break;
         }
-        retval = marshal.r_string(vm, n, p);
+        retval = "";
+        data = marshal.r_string(vm, n, p);
+        for (i = 0; i < data.length; i++) {
+            retval += String.fromCharCode(data[i]);
+        }
 
         if (flag) {
             marshal.r_ref(vm, retval, flag, p);
@@ -564,7 +569,11 @@ marshal.r_object = function(vm, p) {
                 "EOF read where object expected");
             break;
         }
-        retval = marshal.r_string(vm, n, p);
+        retval = "";
+        data = marshal.r_string(vm, n, p);
+        for (i = 0; i < data.length; i++) {
+            retval += String.fromCharCode(data[i]);
+        }
 
         // Now decode the contents from UTF-8
         retval = decodeURIComponent(escape(retval));

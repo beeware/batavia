@@ -1,3 +1,4 @@
+var constants = require('../core').constants;
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
@@ -20,7 +21,7 @@ function List() {
         } else {
             var iterobj = builtins.iter([arguments[0]], null);
             var self = this;
-            utils.iter_for_each(iterobj, function(val) {
+            callables.iter_for_each(iterobj, function(val) {
                 self.push(val);
             });
         }
@@ -395,7 +396,7 @@ List.prototype.__getitem__ = function(index) {
         return new List(result);
     } else {
         var msg = "list indices must be integers or slices, not ";
-        if (utils.BATAVIA_MAGIC === utils.BATAVIA_MAGIC_34) {
+        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
             msg = "list indices must be integers, not ";
         }
         throw new exceptions.TypeError(msg + type_name(index));
