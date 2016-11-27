@@ -842,8 +842,8 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         }
         // throw e;
     }
-    this.modules.sys.stdout.flush();
-    this.modules.sys.stderr.flush();
+    sys.stdout.flush();
+    sys.stderr.flush();
 };
 
 VirtualMachine.prototype.unwind_block = function(block) {
