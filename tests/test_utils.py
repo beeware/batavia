@@ -102,6 +102,9 @@ class JavaScriptNormalizationTests(unittest.TestCase):
         self.assertNormalized('0.000002653582035', '2.65358...e-6')
         self.assertNormalized('321956420358983230.0', '3.21956...e+17')
 
+        self.assertNormalized('(18446744073709552000-4j)', '(1.84467...e+19-4j)')
+        self.assertNormalized('(18446744073709552000+4j)', '(1.84467...e+19+4j)')
+
     def test_memory_reference(self):
         self.assertNormalized(
             """

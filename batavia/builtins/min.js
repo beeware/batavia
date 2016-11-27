@@ -4,7 +4,8 @@ var type_name = require('../core').type_name;
 var None = require('../core').None;
 var tuple = require('./tuple');
 
-var min = function(args, kwargs) {
+
+function min(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -49,7 +50,7 @@ var min = function(args, kwargs) {
         }
     }
     return min;
-};
+}
 min.__doc__ = "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.";
 
 module.exports = min;

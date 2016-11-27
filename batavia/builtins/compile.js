@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions;
 
-var compile = function(args, kwargs) {
+
+function compile(args, kwargs) {
     var _compile = require('../modules/_compile/_compile');
 
     var source = args[0];
@@ -8,9 +9,11 @@ var compile = function(args, kwargs) {
     var mode = args[2];
     // var flags = args[3];
     var cf = null; // compiler flags
-    var start = [_compile.Py_file_input,
-                 _compile.Py_eval_input,
-                 _compile.Py_single_input];
+    var start = [
+        _compile.Py_file_input,
+        _compile.Py_eval_input,
+        _compile.Py_single_input
+    ];
 
     var compile_mode;
     if (mode == "exec") {
@@ -40,7 +43,7 @@ var compile = function(args, kwargs) {
         return null;
     }
     return _compile.ast_compile_object(mod, filename, cf, false);
-};
+}
 compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified.";
 
 module.exports = compile;

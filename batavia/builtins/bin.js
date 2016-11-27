@@ -2,7 +2,8 @@ var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var types = require('../types');
 
-var bin = function(args, kwargs) {
+
+function bin(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -21,7 +22,7 @@ var bin = function(args, kwargs) {
     }
 
     return new types.Str("0b" + obj.toString(2));
-};
+}
 bin.__doc__ = "bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   ";
 
 module.exports = bin;

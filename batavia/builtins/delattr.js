@@ -2,7 +2,8 @@ var exceptions = require('../core').exceptions;
 var getattr = require('./getattr');
 var types = require('../types');
 
-var delattr = function(args, kwargs) {
+
+function delattr(args, kwargs) {
     if (args) {
         try {
             if (getattr(args)) {
@@ -24,7 +25,7 @@ var delattr = function(args, kwargs) {
     } else {
         throw new exceptions.TypeError("delattr expected 2 arguments, got 0");
     }
-};
+}
 delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''.";
 
 module.exports = delattr;

@@ -2,7 +2,8 @@ var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 
-var any = function(args, kwargs) {
+
+function any(args, kwargs) {
     if (args[0] === null) {
         throw new exceptions.TypeError("'NoneType' object is not iterable");
     }
@@ -33,7 +34,7 @@ var any = function(args, kwargs) {
         }
     }
     return false;
-};
+}
 any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.';
 
 module.exports = any;

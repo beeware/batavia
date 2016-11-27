@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var sum = function(args, kwargs) {
+
+function sum(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -22,7 +23,7 @@ var sum = function(args, kwargs) {
     } catch (err) {
         throw new exceptions.TypeError("bad operand type for sum(): 'NoneType'");
     }
-};
+}
 sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start.";
 
 module.exports = sum;

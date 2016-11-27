@@ -288,8 +288,8 @@ List.prototype.__mul__ = function(other) {
     var types = require('../types');
 
     if (types.isinstance(other, types.Int)) {
-        result = new List();
-        if(other <= 0) {
+        var result = new List();
+        if (other <= 0) {
             return result;
         } else {
             for (var i = 0; i < other; i++) {
@@ -316,16 +316,16 @@ List.prototype.__add__ = function(other) {
     var types = require('../types');
 
     if (types.isinstance(other, types.List)) {
-        result = new List();
-            for (var i = 0; i < this.length; i++) {
-                result.push(this[i]);
-            }
+        var result = new List();
+        for (var i = 0; i < this.length; i++) {
+            result.push(this[i]);
+        }
 
-            for (var i = 0; i < other.length; i++) {
-                result.push(other[i]);
-            }
+        for (var i = 0; i < other.length; i++) {
+            result.push(other[i]);
+        }
 
-            return result;
+        return result;
     } else {
         throw new exceptions.TypeError('can only concatenate list (not "' + type_name(other) + '") to list');
     }
@@ -440,8 +440,8 @@ List.prototype.__iadd__ = function(other) {
     var types = require('../types');
 
     if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
-        for (i = 0; i < other.length; i++) {
-          this.push(other[i]);
+        for (var i = 0; i < other.length; i++) {
+            this.push(other[i]);
         }
         return this;
     } else {
@@ -460,9 +460,8 @@ List.prototype.__imul__ = function(other) {
         if (other <= 0) {
             return new List();
         } else {
-            list_length = this.length;
-            for (i = 1; i < other; i++) {
-                for (j = 0; j < list_length; j++) {
+            for (var i = 1; i < other; i++) {
+                for (var j = 0; j < this.length; j++) {
                     this.push(this[j]);
                 }
             }

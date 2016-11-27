@@ -83,46 +83,46 @@ Tuple.prototype.__lt__ = function(other) {
         throw new exceptions.TypeError('unorderable types: tuple() < ' + type_name(other) + '()')
     }
     if (this.length == 0 && other.length > 0) {
-        return true;
+        return new types.Bool(true);
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
-            return false;
+            return new types.Bool(false);
         }
-        if (this[i].__lt__(other[i])) {
-            return true;
-        } else if (this[i].__eq__(other[i])) {
+        if (this[i].__lt__(other[i]).valueOf()) {
+            return new types.Bool(true);
+        } else if (this[i].__eq__(other[i]).valueOf()) {
             continue;
         } else {
-            return false;
+            return new types.Bool(false);
         }
     }
-    return this.length < other.length;
+    return new types.Bool(this.length < other.length);
 }
 
 Tuple.prototype.__le__ = function(other) {
-    return this.__lt__(other) || this.__eq__(other);
+    return this.__lt__(other).__or__(this.__eq__(other));
 }
 
 Tuple.prototype.__eq__ = function(other) {
     var types = require('../types');
 
     if (!types.isinstance(other, types.Tuple)) {
-        return false;
+        return new types.Bool(false);
     }
     if (this.length != other.length) {
-        return false;
+        return new types.Bool(false);
     }
     for (var i = 0; i < this.length; i++) {
-        if (!this[i].__eq__(other[i])) {
-            return false;
+        if (!this[i].__eq__(other[i]).valueOf()) {
+            return new types.Bool(false);
         }
     }
-    return true;
+    return new types.Bool(true);
 }
 
 Tuple.prototype.__ne__ = function(other) {
-    return !this.__eq__(other);
+    return this.__eq__(other).__not__();
 }
 
 Tuple.prototype.__gt__ = function(other) {
@@ -132,25 +132,25 @@ Tuple.prototype.__gt__ = function(other) {
         throw new exceptions.TypeError('unorderable types: tuple() > ' + type_name(other) + '()')
     }
     if (this.length == 0 && other.length > 0) {
-        return false;
+        return new types.Bool(false);
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
-            return true;
+            return new types.Bool(true);
         }
-        if (this[i].__lt__(other[i])) {
-            return false;
-        } else if (this[i].__eq__(other[i])) {
+        if (this[i].__lt__(other[i]).valueOf()) {
+            return new types.Bool(false);
+        } else if (this[i].__eq__(other[i]).valueOf()) {
             continue;
         } else {
-            return true;
+            return new types.Bool(true);
         }
     }
-    return this.length > other.length;
+    return new types.Bool(this.length > other.length);
 }
 
 Tuple.prototype.__ge__ = function(other) {
-  return this.__gt__(other) || this.__eq__(other);
+    return this.__gt__(other).__or__(this.__eq__(other));
 }
 
 Tuple.prototype.__contains__ = function(other) {
@@ -178,7 +178,7 @@ Tuple.prototype.__invert__ = function() {
 }
 
 Tuple.prototype.__bool__ = function() {
-    return this.length > 0;
+    return new types.Bool(this.length > 0);
 }
 
 /**************************************************
@@ -205,7 +205,7 @@ Tuple.prototype.__mul__ = function(other) {
     var types = require('../types');
 
     if (types.isinstance(other, types.Int)) {
-        result = new List();
+        var result = new Tuple();
         for (var i = 0; i < other.valueOf(); i++) {
             result.extend(this);
         }
@@ -214,7 +214,7 @@ Tuple.prototype.__mul__ = function(other) {
         if (other.valueOf()) {
             return this.copy();
         } else {
-            return new List();
+            return new Tuple();
         }
     } else {
         throw new exceptions.TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'");
@@ -231,7 +231,7 @@ Tuple.prototype.__add__ = function(other) {
 	if (!types.isinstance(other, types.Tuple)) {
 		throw new exceptions.TypeError('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
 	} else {
-		result = new Tuple();
+		var result = new Tuple();
 		for (var i = 0; i < this.length; i++){
 			result.push(this[i]);
 		}

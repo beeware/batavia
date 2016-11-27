@@ -26,3 +26,7 @@ package/
 
 # PyCharm settings
 .idea
+
+# Py.test 
+.cache
+

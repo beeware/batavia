@@ -425,7 +425,7 @@ Tokenizer.prototype.get_token = function() {
                     col = (Math.floor(col / tok.tabsize) + 1) * tok.tabsize;
                     altcol = (Math.floor(altcol / tok.alttabsize) + 1)
                         * tok.alttabsize;
-                } else if (c == '\014') { // Control-L (formfeed)
+                } else if (c == '\x0f') { // Control-L (formfeed)
                     col = 0; // For Emacs users
                     altcol = 0;
                 } else {
@@ -529,7 +529,7 @@ Tokenizer.prototype.again = function() {
     // Skip spaces
     do {
         c = tok.tok_nextc();
-    } while (c == ' ' || c == '\t' || c == '\014');
+    } while (c == ' ' || c == '\t' || c == '\x0c');
 
     // Set start of current token
     tok.start = tok.cur - 1;
@@ -804,6 +804,7 @@ Tokenizer.prototype.parse_identifier = function(c) {
 
 Tokenizer.prototype.letter_quote = function(c) {
     var tok = this;
+    var p_start, p_end;
     // String
     if (c == '\'' || c == '"') {
         var quote = c;
@@ -860,6 +861,7 @@ Tokenizer.prototype.letter_quote = function(c) {
 
 Tokenizer.prototype.fraction = function(c) {
     var tok = this;
+    var p_start, p_end;
     // var e;
     // Accept floating point numbers.
     if (c == '.') {
@@ -913,7 +915,9 @@ Tokenizer.prototype.exponent = function(c) {
 
 Tokenizer.prototype.imaginary = function() {
     var tok = this;
+    var p_start, p_end;
     var c = tok.tok_nextc();
+
     tok.tok_backup(c);
     p_start = tok.start;
     p_end = tok.cur;

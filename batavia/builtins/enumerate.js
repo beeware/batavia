@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions;
 
-var enumerate = function(args, kwargs) {
+
+function enumerate(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -14,7 +15,7 @@ var enumerate = function(args, kwargs) {
     }
     // FIXME this should return a generator, not list
     return result;
-};
+}
 enumerate.__doc__ = 'enumerate(iterable[, start]) -> iterator for index, value of iterable\n\nReturn an enumerate object.  iterable must be another object that supports\niteration.  The enumerate object yields pairs containing a count (from\nstart, which defaults to zero) and a value yielded by the iterable argument.\nenumerate is useful for obtaining an indexed list:\n    (0, seq[0]), (1, seq[1]), (2, seq[2]), ...';
 
 module.exports = enumerate;

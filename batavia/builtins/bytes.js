@@ -6,8 +6,8 @@ var type_name = require('../core').type_name;
 var types = require('../types');
 var iter = require('./iter');
 
-var bytes = function(args, kwargs) {
 
+function bytes(args, kwargs) {
 //    bytes(iterable_of_ints) -> bytes
 //    bytes(string, encoding[, errors]) -> bytes
 //    bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
@@ -104,11 +104,10 @@ var bytes = function(args, kwargs) {
         //    bytes(string, encoding[, errors]) -> bytes
         //    we delegate to str.encode(encoding, errors)
         //    we need to rewrap the first argument because somehow it's coming unwrapped!
-        wrapped_string = new types.Str(args[0]);
+        var wrapped_string = new types.Str(args[0]);
         return wrapped_string.encode(args[1], args[2]);
     }
-};
-
+}
 bytes.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer';
 
 module.exports = bytes;

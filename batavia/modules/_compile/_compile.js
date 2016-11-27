@@ -55,9 +55,9 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
     throw new exceptions.NotImplementedError("_compile.parsetok is not implemented yet");
 }
 
-Py_single_input = new types.Int(256)
-Py_file_input = new types.Int(257)
-Py_eval_input = new types.Int(258)
+_compile['Py_single_input'] = new types.Int(256);
+_compile['Py_file_input'] = new types.Int(257);
+_compile['Py_eval_input'] = new types.Int(258);
 
 _compile['EOF'] = tokenizer.EOF;
 _compile['E_OK'] = tokenizer.E_OK;

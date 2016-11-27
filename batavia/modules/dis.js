@@ -3,7 +3,7 @@
  * operate on bytecodes (e.g. peephole optimizers).
  */
 
-const dis = {
+var dis = {
     CO_GENERATOR: 32,  // flag for "this code uses yield"
 
     hasconst: {},
@@ -24,48 +24,48 @@ const dis = {
     // slice_ops: {},
 }
 
-def_op = function(name, op) {
+function def_op(name, op) {
     dis.opname[op] = name;
     dis.opmap[name] = op;
 }
 
-def_unary_op = function(name, op) {
+function def_unary_op(name, op) {
     def_op(name, op);
     dis.unary_ops[op] = op;
 }
 
-def_binary_op = function(name, op) {
+function def_binary_op(name, op) {
     def_op(name, op);
     dis.binary_ops[op] = op;
 }
 
-def_inplace_op = function(name, op) {
+function def_inplace_op(name, op) {
     def_op(name, op);
     dis.inplace_ops[op] = op;
 }
 
-//def_slice_op = function(name, op) {
+// function def_slice_op(name, op) {
 //     def_op(name, op);
 //     slice_ops[op] = op;
 // }
 
-name_op = function(name, op) {
+function name_op(name, op) {
     def_op(name, op);
     dis.hasname[op] = op;
 }
 
-jrel_op = function(name, op) {
+function jrel_op(name, op) {
     def_op(name, op);
     dis.hasjrel[op] = op;
 }
 
-jabs_op = function(name, op) {
+function jabs_op(name, op) {
     def_op(name, op);
     dis.hasjabs[op] = op;
 }
 
 // Prime the opname list with all possible opnames
-for (var op=0; op < 256; op++) {
+for (var op = 0; op < 256; op++) {
     dis.opname.push('<' + op + '>');
 }
 

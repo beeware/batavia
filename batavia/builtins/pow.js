@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var pow = function(args) {
+
+function pow(args, kwargs) {
     var x, y, z;
     if (!args) {
       throw new exceptions.TypeError("pow expected at least 2 arguments, got 0");
@@ -45,7 +46,7 @@ var pow = function(args) {
     } else {
         throw new exceptions.TypeError("pow expected at least 2 arguments, got " + args.length);
     }
-};
+}
 pow.__doc__ = 'pow(x, y[, z]) -> number\n\nWith two arguments, equivalent to x**y.  With three arguments,\nequivalent to (x**y) % z, but may be more efficient (e.g. for ints).';
 
 module.exports = pow;

@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions;
 
-var repr = function(args, kwargs) {
+
+function repr(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -18,7 +19,7 @@ var repr = function(args, kwargs) {
     } else {
         return args[0].toString();
     }
-};
+}
 repr.__doc__ = 'repr(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) == object.';
 
 module.exports = repr;

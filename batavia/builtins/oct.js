@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var oct = function(args) {
+
+function oct(args, kwargs) {
     if (!args || args.length !== 1) {
         throw new exceptions.TypeError("oct() takes exactly one argument (" + (args ? args.length : 0) + " given)");
     }

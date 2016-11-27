@@ -22,9 +22,8 @@ var make_callable = function(func) {
         });
 
         if (func.__code__.co_flags & dis.CO_GENERATOR) {
-            gen = new types.Generator(frame, this);
-            frame.generator = gen;
-            retval = gen;
+            frame.generator = new types.Generator(frame, this);
+            retval = frame.generator;
         } else {
             retval = this.run_frame(frame);
         }

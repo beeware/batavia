@@ -147,15 +147,13 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     return out[0].decode('utf8')
 
 
-
-
-
 JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
 JS_FLOAT_DECIMAL = re.compile('(\d+\.\d+)')
 JS_FLOAT_EXP = re.compile('(\d+)e(-)?0?(\d+)')
+JS_LARGE_COMPLEX = re.compile('\((\d{15}\d+)[-+]')
 
 PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
@@ -207,6 +205,10 @@ def cleanse_javascript(input, substitutions):
         out = JS_FLOAT_EXP.sub('\\1e\\2\\3', out)
     except:
         pass
+
+    # Replace large integers in a complex number with floating point.
+    for match in JS_LARGE_COMPLEX.findall(out):
+        out = out.replace(match, str(float(match)))
 
     # Replace high precision floats with abbreviated forms
     out = FLOAT_PRECISION.sub('\\1...', out)

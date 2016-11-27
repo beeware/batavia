@@ -2,7 +2,8 @@ var None = require('../core').None;
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var __import__ = function(args, kwargs) {
+
+function __import__(args, kwargs) {
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError("Batavia calling convention not used.");
     }

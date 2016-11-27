@@ -652,13 +652,12 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
     }
     f_locals.update(callargs);
 
-    frame = new Frame({
+    return new Frame({
         'f_code': code,
         'f_globals': f_globals,
         'f_locals': f_locals,
         'f_back': this.frame
     });
-    return frame;
 };
 
 VirtualMachine.prototype.push_frame = function(frame) {
@@ -772,7 +771,7 @@ VirtualMachine.prototype.unpack_code = function(code) {
                 if (intArg < code.co_cellvars.length) {
                     args = [code.co_cellvars[intArg]];
                 } else {
-                    var_idx = intArg - code.co_cellvars.length;
+                    var var_idx = intArg - code.co_cellvars.length;
                     args = [code.co_freevars[var_idx]];
                 }
             } else if (opcode in dis.hasname) {
@@ -824,7 +823,7 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         return val;
     } catch (e) {
         if (this.last_exception) {
-            trace = ['Traceback (most recent call last):'];
+            var trace = ['Traceback (most recent call last):'];
             var frame;
             for (var t in this.last_exception.traceback) {
                 frame = this.last_exception.traceback[t];
@@ -847,6 +846,8 @@ VirtualMachine.prototype.run_code = function(kwargs) {
 };
 
 VirtualMachine.prototype.unwind_block = function(block) {
+    var offset, exc;
+
     if (block.type === 'except-handler') {
         offset = 3;
     } else {
@@ -956,7 +957,7 @@ VirtualMachine.prototype.run_frame = function(frame) {
 
     while (!why) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
-        var opname = dis.opname[operation.opcode];
+        // var opname = dis.opname[operation.opcode];
 
         // advance f_lasti to next operation. If the operation is a jump, then this
         // pointer will be overwritten during the operation's execution.
@@ -1273,6 +1274,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 
 VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
+    var val;
     if (obj.__getattr__ === undefined) {
         val = obj[attr];
     } else {
@@ -1449,7 +1451,7 @@ VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
 
 VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
     if (count === 2 || count === 3) {
-        items = this.popn(count);
+        var items = this.popn(count);
         this.push(builtins.slice(items));
     } else {
         throw new builtins.BataviaError("Strange BUILD_SLICE count: " + count);
@@ -1615,6 +1617,7 @@ VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
 };
 
 VirtualMachine.prototype.byte_END_FINALLY = function() {
+    var why, value, traceback;
     var exc_type = this.pop();
     if (exc_type === builtins.None) {
         why = null;
@@ -1651,6 +1654,7 @@ VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
 };
 
 VirtualMachine.prototype.do_raise = function(exc, cause) {
+    var exc_type, val;
     if (exc === undefined) {  // reraise
         if (this.last_exception.exc_type === undefined) {
             return 'exception';      // error

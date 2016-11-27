@@ -333,7 +333,7 @@ Int.prototype.__mul__ = function(other) {
         if (this.valueOf() > 4294967295) {
             throw new exceptions.MemoryError("");
         }
-        result = new types.List();
+        var result = new types.List();
         for (var i = 0; i < this.valueOf(); i++) {
             result.extend(other);
         }
@@ -356,7 +356,7 @@ Int.prototype.__mul__ = function(other) {
             throw new exceptions.MemoryError("");
         }
 
-        result = '';
+        var result = '';
         for (var i = 0; i < this.valueOf(); i++) {
             result += other.valueOf();
         }
@@ -371,9 +371,9 @@ Int.prototype.__mul__ = function(other) {
         if (this.valueOf() > 4294967295) {
             throw new exceptions.MemoryError("");
         }
-        result = new types.Tuple();
+        var result = new types.Tuple();
         for (var i = 0; i < this.valueOf(); i++) {
-            result.__add__(other);
+            result = result.__add__(other);
         }
         return result;
     } else if (types.isinstance(other, types.Complex)) {

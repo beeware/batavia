@@ -2,7 +2,8 @@ var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var types = require('../types');
 
-var abs = function(args, kwargs) {
+
+function abs(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -24,7 +25,7 @@ var abs = function(args, kwargs) {
         throw new exceptions.TypeError(
             "bad operand type for abs(): '" + type_name(value) + "'");
     }
-};
+}
 abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.';
 
 module.exports = abs;

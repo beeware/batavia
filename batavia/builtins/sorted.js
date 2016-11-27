@@ -1,15 +1,17 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var _validateInput = function (args, kwargs, undefined) {
+
+function _validateInput(args, kwargs, undefined) {
     var bigger = 1;
     var smaller = -1;
-    var preparingFunction = function (value) {
+
+    function preparingFunction(value) {
         return {
             "key": value,
             "value": value
         };
-    };
+    }
 
     if (kwargs !== undefined) {
         if (kwargs['iterable'] !== undefined) {
@@ -44,9 +46,10 @@ var _validateInput = function (args, kwargs, undefined) {
         smaller: smaller,
         preparingFunction: preparingFunction
     };
-};
+}
 
-var sorted = function(args, kwargs) {
+
+function sorted(args, kwargs) {
     var validatedInput = _validateInput(args, kwargs);
     var iterable = validatedInput["iterable"];
 
@@ -75,7 +78,7 @@ var sorted = function(args, kwargs) {
     }
 
     throw new exceptions.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
-};
+}
 sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list';
 
 module.exports = sorted;

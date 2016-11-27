@@ -2,7 +2,8 @@ var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var types = require('../types');
 
-var dict = function(args, kwargs) {
+
+function dict(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -56,7 +57,7 @@ var dict = function(args, kwargs) {
         }
         return new types.Dict(dict);
     }
-};
+}
 dict.__doc__ = "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)";
 
 module.exports = dict;

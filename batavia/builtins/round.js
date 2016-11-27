@@ -3,7 +3,8 @@ var BigNumber = require('bignumber.js');
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var round = function(args) {
+
+function round(args, kwargs) {
     var p = 0; // Precision
     if (!args) {
       throw new exceptions.TypeError("Required argument 'number' (pos 1) not found");
@@ -21,7 +22,7 @@ var round = function(args) {
         return new types.Int(result);
     }
     return types.Float(result.valueOf());
-};
+}
 round.__doc__ = 'round(number[, ndigits]) -> number\n\nRound a number to a given precision in decimal digits (default 0 digits).\nThis returns an int when called with one argument, otherwise the\nsame type as the number. ndigits may be negative.';
 
 module.exports = round;

@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var chr = function(args, kwargs) {
+
+function chr(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -14,7 +15,7 @@ var chr = function(args, kwargs) {
     return new types.Str(String.fromCharCode(args[0]));
     // After tests pass, let's try saving one object creation
     // return new types.Str.fromCharCode(args[0]);
-};
+}
 chr.__doc__ = 'chr(i) -> Unicode character\n\nReturn a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.';
 
 module.exports = chr;

@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var frozenset = function(args, kwargs) {
+
+function frozenset(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -15,7 +16,7 @@ var frozenset = function(args, kwargs) {
         return new types.FrozenSet();
     }
     return new types.FrozenSet(args[0]);
-};
+}
 frozenset.__doc__ = 'frozenset() -> empty frozenset object\nfrozenset(iterable) -> frozenset object\n\nBuild an immutable unordered collection of unique elements.';
 
 module.exports = frozenset;

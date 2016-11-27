@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var complex = function(args, kwargs) {
+
+function complex(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -23,7 +24,7 @@ var complex = function(args, kwargs) {
         im = args[1];
     }
     return new types.Complex(re, im);
-};
+}
 complex.__doc__ = 'complex(real[, imag]) -> complex number\n\nCreate a complex number from a real part and an optional imaginary part.\nThis is equivalent to (real + imag*1j) where imag defaults to 0.';
 
 module.exports = complex;

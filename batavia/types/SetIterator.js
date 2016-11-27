@@ -6,7 +6,7 @@ var exceptions = require('../core').exceptions;
  * Set Iterator
  **************************************************/
 
-SetIterator = function (data) {
+function SetIterator(data) {
     PyObject.call(this);
     this.index = 0;
     this.data = data;

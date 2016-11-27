@@ -190,7 +190,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_modulo_complex',
 
-        'test_multiply_bool',
         'test_multiply_int',
 
         'test_or_bool',

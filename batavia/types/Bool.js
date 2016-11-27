@@ -387,10 +387,7 @@ Bool.prototype.__lt__ = function(other) {
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__lt__(other);
     } else if (types.isinstance(other, Bool)) {
-        int_one = new types.Int(1);
-        int_zero= new types.Int(0);
-
-        return (this.valueOf() ? int_one : int_zero) < (other.valueOf() ? int_one : int_zero);
+        return new Boolean((this.valueOf() ? 1 : 0) < (other.valueOf() ? 1 : 0));
     } else if (types.isbataviainstance(other)) {
         throw new exceptions.TypeError("unorderable types: bool() < " + type_name(other) + "()");
     } else {

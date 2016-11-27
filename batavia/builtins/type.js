@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
+
 var type = function(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
@@ -21,7 +22,7 @@ var type = function(args, kwargs) {
     } else {
         return new types.Type(args[0], args[1], args[2]);
     }
-};
+}
 type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type";
 
 module.exports = type;

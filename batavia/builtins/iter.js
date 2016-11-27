@@ -3,7 +3,8 @@ var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 var None = require('../core').None;
 
-var iter = function(args, kwargs) {
+
+function iter(args, kwargs) {
     var types = require('../types');
 
     if (arguments.length != 2) {
@@ -33,7 +34,7 @@ var iter = function(args, kwargs) {
     } else {
         throw new exceptions.TypeError("'" + type_name(iterobj) + "' object is not iterable");
     }
-};
+}
 iter.__doc__ = 'iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.';
 
 module.exports = iter;

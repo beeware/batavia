@@ -1,6 +1,7 @@
 var types = require('../types');
 
-var zip = function(args, undefined) {
+
+function zip(args, undefined) {
     if (args === undefined) {
         return new types.List();
     }
@@ -25,7 +26,7 @@ var zip = function(args, undefined) {
     }
 
     return result;
-};
+}
 zip.__doc__ = 'zip(iter1 [,iter2 [...]]) --> zip object\n\nReturn a zip object whose .__next__() method returns a tuple where\nthe i-th element comes from the i-th iterable argument.  The .__next__()\nmethod continues until the shortest iterable in the argument sequence\nis exhausted and then it raises StopIteration.';
 
 module.exports = zip;

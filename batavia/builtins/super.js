@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
 
-make_super = function(frame, args) {
+
+function make_super(frame, args) {
     // I guess we have to examine the stack to find out which class we are in?
     // this seems suboptimal...
     // what does CPython do?
@@ -30,16 +31,16 @@ make_super = function(frame, args) {
     };
     obj.__init__.__python__ = true;
     return obj;
-};
+}
 
 
-var super_ = function(args, kwargs) {
+function super_(args, kwargs) {
     if (args.length > 0) {
         throw new exceptions.NotImplementedError("Builtin Batavia function 'super' with arguments not implemented");
     }
 
     return make_super(this.frame, args);
-};
+}
 super_.__doc__ = 'super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)\n';
 
 module.exports = super_;

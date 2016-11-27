@@ -1,8 +1,9 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-// TODO: this should be a proper dictionary
-var globals = function(args, kwargs) {
+
+// TODO: this should return a proper dictionary
+function globals(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -30,7 +31,7 @@ var globals = function(args, kwargs) {
         return l;
     };
     return gbl;
-};
+}
 globals.__doc__ = "globals() -> dictionary\n\nReturn the dictionary containing the current scope's global variables.";
 
 module.exports = globals;

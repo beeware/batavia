@@ -217,7 +217,7 @@ marshal.r_long = function(vm, p) {
 
 marshal.r_float = function(vm, p)
 {
-    buf = p.fread(8);
+    var buf = p.fread(8);
 
     var sign;
     var e;
@@ -321,6 +321,8 @@ marshal.r_ref = function(vm, o, flag, p) {
 marshal.r_object = function(vm, p) {
     /* null is a valid return value, it does not necessarily means that
        an exception is set. */
+    var buf;
+    var real, imag;
     var retval, v;
     var idx = 0;
     var i, n;
@@ -530,9 +532,9 @@ marshal.r_object = function(vm, p) {
             break;
         }
         retval = "";
-        data = marshal.r_string(vm, n, p);
-        for (i = 0; i < data.length; i++) {
-            retval += String.fromCharCode(data[i]);
+        buf = marshal.r_string(vm, n, p);
+        for (i = 0; i < buf.length; i++) {
+            retval += String.fromCharCode(buf[i]);
         }
 
         if (flag) {
@@ -550,9 +552,9 @@ marshal.r_object = function(vm, p) {
             break;
         }
         retval = "";
-        data = marshal.r_string(vm, n, p);
-        for (i = 0; i < data.length; i++) {
-            retval += String.fromCharCode(data[i]);
+        buf = marshal.r_string(vm, n, p);
+        for (i = 0; i < buf.length; i++) {
+            retval += String.fromCharCode(buf[i]);
         }
 
         if (flag) {
@@ -570,9 +572,9 @@ marshal.r_object = function(vm, p) {
             break;
         }
         retval = "";
-        data = marshal.r_string(vm, n, p);
-        for (i = 0; i < data.length; i++) {
-            retval += String.fromCharCode(data[i]);
+        buf = marshal.r_string(vm, n, p);
+        for (i = 0; i < buf.length; i++) {
+            retval += String.fromCharCode(buf[i]);
         }
 
         // Now decode the contents from UTF-8

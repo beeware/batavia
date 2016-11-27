@@ -18,10 +18,26 @@ module.exports = {
             include: /\.min\.js$/,
             minimize: true
         })
-    ]
-    // module: {
-    //     loaders: [
-    //         { test: /\.css$/, loader: "style!css" }
-    //     ]
+    ],
+    module: {
+        // preLoaders: [
+        //     {
+        //         test: /\.js$/,
+        //         loader: 'eslint',
+        //         exclude: /node_modules/,
+        //     }
+        // ],
+        loaders: [
+            {
+                test: /\.js$/,
+                loader: "babel-loader",
+                exclude: /node_modules/
+            }
+        ]
+    },
+    // eslint: {
+    //     configFile: './.eslintrc',
+    //     failOnWarning: false,
+    //     failOnError: true
     // }
-};
+}

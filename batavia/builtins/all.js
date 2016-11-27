@@ -3,7 +3,8 @@ var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 var types = require('../types');
 
-var all = function(args, kwargs) {
+
+function all(args, kwargs) {
     if (args[0] === null) {
         throw new exceptions.TypeError("'NoneType' object is not iterable");
     }
@@ -35,7 +36,7 @@ var all = function(args, kwargs) {
     }
 
     return new types.Bool(true);
-};
+}
 all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.';
 
 module.exports = all;

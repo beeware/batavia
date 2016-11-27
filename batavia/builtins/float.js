@@ -1,7 +1,8 @@
 var exceptions = require('../core').exceptions;
 var types = require('../types');
 
-var float = function(args) {
+
+function float(args, kwargs) {
     if (args.length > 1) {
         throw new exceptions.TypeError("float() takes at most 1 argument (" + args.length + " given)");
     }
@@ -27,7 +28,7 @@ var float = function(args) {
     } else if (types.isinstance(value, [types.Int, types.Bool, types.Float])) {
         return args[0].__float__();
     }
-};
+}
 float.__doc__ = 'float([x]) -> Convert a string or a number to floating point.';
 
 module.exports = float;

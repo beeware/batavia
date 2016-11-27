@@ -3,7 +3,8 @@ var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 var types = require('../types');
 
-var hash = function(args, kwargs) {
+
+function hash(args, kwargs) {
     if (arguments.length != 2) {
         throw new exceptions.BataviaError('Batavia calling convention not used.');
     }
@@ -27,7 +28,7 @@ var hash = function(args, kwargs) {
     // Use JS toString() to do a simple default hash, for now.
     // (This is similar to how JS objects work.)
     return new types.Str(arg.toString()).__hash__();
-};
+}
 hash.__doc__ = 'hash(object) -> integer\n\nReturn a hash value for the object.  Two objects with the same value have\nthe same hash value.  The reverse is not necessarily true, but likely.';
 
 module.exports = hash;
