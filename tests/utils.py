@@ -154,13 +154,12 @@ JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P
 JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
-JS_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
-JS_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
+JS_FLOAT_DECIMAL = re.compile('(\d+\.\d+)')
+JS_FLOAT_EXP = re.compile('(\d+)e(-)?0?(\d+)')
 
 PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
-PYTHON_FLOAT = re.compile('(\d+)e(-)?0?(\d+)')
-PYTHON_FLOAT_ROUND = re.compile('(\\.\d+)0000000000\d')
+PYTHON_FLOAT_EXP = re.compile('(\d+)e(-)?0?(\d+)')
 PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
 
 # Prevent floating point discrepancies in very low significant digits from being an issue
@@ -190,17 +189,32 @@ def cleanse_javascript(input, substitutions):
         os.linesep.join(stacklines),
         os.linesep if stack else ''
     )
+
+    # Normalize memory references from output
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
+
+    # Normalize true and false to True and False
     out = JS_BOOL_TRUE.sub("True", out)
     out = JS_BOOL_FALSE.sub("False", out)
+
+    # Replace floating point numbers in decimal form with
+    # the form used by python
+    for match in JS_FLOAT_DECIMAL.findall(out):
+        out = out.replace(match, str(float(match)))
+
+    # Format floating point numbers using a lower case e
     try:
-        out = JS_FLOAT.sub('\\1e\\2\\3', out)
+        out = JS_FLOAT_EXP.sub('\\1e\\2\\3', out)
     except:
         pass
-    out = JS_FLOAT_ROUND.sub('\\1', out)
+
+    # Replace high precision floats with abbreviated forms
     out = FLOAT_PRECISION.sub('\\1...', out)
+
+    # Replace references to the test script with something generic
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
+    # Replace all the explicit data substitutions
     if substitutions:
         for to_value, from_values in substitutions.items():
             for from_value in from_values:
@@ -231,11 +245,19 @@ def cleanse_python(input, substitutions):
         ),
         os.linesep if stack else ''
     )
+    # Normalize memory references from output
     out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
-    out = PYTHON_FLOAT.sub('\\1e\\2\\3', out)
-    out = PYTHON_FLOAT_ROUND.sub('\\1', out)
+
+    # Format floating point numbers using a lower case e
+    out = PYTHON_FLOAT_EXP.sub('\\1e\\2\\3', out)
+
+    # Replace "-0j" with "+0j"
     out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
+
+    # Replace high precision floats with abbreviated forms
     out = FLOAT_PRECISION.sub('\\1...', out)
+
+    # Replace references to the test script with something generic
     out = out.replace("'test.py'", '***EXECUTABLE***')
 
     # Python 3.4.4 changed the message describing strings in exceptions
@@ -757,18 +779,6 @@ SAMPLE_SUBSTITUTIONS = {
         "('d', 'a', 'c')",
         "('d', 'c', 'a')",
     ],
-    # Normalize precision error
-    "-0.00000265358979335273": ["-2.65358979335273e-6",],
-    "-0.0000026535897933527304": ["-2.6535897933527304e-6",],
-    "0.0000026535897933620727": ["2.6535897933620727e-6",],
-    "0.000002653589793362073": ["2.653589793362073e-6",],
-    "0.000022090496998639075": ["2.2090496998585482e-5",],
-    "160978210179491620.0": ["1.6097821017949162e+17",],
-    "2.8823037615171174e+17": ["288230376151711740.0",],
-    "321956420358983230.0": ["3.2195642035898323e+17",],
-    "5.764607523034235e+17": ["576460752303423500.0",],
-    "18446744073709552000": ["1.8446744073709552e+19",],
-    "9223372036854776000": ["9.223372036854776e+18",],
 }
 
 
@@ -1101,7 +1111,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
             module=module,
             func=f,
             x_values=actuals,
-            substitutions=SAMPLE_SUBSTITUTIONS
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
         )
     return func
 
@@ -1113,7 +1123,8 @@ def _module_two_arg_func_test(name, module, f,  examples, examples2):
             func=f,
             x_values=examples,
             y_values=examples2,
-            substitutions=SAMPLE_SUBSTITUTIONS
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
+
         )
     return func
 

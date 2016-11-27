@@ -95,7 +95,12 @@ class JavaScriptNormalizationTests(unittest.TestCase):
         self.assertNormalized('false', 'False')
 
     def test_float(self):
-        self.assertNormalized('7.950899459780156e-06', '7.950899459780156e-6')
+        self.assertNormalized('7.95089e-06', '7.95089e-6')
+        self.assertNormalized('7.950899e-06', '7.95089...e-6')
+        self.assertNormalized('7.950899459780156e-06', '7.95089...e-6')
+
+        self.assertNormalized('0.000002653582035', '2.65358...e-6')
+        self.assertNormalized('321956420358983230.0', '3.21956...e+17')
 
     def test_memory_reference(self):
         self.assertNormalized(
@@ -184,7 +189,9 @@ class PythonNormalizationTests(unittest.TestCase):
         )
 
     def test_float(self):
-        self.assertNormalized('7.950899459780156e-06', '7.950899459780156e-6')
+        self.assertNormalized('7.95089e-06', '7.95089e-6')
+        self.assertNormalized('7.950899e-06', '7.95089...e-6')
+        self.assertNormalized('7.950899459780156e-06', '7.95089...e-6')
 
     def test_memory_reference(self):
         self.assertNormalized(
