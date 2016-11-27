@@ -33,7 +33,7 @@ math.acos = function(x) {
     _checkFloat(x);
     return new types.Float(Math.acos(x.__float__().val));
 }
-math.acos.__doc__ = 'acos(x)\n\n\nReturn the arc cosine (measured in radians) of x.';
+math.acos.__doc__ = 'acos(x)\n\nReturn the arc cosine (measured in radians) of x.';
 
 math.acosh = function(x) {
     _checkFloat(x);
@@ -43,25 +43,25 @@ math.acosh = function(x) {
     }
     return new types.Float(result);
 }
-math.acosh.__doc__ = 'acosh(x)\n\n\nReturn the inverse hyperbolic cosine of x.';
+math.acosh.__doc__ = 'acosh(x)\n\nReturn the inverse hyperbolic cosine of x.';
 
 math.asin = function(x) {
     _checkFloat(x);
     return new types.Float(Math.asin(x.__float__().val));
 }
-math.asin.__doc__ = 'asin(x)\n\n\nReturn the arc sine (measured in radians) of x.';
+math.asin.__doc__ = 'asin(x)\n\nReturn the arc sine (measured in radians) of x.';
 
 math.asinh = function(x) {
     _checkFloat(x);
     return new types.Float(Math.asinh(x.__float__().val));
 }
-math.asinh.__doc__ = 'asinh(x)\n\n\nReturn the inverse hyperbolic sine of x.';
+math.asinh.__doc__ = 'asinh(x)\n\nReturn the inverse hyperbolic sine of x.';
 
 math.atan = function(x) {
     _checkFloat(x);
     return new types.Float(Math.atan(x.__float__().val));
 }
-math.atan.__doc__ = 'atan(x)\n\n\nReturn the arc tangent (measured in radians) of x.';
+math.atan.__doc__ = 'atan(x)\n\nReturn the arc tangent (measured in radians) of x.';
 
 math.atan2 = function(y, x) {
     _checkFloat(x);
@@ -70,7 +70,7 @@ math.atan2 = function(y, x) {
     var yy = y.__float__().val;
     return new types.Float(Math.atan2(yy, xx));
 }
-math.atan2.__doc__ = 'atan2(y, x)\n\n\nReturn the arc tangent (measured in radians) of y/x.\nUnlike atan(y/x), the signs of both x and y are considered.';
+math.atan2.__doc__ = 'atan2(y, x)\n\nReturn the arc tangent (measured in radians) of y/x.\nUnlike atan(y/x), the signs of both x and y are considered.';
 
 math.atanh = function(x) {
     _checkFloat(x);
@@ -80,7 +80,7 @@ math.atanh = function(x) {
     }
     return new types.Float(Math.atanh(x.__float__().val));
 }
-math.atanh.__doc__ = 'atanh(x)\n\n\nReturn the inverse hyperbolic tangent of x.';
+math.atanh.__doc__ = 'atanh(x)\n\nReturn the inverse hyperbolic tangent of x.';
 
 math.ceil = function(x) {
     if (types.isinstance(x, types.Int)) {
@@ -89,7 +89,7 @@ math.ceil = function(x) {
     _checkFloat(x);
     return new types.Int(Math.ceil(x.__float__().val));
 }
-math.ceil.__doc__ = 'ceil(x)\n\n\nReturn the ceiling of x as an int.\nThis is the smallest integral value >= x.';
+math.ceil.__doc__ = 'ceil(x)\n\nReturn the ceiling of x as an int.\nThis is the smallest integral value >= x.';
 
 math.copysign = function(x, y) {
     _checkFloat(y);
@@ -101,13 +101,13 @@ math.copysign = function(x, y) {
     }
     return x.__float__();
 }
-math.copysign.__doc__ = 'copysign(x, y)\n\n\nReturn a float with the magnitude (absolute value) of x but the sign \nof y. On platforms that support signed zeros, copysign(1.0, -0.0) \nreturns -1.0.\n';
+math.copysign.__doc__ = 'copysign(x, y)\n\nReturn a float with the magnitude (absolute value) of x but the sign \nof y. On platforms that support signed zeros, copysign(1.0, -0.0) \nreturns -1.0.\n';
 
 math.cos = function(x) {
     _checkFloat(x);
     return new types.Float(Math.cos(x.__float__().val));
 }
-math.cos.__doc__ = 'cos(x)\n\n\nReturn the cosine of x (measured in radians).';
+math.cos.__doc__ = 'cos(x)\n\nReturn the cosine of x (measured in radians).';
 
 math.cosh = function(x) {
     _checkFloat(x);
@@ -117,14 +117,14 @@ math.cosh = function(x) {
     }
     return new types.Float(Math.cosh(x.__float__().val));
 }
-math.cosh.__doc__ = 'cosh(x)\n\n\nReturn the hyperbolic cosine of x.';
+math.cosh.__doc__ = 'cosh(x)\n\nReturn the hyperbolic cosine of x.';
 
 math.degrees = function(x) {
     _checkFloat(x);
     // multiply by 180 / math.pi
     return new types.Float(x.__float__().val * 57.295779513082322865);
 }
-math.degrees.__doc__ = 'degrees(x)\n\n\nConvert angle x from radians to degrees.';
+math.degrees.__doc__ = 'degrees(x)\n\nConvert angle x from radians to degrees.';
 
 // taylor series expansion for erf(x)
 var _erf_series = function(x) {
@@ -207,13 +207,13 @@ math.erf = function(x) {
     }
     return new types.Float(sign * result);
 }
-math.erf.__doc__ = 'erf(x)\n\n\nError function at x.';
+math.erf.__doc__ = 'erf(x)\n\nError function at x.';
 
 math.erfc = function(x) {
     _checkFloat(x);
     return new types.Float(1.0 - math.erf(x).val);
 }
-math.erfc.__doc__ = 'erfc(x)\n\n\nComplementary error function at x.';
+math.erfc.__doc__ = 'erfc(x)\n\nComplementary error function at x.';
 
 math.exp = function(x) {
     _checkFloat(x);
@@ -223,7 +223,7 @@ math.exp = function(x) {
     }
     return new types.Float(result);
 }
-math.exp.__doc__ = 'exp(x)\n\n\nReturn e raised to the power of x.';
+math.exp.__doc__ = 'exp(x)\n\nReturn e raised to the power of x.';
 
 math.expm1 = function(x) {
     _checkFloat(x);
@@ -233,13 +233,13 @@ math.expm1 = function(x) {
     }
     return new types.Float(Math.expm1(x.__float__().val));
 }
-math.expm1.__doc__ = 'expm1(x)\n\n\nReturn exp(x)-1.\nThis function avoids the loss of precision involved in the direct evaluation of exp(x)-1 for small x.';
+math.expm1.__doc__ = 'expm1(x)\n\nReturn exp(x)-1.\nThis function avoids the loss of precision involved in the direct evaluation of exp(x)-1 for small x.';
 
 math.fabs = function(x) {
     _checkFloat(x);
     return new types.Float(Math.abs(x.__float__().val));
 }
-math.fabs.__doc__ = 'fabs(x)\n\n\nReturn the absolute value of the float x.';
+math.fabs.__doc__ = 'fabs(x)\n\nReturn the absolute value of the float x.';
 
 // efficiently multiply all of the bignumbers in the list together, returning the product
 var _mul_list = function(l, start, end) {
@@ -297,7 +297,7 @@ math.factorial = function(x) {
     }
     return new types.Int(_mul_list(nums, 0, nums.length - 1));
 }
-math.factorial.__doc__ = 'factorial(x) -> Integral\n\n\nFind x!. Raise a ValueError if x is negative or non-integral.';
+math.factorial.__doc__ = 'factorial(x) -> Integral\n\nFind x!. Raise a ValueError if x is negative or non-integral.';
 
 math.floor = function(x) {
     if (types.isinstance(x, types.Int)) {
@@ -306,7 +306,7 @@ math.floor = function(x) {
     _checkFloat(x);
     return new types.Int(Math.floor(x.__float__().val));
 }
-math.floor.__doc__ = 'floor(x)\n\n\nReturn the floor of x as an int.\nThis is the largest integral value <= x.';
+math.floor.__doc__ = 'floor(x)\n\nReturn the floor of x as an int.\nThis is the largest integral value <= x.';
 
 math.fmod = function(x, y) {
     _checkFloat(y);
@@ -318,7 +318,7 @@ math.fmod = function(x, y) {
     }
     return new types.Float(xx % yy);
 }
-math.fmod.__doc__ = 'fmod(x, y)\n\n\nReturn fmod(x, y), according to platform C.  x % y may differ.';
+math.fmod.__doc__ = 'fmod(x, y)\n\nReturn fmod(x, y), according to platform C.  x % y may differ.';
 
 math.frexp = function(x) {
     _checkFloat(x);
@@ -351,7 +351,7 @@ math.frexp = function(x) {
     }
     return new types.Tuple([new types.Float(num), new types.Int(exp)]);
 }
-math.frexp.__doc__ = 'frexp(x)\n\n\nReturn the mantissa and exponent of x, as pair (m, e).\nm is a float and e is an int, such that x = m * 2.**e.\nIf x is 0, m and e are both 0.  Else 0.5 <= abs(m) < 1.0.';
+math.frexp.__doc__ = 'frexp(x)\n\nReturn the mantissa and exponent of x, as pair (m, e).\nm is a float and e is an int, such that x = m * 2.**e.\nIf x is 0, m and e are both 0.  Else 0.5 <= abs(m) < 1.0.';
 
 math.fsum = function(iterable) {
     var iterobj = builtins.iter([iterable], null);
@@ -364,7 +364,7 @@ math.fsum = function(iterable) {
     });
     return new types.Float(sum);
 }
-math.fsum.__doc__ = 'fsum(iterable)\n\n\nReturn an accurate floating point sum of values in the iterable.\nAssumes IEEE-754 floating point arithmetic.';
+math.fsum.__doc__ = 'fsum(iterable)\n\nReturn an accurate floating point sum of values in the iterable.\nAssumes IEEE-754 floating point arithmetic.';
 
 math.gamma = function(x) {
     // adapted from public domain code at http://picomath.org/javascript/gamma.js.html
@@ -477,7 +477,7 @@ math.gamma = function(x) {
 
     return math.exp(math.lgamma(x));
 }
-math.gamma.__doc__ = 'gamma(x)\n\n\nGamma function at x.';
+math.gamma.__doc__ = 'gamma(x)\n\nGamma function at x.';
 
 math.gcd = function(x, y) {
     if (!types.isinstance(x, [types.Bool, types.Int])) {
@@ -511,7 +511,7 @@ math.hypot = function(x, y) {
     var xx = x.__float__().val;
     return new types.Float(Math.hypot(xx, yy));
 }
-math.hypot.__doc__ = 'hypot(x, y)\n\n\nReturn the Euclidean distance, sqrt(x*x + y*y).';
+math.hypot.__doc__ = 'hypot(x, y)\n\nReturn the Euclidean distance, sqrt(x*x + y*y).';
 
 math.isclose = function(args, kwargs) {
     if (arguments.length != 2) {
@@ -565,27 +565,27 @@ math.isclose = function(args, kwargs) {
     return new types.Bool(false);
 }
 math.isclose.__python__ = true;
-math.isclose.__doc__ = 'is_close(a, b, *, rel_tol=1e-9, abs_tol=0.0) -> bool\n\n\nDetermine whether two floating point numbers are close in value.\n\n\n   rel_tol\n       maximum difference for being considered "close", relative to the\n       magnitude of the input values\n    abs_tol\n       maximum difference for being considered "close", regardless of the\n       magnitude of the input values\n\n\nReturn True if a is close in value to b, and False otherwise.\n\n\nFor the values to be considered close, the difference between them\nmust be smaller than at least one of the tolerances.\n\n\n-inf, inf and NaN behave similarly to the IEEE 754 Standard.  That\nis, NaN is not close to anything, even itself.  inf and -inf are\nonly close to themselves.';
+math.isclose.__doc__ = 'is_close(a, b, *, rel_tol=1e-9, abs_tol=0.0) -> bool\n\nDetermine whether two floating point numbers are close in value.\n\n   rel_tol\n       maximum difference for being considered "close", relative to the\n       magnitude of the input values\n    abs_tol\n       maximum difference for being considered "close", regardless of the\n       magnitude of the input values\n\nReturn True if a is close in value to b, and False otherwise.\n\nFor the values to be considered close, the difference between them\nmust be smaller than at least one of the tolerances.\n\n-inf, inf and NaN behave similarly to the IEEE 754 Standard.  That\nis, NaN is not close to anything, even itself.  inf and -inf are\nonly close to themselves.';
 
 math.isfinite = function(x) {
     _checkFloat(x);
     return new types.Bool(isFinite(x.__float__().val));
 }
-math.isfinite.__doc__ = 'isfinite(x) -> bool\n\n\nReturn True if x is neither an infinity nor a NaN, and False otherwise.';
+math.isfinite.__doc__ = 'isfinite(x) -> bool\n\nReturn True if x is neither an infinity nor a NaN, and False otherwise.';
 
 math.isinf = function(x) {
     _checkFloat(x);
     var xx = x.__float__().val;
     return new types.Bool(xx == Infinity || xx == -Infinity);
 }
-math.isinf.__doc__ = 'isinf(x) -> bool\n\n\nReturn True if x is a positive or negative infinity, and False otherwise.';
+math.isinf.__doc__ = 'isinf(x) -> bool\n\nReturn True if x is a positive or negative infinity, and False otherwise.';
 
 math.isnan = function(x) {
     _checkFloat(x);
     var xx = x.__float__().val;
     return new types.Bool(isNaN(xx));
 }
-math.isnan.__doc__ = 'isnan(x) -> bool\n\n\nReturn True if x is a NaN (not a number), and False otherwise.';
+math.isnan.__doc__ = 'isnan(x) -> bool\n\nReturn True if x is a NaN (not a number), and False otherwise.';
 
 math.ldexp = function(x, i) {
     _checkFloat(x);
@@ -608,7 +608,7 @@ math.ldexp = function(x, i) {
     }
     return new types.Float(result);
 }
-math.ldexp.__doc__ = 'ldexp(x, i)\n\n\nReturn x * (2**i).';
+math.ldexp.__doc__ = 'ldexp(x, i)\n\nReturn x * (2**i).';
 
 math.lgamma = function(x) {
     // adapted from public domain code at http://picomath.org/javascript/gamma.js.html
@@ -659,7 +659,7 @@ math.lgamma = function(x) {
     var logGamma = (xx - 0.5) * Math.log(xx) - xx + halfLogTwoPi + series;
     return new types.Float(logGamma);
 }
-math.lgamma.__doc__ = 'lgamma(x)\n\n\nNatural logarithm of absolute value of Gamma function at x.';
+math.lgamma.__doc__ = 'lgamma(x)\n\nNatural logarithm of absolute value of Gamma function at x.';
 
 math.log = function(x, base) {
     if (x == null) {
@@ -720,7 +720,7 @@ math.log = function(x, base) {
     }
     return new types.Float(Math.log(x.__float__().val));
 }
-math.log.__doc__ = 'log(x[, base])\n\n\nReturn the logarithm of x to the given base.\nIf the base not specified, returns the natural logarithm (base e) of x.';
+math.log.__doc__ = 'log(x[, base])\n\nReturn the logarithm of x to the given base.\nIf the base not specified, returns the natural logarithm (base e) of x.';
 
 math.log10 = function(x) {
     _checkFloat(x);
@@ -738,7 +738,7 @@ math.log10 = function(x) {
     }
     return new types.Float(Math.log10(xx));
 }
-math.log10.__doc__ = 'log10(x)\n\n\nReturn the base 10 logarithm of x.';
+math.log10.__doc__ = 'log10(x)\n\nReturn the base 10 logarithm of x.';
 
 math.log1p = function(x) {
     _checkFloat(x);
@@ -748,7 +748,7 @@ math.log1p = function(x) {
     }
     return new types.Float(Math.log1p(xx));
 }
-math.log1p.__doc__ = 'log1p(x)\n\n\nReturn the natural logarithm of 1+x (base e).\nThe result is computed in a way which is accurate for x near zero.';
+math.log1p.__doc__ = 'log1p(x)\n\nReturn the natural logarithm of 1+x (base e).\nThe result is computed in a way which is accurate for x near zero.';
 
 // compute log2 of the (possibly large) integer argument
 var _log2_int = function(x) {
@@ -778,7 +778,7 @@ math.log2 = function(x) {
     }
     return new types.Float(Math.log2(x.__float__().val));
 }
-math.log2.__doc__ = 'log2(x)\n\n\nReturn the base 2 logarithm of x.';
+math.log2.__doc__ = 'log2(x)\n\nReturn the base 2 logarithm of x.';
 
 math.modf = function(x) {
     _checkFloat(x);
@@ -788,7 +788,7 @@ math.modf = function(x) {
     return new types.Tuple([new types.Float(frac),
       new types.Float(int)]);
 }
-math.modf.__doc__ = 'modf(x)\n\n\nReturn the fractional and integer parts of x.  Both results carry the sign\nof x and are floats.';
+math.modf.__doc__ = 'modf(x)\n\nReturn the fractional and integer parts of x.  Both results carry the sign\nof x and are floats.';
 
 math.pow = function(x, y) {
     _checkFloat(y);
@@ -807,20 +807,20 @@ math.pow = function(x, y) {
     }
     return new types.Float(result);
 }
-math.pow.__doc__ = 'pow(x, y)\n\n\nReturn x**y (x to the power of y).';
+math.pow.__doc__ = 'pow(x, y)\n\nReturn x**y (x to the power of y).';
 
 math.radians = function(x) {
     _checkFloat(x);
     // multiply by math.pi / 180
     return new types.Float(x.__float__().val * 0.017453292519943295);
 }
-math.radians.__doc__ = 'radians(x)\n\n\nConvert angle x from degrees to radians.';
+math.radians.__doc__ = 'radians(x)\n\nConvert angle x from degrees to radians.';
 
 math.sin = function(x) {
     _checkFloat(x);
     return new types.Float(Math.sin(x.__float__().val));
 }
-math.sin.__doc__ = 'sin(x)\n\n\nReturn the sine of x (measured in radians).';
+math.sin.__doc__ = 'sin(x)\n\nReturn the sine of x (measured in radians).';
 
 math.sinh = function(x) {
   _checkFloat(x);
@@ -830,7 +830,7 @@ math.sinh = function(x) {
   }
   return new types.Float(result);
 }
-math.sinh.__doc__ = 'sinh(x)\n\n\nReturn the hyperbolic sine of x.';
+math.sinh.__doc__ = 'sinh(x)\n\nReturn the hyperbolic sine of x.';
 
 math.sqrt = function(x) {
     _checkFloat(x);
@@ -840,19 +840,19 @@ math.sqrt = function(x) {
     }
     return new types.Float(result);
 }
-math.sqrt.__doc__ = 'sqrt(x)\n\n\nReturn the square root of x.';
+math.sqrt.__doc__ = 'sqrt(x)\n\nReturn the square root of x.';
 
 math.tan = function(x) {
     _checkFloat(x);
     return new types.Float(Math.tan(x.__float__().val));
 }
-math.tan.__doc__ = 'tan(x)\n\n\nReturn the tangent of x (measured in radians).';
+math.tan.__doc__ = 'tan(x)\n\nReturn the tangent of x (measured in radians).';
 
 math.tanh = function(x) {
     _checkFloat(x);
     return new types.Float(Math.tanh(x.__float__().val));
 }
-math.tanh.__doc__ = 'tanh(x)\n\n\nReturn the hyperbolic tangent of x.';
+math.tanh.__doc__ = 'tanh(x)\n\nReturn the hyperbolic tangent of x.';
 
 math.trunc = function(x) {
     if (x === null) {
@@ -862,6 +862,6 @@ math.trunc = function(x) {
     }
     return x.__trunc__();
 }
-math.trunc.__doc__ = 'trunc(x:Real) -> Integral\n\n\nTruncates x to the nearest Integral toward 0. Uses the __trunc__ magic method.';
+math.trunc.__doc__ = 'trunc(x:Real) -> Integral\n\nTruncates x to the nearest Integral toward 0. Uses the __trunc__ magic method.';
 
 module.exports = math;
