@@ -1,7 +1,7 @@
 import os
 import re
 from time import gmtime, localtime, mktime
-from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsJavaScript, runAsPython
+from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsPython
 import unittest
 
 
@@ -444,10 +444,9 @@ class TimeTests(TranspileTestCase):
             pass
         # run as both JS and Python
         outputs = [
-            runAsJavaScript(test_dir, test_str, js={}),
+            self.runAsJavaScript(test_str, js={}),
             runAsPython(test_dir, test_str)
         ]
-        print(outputs)
         raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
 
         # regex to parse struct_time

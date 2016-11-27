@@ -4,8 +4,8 @@ var IOBuffer = function(con) {
     this.console = con;
 }
 
-IOBuffer.prototype.write = function(data) {
-    var lines = data.split('\n');
+IOBuffer.prototype.write = function(args, kwargs) {
+    var lines = args[0].split('\n');
 
     if (lines.length === 1) {
         // If there's only one element in the split,
@@ -26,6 +26,13 @@ IOBuffer.prototype.write = function(data) {
         // is no newline at the end of the content, so there's
         // no flush; this content becomes the accumulated buffer.
         this.buf = lines[lines.length - 1];
+    }
+}
+
+IOBuffer.prototype.flush = function(args, kwargs) {
+    if (this.buf) {
+        this.console.log(this.buf);
+        this.buf = '';
     }
 }
 

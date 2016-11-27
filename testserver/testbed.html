@@ -258,8 +258,8 @@ function ScreenBuffer(element) {
     this.element = element;
 }
 
-ScreenBuffer.prototype.write = function(content) {
-    this.element.textContent = this.element.textContent + content;
+ScreenBuffer.prototype.write = function(args, kwargs) {
+    this.element.textContent = this.element.textContent + args[0];
 }
 
     {% if customcode %}

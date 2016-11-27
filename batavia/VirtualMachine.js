@@ -8,10 +8,10 @@ var Frame = require('./core').Frame;
 var constants = require('./core').constants;
 var exceptions = require('./core').exceptions;
 var callables = require('./core').callables;
-var io = require('./core').io;
 var dis = require('./modules/dis');
 var marshal = require('./modules/marshal');
 var sys = require('./modules/sys');
+
 
 var VirtualMachine = function(args) {
     if (args.loader === undefined) {
@@ -842,6 +842,8 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         }
         // throw e;
     }
+    this.modules.sys.stdout.flush();
+    this.modules.sys.stderr.flush();
 };
 
 VirtualMachine.prototype.unwind_block = function(block) {
@@ -1473,7 +1475,7 @@ VirtualMachine.prototype.byte_MAP_ADD = function(count) {
 };
 
 VirtualMachine.prototype.byte_PRINT_EXPR = function() {
-    io.stdout(this.pop());
+    sys.stdout.write(this.pop());
 };
 
 VirtualMachine.prototype.byte_PRINT_ITEM = function() {
@@ -1500,14 +1502,14 @@ VirtualMachine.prototype.print_item = function(item, to) {
     // if (to === undefined) {
     //     to = sys.stdout;  // FIXME - the to value is ignored.
     // }
-    io.stdout(item);
+    sys.stdout.write(item);
 };
 
 VirtualMachine.prototype.print_newline = function(to) {
     // if (to === undefined) {
     //     to = sys.stdout;  // FIXME - the to value is ignored.
     // }
-    io.stdout("");
+    sys.stdout.write("");
 };
 
 VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
