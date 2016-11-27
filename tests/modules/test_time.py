@@ -442,10 +442,11 @@ class TimeTests(TranspileTestCase):
             os.mkdir(test_dir)
         except FileExistsError:
             pass
-        # run as both JS and Python
+        # run as both Python and JS (Python first
+        # to ensure code is rolled out for JS to use)
         outputs = [
+            runAsPython(test_dir, test_str),
             self.runAsJavaScript(test_str, js={}),
-            runAsPython(test_dir, test_str)
         ]
         raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
 
