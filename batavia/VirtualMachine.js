@@ -1277,7 +1277,7 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var val;
     if (obj.__getattr__ === undefined) {
         val = obj[attr];
-        if (!val) {
+        if (val === undefined) {
             throw new builtins.AttributeError(
                 "'" + obj.__class__.__name__ + "' object has no attribute '" + attr + "'"
             );
