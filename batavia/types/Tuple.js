@@ -170,7 +170,7 @@ Tuple.prototype.__neg__ = function() {
 }
 
 Tuple.prototype.__not__ = function() {
-    return !this.__bool__();
+    return this.__bool__().__not__();
 }
 
 Tuple.prototype.__invert__ = function() {
