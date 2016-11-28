@@ -460,8 +460,11 @@ List.prototype.__imul__ = function(other) {
         if (other <= 0) {
             return new List();
         } else {
+            // Need to cache the length beacuse it will change
+            // as a result of inline modification.
+            var length = this.length;
             for (var i = 1; i < other; i++) {
-                for (var j = 0; j < this.length; j++) {
+                for (var j = 0; j < length; j++) {
                     this.push(this[j]);
                 }
             }
