@@ -46,6 +46,18 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
+    def test_attributeerror(self):
+        self.assertCodeExecution("""
+            class MyClass:
+                def __init__(self):
+                    self.a = 42
+
+            obj = MyClass()
+
+            print(obj.a)
+            print(obj.fail)
+        """)
+
     def test_subclass(self):
         self.assertCodeExecution("""
             class MyBase:

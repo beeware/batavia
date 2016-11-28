@@ -1277,6 +1277,11 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var val;
     if (obj.__getattr__ === undefined) {
         val = obj[attr];
+        if (!val) {
+            throw new builtins.AttributeError(
+                "'" + obj.__class__.__name__ + "' object has no attribute '" + attr + "'"
+            );
+        }
     } else {
         val = obj.__getattr__(attr);
     }
@@ -1525,7 +1530,7 @@ VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__();
     }
 
     if (val) {
@@ -1547,7 +1552,7 @@ VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
 VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__();
     }
 
     if (val) {
@@ -1820,7 +1825,7 @@ VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 };
 
 VirtualMachine.prototype.byte_YIELD_VALUE = function() {
-    this.return_value = this.pop()
+    this.return_value = this.pop();
     return "yield";
 };
 

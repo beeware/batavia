@@ -12,7 +12,6 @@ class TupleTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = (1, 2, 3)

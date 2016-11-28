@@ -12,7 +12,6 @@ class BoolTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = True
