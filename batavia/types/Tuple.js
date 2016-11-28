@@ -178,6 +178,7 @@ Tuple.prototype.__invert__ = function() {
 }
 
 Tuple.prototype.__bool__ = function() {
+    var types = require('../types');
     return new types.Bool(this.length > 0);
 }
 
