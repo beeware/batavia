@@ -16,7 +16,7 @@ setup(
     url='http://pybee.org/batavia',
     packages=find_packages(exclude=['docs', 'tests']),
     install_requires=[
-        'jsmin'
+        'jsmin', 'click'
     ],
     license='New BSD',
     classifiers=[

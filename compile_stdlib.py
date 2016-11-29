@@ -15,45 +15,23 @@ import py_compile
 import sys
 import tempfile
 
-
-def parse_args():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('modules', metavar='module', nargs='*',
-                        help='source modules to compile')
-    parser.add_argument('--source', help='location of the ouroboros source files')
-
-    args = parser.parse_args()
-
-    enabled_modules = args.modules or [
-        '_weakrefset',
-        'abc',
-        'bisect',
-        'colorsys',
-        'copyreg',
-        'token',
-        'operator',
-        'stat',
-        'this',
-    ]
-
-    # find the ouroboros directory
-    ouroboros_not_found_msg = "'ouroboros' folder must be present here or in the parent directory to compile stdlib" 
-
-    if args.source is not None:
-        if not os.path.exists(args.source):
-            exit("{} directory doesn't exist".format(args.source)) 
-        ouroboros = args.source
-    elif os.path.exists('ouroboros'):
-        ouroboros = 'ouroboros'
-    elif os.path.exists('../ouroboros'):
-        ouroboros = '../ouroboros'
-    else:
-        exit("'ouroboros' folder must be present here or in the parent directory to compile stdlib")
-
-    return ouroboros, enabled_modules
+import click
 
 
-def compile_stdlib(ouroboros, enabled_modules):
+ENABLED_MODULES = (
+    '_weakrefset',
+    'abc',
+    'bisect',
+    'colorsys',
+    'copyreg',
+    'token',
+    'operator',
+    'stat',
+    'this',
+)
+
+
+def compile_stdlib(ouroboros, enabled_modules=ENABLED_MODULES):
     for module in enabled_modules:
         module_fname = os.path.join(ouroboros, 'ouroboros', module + '.py')
         if not os.path.exists(module_fname):
@@ -76,9 +54,20 @@ def compile_stdlib(ouroboros, enabled_modules):
             fout.write("';\n")
 
 
-def main():
-    ouroboros, enabled_modules = parse_args()
-    compile_stdlib(ouroboros, enabled_modules)
+def get_default_ouroboros_path():
+    for path in 'ouroboros', os.path.join('..', 'ouroboros'):
+        if os.path.exists(path):
+            return path
+
+
+@click.command(help=__doc__)
+@click.option('--source', '-s',
+              type=click.Path(exists=True), default=get_default_ouroboros_path(),
+              help='location of the ouroboros source files')
+@click.argument('modules', metavar='[MODULE1 MODULE2 ...]', nargs=-1)
+def main(source, modules):
+    enabled_modules = modules or ENABLED_MODULES
+    compile_stdlib(source, enabled_modules)
 
 
 if __name__ == '__main__':
