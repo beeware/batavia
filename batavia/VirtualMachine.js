@@ -9,7 +9,7 @@ batavia.VirtualMachine = function(loader) {
 
     if (loader === undefined) {
         this.loader = function(name) {
-            return document.getElementById('batavia-' + name).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+            return document.getElementById('batavia-' + name).text.replace(/(\\r\\n|\\n|\\r)/gm, "").trim();
         };
     } else {
         this.loader = loader;
