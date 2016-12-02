@@ -4,7 +4,7 @@ batavia.modules.inspect = {
         this.args = kwargs.args || [];
         this.varargs = kwargs.getcallargs;
         this.varkw = kwargs.varkw;
-        this.defaults = kwargs.defaults || {};
+        this.defaults = kwargs.defaults || [];
         this.kwonlyargs = kwargs.kwonlyargs || [];
         this.kwonlydefaults = kwargs.kwonlydefaults || {};
         this.annotations = kwargs.annotations || {};
@@ -319,27 +319,25 @@ batavia.modules.inspect = {
     },
 
     _missing_arguments: function(f_name, argnames, pos, values) {
-        throw "Missing arguments";
-        // var names = [];
-        // for (var name in argnames) {
-        //     if (!name in values) {
-        //         names.push(name);
-        //     }
-        // }
-        // var missing = names.length;
-        // if (missing == 1) {
-        //     s = names[0];
-        // } else if (missing === 2) {
-        //     s = "{} and {}".format(*names)
-        // } else {
-        //     tail = ", {} and {}".format(*names[-2:])
-        //     del names[-2:]
-        //     s = ", ".join(names) + tail
-        // }
-        // raise TypeError("%s() missing %i required %s argument%s: %s" %
-        //                 (f_name, missing,
-        //                   "positional" if pos else "keyword-only",
-        //                   "" if missing == 1 else "s", s))
+        var names = [], s, plural = "s";
+        for (var name of argnames) {
+            if (!values.hasOwnProperty(name)) {
+                names.push(name);
+            }
+        }
+        var missing = names.length;
+        if (missing == 1) {
+            s = names[0];
+            plural = ""
+        } else if (missing === 2) {
+            s = names.join(" and ");
+        } else {
+            tail = ", " + names.slice(-2).join(" and ");
+            s = names.slice(0, -2).join(", ") + tail
+        }
+        throw new batavia.builtins.TypeError([
+            f_name, "() missing ", missing, " required ", pos ? "positional" : "keyword-only",
+            " argument", plural, ": ", s].join(""));
     },
 
     _too_many: function(f_name, args, kwonly, varargs, defcount, given, values) {
