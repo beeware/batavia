@@ -1409,6 +1409,7 @@ VirtualMachine.prototype.byte_BUILD_SET = function(count) {
 VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
     switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
             var items = this.popn(size * 2);
             var dict = new types.Dict();
 
@@ -1428,7 +1429,7 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
 
         default:
             throw new builtins.BataviaError(
-                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version"
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)"
             );
     }
 };
@@ -1436,6 +1437,7 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
 VirtualMachine.prototype.byte_STORE_MAP = function() {
     switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
             throw new builtins.BataviaError(
                 "STORE_MAP is unsupported with BATAVIA_MAGIC"
             );
@@ -1454,7 +1456,7 @@ VirtualMachine.prototype.byte_STORE_MAP = function() {
 
         default:
             throw new builtins.BataviaError(
-                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version"
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)"
             );
     }
 };
