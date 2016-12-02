@@ -78,13 +78,22 @@ batavia.types.Float = function() {
      * Comparison operators
      **************************************************/
 
+    not_comparable_to = [
+        batavia.types.Bytearray,
+        batavia.types.Dict,
+        batavia.types.List,
+        batavia.types.NoneType,
+        batavia.types.NotImplementedType,
+        batavia.types.Range,
+        batavia.types.Set,
+        batavia.types.Slice,
+        batavia.types.Str,
+        batavia.types.Tuple
+    ]
+
     Float.prototype.__lt__ = function(other) {
         if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
-                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
-                    ])) {
+            if (batavia.isinstance(other, not_comparable_to)) {
                 throw new batavia.builtins.TypeError("unorderable types: float() < " + batavia.type_name(other) + "()");
             } else {
                 return this.valueOf() < other.valueOf();
@@ -96,11 +105,7 @@ batavia.types.Float = function() {
 
     Float.prototype.__le__ = function(other) {
         if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
-                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
-                    ])) {
+            if (batavia.isinstance(other, not_comparable_to)) {
                 throw new batavia.builtins.TypeError("unorderable types: float() <= " + batavia.type_name(other) + "()");
             } else {
                 return this.valueOf() <= other.valueOf();
@@ -131,11 +136,7 @@ batavia.types.Float = function() {
 
     Float.prototype.__gt__ = function(other) {
         if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
-                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
-                    ])) {
+            if (batavia.isinstance(other, not_comparable_to)) {
                 throw new batavia.builtins.TypeError("unorderable types: float() > " + batavia.type_name(other) + "()");
             } else {
                 return this.valueOf() > other.valueOf();
@@ -147,11 +148,7 @@ batavia.types.Float = function() {
 
     Float.prototype.__ge__ = function(other) {
         if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Dict, batavia.types.List, batavia.types.Tuple,
-                        batavia.types.NoneType, batavia.types.Str, batavia.types.NotImplementedType,
-                        batavia.types.Range, batavia.types.Set, batavia.types.Slice
-                    ])) {
+            if (batavia.isinstance(other, not_comparable_to)) {
                 throw new batavia.builtins.TypeError("unorderable types: float() >= " + batavia.type_name(other) + "()");
             } else {
                 return this.valueOf() >= other.valueOf();
