@@ -236,18 +236,72 @@ DAEDABcBDQEdAgYB
 
     <!-- This is a simple test script. The content comes from sample.py
          in the testserver directory -->
-    <script id="batavia-sample" type="application/python-bytecode">
-{{ samplecode }}
+    <script id="batavia-sample"
+        type="application/python-bytecode"
+        data-filename="{{ modules.sample.filename }}">
+{{ modules.sample.compiled }}
     </script>
 
     <!-- This is a second module module that can be imported. The content
          comes from other.py in the testserver directory -->
-    <script id="batavia-other" type="application/python-bytecode">
-{{ othercode }}
+    <script id="batavia-other"
+        type="application/python-bytecode"
+        data-filename="{{ modules.sample.filename }}">
+{{ modules.other.compiled }}
+    </script>
+
+    <script id="batavia-submodule"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.init.filename }}">
+{{ modules.submodule.init.compiled }}
+    </script>
+
+    <script id="batavia-submodule.modulea"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.modulea.filename }}">
+{{ modules.submodule.modulea.compiled }}
+    </script>
+
+    <script id="batavia-submodule.moduleb"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.moduleb.filename }}">
+{{ modules.submodule.moduleb.compiled }}
+    </script>
+
+    <script id="batavia-submodule.modulec"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.modulec.filename }}">
+{{ modules.submodule.modulec.compiled }}
+    </script>
+
+    <script id="batavia-submodule.moduled"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.moduled.init.filename }}">
+{{ modules.submodule.moduled.init.compiled }}
+    </script>
+
+    <script id="batavia-submodule.moduled.submoduled"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.moduled.submoduled.filename }}">
+{{ modules.submodule.moduled.submoduled.compiled }}
+    </script>
+
+    <script id="batavia-submodule.subsubmodule"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.subsubmodule.init.filename }}">
+{{ modules.submodule.subsubmodule.init.compiled }}
+    </script>
+
+    <script id="batavia-submodule.subsubmodule.submodulea"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.subsubmodule.submodulea.filename }}">
+{{ modules.submodule.subsubmodule.submodulea.compiled }}
     </script>
 
     {% if customcode and customcode.compiled %}
-    <script id="batavia-customcode" type="application/python-bytecode">
+    <script id="batavia-customcode"
+        type="application/python-bytecode"
+        data-filename="{{ modules.custom.filename }}">
 {{ customcode.compiled }}
     </script>
 
@@ -280,14 +334,23 @@ function pystone(loops) {
     console.log('done.');
 }
 
-// Now define a stdout function that will output to the page.
+// Now define stdout and stderr functions that will output to the page.
 function stdout(content) {
     var pre = document.getElementById('stdout');
     pre.textContent = pre.textContent + content;
 }
 
 batavia.stdout = stdout;
-batavia.stderr = stdout;
+
+function stderr(content) {
+    var pre = document.getElementById('stdout');
+    var err = document.createElement('span');
+    err.className = "error";
+    err.textContent = content
+    pre.appendChild(err);
+}
+
+batavia.stderr = stderr;
     </script>
 
 </head>

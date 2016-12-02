@@ -248,8 +248,13 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
         lines = code.decode('utf-8').split('\n')
         output = '"%s"' % '" +\n        "'.join(line for line in lines if line)
         if name.endswith('.__init__'):
-            name = name.rsplit('.', 1)[0]
-        payload.append('    "%s": %s' % (name, output))
+            module_name = name.rsplit('.', 1)[0]
+        else:
+            module_name = name
+        payload.append('    "%s": {"bytecode": %s, "filename": "%s.py"}' % (
+                module_name, output, name.replace('.', '/')
+            )
+        )
 
     with open(os.path.join(test_dir, 'modules.js'), 'w') as js_file:
         js_file.write(adjust("""
@@ -267,7 +272,6 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
         try:
             if _phantomjs is None:
                 build_batavia()
-
                 if _phantomjs is None:
                     # Make sure Batavia is compiled
 
@@ -334,7 +338,11 @@ def runAsJavaScript(test_dir, main_code, extra_code=None, js=None, run_in_functi
                 """
                 page.evaluate(function() {
                     var vm = new batavia.VirtualMachine(function(name) {
-                        return modules[name];
+                        var payload = modules[name];
+                        if (payload === undefined) {
+                            return null;
+                        }
+                        return payload;
                     });
                     vm.run('testcase', []);
                 });
@@ -961,7 +969,7 @@ def _unary_test(test_name, operation):
             x_values=SAMPLE_DATA[self.data_type],
             operation=operation,
             format=self.format,
-            substitutions=SAMPLE_SUBSTITUTIONS
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
         )
     return func
 

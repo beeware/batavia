@@ -50,6 +50,11 @@ h3 {
     background-color: #fff;
 }
 
+#stdout span.error {
+    font-weight: bold;
+    color: #b00;
+}
+
 p,
 button {
     font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
