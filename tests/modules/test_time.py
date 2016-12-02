@@ -471,6 +471,23 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    def test_gmtime_dst(self):
+        """
+        test all months to demonstrate dst is not messing with things
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        test_str += ''.join([adjust("""
+        print('>>> time.gmtime({seq})')
+        time.gmtime({seq})
+        """.format(seq=str((2016, month, 1, 0, 0, 0, 0, 0, -1)))) for month in range(1,13)])
+
+        self.assertCodeExecution(test_str)
+
     def test_gmtime_too_many_args(self):
 
         test_str = adjust("""
@@ -524,6 +541,129 @@ class TimeTests(TranspileTestCase):
                                                out=adjust("""
                 >>> import time
                 >>> time.gmtime({seconds})
+                ### EXCEPTION ###
+                OSError: Value too large to be stored in data type
+                    test.py:4
+                """).format(seconds=seconds))
+
+    # TESTS FOR LOCALTIME
+    def test_localtime_no_arg(self):
+        """
+        test for gmtime with no arugment
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.localtime()')
+        print(time.localtime())
+        """)
+
+        # set up a test directory
+        test_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
+        try:
+            os.mkdir(test_dir)
+        except FileExistsError:
+            pass
+        # run as both JS and Python
+        outputs = [
+            runAsJavaScript(test_dir, test_str, js={}),
+            runAsPython(test_dir, test_str)
+        ]
+        raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
+
+        # regex to parse struct_time
+        match_str = 'time\.struct_time\(tm_year=(?P<year>-?\d{1,4}), tm_mon=(?P<mon>-?\d{1,2}), tm_mday=(?P<mday>-?\d{1,2}), tm_hour=(?P<hour>-?\d{1,2}), tm_min=(?P<min>-?\d{1,2}), tm_sec=(?P<sec>-?\d{1,2}), tm_wday=(?P<wday>-?\d{1}), tm_yday=(?P<yday>-?\d{1,4}), tm_isdst=(?P<isdst>-?\d{1})\)'
+
+        times = []
+        for raw in raw_times:
+            match = re.search(match_str, raw)
+            attrs = [int(match.group(i)) for i in range(1, 10)]   # grab each attr from struct_tine
+            times.append(mktime(tuple(attrs)))
+
+        self.assertAlmostEqual(times[0], times[1], delta=2)  # times should be within 2 seconds of each other
+
+    def test_localtime_with_arg(self):
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.localtime(1000)')
+        print(time.localtime(1000))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_localtime_dst(self):
+        """
+        test all months to ensure dst works as expected
+        """
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        """)
+
+        test_str += ''.join([adjust("""
+        print('>>> time.localtime({seq})')
+        time.localtime({seq})
+        """.format(seq=str((2016, month, 1, 0, 0, 0, 0, 0, -1)))) for month in range(1,13)])
+
+        self.assertCodeExecution(test_str)
+
+    def test_localtime_too_many_args(self):
+
+        test_str = adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.localtime(1,2)')
+        print(time.localtime(1,2))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_localtime_bad_type(self):
+        """
+        only int or float allowed
+        """
+
+        bad_types = [SAMPLE_DATA[t][0] for t in SAMPLE_DATA if t not in ['int', 'float', 'None']]
+
+        test_strs = [adjust("""
+        print('>>> import time')
+        import time
+        print('>>> time.localtime({item})')
+        print(time.localtime({item}))
+        """.format(item=item)) for item in bad_types]
+
+        for t_str in test_strs:
+            self.assertCodeExecution(t_str)
+
+    def test_localtime_argument_range(self):
+        """
+        tests for values exceding +- 8640000000000000 ms (limit for JS)
+        """
+
+        limit_abs = 8640000000000000 / 1000
+
+        for adder in range(2):
+            for factor in [-1, 1]:
+                seconds = factor * (limit_abs + adder)
+                test_str = adjust("""
+                    print('>>> import time')
+                    import time
+                    print('>>> time.localtime({seconds})')
+                    print(time.localtime({seconds}))
+                    """.format(seconds=seconds))
+
+                throws_error = adder == 1
+                self.assertJavaScriptExecution(test_str,
+                                               js={},
+                                               run_in_function=False,
+                                               same=throws_error,   # when exceeding the limit, expect an error
+                                               out=adjust("""
+                >>> import time
+                >>> time.localtime({seconds})
                 ### EXCEPTION ###
                 OSError: Value too large to be stored in data type
                     test.py:4

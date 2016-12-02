@@ -1,4 +1,3 @@
-
 batavia.modules.time = {
     _startTime: new Date().getTime(),
     clock: function() {
@@ -191,9 +190,61 @@ batavia.modules.time.gmtime = function(seconds){
     var diff = date - firstOfYear;
     var oneDay = 1000 * 60 * 60 * 24;
     var dayOfYear = Math.floor(diff / oneDay);
-    sequence.push(dayOfYear + 1);
+    sequence.push(dayOfYear + 1);   
 
     sequence.push(0)  // dst for UTC, always off
+
+    return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
+}
+
+batavia.modules.time.localtime = function(seconds){
+    // https://docs.python.org/3.0/library/time.html#time.localtime
+
+    // 0-1 arguments allowed
+    if (arguments.length > 1){
+        throw new batavia.builtins.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
+    }
+
+    if (arguments.length == 1) {
+        // catching bad types
+        if (batavia.isinstance(seconds, [batavia.types.Complex])){
+            throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
+
+        } else if (!(batavia.isinstance(seconds, [batavia.types.Int, batavia.types.Float, batavia.types.Bool]))) {
+            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(seconds) + ")")
+        }
+
+        var date = new Date(seconds * 1000)
+        if (isNaN(date)){
+            // date is too large per ECMA specs
+            // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+            throw new batavia.builtins.OSError("Value too large to be stored in data type")
+        }
+
+    } else if (seconds === undefined){
+        var date = new Date();
+    }
+
+    var sequence = [date.getFullYear(),
+    date.getMonth() + 1,
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getDay() -1
+    ]
+
+    // add day of year
+    var firstOfYear = new Date(date.getFullYear(), 0, 1);
+    var diff = date - firstOfYear;
+    var oneDay = 1000 * 60 * 60 * 24;
+    var dayOfYear = Math.floor(diff / oneDay);
+    sequence.push(dayOfYear + 1);
+
+    // is DST in effect
+    var tz = batavia.vendored.moment.tz.guess()
+    var isDST = batavia.vendored.moment(date.getTime()).tz(tz).isDST()
+    sequence.push(Number(isDST))
 
     return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
 }
