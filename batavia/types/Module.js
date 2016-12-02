@@ -1,22 +1,26 @@
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
+var JSDict = require('./JSDict');
 
 /*************************************************************************
  * A Python module type
  *************************************************************************/
 
-function Module(name, locals) {
-    PyObject.call(this);
+function Module(name, filename, pkg) {
+    JSDict.call(this);
 
     this.__name__ = name;
-    for (var key in locals) {
-        if (locals.hasOwnProperty(key)) {
-            this[key] = locals[key];
-        }
-    }
+    this.__file__ = filename;
+    this.__package__ = pkg;
+
+    // for (var key in locals) {
+    //     if (locals.hasOwnProperty(key)) {
+    //         this[key] = locals[key];
+    //     }
+    // }
 }
 
-Module.prototype = Object.create(PyObject.prototype);
+Module.prototype = Object.create(JSDict.prototype);
 Module.prototype.__class__ = new Type('module');
 Module.prototype.constructor = Module;
 

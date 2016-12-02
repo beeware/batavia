@@ -64,11 +64,18 @@ Str.prototype.__getattr__ = function(attr) {
         throw new exceptions.AttributeError("'str' object has no attribute '" + attr + "'");
     }
     return this[attr];
-},
+}
 
 Str.prototype.__setattr__ = function(attr, value) {
-    throw new exceptions.AttributeError("'str' object has no attribute '" + attr + "'");
-},
+    if (this.__proto__[name] === undefined) {
+        throw new exceptions.AttributeError("'str' object has no attribute '" + name + "'");
+    } else {
+        throw new exceptions.AttributeError("'str' object attribute '" + name + "' is read-only");
+    }
+}
+
+
+
 /**************************************************
  * Comparison operators
  **************************************************/
@@ -619,12 +626,8 @@ Str.prototype.startswith = function (str) {
     return this.slice(0, str.length) === str;
 }
 
-Str.prototype.__setattr__ = function (name, val) {
-    if (this.__proto__[name] === undefined) {
-        throw new exceptions.AttributeError("'str' object has no attribute '" + name + "'");
-    } else {
-        throw new exceptions.AttributeError("'str' object attribute '" + name + "' is read-only");
-    }
+Str.prototype.endswith = function (str) {
+    return this.slice(this.length - str.length) === str;
 }
 
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings

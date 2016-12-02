@@ -16,12 +16,37 @@ var sys = require('./modules/sys');
 var VirtualMachine = function(args) {
     if (args.loader === undefined) {
         this.loader = function(name) {
+            // Find the script element with the ID matching the
+            // fully qualified module name (e.g., batavia-foo.bar.whiz)
             var element = document.getElementById('batavia-' + name);
-            if (element !== null) {
-                return element.text.replace(/(\r\n|\n|\r)/gm, "").trim();
-            } else {
-                return window[name];
+            if (element === null) {
+                // If the element doesn't exist, look for a javascript element.
+                element = window[name];
+                if (element === undefined) {
+                    return null;
+                } else {
+                    return {
+                        'javascript': element
+                    }
+                }
             }
+
+            // Look for the filename in the data-filename
+            // attribute of script tag.
+            var filename;
+            if (element.dataset) {
+                filename = element.dataset['filename'];
+            } else {
+                filename = "<input>";
+            }
+
+            // Strip all the whitespace out of the text content of
+            // the script tag.
+            return {
+                '__python__': true,
+                'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, "").trim(),
+                'filename': new batavia.types.Str(filename)
+            };
         };
     } else {
         this.loader = args.loader;
@@ -490,7 +515,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
 VirtualMachine.prototype.run = function(tag, args) {
     try {
         var payload = this.loader(tag);
-        var code = marshal.load_pyc(this, payload);
+        var code = marshal.load_pyc(this, payload.bytecode);
 
         // Set up sys.argv
         sys.argv = new types.List(['batavia']);
@@ -503,7 +528,7 @@ VirtualMachine.prototype.run = function(tag, args) {
 
     } catch (e) {
         if (e instanceof builtins.BataviaError) {
-            console.log(e.msg);
+            sys.stderr.write([e.msg + '\n']);
         } else {
             throw e;
         }
@@ -518,7 +543,7 @@ VirtualMachine.prototype.run = function(tag, args) {
 VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
     try {
         var payload = this.loader(tag);
-        var code = marshal.load_pyc(this, payload);
+        var code = marshal.load_pyc(this, payload.bytecode);
 
         var callargs = new types.JSDict();
         for (var i = 0, l = args.length; i < l; i++) {
@@ -536,7 +561,7 @@ VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_gl
 
     } catch (e) {
         if (e instanceof builtins.BataviaError) {
-            console.log(e.msg);
+            sys.stderr.write([e.msg + '\n']);
         } else {
             throw e;
         }
@@ -834,7 +859,7 @@ VirtualMachine.prototype.run_code = function(kwargs) {
             } else {
                 trace.push(this.last_exception.value.name);
             }
-            console.log(trace.join('\n'));
+            sys.stderr.write([trace.join('\n') + '\n']);
             this.last_exception = null;
         } else {
             throw e;

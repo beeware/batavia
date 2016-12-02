@@ -1,4 +1,4 @@
-native = function(mod) {
+var native = function(mod) {
     mod.waggle = function(count) {
         for (var i = 0; i < count; i++) {
             batavia.modules.sys.stdout.write('Waggle ' + i + '\n');

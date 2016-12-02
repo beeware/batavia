@@ -477,7 +477,7 @@ class TranspileTestCase(TestCase):
                 with open(py_filename, 'w', encoding='utf-8') as py_source:
                     py_source.write(adjust(main_code, run_in_function=run_in_function))
 
-        modules = {}
+        modules = []
 
         # Temporarily move into the test directory.
         cwd = os.getcwd()
@@ -486,9 +486,9 @@ class TranspileTestCase(TestCase):
         if isinstance(main_code, str):
             py_compile.compile('test.py')
             with open(importlib.util.cache_from_source('test.py'), 'rb') as compiled:
-                modules['test'] = base64.encodebytes(compiled.read())
+                modules.append(('test', base64.encodebytes(compiled.read()), 'test.py'))
         elif isinstance(main_code, bytes):
-            modules['test'] = main_code
+            modules.append(('test', main_code, 'test.py'))
 
         if extra_code:
             for name, code in extra_code.items():
@@ -508,23 +508,33 @@ class TranspileTestCase(TestCase):
                 py_compile.compile(py_filename)
 
                 with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
-                    modules[name] = base64.encodebytes(compiled.read())
+                    modules.append((name, base64.encodebytes(compiled.read()), py_filename))
 
         if args is None:
             args = []
 
         # Convert the dictionary of modules into a payload
         payload = []
-        for name, code in modules.items():
+        for name, code, filename in modules:
             lines = code.decode('utf-8').split('\n')
-            output = '"%s"' % '" +\n        "'.join(line for line in lines if line)
+            output = '"%s"' % '" +\n            "'.join(line for line in lines if line)
             if name.endswith('.__init__'):
                 name = name.rsplit('.', 1)[0]
-            payload.append('    "%s": %s' % (name, output))
+            payload.append(
+                '    "%s": {\n' % name +
+                '        "__python__": true,\n' +
+                '        "bytecode": %s,\n' % output +
+                '        "filename": "%s"\n' % filename +
+                '    }'
+            )
 
         if js:
             for name, code in js.items():
-                payload.append('    "%s": %s' % (name, name))
+                payload.append(
+                    '    "%s": {\n' % name +
+                    '        "javascript": %s\n' % name +
+                    '    }'
+                )
 
         with open(os.path.join(self.temp_dir, 'test.js'), 'w') as js_file:
             js_file.write(adjust("""
@@ -537,7 +547,11 @@ class TranspileTestCase(TestCase):
 
                 var vm = new batavia.VirtualMachine({
                     loader: function(name) {
-                        return modules[name];
+                        var payload = modules[name];
+                        if (payload === undefined) {
+                            return null;
+                        }
+                        return payload;
                     }
                 });
                 vm.run('test', []);

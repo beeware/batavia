@@ -444,6 +444,7 @@ class TimeTests(TranspileTestCase):
         py_out = runAsPython(self.temp_dir, test_str)
         js_out = self.runAsJavaScript(test_str, js={})
         outputs = [py_out, js_out]
+
         raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
 
         # regex to parse struct_time
