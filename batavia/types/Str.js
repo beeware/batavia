@@ -67,10 +67,10 @@ Str.prototype.__getattr__ = function(attr) {
 }
 
 Str.prototype.__setattr__ = function(attr, value) {
-    if (this.__proto__[name] === undefined) {
-        throw new exceptions.AttributeError("'str' object has no attribute '" + name + "'");
+    if (this.__proto__[attr] === undefined) {
+        throw new exceptions.AttributeError("'str' object has no attribute '" + attr + "'");
     } else {
-        throw new exceptions.AttributeError("'str' object attribute '" + name + "' is read-only");
+        throw new exceptions.AttributeError("'str' object attribute '" + attr + "' is read-only");
     }
 }
 
