@@ -37,18 +37,10 @@ def parse_args():
     ]
 
     # find the ouroboros directory
-    ouroboros_not_found_msg = "'ouroboros' folder must be present here or in the parent directory to compile stdlib" 
-
-    if args.source is not None:
-        if not os.path.exists(args.source):
-            exit("{} directory doesn't exist".format(args.source)) 
-        ouroboros = args.source
-    elif os.path.exists('ouroboros'):
-        ouroboros = 'ouroboros'
-    elif os.path.exists('../ouroboros'):
-        ouroboros = '../ouroboros'
+    if os.path.exists('./node_modules/ouroboros'):
+        ouroboros = './node_modules/ouroboros'
     else:
-        exit("'ouroboros' folder must be present here or in the parent directory to compile stdlib")
+        exit("Please install the development dependencies with `npm install`.")
 
     return ouroboros, enabled_modules
 
@@ -58,7 +50,7 @@ def compile_stdlib(ouroboros, enabled_modules):
         module_fname = os.path.join(ouroboros, 'ouroboros', module + '.py')
         if not os.path.exists(module_fname):
             exit("Could not find file for module " + module)
-        outfile = os.path.join('batavia', 'modules', 'stdlib', module + '.js')
+        outfile = os.path.join('batavia', 'stdlib', module + '.js')
         print("Compiling %s to %s" % (module_fname, outfile))
         fp = tempfile.NamedTemporaryFile(delete=False)
         fp.close()
@@ -71,9 +63,18 @@ def compile_stdlib(ouroboros, enabled_modules):
             os.unlink(fp.name)
 
         with open(outfile, 'w') as fout:
-            fout.write("batavia.stdlib['" + module + "'] = '")
-            fout.write(base64.b64encode(pyc).decode('utf8'))
-            fout.write("';\n")
+            fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
+
+    outfile = os.path.join('batavia', 'stdlib.js')
+    print("Compiling stdlib index %s" % outfile)
+    with open(outfile, 'w') as fout:
+        fout.write("module.exports = {\n    ")
+        module_list = [
+            "'" + module + "': require('./stdlib/" + module + "')"
+            for module in enabled_modules
+        ]
+        fout.write(',\n    '.join(module_list))
+        fout.write("\n}\n")
 
 
 def main():

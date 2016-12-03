@@ -4,6 +4,16 @@ from unittest import skipUnless
 from ..utils import ModuleFunctionTestCase, TranspileTestCase
 
 class MathTests(ModuleFunctionTestCase, TranspileTestCase):
+    substitutions = {
+        # A
+        '7.32747...e-15': [
+            '7.35784...e-15'
+        ],
+        '1.53745...e-12': [
+            '1.53743...e-12'
+        ],
+    }
+
     @classmethod
     def add_math_tests(klass):
         klass.add_one_arg_tests('math', [
@@ -65,13 +75,8 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         'test_math_acos_float',
         'test_math_acos_int',
 
-        'test_math_acosh_float',
-
         'test_math_asin_float',
         'test_math_asin_int',
-
-        'test_math_asinh_float',
-        'test_math_asinh_int',
 
         'test_math_fsum_NotImplemented',
         'test_math_fsum_bytearray',

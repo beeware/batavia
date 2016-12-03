@@ -8,11 +8,11 @@ def testTokenize(self, source, expected):
         s = %s
         tok = _compile.Tokenizer(s)
         for i in range(10000):
-          t = tok.get_token()
-          if t is None:
-            break
-          token, a, b = str(t).split(",")
-          print(i, token, s[int(a):int(b)])
+            t = tok.get_token()
+            if t is None:
+                break
+            token, a, b = str(t).split(",")
+            print(i, token, s[int(a):int(b)])
         """ % repr(source), expected)
 
 class CompileTests(TranspileTestCase):

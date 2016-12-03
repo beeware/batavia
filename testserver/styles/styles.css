@@ -40,7 +40,7 @@ h3 {
 }
 
 
-#stdout {
+#pyconsole {
     display: block;
     overflow-y: scroll;
     padding: 5px;
@@ -50,7 +50,7 @@ h3 {
     background-color: #fff;
 }
 
-#stdout span.error {
+#pyconsole span.error {
     font-weight: bold;
     color: #b00;
 }

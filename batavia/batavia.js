@@ -1,20 +1,26 @@
 
-fixedConsoleLog = console.log.bind(console);
+// Configure dependencies
+var BigNumber = require('bignumber.js');
+BigNumber.config({
+    DECIMAL_PLACES: 324,
+    ROUNDING_MODE: BigNumber.ROUND_HALF_EVEN
+});
 
-var batavia = {
-    stdout: fixedConsoleLog,
-    stderr: fixedConsoleLog,
-    core: {},
-    types: {},
-    modules: {},
-    builtins: {},
-    vendored: {},
-    stdlib: {}
-};
+var batavia = {};
 
-// set in PYCFile while parsing python bytecode
-batavia.BATAVIA_MAGIC = null;
-batavia.BATAVIA_MAGIC_34 = String.fromCharCode(238, 12, 13, 10);
-batavia.BATAVIA_MAGIC_35 = String.fromCharCode(22, 13, 13, 10);
-batavia.BATAVIA_MAGIC_353 = String.fromCharCode(23, 13, 13, 10);
-batavia.BATAVIA_MAGIC_35a0 = String.fromCharCode(248, 12, 13, 10);
+// Set up the core interpreter.
+batavia['core'] = require('./core');
+
+// Set up the core interpreter.
+batavia['types'] = require('./types');
+
+// Set up the modules, including builtins and code from ouroboros
+batavia['builtins'] = require('./builtins');
+batavia['modules'] = require('./modules');
+batavia['stdlib'] = require('./stdlib');
+
+// Lastly, the virtual machine itself.
+batavia['VirtualMachine'] = require('./VirtualMachine');
+
+// Export the full Batavia namespace.
+module.exports = batavia;

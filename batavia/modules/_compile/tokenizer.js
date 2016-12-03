@@ -5,242 +5,165 @@
    parser than when passed from the parser to the interpreter; e.g.
    the parser only returns E_EOF when it hits EOF immediately, and it
    never returns E_OK. */
+var types = require('../../types');
+var builtins = require('../../builtins');
 
-var EOF = -1;
-var E_OK =		10;	/* No error */
-var E_EOF =		11;	/* End Of File */
-var E_INTR =		12;	/* Interrupted */
-var E_TOKEN =		13;	/* Bad token */
-var E_SYNTAX =	14;	/* Syntax error */
-var E_NOMEM =		15;	/* Ran out of memory */
-var E_DONE =		16;	/* Parsing complete */
-var E_ERROR =		17;	/* Execution error */
-var E_TABSPACE =	18;	/* Inconsistent mixing of tabs and spaces */
-var E_OVERFLOW =      19;	/* Node had too many children */
-var E_TOODEEP =	20;	/* Too many indentation levels */
-var E_DEDENT =	21;	/* No matching outer block for dedent */
-var E_DECODE =	22;	/* Error in decoding into Unicode */
-var E_EOFS =		23;	/* EOF in triple-quoted string */
-var E_EOLS =		24;	/* EOL in single-quoted string */
-var E_LINECONT =	25;	/* Unexpected characters after a line continuation */
-var E_IDENTIFIER =    26;      /* Invalid characters in identifier */
-var E_BADSINGLE =	27;	/* Ill-formed single statement input */
+var tokenizer = {
+    'EOF':          -1,
+    'E_OK':         10,    /* No error */
+    'E_EOF':        11,    /* End Of File */
+    'E_INTR':       12,    /* Interrupted */
+    'E_TOKEN':      13,    /* Bad token */
+    'E_SYNTAX':     14,    /* Syntax error */
+    'E_NOMEM':      15,    /* Ran out of memory */
+    'E_DONE':       16,    /* Parsing complete */
+    'E_ERROR':      17,    /* Execution error */
+    'E_TABSPACE':   18,    /* Inconsistent mixing of tabs and spaces */
+    'E_OVERFLOW':   19,    /* Node had too many children */
+    'E_TOODEEP':    20,    /* Too many indentation levels */
+    'E_DEDENT':     21,    /* No matching outer block for dedent */
+    'E_DECODE':     22,    /* Error in decoding into Unicode */
+    'E_EOFS':       23,    /* EOF in triple-quoted string */
+    'E_EOLS':       24,    /* EOL in single-quoted string */
+    'E_LINECONT':   25,    /* Unexpected characters after a line continuation */
+    'E_IDENTIFIER': 26,    /* Invalid characters in identifier */
+    'E_BADSINGLE':  27,    /* Ill-formed single statement input */
 
 
 // modeled closely after tokenizer.c.
-(function() {
-
 /* Token types */
-var ENDMARKER =	0;
-var NAME =		1;
-var NUMBER =		2;
-var STRING =		3;
-var NEWLINE =		4;
-var INDENT =		5;
-var DEDENT =		6;
-var LPAR =		7;
-var RPAR =		8;
-var LSQB =		9;
-var RSQB =		10;
-var COLON =		11;
-var COMMA =		12;
-var SEMI =		13;
-var PLUS =		14;
-var MINUS =		15;
-var STAR =		16;
-var SLASH =		17;
-var VBAR =		18;
-var AMPER =		19;
-var LESS =		20;
-var GREATER =		21;
-var EQUAL =		22;
-var DOT =		23;
-var PERCENT =		24;
-var LBRACE =		25;
-var RBRACE =		26;
-var EQEQUAL =		27;
-var NOTEQUAL =	28;
-var LESSEQUAL =	29;
-var GREATEREQUAL =	30;
-var TILDE =		31;
-var CIRCUMFLEX =	32;
-var LEFTSHIFT =	33;
-var RIGHTSHIFT =	34;
-var DOUBLESTAR =	35;
-var PLUSEQUAL =	36;
-var MINEQUAL =	37;
-var STAREQUAL =	38;
-var SLASHEQUAL =	39;
-var PERCENTEQUAL =	40;
-var AMPEREQUAL =	41;
-var VBAREQUAL =	42;
-var CIRCUMFLEXEQUAL =	43;
-var LEFTSHIFTEQUAL =	44;
-var RIGHTSHIFTEQUAL =	45;
-var DOUBLESTAREQUAL =	46;
-var DOUBLESLASH =	47;
-var DOUBLESLASHEQUAL = 48;
-var AT =              49;
-var ATEQUAL =		50;
-var RARROW =          51;
-var ELLIPSIS =        52;
-var OP =		53;
-var AWAIT =		54;
-var ASYNC =		55;
-var ERRORTOKEN =	56;
-var N_TOKENS =	57;
-var NT_OFFSET =		256;
+    'ENDMARKER':        0,
+    'NAME':             1,
+    'NUMBER':           2,
+    'STRING':           3,
+    'NEWLINE':          4,
+    'INDENT':           5,
+    'DEDENT':           6,
+    'LPAR':             7,
+    'RPAR':             8,
+    'LSQB':             9,
+    'RSQB':             10,
+    'COLON':            11,
+    'COMMA':            12,
+    'SEMI':             13,
+    'PLUS':             14,
+    'MINUS':            15,
+    'STAR':             16,
+    'SLASH':            17,
+    'VBAR':             18,
+    'AMPER':            19,
+    'LESS':             20,
+    'GREATER':          21,
+    'EQUAL':            22,
+    'DOT':              23,
+    'PERCENT':          24,
+    'LBRACE':           25,
+    'RBRACE':           26,
+    'EQEQUAL':          27,
+    'NOTEQUAL':         28,
+    'LESSEQUAL':        29,
+    'GREATEREQUAL':     30,
+    'TILDE':            31,
+    'CIRCUMFLEX':       32,
+    'LEFTSHIFT':        33,
+    'RIGHTSHIFT':       34,
+    'DOUBLESTAR':       35,
+    'PLUSEQUAL':        36,
+    'MINEQUAL':         37,
+    'STAREQUAL':        38,
+    'SLASHEQUAL':       39,
+    'PERCENTEQUAL':     40,
+    'AMPEREQUAL':       41,
+    'VBAREQUAL':        42,
+    'CIRCUMFLEXEQUAL':  43,
+    'LEFTSHIFTEQUAL':   44,
+    'RIGHTSHIFTEQUAL':  45,
+    'DOUBLESTAREQUAL':  46,
+    'DOUBLESLASH':      47,
+    'DOUBLESLASHEQUAL': 48,
+    'AT':               49,
+    'ATEQUAL':          50,
+    'RARROW':           51,
+    'ELLIPSIS':         52,
+    'OP':               53,
+    'AWAIT':            54,
+    'ASYNC':            55,
+    'ERRORTOKEN':       56,
+    'N_TOKENS':         57,
+    'NT_OFFSET':        256,
 
-var TABSIZE = 8;
-var MAXINDENT = 100;
+    'TABSIZE':          8,
+    'MAXINDENT':        100,
 
-batavia.modules._compile.EOF = EOF;
-batavia.modules._compile.E_OK = E_OK;
-batavia.modules._compile.E_EOF = E_EOF;
-batavia.modules._compile.E_INTR = E_INTR;
-batavia.modules._compile.E_TOKEN = E_TOKEN;
-batavia.modules._compile.E_SYNTAX = E_SYNTAX;
-batavia.modules._compile.E_NOMEM = E_NOMEM;
-batavia.modules._compile.E_DONE = E_DONE;
-batavia.modules._compile.E_ERROR = E_ERROR;
-batavia.modules._compile.E_TABSPACE = E_TABSPACE;
-batavia.modules._compile.E_OVERFLOW = E_OVERFLOW;
-batavia.modules._compile.E_TOODEEP = E_TOODEEP;
-batavia.modules._compile.E_DEDENT = E_DEDENT;
-batavia.modules._compile.E_DECODE = E_DECODE;
-batavia.modules._compile.E_EOFS = E_EOFS;
-batavia.modules._compile.E_EOLS = E_EOLS;
-batavia.modules._compile.E_LINECONT = E_LINECONT;
-batavia.modules._compile.E_IDENTIFIER = E_IDENTIFIER;
-batavia.modules._compile.E_BADSINGLE = E_BADSINGLE;
+    'TOKEN_NAMES': {}
+}
 
-batavia.modules._compile.ENDMARKER = ENDMARKER;
-batavia.modules._compile.NAME = NAME;
-batavia.modules._compile.NUMBER = NUMBER;
-batavia.modules._compile.STRING = STRING;
-batavia.modules._compile.NEWLINE = NEWLINE;
-batavia.modules._compile.INDENT = INDENT;
-batavia.modules._compile.DEDENT = DEDENT;
-batavia.modules._compile.LPAR = LPAR;
-batavia.modules._compile.RPAR = RPAR;
-batavia.modules._compile.LSQB = LSQB;
-batavia.modules._compile.RSQB = RSQB;
-batavia.modules._compile.COLON = COLON;
-batavia.modules._compile.COMMA = COMMA;
-batavia.modules._compile.SEMI = SEMI;
-batavia.modules._compile.PLUS = PLUS;
-batavia.modules._compile.MINUS = MINUS;
-batavia.modules._compile.STAR = STAR;
-batavia.modules._compile.SLASH = SLASH;
-batavia.modules._compile.VBAR = VBAR;
-batavia.modules._compile.AMPER = AMPER;
-batavia.modules._compile.LESS = LESS;
-batavia.modules._compile.GREATER = GREATER;
-batavia.modules._compile.EQUAL = EQUAL;
-batavia.modules._compile.DOT = DOT;
-batavia.modules._compile.PERCENT = PERCENT;
-batavia.modules._compile.LBRACE = LBRACE;
-batavia.modules._compile.RBRACE = RBRACE;
-batavia.modules._compile.EQEQUAL = EQEQUAL;
-batavia.modules._compile.NOTEQUAL = NOTEQUAL;
-batavia.modules._compile.LESSEQUAL = LESSEQUAL;
-batavia.modules._compile.GREATEREQUAL = GREATEREQUAL;
-batavia.modules._compile.TILDE = TILDE;
-batavia.modules._compile.CIRCUMFLEX = CIRCUMFLEX;
-batavia.modules._compile.LEFTSHIFT = LEFTSHIFT;
-batavia.modules._compile.RIGHTSHIFT = RIGHTSHIFT;
-batavia.modules._compile.DOUBLESTAR = DOUBLESTAR;
-batavia.modules._compile.PLUSEQUAL = PLUSEQUAL;
-batavia.modules._compile.MINEQUAL = MINEQUAL;
-batavia.modules._compile.STAREQUAL = STAREQUAL;
-batavia.modules._compile.SLASHEQUAL = SLASHEQUAL;
-batavia.modules._compile.PERCENTEQUAL = PERCENTEQUAL;
-batavia.modules._compile.AMPEREQUAL = AMPEREQUAL;
-batavia.modules._compile.VBAREQUAL = VBAREQUAL;
-batavia.modules._compile.CIRCUMFLEXEQUAL = CIRCUMFLEXEQUAL;
-batavia.modules._compile.LEFTSHIFTEQUAL = LEFTSHIFTEQUAL;
-batavia.modules._compile.RIGHTSHIFTEQUAL = RIGHTSHIFTEQUAL;
-batavia.modules._compile.DOUBLESTAREQUAL = DOUBLESTAREQUAL;
-batavia.modules._compile.DOUBLESLASH = DOUBLESLASH;
-batavia.modules._compile.DOUBLESLASHEQUAL = DOUBLESLASHEQUAL;
-batavia.modules._compile.AT = AT;
-batavia.modules._compile.ATEQUAL = ATEQUAL;
-batavia.modules._compile.RARROW = RARROW;
-batavia.modules._compile.ELLIPSIS = ELLIPSIS;
-batavia.modules._compile.OP = OP;
-batavia.modules._compile.AWAIT = AWAIT;
-batavia.modules._compile.ASYNC = ASYNC;
-batavia.modules._compile.ERRORTOKEN = ERRORTOKEN;
-batavia.modules._compile.N_TOKENS = N_TOKENS;
-batavia.modules._compile.NT_OFFSET = NT_OFFSET;
-
-batavia.modules._compile.TOKEN_NAMES = {};
-batavia.modules._compile.TOKEN_NAMES[ENDMARKER] = "ENDMARKER";
-batavia.modules._compile.TOKEN_NAMES[NAME] = "NAME";
-batavia.modules._compile.TOKEN_NAMES[NUMBER] = "NUMBER";
-batavia.modules._compile.TOKEN_NAMES[STRING] = "STRING";
-batavia.modules._compile.TOKEN_NAMES[NEWLINE] = "NEWLINE";
-batavia.modules._compile.TOKEN_NAMES[INDENT] = "INDENT";
-batavia.modules._compile.TOKEN_NAMES[DEDENT] = "DEDENT";
-batavia.modules._compile.TOKEN_NAMES[LPAR] = "LPAR";
-batavia.modules._compile.TOKEN_NAMES[RPAR] = "RPAR";
-batavia.modules._compile.TOKEN_NAMES[LSQB] = "LSQB";
-batavia.modules._compile.TOKEN_NAMES[RSQB] = "RSQB";
-batavia.modules._compile.TOKEN_NAMES[COLON] = "COLON";
-batavia.modules._compile.TOKEN_NAMES[COMMA] = "COMMA";
-batavia.modules._compile.TOKEN_NAMES[SEMI] = "SEMI";
-batavia.modules._compile.TOKEN_NAMES[PLUS] = "PLUS";
-batavia.modules._compile.TOKEN_NAMES[MINUS] = "MINUS";
-batavia.modules._compile.TOKEN_NAMES[STAR] = "STAR";
-batavia.modules._compile.TOKEN_NAMES[SLASH] = "SLASH";
-batavia.modules._compile.TOKEN_NAMES[VBAR] = "VBAR";
-batavia.modules._compile.TOKEN_NAMES[AMPER] = "AMPER";
-batavia.modules._compile.TOKEN_NAMES[LESS] = "LESS";
-batavia.modules._compile.TOKEN_NAMES[GREATER] = "GREATER";
-batavia.modules._compile.TOKEN_NAMES[EQUAL] = "EQUAL";
-batavia.modules._compile.TOKEN_NAMES[DOT] = "DOT";
-batavia.modules._compile.TOKEN_NAMES[PERCENT] = "PERCENT";
-batavia.modules._compile.TOKEN_NAMES[LBRACE] = "LBRACE";
-batavia.modules._compile.TOKEN_NAMES[RBRACE] = "RBRACE";
-batavia.modules._compile.TOKEN_NAMES[EQEQUAL] = "EQEQUAL";
-batavia.modules._compile.TOKEN_NAMES[NOTEQUAL] = "NOTEQUAL";
-batavia.modules._compile.TOKEN_NAMES[LESSEQUAL] = "LESSEQUAL";
-batavia.modules._compile.TOKEN_NAMES[GREATEREQUAL] = "GREATEREQUAL";
-batavia.modules._compile.TOKEN_NAMES[TILDE] = "TILDE";
-batavia.modules._compile.TOKEN_NAMES[CIRCUMFLEX] = "CIRCUMFLEX";
-batavia.modules._compile.TOKEN_NAMES[LEFTSHIFT] = "LEFTSHIFT";
-batavia.modules._compile.TOKEN_NAMES[RIGHTSHIFT] = "RIGHTSHIFT";
-batavia.modules._compile.TOKEN_NAMES[DOUBLESTAR] = "DOUBLESTAR";
-batavia.modules._compile.TOKEN_NAMES[PLUSEQUAL] = "PLUSEQUAL";
-batavia.modules._compile.TOKEN_NAMES[MINEQUAL] = "MINEQUAL";
-batavia.modules._compile.TOKEN_NAMES[STAREQUAL] = "STAREQUAL";
-batavia.modules._compile.TOKEN_NAMES[SLASHEQUAL] = "SLASHEQUAL";
-batavia.modules._compile.TOKEN_NAMES[PERCENTEQUAL] = "PERCENTEQUAL";
-batavia.modules._compile.TOKEN_NAMES[AMPEREQUAL] = "AMPEREQUAL";
-batavia.modules._compile.TOKEN_NAMES[VBAREQUAL] = "VBAREQUAL";
-batavia.modules._compile.TOKEN_NAMES[CIRCUMFLEXEQUAL] = "CIRCUMFLEXEQUAL";
-batavia.modules._compile.TOKEN_NAMES[LEFTSHIFTEQUAL] = "LEFTSHIFTEQUAL";
-batavia.modules._compile.TOKEN_NAMES[RIGHTSHIFTEQUAL] = "RIGHTSHIFTEQUAL";
-batavia.modules._compile.TOKEN_NAMES[DOUBLESTAREQUAL] = "DOUBLESTAREQUAL";
-batavia.modules._compile.TOKEN_NAMES[DOUBLESLASH] = "DOUBLESLASH";
-batavia.modules._compile.TOKEN_NAMES[DOUBLESLASHEQUAL] = "DOUBLESLASHEQUAL";
-batavia.modules._compile.TOKEN_NAMES[AT] = "AT";
-batavia.modules._compile.TOKEN_NAMES[ATEQUAL] = "ATEQUAL";
-batavia.modules._compile.TOKEN_NAMES[RARROW] = "RARROW";
-batavia.modules._compile.TOKEN_NAMES[ELLIPSIS] = "ELLIPSIS";
-batavia.modules._compile.TOKEN_NAMES[OP] = "OP";
-batavia.modules._compile.TOKEN_NAMES[AWAIT] = "AWAIT";
-batavia.modules._compile.TOKEN_NAMES[ASYNC] = "ASYNC";
-batavia.modules._compile.TOKEN_NAMES[ERRORTOKEN] = "ERRORTOKEN";
-batavia.modules._compile.TOKEN_NAMES[N_TOKENS] = "N_TOKENS";
-batavia.modules._compile.TOKEN_NAMES[NT_OFFSET] = "NT_OFFSET";
+tokenizer.TOKEN_NAMES[tokenizer.ENDMARKER] = "ENDMARKER";
+tokenizer.TOKEN_NAMES[tokenizer.NAME] = "NAME";
+tokenizer.TOKEN_NAMES[tokenizer.NUMBER] = "NUMBER";
+tokenizer.TOKEN_NAMES[tokenizer.STRING] = "STRING";
+tokenizer.TOKEN_NAMES[tokenizer.NEWLINE] = "NEWLINE";
+tokenizer.TOKEN_NAMES[tokenizer.INDENT] = "INDENT";
+tokenizer.TOKEN_NAMES[tokenizer.DEDENT] = "DEDENT";
+tokenizer.TOKEN_NAMES[tokenizer.LPAR] = "LPAR";
+tokenizer.TOKEN_NAMES[tokenizer.RPAR] = "RPAR";
+tokenizer.TOKEN_NAMES[tokenizer.LSQB] = "LSQB";
+tokenizer.TOKEN_NAMES[tokenizer.RSQB] = "RSQB";
+tokenizer.TOKEN_NAMES[tokenizer.COLON] = "COLON";
+tokenizer.TOKEN_NAMES[tokenizer.COMMA] = "COMMA";
+tokenizer.TOKEN_NAMES[tokenizer.SEMI] = "SEMI";
+tokenizer.TOKEN_NAMES[tokenizer.PLUS] = "PLUS";
+tokenizer.TOKEN_NAMES[tokenizer.MINUS] = "MINUS";
+tokenizer.TOKEN_NAMES[tokenizer.STAR] = "STAR";
+tokenizer.TOKEN_NAMES[tokenizer.SLASH] = "SLASH";
+tokenizer.TOKEN_NAMES[tokenizer.VBAR] = "VBAR";
+tokenizer.TOKEN_NAMES[tokenizer.AMPER] = "AMPER";
+tokenizer.TOKEN_NAMES[tokenizer.LESS] = "LESS";
+tokenizer.TOKEN_NAMES[tokenizer.GREATER] = "GREATER";
+tokenizer.TOKEN_NAMES[tokenizer.EQUAL] = "EQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.DOT] = "DOT";
+tokenizer.TOKEN_NAMES[tokenizer.PERCENT] = "PERCENT";
+tokenizer.TOKEN_NAMES[tokenizer.LBRACE] = "LBRACE";
+tokenizer.TOKEN_NAMES[tokenizer.RBRACE] = "RBRACE";
+tokenizer.TOKEN_NAMES[tokenizer.EQEQUAL] = "EQEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.NOTEQUAL] = "NOTEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.LESSEQUAL] = "LESSEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.GREATEREQUAL] = "GREATEREQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.TILDE] = "TILDE";
+tokenizer.TOKEN_NAMES[tokenizer.CIRCUMFLEX] = "CIRCUMFLEX";
+tokenizer.TOKEN_NAMES[tokenizer.LEFTSHIFT] = "LEFTSHIFT";
+tokenizer.TOKEN_NAMES[tokenizer.RIGHTSHIFT] = "RIGHTSHIFT";
+tokenizer.TOKEN_NAMES[tokenizer.DOUBLESTAR] = "DOUBLESTAR";
+tokenizer.TOKEN_NAMES[tokenizer.PLUSEQUAL] = "PLUSEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.MINEQUAL] = "MINEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.STAREQUAL] = "STAREQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.SLASHEQUAL] = "SLASHEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.PERCENTEQUAL] = "PERCENTEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.AMPEREQUAL] = "AMPEREQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.VBAREQUAL] = "VBAREQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.CIRCUMFLEXEQUAL] = "CIRCUMFLEXEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.LEFTSHIFTEQUAL] = "LEFTSHIFTEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.RIGHTSHIFTEQUAL] = "RIGHTSHIFTEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.DOUBLESTAREQUAL] = "DOUBLESTAREQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.DOUBLESLASH] = "DOUBLESLASH";
+tokenizer.TOKEN_NAMES[tokenizer.DOUBLESLASHEQUAL] = "DOUBLESLASHEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.AT] = "AT";
+tokenizer.TOKEN_NAMES[tokenizer.ATEQUAL] = "ATEQUAL";
+tokenizer.TOKEN_NAMES[tokenizer.RARROW] = "RARROW";
+tokenizer.TOKEN_NAMES[tokenizer.ELLIPSIS] = "ELLIPSIS";
+tokenizer.TOKEN_NAMES[tokenizer.OP] = "OP";
+tokenizer.TOKEN_NAMES[tokenizer.AWAIT] = "AWAIT";
+tokenizer.TOKEN_NAMES[tokenizer.ASYNC] = "ASYNC";
+tokenizer.TOKEN_NAMES[tokenizer.ERRORTOKEN] = "ERRORTOKEN";
+tokenizer.TOKEN_NAMES[tokenizer.N_TOKENS] = "N_TOKENS";
+tokenizer.TOKEN_NAMES[tokenizer.NT_OFFSET] = "NT_OFFSET";
 
 var is_potential_identifier_start = function(c) {
     return (c >= 'a' && c <= 'z')
            || (c >= 'A' && c <= 'Z')
            || c == '_'
            || (c >= 128);
-};
+}
 
 var is_potential_identifier_char = function(c) {
     return (c >= 'a' && c <= 'z')
@@ -248,118 +171,118 @@ var is_potential_identifier_char = function(c) {
            || (c >= '0' && c <= '9')
            || c == '_'
            || (c >= 128);
-};
+}
 
 var isdigit = function(c) {
     return c >= '0' && c <= '9';
-};
+}
 
 
 var PyToken_OneChar = function(c) {
     switch (c) {
-    case '(':           return LPAR;
-    case ')':           return RPAR;
-    case '[':           return LSQB;
-    case ']':           return RSQB;
-    case ':':           return COLON;
-    case ',':           return COMMA;
-    case ';':           return SEMI;
-    case '+':           return PLUS;
-    case '-':           return MINUS;
-    case '*':           return STAR;
-    case '/':           return SLASH;
-    case '|':           return VBAR;
-    case '&':           return AMPER;
-    case '<':           return LESS;
-    case '>':           return GREATER;
-    case '=':           return EQUAL;
-    case '.':           return DOT;
-    case '%':           return PERCENT;
-    case '{':           return LBRACE;
-    case '}':           return RBRACE;
-    case '^':           return CIRCUMFLEX;
-    case '~':           return TILDE;
-    case '@':           return AT;
-    default:            return OP;
+        case '(':           return tokenizer.LPAR;
+        case ')':           return tokenizer.RPAR;
+        case '[':           return tokenizer.LSQB;
+        case ']':           return tokenizer.RSQB;
+        case ':':           return tokenizer.COLON;
+        case ',':           return tokenizer.COMMA;
+        case ';':           return tokenizer.SEMI;
+        case '+':           return tokenizer.PLUS;
+        case '-':           return tokenizer.MINUS;
+        case '*':           return tokenizer.STAR;
+        case '/':           return tokenizer.SLASH;
+        case '|':           return tokenizer.VBAR;
+        case '&':           return tokenizer.AMPER;
+        case '<':           return tokenizer.LESS;
+        case '>':           return tokenizer.GREATER;
+        case '=':           return tokenizer.EQUAL;
+        case '.':           return tokenizer.DOT;
+        case '%':           return tokenizer.PERCENT;
+        case '{':           return tokenizer.LBRACE;
+        case '}':           return tokenizer.RBRACE;
+        case '^':           return tokenizer.CIRCUMFLEX;
+        case '~':           return tokenizer.TILDE;
+        case '@':           return tokenizer.AT;
+        default:            return tokenizer.OP;
     }
-};
+}
 
 var PyToken_TwoChars = function(c1, c2) {
     switch (c1) {
-    case '=':
-        switch (c2) {
-        case '=':               return EQEQUAL;
-        }
-        break;
-    case '!':
-        switch (c2) {
-        case '=':               return NOTEQUAL;
-        }
-        break;
-    case '<':
-        switch (c2) {
-        case '>':               return NOTEQUAL;
-        case '=':               return LESSEQUAL;
-        case '<':               return LEFTSHIFT;
-        }
-        break;
-    case '>':
-        switch (c2) {
-        case '=':               return GREATEREQUAL;
-        case '>':               return RIGHTSHIFT;
-        }
-        break;
-    case '+':
-        switch (c2) {
-        case '=':               return PLUSEQUAL;
-        }
-        break;
-    case '-':
-        switch (c2) {
-        case '=':               return MINEQUAL;
-        case '>':               return RARROW;
-        }
-        break;
-    case '*':
-        switch (c2) {
-        case '*':               return DOUBLESTAR;
-        case '=':               return STAREQUAL;
-        }
-        break;
-    case '/':
-        switch (c2) {
-        case '/':               return DOUBLESLASH;
-        case '=':               return SLASHEQUAL;
-        }
-        break;
-    case '|':
-        switch (c2) {
-        case '=':               return VBAREQUAL;
-        }
-        break;
-    case '%':
-        switch (c2) {
-        case '=':               return PERCENTEQUAL;
-        }
-        break;
-    case '&':
-        switch (c2) {
-        case '=':               return AMPEREQUAL;
-        }
-        break;
-    case '^':
-        switch (c2) {
-        case '=':               return CIRCUMFLEXEQUAL;
-        }
-        break;
-    case '@':
-        switch (c2) {
-        case '=':               return ATEQUAL;
-        }
-        break;
+        case '=':
+            switch (c2) {
+            case '=':               return tokenizer.EQEQUAL;
+            }
+            break;
+        case '!':
+            switch (c2) {
+            case '=':               return tokenizer.NOTEQUAL;
+            }
+            break;
+        case '<':
+            switch (c2) {
+            case '>':               return tokenizer.NOTEQUAL;
+            case '=':               return tokenizer.LESSEQUAL;
+            case '<':               return tokenizer.LEFTSHIFT;
+            }
+            break;
+        case '>':
+            switch (c2) {
+            case '=':               return tokenizer.GREATEREQUAL;
+            case '>':               return tokenizer.RIGHTSHIFT;
+            }
+            break;
+        case '+':
+            switch (c2) {
+            case '=':               return tokenizer.PLUSEQUAL;
+            }
+            break;
+        case '-':
+            switch (c2) {
+            case '=':               return tokenizer.MINEQUAL;
+            case '>':               return tokenizer.RARROW;
+            }
+            break;
+        case '*':
+            switch (c2) {
+            case '*':               return tokenizer.DOUBLESTAR;
+            case '=':               return tokenizer.STAREQUAL;
+            }
+            break;
+        case '/':
+            switch (c2) {
+            case '/':               return tokenizer.DOUBLESLASH;
+            case '=':               return tokenizer.SLASHEQUAL;
+            }
+            break;
+        case '|':
+            switch (c2) {
+            case '=':               return tokenizer.VBAREQUAL;
+            }
+            break;
+        case '%':
+            switch (c2) {
+            case '=':               return tokenizer.PERCENTEQUAL;
+            }
+            break;
+        case '&':
+            switch (c2) {
+            case '=':               return tokenizer.AMPEREQUAL;
+            }
+            break;
+        case '^':
+            switch (c2) {
+            case '=':               return tokenizer.CIRCUMFLEXEQUAL;
+            }
+            break;
+        case '@':
+            switch (c2) {
+            case '=':               return tokenizer.ATEQUAL;
+            }
+            break;
     }
-    return OP;
-};
+    return tokenizer.OP;
+}
 
 var PyToken_ThreeChars = function(c1, c2, c3) {
     switch (c1) {
@@ -368,7 +291,7 @@ var PyToken_ThreeChars = function(c1, c2, c3) {
         case '<':
             switch (c3) {
             case '=':
-                return LEFTSHIFTEQUAL;
+                return tokenizer.LEFTSHIFTEQUAL;
             }
             break;
         }
@@ -378,7 +301,7 @@ var PyToken_ThreeChars = function(c1, c2, c3) {
         case '>':
             switch (c3) {
             case '=':
-                return RIGHTSHIFTEQUAL;
+                return tokenizer.RIGHTSHIFTEQUAL;
             }
             break;
         }
@@ -388,7 +311,7 @@ var PyToken_ThreeChars = function(c1, c2, c3) {
         case '*':
             switch (c3) {
             case '=':
-                return DOUBLESTAREQUAL;
+                return tokenizer.DOUBLESTAREQUAL;
             }
             break;
         }
@@ -398,7 +321,7 @@ var PyToken_ThreeChars = function(c1, c2, c3) {
         case '/':
             switch (c3) {
             case '=':
-                return DOUBLESLASHEQUAL;
+                return tokenizer.DOUBLESLASHEQUAL;
             }
             break;
         }
@@ -408,21 +331,21 @@ var PyToken_ThreeChars = function(c1, c2, c3) {
         case '.':
             switch (c3) {
             case '.':
-                return ELLIPSIS;
+                return tokenizer.ELLIPSIS;
             }
             break;
         }
         break;
     }
-    return OP;
-};
+    return tokenizer.OP;
+}
 
 var preprocess_string = function(str) {
     str = str.replace(/\s+$/, '');
     str = str.replace(/\r\n/, '\n');
     str = str.replace(/\r/, '\n');
     return str;
-};
+}
 
 var Tokenizer = function(str) {
     /* Input state; buf <= cur <= inp <= end */
@@ -433,9 +356,9 @@ var Tokenizer = function(str) {
     this.inp = str.length;          /* End of data in buffer */
     this.end = str.length;          /* End of input buffer if buf != null */
     this.start = null;        /* Start of current token if not null */
-    this.done = E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
+    this.done = tokenizer.E_OK;           /* E_OK normally, E_EOF at EOF, otherwise error code */
     /* NB If done != E_OK, cur must be == inp!!! */
-    this.tabsize = TABSIZE;        /* Tab spacing */
+    this.tabsize = tokenizer.TABSIZE;        /* Tab spacing */
     this.indent = 0;         /* Current indentation index */
     this.indstack = [0];      /* Stack of indents */
     this.atbol = 0;          /* Nonzero if at begin of new line */
@@ -464,23 +387,24 @@ var Tokenizer = function(str) {
     this.async_def = 0;        /* =1 if tokens are inside an 'async def' body. */
     this.async_def_indent = 0; /* Indentation level of the outermost 'async def'. */
     this.async_def_nl = 0;     /* =1 if the outermost 'async def' had at least one
-                             NEWLINE token after it. */
-};
+                             NEWLINE token after itokenizer. */
+}
 
-Tokenizer.prototype.__class__ = new batavia.types.Type('Tokenizer');
+Tokenizer.prototype.__class__ = new types.Type('Tokenizer');
+tokenizer['Tokenizer'] = Tokenizer;
 
 
 // Get next token, after space stripping etc.
 Tokenizer.prototype.get_token = function() {
     var tok = this;
     var c;
-    var p_start = null;
-    var p_end = null;
+    // var p_start = null;
+    // var p_end = null;
     tok.continue_processing = true;
 
     // nothing left to process
     if (tok.cur >= tok.buf.length) {
-        return batavia.builtins.None;
+        return builtins.None;
     }
 
     var process_line = function() {
@@ -501,7 +425,7 @@ Tokenizer.prototype.get_token = function() {
                     col = (Math.floor(col / tok.tabsize) + 1) * tok.tabsize;
                     altcol = (Math.floor(altcol / tok.alttabsize) + 1)
                         * tok.alttabsize;
-                } else if (c == '\014') { // Control-L (formfeed)
+                } else if (c == '\x0f') { // Control-L (formfeed)
                     col = 0; // For Emacs users
                     altcol = 0;
                 } else {
@@ -519,19 +443,19 @@ Tokenizer.prototype.get_token = function() {
                     // No change
                     if (altcol != tok.altindstack[tok.indent]) {
                         if (tok.indenterror()) {
-                            return [ERRORTOKEN, tok.cur, tok.cur, 1];
+                            return [tokenizer.ERRORTOKEN, tok.cur, tok.cur, 1];
                         }
                     }
                 } else if (col > tok.indstack[tok.indent]) {
                     /* Indent -- always one */
-                    if (tok.indent + 1 >= MAXINDENT) {
-                        tok.done = E_TOODEEP;
+                    if (tok.indent + 1 >= tokenizer.MAXINDENT) {
+                        tok.done = tokenizer.E_TOODEEP;
                         tok.cur = tok.inp;
-                        return [ERRORTOKEN, tok.cur, tok.cur, 2];
+                        return [tokenizer.ERRORTOKEN, tok.cur, tok.cur, 2];
                     }
                     if (altcol <= tok.altindstack[tok.indent]) {
                         if (tok.indenterror()) {
-                            return [ERRORTOKEN, tok.cur, tok.cur, 3];
+                            return [tokenizer.ERRORTOKEN, tok.cur, tok.cur, 3];
                         }
                     }
                     tok.pendin++;
@@ -545,13 +469,13 @@ Tokenizer.prototype.get_token = function() {
                         tok.indent--;
                     }
                     if (col != tok.indstack[tok.indent]) {
-                        tok.done = E_DEDENT;
+                        tok.done = tokenizer.E_DEDENT;
                         tok.cur = tok.inp;
-                        return [ERRORTOKEN, tok.cur, tok.cur, 4];
+                        return [tokenizer.ERRORTOKEN, tok.cur, tok.cur, 4];
                     }
                     if (altcol != tok.altindstack[tok.indent]) {
                         if (tok.indenterror())
-                            return [ERRORTOKEN, tok.cur, tok.cur, 5];
+                            return [tokenizer.ERRORTOKEN, tok.cur, tok.cur, 5];
                     }
                 }
             }
@@ -563,10 +487,10 @@ Tokenizer.prototype.get_token = function() {
         if (tok.pendin != 0) {
             if (tok.pendin < 0) {
                 tok.pendin++;
-                return [DEDENT, tok.start, tok.cur];
+                return [tokenizer.DEDENT, tok.start, tok.cur];
             } else {
                 tok.pendin--;
-                return [INDENT, tok.start, tok.cur];
+                return [tokenizer.INDENT, tok.start, tok.cur];
             }
         }
 
@@ -586,416 +510,419 @@ Tokenizer.prototype.get_token = function() {
         }
 
         return tok.again();
-  };
+    }
 
-  var result;
-  while (tok.continue_processing) {
-      result = process_line();
-  }
-  result[0] = batavia.modules._compile.TOKEN_NAMES[result[0]];
-  return result;
-};
+    var result;
+    while (tok.continue_processing) {
+        result = process_line();
+    }
+    result[0] = tokenizer.TOKEN_NAMES[result[0]];
+    return result;
+}
 
 Tokenizer.prototype.again = function() {
-   var tok = this;
-   var c;
-   tok.start = null;
-   var p_start = null;
-   var p_end = null;
-   // Skip spaces
-   do {
-       c = tok.tok_nextc();
-   } while (c == ' ' || c == '\t' || c == '\014');
+    var tok = this;
+    var c;
+    tok.start = null;
+    var p_start = null;
+    var p_end = null;
+    // Skip spaces
+    do {
+        c = tok.tok_nextc();
+    } while (c == ' ' || c == '\t' || c == '\x0c');
 
-   // Set start of current token
-   tok.start = tok.cur - 1;
+    // Set start of current token
+    tok.start = tok.cur - 1;
 
-   // Skip comment
-   if (c == '#') {
-       while (c != EOF && c != '\n') {
-           c = tok.tok_nextc();
-       }
-   }
+    // Skip comment
+    if (c == '#') {
+        while (c != tokenizer.EOF && c != '\n') {
+            c = tok.tok_nextc();
+        }
+    }
 
-   // Check for EOF and errors now
-   if (c == EOF) {
-       return [tok.done == E_EOF ? ENDMARKER : ERRORTOKEN, batavia.builtins.None, batavia.builtins.None, 5];
-   }
+    // Check for EOF and errors now
+    if (c == tokenizer.EOF) {
+        return [tok.done == tokenizer.E_EOF ? tokenizer.ENDMARKER : tokenizer.ERRORTOKEN, builtins.None, builtins.None, 5];
+    }
 
-   // Identifier (most frequent token!)
-   if (is_potential_identifier_start(c)) {
-       return tok.parse_identifier(c);
-   }
+    // Identifier (most frequent token!)
+    if (is_potential_identifier_start(c)) {
+        return tok.parse_identifier(c);
+    }
 
-   // Newline
-   if (c == '\n') {
-       tok.atbol = 1;
-       if (tok.level > 0) {
-           // process next line
-           tok.continue_processing = true;
-           return batavia.builtins.None;
-       }
-       tok.cont_line = 0;
-       if (tok.async_def) {
-           // We're somewhere inside an 'async def' function, and
-           // we've encountered a NEWLINE after its signature.
-           tok.async_def_nl = 1;
-       }
-       // Leave '\n' out of the string
-       return [NEWLINE, tok.start, tok.cur - 1];
-   }
+    // Newline
+    if (c == '\n') {
+        tok.atbol = 1;
+        if (tok.level > 0) {
+            // process next line
+            tok.continue_processing = true;
+            return builtins.None;
+        }
+        tok.cont_line = 0;
+        if (tok.async_def) {
+            // We're somewhere inside an 'async def' function, and
+            // we've encountered a NEWLINE after its signature.
+            tok.async_def_nl = 1;
+        }
+        // Leave '\n' out of the string
+        return [tokenizer.NEWLINE, tok.start, tok.cur - 1];
+    }
 
-   // Period or number starting with period?
-   if (c == '.') {
-       c = tok.tok_nextc();
-       if (isdigit(c)) {
-           tok.tok_backup(c);
-           return tok.fraction(c);
-       } else if (c == '.') {
-           c = tok.tok_nextc();
-           if (c == '.') {
-               p_start = tok.start;
-               p_end = tok.cur;
-               return [ELLIPSIS, p_start, p_end];
-           } else {
-               tok.tok_backup(c);
-           }
-           tok.tok_backup('.');
-       } else {
-           tok.tok_backup(c);
-       }
-       p_start = tok.start;
-       p_end = tok.cur;
-       return [DOT, p_start, p_end];
-   }
+    // Period or number starting with period?
+    if (c == '.') {
+        c = tok.tok_nextc();
+        if (isdigit(c)) {
+            tok.tok_backup(c);
+            return tok.fraction(c);
+         } else if (c == '.') {
+            c = tok.tok_nextc();
+            if (c == '.') {
+                p_start = tok.start;
+                p_end = tok.cur;
+                return [tokenizer.ELLIPSIS, p_start, p_end];
+            } else {
+                tok.tok_backup(c);
+            }
+            tok.tok_backup('.');
+        } else {
+            tok.tok_backup(c);
+        }
+        p_start = tok.start;
+        p_end = tok.cur;
+        return [tokenizer.DOT, p_start, p_end];
+    }
 
-   // Number
-   if (isdigit(c)) {
-       if (c == '0') {
-           // Hex, octal or binary -- maybe.
-           c = tok.tok_nextc();
-           if (c == 'x' || c == 'X') {
-               // Hex
-               c = tok.tok_nextc();
-               if (!isxdigit(c)) {
-                   tok.done = E_TOKEN;
-                   tok.tok_backup(c);
-                   return [ERRORTOKEN, p_start, p_end, 6];
-               }
-               do {
+    // Number
+    if (isdigit(c)) {
+        if (c == '0') {
+            // Hex, octal or binary -- maybe.
+            c = tok.tok_nextc();
+            if (c == 'x' || c == 'X') {
+                // Hex
+                c = tok.tok_nextc();
+                if (!isxdigit(c)) {
+                    tok.done = tokenizer.E_TOKEN;
+                    tok.tok_backup(c);
+                     return [tokenizer.ERRORTOKEN, p_start, p_end, 6];
+                }
+                do {
+                    c = tok.tok_nextc();
+                } while (isxdigit(c));
+            }
+            else if (c == 'o' || c == 'O') {
+                // Octal
+                c = tok.tok_nextc();
+                if (c < '0' || c >= '8') {
+                    tok.done = tokenizer.E_TOKEN;
+                    tok.tok_backup(c);
+                    return [tokenizer.ERRORTOKEN, p_start, p_end, 7];
+                }
+                do {
+                    c = tok.tok_nextc();
+                } while ('0' <= c && c < '8');
+            }
+            else if (c == 'b' || c == 'B') {
+                // Binary
+                c = tok.tok_nextc();
+                if (c != '0' && c != '1') {
+                    tok.done = tokenizer.E_TOKEN;
+                    tok.tok_backup(c);
+                    return [tokenizer.ERRORTOKEN, p_start, p_end, 8];
+                }
+                do {
+                    c = tok.tok_nextc();
+                } while (c == '0' || c == '1');
+            }
+            else {
+                var nonzero = 0;
+                // maybe old-style octal; c is first char of it
+                // in any case, allow '0' as a literal
+                while (c == '0') {
                    c = tok.tok_nextc();
-               } while (isxdigit(c));
-           }
-           else if (c == 'o' || c == 'O') {
-               // Octal
-               c = tok.tok_nextc();
-               if (c < '0' || c >= '8') {
-                   tok.done = E_TOKEN;
-                   tok.tok_backup(c);
-                   return [ERRORTOKEN, p_start, p_end, 7];
-               }
-               do {
-                   c = tok.tok_nextc();
-               } while ('0' <= c && c < '8');
-           }
-           else if (c == 'b' || c == 'B') {
-               // Binary
-               c = tok.tok_nextc();
-               if (c != '0' && c != '1') {
-                   tok.done = E_TOKEN;
-                   tok.tok_backup(c);
-                   return [ERRORTOKEN, p_start, p_end, 8];
-               }
-               do {
-                   c = tok.tok_nextc();
-               } while (c == '0' || c == '1');
-           }
-           else {
-               var nonzero = 0;
-               // maybe old-style octal; c is first char of it
-               // in any case, allow '0' as a literal
-               while (c == '0') {
-                  c = tok.tok_nextc();
-               }
-               while (isdigit(c)) {
-                   nonzero = 1;
-                   c = tok.tok_nextc();
-               }
-               if (c == '.') {
-                   return tok.fraction(c);
-               } else if (c == 'e' || c == 'E') {
-                   return tok.exponent(c);
-               } else if (c == 'j' || c == 'J') {
-                   return tok.imaginary();
-               } else if (nonzero) {
-                   tok.done = E_TOKEN;
-                   tok.tok_backup(c);
-                   return [ERRORTOKEN, tok.start, tok.cur, 8];
-               }
-           }
-       } else {
-           // Decimal
-           do {
-               c = tok.tok_nextc();
-           } while (isdigit(c));
-           return tok.fraction(c);
-       }
-       tok.tok_backup(c);
-       p_start = tok.start;
-       p_end = tok.cur;
-       return [NUMBER, p_start, p_end];
-   }
+                }
+                while (isdigit(c)) {
+                    nonzero = 1;
+                    c = tok.tok_nextc();
+                }
+                if (c == '.') {
+                    return tok.fraction(c);
+                } else if (c == 'e' || c == 'E') {
+                    return tok.exponent(c);
+                } else if (c == 'j' || c == 'J') {
+                    return tok.imaginary();
+                } else if (nonzero) {
+                    tok.done = tokenizer.E_TOKEN;
+                    tok.tok_backup(c);
+                    return [tokenizer.ERRORTOKEN, tok.start, tok.cur, 8];
+                }
+            }
+        } else {
+            // Decimal
+            do {
+                c = tok.tok_nextc();
+            } while (isdigit(c));
+            return tok.fraction(c);
+        }
+        tok.tok_backup(c);
+        p_start = tok.start;
+        p_end = tok.cur;
+        return [tokenizer.NUMBER, p_start, p_end];
+    }
 
- var result = tok.letter_quote(c);
- if (result !== batavia.builtins.None) {
-     return result;
- }
+    var result = tok.letter_quote(c);
+    if (result !== builtins.None) {
+        return result;
+    }
 
- // Line continuation
- if (c == '\\') {
-     c = tok.tok_nextc();
-     if (c != '\n') {
-         tok.done = E_LINECONT;
-         tok.cur = tok.inp;
-         return [ERRORTOKEN, p_start, p_end, 9];
-     }
-     tok.cont_line = 1;
-     return tok.again(); // Read next line
- }
+    // Line continuation
+    if (c == '\\') {
+        c = tok.tok_nextc();
+        if (c != '\n') {
+            tok.done = tokenizer.E_LINECONT;
+            tok.cur = tok.inp;
+            return [tokenizer.ERRORTOKEN, p_start, p_end, 9];
+        }
+        tok.cont_line = 1;
+        return tok.again(); // Read next line
+    }
 
- // Check for two-character token
- var c2 = tok.tok_nextc();
- var token = PyToken_TwoChars(c, c2);
- if (token != OP) {
-     var c3 = tok.tok_nextc();
-     var token3 = PyToken_ThreeChars(c, c2, c3);
-     if (token3 != OP) {
-         token = token3;
-     } else {
-         tok.tok_backup(c3);
-     }
-     p_start = tok.start;
-     p_end = tok.cur;
-     return [token, p_start, p_end];
- }
- tok.tok_backup(c2);
+    // Check for two-character token
+    var c2 = tok.tok_nextc();
+    var token = PyToken_TwoChars(c, c2);
+    if (token != tokenizer.OP) {
+        var c3 = tok.tok_nextc();
+        var token3 = PyToken_ThreeChars(c, c2, c3);
+        if (token3 != tokenizer.OP) {
+            token = token3;
+        } else {
+            tok.tok_backup(c3);
+        }
+        p_start = tok.start;
+        p_end = tok.cur;
+        return [token, p_start, p_end];
+    }
+    tok.tok_backup(c2);
 
- // Keep track of parentheses nesting level
- switch (c) {
- case '(':
- case '[':
- case '{':
-     tok.level++;
-     break;
- case ')':
- case ']':
- case '}':
-     tok.level--;
-     break;
- }
+    // Keep track of parentheses nesting level
+    switch (c) {
+        case '(':
+        case '[':
+        case '{':
+            tok.level++;
+            break;
+        case ')':
+        case ']':
+        case '}':
+            tok.level--;
+            break;
+    }
 
- // Punctuation character
- p_start = tok.start;
- p_end = tok.cur;
- return [PyToken_OneChar(c), p_start, p_end];
-};
+    // Punctuation character
+    p_start = tok.start;
+    p_end = tok.cur;
+    return [PyToken_OneChar(c), p_start, p_end];
+}
 
 Tokenizer.prototype.parse_identifier = function(c) {
-var tok = this;
-var nonascii = 0;
-// Process b"", r"", u"", br"" and rb""
-var saw_b = 0;
-var saw_r = 0;
-var saw_u = 0;
-var saw_f = 0;
-while (1) {
-    if (!(saw_b || saw_u || saw_f) && (c == 'b' || c == 'B'))
-        saw_b = 1;
-    // Since this is a backwards compatibility support literal we don't
-    //   want to support it in arbitrary order like byte literals.
-    else if (!(saw_b || saw_u || saw_r || saw_f) && (c == 'u' || c == 'U'))
-        saw_u = 1;
-    // ur"" and ru"" are not supported
-    else if (!(saw_r || saw_u) && (c == 'r' || c == 'R'))
-        saw_r = 1;
-    else if (!(saw_f || saw_b || saw_u) && (c == 'f' || c == 'F'))
-        saw_f = 1;
-    else
-        break;
-    c = tok.tok_nextc();
-    if (c == '"' || c == '\'') {
-        return tok.letter_quote(c);
+    var tok = this;
+    var nonascii = 0;
+    // Process b"", r"", u"", br"" and rb""
+    var saw_b = 0;
+    var saw_r = 0;
+    var saw_u = 0;
+    var saw_f = 0;
+    while (1) {
+        if (!(saw_b || saw_u || saw_f) && (c == 'b' || c == 'B'))
+            saw_b = 1;
+        // Since this is a backwards compatibility support literal we don't
+        //   want to support it in arbitrary order like byte literals.
+        else if (!(saw_b || saw_u || saw_r || saw_f) && (c == 'u' || c == 'U'))
+            saw_u = 1;
+        // ur"" and ru"" are not supported
+        else if (!(saw_r || saw_u) && (c == 'r' || c == 'R'))
+            saw_r = 1;
+        else if (!(saw_f || saw_b || saw_u) && (c == 'f' || c == 'F'))
+            saw_f = 1;
+        else
+            break;
+        c = tok.tok_nextc();
+        if (c == '"' || c == '\'') {
+            return tok.letter_quote(c);
+        }
     }
-}
-while (is_potential_identifier_char(c)) {
-    if (c >= 128) {
-        nonascii = 1;
+    while (is_potential_identifier_char(c)) {
+        if (c >= 128) {
+            nonascii = 1;
+        }
+        c = tok.tok_nextc();
     }
-    c = tok.tok_nextc();
-}
-tok.tok_backup(c);
-if (nonascii && !verify_identifier(tok)) {
-    return [ERRORTOKEN, p_start, p_end, 10];
-}
+    tok.tok_backup(c);
+    if (nonascii && !verify_identifier(tok)) {
+        return [tokenizer.ERRORTOKEN, p_start, p_end, 10];
+    }
 
-  // async/await parsing block.
- //  if (tok.cur - tok.start == 5) {
- //      // Current token length is 5.
- //      var word = tok.buf.slice(tok.start, tok.start + 5).join('');
- //      if (tok.async_def) {
- //          // We're inside an 'async def' function.
- //          if (word == "async") {
- //              return [ASYNC, tok.start, tok.cur];
- //          } else if (word == "await") {
- //              return [AWAIT, tok.start, tok.cur];
- //          }
- //      } else if (word == "async") {
- //          // The current token is 'async'.
- //          // Look ahead one token.
-  //
- //          var ahead_tok = new Tokenizer();
- //          var ahead_tok_start = null;
- //          var ahead_tok_end = null;
- //          var ahead_tok_kind = 0;
-  //
- //          memcpy(ahead_tok, tok, sizeof(ahead_tok));
- //          ahead_tok_kind = tok_get(ahead_tok, ahead_tok_start,
- //                                   ahead_tok_end);
-  //
- //          if (ahead_tok_kind == NAME
- //              && ahead_tok.cur - ahead_tok.start == 3
- //              && memcmp(ahead_tok.start, "def", 3) == 0)
- //          {
- //              /* The next token is going to be 'def', so instead of
- //                 returning 'async' NAME token, we return ASYNC. */
- //              tok.async_def_indent = tok.indent;
- //              tok.async_def = 1;
- //              return [ASYNC, p_start, p_end];
- //          }
- //      }
- //  }
+    // async/await parsing block.
+    //  if (tok.cur - tok.start == 5) {
+    //      // Current token length is 5.
+    //      var word = tok.buf.slice(tok.start, tok.start + 5).join('');
+    //      if (tok.async_def) {
+    //          // We're inside an 'async def' function.
+    //          if (word == "async") {
+    //              return [ASYNC, tok.start, tok.cur];
+    //          } else if (word == "await") {
+    //              return [AWAIT, tok.start, tok.cur];
+    //          }
+    //      } else if (word == "async") {
+    //          // The current token is 'async'.
+    //          // Look ahead one token.
+    //
+    //          var ahead_tok = new Tokenizer();
+    //          var ahead_tok_start = null;
+    //          var ahead_tok_end = null;
+    //          var ahead_tok_kind = 0;
+    //
+    //          memcpy(ahead_tok, tok, sizeof(ahead_tok));
+    //          ahead_tok_kind = tok_get(ahead_tok, ahead_tok_start,
+    //                                   ahead_tok_end);
+    //
+    //          if (ahead_tok_kind == NAME
+    //              && ahead_tok.cur - ahead_tok.start == 3
+    //              && memcmp(ahead_tok.start, "def", 3) == 0)
+    //          {
+    //              /* The next token is going to be 'def', so instead of
+    //                 returning 'async' NAME token, we return ASYNC. */
+    //              tok.async_def_indent = tok.indent;
+    //              tok.async_def = 1;
+    //              return [ASYNC, p_start, p_end];
+    //          }
+    //      }
+    //  }
 
-  return [NAME, tok.start, tok.cur];
-};
+    return [tokenizer.NAME, tok.start, tok.cur];
+}
 
 Tokenizer.prototype.letter_quote = function(c) {
-  var tok = this;
-  // String
-  if (c == '\'' || c == '"') {
-      var quote = c;
-      var quote_size = 1;             // 1 or 3
-      var end_quote_size = 0;
+    var tok = this;
+    var p_start, p_end;
+    // String
+    if (c == '\'' || c == '"') {
+        var quote = c;
+        var quote_size = 1;             // 1 or 3
+        var end_quote_size = 0;
 
-      // Find the quote size and start of string
-      c = tok.tok_nextc();
-      if (c == quote) {
-          c = tok.tok_nextc();
-          if (c == quote) {
-              quote_size = 3;
-          } else {
-              end_quote_size = 1;     // empty string found
-          }
-      }
-      if (c != quote) {
-          tok.tok_backup(c);
-      }
+        // Find the quote size and start of string
+        c = tok.tok_nextc();
+        if (c == quote) {
+            c = tok.tok_nextc();
+            if (c == quote) {
+                quote_size = 3;
+            } else {
+                end_quote_size = 1;     // empty string found
+            }
+        }
+        if (c != quote) {
+            tok.tok_backup(c);
+        }
 
-      // Get rest of string
-      while (end_quote_size != quote_size) {
-          c = tok.tok_nextc();
-          if (c == EOF) {
-              if (quote_size == 3) {
-                  tok.done = E_EOFS;
-              } else {
-                  tok.done = E_EOLS;
-              }
-              tok.cur = tok.inp;
-              return [ERRORTOKEN, p_start, p_end, 11];
-          }
-          if (quote_size == 1 && c == '\n') {
-              tok.done = E_EOLS;
-              tok.cur = tok.inp;
-              return [ERRORTOKEN, p_start, p_end, 11];
-          }
-          if (c == quote) {
-              end_quote_size += 1;
-          } else {
-              end_quote_size = 0;
-              if (c == '\\') {
-                  c = tok.tok_nextc();  // skip escaped char
-              }
-          }
-      }
+        // Get rest of string
+        while (end_quote_size != quote_size) {
+            c = tok.tok_nextc();
+            if (c == tokenizer.EOF) {
+                if (quote_size == 3) {
+                    tok.done = tokenizer.E_EOFS;
+                } else {
+                    tok.done = tokenizer.E_EOLS;
+                }
+                tok.cur = tok.inp;
+                return [tokenizer.ERRORTOKEN, p_start, p_end, 11];
+            }
+            if (quote_size == 1 && c == '\n') {
+                tok.done = tokenizer.E_EOLS;
+                tok.cur = tok.inp;
+                return [tokenizer.ERRORTOKEN, p_start, p_end, 11];
+            }
+            if (c == quote) {
+                end_quote_size += 1;
+            } else {
+                end_quote_size = 0;
+                if (c == '\\') {
+                    c = tok.tok_nextc();  // skip escaped char
+                }
+            }
+        }
 
-      p_start = tok.start;
-      p_end = tok.cur;
-      return [STRING, p_start, p_end];
-  }
-  return batavia.builtins.None;
-};
+        p_start = tok.start;
+        p_end = tok.cur;
+        return [tokenizer.STRING, p_start, p_end];
+    }
+    return builtins.None;
+}
 
 Tokenizer.prototype.fraction = function(c) {
-  var tok = this;
-  var e;
-  // Accept floating point numbers.
-  if (c == '.') {
-      // Fraction
-      do {
-          c = tok.tok_nextc();
-      } while (isdigit(c));
-  }
-  if (c == 'e' || c == 'E') {
-      return tok.exponent();
-  }
-  if (c == 'j' || c == 'J') {
-      /* Imaginary part */
-      c = tok.tok_nextc();
-  }
+    var tok = this;
+    var p_start, p_end;
+    // var e;
+    // Accept floating point numbers.
+    if (c == '.') {
+        // Fraction
+        do {
+            c = tok.tok_nextc();
+        } while (isdigit(c));
+    }
+    if (c == 'e' || c == 'E') {
+        return tok.exponent();
+    }
+    if (c == 'j' || c == 'J') {
+        /* Imaginary part */
+        c = tok.tok_nextc();
+    }
 
-  tok.tok_backup(c);
-  p_start = tok.start;
-  p_end = tok.cur;
-  return [NUMBER, p_start, p_end];
-};
+    tok.tok_backup(c);
+    p_start = tok.start;
+    p_end = tok.cur;
+    return [tokenizer.NUMBER, p_start, p_end];
+}
 
 Tokenizer.prototype.exponent = function(c) {
-  var tok = this;
-  var e = c;
-  /* Exponent part */
-  c = tok.tok_nextc();
-  if (c == '+' || c == '-') {
-      c = tok.tok_nextc();
-      if (!isdigit(c)) {
-          tok.done = E_TOKEN;
-          tok.tok_backup(c);
-          return [ERRORTOKEN, tok.start, tok.end, 15];
-      }
-  } else if (!isdigit(c)) {
-      tok.tok_backup(c);
-      tok.tok_backup(e);
-      return [NUMBER, tok.start, tok.end];
-  }
-  do {
-      c = tok.tok_nextc();
-  } while (isdigit(c));
+    var tok = this;
+    var e = c;
+    /* Exponent part */
+    c = tok.tok_nextc();
+    if (c == '+' || c == '-') {
+        c = tok.tok_nextc();
+        if (!isdigit(c)) {
+            tok.done = tokenizer.E_TOKEN;
+            tok.tok_backup(c);
+            return [tokenizer.ERRORTOKEN, tok.start, tok.end, 15];
+        }
+    } else if (!isdigit(c)) {
+        tok.tok_backup(c);
+        tok.tok_backup(e);
+        return [tokenizer.NUMBER, tok.start, tok.end];
+    }
+    do {
+        c = tok.tok_nextc();
+    } while (isdigit(c));
 
-  if (c == 'j' || c == 'J') {
-      return tok.imaginary();
-  }
+    if (c == 'j' || c == 'J') {
+        return tok.imaginary();
+    }
 
-  tok.tok_backup(c);
-  return [NUMBER, tok.start, tok.cur];
-};
+    tok.tok_backup(c);
+    return [tokenizer.NUMBER, tok.start, tok.cur];
+}
 
 Tokenizer.prototype.imaginary = function() {
-  var tok = this;
-  var c = tok.tok_nextc();
-  tok.tok_backup(c);
-  p_start = tok.start;
-  p_end = tok.cur;
-  return [NUMBER, p_start, p_end];
-};
+    var tok = this;
+    var p_start, p_end;
+    var c = tok.tok_nextc();
 
+    tok.tok_backup(c);
+    p_start = tok.start;
+    p_end = tok.cur;
+    return [tokenizer.NUMBER, p_start, p_end];
+}
 
 Tokenizer.prototype.tok_nextc = function() {
     var tok = this;
@@ -1003,36 +930,33 @@ Tokenizer.prototype.tok_nextc = function() {
     if (tok.cur != tok.inp) {
         return tok.buf[tok.cur++]; /* Fast path */
     }
-    return EOF;
-};
+    return tokenizer.EOF;
+}
 
 /* Back-up one character */
 Tokenizer.prototype.tok_backup = function(c) {
-  var tok = this;
-  if (c != EOF) {
-      if (--tok.cur < 0) {
-          throw new batavia.types.BatavieError("tok_backup: beginning of buffer");
-      }
-      if (tok.buf[tok.cur] != c) {
-          tok[tok.cur] = c;
-      }
-  }
-};
+    var tok = this;
+    if (c != tokenizer.EOF) {
+        if (--tok.cur < 0) {
+            throw new types.BatavieError("tok_backup: beginning of buffer");
+        }
+        if (tok.buf[tok.cur] != c) {
+            tok[tok.cur] = c;
+        }
+    }
+}
 
 Tokenizer.prototype.indenterror = function() {
-  var tok = this;
-  if (tok.alterror) {
-      tok.done = E_TABSPACE;
-      tok.cur = tok.inp;
-      return 1;
-  }
-  if (tok.altwarning) {
-      console.log(tok.filename + ": inconsistent use of tabs and spaces in indentation"); tok.altwarning = 0;
-  }
-  return 0;
-};
+    var tok = this;
+    if (tok.alterror) {
+        tok.done = tokenizer.E_TABSPACE;
+        tok.cur = tok.inp;
+        return 1;
+    }
+    if (tok.altwarning) {
+        console.log(tok.filename + ": inconsistent use of tabs and spaces in indentation"); tok.altwarning = 0;
+    }
+    return 0;
+}
 
-
-batavia.modules._compile.Tokenizer = Tokenizer;
-
-})();
+module.exports = tokenizer;
