@@ -19,6 +19,6 @@ test:
   override:
     - pip install pytest
     - pip install git+https://github.com/pybee/pytest-circleci
-    - "py.test tests/modules/test_time.py":
+    - "py.test tests":
         timeout: 60
         parallel: true
