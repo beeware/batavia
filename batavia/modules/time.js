@@ -154,11 +154,12 @@ time.mktime = function(sequence) {
 
     var seconds = date.getTime() / 1000;
 
-    // If the struct_time specifies DST (sequence[8] == 1), but
+    // If the struct_time specifies DST (sequence[8] === 1), but
     // the local timezone doesn't have daylight savings, the answer will
     // be out by 3600 seconds. Adjust accordingly.
     var tz = moment.tz.guess();
     var isDST = moment(date.getTime()).tz(tz).isDST();
+    console.log("DEBUG: " + tz + " " + isDST + " " + seconds);
     if (!isDST && sequence[8] == 1) {
         seconds = seconds - 3600;
     }
