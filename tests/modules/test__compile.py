@@ -2,7 +2,7 @@ from ..utils import TranspileTestCase
 
 import unittest
 
-def testTokenize(self, source, expected):
+def assertTokenizaton(self, source, expected):
     self.assertJavaScriptExecution("""
         import _compile
         s = %s
@@ -17,7 +17,7 @@ def testTokenize(self, source, expected):
 
 class CompileTests(TranspileTestCase):
     def test_basic_tokenize(self):
-        testTokenize(self, "x = 1; fun.w3 -= 14.0e4j",
+        assertTokenizaton(self, "x = 1; fun.w3 -= 14.0e4j",
             """
 0 NAME x
 1 EQUAL =
@@ -31,7 +31,7 @@ class CompileTests(TranspileTestCase):
 """)
 
     def test_multiline_tokenize(self):
-        testTokenize(self, '''
+        assertTokenizaton(self, '''
 LOOPS = 50000
 
 from time import clock
@@ -79,7 +79,7 @@ __version__ = "1.2"
         """)
 
     def test_pystone_tokenize(self):
-        testTokenize(self, '''
+        assertTokenizaton(self, '''
 LOOPS = 50000
 
 from time import clock
