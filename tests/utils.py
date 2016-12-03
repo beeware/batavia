@@ -47,6 +47,7 @@ def setUpSuite():
     atexit.register(remove_output_dir)
     _output_dir = tempfile.mkdtemp(dir=TESTS_DIR)
 
+    print("building 'batavia.js'")
     proc = subprocess.Popen(
         [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail"],
         stdin=subprocess.PIPE,
@@ -833,7 +834,8 @@ class UnaryOperationTestCase(NotImplementedToExpectedFailure):
                 for x in x_values
             ),
             "Error running %s" % operation,
-            substitutions=substitutions
+            substitutions=substitutions,
+            run_in_function=False,
         )
 
     test_unary_positive = _unary_test('test_unary_positive', '+')
@@ -893,7 +895,8 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
                 for x, y in data
             ),
             "Error running %s" % operation,
-            substitutions=substitutions
+            substitutions=substitutions,
+            run_in_function=False,
         )
 
     for datatype, examples in SAMPLE_DATA.items():
@@ -969,7 +972,8 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
                 for x, y in data
             ),
             "Error running %s" % operation,
-            substitutions=substitutions
+            substitutions=substitutions,
+            run_in_function=False,
         )
 
     for datatype, examples in SAMPLE_DATA.items():
@@ -1039,7 +1043,8 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                 for f, x in data
             ),
             "Error running %s" % operation,
-            substitutions=substitutions
+            substitutions=substitutions,
+            run_in_function=False,
         )
 
     for datatype, examples in SAMPLE_DATA.items():
@@ -1104,7 +1109,8 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
                 for f, x, y in data
             ),
             "Error running %s" % operation,
-            substitutions=substitutions
+            substitutions=substitutions,
+            run_in_function=False,
         )
 
     for datatype1, examples1 in SAMPLE_DATA.items():
@@ -1174,7 +1180,8 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                 for x in x_values
             ),
             "Error running %s module %s" % (module, name),
-            substitutions=substitutions
+            substitutions=substitutions,
+            run_in_function=False,
         )
 
     def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values, substitutions):
@@ -1205,7 +1212,9 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                 for x in x_values for y in y_values
             ),
             "Error running %s module %s" % (module, name),
-            substitutions=substitutions)
+            substitutions=substitutions,
+            run_in_function=False,
+        )
 
     @classmethod
     def add_one_arg_tests(klass, module, functions, numerics_only=False):
