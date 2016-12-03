@@ -12,7 +12,6 @@ class DictTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = {}
@@ -56,6 +55,14 @@ class DictTests(TranspileTestCase):
             print('c' not in x)
             print(x['c'])
             """, run_in_function=False)
+
+        # Override key
+        self.assertCodeExecution("""
+            x = {'a': 1}
+            print(x)
+            x['a'] = 2
+            print(x)
+            """)
 
     def test_clear(self):
         # Clear a dictionary

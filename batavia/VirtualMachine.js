@@ -1,18 +1,62 @@
-
 /*************************************************************************
  * Virtual Machine
  *************************************************************************/
+var types = require('./types');
+var Block = require('./core').Block;
+var builtins = require('./builtins');
+var Frame = require('./core').Frame;
+var constants = require('./core').constants;
+var exceptions = require('./core').exceptions;
+var callables = require('./core').callables;
+var dis = require('./modules/dis');
+var marshal = require('./modules/marshal');
+var sys = require('./modules/sys');
 
-batavia.VirtualMachine = function(loader) {
-    // Initialize the bytecode module
-    batavia.modules.dis.init();
 
-    if (loader === undefined) {
+var VirtualMachine = function(args) {
+    if (args.loader === undefined) {
         this.loader = function(name) {
-            return document.getElementById('batavia-' + name).text.replace(/(\r\n|\n|\r)/gm, "").trim();
+            // Find the script element with the ID matching the
+            // fully qualified module name (e.g., batavia-foo.bar.whiz)
+            var element = document.getElementById('batavia-' + name);
+            if (element === null) {
+                // If the element doesn't exist, look for a javascript element.
+                element = window[name];
+                if (element === undefined) {
+                    return null;
+                } else {
+                    return {
+                        'javascript': element
+                    }
+                }
+            }
+
+            // Look for the filename in the data-filename
+            // attribute of script tag.
+            var filename;
+            if (element.dataset) {
+                filename = element.dataset['filename'];
+            } else {
+                filename = "<input>";
+            }
+
+            // Strip all the whitespace out of the text content of
+            // the script tag.
+            return {
+                '__python__': true,
+                'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, "").trim(),
+                'filename': new batavia.types.Str(filename)
+            };
         };
     } else {
-        this.loader = loader;
+        this.loader = args.loader;
+    }
+
+    if (args.stdout) {
+        sys.stdout = args.stdout;
+    }
+    if (args.stderr) {
+        sys.stderr = args.stderr;
     }
 
     // Build a table mapping opcodes to method calls
@@ -28,27 +72,26 @@ batavia.VirtualMachine = function(loader) {
     this.is_vm = true;
 };
 
-
 /*
  * Build a table mapping opcodes to a method to be called whenever we encounter that opcode.
  *
  * Each such method will be invoked with apply(this, args).
  */
-batavia.VirtualMachine.prototype.build_dispatch_table = function() {
+VirtualMachine.prototype.build_dispatch_table = function() {
     var vm = this;
-    this.dispatch_table = batavia.modules.dis.opname.map(function(opname, opcode) {
-        var operator_name, operator;
+    this.dispatch_table = dis.opname.map(function(opname, opcode) {
+        var operator_name;
 
-        if (opcode == batavia.modules.dis.NOP) {
+        if (opcode == dis.NOP) {
             return function() {};
-        } else if (opcode in batavia.modules.dis.unary_ops) {
+        } else if (opcode in dis.unary_ops) {
             operator_name = opname.slice(6);
             switch (operator_name) {
                 case "POSITIVE":
                     return function() {
                         var x = this.pop();
                         if (x === null) {
-                            this.push(batavia.types.NoneType.__pos__());
+                            this.push(types.NoneType.__pos__());
                         } else if (x.__pos__) {
                             this.push(x.__pos__());
                         } else {
@@ -59,7 +102,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop();
                         if (x === null) {
-                            this.push(batavia.types.NoneType.__neg__());
+                            this.push(types.NoneType.__neg__());
                         } else if (x.__neg__) {
                             this.push(x.__neg__());
                         } else {
@@ -70,7 +113,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop();
                         if (x === null) {
-                            this.push(batavia.types.NoneType.__not__());
+                            this.push(types.NoneType.__not__());
                         } else if (x.__not__) {
                             this.push(x.__not__());
                         } else {
@@ -81,7 +124,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop();
                         if (x === null) {
-                            this.push(batavia.types.NoneType.__invert__());
+                            this.push(types.NoneType.__invert__());
                         } else if (x.__invert__) {
                             this.push(x.__invert__());
                         } else {
@@ -89,16 +132,16 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     };
                 default:
-                    throw new batavia.builtins.BataviaError("Unknown unary operator " + operator_name);
+                    throw new builtins.BataviaError("Unknown unary operator " + operator_name);
             }
-        } else if (opcode in batavia.modules.dis.binary_ops) {
+        } else if (opcode in dis.binary_ops) {
             operator_name = opname.slice(7);
             switch (operator_name) {
                 case 'POWER':
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__pow__(items[1]));
+                            this.push(types.NoneType.__pow__(items[1]));
                         } else if (items[0].__pow__) {
                             this.push(items[0].__pow__(items[1]));
                         } else {
@@ -109,7 +152,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__mul__(items[1]));
+                            this.push(types.NoneType.__mul__(items[1]));
                         } else if (items[0].__mul__) {
                             this.push(items[0].__mul__(items[1]));
                         } else {
@@ -120,7 +163,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__mod__(items[1]));
+                            this.push(types.NoneType.__mod__(items[1]));
                         } else if (items[0].__mod__) {
                             this.push(items[0].__mod__(items[1]));
                         } else {
@@ -131,7 +174,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__add__(items[1]));
+                            this.push(types.NoneType.__add__(items[1]));
                         } else if (items[0].__add__) {
                             this.push(items[0].__add__(items[1]));
                         } else {
@@ -142,7 +185,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__sub__(items[1]));
+                            this.push(types.NoneType.__sub__(items[1]));
                         } else if (items[0].__sub__) {
                             this.push(items[0].__sub__(items[1]));
                         } else {
@@ -153,7 +196,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__getitem__(items[1]));
+                            this.push(types.NoneType.__getitem__(items[1]));
                         } else if (items[0].__getitem__) {
                             this.push(items[0].__getitem__(items[1]));
                         } else {
@@ -164,7 +207,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__floordiv__(items[1]));
+                            this.push(types.NoneType.__floordiv__(items[1]));
                         } else if (items[0].__floordiv__) {
                             this.push(items[0].__floordiv__(items[1]));
                         } else {
@@ -175,7 +218,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__truediv__(items[1]));
+                            this.push(types.NoneType.__truediv__(items[1]));
                         } else if (items[0].__truediv__) {
                             this.push(items[0].__truediv__(items[1]));
                         } else {
@@ -186,7 +229,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__lshift__(items[1]));
+                            this.push(types.NoneType.__lshift__(items[1]));
                         } else if (items[0].__lshift__) {
                             this.push(items[0].__lshift__(items[1]));
                         } else {
@@ -197,7 +240,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__rshift__(items[1]));
+                            this.push(types.NoneType.__rshift__(items[1]));
                         } else if (items[0].__rshift__) {
                             this.push(items[0].__rshift__(items[1]));
                         } else {
@@ -208,7 +251,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__and__(items[1]));
+                            this.push(types.NoneType.__and__(items[1]));
                         } else if (items[0].__and__) {
                             this.push(items[0].__and__(items[1]));
                         } else {
@@ -219,7 +262,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__xor__(items[1]));
+                            this.push(types.NoneType.__xor__(items[1]));
                         } else if (items[0].__xor__) {
                             this.push(items[0].__xor__(items[1]));
                         } else {
@@ -230,7 +273,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2);
                         if (items[0] === null) {
-                            this.push(batavia.types.NoneType.__or__(items[1]));
+                            this.push(types.NoneType.__or__(items[1]));
                         } else if (items[0].__or__) {
                             this.push(items[0].__or__(items[1]));
                         } else {
@@ -238,9 +281,9 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     };
                 default:
-                    throw new batavia.builtins.BataviaError("Unknown binary operator " + operator_name);
+                    throw new builtins.BataviaError("Unknown binary operator " + operator_name);
             }
-        } else if (opcode in batavia.modules.dis.inplace_ops) {
+        } else if (opcode in dis.inplace_ops) {
             operator_name = opname.slice(8);
             switch (operator_name) {
                 case 'FLOOR_DIVIDE':
@@ -248,7 +291,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__ifloordiv__(items[1]);
+                            result = types.NoneType.__ifloordiv__(items[1]);
                         } else if (items[0].__ifloordiv__) {
                             result = items[0].__ifloordiv__(items[1]);
                             if (result === null) {
@@ -265,7 +308,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__itruediv__(items[1]);
+                            result = types.NoneType.__itruediv__(items[1]);
                         } else if (items[0].__itruediv__) {
                             result = items[0].__itruediv__(items[1]);
                             if (result === null) {
@@ -282,7 +325,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__iadd__(items[1]);
+                            result = types.NoneType.__iadd__(items[1]);
                         } else if (items[0].__iadd__) {
                             result = items[0].__iadd__(items[1]);
                             if (result === null) {
@@ -299,7 +342,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__isub__(items[1]);
+                            result = types.NoneType.__isub__(items[1]);
                         } else if (items[0].__isub__) {
                             result = items[0].__isub__(items[1]);
                             if (result === null) {
@@ -316,7 +359,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__imul__(items[1]);
+                            result = types.NoneType.__imul__(items[1]);
                         } else if (items[0].__imul__) {
                             result = items[0].__imul__(items[1]);
                             if (result === null) {
@@ -333,7 +376,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__imod__(items[1]);
+                            result = types.NoneType.__imod__(items[1]);
                         } else if (items[0].__imod__) {
                             result = items[0].__imod__(items[1]);
                             if (result === null) {
@@ -350,7 +393,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__ipow__(items[1]);
+                            result = types.NoneType.__ipow__(items[1]);
                         } else if (items[0].__ipow__) {
                             result = items[0].__ipow__(items[1]);
                             if (result === null) {
@@ -367,7 +410,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__ilshift__(items[1]);
+                            result = types.NoneType.__ilshift__(items[1]);
                         } else if (items[0].__ilshift__) {
                             result = items[0].__ilshift__(items[1]);
                             if (result === null) {
@@ -384,7 +427,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__irshift__(items[1]);
+                            result = types.NoneType.__irshift__(items[1]);
                         } else if (items[0].__irshift__) {
                             result = items[0].__irshift__(items[1]);
                             if (result === null) {
@@ -401,7 +444,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__iand__(items[1]);
+                            result = types.NoneType.__iand__(items[1]);
                         } else if (items[0].__iand__) {
                             result = items[0].__iand__(items[1]);
                             if (result === null) {
@@ -418,7 +461,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__ixor__(items[1]);
+                            result = types.NoneType.__ixor__(items[1]);
                         } else if (items[0].__ixor__) {
                             result = items[0].__ixor__(items[1]);
                             if (result === null) {
@@ -435,7 +478,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2);
                         var result;
                         if (items[0] === null) {
-                            result = batavia.types.NoneType.__ior__(items[1]);
+                            result = types.NoneType.__ior__(items[1]);
                         } else if (items[0].__ior__) {
                             result = items[0].__ior__(items[1]);
                             if (result === null) {
@@ -448,7 +491,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                         this.push(result);
                     };
                 default:
-                    throw new batavia.builtins.BataviaError("Unknown inplace operator " + operator_name);
+                    throw new builtins.BataviaError("Unknown inplace operator " + operator_name);
             }
         } else {
             // dispatch
@@ -457,7 +500,7 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
                 return bytecode_fn;
             } else {
                 return function() {
-                    throw new batavia.builtins.BataviaError("Unknown opcode " + opcode + " (" + opname + ")");
+                    throw new builtins.BataviaError("Unknown opcode " + opcode + " (" + opname + ")");
                 };
             }
         }
@@ -469,23 +512,23 @@ batavia.VirtualMachine.prototype.build_dispatch_table = function() {
  *
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
-batavia.VirtualMachine.prototype.run = function(tag, args) {
+VirtualMachine.prototype.run = function(tag, args) {
     try {
         var payload = this.loader(tag);
-        var code = batavia.modules.marshal.load_pyc(this, payload);
+        var code = marshal.load_pyc(this, payload.bytecode);
 
         // Set up sys.argv
-        batavia.modules.sys.argv = new batavia.types.List(['batavia']);
+        sys.argv = new types.List(['batavia']);
         if (args) {
-            batavia.modules.sys.argv.extend(args);
+            sys.argv.extend(args);
         }
 
         // Run the code
         return this.run_code({'code': code});
 
     } catch (e) {
-        if (e instanceof batavia.builtins.BataviaError) {
-            console.log(e.msg);
+        if (e instanceof builtins.BataviaError) {
+            sys.stderr.write([e.msg + '\n']);
         } else {
             throw e;
         }
@@ -497,12 +540,12 @@ batavia.VirtualMachine.prototype.run = function(tag, args) {
  *
  * Accepts a DOM id for an element containing base64 encoded bytecode.
  */
-batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
+VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_globals) {
     try {
         var payload = this.loader(tag);
-        var code = batavia.modules.marshal.load_pyc(this, payload);
+        var code = marshal.load_pyc(this, payload.bytecode);
 
-        var callargs = new batavia.types.JSDict();
+        var callargs = new types.JSDict();
         for (var i = 0, l = args.length; i < l; i++) {
             callargs[code.co_varnames[i]] = args[i];
         }
@@ -517,8 +560,8 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
         });
 
     } catch (e) {
-        if (e instanceof batavia.builtins.BataviaError) {
-            console.log(e.msg);
+        if (e instanceof builtins.BataviaError) {
+            sys.stderr.write([e.msg + '\n']);
         } else {
             throw e;
         }
@@ -527,11 +570,11 @@ batavia.VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_loca
 
 /*
  */
-batavia.VirtualMachine.prototype.PyErr_Occurred = function() {
+VirtualMachine.prototype.PyErr_Occurred = function() {
     return this.last_exception !== null;
 };
 
-batavia.VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
+VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
     var exception = new exc(message);
     this.last_exception = {
         'exc_type': exception.__class__,
@@ -543,7 +586,7 @@ batavia.VirtualMachine.prototype.PyErr_SetString = function(exc, message) {
 /*
  * Return the value at the top of the stack, with no changes.
  */
-batavia.VirtualMachine.prototype.top = function() {
+VirtualMachine.prototype.top = function() {
     return this.frame.stack[this.frame.stack.length - 1];
 };
 
@@ -553,7 +596,7 @@ batavia.VirtualMachine.prototype.top = function() {
  * Default to the top of the stack, but `i` can be a count from the top
  * instead.
  */
-batavia.VirtualMachine.prototype.pop = function(i) {
+VirtualMachine.prototype.pop = function(i) {
     if (i === undefined) {
         i = 0;
     }
@@ -563,7 +606,7 @@ batavia.VirtualMachine.prototype.pop = function(i) {
 /*
  * Push value onto the value stack.
  */
-batavia.VirtualMachine.prototype.push = function(val) {
+VirtualMachine.prototype.push = function(val) {
     this.frame.stack.push(val);
 };
 
@@ -572,7 +615,7 @@ batavia.VirtualMachine.prototype.push = function(val) {
  *
  * A list of `n` values is returned, the deepest value first.
 */
-batavia.VirtualMachine.prototype.popn = function(n) {
+VirtualMachine.prototype.popn = function(n) {
     if (n) {
         return this.frame.stack.splice(this.frame.stack.length - n, n);
     } else {
@@ -583,29 +626,29 @@ batavia.VirtualMachine.prototype.popn = function(n) {
 /*
  * Get a value `n` entries down in the stack, without changing the stack.
  */
-batavia.VirtualMachine.prototype.peek = function(n) {
+VirtualMachine.prototype.peek = function(n) {
     return this.frame.stack[this.frame.stack.length - n];
 };
 
 /*
  * Move the bytecode pointer to `jump`, so it will execute next.
  */
-batavia.VirtualMachine.prototype.jump = function(jump) {
+VirtualMachine.prototype.jump = function(jump) {
     this.frame.f_lasti = jump;
 };
 
-batavia.VirtualMachine.prototype.push_block = function(type, handler, level) {
+VirtualMachine.prototype.push_block = function(type, handler, level) {
     if (level === null) {
         level = this.frame.stack.length;
     }
-    this.frame.block_stack.push(new batavia.core.Block(type, handler, level));
+    this.frame.block_stack.push(new Block(type, handler, level));
 };
 
-batavia.VirtualMachine.prototype.pop_block = function() {
+VirtualMachine.prototype.pop_block = function() {
     return this.frame.block_stack.pop();
 };
 
-batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
+VirtualMachine.prototype.make_frame = function(kwargs) {
     var code = kwargs.code;
     var callargs = kwargs.callargs || {};
     var f_globals = kwargs.f_globals || null;
@@ -623,10 +666,10 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
         }
     } else if (this.frames.length > 0) {
         f_globals = this.frame.f_globals;
-        f_locals = new batavia.types.JSDict();
+        f_locals = new types.JSDict();
     } else {
-        f_globals = f_locals = new batavia.types.JSDict({
-            '__builtins__': batavia.builtins,
+        f_globals = f_locals = new types.JSDict({
+            '__builtins__': builtins,
             '__name__': '__main__',
             '__doc__': null,
             '__package__': null,
@@ -634,21 +677,20 @@ batavia.VirtualMachine.prototype.make_frame = function(kwargs) {
     }
     f_locals.update(callargs);
 
-    frame = new batavia.core.Frame({
+    return new Frame({
         'f_code': code,
         'f_globals': f_globals,
         'f_locals': f_locals,
         'f_back': this.frame
     });
-    return frame;
 };
 
-batavia.VirtualMachine.prototype.push_frame = function(frame) {
+VirtualMachine.prototype.push_frame = function(frame) {
     this.frames.push(frame);
     this.frame = frame;
 };
 
-batavia.VirtualMachine.prototype.pop_frame = function() {
+VirtualMachine.prototype.pop_frame = function() {
     this.frames.pop();
     if (this.frames) {
         this.frame = this.frames[this.frames.length - 1];
@@ -657,7 +699,7 @@ batavia.VirtualMachine.prototype.pop_frame = function() {
     }
 };
 
-batavia.VirtualMachine.prototype.create_traceback = function() {
+VirtualMachine.prototype.create_traceback = function() {
     var tb = [];
     var frame;
 
@@ -672,7 +714,6 @@ batavia.VirtualMachine.prototype.create_traceback = function() {
         var byte_num = 0;
         var line_num = frame.f_code.co_firstlineno;
 
-        var byte_incr, line_incr;
         for (var idx = 1; idx < lnotab.length, byte_num < frame.f_lasti; idx += 2) {
             byte_num += lnotab[idx-1]
             if (byte_num < frame.f_lasti) {
@@ -693,7 +734,7 @@ batavia.VirtualMachine.prototype.create_traceback = function() {
  * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
  * unpacked into operations with their respective args
  */
-batavia.VirtualMachine.prototype.unpack_code = function(code) {
+VirtualMachine.prototype.unpack_code = function(code) {
     var pos = 0;
     var unpacked_code = [];
     var args;
@@ -705,43 +746,43 @@ batavia.VirtualMachine.prototype.unpack_code = function(code) {
         var opcode = code.co_code.val[pos++];
 
         // next opcode has 4-byte argument effectively.
-        if (opcode == batavia.modules.dis.EXTENDED_ARG) {
+        if (opcode == dis.EXTENDED_ARG) {
             var lo = code.co_code.val[pos++];
             var hi = code.co_code.val[pos++];
             extra = (lo << 16) | (hi << 24);
             // emulate four NOPs
             unpacked_code[opcode_start_pos] = {
                 'opoffset': opcode_start_pos,
-                'opcode': batavia.modules.dis.NOP,
-                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
                 'args': [],
                 'next_pos': pos
             };
             unpacked_code[opcode_start_pos + 1] = {
                 'opoffset': opcode_start_pos + 1,
-                'opcode': batavia.modules.dis.NOP,
-                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
                 'args': [],
                 'next_pos': pos
             };
             unpacked_code[opcode_start_pos + 2] = {
                 'opoffset': opcode_start_pos + 2,
-                'opcode': batavia.modules.dis.NOP,
-                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
                 'args': [],
                 'next_pos': pos
             };
             unpacked_code[opcode_start_pos + 3] = {
                 'opoffset': opcode_start_pos + 3,
-                'opcode': batavia.modules.dis.NOP,
-                'op_method': this.dispatch_table[batavia.modules.dis.NOP],
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
                 'args': [],
                 'next_pos': pos
             };
             continue;
         }
 
-        if (opcode < batavia.modules.dis.HAVE_ARGUMENT) {
+        if (opcode < dis.HAVE_ARGUMENT) {
             args = [];
         } else {
             var lo = code.co_code.val[pos++];
@@ -749,22 +790,22 @@ batavia.VirtualMachine.prototype.unpack_code = function(code) {
             var intArg = lo | (hi << 8) | extra;
             extra = 0; // use extended arg if present
 
-            if (opcode in batavia.modules.dis.hasconst) {
+            if (opcode in dis.hasconst) {
                 args = [code.co_consts[intArg]];
-            } else if (opcode in batavia.modules.dis.hasfree) {
+            } else if (opcode in dis.hasfree) {
                 if (intArg < code.co_cellvars.length) {
                     args = [code.co_cellvars[intArg]];
                 } else {
-                    var_idx = intArg - code.co_cellvars.length;
+                    var var_idx = intArg - code.co_cellvars.length;
                     args = [code.co_freevars[var_idx]];
                 }
-            } else if (opcode in batavia.modules.dis.hasname) {
+            } else if (opcode in dis.hasname) {
                 args = [code.co_names[intArg]];
-            } else if (opcode in batavia.modules.dis.hasjrel) {
+            } else if (opcode in dis.hasjrel) {
                 args = [pos + intArg];
-            } else if (opcode in batavia.modules.dis.hasjabs) {
+            } else if (opcode in dis.hasjabs) {
                 args = [intArg];
-            } else if (opcode in batavia.modules.dis.haslocal) {
+            } else if (opcode in dis.haslocal) {
                 args = [code.co_varnames[intArg]];
             } else {
                 args = [intArg];
@@ -783,7 +824,7 @@ batavia.VirtualMachine.prototype.unpack_code = function(code) {
     code.co_unpacked_code = unpacked_code;
 };
 
-batavia.VirtualMachine.prototype.run_code = function(kwargs) {
+VirtualMachine.prototype.run_code = function(kwargs) {
     var code = kwargs.code;
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
@@ -799,30 +840,39 @@ batavia.VirtualMachine.prototype.run_code = function(kwargs) {
 
         // Check some invariants
         if (this.frames.length > 0) {
-            throw new batavia.builtins.BataviaError("Frames left over!");
+            throw new builtins.BataviaError("Frames left over!");
         }
         if (this.frame && this.frame.stack.length > 0) {
-            throw new batavia.builtins.BataviaError("Data left on stack! " + this.frame.stack);
+            throw new builtins.BataviaError("Data left on stack! " + this.frame.stack);
         }
         return val;
     } catch (e) {
         if (this.last_exception) {
-            trace = ['Traceback (most recent call last):'];
+            var trace = ['Traceback (most recent call last):'];
             var frame;
             for (var t in this.last_exception.traceback) {
                 frame = this.last_exception.traceback[t];
                 trace.push('  File "' + frame.filename + '", line ' + frame.line + ', in ' + frame.module);
             }
-            trace.push(this.last_exception.value.name + ': ' + this.last_exception.value.toString());
-            console.log(trace.join('\n'));
+            if (this.last_exception.value.toString().length > 0) {
+                trace.push(this.last_exception.value.name + ': ' + this.last_exception.value.toString());
+            } else {
+                trace.push(this.last_exception.value.name);
+            }
+            sys.stderr.write([trace.join('\n') + '\n']);
             this.last_exception = null;
         } else {
             throw e;
         }
+        // throw e;
     }
+    sys.stdout.flush();
+    sys.stderr.flush();
 };
 
-batavia.VirtualMachine.prototype.unwind_block = function(block) {
+VirtualMachine.prototype.unwind_block = function(block) {
+    var offset, exc;
+
     if (block.type === 'except-handler') {
         offset = 3;
     } else {
@@ -842,7 +892,7 @@ batavia.VirtualMachine.prototype.unwind_block = function(block) {
 /*
  * Log arguments, block stack, and data stack for each opcode.
  */
-batavia.VirtualMachine.prototype.log = function(opcode) {
+VirtualMachine.prototype.log = function(opcode) {
     var op = opcode.opoffset + ': ' + opcode.byteName;
     for (var arg in opcode.args) {
         op += ' ' + opcode.args[arg];
@@ -859,9 +909,7 @@ batavia.VirtualMachine.prototype.log = function(opcode) {
  * Manipulate the block stack and data stack for looping,
  * exception handling, or returning.
  */
-batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
-    assert(why !== 'yield');
-
+VirtualMachine.prototype.manage_block_stack = function(why) {
     var block = this.frame.block_stack[this.frame.block_stack.length - 1];
     if (block.type === 'loop' && why === 'continue') {
         this.jump(this.return_value);
@@ -917,7 +965,7 @@ batavia.VirtualMachine.prototype.manage_block_stack = function(why) {
  * from whereever it left off.
  *
  */
-batavia.VirtualMachine.prototype.run_frame = function(frame) {
+VirtualMachine.prototype.run_frame = function(frame) {
     var why, operation;
 
     this.push_frame(frame);
@@ -934,7 +982,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
 
     while (!why) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
-        var opname = batavia.modules.dis.opname[operation.opcode];
+        // var opname = dis.opname[operation.opcode];
 
         // advance f_lasti to next operation. If the operation is a jump, then this
         // pointer will be overwritten during the operation's execution.
@@ -948,7 +996,7 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
             why = operation.op_method.apply(this, operation.args);
         } catch (err) {
             // deal with exceptions encountered while executing the op.
-            if (err instanceof batavia.builtins.BataviaError) {
+            if (err instanceof builtins.BataviaError) {
                 // Batavia errors are a major problem; ABORT HARD
                 this.last_exception = null;
                 throw err;
@@ -962,9 +1010,9 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
             why = 'exception';
         }
 
-        if (why === 'exception')  {
-            // TODO: ceval calls PyTraceBack_Here, not sure what that does.
-        }
+        // if (why === 'exception')  {
+        //     TODO: ceval calls PyTraceBack_Here, not sure what that does.
+        // }
 
         if (why === 'reraise') {
             why = 'exception';
@@ -989,19 +1037,19 @@ batavia.VirtualMachine.prototype.run_frame = function(frame) {
     return this.return_value;
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_CONST = function(c) {
+VirtualMachine.prototype.byte_LOAD_CONST = function(c) {
     this.push(c);
 };
 
-batavia.VirtualMachine.prototype.byte_POP_TOP = function() {
+VirtualMachine.prototype.byte_POP_TOP = function() {
     this.pop();
 };
 
-batavia.VirtualMachine.prototype.byte_DUP_TOP = function() {
+VirtualMachine.prototype.byte_DUP_TOP = function() {
     this.push(this.top());
 };
 
-batavia.VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
+VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
     var items = this.popn(count);
     for (var n = 0; n < 2; n++) {
         for (var i = 0; i < count; i++) {
@@ -1010,7 +1058,7 @@ batavia.VirtualMachine.prototype.byte_DUP_TOPX = function(count) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
+VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
     var items = this.popn(2);
     this.push(items[0]);
     this.push(items[1]);
@@ -1018,20 +1066,20 @@ batavia.VirtualMachine.prototype.byte_DUP_TOP_TWO = function() {
     this.push(items[1]);
 };
 
-batavia.VirtualMachine.prototype.byte_ROT_TWO = function() {
+VirtualMachine.prototype.byte_ROT_TWO = function() {
     var items = this.popn(2);
     this.push(items[1]);
     this.push(items[0]);
 };
 
-batavia.VirtualMachine.prototype.byte_ROT_THREE = function() {
+VirtualMachine.prototype.byte_ROT_THREE = function() {
     var items = this.popn(3);
     this.push(items[2]);
     this.push(items[0]);
     this.push(items[1]);
 };
 
-batavia.VirtualMachine.prototype.byte_ROT_FOUR = function() {
+VirtualMachine.prototype.byte_ROT_FOUR = function() {
     var items = this.popn(4);
     this.push(items[3]);
     this.push(items[0]);
@@ -1039,7 +1087,7 @@ batavia.VirtualMachine.prototype.byte_ROT_FOUR = function() {
     this.push(items[2]);
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
+VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
     var frame = this.frame;
     var val;
     if (name in frame.f_locals) {
@@ -1049,66 +1097,66 @@ batavia.VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
     } else if (name in frame.f_builtins) {
         val = frame.f_builtins[name];
     } else {
-        throw new batavia.builtins.NameError("name '" + name + "' is not defined");
+        throw new builtins.NameError("name '" + name + "' is not defined");
     }
     this.push(val);
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_NAME = function(name) {
+VirtualMachine.prototype.byte_STORE_NAME = function(name) {
     this.frame.f_locals[name] = this.pop();
 };
 
-batavia.VirtualMachine.prototype.byte_DELETE_NAME = function(name) {
+VirtualMachine.prototype.byte_DELETE_NAME = function(name) {
     delete this.frame.f_locals[name];
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
+VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     var val;
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
-        throw new batavia.builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment");
+        throw new builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment");
     }
     this.push(val);
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_FAST = function(name) {
+VirtualMachine.prototype.byte_STORE_FAST = function(name) {
     this.frame.f_locals[name] = this.pop();
 };
 
-batavia.VirtualMachine.prototype.byte_DELETE_FAST = function(name) {
+VirtualMachine.prototype.byte_DELETE_FAST = function(name) {
     delete this.frame.f_locals[name];
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_GLOBAL = function(name) {
+VirtualMachine.prototype.byte_STORE_GLOBAL = function(name) {
     this.frame.f_globals[name] = this.pop();
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
+VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
     var val;
     if (name in this.frame.f_globals) {
         val = this.frame.f_globals[name];
     } else if (name in this.frame.f_builtins) {
         val = this.frame.f_builtins[name];
     } else {
-        throw new batavia.builtins.NameError("name '" + name + "' is not defined");
+        throw new builtins.NameError("name '" + name + "' is not defined");
     }
     this.push(val);
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_DEREF = function(name) {
+VirtualMachine.prototype.byte_LOAD_DEREF = function(name) {
     this.push(this.frame.cells[name].get());
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_DEREF = function(name) {
+VirtualMachine.prototype.byte_STORE_DEREF = function(name) {
     this.frame.cells[name].set(this.pop());
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
+VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
     this.push(this.frame.f_locals);
 };
 
-// batavia.VirtualMachine.prototype.sliceOperator = function(op) {
+// VirtualMachine.prototype.sliceOperator = function(op) {
 //     start = 0;
 //     end = null;          // we will take this to mean end
 //     // op, count = op[:-2], int(op[-1]);
@@ -1130,7 +1178,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_LOCALS = function() {
 //         this.push(l[start:end])
 // };
 
-batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
+VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     var items = this.popn(2);
     var result;
 
@@ -1142,7 +1190,7 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 
     if (opnum === 6) {  // x in None
         if (items[1] === null) {
-            result = batavia.types.NoneType.__contains__(items[0]);
+            result = types.NoneType.__contains__(items[0]);
         } if (items[1].__contains__) {
             result = items[1].__contains__(items[0]);
         } else {
@@ -1150,7 +1198,7 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
         }
     } else if (opnum === 7) {
         if (items[1] === null) {  // x not in None
-            result = batavia.types.NoneType.__contains__(items[0]).__not__();
+            result = types.NoneType.__contains__(items[0]).__not__();
         } else if (items[1].__contains__) {
             result = items[1].__contains__(items[0]).__not__();
         } else {
@@ -1159,22 +1207,22 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     } else if (items[0] === null) {
         switch(opnum) {
             case 0:  // <
-                result = batavia.types.NoneType.__lt__(items[1]);
+                result = types.NoneType.__lt__(items[1]);
                 break;
             case 1:  // <=
-                result = batavia.types.NoneType.__le__(items[1]);
+                result = types.NoneType.__le__(items[1]);
                 break;
             case 2:  // ==
-                result = batavia.types.NoneType.__eq__(items[1]);
+                result = types.NoneType.__eq__(items[1]);
                 break;
             case 3:  // !=
-                result = batavia.types.NoneType.__ne__(items[1]);
+                result = types.NoneType.__ne__(items[1]);
                 break;
             case 4:  // >
-                result = batavia.types.NoneType.__gt__(items[1]);
+                result = types.NoneType.__gt__(items[1]);
                 break;
             case 5:  // >=
-                result = batavia.types.NoneType.__ge__(items[1]);
+                result = types.NoneType.__ge__(items[1]);
                 break;
             case 8:  // is
                 result = items[1] === null;
@@ -1186,7 +1234,7 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[1] === null;
                 break;
             default:
-                throw new batavia.builtins.BataviaError('Unknown operator ' + opnum);
+                throw new builtins.BataviaError('Unknown operator ' + opnum);
         }
     } else {
         switch(opnum) {
@@ -1239,30 +1287,36 @@ batavia.VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[0] !== items[1];
                 break;
             case 10:  // exception match
-                result = batavia.issubclass(items[0], items[1]);
+                result = types.issubclass(items[0], items[1]);
                 break;
             default:
-                throw new batavia.builtins.BataviaError('Unknown operator ' + opnum);
+                throw new builtins.BataviaError('Unknown operator ' + opnum);
         }
     }
 
     this.push(result);
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
+VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
+    var val;
     if (obj.__getattr__ === undefined) {
         val = obj[attr];
+        if (val === undefined) {
+            throw new builtins.AttributeError(
+                "'" + obj.__class__.__name__ + "' object has no attribute '" + attr + "'"
+            );
+        }
     } else {
         val = obj.__getattr__(attr);
     }
 
-    if (val instanceof batavia.types.Function) {
+    if (val instanceof types.Function) {
         // If this is a Python function, we need to know the current
         // context - if it's an attribute of an object (rather than
         // a module) we need to upgrade the Function to a Method.
-        if (!(obj instanceof batavia.types.Module)) {
-            val = new batavia.types.Method(obj, val);
+        if (!(obj instanceof types.Module)) {
+            val = new types.Method(obj, val);
         }
     } else if (val instanceof Function) {
         // If this is a native Javascript function, wrap the function
@@ -1305,7 +1359,7 @@ batavia.VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     this.push(val);
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
+VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
     if (items[1].__setattr__ === undefined) {
         items[1][name] = items[0];
@@ -1314,12 +1368,12 @@ batavia.VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
+VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
     var obj = this.pop();
     delete obj[name];
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
+VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     var items = this.popn(3);
     if (items[1].__setitem__) {
         items[1].__setitem__(items[2], items[0]);
@@ -1328,7 +1382,7 @@ batavia.VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
+VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
     if (items[1].__delitem__) {
         items[1].__delitem__(items[0]);
@@ -1337,26 +1391,27 @@ batavia.VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
+VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.types.Tuple(items));
+    this.push(new types.Tuple(items));
 };
 
-batavia.VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
+VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.types.List(items));
+    this.push(new types.List(items));
 };
 
-batavia.VirtualMachine.prototype.byte_BUILD_SET = function(count) {
+VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     var items = this.popn(count);
-    this.push(new batavia.types.Set(items));
+    this.push(new types.Set(items));
 };
 
-batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    switch (batavia.BATAVIA_MAGIC) {
-        case batavia.BATAVIA_MAGIC_35:
+VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
             var items = this.popn(size * 2);
-            var dict = new batavia.types.Dict();
+            var dict = new types.Dict();
 
             for (var i = 0; i < items.length; i += 2) {
                 dict.__setitem__(items[i], items[i + 1]);
@@ -1366,28 +1421,29 @@ batavia.VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
 
             return;
 
-        case batavia.BATAVIA_MAGIC_35a0:
-        case batavia.BATAVIA_MAGIC_34:
-            this.push(new batavia.types.Dict());
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_34:
+            this.push(new types.Dict());
 
             return;
 
         default:
-            throw new batavia.builtins.BataviaError(
-                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
+            throw new builtins.BataviaError(
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)"
             );
     }
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
-    switch (batavia.BATAVIA_MAGIC) {
-        case batavia.BATAVIA_MAGIC_35:
-            throw new batavia.builtins.BataviaError(
+VirtualMachine.prototype.byte_STORE_MAP = function() {
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new builtins.BataviaError(
                 "STORE_MAP is unsupported with BATAVIA_MAGIC"
             );
 
-        case batavia.BATAVIA_MAGIC_35a0:
-        case batavia.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_34:
             var items = this.popn(3);
             if (items[0].__setitem__) {
                 items[0].__setitem__(items[2], items[1]);
@@ -1399,13 +1455,13 @@ batavia.VirtualMachine.prototype.byte_STORE_MAP = function() {
             return;
 
         default:
-            throw new batavia.builtins.BataviaError(
-                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python versionStrange"
+            throw new builtins.BataviaError(
+                "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)"
             );
     }
 };
 
-batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
+VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     var seq = this.pop();
 
     // If the sequence item on top of the stack is iterable,
@@ -1425,84 +1481,83 @@ batavia.VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
+VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
     if (count === 2 || count === 3) {
-        items = this.popn(count);
-        this.push(batavia.builtins.slice(items));
+        var items = this.popn(count);
+        this.push(builtins.slice(items));
     } else {
-        throw new batavia.builtins.BataviaError("Strange BUILD_SLICE count: " + count);
+        throw new builtins.BataviaError("Strange BUILD_SLICE count: " + count);
     }
 };
 
-batavia.VirtualMachine.prototype.byte_LIST_APPEND = function(count) {
+VirtualMachine.prototype.byte_LIST_APPEND = function(count) {
     var val = this.pop();
     var the_list = this.peek(count);
     the_list.push(val);
 };
 
-batavia.VirtualMachine.prototype.byte_SET_ADD = function(count) {
+VirtualMachine.prototype.byte_SET_ADD = function(count) {
     var val = this.pop();
     var the_set = this.peek(count);
     the_set.add(val);
 };
 
-batavia.VirtualMachine.prototype.byte_MAP_ADD = function(count) {
+VirtualMachine.prototype.byte_MAP_ADD = function(count) {
     var items = this.popn(2);
     var the_map = this.peek(count);
     the_map[items[1]] = items[0];
 };
 
-batavia.VirtualMachine.prototype.byte_PRINT_EXPR = function() {
-    batavia.stdout(this.pop());
+VirtualMachine.prototype.byte_PRINT_EXPR = function() {
+    sys.stdout.write(this.pop());
 };
 
-batavia.VirtualMachine.prototype.byte_PRINT_ITEM = function() {
+VirtualMachine.prototype.byte_PRINT_ITEM = function() {
     var item = this.pop();
     this.print_item(item);
 };
 
-batavia.VirtualMachine.prototype.byte_PRINT_ITEM_TO = function() {
-    var to = this.pop();  // FIXME - this is ignored.
+VirtualMachine.prototype.byte_PRINT_ITEM_TO = function() {
+    this.pop();  // FIXME - the to value is ignored.
     var item = this.pop();
     this.print_item(item);
 };
 
-batavia.VirtualMachine.prototype.byte_PRINT_NEWLINE = function() {
+VirtualMachine.prototype.byte_PRINT_NEWLINE = function() {
     this.print_newline();
 };
 
-batavia.VirtualMachine.prototype.byte_PRINT_NEWLINE_TO = function() {
+VirtualMachine.prototype.byte_PRINT_NEWLINE_TO = function() {
     var to = this.pop();  // FIXME - this is ignored.
     this.print_newline(to);
 };
 
-batavia.VirtualMachine.prototype.print_item = function(item, to) {
-    if (to === undefined) {
-        // to = sys.stdout;  // FIXME - this is ignored.
-    }
-    batavia.stdout(item);
+VirtualMachine.prototype.print_item = function(item, to) {
+    // if (to === undefined) {
+    //     to = sys.stdout;  // FIXME - the to value is ignored.
+    // }
+    sys.stdout.write(item);
 };
 
-batavia.VirtualMachine.prototype.print_newline = function(to) {
-    if (to === undefined) {
-        // to = sys.stdout;  // FIXME - this is ignored.
-    }
-    batavia.stdout("");
+VirtualMachine.prototype.print_newline = function(to) {
+    // if (to === undefined) {
+    //     to = sys.stdout;  // FIXME - the to value is ignored.
+    // }
+    sys.stdout.write("");
 };
 
-batavia.VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
+VirtualMachine.prototype.byte_JUMP_FORWARD = function(jump) {
     this.jump(jump);
 };
 
-batavia.VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
+VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
     this.jump(jump);
 };
 
-batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
+VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop();
-    var bool_value;
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__();
     }
 
     if (val) {
@@ -1510,7 +1565,7 @@ batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
+VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop();
     if (val.__bool__ !== undefined) {
         val = val.__bool__();
@@ -1521,10 +1576,10 @@ batavia.VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
+VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top();
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__();
     }
 
     if (val) {
@@ -1534,7 +1589,7 @@ batavia.VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
+VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top();
     if (val.__bool__ !== undefined) {
         val = val.__bool__();
@@ -1547,21 +1602,21 @@ batavia.VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_SETUP_LOOP = function(dest) {
+VirtualMachine.prototype.byte_SETUP_LOOP = function(dest) {
     this.push_block('loop', dest);
 };
 
-batavia.VirtualMachine.prototype.byte_GET_ITER = function() {
-    this.push(batavia.builtins.iter([this.pop()], null));
+VirtualMachine.prototype.byte_GET_ITER = function() {
+    this.push(builtins.iter([this.pop()], null));
 };
 
-batavia.VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
+VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
     var iterobj = this.top();
     try {
         var v = iterobj.__next__();
         this.push(v);
     } catch (err) {
-        if (err instanceof batavia.builtins.StopIteration) {
+        if (err instanceof builtins.StopIteration) {
             this.pop();
             this.jump(jump);
         } else {
@@ -1570,11 +1625,11 @@ batavia.VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_BREAK_LOOP = function() {
+VirtualMachine.prototype.byte_BREAK_LOOP = function() {
     return 'break';
 };
 
-batavia.VirtualMachine.prototype.byte_CONTINUE_LOOP = function(dest) {
+VirtualMachine.prototype.byte_CONTINUE_LOOP = function(dest) {
     // This is a trick with the return value.
     // While unrolling blocks, continue and return both have to preserve
     // state as the finally blocks are executed.  For continue, it's
@@ -1585,21 +1640,22 @@ batavia.VirtualMachine.prototype.byte_CONTINUE_LOOP = function(dest) {
     return 'continue';
 };
 
-batavia.VirtualMachine.prototype.byte_SETUP_EXCEPT = function(dest) {
+VirtualMachine.prototype.byte_SETUP_EXCEPT = function(dest) {
     this.push_block('setup-except', dest);
 };
 
-batavia.VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
+VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
     this.push_block('finally', dest);
 };
 
-batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
+VirtualMachine.prototype.byte_END_FINALLY = function() {
+    var why, value, traceback;
     var exc_type = this.pop();
-    if (exc_type === batavia.builtins.None) {
+    if (exc_type === builtins.None) {
         why = null;
     } else {
         value = this.pop();
-        if (value instanceof batavia.builtins.BaseException) {
+        if (value instanceof builtins.BaseException) {
             traceback = this.pop();
             this.last_exception = {
                 'exc_type': exc_type,
@@ -1608,17 +1664,17 @@ batavia.VirtualMachine.prototype.byte_END_FINALLY = function() {
             };
             why = 'reraise';
         } else {
-            throw new batavia.builtins.BataviaError("Confused END_FINALLY: " + value.toString());
+            throw new builtins.BataviaError("Confused END_FINALLY: " + value.toString());
         }
     }
     return why;
 };
 
-batavia.VirtualMachine.prototype.byte_POP_BLOCK = function() {
+VirtualMachine.prototype.byte_POP_BLOCK = function() {
     this.pop_block();
 };
 
-batavia.VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
+VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
     var cause, exc;
     if (argc == 2) {
         cause = this.pop();
@@ -1629,14 +1685,15 @@ batavia.VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
     return this.do_raise(exc, cause);
 };
 
-batavia.VirtualMachine.prototype.do_raise = function(exc, cause) {
+VirtualMachine.prototype.do_raise = function(exc, cause) {
+    var exc_type, val;
     if (exc === undefined) {  // reraise
         if (this.last_exception.exc_type === undefined) {
             return 'exception';      // error
         } else {
             return 'reraise';
         }
-    } else if (exc instanceof batavia.builtins.BaseException) {
+    } else if (exc instanceof builtins.BaseException) {
         // As in `throw ValueError('foo')`
         exc_type = exc.__class__;
         val = exc;
@@ -1662,15 +1719,15 @@ batavia.VirtualMachine.prototype.do_raise = function(exc, cause) {
     return 'exception';
 };
 
-batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function() {
+VirtualMachine.prototype.byte_POP_EXCEPT = function() {
     var block = this.pop_block();
     if (block.type !== 'except-handler') {
-        throw new batavia.exception.BataviaError("popped block is not an except handler");
+        throw new exceptions.BataviaError("popped block is not an except handler");
     }
     this.unwind_block(block);
 };
 
-// batavia.VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
+// VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
 //         ctxmgr = this.pop()
 //         this.push(ctxmgr.__exit__)
 //         ctxmgr_obj = ctxmgr.__enter__()
@@ -1680,7 +1737,7 @@ batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //             this.push_block('finally', dest)
 //         this.push(ctxmgr_obj)
 // }
-// batavia.VirtualMachine.prototype.byte_WITH_CLEANUP = function {
+// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
 //         // The code here does some weird stack manipulation: the exit function
 //         // is buried in the stack, and where depends on what's on top of it.
 //         // Pull out the exit function, and leave the rest in place.
@@ -1707,7 +1764,6 @@ batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //                 this.push(null)
 //                 this.push(w, v, u)
 //                 block = this.pop_block()
-//                 assert block.type == 'except-handler'
 //                 this.push_block(block.type, block.handler, block.level-1)
 //         else:       // pragma: no cover
 //             throw "Confused WITH_CLEANUP")
@@ -1724,51 +1780,51 @@ batavia.VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //     #// Functions
 // }
 
-batavia.VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
+VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
     var name = this.pop();
     var code = this.pop();
     var defaults = this.popn(argc);
-    var fn = new batavia.types.Function(name, code, this.frame.f_globals, defaults, null, this);
+    var fn = new types.Function(name, code, this.frame.f_globals, defaults, null, this);
     this.push(fn);
 };
 
-batavia.VirtualMachine.prototype.byte_LOAD_CLOSURE = function(name) {
+VirtualMachine.prototype.byte_LOAD_CLOSURE = function(name) {
     this.push(this.frame.cells[name]);
 };
 
-batavia.VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
+VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
     var name = this.pop();
     var items = this.popn(2);
     var defaults = this.popn(argc);
-    var fn = new batavia.types.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
+    var fn = new types.Function(name, items[1], this.frame.f_globals, defaults, items[0], this);
     this.push(fn);
 };
 
-batavia.VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {
     return this.call_function(arg, null, null);
 };
 
-batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
     var args = this.pop();
     return this.call_function(arg, args, null);
 };
 
-batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
     var kwargs = this.pop();
     return this.call_function(arg, null, kwargs);
 };
 
-batavia.VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
     var items = this.popn(2);
     return this.call_function(arg, items[0], items[1]);
 };
 
-batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
+VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     //@arg is based on
     //https://docs.python.org/3/library/dis.html#opcode-CALL_FUNCTION
     var lenKw = Math.floor(arg / 256);
     var lenPos = arg % 256;
-    var namedargs = new batavia.types.JSDict();
+    var namedargs = new types.JSDict();
     for (var i = 0; i < lenKw; i++) {
         var items = this.popn(2);
         namedargs[items[0]] = items[1];
@@ -1783,11 +1839,11 @@ batavia.VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
 
     var func = this.pop();
     // frame = this.frame
-    var retval = batavia.run_callable(this, func, posargs, namedargs);
+    var retval = callables.run_callable(this, func, posargs, namedargs);
     this.push(retval);
 };
 
-batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
+VirtualMachine.prototype.byte_RETURN_VALUE = function() {
     this.return_value = this.pop();
     if (this.frame.generator) {
         this.frame.generator.finished = true;
@@ -1795,12 +1851,12 @@ batavia.VirtualMachine.prototype.byte_RETURN_VALUE = function() {
     return "return";
 };
 
-batavia.VirtualMachine.prototype.byte_YIELD_VALUE = function() {
-    this.return_value = this.pop()
+VirtualMachine.prototype.byte_YIELD_VALUE = function() {
+    this.return_value = this.pop();
     return "yield";
 };
 
-// batavia.VirtualMachine.prototype.byte_YIELD_FROM = function {
+// VirtualMachine.prototype.byte_YIELD_FROM = function {
 //         u = this.pop()
 //         x = this.top()
 
@@ -1825,14 +1881,14 @@ batavia.VirtualMachine.prototype.byte_YIELD_VALUE = function() {
 //     #// Importing
 // }
 
-batavia.VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
+VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2);
     this.push(
-        batavia.builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]], null])
+        builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]], null])
     );
 };
 
-batavia.VirtualMachine.prototype.byte_IMPORT_STAR = function() {
+VirtualMachine.prototype.byte_IMPORT_STAR = function() {
     // TODO: this doesn't use __all__ properly.
     var mod = this.pop();
     if ('__all__' in mod) {
@@ -1849,29 +1905,86 @@ batavia.VirtualMachine.prototype.byte_IMPORT_STAR = function() {
     }
 };
 
-batavia.VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
+VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
     var mod = this.top();
     this.push(mod[name]);
 };
 
-// batavia.VirtualMachine.prototype.byte_EXEC_STMT = function() {
+// VirtualMachine.prototype.byte_EXEC_STMT = function() {
 //     stmt, globs, locs = this.popn(3)
 //     six.exec_(stmt, globs, locs) f
 // };
 
-batavia.VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
-    var make_class = batavia.make_class.bind(this);
-    make_class.__python__ = true;
-    this.push(make_class);
+var make_class = function(args, kwargs) {
+    var func = args[0];
+    var name = args[1];
+    var bases = kwargs.bases || args[2];
+    // var metaclass = kwargs.metaclass || args[3];
+    // var kwds = kwargs.kwds || args[4] || [];
+
+    // Create a locals context, and run the class function in it.
+    var locals = new types.Dict();
+    func.__call__.apply(this, [[], [], locals]);
+
+    // Now construct the class, based on the constructed local context.
+    var unbound_pytype = function(vm, args, kwargs) {
+        if (this.__init__) {
+            this.__init__.__self__ = this;
+            this.__init__.__call__.apply(vm, [args, kwargs]);
+        }
+    };
+    unbound_pytype.__name__ = name;
+
+    if (bases) {
+        // load up the base attributes
+        if (Array.isArray(bases)) {
+            throw new exceptions.NotImplementedError("multiple inheritance not supported yet");
+        }
+        var base = bases.__class__;
+        for (var attr in base) {
+            if (base.hasOwnProperty(attr)) {
+                unbound_pytype[attr] = base[attr];
+                unbound_pytype.prototype[attr] = base[attr];
+            }
+        }
+    }
+    for (var attr in locals) {
+        if (locals.hasOwnProperty(attr)) {
+            unbound_pytype[attr] = locals[attr];
+            unbound_pytype.prototype[attr] = locals[attr];
+        }
+    }
+    unbound_pytype.prototype.__class__ = new types.Type(name, bases);
+
+    var pytype = function(vm, unbound_pytype, name) {
+        var __new__ = function(args, kwargs) {
+            return new unbound_pytype(vm, args, kwargs);
+        };
+        __new__.__python__ = true;
+        __new__.__class__ = unbound_pytype;
+        return __new__;
+    }(this, unbound_pytype, name);
+    pytype.__class__ = unbound_pytype;
+    pytype.__python__ = true;
+
+    return pytype
+}
+
+VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
+    var pytype = make_class.bind(this);
+    pytype.__python__ = true;
+    this.push(pytype);
 };
 
-batavia.VirtualMachine.prototype.byte_STORE_LOCALS = function() {
+VirtualMachine.prototype.byte_STORE_LOCALS = function() {
     this.frame.f_locals = this.pop();
 };
 
-batavia.VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
+VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
     this.frame.f_lineno = lineno;
 };
 
-batavia.VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
+VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
 };
+
+module.exports = VirtualMachine;

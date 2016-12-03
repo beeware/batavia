@@ -1,16 +1,31 @@
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
+var JSDict = require('./JSDict');
 
-batavia.types.Module = function() {
-    function Module(name, locals) {
-        this.__name__ = name;
-        for (var key in locals) {
-            if (locals.hasOwnProperty(key)) {
-                this[key] = locals[key];
-            }
-        }
-    }
+/*************************************************************************
+ * A Python module type
+ *************************************************************************/
 
-    Module.prototype = Object.create(Object.prototype);
-    Module.prototype.__class__ = new batavia.types.Type('module');
+function Module(name, filename, pkg) {
+    JSDict.call(this);
 
-    return Module;
-}();
+    this.__name__ = name;
+    this.__file__ = filename;
+    this.__package__ = pkg;
+
+    // for (var key in locals) {
+    //     if (locals.hasOwnProperty(key)) {
+    //         this[key] = locals[key];
+    //     }
+    // }
+}
+
+Module.prototype = Object.create(JSDict.prototype);
+Module.prototype.__class__ = new Type('module');
+Module.prototype.constructor = Module;
+
+/**************************************************
+ * Module exports
+ **************************************************/
+
+module.exports = Module;

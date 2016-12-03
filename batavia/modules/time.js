@@ -1,30 +1,38 @@
+var type_name = require('../core').type_name;
+var exceptions = require('../core').exceptions;
+var types = require('../types');
 
-batavia.modules.time = {
-    _startTime: new Date().getTime(),
-    clock: function() {
-        return new batavia.types.Float(new Date().getTime() - batavia.modules.time._startTime);
-    },
+var time = {
+    __doc__: "",
+    __file__: "batavia/modules/time.js",
+    __name__: "math",
+    __package__: "",
+    _startTime: new Date().getTime()
+}
 
-    time: function() {
-        // JS operates in milliseconds, Python in seconds, so divide by 1000
-        return new batavia.types.Float(new Date().getTime() / 1000);
-    },
+time.clock = function() {
+    return new types.Float(new Date().getTime() - time._startTime);
+}
 
-    sleep: function(secs) {
-        if (secs < 0) {
-            throw new batavia.builtins.ValueError('sleep length must be non-negative')
-        }
+time.time = function() {
+    // JS operates in milliseconds, Python in seconds, so divide by 1000
+    return new types.Float(new Date().getTime() / 1000);
+}
 
-        var start = new Date().getTime();
-        while (1) {
-            if ((new Date().getTime() - start) / 1000 > secs){
-                break;
-            }
+time.sleep = function(secs) {
+    if (secs < 0) {
+        throw new exceptions.ValueError('sleep length must be non-negative');
+    }
+
+    var start = new Date().getTime();
+    while (1) {
+        if ((new Date().getTime() - start) / 1000 > secs){
+            break;
         }
     }
-};
+}
 
-batavia.modules.time.struct_time = function (sequence) {
+time.struct_time = function (sequence) {
     /*
         copied from https://docs.python.org/3/library/time.html#time.struct_time
 
@@ -42,31 +50,28 @@ batavia.modules.time.struct_time = function (sequence) {
         N/A 	tm_gmtoff 	offset east of UTC in seconds
     */
 
-
-    if (batavia.isinstance(sequence, [batavia.types.Bytearray, batavia.types.Bytes, batavia.types.Dict,
-        batavia.types.FrozenSet, batavia.types.List, batavia.types.Range, batavia.types.Set, batavia.types.Str,
-        batavia.types.Tuple]
-        )){
-
-        if (sequence.length < 9){
-            throw new batavia.builtins.TypeError("time.struct_time() takes an at least 9-sequence ("+sequence.length+"-sequence given)")
+    if (types.isinstance(sequence, [types.Bytearray, types.Bytes, types.Dict,
+            types.FrozenSet, types.List, types.Range, types.Set, types.Str,
+            types.Tuple])){
+        if (sequence.length < 9) {
+            throw new exceptions.TypeError("time.struct_time() takes an at least 9-sequence ("+sequence.length+"-sequence given)")
         } else if (sequence.length > 11) {
-            throw new batavia.builtins.TypeError("time.struct_time() takes an at most 11-sequence ("+sequence.length+"-sequence given)")
+            throw new exceptions.TypeError("time.struct_time() takes an at most 11-sequence ("+sequence.length+"-sequence given)")
         }
 
         // might need to convert sequence to a more manageable type
-        if (batavia.isinstance(sequence, [batavia.types.Bytearray])){
+        if (types.isinstance(sequence, [types.Bytearray])){
             // dict won't work until .keys() is implemented
             // bytearray won't work until .__iter__ is implemented
 
-            throw new batavia.builtins.NotImplementedError("not implemented for "+ batavia.type_name(sequence)+".")
+            throw new exceptions.NotImplementedError("not implemented for "+ type_name(sequence)+".")
 
-        } else if (batavia.isinstance(sequence, [batavia.types.Bytes, batavia.types.FrozenSet,
-            batavia.types.Set, batavia.types.Range])) {
+        } else if (types.isinstance(sequence, [types.Bytes, types.FrozenSet,
+            types.Set, types.Range])) {
 
-            var items = new batavia.types.Tuple(sequence);
+            var items = new types.Tuple(sequence);
 
-        } else if (batavia.isinstance(sequence, batavia.types.Dict)){
+        } else if (types.isinstance(sequence, types.Dict)){
 
             var items = sequence.keys();
 
@@ -90,50 +95,50 @@ batavia.modules.time.struct_time = function (sequence) {
 
     } else {
         //some other, unacceptable type
-        throw new batavia.builtins.TypeError("constructor requires a sequence");
+        throw new exceptions.TypeError("constructor requires a sequence");
     }
 }
 
-batavia.modules.time.struct_time.prototype = new batavia.types.Tuple();
+time.struct_time.prototype = new types.Tuple();
 
-batavia.modules.time.struct_time.prototype.__str__ = function(){
+time.struct_time.prototype.__str__ = function(){
     return "time.struct_time(tm_year="+this.tm_year+", tm_mon="+this.tm_mon+", tm_mday="+this.tm_mday+", tm_hour="+this.tm_hour+", tm_min="+this.tm_min+", tm_sec="+this.tm_sec+", tm_wday="+this.tm_wday+", tm_yday="+this.tm_yday+", tm_isdst="+this.tm_isdst+")"
 }
 
-batavia.modules.time.struct_time.prototype.__repr__ = function(){
+time.struct_time.prototype.__repr__ = function(){
     return this.__str__()
 }
 
-batavia.modules.time.mktime = function(sequence){
+time.mktime = function(sequence){
     // sequence: struct_time like
     // documentation: https://docs.python.org/3/library/time.html#time.mktime
 
     //Validations
     if (arguments.length != 1){
-        throw new batavia.builtins.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
+        throw new exceptions.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
     }
 
-    if (!batavia.isinstance(sequence, [batavia.types.Tuple, batavia.modules.time.struct_time])) {
-        throw new batavia.builtins.TypeError("Tuple or struct_time argument required");
+    if (!types.isinstance(sequence, [types.Tuple, time.struct_time])) {
+        throw new exceptions.TypeError("Tuple or struct_time argument required");
     }
 
     if (sequence.length !== 9){
-        throw new batavia.builtins.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)");
+        throw new exceptions.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)");
     }
 
     if (sequence[0] < 1900){
         // because the earliest possible date is system dependant, use an arbitrary cut off for now.
-        throw new batavia.builtins.OverflowError("mktime argument out of range");
+        throw new exceptions.OverflowError("mktime argument out of range");
     }
 
     // all items must be integers
     for (var i=0; i<sequence.length; i++){
         var item = sequence[i];
-        if (batavia.isinstance(item, batavia.types.Float)){
-            throw new batavia.builtins.TypeError("integer argument expected, got float")
+        if (types.isinstance(item, types.Float)){
+            throw new exceptions.TypeError("integer argument expected, got float")
         }
-        else if (!batavia.isinstance(item, [batavia.types.Int])){
-            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(item) + ")");
+        else if (!types.isinstance(item, [types.Int])){
+            throw new exceptions.TypeError("an integer is required (got type " + type_name(item) + ")");
         }
     }
 
@@ -142,48 +147,49 @@ batavia.modules.time.mktime = function(sequence){
     if (isNaN(date)){
         // date is too large per ECMA specs
         // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
-        throw new batavia.builtins.OverflowError("signed integer is greater than maximum")
+        throw new exceptions.OverflowError("signed integer is greater than maximum")
     }
 
     var seconds = date.getTime() / 1000;
     return seconds.toFixed(1);
 }
 
-batavia.modules.time.gmtime = function(seconds){
+time.gmtime = function(seconds){
     // https://docs.python.org/3/library/time.html#time.gmtime
 
     // 0-1 arguments allowed
     if (arguments.length > 1){
-        throw new batavia.builtins.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
+        throw new exceptions.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
     }
 
     if (arguments.length == 1) {
         // catching bad types
-        if (batavia.isinstance(seconds, [batavia.types.Complex])){
-            throw new batavia.builtins.TypeError("can't convert " + batavia.type_name(seconds) + " to int")
+        if (types.isinstance(seconds, [types.Complex])){
+            throw new exceptions.TypeError("can't convert " + type_name(seconds) + " to int")
 
-        } else if (!(batavia.isinstance(seconds, [batavia.types.Int, batavia.types.Float, batavia.types.Bool]))) {
-            throw new batavia.builtins.TypeError("an integer is required (got type " + batavia.type_name(seconds) + ")")
+        } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
+            throw new exceptions.TypeError("an integer is required (got type " + type_name(seconds) + ")")
         }
 
         var date = new Date(seconds * 1000)
         if (isNaN(date)){
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
-            throw new batavia.builtins.OSError("Value too large to be stored in data type")
+            throw new exceptions.OSError("Value too large to be stored in data type")
         }
 
     } else if (seconds === undefined){
         var date = new Date();
     }
 
-    var sequence = [date.getUTCFullYear(),
-    date.getUTCMonth() + 1,
-    date.getUTCDate(),
-    date.getUTCHours(),
-    date.getUTCMinutes(),
-    date.getUTCSeconds(),
-    date.getUTCDay() -1
+    var sequence = [
+        date.getUTCFullYear(),
+        date.getUTCMonth() + 1,
+        date.getUTCDate(),
+        date.getUTCHours(),
+        date.getUTCMinutes(),
+        date.getUTCSeconds(),
+        date.getUTCDay() -1
     ]
 
     // add day of year
@@ -195,5 +201,7 @@ batavia.modules.time.gmtime = function(seconds){
 
     sequence.push(0)  // dst for UTC, always off
 
-    return new batavia.modules.time.struct_time(new batavia.types.Tuple(sequence))
+    return new time.struct_time(new types.Tuple(sequence))
 }
+
+module.exports = time;

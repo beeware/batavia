@@ -4,72 +4,79 @@ from unittest import skipUnless
 from ..utils import ModuleFunctionTestCase, TranspileTestCase
 
 class MathTests(ModuleFunctionTestCase, TranspileTestCase):
-    ModuleFunctionTestCase.add_one_arg_tests('math', [
-        'acos',
-        'acosh',
-        'asin',
-        'asinh',
-        'atan',
-        'atanh',
-        'ceil',
-        'cos',
-        'cosh',
-        'degrees',
-        'exp',
-        'expm1',
-        'erf',
-        'erfc',
-        'fabs',
-        'factorial',
-        'floor',
-        'frexp',
-        'fsum',
-        'gamma',
-        'isfinite',
-        'isinf',
-        'isnan',
-        'lgamma',
-        'log',
-        'log10',
-        'log1p',
-        'log2',
-        'modf',
-        'radians',
-        'sin',
-        'sinh',
-        'sqrt',
-        'tan',
-        'tanh',
-        'trunc',
-    ], numerics_only=True)
+    substitutions = {
+        # A
+        '7.32747...e-15': [
+            '7.35784...e-15'
+        ],
+        '1.53745...e-12': [
+            '1.53743...e-12'
+        ],
+    }
 
-    ModuleFunctionTestCase.add_two_arg_tests('math', [
-        'atan2',
-        'copysign',
-        'fmod',
-        'hypot',
-        'ldexp',
-        'log',
-        'pow',
-    ], numerics_only=True)
-
-    if sys.version_info >= (3, 5):
-        ModuleFunctionTestCase.add_two_arg_tests('math', [
-            'gcd',
-            'isclose',
+    @classmethod
+    def add_math_tests(klass):
+        klass.add_one_arg_tests('math', [
+            'acos',
+            'acosh',
+            'asin',
+            'asinh',
+            'atan',
+            'atanh',
+            'ceil',
+            'cos',
+            'cosh',
+            'degrees',
+            'exp',
+            'expm1',
+            'erf',
+            'erfc',
+            'fabs',
+            'factorial',
+            'floor',
+            'frexp',
+            'fsum',
+            'gamma',
+            'isfinite',
+            'isinf',
+            'isnan',
+            'lgamma',
+            'log',
+            'log10',
+            'log1p',
+            'log2',
+            'modf',
+            'radians',
+            'sin',
+            'sinh',
+            'sqrt',
+            'tan',
+            'tanh',
+            'trunc',
         ], numerics_only=True)
+
+        klass.add_two_arg_tests('math', [
+            'atan2',
+            'copysign',
+            'fmod',
+            'hypot',
+            'ldexp',
+            'log',
+            'pow',
+        ], numerics_only=True)
+
+        if sys.version_info >= (3, 5):
+            klass.add_two_arg_tests('math', [
+                'gcd',
+                'isclose',
+            ], numerics_only=True)
 
     not_implemented = [
         'test_math_acos_float',
         'test_math_acos_int',
 
-        'test_math_acosh_float',
-
         'test_math_asin_float',
         'test_math_asin_int',
-
-        'test_math_asinh_float',
-        'test_math_asinh_int',
 
         'test_math_fsum_NotImplemented',
         'test_math_fsum_bytearray',
@@ -238,3 +245,5 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.isclose(1.0, 0.9, rel_tol=0.09, abs_tol=0.1))
             print(math.isclose(1.0, 1.000000001, rel_tol=1.0, abs_tol=1.0))
             """)
+
+MathTests.add_math_tests()

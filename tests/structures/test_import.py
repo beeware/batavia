@@ -373,6 +373,183 @@ class ImportTests(TranspileTestCase):
                     """
             }, run_in_function=False)
 
+    def test_import_from_dot(self):
+        self.assertCodeExecution(
+            """
+            from example import submodule2
+
+            submodule2.method()
+
+            print("Done.")
+            """,
+            extra_code={
+                'example.__init__':
+                    """
+                    """,
+                'example.submodule1':
+                    """
+                    def method():
+                        print("Calling method in submodule1")
+                    """,
+                'example.submodule2':
+                    """
+                    from . import submodule1
+
+                    def method():
+                        print("Calling method in submodule2")
+                        submodule1.method()
+                    """,
+            })
+
+    def test_import_from_local_dot(self):
+        self.assertCodeExecution(
+            """
+            from submodule import method1, method2
+
+            method1()
+            method2()
+
+            print("Done.")
+            """,
+            extra_code={
+                'submodule.__init__':
+                    """
+                    print("in submodule/__init__.py")
+                    from .modulea import method2
+
+                    def method1():
+                        print("Calling method in submodule.__init__")
+                    """,
+                'submodule.modulea':
+                    """
+                    print("in submodule/modulea.py")
+
+                    def method2():
+                        print("Calling method in submodule.modulea")
+                    """,
+            })
+
+    def test_import_from_local_dot_deep(self):
+        self.assertCodeExecution(
+            """
+            from submodule import method1, method2, method3, method4
+
+            method1()
+            method2()
+            method3()
+            method4()
+
+            print("Done.")
+            """,
+            extra_code={
+                'submodule.__init__':
+                    """
+                    print("in submodule/__init__.py")
+                    from .modulea import method2
+                    from .subsubmodule import method3, method4
+
+                    def method1():
+                        print("Calling method1 in submodule.__init__")
+                    """,
+                'submodule.modulea':
+                    """
+                    print("in submodule/modulea.py")
+
+                    def method2():
+                        print("Calling method2 in submodule.modulea")
+                    """,
+                'submodule.subsubmodule.__init__':
+                    """
+                    print("in submodule/subsubmodule/__init__.py")
+                    from .submodulea import method4
+
+                    def method3():
+                        print("Calling method3 in submodule.subsubmodule.__init__")
+                    """,
+                'submodule.subsubmodule.submodulea':
+                    """
+                    print("in submodule/subsubmodule/submodulea.py")
+
+                    def method4():
+                        print("Calling method4 in submodule.subsubmodule.submodula")
+                    """,
+            })
+
+    def test_import_from_deep_upstream(self):
+        self.assertCodeExecution(
+            """
+            from submodule.subsubmodule.submodulea import method
+
+            method()
+
+            print("Done.")
+            """,
+            extra_code={
+                'submodule.__init__':
+                    """
+                    print("in submodule/__init__.py")
+
+                    def method1():
+                        print("Calling method in submodule.__init__")
+                    """,
+                'submodule.modulea':
+                    """
+                    print("in submodule/modulea.py")
+
+                    def method2():
+                        print("Calling method in submodule.modulea")
+                    """,
+                'submodule.moduleb':
+                    """
+                    print("in submodule/moduleb.py")
+
+                    def method3():
+                        print("Calling method in submodule.moduleb")
+                    """,
+                'submodule.modulec':
+                    """
+                    print("in submodule/modulec.py")
+
+                    def method4():
+                        print("Calling method in submodule.modulec")
+                    """,
+                'submodule.moduled.__init__':
+                    """
+                    print("in submodule/moduled/__init__.py")
+
+                    def method5():
+                        print("Calling method in submodule.moduled")
+                    """,
+                'submodule.moduled.submoduled':
+                    """
+                    print("in submodule/moduled/submoduled.py")
+
+                    def method6():
+                        print("Calling method in submodule.moduled.submoduled")
+                    """,
+                'submodule.subsubmodule.__init__':
+                    """
+                    print("in submodule/subsubmodule/__init__.py")
+
+                    def method7():
+                        print("Calling method in submodule.subsubmodule.__init__")
+                    """,
+                'submodule.subsubmodule.submodulea':
+                    """
+                    print("in submodule/subsubmodule/submodulea.py")
+                    from .. import moduleb
+                    from ..modulec import method4
+                    from ..moduled import method5, submoduled
+
+                    def method():
+                        print("Calling method4 in submodule.subsubmodule.submodulea")
+                        moduleb.method3()
+                        method4()
+                        method5()
+                        submoduled.method6()
+                    """,
+            })
+
 
 class NativeImportTests(TranspileTestCase):
     def test_import_module(self):
@@ -388,7 +565,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -419,7 +596,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -460,7 +637,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -496,7 +673,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -532,7 +709,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -568,7 +745,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -632,7 +809,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -696,7 +873,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
                         return mod;
                     }({});
@@ -760,7 +937,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -798,7 +975,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -847,7 +1024,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.some_method = function() {
@@ -891,7 +1068,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.MyClass = function(x, y, z) {
@@ -933,7 +1110,7 @@ class NativeImportTests(TranspileTestCase):
             js={
                 'example':
                     """
-                    example = function(mod) {
+                    var example = function(mod) {
                         console.log("Now we're in the example module");
 
                         mod.MyClass = function(x, y, z) {
@@ -962,8 +1139,25 @@ class NativeImportTests(TranspileTestCase):
             Done.
             """)
 
+
+class BuiltinsImportTests(TranspileTestCase):
+    def test_import_builtins(self):
+        self.assertCodeExecution("""
+            import builtins
+            print(builtins.abs(-42))
+            print("Done")
+            """)
+
+    def test_import_from_builtins(self):
+        self.assertCodeExecution("""
+            from builtins import abs
+            print(abs(-42))
+            print("Done")
+            """)
+
     def test_import_from_builtins_as(self):
         self.assertCodeExecution("""
             from builtins import abs as _abs
+            print(_abs(-42))
             print("Done")
             """)

@@ -1,7 +1,7 @@
 import os
 import re
 from time import gmtime, localtime, mktime
-from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsJavaScript, runAsPython
+from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsPython
 import unittest
 
 
@@ -436,18 +436,15 @@ class TimeTests(TranspileTestCase):
         print(time.gmtime())
         """)
 
-        # set up a test directory
-        test_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
-        try:
-            os.mkdir(test_dir)
-        except FileExistsError:
-            pass
-        # run as both JS and Python
-        outputs = [
-            runAsJavaScript(test_dir, test_str, js={}),
-            runAsPython(test_dir, test_str)
-        ]
-        print(outputs)
+        # set up a temp directory
+        self.makeTempDir()
+
+        # run as both Python and JS (Python first
+        # to ensure code is rolled out for JS to use)
+        py_out = runAsPython(self.temp_dir, test_str)
+        js_out = self.runAsJavaScript(test_str, js={})
+        outputs = [py_out, js_out]
+
         raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
 
         # regex to parse struct_time

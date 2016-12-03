@@ -1,241 +1,314 @@
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
+var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
+var type_name = require('../core').type_name;
+var SetIterator = require('./SetIterator');
 
 /*************************************************************************
  * A Python FrozenSet type, with an underlying Dict.
  *************************************************************************/
 
-batavia.types.FrozenSet = function() {
-    function FrozenSet(args, kwargs) {
-        this.data = new batavia.types.Dict();
-        if (args) {
-            this._update(args);
+function FrozenSet(args, kwargs) {
+    var types = require('../types');
+
+    PyObject.call(this);
+
+    this.data = new types.Dict();
+    if (args) {
+        this._update(args);
+    }
+}
+
+FrozenSet.prototype = Object.create(PyObject.prototype);
+FrozenSet.prototype.__class__ = new Type('frozenset');
+FrozenSet.prototype.constructor = FrozenSet;
+
+/**************************************************
+ * Javascript compatibility methods
+ **************************************************/
+
+FrozenSet.prototype.toString = function() {
+    return this.__str__();
+}
+
+/**************************************************
+ * Type conversions
+ **************************************************/
+
+FrozenSet.prototype.__bool__ = function() {
+    return this.data.__bool__();
+}
+
+FrozenSet.prototype.__iter__ = function() {
+    return new SetIterator(this);
+}
+
+FrozenSet.prototype.__repr__ = function() {
+    return this.__str__();
+}
+
+FrozenSet.prototype.__str__ = function() {
+    var keys = this.data.keys();
+    if (keys.length == 0) {
+        return "frozenset()";
+    }
+    return "frozenset({" +
+        keys.map(function(x) { return x.__repr__(); }).join(", ") +
+        "})";
+}
+
+/**************************************************
+ * Comparison operators
+ **************************************************/
+
+FrozenSet.prototype.__lt__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [types.Set, types.FrozenSet])) {
+        return new types.Bool(this.data.keys().length < other.data.keys().length);
+    }
+    throw new exceptions.TypeError("unorderable types: frozenset() < " + type_name(other) + "()");
+}
+
+FrozenSet.prototype.__le__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [types.Set, types.FrozenSet])) {
+        return new types.Bool(this.data.keys().length <= other.data.keys().length);
+    }
+    throw new exceptions.TypeError("unorderable types: frozenset() <= " + type_name(other) + "()");
+}
+
+FrozenSet.prototype.__eq__ = function(other) {
+    var types = require('../types');
+    var builtins = require('../builtins');
+
+    if (!types.isinstance(other, [types.FrozenSet, types.Set])) {
+        return new types.Bool(false);
+    }
+    if (this.data.keys().length != other.data.keys().length) {
+        return new types.Bool(false);
+    }
+    var iterobj = builtins.iter([this], null);
+    var equal = true;
+    callables.iter_for_each(iterobj, function(val) {
+        equal = equal && other.__contains__(val).valueOf();
+    });
+
+    return new types.Bool(equal);
+}
+
+FrozenSet.prototype.__ne__ = function(other) {
+    return this.__eq__(other).__not__();
+}
+
+FrozenSet.prototype.__gt__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [types.Set, types.FrozenSet])) {
+        return new types.Bool(this.data.keys().length > other.data.keys().length);
+    }
+    throw new exceptions.TypeError("unorderable types: frozenset() > " + type_name(other) + "()");
+}
+
+FrozenSet.prototype.__ge__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [types.Set, types.FrozenSet])) {
+        return new types.Bool(this.data.keys().length >= other.data.keys().length);
+    }
+    throw new exceptions.TypeError("unorderable types: frozenset() >= " + type_name(other) + "()");
+}
+
+FrozenSet.prototype.__contains__ = function(other) {
+    return this.data.__contains__(other);
+}
+
+
+/**************************************************
+ * Unary operators
+ **************************************************/
+
+FrozenSet.prototype.__not__ = function() {
+    return this.__bool__().__not__();
+}
+
+/**************************************************
+ * Binary operators
+ **************************************************/
+
+FrozenSet.prototype.__pow__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'");
+}
+
+FrozenSet.prototype.__div__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'");
+}
+
+FrozenSet.prototype.__floordiv__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'");
+    }
+}
+
+FrozenSet.prototype.__truediv__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'");
+}
+
+FrozenSet.prototype.__mul__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, [
+        types.Bytearray, types.Bytes, types.List,
+        types.Str, types.Tuple
+    ])) {
+        throw new exceptions.TypeError("can't multiply sequence by non-int of type 'frozenset'");
+    } else {
+        throw new exceptions.TypeError("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'");
+    }
+}
+
+FrozenSet.prototype.__mod__ = function(other) {
+    var types = require('../types');
+
+    if (types.isinstance(other, types.Complex)){
+        throw new exceptions.TypeError("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'");
+    }
+}
+
+FrozenSet.prototype.__add__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'");
+}
+
+FrozenSet.prototype.__sub__ = function(other) {
+    var types = require('../types');
+    var builtins = require('../builtins');
+
+    if (types.isinstance(other, [types.FrozenSet, types.Set])){
+        var both = [];
+        var iterobj1 = builtins.iter([this], null);
+        callables.iter_for_each(iterobj1, function(val) {
+            if (!(other.__contains__(val).valueOf())) {
+                both.push(val);
+            }
+        });
+        return new FrozenSet(both);
+    }
+    throw new exceptions.TypeError("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'");
+}
+
+FrozenSet.prototype.__getitem__ = function(other) {
+    var types = require('../types');
+    var builtins = require('../builtins');
+
+    if (types.isinstance(other, [types.Bool])){
+        throw new exceptions.TypeError("'frozenset' object does not support indexing");
+    } else if (types.isinstance(other, [types.Int])){
+        if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
+            throw new builtins.IndexError("cannot fit 'int' into an index-sized integer");
+        } else {
+            throw new exceptions.TypeError("'frozenset' object does not support indexing");
         }
     }
+    throw new exceptions.TypeError("'frozenset' object is not subscriptable");
+}
 
-    FrozenSet.prototype.__class__ = new batavia.types.Type('frozenset');
+FrozenSet.prototype.__lshift__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'");
+}
 
-    /**************************************************
-     * Javascript compatibility methods
-     **************************************************/
+FrozenSet.prototype.__rshift__ = function(other) {
+    throw new exceptions.TypeError("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'");
+}
 
-    FrozenSet.prototype.toString = function() {
-        return this.__str__();
-    };
+FrozenSet.prototype.__and__ = function(other) {
+    var types = require('../types');
+    var builtins = require('../builtins');
 
-    /**************************************************
-     * Type conversions
-     **************************************************/
-
-    FrozenSet.prototype.__bool__ = function() {
-        return this.data.__bool__();
-    };
-
-    FrozenSet.prototype.__iter__ = function() {
-        return new batavia.types.SetIterator(this);
-    };
-
-    FrozenSet.prototype.__repr__ = function() {
-        return this.__str__();
-    };
-
-    FrozenSet.prototype.__str__ = function() {
-        var keys = this.data.keys();
-        if (keys.length == 0) {
-            return "frozenset()";
-        }
-        return "frozenset({" +
-            keys.map(function(x) { return x.__repr__(); }).join(", ") +
-            "})";
-    };
-
-    /**************************************************
-     * Comparison operators
-     **************************************************/
-
-    FrozenSet.prototype.__lt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() < " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() < other.valueOf();
+    if (types.isinstance(other, [types.FrozenSet, types.Set])){
+        var both = [];
+        var iterobj = builtins.iter([this], null);
+        callables.iter_for_each(iterobj, function(val) {
+            if (other.__contains__(val).valueOf()) {
+                both.push(val);
             }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() < NoneType()");
-        }
-    };
-
-    FrozenSet.prototype.__le__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() <= " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() <= other.valueOf();
-            }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() <= NoneType()");
-        }
-    };
-
-    FrozenSet.prototype.__eq__ = function(other) {
-        if (!batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])) {
-            return new batavia.types.Bool(false);
-        }
-        if (this.data.keys().length != other.data.keys().length) {
-            return new batavia.types.Bool(false);
-        }
-        var iterobj = batavia.builtins.iter([this], null);
-        var equal = true;
-        batavia.iter_for_each(iterobj, function(val) {
-            equal = equal && other.__contains__(val).valueOf();
         });
+        return new FrozenSet(both);
+    }
+    throw new exceptions.TypeError("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'");
+}
 
-        return new batavia.types.Bool(equal);
-    };
+FrozenSet.prototype.__xor__ = function(other) {
+    var types = require('../types');
+    var builtins = require('../builtins');
 
-    FrozenSet.prototype.__ne__ = function(other) {
-        return this.__eq__(other).__not__();
-    };
-
-    FrozenSet.prototype.__gt__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() > " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() > other.valueOf();
+    if (types.isinstance(other, [types.FrozenSet, types.Set])){
+        var both = [];
+        var iterobj1 = builtins.iter([this], null);
+        callables.iter_for_each(iterobj1, function(val) {
+            if (!(other.__contains__(val).valueOf())) {
+                both.push(val);
             }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() > NoneType()");
-        }
-    };
-
-    FrozenSet.prototype.__ge__ = function(other) {
-        if (other !== batavia.builtins.None) {
-            if (batavia.isinstance(other, [
-                        batavia.types.Bool, batavia.types.Dict, batavia.types.Float,
-                        batavia.types.List, batavia.types.Int, batavia.types.Range,
-                        batavia.types.Str, batavia.types.Tuple
-                    ])) {
-                throw new batavia.builtins.TypeError("unorderable types: frozenset() >= " + batavia.type_name(other) + "()");
-            } else {
-                return this.valueOf() >= other.valueOf();
+        });
+        var iterobj2 = builtins.iter([other], null);
+        callables.iter_for_each(iterobj2, function(val) {
+            if (!(this.__contains__(val).valueOf())) {
+                both.push(val);
             }
-        } else {
-            throw new batavia.builtins.TypeError("unorderable types: frozenset() >= NoneType()");
-        }
-    };
+        }.bind(this));
+        return new FrozenSet(both);
+    }
+    throw new exceptions.TypeError("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'");
+}
 
-    FrozenSet.prototype.__contains__ = function(other) {
-        return this.data.__contains__(other);
-    };
+FrozenSet.prototype.__or__ = function(other) {
+    var types = require('../types');
+    var builtins = require('../builtins');
 
+    if (types.isinstance(other, [types.FrozenSet, types.Set])){
+        var both = [];
+        var iterobj1 = builtins.iter([this], null);
+        callables.iter_for_each(iterobj1, function(val) {
+            both.push(val);
+        });
+        var iterobj2 = builtins.iter([other], null);
+        callables.iter_for_each(iterobj2, function(val) {
+            both.push(val);
+        }.bind(this));
+        return new FrozenSet(both);
+    }
+    throw new exceptions.TypeError("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'");
+}
 
-    /**************************************************
-     * Unary operators
-     **************************************************/
+/**************************************************
+ * Methods
+ **************************************************/
 
-    FrozenSet.prototype.__not__ = function() {
-        return this.__bool__().__not__();
-    };
+FrozenSet.prototype._update = function(args) {
+    var types = require('../types');
+    var builtins = require('../builtins');
 
-    /**************************************************
-     * Binary operators
-     **************************************************/
+    var new_args = types.js2py(args);
+    if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Str, types.Tuple])) {
+        var iterobj = builtins.iter([new_args], null);
+        var self = this;
+        callables.iter_for_each(iterobj, function(val) {
+            self.data.__setitem__(val, val);
+        });
+    } else {
+        throw new exceptions.TypeError("'" + type_name(new_args) + "' object is not iterable");
+    }
+}
 
-    FrozenSet.prototype.__pow__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__pow__ has not been implemented");
-    };
+/**************************************************
+ * Module exports
+ **************************************************/
 
-    FrozenSet.prototype.__div__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__div__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__floordiv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for //: 'frozenset' and '" + batavia.type_name(other) + "'");
-    };
-
-    FrozenSet.prototype.__truediv__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for /: 'frozenset' and '" + batavia.type_name(other) + "'");
-    };
-
-    FrozenSet.prototype.__mul__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + batavia.type_name(other) + "'");
-    };
-
-    FrozenSet.prototype.__mod__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__mod__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__add__ = function(other) {
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for +: 'frozenset' and '" + batavia.type_name(other) + "'");
-    };
-
-    FrozenSet.prototype.__sub__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__sub__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__getitem__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__getitem__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__lshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__lshift__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__rshift__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__rshift__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__and__ = function(other) {
-        if (batavia.isinstance(other, [batavia.types.FrozenSet, batavia.types.Set])){
-            var both = [];
-            var iterobj = batavia.builtins.iter([this], null);
-            batavia.iter_for_each(iterobj, function(val) {
-                if (other.__contains__(val).valueOf()) {
-                    both.push(val);
-                }
-            });
-            return new FrozenSet(both);
-        }
-        throw new batavia.builtins.TypeError("unsupported operand type(s) for &: 'frozenset' and '" + batavia.type_name(other) + "'");
-    };
-
-    FrozenSet.prototype.__xor__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__xor__ has not been implemented");
-    };
-
-    FrozenSet.prototype.__or__ = function(other) {
-        throw new batavia.builtins.NotImplementedError("FrozenSet.__or__ has not been implemented");
-    };
-
-    /**************************************************
-     * Methods
-     **************************************************/
-
-    FrozenSet.prototype._update = function(args) {
-        var new_args = batavia.js2py(args);
-        if (batavia.isinstance(new_args, [batavia.types.FrozenSet, batavia.types.List, batavia.types.Set, batavia.types.Str, batavia.types.Tuple])) {
-            var iterobj = batavia.builtins.iter([new_args], null);
-            var self = this;
-            batavia.iter_for_each(iterobj, function(val) {
-                self.data.__setitem__(val, val);
-            });
-        } else {
-            throw new batavia.builtins.TypeError("'" + batavia.type_name(new_args) + "' object is not iterable");
-        }
-    };
-
-    /**************************************************/
-
-    return FrozenSet;
-}();
+module.exports = FrozenSet;
