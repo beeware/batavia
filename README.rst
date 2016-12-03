@@ -47,12 +47,11 @@ Check the `Setting up your environment
 Downloading and Installing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Clone the code repos::
+1. Clone the code repositories::
 
    $ mkdir pybee
    $ cd pybee
    $ git clone https://github.com/pybee/batavia
-   $ git clone https://github.com/pybee/ouroboros
 
 2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
@@ -70,11 +69,12 @@ Windows::
    > cd batavia
    > pip install -e .
 
-3. Run the :code:`make` script to generate the combined Batavia JavaScript files::
+3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of
+   Node; we do our testing using v6.9.1. Once you've installed Node, you can
+   use it to install the Javascript dependencies and compile the Batavia
+   library::
 
-   $ make
-
-NOTE some platforms do not have an alias for make, e.g. Windows with GCC may require `gmake` to be issued instead.
+   $ npm install
 
 For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
 

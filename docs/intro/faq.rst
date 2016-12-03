@@ -24,8 +24,9 @@ implementation of the Python virtual machine, it uses Emscripten to compile
 PyPy source code into Javascript (or the asm.js subset).
 
 The biggest advantage of the Batavia approach is size. By only implementing
-the virtual machine, Batavia weighs in at around 15kB. This compares with
-5MB for PyPy.js.
+the virtual machine, Batavia weighs in at around 400kB; this can be trimmed
+further by using tree-shaking to remove parts of Batavia that aren't used at
+runtime. This compares with 5MB for PyPy.js.
 
 The easiest way to demonstrate the difference between Brython/Skulpt/PyPy.js
 and Batavia is to look at the `eval()` and `exec()` methods. In Brython et al,
