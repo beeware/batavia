@@ -1,53 +1,80 @@
+var PyObject = require('../core').Object;
+var Type = require('../core').Type;
 
-batavia.types.Function = function() {
-    function Function(name, code, globals, defaults, closure, vm) {
-        this.__python__ = true;
-        this._vm = vm;
-        this.__code__ = code;
-        this.__globals__ = globals;
-        this.__defaults__ = defaults;
-        this.__kwdefaults__ = null;
-        this.__closure__ = closure;
-        if (code.co_consts.length > 0) {
-            this.__doc__ = code.co_consts[0];
+/*************************************************************************
+ * A Python function type.
+ *************************************************************************/
+
+var make_callable = function(func) {
+    var types = require('../types');
+
+    var fn = function(args, kwargs, locals) {
+        var inspect = require('../modules/inspect');
+        var dis = require('../modules/dis');
+        var retval;
+        var callargs = inspect.getcallargs(func, args, kwargs);
+
+        var frame = this.make_frame({
+            'code': func.__code__,
+            'callargs': callargs,
+            'f_globals': func.__globals__,
+            'f_locals': locals || new types.JSDict()
+        });
+
+        if (func.__code__.co_flags & dis.CO_GENERATOR) {
+            frame.generator = new types.Generator(frame, this);
+            retval = frame.generator;
         } else {
-            this.__doc__ = null;
+            retval = this.run_frame(frame);
         }
-        this.__name__ = name || code.co_name;
-        this.__dict__ = new batavia.types.Dict();
-        this.__annotations__ = new batavia.types.Dict();
-        this.__qualname__ = this.__name__;
+        return retval;
+    };
+    fn.__python__ = true;
+    return fn;
+}
 
-        // var kw = {
-        //     'argdefs': this.__defaults__,
-        // }
-        // if (closure) {
-        //     kw['closure'] = tuple(make_cell(0) for _ in closure)
-        // }
 
-        this.__call__ = batavia.make_callable(this);
+function Function(name, code, globals, defaults, closure, vm) {
+    var types = require('../types');
+    var inspect = require('../modules/inspect');
 
-        this.argspec = batavia.modules.inspect.getfullargspec(this);
+    PyObject.call(this);
+
+    this.__python__ = true;
+    this._vm = vm;
+    this.__code__ = code;
+    this.__globals__ = globals;
+    this.__defaults__ = defaults;
+    this.__kwdefaults__ = null;
+    this.__closure__ = closure;
+    if (code.co_consts.length > 0) {
+        this.__doc__ = code.co_consts[0];
+    } else {
+        this.__doc__ = null;
     }
+    this.__name__ = name || code.co_name;
+    this.__dict__ = new types.Dict();
+    this.__annotations__ = new types.Dict();
+    this.__qualname__ = this.__name__;
 
-    Function.prototype = Object.create(Object.prototype);
-    Function.prototype.__class__ = new batavia.types.Type('function');
+    // var kw = {
+    //     'argdefs': this.__defaults__,
+    // }
+    // if (closure) {
+    //     kw['closure'] = tuple(make_cell(0) for _ in closure)
+    // }
 
-    return Function;
-}();
+    this.__call__ = make_callable(this);
 
+    this.argspec = inspect.getfullargspec(this);
+}
 
-batavia.types.Method = function() {
-    function Method(instance, func) {
-        batavia.types.Function.call(this, func.__name__, func.__code__, func.__globals__, func.__closure__, func._vm);
-        this.__self__ = instance;
-        this.__func__ = func;
-        this.__class__ = instance.prototype;
-    }
+Function.prototype = Object.create(PyObject.prototype);
+Function.prototype.__class__ = new Type('function');
+Function.prototype.constructor = Function;
 
-    Method.prototype = Object.create(Function.prototype);
+/**************************************************
+ * Module exports
+ **************************************************/
 
-    Method.prototype.constructor = Method;
-
-    return Method;
-}();
+module.exports = Function;

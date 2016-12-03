@@ -5,22 +5,14 @@ python:
 
 install:
   - "pip install ."
+  - "npm install"
+  - "npm install webpack -g"
 
 script:
   - "cd docs && make dirhtml ; cd .."
   ## The $PATH seems to need to be re-inforced here rather than in the 'before_install' stage.
-  - "export PATH=$PWD/travis_phantomjs/phantomjs-2.1.1-linux-x86_64/bin:$PATH"
-  - "python setup.py test -q"
+  - "python setup.py test"
 
 ## Cache the pip install (which is minimal at the moment), and the phantomjs install.
 cache:
   pip: []
-  directories:
-    - "travis_phantomjs"
-
-## These phantomjs instructions are adapted from this comment:
-##    https://github.com/travis-ci/travis-ci/issues/3225#issuecomment-200965782
-before_install:
-  - "if [ ! -x $PWD/travis_phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs ]; then rm -rf $PWD/travis_phantomjs; mkdir -p $PWD/travis_phantomjs; fi"
-  - "if [ ! -x $PWD/travis_phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs ]; then wget https://assets.membergetmember.co/software/phantomjs-2.1.1-linux-x86_64.tar.bz2 -O $PWD/travis_phantomjs/phantomjs-2.1.1-linux-x86_64.tar.bz2; fi"
-  - "if [ ! -x $PWD/travis_phantomjs/phantomjs-2.1.1-linux-x86_64/bin/phantomjs ]; then tar -xvf $PWD/travis_phantomjs/phantomjs-2.1.1-linux-x86_64.tar.bz2 -C $PWD/travis_phantomjs; fi"

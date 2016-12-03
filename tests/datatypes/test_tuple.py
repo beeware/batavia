@@ -12,7 +12,6 @@ class TupleTests(TranspileTestCase):
             print('Done.')
             """)
 
-    @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             x = (1, 2, 3)
@@ -190,7 +189,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_modulo_complex',
 
-        'test_multiply_bool',
         'test_multiply_int',
 
         'test_or_bool',

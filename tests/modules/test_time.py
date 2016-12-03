@@ -1,7 +1,7 @@
 import os
 import re
 from time import gmtime, localtime, mktime
-from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsJavaScript, runAsPython
+from ..utils import TranspileTestCase, adjust, SAMPLE_DATA, runAsPython
 import unittest
 
 
@@ -365,9 +365,14 @@ class TimeTests(TranspileTestCase):
         source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
 
-        hour = 24 + localtime().tm_hour - gmtime().tm_hour + 1
+        hour = 24 + localtime().tm_hour - gmtime().tm_hour
+        if hour > 24:
+            day = 13
+            hour = hour - 24
+        else:
+            day = 12
 
-        seed = [275760, 9, 12, hour, 0, 0, 0, 0, 1] # the max date that can be computed.
+        seed = [275760, 9, day, hour, 0, 0, 0, 0, 0]  # the max date that can be computed.
         set_up = adjust("""
         print('>>> import time')
         import time
@@ -386,11 +391,11 @@ class TimeTests(TranspileTestCase):
                                            same=same,
                                            out="""
             >>> import time
-            >>> time.mktime((275760, 9, 12, {hour}, 0, {second}, 0, 0, 1))
+            >>> time.mktime((275760, 9, {day}, {hour}, 0, {second}, 0, 0, 0))
             ### EXCEPTION ###
             OverflowError: signed integer is greater than maximum
                 test.py:4
-            """.format(hour=hour, second=second))
+            """.format(day=day, hour=hour, second=second))
 
     def test_mktime_no_overflow_error(self):
         """
@@ -432,18 +437,15 @@ class TimeTests(TranspileTestCase):
         print(time.gmtime())
         """)
 
-        # set up a test directory
-        test_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
-        try:
-            os.mkdir(test_dir)
-        except FileExistsError:
-            pass
-        # run as both JS and Python
-        outputs = [
-            runAsJavaScript(test_dir, test_str, js={}),
-            runAsPython(test_dir, test_str)
-        ]
-        print(outputs)
+        # set up a temp directory
+        self.makeTempDir()
+
+        # run as both Python and JS (Python first
+        # to ensure code is rolled out for JS to use)
+        py_out = runAsPython(self.temp_dir, test_str)
+        js_out = self.runAsJavaScript(test_str, js={})
+        outputs = [py_out, js_out]
+
         raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
 
         # regex to parse struct_time
@@ -556,19 +558,17 @@ class TimeTests(TranspileTestCase):
         print(time.localtime())
         """)
 
-        # set up a test directory
-        test_dir = os.path.join(os.path.dirname(__file__), '..', 'temp')
-        try:
-            os.mkdir(test_dir)
-        except FileExistsError:
-            pass
-        # run as both JS and Python
-        outputs = [
-            runAsJavaScript(test_dir, test_str, js={}),
-            runAsPython(test_dir, test_str)
-        ]
-        raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
+        # set up a temp directory
+        self.makeTempDir()
 
+        # run as both Python and JS (Python first
+        # to ensure code is rolled out for JS to use)
+        py_out = runAsPython(self.temp_dir, test_str)
+        js_out = self.runAsJavaScript(test_str, js={})
+        outputs = [py_out, js_out]
+
+        print (outputs)
+        raw_times = [out.split('\n')[2] for out in outputs]  # each item will be a string representation of struct_time
         # regex to parse struct_time
         match_str = 'time\.struct_time\(tm_year=(?P<year>-?\d{1,4}), tm_mon=(?P<mon>-?\d{1,2}), tm_mday=(?P<mday>-?\d{1,2}), tm_hour=(?P<hour>-?\d{1,2}), tm_min=(?P<min>-?\d{1,2}), tm_sec=(?P<sec>-?\d{1,2}), tm_wday=(?P<wday>-?\d{1}), tm_yday=(?P<yday>-?\d{1,4}), tm_isdst=(?P<isdst>-?\d{1})\)'
 

@@ -1,0 +1,57 @@
+{
+  "name": "batavia",
+  "version": "3.4.0-dev1",
+  "description": "A Javascript implementation of the Python virtual machine.",
+  "main": "batavia.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "python compile_stdlib.py",
+    "build": "node_modules/.bin/webpack",
+    "start": "webpack-dev-server --inline --hot"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pybee/batavia.git"
+  },
+  "keywords": [
+    "python"
+  ],
+  "author": "Russell Keith-Magee",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/pybee/batavia/issues"
+  },
+  "homepage": "https://github.com/pybee/batavia#readme",
+  "devDependencies": {
+    "babel-core": "6.18.2",
+    "babel-loader": "6.2.8",
+    "babel-preset-latest": "6.16.0",
+    "eslint": "3.9.1",
+    "eslint-config-airbnb": "13.0.0",
+    "eslint-loader": "1.6.1",
+    "eslint-plugin-import": "2.1.0",
+    "eslint-plugin-jsx-a11y": "2.2.3",
+    "eslint-plugin-react": "6.6.0",
+    "json-loader": "0.5.4",
+    "ouroboros": "3.4.0",
+    "uglifyjs": "2.4.10"
+  },
+  "dev": "webpack-dev-server",
+  "dependencies": {
+    "base64-js": "1.2.0",
+    "bignumber.js": "2.4.0",
+    "buffer": "5.0.0",
+    "moment": "2.17.0",
+    "moment-timezone": "0.5.10",
+    "webpack": "1.13.3"
+  },
+  "files": [
+    "batavia.js",
+    "batavia.min.js",
+    "batavia.js.map",
+    "batavia.min.js.map"
+  ]
+}

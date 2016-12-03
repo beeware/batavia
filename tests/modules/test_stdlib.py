@@ -5,7 +5,7 @@ import unittest
 # do basic tests for now
 # TODO: execute complete tests for each stdlib module
 
-def test_module(self, name, exclude=[]):
+def _test_module(self, name, exclude=[]):
     self.assertCodeExecution("""
         import %s
         print(sorted([x for x in list(dir(%s)) if not x.startswith('_') and x not in set(%s)]))
@@ -13,22 +13,22 @@ def test_module(self, name, exclude=[]):
 
 class StdlibTests(TranspileTestCase):
     def test__weakref(self):
-        test_module(self, "_weakref")
+        _test_module(self, "_weakref")
 
     def test__weakrefset(self):
-        test_module(self, "_weakrefset")
+        _test_module(self, "_weakrefset")
 
     def test_abc(self):
-        test_module(self, "abc", exclude=['ref'])
+        _test_module(self, "abc", exclude=['ref'])
 
     def test_bisect(self):
-        test_module(self, "bisect")
+        _test_module(self, "bisect")
 
     def test_colorsys(self):
-        test_module(self, "colorsys")
+        _test_module(self, "colorsys")
 
     def test_copyreg(self):
-        test_module(self, "copyreg")
+        _test_module(self, "copyreg")
 
     def test_token(self):
         # our version doesn't quite sync up

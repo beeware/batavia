@@ -10,7 +10,9 @@ _build
 distribute-*
 /batavia*.js
 /batavia*.min.js
-/batavia/modules/stdlib/*.js
+/batavia*.map
+/batavia/stdlib.js
+/batavia/stdlib/*.js
 /tests/temp
 env
 .eggs/
@@ -18,5 +20,13 @@ env
 make.exe
 phantomjs.exe
 
+# JS
+node_modules/
+package/
+
 # PyCharm settings
 .idea
+
+# Py.test 
+.cache
+

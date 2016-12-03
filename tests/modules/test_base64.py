@@ -27,7 +27,7 @@ class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
         self.assertCodeExecution("""
             import base64
             print(str(base64.urlsafe_b64decode(b'aHR0cDovL2dvb2dsZS5jb20=')))
-            print(type(base64.b64decode(b'aHR0cDovL2dvb2dsZS5jb20=')))
+            print(type(base64.urlsafe_b64decode(b'aHR0cDovL2dvb2dsZS5jb20=')))
             """)
 
     def test_urlsafe_b64encode(self):

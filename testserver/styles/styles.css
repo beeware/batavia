@@ -40,7 +40,7 @@ h3 {
 }
 
 
-#stdout {
+#pyconsole {
     display: block;
     overflow-y: scroll;
     padding: 5px;
@@ -48,6 +48,11 @@ h3 {
     max-height: 300px;
     height: auto;
     background-color: #fff;
+}
+
+#pyconsole span.error {
+    font-weight: bold;
+    color: #b00;
 }
 
 p,

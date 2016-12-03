@@ -31,8 +31,8 @@
     <!--Adding Font Awesome to give some zest to headings etc -->
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
 
-    <script src="/static/batavia/batavia.js"></script>
-    <script src="/static/batavia/vendor/vendored.js"></script>
+    <script src="/static/batavia.js"></script>
+    <!--script src="/static/batavia/vendor/vendored.js"></script>
     <script src="/static/batavia/utils.js"></script>
 
     <script src="/static/batavia/types/Type.js"></script>
@@ -92,7 +92,7 @@
     <script src="/static/batavia/modules/stdlib/stat.js"></script>
     <script src="/static/batavia/modules/stdlib/this.js"></script>
 
-    <script src="/static/batavia/VirtualMachine.js"></script>
+    <script src="/static/batavia/VirtualMachine.js"></script-->
     <!--script src="../batavia.js"></script-->
 
     <!-- The following <script> tag contains a Base64 encoded PYC file.
@@ -236,36 +236,123 @@ DAEDABcBDQEdAgYB
 
     <!-- This is a simple test script. The content comes from sample.py
          in the testserver directory -->
-    <script id="batavia-sample" type="application/python-bytecode">
-{{ samplecode }}
+    <script
+        id="batavia-sample"
+        type="application/python-bytecode"
+        data-filename="{{ modules.sample.filename }}">
+{{ modules.sample.compiled }}
     </script>
 
     <!-- This is a second module module that can be imported. The content
          comes from other.py in the testserver directory -->
-    <script id="batavia-other" type="application/python-bytecode">
-{{ othercode }}
+    <script id="batavia-other"
+        type="application/python-bytecode"
+        data-filename="{{ modules.sample.filename }}">
+{{ modules.other.compiled }}
+    </script>
+
+    <script id="batavia-submodule"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.init.filename }}">
+{{ modules.submodule.init.compiled }}
+    </script>
+
+    <script id="batavia-submodule.modulea"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.modulea.filename }}">
+{{ modules.submodule.modulea.compiled }}
+    </script>
+
+    <script id="batavia-submodule.moduleb"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.moduleb.filename }}">
+{{ modules.submodule.moduleb.compiled }}
+    </script>
+
+    <script id="batavia-submodule.modulec"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.modulec.filename }}">
+{{ modules.submodule.modulec.compiled }}
+    </script>
+
+    <script id="batavia-submodule.moduled"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.moduled.init.filename }}">
+{{ modules.submodule.moduled.init.compiled }}
+    </script>
+
+    <script id="batavia-submodule.moduled.submoduled"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.moduled.submoduled.filename }}">
+{{ modules.submodule.moduled.submoduled.compiled }}
+    </script>
+
+    <script id="batavia-submodule.subsubmodule"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.subsubmodule.init.filename }}">
+{{ modules.submodule.subsubmodule.init.compiled }}
+    </script>
+
+    <script id="batavia-submodule.subsubmodule.submodulea"
+        type="application/python-bytecode"
+        data-filename="{{ modules.submodule.subsubmodule.submodulea.filename }}">
+{{ modules.submodule.subsubmodule.submodulea.compiled }}
     </script>
 
     {% if customcode and customcode.compiled %}
-    <script id="batavia-customcode" type="application/python-bytecode">
+    <script id="batavia-customcode"
+        type="application/python-bytecode"
+        data-filename="{{ modules.custom.filename }}">
 {{ customcode.compiled }}
-    </script>
-
-    <script>
-function customcode() {
-    console.log('Create VM');
-    var vm = new batavia.VirtualMachine();
-    console.log('Run code...');
-    vm.run('customcode', []);
-    console.log('done.');
-}
     </script>
     {% endif %}
 
     <script>
+
+// Now define a stdout and stderr function that will output to the page.
+function PyConsole(element) {
+    this.element = document.getElementById('pyconsole');
+}
+
+PyConsole.prototype.write = function(args, kwargs) {
+    this.element.textContent = this.element.textContent + args[0];
+}
+
+PyConsole.prototype.flush = function(args, kwargs) {}
+
+function PyErrConsole(element) {
+    this.element = document.getElementById('pyconsole');
+}
+
+PyErrConsole.prototype.write = function(args, kwargs) {
+    var err = document.createElement('span');
+    err.className = "error";
+    err.textContent = args[0]
+
+    this.element.appendChild(err);
+}
+
+PyErrConsole.prototype.flush = function(args, kwargs) {}
+
+    {% if customcode %}
+function bootstrap() {
+    console.log('Create VM');
+    var vm = new batavia.VirtualMachine({
+        stdout: new PyConsole(),
+        stderr: new PyErrConsole()
+    });
+    console.log('Run code...');
+    vm.run('customcode', []);
+    console.log('done.');
+}
+    {% endif %}
+
 function sample() {
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine();
+    var vm = new batavia.VirtualMachine({
+        stdout: new PyConsole(),
+        stderr: new PyErrConsole()
+    });
     console.log('Run code...');
     // The first argument is the Python dotted-path of the module to run
     // The second argument is the value for sys.argv
@@ -275,24 +362,18 @@ function sample() {
 
 function pystone(loops) {
     console.log('Benchmarking...');
-    var vm = new batavia.VirtualMachine();
+    var vm = new batavia.VirtualMachine({
+        stdout: new PyConsole(),
+        stderr: new PyErrConsole()
+    });
     vm.run('test.pystone', [loops]);
     console.log('done.');
 }
-
-// Now define a stdout function that will output to the page.
-function stdout(content) {
-    var pre = document.getElementById('stdout');
-    pre.textContent = pre.textContent + content;
-}
-
-batavia.stdout = stdout;
-batavia.stderr = stdout;
     </script>
 
 </head>
 {% if customcode %}
-<body onload="customcode();">
+<body onload="bootstrap();">
 {% else %}
 <body>
 {% endif %}
@@ -333,7 +414,7 @@ batavia.stderr = stdout;
     </script>
     <h3>Console output</h3>
     <div class="indent_block">
-        <pre id="stdout"></pre>
+        <pre id="pyconsole"></pre>
     </div>
     <hr/>
     <h3>More about Batavia</h3>
