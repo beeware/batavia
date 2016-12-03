@@ -52,9 +52,9 @@ Then create a virtual environment and install Batavia into it:
 Install Node.JS
 ^^^^^^^^^^^^^^^
 
-Lastly, you'll need to obtain and install `Node.js`_. Once you've installed
-node, you can use it to install Batavia's Javascript dependencies, and compile
-the Batavia library:
+Lastly, you'll need to install `Node.js`_. You need to have a recent version
+of Node; we test using v6.9.1. Once you've installed node, you can use it to
+install Batavia's Javascript dependencies, and compile the Batavia library:
 
 .. code-block:: bash
 
