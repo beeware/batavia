@@ -33,7 +33,7 @@ Starting the test server
 
  * On Windows::
 
-    >python manage.py runserver
+    > python manage.py runserver
 
 4. Now open your browser and go to `http://localhost:8000 <http://localhost:8000>`_
 
@@ -105,11 +105,11 @@ should see a block in the document ``<head>`` that looks something like:
         OTc0ZGRocDFoZnJjY2JwdzgwMDAwZ24vVC90bXB4amMzZXJyddoIPG1vZHVsZT4BAAAAcwAAAAA=
     </script>
 
-That string is the base64 encoded version of the Python program you submitted.
-The browser then takes this base64 string, decodes it back into a bytestring,
-and runs it through Batavia -- a 15kb Javascript module that does the same thing
-in a browser that CPython does on the desktop: iterprets Python bytecode as a
-running program.
+That string is the base64 encoded version of the bytecode for the Python
+program you submitted. The browser then takes this base64 string, decodes it
+back into a bytestring, and runs it through Batavia -- a Javascript module
+that does the same thing in a browser that CPython does on the desktop:
+iterprets Python bytecode as a running program.
 
 Push the button...
 ------------------
