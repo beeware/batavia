@@ -17,6 +17,8 @@ test:
     - sudo service mysql stop || true
     - sudo service postgresql stop || true
   override:
-    - "pip install pytest; pip install git+https://github.com/pybee/pytest-circleci; py.test tests":
-         timeout: 60
-         parallel: true
+    - pip install pytest
+    - pip install git+https://github.com/pybee/pytest-circleci
+    - "py.test tests":
+        timeout: 60
+        parallel: true

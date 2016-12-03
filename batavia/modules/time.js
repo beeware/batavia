@@ -1,3 +1,5 @@
+var moment = require('moment-timezone');
+
 var type_name = require('../core').type_name;
 var exceptions = require('../core').exceptions;
 var types = require('../types');
@@ -26,13 +28,13 @@ time.sleep = function(secs) {
 
     var start = new Date().getTime();
     while (1) {
-        if ((new Date().getTime() - start) / 1000 > secs){
+        if ((new Date().getTime() - start) / 1000 > secs) {
             break;
         }
     }
 }
 
-time.struct_time = function (sequence) {
+time.struct_time = function(sequence) {
     /*
         copied from https://docs.python.org/3/library/time.html#time.struct_time
 
@@ -52,15 +54,16 @@ time.struct_time = function (sequence) {
 
     if (types.isinstance(sequence, [types.Bytearray, types.Bytes, types.Dict,
             types.FrozenSet, types.List, types.Range, types.Set, types.Str,
-            types.Tuple])){
+            types.Tuple])) {
         if (sequence.length < 9) {
-            throw new exceptions.TypeError("time.struct_time() takes an at least 9-sequence ("+sequence.length+"-sequence given)")
+            throw new exceptions.TypeError("time.struct_time() takes an at least 9-sequence (" + sequence.length + "-sequence given)")
         } else if (sequence.length > 11) {
-            throw new exceptions.TypeError("time.struct_time() takes an at most 11-sequence ("+sequence.length+"-sequence given)")
+            throw new exceptions.TypeError("time.struct_time() takes an at most 11-sequence (" + sequence.length + "-sequence given)")
         }
 
+        var items;
         // might need to convert sequence to a more manageable type
-        if (types.isinstance(sequence, [types.Bytearray])){
+        if (types.isinstance(sequence, [types.Bytearray])) {
             // dict won't work until .keys() is implemented
             // bytearray won't work until .__iter__ is implemented
 
@@ -69,30 +72,30 @@ time.struct_time = function (sequence) {
         } else if (types.isinstance(sequence, [types.Bytes, types.FrozenSet,
             types.Set, types.Range])) {
 
-            var items = new types.Tuple(sequence);
-
-        } else if (types.isinstance(sequence, types.Dict)){
-
-            var items = sequence.keys();
-
+            items = new types.Tuple(sequence);
+        } else if (types.isinstance(sequence, types.Dict)) {
+            items = sequence.keys();
         } else {
             // friendly type, no extra processing needed
-            var items = sequence;
+            items = sequence;
         }
 
         this.n_fields = 11;
         this.n_unnamed_fields = 0;
         this.n_sequence_fields = 9;
 
-       this.push.apply(this, items.slice(0,9));  // only first 9 elements accepted for __getitem__
+        this.push.apply(this, items.slice(0,9));  // only first 9 elements accepted for __getitem__
 
-        var attrs = [ 'tm_year', 'tm_mon', 'tm_mday', 'tm_hour', 'tm_min', 'tm_sec', 'tm_wday', 'tm_yday', 'tm_isdst',
-            'tm_zone', 'tm_gmtoff']
+        var attrs = [
+            'tm_year', 'tm_mon', 'tm_mday',
+            'tm_hour', 'tm_min', 'tm_sec',
+            'tm_wday', 'tm_yday', 'tm_isdst',
+            'tm_zone', 'tm_gmtoff'
+        ]
 
-        for (var i=0; i<items.length; i++){
+        for (var i=0; i<items.length; i++) {
             this[attrs[i]] = items[i];
         }
-
     } else {
         //some other, unacceptable type
         throw new exceptions.TypeError("constructor requires a sequence");
@@ -101,20 +104,20 @@ time.struct_time = function (sequence) {
 
 time.struct_time.prototype = new types.Tuple();
 
-time.struct_time.prototype.__str__ = function(){
+time.struct_time.prototype.__str__ = function() {
     return "time.struct_time(tm_year="+this.tm_year+", tm_mon="+this.tm_mon+", tm_mday="+this.tm_mday+", tm_hour="+this.tm_hour+", tm_min="+this.tm_min+", tm_sec="+this.tm_sec+", tm_wday="+this.tm_wday+", tm_yday="+this.tm_yday+", tm_isdst="+this.tm_isdst+")"
 }
 
-time.struct_time.prototype.__repr__ = function(){
+time.struct_time.prototype.__repr__ = function() {
     return this.__str__()
 }
 
-time.mktime = function(sequence){
+time.mktime = function(sequence) {
     // sequence: struct_time like
     // documentation: https://docs.python.org/3/library/time.html#time.mktime
 
     //Validations
-    if (arguments.length != 1){
+    if (arguments.length != 1) {
         throw new exceptions.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
     }
 
@@ -122,49 +125,57 @@ time.mktime = function(sequence){
         throw new exceptions.TypeError("Tuple or struct_time argument required");
     }
 
-    if (sequence.length !== 9){
+    if (sequence.length !== 9) {
         throw new exceptions.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)");
     }
 
-    if (sequence[0] < 1900){
+    if (sequence[0] < 1900) {
         // because the earliest possible date is system dependant, use an arbitrary cut off for now.
         throw new exceptions.OverflowError("mktime argument out of range");
     }
 
     // all items must be integers
-    for (var i=0; i<sequence.length; i++){
+    for (var i = 0; i < sequence.length; i++) {
         var item = sequence[i];
-        if (types.isinstance(item, types.Float)){
+        if (types.isinstance(item, types.Float)) {
             throw new exceptions.TypeError("integer argument expected, got float")
-        }
-        else if (!types.isinstance(item, [types.Int])){
+        } else if (!types.isinstance(item, types.Int)) {
             throw new exceptions.TypeError("an integer is required (got type " + type_name(item) + ")");
         }
     }
 
-    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0)
+    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0);
 
-    if (isNaN(date)){
+    if (isNaN(date)) {
         // date is too large per ECMA specs
         // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         throw new exceptions.OverflowError("signed integer is greater than maximum")
     }
 
     var seconds = date.getTime() / 1000;
+
+    // If the struct_time specifies DST (sequence[8] === 1), but
+    // the local timezone is anything but UTC, the answer will
+    // be out by 3600 seconds. Adjust accordingly.
+    var tz = moment.tz.guess();
+    if (tz !== 'UTC' && sequence[8] == 1) {
+        seconds = seconds - 3600;
+    }
+
     return seconds.toFixed(1);
 }
 
-time.gmtime = function(seconds){
+time.gmtime = function(seconds) {
     // https://docs.python.org/3/library/time.html#time.gmtime
 
     // 0-1 arguments allowed
-    if (arguments.length > 1){
+    if (arguments.length > 1) {
         throw new exceptions.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
     }
 
     if (arguments.length == 1) {
         // catching bad types
-        if (types.isinstance(seconds, [types.Complex])){
+        if (types.isinstance(seconds, [types.Complex])) {
             throw new exceptions.TypeError("can't convert " + type_name(seconds) + " to int")
 
         } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
@@ -172,13 +183,13 @@ time.gmtime = function(seconds){
         }
 
         var date = new Date(seconds * 1000)
-        if (isNaN(date)){
+        if (isNaN(date)) {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
             throw new exceptions.OSError("Value too large to be stored in data type")
         }
 
-    } else if (seconds === undefined){
+    } else if (seconds === undefined) {
         var date = new Date();
     }
 
@@ -189,7 +200,7 @@ time.gmtime = function(seconds){
         date.getUTCHours(),
         date.getUTCMinutes(),
         date.getUTCSeconds(),
-        date.getUTCDay() -1
+        date.getUTCDay() - 1
     ]
 
     // add day of year
@@ -200,6 +211,59 @@ time.gmtime = function(seconds){
     sequence.push(dayOfYear + 1);
 
     sequence.push(0)  // dst for UTC, always off
+
+    return new time.struct_time(new types.Tuple(sequence))
+}
+
+time.localtime = function(seconds) {
+    // https://docs.python.org/3.0/library/time.html#time.localtime
+
+    // 0-1 arguments allowed
+    if (arguments.length > 1) {
+        throw new exceptions.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
+    }
+
+    if (arguments.length == 1) {
+        // catching bad types
+        if (types.isinstance(seconds, [types.Complex])) {
+            throw new exceptions.TypeError("can't convert " + type_name(seconds) + " to int")
+
+        } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
+            throw new exceptions.TypeError("an integer is required (got type " + type_name(seconds) + ")")
+        }
+
+        var date = new Date(seconds * 1000)
+        if (isNaN(date)) {
+            // date is too large per ECMA specs
+            // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
+            throw new exceptions.OSError("Value too large to be stored in data type")
+        }
+
+    } else if (seconds === undefined) {
+        var date = new Date();
+    }
+
+    var sequence = [
+        date.getFullYear(),
+        date.getMonth() + 1,
+        date.getDate(),
+        date.getHours(),
+        date.getMinutes(),
+        date.getSeconds(),
+        date.getDay() -1
+    ]
+
+    // add day of year
+    var firstOfYear = new Date(date.getFullYear(), 0, 1);
+    var diff = date - firstOfYear;
+    var oneDay = 1000 * 60 * 60 * 24;
+    var dayOfYear = Math.floor(diff / oneDay);
+    sequence.push(dayOfYear + 1);
+
+    // is DST in effect?
+    var tz = moment.tz.guess();
+    var isDST = moment(date.getTime()).tz(tz).isDST();
+    sequence.push(Number(isDST));
 
     return new time.struct_time(new types.Tuple(sequence))
 }
