@@ -195,6 +195,89 @@ class StrTests(TranspileTestCase):
                 print('BeeWare starts with either e or B')
          """)
 
+class FormatTests(TranspileTestCase):
+
+    field_widths = (
+        '5',
+        '-5',
+        ''
+    )
+
+    percisions = (
+        '5',
+        '-5',
+        ''
+    )
+
+    length_modifiers = (
+        'h',
+        'L',
+        'l',
+        ''
+    )
+
+    converstion_flags = (
+        'd',
+        'i',
+        'o',
+        'u',
+        'x',
+        'X',
+        'e',
+        'E',
+        'f',
+        'F',
+        'g',
+        'G',
+        'c',
+        'r',
+        's',
+        '%'  # literal %
+    )
+
+    args = (
+        'spam',
+        5,
+        -5,
+        5.0,
+        -5.0,
+        '5',
+        0o12,
+        -0o12,
+        0x12,
+        -0x12,
+        0X12,
+        -0X12,
+        10e5,
+        -10e5,
+        10E5,
+        -10E5
+    )
+
+    template = 'format this: %{}'
+
+    specifiers = []
+
+    for fw in field_widths:
+        for p in percisions:
+            for l in length_modifiers:
+                for cf in converstion_flags:
+                    specifiers.append("%{fw}{p}{l}{cf}".format(fw=fw, p=p, l=l, cf=cf))
+
+    def test_basic(self):
+        pass
+
+    def test_with_mapping_key(self):
+        pass
+
+    def test_with_arbitrary_field_width(self):
+        pass
+
+    def test_with_arbitrary_precision(self):
+        pass
+
+    def test_literal_percent(self):
+        pass
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
