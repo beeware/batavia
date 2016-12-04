@@ -220,7 +220,6 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_range',
         'test_modulo_set',
         'test_modulo_slice',
-        'test_modulo_str',
         'test_modulo_tuple',
     ]
 

@@ -334,9 +334,16 @@ var _substitute = function(format, args) {
             throw new exceptions.TypeError('not all arguments converted during string formatting');
         }
     }
+
     // Push the rest of the string.
     results.push(format.slice(re.lastIndex));
-    return results.join('');
+
+    if (re.exec(format)){
+        // more matches were found!
+        throw new exceptions.TypeError('not enough arguments for format string');
+    } else {
+        return results.join('');
+    }
 }
 
 Str.prototype.__mod__ = function(other) {
