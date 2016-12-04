@@ -144,21 +144,40 @@ time.mktime = function(sequence) {
         }
     }
 
-    var date = new Date(sequence[0], sequence[1] - 1, sequence[2], sequence[3], sequence[4], sequence[5], 0);
+    // Find the local timezone, and create a datetime in that timezone.
+    var tz_name = moment.tz.guess();
+    var m = moment.tz(
+        [
+            sequence[0].int32(),
+            sequence[1].int32() - 1,
+            sequence[2].int32(),
+            sequence[3].int32(),
+            sequence[4].int32(),
+            sequence[5].int32(),
+            0
+        ],
+        tz_name
+    );
+    var d = m.toDate();
 
-    if (isNaN(date)) {
-        // date is too large per ECMA specs
+    if (isNaN(d)) {
+        // d is too large per ECMA specs
         // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         throw new exceptions.OverflowError("signed integer is greater than maximum")
     }
 
-    var seconds = date.getTime() / 1000;
+    var seconds = d.getTime() / 1000;
 
-    // If the struct_time specifies DST (sequence[8] === 1), but
-    // the local timezone is anything but UTC, the answer will
-    // be out by 3600 seconds. Adjust accordingly.
-    var tz = moment.tz.guess();
-    if (tz !== 'UTC' && sequence[8] == 1) {
+    // If the struct_time requests DST (sequence[8] === 1), but
+    // the local timezone *wouldn't* be in DST, or the struct_time
+    // doesn't request DST (sequence[8] == 0) but the local timezone
+    // *would* be in DST, the seconds value will be out by 3600 seconds.
+    // This is because Javascript (and browsers) know about timezones,
+    // but Python datetimes are naive without PyTZ.
+    // So, adjust the answer accordingly.
+    if (m.isDST() && sequence[8] == 0 && tz_name !== 'UTC') {
+        seconds = seconds + 3600;
+    } else if (!m.isDST() && sequence[8] == 1 && tz_name !== 'UTC') {
         seconds = seconds - 3600;
     }
 
