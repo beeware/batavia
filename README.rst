@@ -17,8 +17,8 @@ Batavia
 .. image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/pybee/batavia/blob/master/LICENSE
 
-.. image:: https://travis-ci.org/pybee/batavia.svg?branch=master
-    :target: https://travis-ci.org/pybee/batavia
+.. image:: https://circleci.com/gh/pybee/batavia.svg?style=shield&circle-token=:circle-token
+    :target: https://circleci.com/gh/pybee/batavia
 
 .. image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
