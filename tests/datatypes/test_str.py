@@ -1,5 +1,7 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    adjust
 
+from itertools import product
 import unittest
 
 
@@ -216,7 +218,7 @@ class FormatTests(TranspileTestCase):
         ''
     )
 
-    converstion_flags = (
+    conversion_flags = (
         'd',
         'i',
         'o',
@@ -236,12 +238,12 @@ class FormatTests(TranspileTestCase):
     )
 
     args = (
-        'spam',
+        '"spam"',
         5,
         -5,
         5.0,
         -5.0,
-        '5',
+        '"5"',
         0o12,
         -0o12,
         0x12,
@@ -254,20 +256,27 @@ class FormatTests(TranspileTestCase):
         -10E5
     )
 
-    template = 'format this: %{}'
 
-    specifiers = []
-
-    for fw in field_widths:
-        for p in percisions:
-            for l in length_modifiers:
-                for cf in converstion_flags:
-                    specifiers.append("%{fw}{p}{l}{cf}".format(fw=fw, p=p, l=l, cf=cf))
 
     def test_basic(self):
-        pass
+        combinations = (product(self.field_widths, self.percisions, self.length_modifiers, self.conversion_flags, self.args))
+        tests = ''.join([adjust("""
+                print('>>> format this: %{spec} % {arg}')
+                print('format this: %{spec}' % {arg})
+                """.format(
+                    spec=''.join(comb[0:4]), arg=comb[4])) for comb in combinations])
+
+        self.assertCodeExecution(tests)
 
     def test_with_mapping_key(self):
+        # combinations = (product(self.field_widths, self.percisions, self.length_modifiers, self.conversion_flags, self.args))
+        # tests = ''.join([adjust("""
+        #         print('>>> {spec} % {arg}')
+        #         print('%{spec}' % {arg})
+        #         """.format(
+        #             spec=''.join(comb[0:4]), arg=comb[4])) for comb in combinations])
+        #
+        # self.assertCodeExecution(tests)
         pass
 
     def test_with_arbitrary_field_width(self):
