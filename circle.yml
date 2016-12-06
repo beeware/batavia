@@ -3,6 +3,8 @@ machine:
     version: 3.4.4
   node:
     version: 6.9.1
+  timezone:
+    "Australia/Perth"
 
 dependencies:
   cache_directories:
