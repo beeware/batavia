@@ -365,7 +365,7 @@ class TimeTests(TranspileTestCase):
         source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
 
-        hour = 24 + localtime().tm_hour - gmtime().tm_hour
+        hour = 16 + localtime().tm_hour - gmtime().tm_hour
         if hour > 24:
             day = 13
             hour = hour - 24
