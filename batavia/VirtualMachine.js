@@ -1310,7 +1310,7 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
                 );
             } else if (obj.__getattr__ instanceof Function) {
                 val = obj.__getattr__(attr);
-            } else if (obj.__getattr__ instanceof types.Function) { // Shouldn't these already be methods?
+            } else if (obj.__getattr__ instanceof types.Function) {
                 var getattr_method = new types.Method(obj, obj.__getattr__);
                 val = callables.run_callable(this, getattr_method.__call__, [attr], new types.JSDict());
             }

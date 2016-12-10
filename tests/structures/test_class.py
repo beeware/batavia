@@ -46,21 +46,38 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    # @unittest.expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             class MyClass:
                 def __init__(self):
                     self.x = 1
-                    self.y = 22
+
                 def __getattr__(self, attr):
-                    self.y = 42
-                    return y+1
+                    self.x = 42
+                    return self.x+1
 
             obj = MyClass()
             print(obj.x)
             print(obj.fail)
-            print(obj.y)
+            print(obj.x)
+        """)
+
+    def test_getattribute(self):
+        self.assertCodeExecution("""
+            class MyClass:
+                def __init__(self):
+                    self.x = 7
+
+                def __getattr__(self, attr):
+                    self.x = attr
+                    return attr
+
+                def __getattribute__(self, attr):
+                    self.x = 42
+                    return 42
+
+            obj = MyClass()
+            print(obj.x)
         """)
 
     def test_attributeerror(self):
