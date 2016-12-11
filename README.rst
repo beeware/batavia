@@ -78,7 +78,7 @@ Windows::
    
 4. Compile the Batavia library and bundle it’s dependencies::
 
-   $ npm run build   
+   $ npm run build  
 
 For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
 
