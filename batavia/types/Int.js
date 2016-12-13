@@ -44,7 +44,7 @@ Int.prototype.int32 = function() {
 }
 
 Int.prototype.bigNumber = function() {
-    return new batavia.vendored.BigNumber(this.val);
+    return new BigNumber(this.val);
 }
 
 Int.prototype.valueOf = function() {
