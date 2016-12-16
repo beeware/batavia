@@ -268,7 +268,7 @@ Str.prototype.__mul__ = function(other) {
 
 
 function _substitute(format, args){
-
+  var types = require('../types');
   var workingArgs = args.slice();
 
   function Specfier(fullText, index, args){
@@ -303,7 +303,7 @@ function _substitute(format, args){
       // if its '*' there needs to be at least 2 args left (one for the * and another for the conversion)
       // if its a conversion there needs to be atleast one left
 
-    allArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
+    this.remainingArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
     this.args = []; // args to be used by this specifier
 
 
@@ -415,7 +415,7 @@ function _substitute(format, args){
             // can't be using numerics or have another * already
             if (this.fieldWidth.value === undefined && this.fieldWidth.numeric === undefined){
 
-              var arg = allArgs.shift(); // grab an arg
+              var arg = this.remainingArgs.shift(); // grab an arg
 
               // arg must be an int
               if ( !types.isinstance(arg, types.Int) ){
@@ -423,7 +423,7 @@ function _substitute(format, args){
               }
 
               // need to have at least one arg left
-              if ( allArgs === [] ){
+              if ( this.remainingArgs === [] ){
                 throw new exceptions.TypeError("not enough arguments for format string")
               }
               this.args.push(arg);
@@ -447,11 +447,10 @@ function _substitute(format, args){
         case 4:
           // percision
           if (char === '*'){
-            this.args.push(allArgs.shift());
             // can't be using numerics or have another * already
             if (this.percision.value === undefined && this.percision.numeric === undefined){
 
-              var arg = allArgs.shift(); // grab an arg
+              var arg = this.remainingArgs.shift(); // grab an arg
 
               // arg must be an int
               if ( !types.isinstance(arg, types.Int) ){
@@ -459,7 +458,7 @@ function _substitute(format, args){
               }
 
               // need to have at least one arg left
-              if ( allArgs === [] ){
+              if ( this.remainingArgs === [] ){
                 throw new exceptions.TypeError("not enough arguments for format string")
               }
               this.args.push(arg);
@@ -487,8 +486,8 @@ function _substitute(format, args){
         case 6:
           // conversion type
 
-          var arg = allArgs.shift(); // grab an arg
-          if ( allArgs === [] ){
+          var arg = this.remainingArgs.shift(); // grab an arg
+          if ( this.remainingArgs === [] ){
             throw new exceptions.TypeError("not enough arguments for format string")
           }
           this.args.push(arg);
@@ -522,15 +521,18 @@ function _substitute(format, args){
 
       switch(this.conversionType){
         case('d'):
-          if ( !types.isinstance(conversionArg, [types.Int, types.Float]) ){
-            throw new exceptions.TypeError("%d format: a number is required, not "+ type_name(conversionArg) )
-          }
 
           // can accept float or int, not str
-          conversionArgRaw = String(workingArgs.shift().valueOf());
+          // conversionArgRaw = String(workingArgs.shift().valueOf());
+
+          conversionArgRaw = workingArgs.shift();
+
+          if ( !types.isinstance(conversionArgRaw, [types.Int, types.Float]) ){
+            throw new exceptions.TypeError("%d format: a number is required, not "+ type_name(conversionArgRaw) )
+          }
 
           if ( this.conversionFlags[' '] ) {
-            conversionArg = ' ' + conversionArgRaw;
+            conversionArg = ' ' + String(conversionArgRaw.valueOf());
           } else if ( this.conversionFlags['+'] ){
             conversionArg = '+' + conversionArgRaw;
           } else {
@@ -610,10 +612,9 @@ function _substitute(format, args){
     charObj = charGen.next();
     var nextStep = 2
 
-    // MAIN LOOP
+    // SPECIFIER MAIN LOOP
     while(charObj.value){
       var nextChar = charObj.value.char
-      // console.log("the char is "+ nextChar)
       try {
         var nextStep = this.getNextStep(nextChar, nextStep)
         this.step(nextChar, nextStep)
@@ -632,46 +633,54 @@ function _substitute(format, args){
 
   } // END SPECIFIER
 
-  // function* getSpecifier(str){
-  //   // str: a string with potential specifiers
-  //   // a generator for possible specifiers in str
-  //
-  //   // solution for regex http://stackoverflow.com/questions/41022735/regex-word-must-end-with-one-of-given-characters/41022892#41022892
-  //   const re = /%+[^%]*?[diouxXeEfFgGcrs]/g
-  //   var matchIndex = 0;
-  //
-  //   while(true){
-  //     match = re.exec(str)
-  //     if (match === null){
-  //       break;
-  //     }
-  //     specifier = {
-  //       posSpec: match[matchIndex],
-  //       index: match.index // location of the specifier in the format string
-  //     }
-  //     yield specifier;
-  //   } // while loop
-  // } // end getSpecifier
+  function* getSpecifier(str){
+    // str: a string with potential specifiers
+    // a generator for possible specifiers in str
+
+    // solution for regex http://stackoverflow.com/questions/41022735/regex-word-must-end-with-one-of-given-characters/41022892#41022892
+    const re = /%+[^%]*?[diouxXeEfFgGcrs]/g
+    while(true){
+      match = re.exec(str)
+      if (match === null){
+        break;
+      }
+      specifier = {
+        posSpec: match[0],
+        index: match.index // location of the specifier in the format string
+      }
+      yield specifier;
+    } // while loop
+  } // end getSpecifier
 
   // var specGen = getSpecifier(format);
   // // get value with specGen.next().value
   // var spec = specGen.next().value;
 
   // grab specifiers one at a time
-  const re = /%+[^%]*?[diouxXeEfFgGcrs]/g
-  specMatch = re.exec(format)
+
+
+  specGen = getSpecifier(format)
 
   result = '';
   lastStop = 0
-  while(specMatch){
-    specFullText = specMatch[0]
-    specIndex = specMatch.index
-    var specObj = new Specfier(specFullText, specIndex);
+
+  spec = specGen.next().value
+  while(spec){
     // grab everything between lastStop and current spec start
-    result += format.slice(lastStop, specIndex)
-    result += specObj.transform()
-    lastStop = specIndex + spec.fullText.length;
-    specMatch = re.exec(format)
+    result += format.slice(lastStop, spec.index);
+
+    // parse the specifier
+    var specObj = new Specfier(spec.posSpec, spec.index, workingArgs);
+
+    // do the substitution
+    result += specObj.transform();
+
+    // update to end of current specifier
+    lastStop = spec.index + spec.posSpec.length;
+
+    workingArgs = specObj.remainingArgs;
+
+    spec = specGen.next().value;
   }
 
   return result;
