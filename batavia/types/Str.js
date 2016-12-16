@@ -267,84 +267,417 @@ Str.prototype.__mul__ = function(other) {
 }
 
 
-var _substitute = function(format, args) {
-    var types = require('../types');
-    var results = [];
-    var special_case_types = [
-        types.List,
-        types.Dict,
-        types.Bytes];
+function _substitute(format, args){
 
-    /* This is the general form regex for a sprintf-like string. */
-    var re = /\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/g;
-    var match;
-    var lastIndex = 0;
-    for (var i = 0; i < args.length; i++) {
-        var arg = args[i];
+  var workingArgs = args.slice();
 
-        match = re.exec(format);
-        if (match) {
-            switch (match[8]) {
-                case "b":
-                    arg = arg.toString(2);
-                break;
-                case "c":
-                    arg = String.fromCharCode(arg);
-                break;
-                case "d":
-                case "i":
-                    arg = parseInt(arg, 10);
-                break;
-                case "j":
-                    arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6], 10) : 0);
-                break;
-                case "e":
-                    arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential();
-                break;
-                case "f":
-                    arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg);
-                break;
-                case "g":
-                    arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg);
-                break;
-                case "o":
-                    arg = arg.toString(8);
-                break;
-                case "s":
-                    arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg);
-                break;
-                case "u":
-                    arg = arg >>> 0;
-                break;
-                case "x":
-                    arg = arg.toString(16);
-                break;
-                case "X":
-                    arg = arg.toString(16).toUpperCase();
-                break;
+  function Specfier(fullText, index, args){
+    // fullText (str): full specifier including %
+    // index: starting index in the format string
+    // args: the remaining available arguments in the conversion
+
+    // returns object containing the specifier object and the remaining unused arguments
+
+    // ORDER OF SPECIFIERS
+    // 0) The '%' character, which marks the start of the specifier.
+    // 1) Mapping key (optional), consisting of a parenthesised sequence of characters (for example, (somename)).
+    // 2) Conversion flags (optional), which affect the result of some conversion types.
+      // # the value conversion will use the "alternate form" (where defined below) specific alternate form differs by conversion type
+      // '0' conversion is 0 padded for numerics
+      // - conversion is left adjusted (overrides 0)
+      // ' '(space) a blank should be left before positive number or empty string produced by sign conversion
+      // '+' positive or negative will precede the conversion (overrides space)
+
+
+    // 3) Minimum field width (optional). If specified as an '*' (asterisk), the actual width is read from the next element of the tuple in values, and the object to convert comes after the minimum field width and optional precision.
+    // 4) Precision (optional), given as a '.' (dot) followed by the precision. If specified as '*' (an asterisk), the actual width is read from the next element of the tuple in values, and the value to convert comes after the precision.
+    // 5) Length modifier (optional). IGNORED IN PYTHON
+    // 6) Conversion type.
+
+    this.fullText = fullText; // full text starting with %
+    this.index = index; // its position in the format string
+
+    // exceptions are thrown like this:
+      // scan one character at a time
+      // if its illegal, throw that error! -> unsupported character
+      // if its '*' there needs to be at least 2 args left (one for the * and another for the conversion)
+      // if its a conversion there needs to be atleast one left
+
+    allArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
+    this.args = []; // args to be used by this specifier
+
+
+    // this.foundArg = function(){
+    //   // this ALMOST works. It throws an error when we hit one too many spaces
+    //   // but when we come across a '*' we had better not have used up our last argument!
+    //
+    //   // if its a '*' we need one more
+    //   // if its a conversion type we can use the last one.
+    //
+    //   this.argCount++;
+    //   if (this.argCount > this.maxArgs){
+    //     throw new exceptions.TypeError("not enough arguments for format string")
+    //   }
+    // }
+
+    // PARSED DATA FOR SPECIFIER
+
+    this.conversionFlags = {
+      '#': false,
+      '0': false,
+      '-': false,
+      ' ': false,
+      '+': false
+    };
+
+    this.fieldWidth = { }
+
+    this.percision = { }
+
+    this.getNextStep = function(nextChar, currStep){
+      // nextChar(str): the next character to be processed
+      // currSte(int): the current step we are on.
+      // return: nextStep(int): what step we should process nextChar on
+
+      var steps = {
+        // regex to search for the FIRST character in each step
+        2: /[#0-\s\+]/, // conversion flags
+        3: /[\d\*]/, // min field width
+        4: /[\d\*\.]/, // percision
+        5: /[hHl]/, // length modifier (not used)
+        6: /[diouxXeEfFgGcrs]/ // conversion type
+      }
+
+      for (var s=currStep; s<=6; s++){
+        // try to make a match
+        var re = steps[s];
+        if (nextChar.search(re) !== -1){
+          return s
+        }
+      }
+
+      // getting here means its an illegal character!
+      throw new Error("illegal character")
+    }
+
+    this.step = function(char, step){
+      // nextChar(str): the next character to be processed
+      // nextChar is processed under the appropriate step number.
+
+      // role step into one function, not object of function
+      switch(step){
+
+        case 2:
+          // conversion flags
+          switch(char){
+
+            case '#':
+              this.conversionFlags['#'] = true;
+              break;
+
+            case '0':
+              // '-' overrides '0'.
+              if (!this.conversionFlags['-']) {
+                this.conversionFlags['0'] = true;
+              };
+              break;
+
+            case '-':
+              this.conversionFlags['-'] = true;
+              this.conversionFlags['0'] = false;
+
+            case ' ':
+              // '+' overrides ' '
+              if (!this.conversionFlags['+']) {
+                this.conversionFlags[' '] = true
+              };
+              break;
+
+            case '+':
+              this.conversionFlags['+'] = true;
+              this.conversionFlags[' '] = false;
+              break;
+
+            default:
+              /* this isn't a python error. I'm just throwing an exception to the
+              * caller that the conversion flag isn't legal
+              */
+              throw new Error("illegal character")
+          } // end inner switch 2
+          break;
+
+        case 3:
+          // min field width
+          if (char === '*'){
+            // there needs to be atleast two args available
+            // (one for this, another for the conversion)
+
+            // can't be using numerics or have another * already
+            if (this.fieldWidth.value === undefined && this.fieldWidth.numeric === undefined){
+
+              var arg = allArgs.shift(); // grab an arg
+
+              // arg must be an int
+              if ( !types.isinstance(arg, types.Int) ){
+                throw new exceptions.TypeError("* wants int")
+              }
+
+              // need to have at least one arg left
+              if ( allArgs === [] ){
+                throw new exceptions.TypeError("not enough arguments for format string")
+              }
+              this.args.push(arg);
+
+              this.fieldWidth.value = "*";
+              this.fieldWidth.numeric = false;
+            } else {
+              throw new Error("illegal character")
             }
 
-            results.push(format.slice(lastIndex, match.index));
-            lastIndex = re.lastIndex;
-            results.push(arg);
-        } else if (    (args.constructor === Array)
-                    && types.isinstance(args[0], special_case_types)) {
-            return format;
-        } else {
-            throw new exceptions.TypeError('not all arguments converted during string formatting');
+          } else if (!isNaN(char)){
+            // value is numeric
+            if (!isNaN(this.fieldWidth.value) && this.fieldWidth.numeric === true){
+              this.fieldWidth.value += char
+            } else {
+              throw new Error("illegal character")
+            }
+          } // end if
+          break;
+
+        case 4:
+          // percision
+          if (char === '*'){
+            this.args.push(allArgs.shift());
+            // can't be using numerics or have another * already
+            if (this.percision.value === undefined && this.percision.numeric === undefined){
+
+              var arg = allArgs.shift(); // grab an arg
+
+              // arg must be an int
+              if ( !types.isinstance(arg, types.Int) ){
+                throw new exceptions.TypeError("* wants int")
+              }
+
+              // need to have at least one arg left
+              if ( allArgs === [] ){
+                throw new exceptions.TypeError("not enough arguments for format string")
+              }
+              this.args.push(arg);
+
+              this.percision.value = "*";
+              this.percision.numeric = false;
+            } else {
+              throw new Error("illegal character")
+            }
+
+          } else if ( !isNaN(char) ){
+            // value is numeric
+            if (!isNaN(this.percision.value) && this.percision.numeric === true){
+              this.percision.value += char
+            } else {
+              throw new Error("illegal character")
+            }
+          };
+          break;
+
+        case 5:
+          // length modifier. Skip!
+          break;
+
+        case 6:
+          // conversion type
+
+          var arg = allArgs.shift(); // grab an arg
+          if ( allArgs === [] ){
+            throw new exceptions.TypeError("not enough arguments for format string")
+          }
+          this.args.push(arg);
+          this.conversionType = char;
+          break;
+
+      } // end switch
+
+    } // end this.step
+
+    this.transform = function(){
+      // returns the substituted string
+
+      workingArgs = this.args.slice();
+
+      if ( this.fieldWidth.value === '*' ){
+        minWidth = workingArgs.shift();
+      } else if ( !isNaN(this.fieldWidth.value) ){
+        minWidth = this.fieldWidth.value;
+      } else {
+        minWidth = 0;
+      }
+
+      if ( this.percision.value === '*' ){
+        percision = workingArgs.shift();
+      } else if ( !isNaN(this.percision.value) ){
+        percision = this.percision.value;
+      } else {
+        percision = 0;
+      }
+
+      switch(this.conversionType){
+        case('d'):
+          if ( !types.isinstance(conversionArg, [types.Int, types.Float]) ){
+            throw new exceptions.TypeError("%d format: a number is required, not "+ type_name(conversionArg) )
+          }
+
+          // can accept float or int, not str
+          conversionArgRaw = String(workingArgs.shift().valueOf());
+
+          if ( this.conversionFlags[' '] ) {
+            conversionArg = ' ' + conversionArgRaw;
+          } else if ( this.conversionFlags['+'] ){
+            conversionArg = '+' + conversionArgRaw;
+          } else {
+            conversionArg = conversionArgRaw;
+          }
+
+          var cellWidth = Math.max(this.minWidth, this.percision, conversionArg.length);
+          var padSize = cellWidth - conversionArg.length;
+          var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
+            percision - conversionArg.length : 0;
+          var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
+
+          // no alternate format
+
+          if ( this.conversionFlags['0'] ){
+            // example: '00005'
+            return '0'.repeat(padSize) + conversionArg
+
+          } else if ( this.conversionFlags['-'] ){
+            // exmaple:  '00005     '
+            return '0'.repeat(percisionPaddingSize) + conversionArg + ' '.repeat(whiteSpaceSize)
+          } else {
+            // example: '   0005'
+            return ' '.repeat(whiteSpaceSize) + conversionArg + '0'.repeat(percisionPaddingSize)
+          }
+
+        case('i'):
+
+        case('o'):
+
+        case('u'):
+
+        case('x'):
+
+        case('X'):
+
+        case('e'):
+
+        case('E'):
+
+        case('f'):
+
+        case('F'):
+
+        case('g'):
+
+        case('G'):
+
+        case('c'):
+
+        case('r'):
+
+        case('s'):
+
+      } // end switch
+
+    } // end transform
+
+    function* getChar(str){
+      // str: full text of specifier (including %)
+
+      // return structure: { value: { char: 's', index: 1 }, done: false }
+
+      var charArray = str.slice(1).split('')
+      index = 0;
+      while(index < charArray.length){
+        obj = {
+          char: charArray[index++],
+          index: index
         }
+        yield obj;
+      }
+
     }
 
-    // Push the rest of the string.
-    results.push(format.slice(re.lastIndex));
+    charGen = getChar(this.fullText);
+    charObj = charGen.next();
+    var nextStep = 2
 
-    if (re.exec(format)){
-        // more matches were found!
-        throw new exceptions.TypeError('not enough arguments for format string');
-    } else {
-        return results.join('');
+    // MAIN LOOP
+    while(charObj.value){
+      var nextChar = charObj.value.char
+      // console.log("the char is "+ nextChar)
+      try {
+        var nextStep = this.getNextStep(nextChar, nextStep)
+        this.step(nextChar, nextStep)
+
+      } catch(err){
+        var charAsHex = nextChar.charCodeAt(0).toString(16)
+        if (err.message === 'illegal character'){
+          throw new exceptions.ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charObj.value.index}`)
+        } else {
+          //its some other error
+          throw err
+        }
+      }
+      charObj = charGen.next()
     }
-}
+
+  } // END SPECIFIER
+
+  // function* getSpecifier(str){
+  //   // str: a string with potential specifiers
+  //   // a generator for possible specifiers in str
+  //
+  //   // solution for regex http://stackoverflow.com/questions/41022735/regex-word-must-end-with-one-of-given-characters/41022892#41022892
+  //   const re = /%+[^%]*?[diouxXeEfFgGcrs]/g
+  //   var matchIndex = 0;
+  //
+  //   while(true){
+  //     match = re.exec(str)
+  //     if (match === null){
+  //       break;
+  //     }
+  //     specifier = {
+  //       posSpec: match[matchIndex],
+  //       index: match.index // location of the specifier in the format string
+  //     }
+  //     yield specifier;
+  //   } // while loop
+  // } // end getSpecifier
+
+  // var specGen = getSpecifier(format);
+  // // get value with specGen.next().value
+  // var spec = specGen.next().value;
+
+  // grab specifiers one at a time
+  const re = /%+[^%]*?[diouxXeEfFgGcrs]/g
+  specMatch = re.exec(format)
+
+  result = '';
+  lastStop = 0
+  while(specMatch){
+    specFullText = specMatch[0]
+    specIndex = specMatch.index
+    var specObj = new Specfier(specFullText, specIndex);
+    // grab everything between lastStop and current spec start
+    result += format.slice(lastStop, specIndex)
+    result += specObj.transform()
+    lastStop = specIndex + spec.fullText.length;
+    specMatch = re.exec(format)
+  }
+
+  return result;
+
+} // end _substitute
+
 
 Str.prototype.__mod__ = function(other) {
     var types = require('../types');
@@ -357,6 +690,7 @@ Str.prototype.__mod__ = function(other) {
 }
 
 Str.prototype.__add__ = function(other) {
+    console.log("hello from __mod__")
     var types = require('../types');
 
     if (types.isinstance(other, Str)) {
