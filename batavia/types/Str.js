@@ -330,9 +330,15 @@ function _substitute(format, args){
       '+': false
     };
 
-    this.fieldWidth = { }
+    this.fieldWidth = {
+      value: '',
+      numeric: null
+    }
 
-    this.percision = { }
+    this.percision = {
+      value: '',
+      numeric: null
+    }
 
     this.getNextStep = function(nextChar, currStep){
       // nextChar(str): the next character to be processed
@@ -385,6 +391,7 @@ function _substitute(format, args){
             case '-':
               this.conversionFlags['-'] = true;
               this.conversionFlags['0'] = false;
+              break;
 
             case ' ':
               // '+' overrides ' '
@@ -413,7 +420,7 @@ function _substitute(format, args){
             // (one for this, another for the conversion)
 
             // can't be using numerics or have another * already
-            if (this.fieldWidth.value === undefined && this.fieldWidth.numeric === undefined){
+            if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null){
 
               var arg = this.remainingArgs.shift(); // grab an arg
 
@@ -423,7 +430,7 @@ function _substitute(format, args){
               }
 
               // need to have at least one arg left
-              if ( this.remainingArgs === [] ){
+              if ( this.remainingArgs.length === 0 ){
                 throw new exceptions.TypeError("not enough arguments for format string")
               }
               this.args.push(arg);
@@ -431,16 +438,23 @@ function _substitute(format, args){
               this.fieldWidth.value = "*";
               this.fieldWidth.numeric = false;
             } else {
+              console.log("illegal character at step 3")
               throw new Error("illegal character")
             }
 
           } else if (!isNaN(char)){
             // value is numeric
-            if (!isNaN(this.fieldWidth.value) && this.fieldWidth.numeric === true){
-              this.fieldWidth.value += char
+            if ( this.fieldWidth.numeric != false ){
+
+              // assign if null else concatentate
+              this.fieldWidth.value += char;
+              this.fieldWidth.numeric = true;
             } else {
+              console.log("illegal character at step 3")
               throw new Error("illegal character")
             }
+          } else {
+            throw new Error("illegal character")
           } // end if
           break;
 
@@ -448,7 +462,7 @@ function _substitute(format, args){
           // percision
           if (char === '*'){
             // can't be using numerics or have another * already
-            if (this.percision.value === undefined && this.percision.numeric === undefined){
+            if (this.percision.value === '' && this.percision.numeric === undefined){
 
               var arg = this.remainingArgs.shift(); // grab an arg
 
@@ -466,16 +480,22 @@ function _substitute(format, args){
               this.percision.value = "*";
               this.percision.numeric = false;
             } else {
+              console.log("illegal character at step 4")
               throw new Error("illegal character")
             }
 
           } else if ( !isNaN(char) ){
             // value is numeric
-            if (!isNaN(this.percision.value) && this.percision.numeric === true){
-              this.percision.value += char
+            if ( this.percision.numeric != false ){
+
+              // assign if null else concatentate
+              this.percision.value += char;
+              this.percision.numeric = true;
             } else {
               throw new Error("illegal character")
             }
+          } else if (char !== '.') {
+            throw new Error("illegal character")
           };
           break;
 
@@ -499,71 +519,66 @@ function _substitute(format, args){
     } // end this.step
 
     this.transform = function(){
+
+      // // valid arg types for each conversion
+      function validateType(arg, conversion){
+        // arg: the arg to be subsituted in
+        // conversion(str): the type of conversion to perform
+        // throws an error if the arg is an invalid type
+
+        if ( /[diouxX]/.test(conversion) ){
+          if ( !types.isinstance(arg, [types.Int, types.Float]) ){
+            throw new exceptions.TypeError(`%${conversion} format: a number is required, not str`)
+          }
+        } else if ( /[eEfFgG]/.text(conversion)   ){
+          if ( !types.isinstance(arg, [types.Float]) ){
+            throw new exceptions.TypeError("a float is required")
+          }
+        } else if ( conversion === 'c' ){
+          // this might be an error in C Python but floats ARE allowed.
+          //  multi character strings are not allowed
+          if ( types.isinstance(arg, types.Str) && arg.valueOf().length > 1 ){
+            throw new exceptions.TypeError("%c requires int or char")
+          }
+        }
+
+        // conversion types s and r are ok with anything
+      } // end validateType
+
       // returns the substituted string
 
       workingArgs = this.args.slice();
 
       if ( this.fieldWidth.value === '*' ){
-        minWidth = workingArgs.shift();
-      } else if ( !isNaN(this.fieldWidth.value) ){
-        minWidth = this.fieldWidth.value;
+        minWidth = workingArgs.shift().valueOf();
+      } else if ( !isNaN(this.fieldWidth.value ) ){
+        minWidth = Number(this.fieldWidth.value);
       } else {
         minWidth = 0;
       }
 
       if ( this.percision.value === '*' ){
-        percision = workingArgs.shift();
-      } else if ( !isNaN(this.percision.value) ){
-        percision = this.percision.value;
+        percision = workingArgs.shift().valueOf();
+      } else if ( !isNaN(this.percision.value ) ){
+        percision = Number(this.percision.value);
       } else {
         percision = 0;
       }
 
+      conversionArgRaw = workingArgs.shift();
+      validateType(conversionArgRaw, this.conversionType);
+
       switch(this.conversionType){
+        // handle the #
+
         case('d'):
-
-          // can accept float or int, not str
-          // conversionArgRaw = String(workingArgs.shift().valueOf());
-
-          conversionArgRaw = workingArgs.shift();
-
-          if ( !types.isinstance(conversionArgRaw, [types.Int, types.Float]) ){
-            throw new exceptions.TypeError("%d format: a number is required, not "+ type_name(conversionArgRaw) )
-          }
-
-          if ( this.conversionFlags[' '] ) {
-            conversionArg = ' ' + String(conversionArgRaw.valueOf());
-          } else if ( this.conversionFlags['+'] ){
-            conversionArg = '+' + conversionArgRaw;
-          } else {
-            conversionArg = conversionArgRaw;
-          }
-
-          var cellWidth = Math.max(this.minWidth, this.percision, conversionArg.length);
-          var padSize = cellWidth - conversionArg.length;
-          var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
-            percision - conversionArg.length : 0;
-          var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
-
-          // no alternate format
-
-          if ( this.conversionFlags['0'] ){
-            // example: '00005'
-            return '0'.repeat(padSize) + conversionArg
-
-          } else if ( this.conversionFlags['-'] ){
-            // exmaple:  '00005     '
-            return '0'.repeat(percisionPaddingSize) + conversionArg + ' '.repeat(whiteSpaceSize)
-          } else {
-            // example: '   0005'
-            return ' '.repeat(whiteSpaceSize) + conversionArg + '0'.repeat(percisionPaddingSize)
-          }
-
         case('i'):
+        case('u'):
+          conversionArg = parseInt(conversionArgRaw);
+          break;
 
         case('o'):
-
-        case('u'):
+          parseInt(conversionArgRaw).toString(8)
 
         case('x'):
 
@@ -588,6 +603,40 @@ function _substitute(format, args){
         case('s'):
 
       } // end switch
+
+      if ( this.conversionFlags[' '] ) {
+        conversionArg = ' ' + String(conversionArgRaw.valueOf());
+      } else if ( this.conversionFlags['+'] ){
+        conversionArg = conversionArgRaw.valueOf() >= 0 ?
+        `+${conversionArgRaw.valueOf()}` : `${conversionArgRaw.valueOf()}`
+      } else {
+        conversionArg = String(conversionArgRaw.valueOf());
+      }
+
+      // console.log(conversionArg)
+      var cellWidth = Math.max(minWidth, percision, conversionArg.length);
+
+      var padSize = cellWidth - conversionArg.length;
+      var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
+        percision - conversionArg.length : 0;
+      var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
+
+      // no alternate format
+
+      if ( this.conversionFlags['0'] ){
+        // example: '00005'
+        retVal = '0'.repeat(padSize) + conversionArg
+
+      } else if ( this.conversionFlags['-'] ){
+        // exmaple:  '00005     '
+        retVal = '0'.repeat(percisionPaddingSize) + conversionArg + ' '.repeat(whiteSpaceSize)
+      } else {
+        // example: '   0005'
+        retVal = ' '.repeat(whiteSpaceSize) + '0'.repeat(percisionPaddingSize) + conversionArg
+      }
+
+      return retVal;
+
 
     } // end transform
 
@@ -616,9 +665,9 @@ function _substitute(format, args){
     while(charObj.value){
       var nextChar = charObj.value.char
       try {
+
         var nextStep = this.getNextStep(nextChar, nextStep)
         this.step(nextChar, nextStep)
-
       } catch(err){
         var charAsHex = nextChar.charCodeAt(0).toString(16)
         if (err.message === 'illegal character'){
@@ -668,21 +717,22 @@ function _substitute(format, args){
   while(spec){
     // grab everything between lastStop and current spec start
     result += format.slice(lastStop, spec.index);
-
     // parse the specifier
     var specObj = new Specfier(spec.posSpec, spec.index, workingArgs);
-
     // do the substitution
     result += specObj.transform();
-
-    // update to end of current specifier
+    // update end of current specifier
     lastStop = spec.index + spec.posSpec.length;
-
     workingArgs = specObj.remainingArgs;
-
     spec = specGen.next().value;
   }
 
+  if ( workingArgs.length !== 0 ){
+    throw new exceptions.TypeError("not all arguments converted during string formatting")
+  }
+
+  // get the last part of the string
+  result += format.slice(lastStop, format.length)
   return result;
 
 } // end _substitute
