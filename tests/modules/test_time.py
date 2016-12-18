@@ -364,38 +364,34 @@ class TimeTests(TranspileTestCase):
         is too large per ECMA spec
         source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
         """
+        ok_date = [300000, 1, 1, 1, 0, 0, 0, 0, 0]  # one exceeding date
+        bad_date = [275758, 1, 1, 1, 0, 0, 0, 0, 0]  # one just-ok date
 
-        hour = 16 + localtime().tm_hour - gmtime().tm_hour
-        if hour > 24:
-            day = 13
-            hour = hour - 24
-        else:
-            day = 12
-
-        seed = [275760, 9, day, hour, 0, 0, 0, 0, 0]  # the max date that can be computed.
         set_up = adjust("""
         print('>>> import time')
         import time
         """)
-
-        for second in range(0, 2):
-            seq = seed[:]
-            seq[5] = second
-            same = second == 1 # do we expect an error?
-            test_str = set_up + mktime_setup(str(tuple(seq)))
-
-            # need to compare each example individually
-            self.assertJavaScriptExecution(test_str,
-                                           js={},
-                                           run_in_function=False,
-                                           same=same,
-                                           out="""
+    
+        expected_output = adjust("""
             >>> import time
-            >>> time.mktime((275760, 9, {day}, {hour}, 0, {second}, 0, 0, 0))
+            >>> time.mktime({seed_expand})
             ### EXCEPTION ###
             OverflowError: signed integer is greater than maximum
                 test.py:4
-            """.format(day=day, hour=hour, second=second))
+            """)
+
+        self.assertJavaScriptExecution(
+            set_up + mktime_setup(str(tuple(ok_date))),
+            run_in_function=False,
+            same=True,
+            out=expected_output.format(seed_expand=str(tuple(ok_date))))
+
+        self.assertJavaScriptExecution(
+            set_up + mktime_setup(str(tuple(bad_date))),
+            run_in_function=False,
+            same=False,
+            out=expected_output.format(seed_expand=str(tuple(bad_date))))
+
 
     def test_mktime_no_overflow_error(self):
         """

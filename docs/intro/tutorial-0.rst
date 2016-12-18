@@ -40,11 +40,15 @@ how to set this up are `on our Environment setup guide
    $ source activate batavia
    $ pip install -e .
 
-4. Lastly, you need to install `Node.js`_. You need to have a recent version
+4. In addition, you need to install `Node.js`_. You need to have a recent version
    of Node; we test using v6.9.1. Once you've installed node, you can use it to
    install Batavia's Javascript dependencies, and compile the Batavia library::
 
    $ npm install
+   
+5. Lastly, compile the Batavia library and bundle it’s dependencies::
+
+   $ npm run build
 
 Your final setup should end up looking like this::
 

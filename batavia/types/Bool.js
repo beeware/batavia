@@ -274,7 +274,7 @@ Bool.prototype.__sub__ = function(other) {
 }
 
 Bool.prototype.__getitem__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__getitem__ has not been implemented");
+    throw new exceptions.TypeError("'bool' object is not subscriptable");
 }
 
 Bool.prototype.__lshift__ = function(other) {
