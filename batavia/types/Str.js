@@ -526,11 +526,11 @@ function _substitute(format, args){
         // conversion(str): the type of conversion to perform
         // throws an error if the arg is an invalid type
 
-        if ( /[diouxX]/.test(conversion) ){
+        if ( /[diouxXeE]/.test(conversion) ){
           if ( !types.isinstance(arg, [types.Int, types.Float]) ){
             throw new exceptions.TypeError(`%${conversion} format: a number is required, not str`)
           }
-        } else if ( /[eEfFgG]/.text(conversion)   ){
+        } else if ( /[fFgG]/.test(conversion)   ){
           if ( !types.isinstance(arg, [types.Float]) ){
             throw new exceptions.TypeError("a float is required")
           }
@@ -565,8 +565,8 @@ function _substitute(format, args){
         percision = 0;
       }
 
-      conversionArgRaw = workingArgs.shift();
-      validateType(conversionArgRaw, this.conversionType);
+      conversionArgValue = workingArgs.shift();
+      validateType(conversionArgValue, this.conversionType);
 
       switch(this.conversionType){
         // handle the #
@@ -574,19 +574,45 @@ function _substitute(format, args){
         case('d'):
         case('i'):
         case('u'):
-          conversionArg = parseInt(conversionArgRaw);
+          var conversionArg = parseInt(conversionArgValue);
           break;
 
         case('o'):
-          parseInt(conversionArgRaw).toString(8)
+          var base = parseInt(Math.abs(conversionArgValue)).toString(8);
+          if (this.conversionFlags['#']){
+            var conversionArg = '0o' + base;
+          } else {
+            var conversionArg = base;
+          }
+          break;
 
         case('x'):
-
         case('X'):
+          var base = this.conversionType == 'x' ?
+            parseInt(conversionArgValue).toString(16) :
+            parseInt(conversionArgValue).toString(16).toUpperCase()
+          if (this.conversionFlags('#')){
+            var conversionArg = '0' + this.conversionType +  base;
+          } else {
+            var conversionArg = base;
+          }
+          break;
 
         case('e'):
-
         case('E'):
+          // toExponential() will almost work here, but the digit here
+          // has a minimum of 1 zero pad
+          // example: 5 = '5.000000e+00'
+
+          var baseExpSplit = conversionArgValue.toExponential(6).split('e+');
+          if ( baseExpSplit[1].length === 1 ){
+            baseExpSplit[1] = '0' + baseExpSplit[1]
+          }
+
+          var conversionArg = this.conversionType === 'e' ?
+            baseExpSplit.join('+e') :
+            baseExpSplit.join('+E')
+          break;
 
         case('f'):
 
@@ -604,13 +630,18 @@ function _substitute(format, args){
 
       } // end switch
 
-      if ( this.conversionFlags[' '] ) {
-        conversionArg = ' ' + String(conversionArgRaw.valueOf());
-      } else if ( this.conversionFlags['+'] ){
-        conversionArg = conversionArgRaw.valueOf() >= 0 ?
-        `+${conversionArgRaw.valueOf()}` : `${conversionArgRaw.valueOf()}`
-      } else {
-        conversionArg = String(conversionArgRaw.valueOf());
+      // only do the below for numbers
+      if ( typeof conversionArgValue === 'number' ){
+        if ( this.conversionFlags[' '] ) {
+          // A blank should be left before a positive number (or empty string)
+          // produced by a signed conversion.
+          conversionArg = conversionArgValue >= 0 ?
+          ` ${conversionArg}` : `-${conversionArg}`;
+        } else if ( this.conversionFlags['+'] ){
+          // sign character should proceed the conversion
+          conversionArg = conversionArgValue >= 0 ?
+          `+${conversionArg}` : `-${conversionArg}`;
+        }
       }
 
       // console.log(conversionArg)
