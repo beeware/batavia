@@ -14,14 +14,14 @@ Isn't this the same thing as Brython/Skulpt/PyPy.js?
 ----------------------------------------------------
 
 No. `Brython`_ and `Skulpt`_ are full implementations of the Python compiler and
-interpreter, written in Javascript. They provide a REPL (an interactive
+interpreter, written in JavaScript. They provide a REPL (an interactive
 prompt), and you run your Python code through Brython/Skuplt. Batavia doesn't
 contain the compilation tools - you ship pre-compiled bytecode to the browser,
 and that bytecode is executed in a browser-side virtual machine.
 
 `PyPy.js`_ is a very similar idea, except that instead of being a clean
 implementation of the Python virtual machine, it uses Emscripten to compile
-PyPy source code into Javascript (or the asm.js subset).
+PyPy source code into JavaScript (or the asm.js subset).
 
 The biggest advantage of the Batavia approach is size. By only implementing
 the virtual machine, Batavia weighs in at around 400kB; this can be trimmed
@@ -52,7 +52,7 @@ same machine.
 
 This means it probably isn't fast enough for an application that is CPU
 bound. However, if this is the case, you can always write your CPU bound
-parts in *pure* Java, and call those directly from Python, same as you
+parts in *pure* JavaScript, and call those directly from Python, same as you
 would for a CPython extension.
 
 It should also be noted that Batavia is a very young project, and very little
@@ -64,7 +64,7 @@ What can I use Batavia for?
 ---------------------------
 
 The main use of Batavia is for writing web applications. Batavia provides the
-option for writing client-side logic in Python, rather than Javascript.
+option for writing client-side logic in Python, rather than JavaScript.
 
 What version of Python does Batavia require?
 --------------------------------------------
