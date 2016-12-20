@@ -147,9 +147,6 @@ Range.prototype.__getitem__ = function(index) {
                          new types.Int(this.step.mul(step)));
     } else {
         var msg = "range indices must be integers or slices, not ";
-        if (constants.BATAVIA_MAGIC == constants.BATAVIA_MAGIC_34) {
-            msg = "range indices must be integers, not ";
-        }
         throw new exceptions.TypeError(msg + type_name(index));
     }
 }
