@@ -2,8 +2,21 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class RangeTests(TranspileTestCase):
-    pass
 
+    def test_range_one_argument(self):
+        self.assertCodeExecution("""
+            print(range(10))
+        """)
+
+    def test_range_two_arguments(self):
+        self.assertCodeExecution("""
+            print(range(5, 10))
+        """)
+
+    def test_range_three_arguments(self):
+        self.assertCodeExecution("""
+            print(range(10, 20, 2))
+        """)
 
 class BuiltinRangeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["range"]
@@ -18,7 +31,6 @@ class BuiltinRangeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_dict',
         'test_float',
         'test_frozenset',
-        'test_int',
         'test_list',
         'test_None',
         'test_NotImplemented',

@@ -271,7 +271,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_dict',
         'test_subscr_NotImplemented',
         'test_subscr_list',
-        'test_subscr_range',
         'test_subscr_set',
         'test_subscr_slice',
 
