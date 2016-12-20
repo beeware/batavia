@@ -526,7 +526,10 @@ function _substitute(format, args){
         // conversion(str): the type of conversion to perform
         // throws an error if the arg is an invalid type
 
+
+        // TODO: THESE WON'T BE BATAVIA TYPES! VALIDATE THEM AS NATIVE TYPES. 
         if ( /[diouxXeE]/.test(conversion) ){
+
           if ( !types.isinstance(arg, [types.Int, types.Float]) ){
             throw new exceptions.TypeError(`%${conversion} format: a number is required, not str`)
           }
@@ -604,7 +607,7 @@ function _substitute(format, args){
           // has a minimum of 1 zero pad
           // example: 5 = '5.000000e+00'
 
-          var baseExpSplit = conversionArgValue.toExponential(6).split('e+');
+          var baseExpSplit = conversionArgValue.toExponential(6).split(/e[\+\-]/);
           if ( baseExpSplit[1].length === 1 ){
             baseExpSplit[1] = '0' + baseExpSplit[1]
           }
@@ -614,13 +617,35 @@ function _substitute(format, args){
             baseExpSplit.join('+E')
           break;
 
-        case('f'):
+        case('g'):
+        case('G'):
+          var conversionExp = conversionArgValue.toExponential(6);
+          baseExpSplit = conversionExp.split(/e[\+\-]/)
+          var exp = Number(baseExpSplit[1]);
+          if ( exp < -4 || !exp < percision){
+            // use exponential
+            if ( baseExpSplit[1].length === 1 ){
+              baseExpSplit[1] = '0' + baseExpSplit[1]
+            }
+            var conversionArg = this.conversionType === 'g' ?
+              baseExpSplit.join('+e') :
+              baseExpSplit.join('+E')
+          } else {
+            // don't use exponential
+            conversionArg = conversionArgValue.toFixed(6)
+          }
 
+          break;
+        case('f'):
         case('F'):
 
-        case('g'):
+          if ( Number.isInteger(conversionArgValue) ){
+            conversionArg = conversionArgValue.toFixed(6);
+          } else {
+            conversionArg = conversionArgValue;
+          }
 
-        case('G'):
+          break;
 
         case('c'):
 
