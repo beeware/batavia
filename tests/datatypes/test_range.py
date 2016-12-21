@@ -4,38 +4,146 @@ import unittest
 
 
 class RangeTests(TranspileTestCase):
-    @unittest.expectedFailure
+    def test_lengths(self):
+        self.assertCodeExecution("""
+            print("len(range(0, 10)) =", len(range(0, 10)))
+            print("len(range(0, 10, 2)) =", len(range(0, 10, 2)))
+            print("len(range(0, 11, 2)) =", len(range(0, 11, 2)))
+            print("len(range(-10, 0)) =", len(range(-10, 0)))
+            print("len(range(10, 0, -1)) =", len(range(10, 0, -1)))
+            print("len(range(10, 0, -2)) =", len(range(10, 0, -2)))
+            print("len(range(11, 0, -2)) =", len(range(11, 0, -2)))
+            print("len(range(0, -10, -1)) =", len(range(0, -10, -1)))
+            print("len(range(0, 5, 2)) =", len(range(0, 5, 2)))
+            print("len(range(7, -6, -3)) =", len(range(7, -6, -3)))
+            print("len(range(1, 10, -1)) =", len(range(1, 10, -1)))
+            print("len(range(10, 0, 1)) =", len(range(10, 0, 1)))
+            """)
+
     def test_creation(self):
         self.assertCodeExecution("""
             x = range(0, 5)
-            print("x[0] = ", x[0])
-            print("x[1] = ", x[1])
-            print("x[3] = ", x[3])
-            print("x[-1] = ", x[-1])
-            print("x[5] = ", x[5])
+            print("x[0] =", x[0])
+            print("x[1] =", x[1])
+            print("x[3] =", x[3])
+            print("x[-1] =", x[-1])
+            print("x[5] =", x[5])
             """)
 
-    @unittest.expectedFailure
+    def test_start_not_zero(self):
+        self.assertCodeExecution("""
+            x = range(5, 10)
+            print("x[0] =", x[0])
+            print("x[1] =", x[1])
+            print("x[3] =", x[3])
+            print("x[-1] =", x[-1])
+            print("x[5] =", x[5])
+            """)
+
     def test_step(self):
         self.assertCodeExecution("""
             x = range(0, 5, 2)
-            print("x[0] = ", x[0])
-            print("x[1] = ", x[1])
-            print("x[3] = ", x[3])
-            print("x[-1] = ", x[-1])
-            print("x[5] = ", x[5])
+            print("x[0] =", x[0])
+            print("x[1] =", x[1])
+            print("x[3] =", x[3])
+            print("x[-1] =", x[-1])
+            print("x[5] =", x[5])
             """)
 
-    @unittest.expectedFailure
     def test_step_negative(self):
         self.assertCodeExecution("""
-            x = range(5, 1, -2)
-            print("x[0] = ", x[0])
-            print("x[1] = ", x[1])
-            print("x[3] = ", x[3])
-            print("x[-1] = ", x[-1])
-            print("x[5] = ", x[5])
+            x = range(7, -5, -2)
+            print("x[0] =", x[0])
+            print("x[1] =", x[1])
+            print("x[3] =", x[3])
+            print("x[-1] =", x[-1])
+            print("x[5] =", x[5])
             """)
+
+    def test_start_negative(self):
+        self.assertCodeExecution("""
+            x = range(-10, 0)
+            print("x[0] =", x[0])
+            print("x[1] =", x[1])
+            print("x[3] =", x[3])
+            print("x[-1] =", x[-1])
+            print("x[5] =", x[5])
+            """)
+
+    def test_slice_simple(self):
+        self.assertCodeExecution("""
+            x = range(-10, 10)
+            print("x[0:5] =", x[0:5])
+            print("x[2:5] =", x[2:5])
+            print("x[5:10] =", x[5:10])
+            print("x[12:12] =", x[12:12])
+            """)
+
+    def test_slice_step(self):
+        self.assertCodeExecution("""
+            x = range(-10, 10)
+            print("x[0:5:2] =", x[0:5:2])
+            print("x[2:5:2] =", x[2:5:2])
+            print("x[5:10:2] =", x[5:10:2])
+            print("x[0:5:-2] =", x[0:5:-2])
+            print("x[2:5:-2] =", x[2:5:-2])
+            print("x[25:21:-2] =", x[25:21:-2])
+            """)
+
+    def test_slice_incomplete(self):
+        self.assertCodeExecution("""
+            x = range(-10, 10)
+            print("x[:5:2] =", x[:5:2])
+            print("x[2::2] =", x[2::2])
+            print("x[::2] =", x[::2])
+            print("x[:5:-2] =", x[:5:-2])
+            print("x[2::-2] =", x[2::-2])
+            print("x[::-2] =", x[::-2])
+            """)
+
+    def test_slice_edge_cases_negative(self):
+        self.assertCodeExecution("""
+            print("range(2, 7, 3)[8:8:-2] =", range(2, 7, 3)[8:8:-2])
+            print("range(2, 7, 3)[-8:-8:-2] =", range(2, 7, 3)[-8:-8:-2])
+
+            print("range(7, 2, 1)[8:8:-2] =", range(7, 2, 1)[8:8:-2])
+            print("range(7, 2, 1)[-8:-8:-2] =", range(7, 2, 1)[-8:-8:-2])
+
+            print("range(7, 2, -1)[8:8:-2] =", range(7, 2, -1)[8:8:-2])
+            print("range(7, 2, -1)[-8:-8:-2] =", range(7, 2, -1)[-8:-8:-2])
+
+            print("range(2, 7, -1)[8:8:-2] =", range(2, 7, -1)[8:8:-2])
+            print("range(2, 7, -1)[-8:-8:-2] =", range(2, 7, -1)[-8:-8:-2])
+            """)
+
+    def test_slice_edge_cases_positive(self):
+        self.assertCodeExecution("""
+            print("range(2, 7, 2)[8:8] =", range(2, 7, 2)[8:8])
+            print("range(2, 7, 2)[-8:-8] =", range(2, 7, 2)[-8:-8])
+
+            print("range(7, 2, 1)[8:8] =", range(7, 2, 1)[8:8])
+            print("range(7, 2, 1)[-8:-8] =", range(7, 2, 1)[-8:-8])
+
+            print("range(7, 2, -1)[8:8] =", range(7, 2, -1)[8:8])
+            print("range(7, 2, -1)[-8:-8] =", range(7, 2, -1)[-8:-8])
+
+            print("range(2, 7, -1)[8:8] =", range(2, 7, -1)[8:8])
+            print("range(2, 7, -1)[-8:-8] =", range(2, 7, -1)[-8:-8])
+            """)
+
+    def test_slice_edge_cases_incomplete(self):
+        self.assertCodeExecution("""
+            print("range(2, 7, 2)[::] =", range(2, 7, 2)[::])
+            print("range(7, 2, 1)[::] =", range(7, 2, 1)[::])
+            print("range(7, 2, -1)[::] =", range(7, 2, -1)[::])
+            print("range(2, 7, -1)[::] =", range(2, 7, -1)[::])
+
+            print("range(2, 7, 2)[::-1] =", range(2, 7, 2)[::-1])
+            print("range(7, 2, 1)[::-1] =", range(7, 2, 1)[::-1])
+            print("range(7, 2, -1)[::-1] =", range(7, 2, -1)[::-1])
+            print("range(2, 7, -1)[::-1] =", range(2, 7, -1)[::-1])
+            """)
+
 
 class UnaryRangeOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'range'
@@ -289,24 +397,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_rshift_slice',
         'test_rshift_str',
         'test_rshift_tuple',
-
-        'test_subscr_bool',
-        'test_subscr_bytearray',
-        'test_subscr_bytes',
-        'test_subscr_class',
-        'test_subscr_complex',
-        'test_subscr_dict',
-        'test_subscr_float',
-        'test_subscr_frozenset',
-        'test_subscr_int',
-        'test_subscr_list',
-        'test_subscr_None',
-        'test_subscr_NotImplemented',
-        'test_subscr_range',
-        'test_subscr_set',
-        'test_subscr_slice',
-        'test_subscr_str',
-        'test_subscr_tuple',
 
         'test_subtract_bool',
         'test_subtract_bytearray',

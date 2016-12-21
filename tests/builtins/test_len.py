@@ -20,7 +20,6 @@ class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_None',
         'test_NotImplemented',
         'test_int',
-        'test_range',
         'test_set',
         'test_slice',
     ]

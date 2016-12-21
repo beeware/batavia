@@ -43,6 +43,10 @@ Int.prototype.int32 = function() {
     return parseInt(this.valueOf());
 }
 
+Int.prototype.bigNumber = function() {
+    return new BigNumber(this.val);
+}
+
 Int.prototype.valueOf = function() {
     return this.val.valueOf();
 }

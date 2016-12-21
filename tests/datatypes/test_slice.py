@@ -18,7 +18,6 @@ class SliceTests(TranspileTestCase):
             print("x[2:8:2] = ", x[2:8:2])
             """)
 
-    @unittest.expectedFailure
     def test_slice_range(self):
         self.assertCodeExecution("""
             x = range(0, 10)
