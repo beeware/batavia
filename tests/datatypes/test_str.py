@@ -199,6 +199,7 @@ class StrTests(TranspileTestCase):
 
 class FormatTests(TranspileTestCase):
 
+    alternate = ('#', '')
 
     length_modifiers = (
         'h',
@@ -238,36 +239,83 @@ class FormatTests(TranspileTestCase):
         0.000000000000000000005,
         -0.5,
         -0.000005,
-        -0.000000000000000000005
+        -0.000000000000000000005,
+        500000,
+        -500000,
+        500000000000000000000,
+        -500000000000000000000
     )
+
 
     def test_basic(self):
 
-        combinations = (product(self.length_modifiers, self.conversion_flags, self.args))
+        combinations = (product(self.alternate, self.length_modifiers, self.conversion_flags, self.args))
         tests = ''.join([adjust("""
                 print('>>> format this: %{spec} % {arg}')
                 print('format this: %{spec}' % {arg})
                 """.format(
-                    spec=''.join(comb[0:1]), arg=comb[2])) for comb in combinations])
+                    spec=''.join(comb[0:2]), arg=comb[3])) for comb in combinations])
 
-        # print(tests)
         self.assertCodeExecution(tests)
 
     def test_with_mapping_key(self):
-        # combinations = (product(self.field_widths, self.percisions, self.length_modifiers, self.conversion_flags, self.args))
-        # tests = ''.join([adjust("""
-        #         print('>>> {spec} % {arg}')
-        #         print('%{spec}' % {arg})
-        #         """.format(
-        #             spec=''.join(comb[0:4]), arg=comb[4])) for comb in combinations])
-        #
-        # self.assertCodeExecution(tests)
+        # TODO
         pass
 
-    def test_with_arbitrary_field_width(self):
+    def test_field_width(self):
+
+        cases = (
+            ('%2s', 's'),
+            ('%2s', 'spam'),
+            ('%2d', 5),
+            ('%2d', 1234),
+        )
+
+        tests = ''.join([adjust("""
+            print('>>> format this: %{spec} % {arg}')
+            print('format this: %{spec}' % {arg})
+            """.format(
+            spec=''.join(c[0]), arg=c[1])) for c in cases])
+
+        self.assertCodeExecution(tests)
+
+    def test_precision(self):
+
+        cases = (
+            ('%.5d', 3),
+            ('%.5i', 3),
+            ('%.5o', 3),
+            ('%.5u', 3),
+            ('%.5x', 3),
+            ('%.5X', 3),
+            ('%.5e', 3),
+            ('%.5E', 3),
+            ('%.5f', 3),
+            ('%.5F', 3),
+            ('%.5g', 3),
+            ('%.5G', 3),
+            ('%.5c', 3),
+            ('%.5r', 's'),
+            ('%.5s', 's')
+        )
+        
+        tests = ''.join([adjust("""
+            print('>>> format this: %{spec} % {arg}')
+            print('format this: %{spec}' % {arg})
+            """.format(
+            spec=''.join(c[0]), arg=c[1])) for c in cases])
+
+        self.assertCodeExecution(tests)
+    def test_zero_padded(self):
         pass
 
-    def test_with_arbitrary_precision(self):
+    def test_left_adjust(self):
+        pass
+
+    def test_blank_pad(self):
+        pass
+
+    def test_plus_sign(self):
         pass
 
     def test_literal_percent(self):

@@ -1,3 +1,6 @@
+var exceptions = require('../core').exceptions;
+var type_name = require('../core').type_name;
+
 function _substitute(format, args){
   var types = require('../types');
   var workingArgs = args.slice();
@@ -27,6 +30,8 @@ function _substitute(format, args){
 
     this.fullText = fullText; // full text starting with %
     this.index = index; // its position in the format string
+    this.parsedSpec = '%'; // the parsed specifier
+
 
     // exceptions are thrown like this:
       // scan one character at a time
@@ -36,20 +41,6 @@ function _substitute(format, args){
 
     this.remainingArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
     this.args = []; // args to be used by this specifier
-
-
-    // this.foundArg = function(){
-    //   // this ALMOST works. It throws an error when we hit one too many spaces
-    //   // but when we come across a '*' we had better not have used up our last argument!
-    //
-    //   // if its a '*' we need one more
-    //   // if its a conversion type we can use the last one.
-    //
-    //   this.argCount++;
-    //   if (this.argCount > this.maxArgs){
-    //     throw new exceptions.TypeError("not enough arguments for format string")
-    //   }
-    // }
 
     // PARSED DATA FOR SPECIFIER
 
@@ -95,7 +86,7 @@ function _substitute(format, args){
 
       // getting here means its an illegal character!
       throw new Error("illegal character")
-    }
+    } // end getNextStep
 
     this.step = function(char, step){
       // nextChar(str): the next character to be processed
@@ -169,7 +160,6 @@ function _substitute(format, args){
               this.fieldWidth.value = "*";
               this.fieldWidth.numeric = false;
             } else {
-              console.log("illegal character at step 3")
               throw new Error("illegal character")
             }
 
@@ -181,7 +171,6 @@ function _substitute(format, args){
               this.fieldWidth.value += char;
               this.fieldWidth.numeric = true;
             } else {
-              console.log("illegal character at step 3")
               throw new Error("illegal character")
             }
           } else {
@@ -211,7 +200,6 @@ function _substitute(format, args){
               this.percision.value = "*";
               this.percision.numeric = false;
             } else {
-              console.log("illegal character at step 4")
               throw new Error("illegal character")
             }
 
@@ -454,7 +442,6 @@ function _substitute(format, args){
         }
       }
 
-      console.log(conversionArg)
       var cellWidth = Math.max(minWidth, conversionArg.length);
       var padSize = cellWidth - conversionArg.length;
       // var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
@@ -485,6 +472,7 @@ function _substitute(format, args){
     // SPECIFIER MAIN LOOP
     while(index < charArray.length){
       var nextChar = charArray[index];
+      this.parsedSpec += nextChar;
       try {
 
         var nextStep = this.getNextStep(nextChar, nextStep)
@@ -498,26 +486,37 @@ function _substitute(format, args){
           throw err
         }
       }
+
       index++;
-    }
+      if ( nextStep === 6 ){
+        break;
+      }
+    } // end while loop
+    // check that a conversion type was found. Otherwise throw error!
+    if ( this.conversionType === undefined ) {
+      throw new exceptions.ValueError("incomplete format")
+    };
+
 
   } // END SPECIFIER
 
-  result = '';
-  lastStop = 0
+  var result = '';
+  var lastStop = 0
 
-  const re = /%+[^%]*?[diouxXeEfFgGcrs]/g;
+  // const re = /%+[^%]*?[diouxXeEfFgGcrs]/g;
+  const re = /%.+?/g // grabs any chunk starting with %
   var match = re.exec(format);
   // spec = specGen.next().value
   while(match){
     // grab everything between lastStop and current spec start
     result += format.slice(lastStop, match.index);
-    // parse the specifier
+    // parse the specifier. DON'T ASSUME IT IS COMPLETE!
     var specObj = new Specfier(match[0], match.index, workingArgs);
+
     // do the substitution
     result += specObj.transform();
     // update end of current specifier
-    lastStop = match.index + match[0].length;
+    lastStop = match.index + specObj.parsedSpec.length;
     workingArgs = specObj.remainingArgs;
 
     var match = re.exec(format);
