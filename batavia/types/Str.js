@@ -564,7 +564,7 @@ function _substitute(format, args){
       } else if ( !isNaN(this.percision.value ) ){
         percision = Number(this.percision.value);
       } else {
-        percision = 0;
+        percision = null;
       }
 
       conversionArgRaw = workingArgs.shift(); // the python representation of the arg
@@ -578,7 +578,13 @@ function _substitute(format, args){
         case('d'):
         case('i'):
         case('u'):
-          var conversionArg = parseInt(conversionArgValue);
+          var conversionArg = String(parseInt(conversionArgValue));
+
+          // percision determines leading 0s
+          var numLeadingZeros = percision - conversionArg.length;
+          if ( numLeadingZeros > 0 ){
+            conversionArg = '0'.repeat(numLeadingZeros);
+          }
           break;
 
         case('o'):
@@ -587,6 +593,12 @@ function _substitute(format, args){
             var conversionArg = '0o' + base;
           } else {
             var conversionArg = base;
+          }
+
+          // percision determines leading 0s
+          var numLeadingZeros = percision - String(base).length;
+          if ( numLeadingZeros > 0 ){
+            conversionArg = '0'.repeat(numLeadingZeros);
           }
           break;
 
@@ -600,6 +612,12 @@ function _substitute(format, args){
           } else {
             var conversionArg = base;
           }
+
+          // percision determines leading 0s
+          var numLeadingZeros = percision - String(base).length;
+          if ( numLeadingZeros > 0 ){
+            conversionArg = '0'.repeat(numLeadingZeros);
+          }
           break;
 
         case('e'):
@@ -609,8 +627,14 @@ function _substitute(format, args){
           // example: 5 = '5.000000e+00'
 
           var baseExpSplit = conversionArgValue.valueOf().toExponential(6).split(/e[\+\-]/);
+
           if ( baseExpSplit[1].length === 1 ){
             baseExpSplit[1] = '0' + baseExpSplit[1]
+          }
+
+          var numLeadingZeros = percision - conversionArg.length;
+          if ( numLeadingZeros > 0 ){
+            baseExpSplit[0] = baseExpSplit[0] + '0'.repeat(numLeadingZeros)
           }
 
           var conversionArg = this.conversionType === 'e' ?
@@ -629,6 +653,10 @@ function _substitute(format, args){
               baseExpSplit[1] = '0' + baseExpSplit[1]
             }
 
+            var numLeadingZeros = percision - conversionArg.length;
+            if ( numLeadingZeros > 0 ){
+              baseExpSplit[0] = baseExpSplit[0] + '0'.repeat(numLeadingZeros)
+            }
 
             var conversionArg = this.conversionType === 'g' ?
               baseExpSplit.join('+e') :
@@ -660,15 +688,25 @@ function _substitute(format, args){
           break;
         case('f'):
         case('F'):
-          conversionArg = conversionArgValue.toFixed(6);
+
+          var beforeDecimal = Math.floor(conversionArgValue);
+          var afterDecimal = conversionArgValue % 1;
+          afterDecimalLen = percision !== null ?
+            percision - String(beforeDecimal).length : 6
+
+          var numExtraZeros = afterDecimalLen - String(afterDecimal).length;
+          var conversionArg = `${beforeDecimal}.${afterDecimal + '0'.repeat(numExtraZeros)}`
           break;
 
         case('c'):
-
+          conversionArg = conversionArgValue;
         case('r'):
-
+          conversionArg = typeof conversionArgValue === 'string' ?
+            `'${conversionArgValue}'` : conversionArgValue;
+          break;
         case('s'):
-
+          conversionArg = conversionArgValue;
+          break;
       } // end switch
 
       // only do the below for numbers
@@ -685,23 +723,23 @@ function _substitute(format, args){
         }
       }
 
-      var cellWidth = Math.max(minWidth, percision, conversionArg.length);
-
+      console.log(conversionArg)
+      var cellWidth = Math.max(minWidth, conversionArg.length);
       var padSize = cellWidth - conversionArg.length;
-      var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
-        percision - conversionArg.length : 0;
-      var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
+      // var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
+      //   percision - conversionArg.length : 0;
+      // var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
 
-      if ( this.conversionFlags['0'] ){
+      if ( this.conversionFlags['0'] && typeof conversionArgValue === 'number' ){
         // example: '00005'
-        retVal = '0'.repeat(padSize) + conversionArg
+        retVal = '0'.repeat(padSize) + conversionArg;
 
       } else if ( this.conversionFlags['-'] ){
         // exmaple:  '00005     '
-        retVal = '0'.repeat(percisionPaddingSize) + conversionArg + ' '.repeat(whiteSpaceSize)
+        retVal = conversionArg + ' '.repeat(padSize);
       } else {
         // example: '   0005'
-        retVal = ' '.repeat(whiteSpaceSize) + '0'.repeat(percisionPaddingSize) + conversionArg
+        retVal = ' '.repeat(padSize) + conversionArg;
       }
 
       return retVal;
