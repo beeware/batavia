@@ -199,17 +199,6 @@ class StrTests(TranspileTestCase):
 
 class FormatTests(TranspileTestCase):
 
-    field_widths = (
-        '5',
-        '-5',
-        ''
-    )
-
-    percisions = (
-        '5',
-        '-5',
-        ''
-    )
 
     length_modifiers = (
         'h',
@@ -233,8 +222,7 @@ class FormatTests(TranspileTestCase):
         'G',
         'c',
         'r',
-        's',
-        '%'  # literal %
+        's'
     )
 
     args = (
@@ -245,38 +233,24 @@ class FormatTests(TranspileTestCase):
         -5,
         5.0,
         -5.0,
-        5.000000,
-        -5.000000,
-        5.000000000000000000000,
-        -5.000000000000000000000,
         0.5,
         0.000005,
         0.000000000000000000005,
         -0.5,
         -0.000005,
-        -0.000000000000000000005,
-        0o12,
-        -0o12,
-        0x12,
-        -0x12,
-        0X12,
-        -0X12,
-        10e5,
-        -10e5,
-        10E5,
-        -10E5
+        -0.000000000000000000005
     )
 
-
-
     def test_basic(self):
-        combinations = (product(self.field_widths, self.percisions, self.length_modifiers, self.conversion_flags, self.args))
+
+        combinations = (product(self.length_modifiers, self.conversion_flags, self.args))
         tests = ''.join([adjust("""
                 print('>>> format this: %{spec} % {arg}')
                 print('format this: %{spec}' % {arg})
                 """.format(
-                    spec=''.join(comb[0:4]), arg=comb[4])) for comb in combinations])
+                    spec=''.join(comb[0:1]), arg=comb[2])) for comb in combinations])
 
+        # print(tests)
         self.assertCodeExecution(tests)
 
     def test_with_mapping_key(self):
