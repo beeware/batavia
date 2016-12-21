@@ -519,7 +519,6 @@ function _substitute(format, args){
     } // end this.step
 
     this.transform = function(){
-
       // // valid arg types for each conversion
       function validateType(arg, conversion){
         // arg: the arg to be subsituted in
@@ -527,7 +526,7 @@ function _substitute(format, args){
         // throws an error if the arg is an invalid type
 
 
-        // TODO: THESE WON'T BE BATAVIA TYPES! VALIDATE THEM AS NATIVE TYPES. 
+        // TODO: THESE WON'T BE BATAVIA TYPES! VALIDATE THEM AS NATIVE TYPES.
         if ( /[diouxXeE]/.test(conversion) ){
 
           if ( !types.isinstance(arg, [types.Int, types.Float]) ){
@@ -568,8 +567,10 @@ function _substitute(format, args){
         percision = 0;
       }
 
-      conversionArgValue = workingArgs.shift();
-      validateType(conversionArgValue, this.conversionType);
+      conversionArgRaw = workingArgs.shift(); // the python representation of the arg
+      validateType(conversionArgRaw, this.conversionType);
+
+      conversionArgValue = conversionArgRaw.valueOf(); // the native type
 
       switch(this.conversionType){
         // handle the #
@@ -607,7 +608,7 @@ function _substitute(format, args){
           // has a minimum of 1 zero pad
           // example: 5 = '5.000000e+00'
 
-          var baseExpSplit = conversionArgValue.toExponential(6).split(/e[\+\-]/);
+          var baseExpSplit = conversionArgValue.valueOf().toExponential(6).split(/e[\+\-]/);
           if ( baseExpSplit[1].length === 1 ){
             baseExpSplit[1] = '0' + baseExpSplit[1]
           }
@@ -627,24 +628,39 @@ function _substitute(format, args){
             if ( baseExpSplit[1].length === 1 ){
               baseExpSplit[1] = '0' + baseExpSplit[1]
             }
+
+
             var conversionArg = this.conversionType === 'g' ?
               baseExpSplit.join('+e') :
               baseExpSplit.join('+E')
           } else {
             // don't use exponential
-            conversionArg = conversionArgValue.toFixed(6)
-          }
 
+            if (this.conversionFlags['#']){
+              // The alternate form causes the result to always contain a
+              // decimal point, and trailing zeroes are not removed as they
+              // would otherwise be.
+
+              // The precision determines the number of significant digits
+              //before and after the decimal point and defaults to 6.
+
+              var beforeDecimal = Math.floor(conversionArgValue);
+              var afterDecimal = conversionArgValue % 1;
+              var afterDecimalLen = this.percision.value !== '' ?
+                percision - String(beforeDecimal).length : 6;
+
+              var numExtraZeros = afterDecimalLen - String(afterDecimal).length;
+              var conversionArg = `${beforeDecimal}.${afterDecimal + '0'.repeat(numExtraZeros)}`
+
+            } else {
+
+              var conversionArg = conversionArgValue;
+            }
+          } // outer if
           break;
         case('f'):
         case('F'):
-
-          if ( Number.isInteger(conversionArgValue) ){
-            conversionArg = conversionArgValue.toFixed(6);
-          } else {
-            conversionArg = conversionArgValue;
-          }
-
+          conversionArg = conversionArgValue.toFixed(6);
           break;
 
         case('c'):
@@ -669,15 +685,12 @@ function _substitute(format, args){
         }
       }
 
-      // console.log(conversionArg)
       var cellWidth = Math.max(minWidth, percision, conversionArg.length);
 
       var padSize = cellWidth - conversionArg.length;
       var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
         percision - conversionArg.length : 0;
       var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
-
-      // no alternate format
 
       if ( this.conversionFlags['0'] ){
         // example: '00005'
