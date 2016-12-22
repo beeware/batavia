@@ -44,7 +44,7 @@
   "dev": "webpack-dev-server",
   "dependencies": {
     "base64-js": "1.2.0",
-    "bignumber.js": "2.4.0",
+    "bignumber.js": "^2.4.0",
     "buffer": "5.0.0",
     "moment": "2.17.0",
     "moment-timezone": "0.5.10",

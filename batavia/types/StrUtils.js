@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
+// var BigNumber = require('bignumber.js').BigNumber
 
 function _substitute(format, args){
   var types = require('../types');
@@ -165,7 +166,7 @@ function _substitute(format, args){
 
           } else if (!isNaN(char)){
             // value is numeric
-            if ( this.fieldWidth.numeric != false ){
+            if ( this.fieldWidth.numeric !== false ){
 
               // assign if null else concatentate
               this.fieldWidth.value += char;
@@ -205,7 +206,7 @@ function _substitute(format, args){
 
           } else if ( !isNaN(char) ){
             // value is numeric
-            if ( this.percision.numeric != false ){
+            if ( this.percision.numeric !== false ){
 
               // assign if null else concatentate
               this.percision.value += char;
@@ -238,14 +239,12 @@ function _substitute(format, args){
     } // end this.step
 
     this.transform = function(){
-      // // valid arg types for each conversion
+
       function validateType(arg, conversion){
         // arg: the arg to be subsituted in
         // conversion(str): the type of conversion to perform
         // throws an error if the arg is an invalid type
 
-
-        // TODO: THESE WON'T BE BATAVIA TYPES! VALIDATE THEM AS NATIVE TYPES.
         if ( /[diouxXeE]/.test(conversion) ){
 
           if ( !types.isinstance(arg, [types.Int, types.Float]) ){
@@ -268,28 +267,27 @@ function _substitute(format, args){
 
       // returns the substituted string
 
-      workingArgs = this.args.slice();
+      var workingArgs = this.args.slice();
+
 
       if ( this.fieldWidth.value === '*' ){
-        minWidth = workingArgs.shift().valueOf();
+        var minWidth = workingArgs.shift().valueOf();
       } else if ( !isNaN(this.fieldWidth.value ) ){
-        minWidth = Number(this.fieldWidth.value);
+        var minWidth = Number(this.fieldWidth.value);
       } else {
-        minWidth = 0;
+        var minWidth = 0;
       }
 
       if ( this.percision.value === '*' ){
-        percision = workingArgs.shift().valueOf();
+        var percision = workingArgs.shift().valueOf();
       } else if ( !isNaN(this.percision.value ) ){
-        percision = Number(this.percision.value);
-      } else {
-        percision = null;
+        var percision = Number(this.percision.value);
       }
 
-      conversionArgRaw = workingArgs.shift(); // the python representation of the arg
+      var conversionArgRaw = workingArgs.shift(); // the python representation of the arg
       validateType(conversionArgRaw, this.conversionType);
 
-      conversionArgValue = conversionArgRaw.valueOf(); // the native type
+      var conversionArgValue = conversionArgRaw.valueOf(); // the native type
 
       switch(this.conversionType){
         // handle the #
@@ -302,7 +300,7 @@ function _substitute(format, args){
           // percision determines leading 0s
           var numLeadingZeros = percision - conversionArg.length;
           if ( numLeadingZeros > 0 ){
-            conversionArg = '0'.repeat(numLeadingZeros);
+            conversionArg = '0'.repeat(numLeadingZeros) + conversionArg;
           }
           break;
 
@@ -317,7 +315,7 @@ function _substitute(format, args){
           // percision determines leading 0s
           var numLeadingZeros = percision - String(base).length;
           if ( numLeadingZeros > 0 ){
-            conversionArg = '0'.repeat(numLeadingZeros);
+            conversionArg = '0'.repeat(numLeadingZeros) + conversionArg;
           }
           break;
 
@@ -326,7 +324,7 @@ function _substitute(format, args){
           var base = this.conversionType == 'x' ?
             parseInt(conversionArgValue).toString(16) :
             parseInt(conversionArgValue).toString(16).toUpperCase()
-          if (this.conversionFlags('#')){
+          if (this.conversionFlags['#']){
             var conversionArg = '0' + this.conversionType +  base;
           } else {
             var conversionArg = base;
@@ -335,7 +333,7 @@ function _substitute(format, args){
           // percision determines leading 0s
           var numLeadingZeros = percision - String(base).length;
           if ( numLeadingZeros > 0 ){
-            conversionArg = '0'.repeat(numLeadingZeros);
+            conversionArg = '0'.repeat(numLeadingZeros) + conversionArg;
           }
           break;
 
@@ -344,21 +342,29 @@ function _substitute(format, args){
           // toExponential() will almost work here, but the digit here
           // has a minimum of 1 zero pad
           // example: 5 = '5.000000e+00'
+          // var argValueBig = new BigNumber(conversionArgValue)
+          var argExp = Number(conversionArgValue).toExponential();
 
-          var baseExpSplit = conversionArgValue.valueOf().toExponential(6).split(/e[\+\-]/);
+          var expSplit = argExp.split('e');
+          // var baseRaw = new BigNumber((expSplit[0]));
 
-          if ( baseExpSplit[1].length === 1 ){
-            baseExpSplit[1] = '0' + baseExpSplit[1]
+          // this is a string!
+          if ( percision !== undefined ){
+
+            var base = baseRaw.toFixed(percision);
+          } else {
+            var base = baseRaw.toFixed(6);
           }
 
-          var numLeadingZeros = percision - conversionArg.length;
-          if ( numLeadingZeros > 0 ){
-            baseExpSplit[0] = baseExpSplit[0] + '0'.repeat(numLeadingZeros)
+          // exponent must have at least two digits
+          var exp = expSplit[1]
+          if ( exp.length === 2 ){
+            exp = exp[0] + '0' + exp[1];
           }
 
-          var conversionArg = this.conversionType === 'e' ?
-            baseExpSplit.join('+e') :
-            baseExpSplit.join('+E')
+        var conversionArg = this.conversionType === 'e' ?
+          `${base}e${exp}` :
+          `${base}E${exp}`
           break;
 
         case('g'):
@@ -450,14 +456,14 @@ function _substitute(format, args){
 
       if ( this.conversionFlags['0'] && typeof conversionArgValue === 'number' ){
         // example: '00005'
-        retVal = '0'.repeat(padSize) + conversionArg;
+        var retVal = '0'.repeat(padSize) + conversionArg;
 
       } else if ( this.conversionFlags['-'] ){
         // exmaple:  '00005     '
-        retVal = conversionArg + ' '.repeat(padSize);
+        var retVal = conversionArg + ' '.repeat(padSize);
       } else {
         // example: '   0005'
-        retVal = ' '.repeat(padSize) + conversionArg;
+        var retVal = ' '.repeat(padSize) + conversionArg;
       }
 
       return retVal;
@@ -466,7 +472,6 @@ function _substitute(format, args){
     } // end transform
 
     var nextStep = 2
-
     var charArray = this.fullText.slice(1).split('')
     var index = 0;
     // SPECIFIER MAIN LOOP
@@ -495,7 +500,7 @@ function _substitute(format, args){
     // check that a conversion type was found. Otherwise throw error!
     if ( this.conversionType === undefined ) {
       throw new exceptions.ValueError("incomplete format")
-    };
+    }; // end parse main loop
 
 
   } // END SPECIFIER
@@ -504,14 +509,14 @@ function _substitute(format, args){
   var lastStop = 0
 
   // const re = /%+[^%]*?[diouxXeEfFgGcrs]/g;
-  const re = /%.+?/g // grabs any chunk starting with %
+  const re = /(%.+?)(\s|$)/g // grabs any chunk starting with %
   var match = re.exec(format);
   // spec = specGen.next().value
   while(match){
     // grab everything between lastStop and current spec start
     result += format.slice(lastStop, match.index);
-    // parse the specifier. DON'T ASSUME IT IS COMPLETE!
-    var specObj = new Specfier(match[0], match.index, workingArgs);
+    // parse the specifier. DON'T ASSUME IT IS COMPLETE OR LEGIT!
+    var specObj = new Specfier(match[1], match.index, workingArgs);
 
     // do the substitution
     result += specObj.transform();

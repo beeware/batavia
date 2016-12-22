@@ -265,10 +265,10 @@ class FormatTests(TranspileTestCase):
     def test_field_width(self):
 
         cases = (
-            ('%2s', 's'),
-            ('%2s', 'spam'),
-            ('%2d', 5),
-            ('%2d', 1234),
+            ('2s', '"s"'),
+            ('2s', '"spam"'),
+            ('2d', 5),
+            ('2d', 1234),
         )
 
         tests = ''.join([adjust("""
@@ -281,33 +281,68 @@ class FormatTests(TranspileTestCase):
 
     def test_precision(self):
 
+        percisions = ('.5', '.21')
+
         cases = (
-            ('%.5d', 3),
-            ('%.5i', 3),
-            ('%.5o', 3),
-            ('%.5u', 3),
-            ('%.5x', 3),
-            ('%.5X', 3),
-            ('%.5e', 3),
-            ('%.5E', 3),
-            ('%.5f', 3),
-            ('%.5F', 3),
-            ('%.5g', 3),
-            ('%.5G', 3),
-            ('%.5c', 3),
-            ('%.5r', 's'),
-            ('%.5s', 's')
+            ('d', 3),
+            ('i', 3),
+            ('o', 3),
+            ('u', 3),
+            ('x', 3),
+            ('X', 3),
+            ('e', 3),
+            ('E', 3),
+            ('f', 3),
+            ('F', 3),
+            ('g', 3),
+            ('G', 3),
+            ('c', 3),
+            ('r', '"s"'),
+            ('s', '"s"')
         )
-        
+
+        combinations = product(percisions, cases)
         tests = ''.join([adjust("""
             print('>>> format this: %{spec} % {arg}')
             print('format this: %{spec}' % {arg})
             """.format(
-            spec=''.join(c[0]), arg=c[1])) for c in cases])
+                spec=c[0]+c[1][0], arg=c[1][1]
+                )
+            ) for c in combinations ])
 
         self.assertCodeExecution(tests)
-    def test_zero_padded(self):
-        pass
+
+    def test_conversion_flags(self):
+
+        zero_pad_left_adjust = ('', '0', '-')
+
+        sign_space = ('', '+', '')
+
+        cases = (
+            ('5d', 3),
+            ('5i', 3),
+            ('5o', 3),
+            ('5u', 3),
+            ('5x', 3),
+            ('5X', 3),
+            ('5e', 3),
+            ('5E', 3),
+            ('5f', 3.5),
+            ('5F', 3.5),
+            ('5g', 3),
+            ('5G', 3),
+            ('5c', 3),
+            ('5r', '"s"'),
+            ('5s', '"s"')
+        )
+
+        tests = ''
+        for flag in zero_pad_left_adjust:
+            for case in cases:
+                tests += adjust("""
+                print('>>> format this: %{spec} % {arg}')
+                print('format this: %{spec}' % {arg})
+                """.format(spec=flag + case[0], arg=case[1]))
 
     def test_left_adjust(self):
         pass
