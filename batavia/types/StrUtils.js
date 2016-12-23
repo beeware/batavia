@@ -1,6 +1,6 @@
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
-// var BigNumber = require('bignumber.js').BigNumber
+var BigNumber = require('bignumber.js').BigNumber
 
 function _substitute(format, args){
   var types = require('../types');
@@ -70,14 +70,15 @@ function _substitute(format, args){
 
       var steps = {
         // regex to search for the FIRST character in each step
+        1: /%/ //literal percentage
         2: /[#0-\s\+]/, // conversion flags
         3: /[\d\*]/, // min field width
         4: /[\d\*\.]/, // percision
         5: /[hHl]/, // length modifier (not used)
-        6: /[diouxXeEfFgGcrs]/ // conversion type
+        6: /[diouxXeEfFgGcrs]/, // conversion type
       }
 
-      for (var s=currStep; s<=6; s++){
+      for (var s=currStep; s<=7; s++){
         // try to make a match
         var re = steps[s];
         if (nextChar.search(re) !== -1){
@@ -95,6 +96,11 @@ function _substitute(format, args){
 
       // role step into one function, not object of function
       switch(step){
+
+        case 1:
+          // handle literal %
+          this.literalPercent = true;
+          break;
 
         case 2:
           // conversion flags
@@ -282,6 +288,8 @@ function _substitute(format, args){
         var percision = workingArgs.shift().valueOf();
       } else if ( !isNaN(this.percision.value ) ){
         var percision = Number(this.percision.value);
+      } else {
+        var percision = null;
       }
 
       var conversionArgRaw = workingArgs.shift(); // the python representation of the arg
@@ -339,18 +347,18 @@ function _substitute(format, args){
 
         case('e'):
         case('E'):
+
           // toExponential() will almost work here, but the digit here
           // has a minimum of 1 zero pad
           // example: 5 = '5.000000e+00'
-          // var argValueBig = new BigNumber(conversionArgValue)
-          var argExp = Number(conversionArgValue).toExponential();
+          var argValueBig = new BigNumber(conversionArgValue)
+          var argExp = Number(argValueBig).toExponential();
 
           var expSplit = argExp.split('e');
-          // var baseRaw = new BigNumber((expSplit[0]));
+          var baseRaw = new BigNumber((expSplit[0]));
 
           // this is a string!
-          if ( percision !== undefined ){
-
+          if ( percision !== null ){
             var base = baseRaw.toFixed(percision);
           } else {
             var base = baseRaw.toFixed(6);
@@ -471,12 +479,12 @@ function _substitute(format, args){
 
     } // end transform
 
-    var nextStep = 2
+    var nextStep = 1;
     var charArray = this.fullText.slice(1).split('')
-    var index = 0;
+    var charIndex = 0;
     // SPECIFIER MAIN LOOP
-    while(index < charArray.length){
-      var nextChar = charArray[index];
+    while( charIndex < charArray.length && !this.literalPercent ){
+      var nextChar = charArray[charIndex];
       this.parsedSpec += nextChar;
       try {
 
@@ -485,20 +493,20 @@ function _substitute(format, args){
       } catch(err){
         var charAsHex = nextChar.charCodeAt(0).toString(16)
         if (err.message === 'illegal character'){
-          throw new exceptions.ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charObj.value.index}`)
+          throw new exceptions.ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
         } else {
           //its some other error
           throw err
         }
       }
 
-      index++;
+      charIndex++;
       if ( nextStep === 6 ){
         break;
       }
     } // end while loop
     // check that a conversion type was found. Otherwise throw error!
-    if ( this.conversionType === undefined ) {
+    if ( this.conversionType === undefined && !this.literalPercent ) {
       throw new exceptions.ValueError("incomplete format")
     }; // end parse main loop
 
@@ -513,6 +521,7 @@ function _substitute(format, args){
   var match = re.exec(format);
   // spec = specGen.next().value
   while(match){
+    console.log(match);
     // grab everything between lastStop and current spec start
     result += format.slice(lastStop, match.index);
     // parse the specifier. DON'T ASSUME IT IS COMPLETE OR LEGIT!

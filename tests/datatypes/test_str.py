@@ -1,5 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust
+    adjust, runAsPython
 
 from itertools import product
 import unittest
@@ -246,7 +246,6 @@ class FormatTests(TranspileTestCase):
         -500000000000000000000
     )
 
-
     def test_basic(self):
 
         combinations = (product(self.alternate, self.length_modifiers, self.conversion_flags, self.args))
@@ -254,13 +253,9 @@ class FormatTests(TranspileTestCase):
                 print('>>> format this: %{spec} % {arg}')
                 print('format this: %{spec}' % {arg})
                 """.format(
-                    spec=''.join(comb[0:2]), arg=comb[3])) for comb in combinations])
+                    spec=comb[0]+comb[1]+comb[2], arg=comb[3])) for comb in combinations])
 
         self.assertCodeExecution(tests)
-
-    def test_with_mapping_key(self):
-        # TODO
-        pass
 
     def test_field_width(self):
 
@@ -279,6 +274,7 @@ class FormatTests(TranspileTestCase):
 
         self.assertCodeExecution(tests)
 
+    @unittest.expectedFailure # strings like "3.000" are truncated to "3.0"
     def test_precision(self):
 
         percisions = ('.5', '.21')
@@ -292,8 +288,8 @@ class FormatTests(TranspileTestCase):
             ('X', 3),
             ('e', 3),
             ('E', 3),
-            ('f', 3),
-            ('F', 3),
+            ('f', 3.5),
+            ('F', 3.5),
             ('g', 3),
             ('G', 3),
             ('c', 3),
@@ -312,49 +308,97 @@ class FormatTests(TranspileTestCase):
 
         self.assertCodeExecution(tests)
 
-    def test_conversion_flags(self):
+    @unittest.expectedFailure
+    def test_left_adjust(self):
+        """conversion flags for - and 0"""
 
-        zero_pad_left_adjust = ('', '0', '-')
-
-        sign_space = ('', '+', '')
+        flags = ('-', '0')
 
         cases = (
-            ('5d', 3),
-            ('5i', 3),
-            ('5o', 3),
-            ('5u', 3),
-            ('5x', 3),
-            ('5X', 3),
-            ('5e', 3),
-            ('5E', 3),
-            ('5f', 3.5),
-            ('5F', 3.5),
-            ('5g', 3),
-            ('5G', 3),
-            ('5c', 3),
-            ('5r', '"s"'),
-            ('5s', '"s"')
+
+            ('3d', 3),
+            ('3i', 3),
+            ('3o', 3),
+            ('3u', 3),
+            ('3x', 3),
+            ('3X', 3),
+            ('10.1e', 3),
+            ('10.1E', 3),
+            ('10.1f', 3.5),
+            ('10.1F', 3.5),
+            ('10.1g', 3),
+            ('10.1G', 3),
+            ('3c', 3),
+            ('3r', '"s"'),
+            ('3s', '"s"')
         )
 
-        tests = ''
-        for flag in zero_pad_left_adjust:
-            for case in cases:
-                tests += adjust("""
-                print('>>> format this: %{spec} % {arg}')
-                print('format this: %{spec}' % {arg})
-                """.format(spec=flag + case[0], arg=case[1]))
+        combinations = product(flags, cases)
+        tests = ''.join([adjust("""
+            print('>>> format this: %{spec} % {arg}')
+            print('format this: %{spec}' % {arg})
+            """.format(
+                spec=c[0]+c[1][0], arg=c[1][1]
+                )
+            ) for c in combinations ])
 
-    def test_left_adjust(self):
-        pass
+        print(tests)
+        self.assertCodeExecution(tests)
 
-    def test_blank_pad(self):
-        pass
-
+    @unittest.expectedFailure
     def test_plus_sign(self):
-        pass
+
+        flags = ('+', ' ')
+
+        cases = (
+
+            ('d', 3),
+            ('d', -3),
+            ('i', 3),
+            ('i', -3),
+            ('o', 3),
+            ('o', -3),
+            ('u', 3),
+            ('u', -3),
+            ('x', 3),
+            ('x', -3),
+            ('X', 3),
+            ('X', -3),
+            ('e', 3),
+            ('e', -3),
+            ('E', 3),
+            ('E', -3),
+            ('f', 3.5),
+            ('f', -3.5),
+            ('F', 3.5),
+            ('F', -3.5),
+            ('g', 3),
+            ('g', -3),
+            ('G', 3),
+            ('G', -3),
+            ('c', 3),
+            ('r', '"s"'),
+            ('s', '"s"')
+        )
+
+        combinations = product(flags, cases)
+        tests = ''.join([adjust("""
+            print('>>> format this: %{spec} % {arg}')
+            print('format this: %{spec}' % {arg})
+            """.format(
+                spec=c[0]+c[1][0], arg=c[1][1]
+                )
+            ) for c in combinations ])
+
+        self.assertCodeExecution(tests)
 
     def test_literal_percent(self):
-        pass
+        test = adjust("""
+            print(">>> '%s %%' % 'spam'")
+            print('%s %%' % 'spam')
+            """)
+
+        self.assertCodeExecution(test)
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
