@@ -112,7 +112,7 @@ Documentation
 Contributing
 ------------
 
-If you'd like to contribute to Batavia development, our `guide for first time contributors <http://batavia.readthedocs.io/en/latest/internals/contributing.html>`_ will help you get started.
+If you'd like to contribute to Batavia development, our `guide for first time contributors <http://pybee.org/contributing/first-time/what/batavia/>`_ will help you get started.
 
 If you experience problems with Batavia, `log them on GitHub <https://github.com/pybee/batavia/issues>`_.
 
