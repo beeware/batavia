@@ -5,7 +5,7 @@
 Batavia
 =======
 
-|py-version||pypi-version||pypi-status||license||build-status||gitter|
+|py-version| |pypi-version| |pypi-status| |license| |build-status| |gitter|
 
 .. |py-version| image:: https://img.shields.io/pypi/pyversions/batavia.svg
     :target: https://pypi.python.org/pypi/batavia
