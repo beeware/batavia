@@ -5,22 +5,19 @@
 Batavia
 =======
 
-.. image:: https://img.shields.io/pypi/pyversions/batavia.svg
-    :target: https://pypi.python.org/pypi/batavia
+|py-version| |pypi-version| |pypi-status| |license| |build-status| |gitter|
 
-.. image:: https://img.shields.io/pypi/v/batavia.svg
+.. |py-version| image:: https://img.shields.io/pypi/pyversions/batavia.svg
     :target: https://pypi.python.org/pypi/batavia
-
-.. image:: https://img.shields.io/pypi/status/batavia.svg
+.. |pypi-version| image:: https://img.shields.io/pypi/v/batavia.svg
     :target: https://pypi.python.org/pypi/batavia
-
-.. image:: https://img.shields.io/pypi/l/batavia.svg
+.. |pypi-status| image:: https://img.shields.io/pypi/status/batavia.svg
+    :target: https://pypi.python.org/pypi/batavia
+.. |license| image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/pybee/batavia/blob/master/LICENSE
-
-.. image:: https://circleci.com/gh/pybee/batavia.svg?style=shield&circle-token=:circle-token
+.. |build-status| image:: https://circleci.com/gh/pybee/batavia.svg?style=shield&circle-token=:circle-token
     :target: https://circleci.com/gh/pybee/batavia
-
-.. image:: https://badges.gitter.im/pybee/general.svg
+.. |gitter| image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
 
 

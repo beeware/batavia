@@ -20,6 +20,9 @@ env
 make.exe
 phantomjs.exe
 
+# Markdown version of README
+README.md
+
 # JS
 node_modules/
 package/
@@ -27,6 +30,5 @@ package/
 # PyCharm settings
 .idea
 
-# Py.test 
+# Py.test
 .cache
-
