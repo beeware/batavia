@@ -26,7 +26,7 @@ Batavia
 Batavia is an implementation of the Python virtual machine, written in
 Javascript. With Batavia, you can run Python bytecode in your browser.
 
-It honors Python 3.4.4+ syntax and conventions, and let's you
+It honors Python 3.4.4+ syntax and conventions, and allows you to
 reference objects and classes defined natively in JavaScript.
 
 Quick Start
@@ -72,13 +72,12 @@ Windows::
    library::
 
    $ npm install
-   
+
 4. Compile the Batavia library and bundle it’s dependencies::
 
-   $ npm run build  
+   $ npm run build
 
 For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
-
 
 Running Batavia in the browser
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -103,8 +102,6 @@ Documentation
 * `Getting Started <http://batavia.readthedocs.io/en/latest/intro/index.html>`_
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
-
-
 
 Contributing
 ------------
