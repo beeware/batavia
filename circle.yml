@@ -7,8 +7,8 @@ machine:
     "Australia/Perth"
 
 dependencies:
-  cache_directories:
-    - ouroboros
+  pre:
+    - sudo apt-get install pandoc
   override:
     - npm install
 

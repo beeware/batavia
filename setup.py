@@ -8,7 +8,7 @@ with io.open('README.rst', encoding='utf8') as readme:
 
 setup(
     name='batavia',
-    version='3.4.0.dev1',
+    version='3.4.0.dev5',
     description='Tools to run Python bytecode on the Javascript VM.',
     long_description=long_description,
     author='Russell Keith-Magee',
