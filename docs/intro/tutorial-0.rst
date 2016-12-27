@@ -25,6 +25,8 @@ how to set this up are `on our Environment setup guide
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
+   On running last command it might throw an error, then run::   
+      $pip install -e PathOfTheDirectoryInWhichBataviaIsCloned
 
  * For Windows::
 
