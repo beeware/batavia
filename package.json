@@ -1,6 +1,6 @@
 {
   "name": "@pybee/batavia",
-  "version": "3.4.0-dev6",
+  "version": "3.4.0-dev7",
   "description": "A Javascript implementation of the Python virtual machine.",
   "main": "batavia.js",
   "directories": {
@@ -36,7 +36,7 @@
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.6.0",
     "json-loader": "0.5.4",
-    "ouroboros": "3.4.0",
+    "@pybee/ouroboros": "3.4.0",
     "uglifyjs": "2.4.10"
   },
   "dev": "webpack-dev-server",
