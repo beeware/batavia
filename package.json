@@ -36,7 +36,7 @@
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.6.0",
     "json-loader": "0.5.4",
-    "@pybee/ouroboros": "3.4.0",
+    "@pybee/ouroboros": "3.4.1-dev3",
     "uglifyjs": "2.4.10"
   },
   "dev": "webpack-dev-server",
