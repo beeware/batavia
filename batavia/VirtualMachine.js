@@ -62,31 +62,24 @@ var VirtualMachine = function(args) {
     // Build a table mapping opcodes to method calls
     this.build_dispatch_table();
 
-    // The call stack of frames.
-    this.frames = [];
-
-    // The current frame.
-    this.frame = null;
-
     this.return_value = null;
     this.last_exception = null;
     this.is_vm = true;
 
-    this.session = args.session || false;
+    this.frames = [];
 
-    if (this.session) {
-        var code = args.code;
-        var f_globals = args.f_globals || null;
-        var f_locals = args.f_locals || null;
-        var callargs = args.callargs || null;
-        var frame = this.make_frame({
-            'code': code,
-            'f_globals': f_globals,
-            'f_locals': f_locals,
-            'callargs': callargs
-        });
-
+    if (args.frame === null) {
+        // Explicitly requested an empty frame stack
+        this.frame = null;
+        this.has_session = false;
+    } else if (args.frame === undefined) {
+        // No frame stack requested; initialize one as a
+        var frame = this.make_frame({'code': null,});
         this.push_frame(frame);
+        this.has_session = true;
+    } else {
+        this.push_frame(args.frame);
+        this.has_session = true;
     }
 };
 
@@ -719,7 +712,7 @@ VirtualMachine.prototype.pop_frame = function() {
 
 VirtualMachine.prototype.create_traceback = function() {
     var tb = [];
-    var frame;
+    var frame, mod_name, filename;
 
     for (var f in this.frames) {
         frame = this.frames[f];
@@ -728,20 +721,23 @@ VirtualMachine.prototype.create_traceback = function() {
         // f_lineno (the line for the start of the method)
         // and adding the line offsets from the line
         // number table.
-        var lnotab = frame.f_code.co_lnotab.val;
-        var byte_num = 0;
-        var line_num = frame.f_code.co_firstlineno;
+        if (frame.f_code) {
+            var lnotab = frame.f_code.co_lnotab.val;
+            var byte_num = 0;
+            var line_num = frame.f_code.co_firstlineno;
 
-        for (var idx = 1; idx < lnotab.length, byte_num < frame.f_lasti; idx += 2) {
-            byte_num += lnotab[idx-1]
-            if (byte_num < frame.f_lasti) {
-                line_num += lnotab[idx];
+            for (var idx = 1; idx < lnotab.length, byte_num < frame.f_lasti; idx += 2) {
+                byte_num += lnotab[idx-1]
+                if (byte_num < frame.f_lasti) {
+                    line_num += lnotab[idx];
+                }
             }
+            mod_name = frame.f_code.co_name;
+            filename = frame.f_code.co_name;
         }
-
         tb.push({
-            'module': frame.f_code.co_name,
-            'filename': frame.f_code.co_filename,
+            'module': mod_name,
+            'filename': filename,
             'line': line_num
         });
     }
@@ -857,7 +853,7 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         var val = this.run_frame(frame);
 
         // Check some invariants
-        if (this.session) {
+        if (this.has_session) {
             if (this.frames.length > 1) {
                 throw new builtins.BataviaError("Frames left over in session!");
             }
@@ -1006,7 +1002,7 @@ VirtualMachine.prototype.run_frame = function(frame) {
 
     while (!why) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti];
-        // var opname = dis.opname[operation.opcode];
+        var opname = dis.opname[operation.opcode];
 
         // advance f_lasti to next operation. If the operation is a jump, then this
         // pointer will be overwritten during the operation's execution.
