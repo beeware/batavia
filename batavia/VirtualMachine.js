@@ -45,7 +45,7 @@ var VirtualMachine = function(args) {
             return {
                 '__python__': true,
                 'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, "").trim(),
-                'filename': new batavia.types.Str(filename)
+                'filename': new types.Str(filename)
             };
         };
     } else {
@@ -67,9 +67,27 @@ var VirtualMachine = function(args) {
 
     // The current frame.
     this.frame = null;
+
     this.return_value = null;
     this.last_exception = null;
     this.is_vm = true;
+
+    this.session = args.session || false;
+
+    if (this.session) {
+        var code = args.code;
+        var f_globals = args.f_globals || null;
+        var f_locals = args.f_locals || null;
+        var callargs = args.callargs || null;
+        var frame = this.make_frame({
+            'code': code,
+            'f_globals': f_globals,
+            'f_locals': f_locals,
+            'callargs': callargs
+        });
+
+        this.push_frame(frame);
+    }
 };
 
 /*
@@ -654,7 +672,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
 
-    if (!code.co_unpacked_code) {
+    if (code && !code.co_unpacked_code) {
         this.unpack_code(code);
     }
 
@@ -839,8 +857,14 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         var val = this.run_frame(frame);
 
         // Check some invariants
-        if (this.frames.length > 0) {
-            throw new builtins.BataviaError("Frames left over!");
+        if (this.session) {
+            if (this.frames.length > 1) {
+                throw new builtins.BataviaError("Frames left over in session!");
+            }
+        } else {
+            if (this.frames.length > 0) {
+                throw new builtins.BataviaError("Frames left over!");
+            }
         }
         if (this.frame && this.frame.stack.length > 0) {
             throw new builtins.BataviaError("Data left on stack! " + this.frame.stack);
@@ -1884,7 +1908,13 @@ VirtualMachine.prototype.byte_YIELD_VALUE = function() {
 VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2);
     this.push(
-        builtins.__import__.apply(this, [[name, this.frame.f_globals, null, items[1], items[0]], null])
+        builtins.__import__.apply(
+            this,
+            [
+                [name, this.frame.f_globals, this.frame.f_locals, items[1], items[0]],
+                null
+            ]
+        )
     );
 };
 
@@ -1928,6 +1958,7 @@ var make_class = function(args, kwargs) {
 
     // Now construct the class, based on the constructed local context.
     var unbound_pytype = function(vm, args, kwargs) {
+        Object.call(this);
         if (this.__init__) {
             this.__init__.__self__ = this;
             this.__init__.__call__.apply(vm, [args, kwargs]);
