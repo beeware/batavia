@@ -1,6 +1,6 @@
 {
   "name": "@pybee/batavia",
-  "version": "3.4.0-dev7",
+  "version": "3.4.0-dev8",
   "description": "A Javascript implementation of the Python virtual machine.",
   "main": "batavia.js",
   "directories": {
