@@ -1,6 +1,6 @@
 {
   "name": "@pybee/batavia",
-  "version": "3.4.0-dev8",
+  "version": "3.4.0-dev9",
   "description": "A Javascript implementation of the Python virtual machine.",
   "main": "batavia.js",
   "directories": {
@@ -36,7 +36,6 @@
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.6.0",
     "json-loader": "0.5.4",
-    "@pybee/ouroboros": "3.4.1-dev3",
     "uglifyjs": "2.4.10"
   },
   "dev": "webpack-dev-server",
@@ -46,12 +45,7 @@
     "buffer": "5.0.0",
     "moment": "2.17.0",
     "moment-timezone": "0.5.10",
+    "@pybee/ouroboros": "^3.4",
     "webpack": "1.13.3"
-  },
-  "files": [
-    "batavia.js",
-    "batavia.min.js",
-    "batavia.js.map",
-    "batavia.min.js.map"
-  ]
+  }
 }
