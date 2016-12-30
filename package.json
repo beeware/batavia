@@ -9,8 +9,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepublish": "python compile_stdlib.py && pandoc --from=rst --to=markdown_github README.rst -o README.md",
-    "build": "node_modules/.bin/webpack",
-    "start": "webpack-dev-server --inline --hot"
+    "build": "node_modules/.bin/webpack --progress",
+    "watch": "node_modules/.bin/webpack --progress --watch",
+    "serve": "node_modules/.bin/webpack-dev-server --inline --hot --port 3000"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
     "eslint-plugin-react": "6.6.0",
     "json-loader": "0.5.4",
     "uglifyjs": "2.4.10",
+    "webpack-dev-server": "1.16.2",
     "@pybee/ouroboros": "~3.4.1-dev.4"
   },
   "dev": "webpack-dev-server",
