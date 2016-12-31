@@ -559,7 +559,8 @@ class TranspileTestCase(TestCase):
                             return null;
                         }
                         return payload;
-                    }
+                    },
+                    frame: null
                 });
                 vm.run('test', []);
                 """) % (

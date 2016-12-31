@@ -733,7 +733,7 @@ VirtualMachine.prototype.create_traceback = function() {
                 }
             }
             mod_name = frame.f_code.co_name;
-            filename = frame.f_code.co_name;
+            filename = frame.f_code.co_filename;
         }
         tb.push({
             'module': mod_name,
