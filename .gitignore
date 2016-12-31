@@ -26,6 +26,7 @@ README.md
 # JS
 node_modules/
 package/
+npm-debug.log
 
 # PyCharm settings
 .idea

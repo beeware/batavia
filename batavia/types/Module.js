@@ -12,12 +12,6 @@ function Module(name, filename, pkg) {
     this.__name__ = name;
     this.__file__ = filename;
     this.__package__ = pkg;
-
-    // for (var key in locals) {
-    //     if (locals.hasOwnProperty(key)) {
-    //         this[key] = locals[key];
-    //     }
-    // }
 }
 
 Module.prototype = Object.create(JSDict.prototype);

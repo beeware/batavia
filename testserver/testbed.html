@@ -315,7 +315,8 @@ function PyConsole(element) {
 }
 
 PyConsole.prototype.write = function(args, kwargs) {
-    this.element.textContent = this.element.textContent + args[0];
+    var text = document.createTextNode(args[0]);
+    this.element.appendChild(text);
 }
 
 PyConsole.prototype.flush = function(args, kwargs) {}
@@ -327,56 +328,45 @@ function PyErrConsole(element) {
 PyErrConsole.prototype.write = function(args, kwargs) {
     var err = document.createElement('span');
     err.className = "error";
-    err.textContent = args[0]
+    var text = document.createTextNode(args[0])
 
+    err.appendChild(text)
     this.element.appendChild(err);
 }
 
 PyErrConsole.prototype.flush = function(args, kwargs) {}
 
-    {% if customcode %}
 function bootstrap() {
     console.log('Create VM');
-    var vm = new batavia.VirtualMachine({
+    window.vm = new batavia.VirtualMachine({
         stdout: new PyConsole(),
-        stderr: new PyErrConsole()
+        stderr: new PyErrConsole(),
+        frame: null
     });
+{% if customcode %}
     console.log('Run code...');
     vm.run('customcode', []);
     console.log('done.');
+{% endif %}
 }
-    {% endif %}
 
 function sample() {
-    console.log('Create VM');
-    var vm = new batavia.VirtualMachine({
-        stdout: new PyConsole(),
-        stderr: new PyErrConsole()
-    });
     console.log('Run code...');
     // The first argument is the Python dotted-path of the module to run
     // The second argument is the value for sys.argv
-    vm.run('sample', ['5']);
+    window.vm.run('sample', ['5']);
     console.log('done.');
 }
 
 function pystone(loops) {
     console.log('Benchmarking...');
-    var vm = new batavia.VirtualMachine({
-        stdout: new PyConsole(),
-        stderr: new PyErrConsole()
-    });
-    vm.run('test.pystone', [loops]);
+    window.vm.run('test.pystone', [loops]);
     console.log('done.');
 }
     </script>
 
 </head>
-{% if customcode %}
 <body onload="bootstrap();">
-{% else %}
-<body>
-{% endif %}
     <h1>Batavia testbed</h1>
     <h3>Try running some Python in the browser</h3>
     <div class="indent_block">

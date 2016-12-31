@@ -148,7 +148,7 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     return out[0].decode('utf8')
 
 
-JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
+JS_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')  # NOQA
 JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
@@ -156,7 +156,7 @@ JS_FLOAT_DECIMAL = re.compile('(\d+\.\d+)')
 JS_FLOAT_EXP = re.compile('(\d+)e(-)?0?(\d+)')
 JS_LARGE_COMPLEX = re.compile('\((\d{15}\d+)[-+]')
 
-PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')
+PYTHON_EXCEPTION = re.compile('Traceback \(most recent call last\):\r?\n(  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')  # NOQA
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\d+), in .*\r?\n    .*\r?\n')
 PYTHON_FLOAT_EXP = re.compile('(\d+)e(-)?0?(\d+)')
 PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
@@ -233,11 +233,14 @@ def cleanse_javascript(input, substitutions):
     return out
 
 
-def cleanse_python(input, substitutions):
+def cleanse_python(raw, substitutions):
     # Test the specific message
-    out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+    out = PYTHON_EXCEPTION.sub(
+        '### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep),
+        raw
+    )
 
-    stack = PYTHON_STACK.findall(input)
+    stack = PYTHON_STACK.findall(raw)
     out = '%s%s%s' % (
         out,
         os.linesep.join(
@@ -299,9 +302,9 @@ class TranspileTestCase(TestCase):
             args=None, substitutions=None):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
-        #==================================================
+        # ==================================================
         # Pass 1 - run the code in the global context
-        #==================================================
+        # ==================================================
         if run_in_global:
             try:
                 self.makeTempDir()
@@ -340,9 +343,9 @@ class TranspileTestCase(TestCase):
                 context = 'Global context'
             self.assertEqual(js_out, py_out, context)
 
-        #==================================================
+        # ==================================================
         # Pass 2 - run the code in a function's context
-        #==================================================
+        # ==================================================
         if run_in_function:
             try:
                 self.makeTempDir()
@@ -387,16 +390,16 @@ class TranspileTestCase(TestCase):
             args=None, substitutions=None, same=True):
         "Run code under JavaScript and check the output is as expected"
         self.maxDiff = None
-        #==================================================
+        # ==================================================
         # Prep - compile any required JavaScript sources
-        #==================================================
+        # ==================================================
         # Cleanse the Python output, producing a simple
         # normalized format for exceptions, floats etc.
         py_out = adjust(out)
 
-        #==================================================
+        # ==================================================
         # Pass 1 - run the code in the global context
-        #==================================================
+        # ==================================================
         if run_in_global:
             try:
                 self.makeTempDir()
@@ -426,9 +429,9 @@ class TranspileTestCase(TestCase):
             else:
                 self.assertNotEqual(js_out, py_out, 'Global context')
 
-        #==================================================
+        # ==================================================
         # Pass 2 - run the code in a function's context
-        #==================================================
+        # ==================================================
         if run_in_function:
             try:
                 self.makeTempDir()
@@ -465,7 +468,10 @@ class TranspileTestCase(TestCase):
         except FileExistsError:
             pass
 
-    def runAsJavaScript(self, main_code, extra_code=None, js=None, run_in_function=False, args=None, python_exists=False):
+    def runAsJavaScript(
+                self, main_code, extra_code=None, js=None,
+                run_in_function=False, args=None, python_exists=False
+            ):
         # Output source code into test directory
         assert isinstance(main_code, (str, bytes)), (
             'I have no idea how to run tests for code of type {}'
@@ -553,7 +559,8 @@ class TranspileTestCase(TestCase):
                             return null;
                         }
                         return payload;
-                    }
+                    },
+                    frame: null
                 });
                 vm.run('test', []);
                 """) % (
@@ -588,7 +595,10 @@ class NotImplementedToExpectedFailure:
             # Mark 'expecting failure' on class. It will only be applicable
             # for this specific run.
             method = getattr(self, self._testMethodName)
-            wrapper = lambda *args, **kwargs: method(*args, **kwargs)
+
+            def wrapper(*args, **kwargs):
+                method(*args, **kwargs)
+
             wrapper.__unittest_expecting_failure__ = True
             setattr(self, self._testMethodName, wrapper)
         return super().run(result=result)
@@ -600,20 +610,20 @@ SAMPLE_DATA = {
             'False',
         ],
     'bytearray': [
-            #'bytearray()',
-            #'bytearray(1)',
-            #'bytearray([1, 2, 3])',
+            # 'bytearray()',
+            # 'bytearray(1)',
+            # 'bytearray([1, 2, 3])',
             'bytearray(b"hello world")',
         ],
     'bytes': [
             'b""',
             'b"This is another string of bytes"',
-            'b"\x01\x75"', # mixing nonprintable and printable bytes
+            'b"\x01\x75"',  # mixing nonprintable and printable bytes
         ],
     'class': [
             'type(1)',
             'type("a")',
-            #'type(object())', # TODO: re-enable this when object() is implemented
+            # 'type(object())', # TODO: re-enable this when object() is implemented
             'type("MyClass", (object,), {})',
         ],
     'complex': [
@@ -663,8 +673,8 @@ SAMPLE_DATA = {
             '-18446744073709551617',
             '1361129467683753853853498429727072845824',
             '-1361129467683753853853498429727072845824',
-            '179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216',
-            '-179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216',
+            '179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216',  # NOQA
+            '-179769313486231590772930519078902473361797697894230657273430081157732675805500963132708477322407536021120113879871393357658789768814416622492847430639474124377767893424865485276302219601246094119453082952085005768838150682342462881473913110540827237163350510684586298239947245938479716304835356329624224137216',  # NOQA
         ],
     'list': [
             '[]',
@@ -900,26 +910,64 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
         )
 
     for datatype, examples in SAMPLE_DATA.items():
-        vars()['test_add_%s' % datatype] = _binary_test('test_add_%s' % datatype, 'x + y', examples)
-        vars()['test_subtract_%s' % datatype] = _binary_test('test_subtract_%s' % datatype, 'x - y', examples)
-        vars()['test_multiply_%s' % datatype] = _binary_test('test_multiply_%s' % datatype, 'x * y', examples, small_ints=True)
-        vars()['test_floor_divide_%s' % datatype] = _binary_test('test_floor_divide_%s' % datatype, 'x // y', examples)
-        vars()['test_true_divide_%s' % datatype] = _binary_test('test_true_divide_%s' % datatype, 'x / y', examples)
-        vars()['test_modulo_%s' % datatype] = _binary_test('test_modulo_%s' % datatype, 'x % y', examples)
-        vars()['test_power_%s' % datatype] = _binary_test('test_power_%s' % datatype, 'x ** y', examples, small_ints=True)
-        vars()['test_subscr_%s' % datatype] = _binary_test('test_subscr_%s' % datatype, 'x[y]', examples)
-        vars()['test_lshift_%s' % datatype] = _binary_test('test_lshift_%s' % datatype, 'x << y', examples, small_ints=True)
-        vars()['test_rshift_%s' % datatype] = _binary_test('test_rshift_%s' % datatype, 'x >> y', examples, small_ints=True)
-        vars()['test_and_%s' % datatype] = _binary_test('test_and_%s' % datatype, 'x & y', examples)
-        vars()['test_xor_%s' % datatype] = _binary_test('test_xor_%s' % datatype, 'x ^ y', examples)
-        vars()['test_or_%s' % datatype] = _binary_test('test_or_%s' % datatype, 'x | y', examples)
+        vars()['test_add_%s' % datatype] = _binary_test(
+            'test_add_%s' % datatype, 'x + y', examples
+        )
+        vars()['test_subtract_%s' % datatype] = _binary_test(
+            'test_subtract_%s' % datatype, 'x - y', examples
+        )
+        vars()['test_multiply_%s' % datatype] = _binary_test(
+            'test_multiply_%s' % datatype, 'x * y', examples, small_ints=True
+        )
+        vars()['test_floor_divide_%s' % datatype] = _binary_test(
+            'test_floor_divide_%s' % datatype, 'x // y', examples
+        )
+        vars()['test_true_divide_%s' % datatype] = _binary_test(
+            'test_true_divide_%s' % datatype, 'x / y', examples
+        )
+        vars()['test_modulo_%s' % datatype] = _binary_test(
+            'test_modulo_%s' % datatype, 'x % y', examples
+        )
+        vars()['test_power_%s' % datatype] = _binary_test(
+            'test_power_%s' % datatype, 'x ** y', examples, small_ints=True
+        )
+        vars()['test_subscr_%s' % datatype] = _binary_test(
+            'test_subscr_%s' % datatype, 'x[y]', examples
+        )
+        vars()['test_lshift_%s' % datatype] = _binary_test(
+            'test_lshift_%s' % datatype, 'x << y', examples, small_ints=True
+        )
+        vars()['test_rshift_%s' % datatype] = _binary_test(
+            'test_rshift_%s' % datatype, 'x >> y', examples, small_ints=True
+        )
+        vars()['test_and_%s' % datatype] = _binary_test(
+            'test_and_%s' % datatype, 'x & y', examples
+        )
+        vars()['test_xor_%s' % datatype] = _binary_test(
+            'test_xor_%s' % datatype, 'x ^ y', examples
+        )
+        vars()['test_or_%s' % datatype] = _binary_test(
+            'test_or_%s' % datatype, 'x | y', examples
+        )
 
-        vars()['test_lt_%s' % datatype] = _binary_test('test_lt_%s' % datatype, 'x < y', examples)
-        vars()['test_le_%s' % datatype] = _binary_test('test_le_%s' % datatype, 'x <= y', examples)
-        vars()['test_gt_%s' % datatype] = _binary_test('test_gt_%s' % datatype, 'x > y', examples)
-        vars()['test_ge_%s' % datatype] = _binary_test('test_ge_%s' % datatype, 'x >= y', examples)
-        vars()['test_eq_%s' % datatype] = _binary_test('test_eq_%s' % datatype, 'x == y', examples)
-        vars()['test_ne_%s' % datatype] = _binary_test('test_ne_%s' % datatype, 'x != y', examples)
+        vars()['test_lt_%s' % datatype] = _binary_test(
+            'test_lt_%s' % datatype, 'x < y', examples
+        )
+        vars()['test_le_%s' % datatype] = _binary_test(
+            'test_le_%s' % datatype, 'x <= y', examples
+        )
+        vars()['test_gt_%s' % datatype] = _binary_test(
+            'test_gt_%s' % datatype, 'x > y', examples
+        )
+        vars()['test_ge_%s' % datatype] = _binary_test(
+            'test_ge_%s' % datatype, 'x >= y', examples
+        )
+        vars()['test_eq_%s' % datatype] = _binary_test(
+            'test_eq_%s' % datatype, 'x == y', examples
+        )
+        vars()['test_ne_%s' % datatype] = _binary_test(
+            'test_ne_%s' % datatype, 'x != y', examples
+        )
 
 
 def _inplace_test(test_name, operation, examples, small_ints=False):
@@ -977,18 +1025,42 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         )
 
     for datatype, examples in SAMPLE_DATA.items():
-        vars()['test_add_%s' % datatype] = _inplace_test('test_add_%s' % datatype, 'x += y', examples)
-        vars()['test_subtract_%s' % datatype] = _inplace_test('test_subtract_%s' % datatype, 'x -= y', examples)
-        vars()['test_multiply_%s' % datatype] = _inplace_test('test_multiply_%s' % datatype, 'x *= y', examples, small_ints=True)
-        vars()['test_floor_divide_%s' % datatype] = _inplace_test('test_floor_divide_%s' % datatype, 'x //= y', examples)
-        vars()['test_true_divide_%s' % datatype] = _inplace_test('test_true_divide_%s' % datatype, 'x /= y', examples)
-        vars()['test_modulo_%s' % datatype] = _inplace_test('test_modulo_%s' % datatype, 'x %= y', examples)
-        vars()['test_power_%s' % datatype] = _inplace_test('test_power_%s' % datatype, 'x **= y', examples, small_ints=True)
-        vars()['test_lshift_%s' % datatype] = _inplace_test('test_lshift_%s' % datatype, 'x <<= y', examples, small_ints=True)
-        vars()['test_rshift_%s' % datatype] = _inplace_test('test_rshift_%s' % datatype, 'x >>= y', examples)
-        vars()['test_and_%s' % datatype] = _inplace_test('test_and_%s' % datatype, 'x &= y', examples)
-        vars()['test_xor_%s' % datatype] = _inplace_test('test_xor_%s' % datatype, 'x ^= y', examples)
-        vars()['test_or_%s' % datatype] = _inplace_test('test_or_%s' % datatype, 'x |= y', examples)
+        vars()['test_add_%s' % datatype] = _inplace_test(
+            'test_add_%s' % datatype, 'x += y', examples
+        )
+        vars()['test_subtract_%s' % datatype] = _inplace_test(
+            'test_subtract_%s' % datatype, 'x -= y', examples
+        )
+        vars()['test_multiply_%s' % datatype] = _inplace_test(
+            'test_multiply_%s' % datatype, 'x *= y', examples, small_ints=True
+        )
+        vars()['test_floor_divide_%s' % datatype] = _inplace_test(
+            'test_floor_divide_%s' % datatype, 'x //= y', examples
+        )
+        vars()['test_true_divide_%s' % datatype] = _inplace_test(
+            'test_true_divide_%s' % datatype, 'x /= y', examples
+        )
+        vars()['test_modulo_%s' % datatype] = _inplace_test(
+            'test_modulo_%s' % datatype, 'x %= y', examples
+        )
+        vars()['test_power_%s' % datatype] = _inplace_test(
+            'test_power_%s' % datatype, 'x **= y', examples, small_ints=True
+        )
+        vars()['test_lshift_%s' % datatype] = _inplace_test(
+            'test_lshift_%s' % datatype, 'x <<= y', examples, small_ints=True
+        )
+        vars()['test_rshift_%s' % datatype] = _inplace_test(
+            'test_rshift_%s' % datatype, 'x >>= y', examples
+        )
+        vars()['test_and_%s' % datatype] = _inplace_test(
+            'test_and_%s' % datatype, 'x &= y', examples
+        )
+        vars()['test_xor_%s' % datatype] = _inplace_test(
+            'test_xor_%s' % datatype, 'x ^= y', examples
+        )
+        vars()['test_or_%s' % datatype] = _inplace_test(
+            'test_or_%s' % datatype, 'x |= y', examples
+        )
 
 
 def _builtin_test(test_name, operation, examples, small_ints=False):
@@ -1127,6 +1199,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
     actuals = examples
     if small_ints and name.endswith('_int'):
         actuals = [x for x in examples if abs(int(x)) < 8192]
+
     def func(self):
         self.assertOneArgModuleFuction(
             name=name,
@@ -1136,6 +1209,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
             substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
         )
     return func
+
 
 def _module_two_arg_func_test(name, module, f,  examples, examples2):
     def func(self):
@@ -1150,7 +1224,9 @@ def _module_two_arg_func_test(name, module, f,  examples, examples2):
         )
     return func
 
+
 numerics = {'bool', 'float', 'int'}
+
 
 class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
     numerics_only = False

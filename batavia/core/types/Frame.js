@@ -1,6 +1,9 @@
 var Cell = require('./Cell');
+var PyObject = require('./Object');
+var basic_types = require('./Type');
 
 var Frame = function(kwargs) {
+    PyObject.call(this);
     var v, i;
 
     this.f_code = kwargs.f_code;
@@ -12,47 +15,58 @@ var Frame = function(kwargs) {
     if (this.f_back) {
         this.f_builtins = this.f_back.f_builtins;
     } else {
-        this.f_builtins = this.f_globals['__builtins__'];
+        this.f_builtins = this.f_locals['__builtins__'];
         if (this.f_builtins.hasOwnProperty('__dict__')) {
             this.f_builtins = this.f_builtins.__dict__;
         }
     }
 
-    this.f_lineno = this.f_code.co_firstlineno;
-    this.f_lasti = 0;
+    if (this.f_code) {
+        this.f_lineno = this.f_code.co_firstlineno;
+        this.f_lasti = 0;
 
-    if (this.f_code.co_cellvars.length > 0) {
-        this.cells = {};
-        if (this.f_back && !this.f_back.cells) {
-            this.f_back.cells = {};
+        if (this.f_code.co_cellvars.length > 0) {
+            this.cells = {};
+            if (this.f_back && !this.f_back.cells) {
+                this.f_back.cells = {};
+            }
+            for (i = 0; i < this.f_code.co_cellvars.length; i++) {
+                // Make a cell for the variable in our locals, or null.
+                v = this.f_code.co_cellvars[i];
+                this.cells[v] = new Cell(this.f_locals[v]);
+                if (this.f_back) {
+                    this.f_back.cells[v] = this.cells[v];
+                }
+            }
+        } else {
+            this.cells = null;
         }
-        for (i = 0; i < this.f_code.co_cellvars.length; i++) {
-            // Make a cell for the variable in our locals, or null.
-            v = this.f_code.co_cellvars[i];
-            this.cells[v] = new Cell(this.f_locals[v]);
-            if (this.f_back) {
-                this.f_back.cells[v] = this.cells[v];
+
+        if (this.f_code.co_freevars.length > 0) {
+            if (!this.cells) {
+                this.cells = {};
+            }
+            for (i = 0; i < this.f_code.co_freevars.length; i++) {
+                v = this.f_code.co_freevars[i];
+                // assert(this.cells !== null);
+                // assert(this.f_back.cells, "f_back.cells: " + this.f_back.cells);
+                this.cells[v] = this.f_back.cells[v];
             }
         }
     } else {
+        this.f_lineno = null;
+        this.f_lasti = 0;
         this.cells = null;
     }
 
-    if (this.f_code.co_freevars.length > 0) {
-        if (!this.cells) {
-            this.cells = {};
-        }
-        for (i = 0; i < this.f_code.co_freevars.length; i++) {
-            v = this.f_code.co_freevars[i];
-            // assert(this.cells !== null);
-            // assert(this.f_back.cells, "f_back.cells: " + this.f_back.cells);
-            this.cells[v] = this.f_back.cells[v];
-        }
-    }
     this.block_stack = [];
     this.generator = null;
-
 }
+
+Frame.prototype = Object.create(PyObject.prototype);
+Frame.prototype.__class__ = new basic_types.Type('frame');
+Frame.prototype.constructor = Frame;
+
 
 Frame.prototype.toString = function() {
     return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename +' @ ' + this.f_lineno + '>';
