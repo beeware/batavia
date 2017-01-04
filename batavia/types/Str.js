@@ -5,7 +5,8 @@ var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var None = require('../core').None;
-
+var path = require('path')
+var StrUtils = require('./StrUtils')
 /*************************************************************************
  * Modify String to behave like a Python String
  *************************************************************************/
@@ -268,8 +269,6 @@ Str.prototype.__mul__ = function(other) {
 
 Str.prototype.__mod__ = function(other) {
     var types = require('../types');
-    var StrUtils = require('./StrUtils')
-
     if (types.isinstance(other, types.Tuple)) {
         return StrUtils._substitute(this, other);
     } else {
@@ -278,7 +277,6 @@ Str.prototype.__mod__ = function(other) {
 }
 
 Str.prototype.__add__ = function(other) {
-    console.log("hello from __mod__")
     var types = require('../types');
 
     if (types.isinstance(other, Str)) {

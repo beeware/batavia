@@ -22,8 +22,6 @@ function _substitute(format, args){
       // - conversion is left adjusted (overrides 0)
       // ' '(space) a blank should be left before positive number or empty string produced by sign conversion
       // '+' positive or negative will precede the conversion (overrides space)
-
-
     // 3) Minimum field width (optional). If specified as an '*' (asterisk), the actual width is read from the next element of the tuple in values, and the object to convert comes after the minimum field width and optional precision.
     // 4) Precision (optional), given as a '.' (dot) followed by the precision. If specified as '*' (an asterisk), the actual width is read from the next element of the tuple in values, and the value to convert comes after the precision.
     // 5) Length modifier (optional). IGNORED IN PYTHON
@@ -70,7 +68,7 @@ function _substitute(format, args){
 
       var steps = {
         // regex to search for the FIRST character in each step
-        1: /%/ //literal percentage
+        1: /%/, //literal percentage
         2: /[#0-\s\+]/, // conversion flags
         3: /[\d\*]/, // min field width
         4: /[\d\*\.]/, // percision
@@ -78,7 +76,7 @@ function _substitute(format, args){
         6: /[diouxXeEfFgGcrs]/, // conversion type
       }
 
-      for (var s=currStep; s<=7; s++){
+      for (var s=currStep; s<=6; s++){
         // try to make a match
         var re = steps[s];
         if (nextChar.search(re) !== -1){
@@ -251,13 +249,13 @@ function _substitute(format, args){
         // conversion(str): the type of conversion to perform
         // throws an error if the arg is an invalid type
 
-        if ( /[diouxXeE]/.test(conversion) ){
+        if ( /[diouxX]/.test(conversion) ){
 
           if ( !types.isinstance(arg, [types.Int, types.Float]) ){
             throw new exceptions.TypeError(`%${conversion} format: a number is required, not str`)
           }
-        } else if ( /[fFgG]/.test(conversion)   ){
-          if ( !types.isinstance(arg, [types.Float]) ){
+        } else if ( /[eEfFgG]/.test(conversion)   ){
+          if ( !types.isinstance(arg, [types.Float, types.Int]) ){
             throw new exceptions.TypeError("a float is required")
           }
         } else if ( conversion === 'c' ){
@@ -286,7 +284,7 @@ function _substitute(format, args){
 
       if ( this.percision.value === '*' ){
         var percision = workingArgs.shift().valueOf();
-      } else if ( !isNaN(this.percision.value ) ){
+      } else if ( this.percision.value !== '' ){
         var percision = Number(this.percision.value);
       } else {
         var percision = null;
@@ -303,7 +301,13 @@ function _substitute(format, args){
         case('d'):
         case('i'):
         case('u'):
-          var conversionArg = String(parseInt(conversionArgValue));
+
+          var conversionArg = new BigNumber(conversionArgValue).toFixed(0);
+
+          if ( conversionArg == '-0' ){
+            conversionArg = '0';
+          }
+
 
           // percision determines leading 0s
           var numLeadingZeros = percision - conversionArg.length;
@@ -313,11 +317,27 @@ function _substitute(format, args){
           break;
 
         case('o'):
-          var base = parseInt(Math.abs(conversionArgValue)).toString(8);
+//          var base = parseInt(Math.abs(conversionArgValue)).toString(8);
+          var base = new BigNumber
+            (Math.floor(
+                Math.abs(conversionArgValue)
+                )
+            )
+            .toString(8)
+
+          if ( base == '-0' ){
+            base = '0';
+          }
+
           if (this.conversionFlags['#']){
             var conversionArg = '0o' + base;
           } else {
             var conversionArg = base;
+          }
+
+          // handle the minus sign
+          if ( conversionArgValue <= -1 ){
+            conversionArg = '-' + conversionArg;
           }
 
           // percision determines leading 0s
@@ -329,13 +349,31 @@ function _substitute(format, args){
 
         case('x'):
         case('X'):
-          var base = this.conversionType == 'x' ?
-            parseInt(conversionArgValue).toString(16) :
-            parseInt(conversionArgValue).toString(16).toUpperCase()
+
+          var base = new BigNumber
+            (Math.floor(
+                Math.abs(conversionArgValue)
+                )
+            )
+          .toString(16)
+
+          if ( this.conversionType == 'X' ){
+            base = base.toUpperCase();
+          }
+
+          if ( base == '-0' ){
+            base = '0';
+          }
+
           if (this.conversionFlags['#']){
             var conversionArg = '0' + this.conversionType +  base;
           } else {
             var conversionArg = base;
+          }
+
+          // handle the minus sign
+          if ( conversionArgValue <= -1 ){
+            conversionArg = '-' + conversionArg;
           }
 
           // percision determines leading 0s
@@ -377,8 +415,8 @@ function _substitute(format, args){
 
         case('g'):
         case('G'):
-          var conversionExp = conversionArgValue.toExponential(6);
-          baseExpSplit = conversionExp.split(/e[\+\-]/)
+          var conversionExp = Number(conversionArgValue).toExponential(6);
+          var baseExpSplit = conversionExp.split(/e[\+\-]/)
           var exp = Number(baseExpSplit[1]);
           if ( exp < -4 || !exp < percision){
             // use exponential
@@ -421,14 +459,22 @@ function _substitute(format, args){
           break;
         case('f'):
         case('F'):
+            conversionArg = percision !== null ?
+                new BigNumber(conversionArgValue).toFixed(percision) :
+                new BigNumber(conversionArgValue).toFixed(6);
 
-          var beforeDecimal = Math.floor(conversionArgValue);
-          var afterDecimal = conversionArgValue % 1;
-          afterDecimalLen = percision !== null ?
-            percision - String(beforeDecimal).length : 6
-
-          var numExtraZeros = afterDecimalLen - String(afterDecimal).length;
-          var conversionArg = `${beforeDecimal}.${afterDecimal + '0'.repeat(numExtraZeros)}`
+//          var beforeDecimal = Math.floor(conversionArgValue);
+//          var afterDecimal = conversionArgValue % 1;
+//
+//
+//          afterDecimalLen = percision !== null ?
+//            percision - String(beforeDecimal).length : 6;
+//
+//          var numExtraZeros = afterDecimalLen - String(afterDecimal).length -2;  // exclude first two chars
+//
+//          var afterDecimalSliced = String(afterDecimal).slice(1,afterDecimal.length); // slice off 0 before .
+//          var conversionArg = beforeDecimal + afterDecimalSliced + '0'.repeat(numExtraZeros)
+////          var conversionArg = `${beforeDecimal}.${afterDecimal + '0'.repeat(numExtraZeros)}`
           break;
 
         case('c'):
@@ -521,7 +567,6 @@ function _substitute(format, args){
   var match = re.exec(format);
   // spec = specGen.next().value
   while(match){
-    console.log(match);
     // grab everything between lastStop and current spec start
     result += format.slice(lastStop, match.index);
     // parse the specifier. DON'T ASSUME IT IS COMPLETE OR LEGIT!
