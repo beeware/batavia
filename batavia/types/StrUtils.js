@@ -417,21 +417,56 @@ function _substitute(format, args){
         case('G'):
           var conversionExp = Number(conversionArgValue).toExponential(6);
           var baseExpSplit = conversionExp.split(/e[\+\-]/)
-          var exp = Number(baseExpSplit[1]);
-          if ( exp < -4 || !exp < percision){
-            // use exponential
-            if ( baseExpSplit[1].length === 1 ){
-              baseExpSplit[1] = '0' + baseExpSplit[1]
-            }
 
-            var numLeadingZeros = percision - conversionArg.length;
-            if ( numLeadingZeros > 0 ){
-              baseExpSplit[0] = baseExpSplit[0] + '0'.repeat(numLeadingZeros)
+          var bn = new BigNumber(conversionArgValue);
+
+          // get number of digits inherent in the value
+          var isInt = conversionArgValue % 1 === 0;
+
+          var conversionArgAbsolute = Math.abs(conversionArgValue);
+          if ( isInt ){
+            // its an integer
+            var numInherentDigits = String(conversionArgAbsolute).length
+          } else {
+            var numInherentDigits = String(conversionArgAbsolute).length - 1 // exclude the decimal
+
+            if ( conversionArgAbsolute < 1 ){
+              numInherentDigits -= 1 // the leading 0 is not significant
             }
+          }
+
+          // how many extra digits?
+          var extraDigits = percision !== null ?
+            percision - numInherentDigits :
+            6 - numInherentDigits;
+
+          // less than 0 makes no sense!
+          if ( extraDigits < 0 ){
+            extraDigits = 0;
+          }
+
+          if ( Number(baseExpSplit[1] < -4 || !exp < percision){
+
+              // this is a string!
+              if ( percision !== null ){
+                var base = baseExpSplit[0].toFixed(percision);
+              } else {
+                var base = baseExpSplit[0].toFixed(6);
+              }
+
+              // use exponential
+              if ( baseExpSplit[1].length === 1 ){
+                baseExpSplit[1] = '0' + baseExpSplit[1]
+              }
+
+              if ( extraDigits > 0 ){
+                baseExpSplit[0] = baseExpSplit[0] + '0'.repeat(extraDigits)
+              }
 
             var conversionArg = this.conversionType === 'g' ?
               baseExpSplit.join('+e') :
               baseExpSplit.join('+E')
+
           } else {
             // don't use exponential
 
@@ -443,13 +478,14 @@ function _substitute(format, args){
               // The precision determines the number of significant digits
               //before and after the decimal point and defaults to 6.
 
-              var beforeDecimal = Math.floor(conversionArgValue);
-              var afterDecimal = conversionArgValue % 1;
-              var afterDecimalLen = this.percision.value !== '' ?
-                percision - String(beforeDecimal).length : 6;
+              // if its an int, tack on a . + zeros
+              // if its a float just tack on zeros
 
-              var numExtraZeros = afterDecimalLen - String(afterDecimal).length;
-              var conversionArg = `${beforeDecimal}.${afterDecimal + '0'.repeat(numExtraZeros)}`
+              if ( isInt ){
+                var conversionArg = `${conversionArgValue}.${'0'.repeat(extraDigits)}`
+              } else {
+                var conversionArg = conversionArgValue + '0'.repeat(extraDigits)
+              }
 
             } else {
 
