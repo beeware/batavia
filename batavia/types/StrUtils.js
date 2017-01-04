@@ -415,58 +415,32 @@ function _substitute(format, args){
 
         case('g'):
         case('G'):
-          var conversionExp = Number(conversionArgValue).toExponential(6);
-          var baseExpSplit = conversionExp.split(/e[\+\-]/)
+          var conversionExp = Number(conversionArgValue).toExponential();
+          var baseExpSplit = conversionExp.split('e')
 
           var bn = new BigNumber(conversionArgValue);
 
-          // get number of digits inherent in the value
-          var isInt = conversionArgValue % 1 === 0;
 
-          var conversionArgAbsolute = Math.abs(conversionArgValue);
-          if ( isInt ){
-            // its an integer
-            var numInherentDigits = String(conversionArgAbsolute).length
-          } else {
-            var numInherentDigits = String(conversionArgAbsolute).length - 1 // exclude the decimal
 
-            if ( conversionArgAbsolute < 1 ){
-              numInherentDigits -= 1 // the leading 0 is not significant
+          var base = baseExpSplit[0];
+          var exp = baseExpSplit[1];
+          var expSign = exp > 0 ? "+" : "-";
+          if ( exp < -4 || !exp < percision ){
+            // use the exponential
+
+
+            // correctly zero pad the base
+            var base = percision === null || percision === 0 ?
+              Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
+              Number(base).toFixed(percision - 1);
+
+            if ( Math.abs(exp < 10 ) ){
+              exp = exp[0] + '0' + exp[1];
             }
-          }
 
-          // how many extra digits?
-          var extraDigits = percision !== null ?
-            percision - numInherentDigits :
-            6 - numInherentDigits;
+            var expMarker = this.conversionType === 'g' ? 'e' : 'E'
 
-          // less than 0 makes no sense!
-          if ( extraDigits < 0 ){
-            extraDigits = 0;
-          }
-
-          if ( Number(baseExpSplit[1] < -4 || !exp < percision){
-
-              // this is a string!
-              if ( percision !== null ){
-                var base = baseExpSplit[0].toFixed(percision);
-              } else {
-                var base = baseExpSplit[0].toFixed(6);
-              }
-
-              // use exponential
-              if ( baseExpSplit[1].length === 1 ){
-                baseExpSplit[1] = '0' + baseExpSplit[1]
-              }
-
-              if ( extraDigits > 0 ){
-                baseExpSplit[0] = baseExpSplit[0] + '0'.repeat(extraDigits)
-              }
-
-            var conversionArg = this.conversionType === 'g' ?
-              baseExpSplit.join('+e') :
-              baseExpSplit.join('+E')
-
+            var conversionArg = `${base}${expMarker}${exp}`
           } else {
             // don't use exponential
 
@@ -480,6 +454,31 @@ function _substitute(format, args){
 
               // if its an int, tack on a . + zeros
               // if its a float just tack on zeros
+              // get number of digits inherent in the value
+              var isInt = conversionArgValue % 1 === 0;
+
+              var conversionArgAbsolute = Math.abs(conversionArgValue);
+
+              if ( isInt ){
+                // its an integer
+                var numInherentDigits = String(conversionArgAbsolute).length
+              } else {
+                var numInherentDigits = String(conversionArgAbsolute).length - 1 // exclude the decimal
+
+                if ( conversionArgAbsolute < 1 ){
+                  numInherentDigits -= 1 // the leading 0 is not significant
+                }
+              }
+
+              // how many extra digits?
+              var extraDigits = percision !== null ?
+                percision - numInherentDigits :
+                6 - numInherentDigits;
+
+              // less than 0 makes no sense!
+              if ( extraDigits < 0 ){
+                extraDigits = 0;
+              }
 
               if ( isInt ){
                 var conversionArg = `${conversionArgValue}.${'0'.repeat(extraDigits)}`
