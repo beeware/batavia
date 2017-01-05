@@ -1,6 +1,6 @@
 {
   "name": "@pybee/batavia",
-  "version": "3.4.0-dev.14",
+  "version": "3.4.0-dev.15",
   "description": "A Javascript implementation of the Python virtual machine.",
   "main": "batavia/batavia.js",
   "directories": {
@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/pybee/batavia/issues"
   },
-  "homepage": "https://github.com/pybee/batavia#readme",
+  "homepage": "http://pybee.org/batavia",
   "devDependencies": {
     "babel-core": "6.18.2",
     "babel-loader": "6.2.8",

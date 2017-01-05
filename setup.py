@@ -1,19 +1,23 @@
 import io
+import json
 from setuptools import setup, find_packages
 
 
 with io.open('README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
+with io.open('package.json', encoding='utf8') as package:
+    data = json.load(package)
+
 
 setup(
     name='batavia',
-    version='3.4.0.dev5',
-    description='Tools to run Python bytecode on the Javascript VM.',
+    version=data['version'],
+    description=data['description'],
     long_description=long_description,
-    author='Russell Keith-Magee',
+    author=data['author'],
     author_email='russell@keith-magee.com',
-    url='http://pybee.org/batavia',
+    url=data['homepage'],
     packages=find_packages(exclude=['docs', 'tests']),
     license='New BSD',
     classifiers=[
