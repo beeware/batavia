@@ -19,6 +19,7 @@ test:
     - sudo service mysql stop || true
     - sudo service postgresql stop || true
   override:
+    - npm install install
     - "pip install pytest":
         parallel: true
     - "pip install git+https://github.com/pybee/pytest-circleci":
