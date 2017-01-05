@@ -420,26 +420,24 @@ function _substitute(format, args){
 
           var bn = new BigNumber(conversionArgValue);
 
-
-
           var base = baseExpSplit[0];
           var exp = baseExpSplit[1];
           var expSign = exp > 0 ? "+" : "-";
-          if ( exp < -4 || !exp < percision ){
+
+          percision = percision || 6;  // percision defaults to 6
+
+          if ( exp < -4 || exp >= percision ){
             // use the exponential
-
-
             // correctly zero pad the base
             var base = percision === null || percision === 0 ?
               Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
               Number(base).toFixed(percision - 1);
 
-            if ( Math.abs(exp < 10 ) ){
+            if ( Math.abs(exp) < 10 ){
               exp = exp[0] + '0' + exp[1];
             }
 
             var expMarker = this.conversionType === 'g' ? 'e' : 'E'
-
             var conversionArg = `${base}${expMarker}${exp}`
           } else {
             // don't use exponential
@@ -487,7 +485,7 @@ function _substitute(format, args){
               }
 
             } else {
-
+              // non alternate format
               var conversionArg = conversionArgValue;
             }
           } // outer if
