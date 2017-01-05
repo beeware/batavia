@@ -10,7 +10,7 @@ dependencies:
   pre:
     - sudo apt-get install pandoc
   override:
-    - npm install npm
+    - sudo npm install -g npm
     - npm install
 
 test:
