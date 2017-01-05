@@ -54,7 +54,7 @@ Downloading and Installing
 
 Linux/Unix/Mac::
 
-   $ virtualenv venv
+   $ virtualenv --python=`which python3` venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
