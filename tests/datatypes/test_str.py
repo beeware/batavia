@@ -223,7 +223,6 @@ class FormatTests(TranspileTestCase):
         'F',
         'g',
         'G',
-        'c',
         'r',
         's'
     )
@@ -260,13 +259,66 @@ class FormatTests(TranspileTestCase):
                 print('>>> "format this: %{spec}" % {arg}')
                 try:
                     print('format this: %{spec}' % {arg})
-                except ValueError as val_err:
+                except (ValueError, TypeError, OverflowError) as val_err:
                     print(val_err)
-                except TypeError as type_err:
-                    print(type_err)
                 print('Done.')
                 """.format(
                     spec=comb[0]+comb[1], arg=comb[2])) for comb in combinations])
+
+        self.assertCodeExecution(tests, cleaner=cleaner)
+
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_c_conversion_normal(self, cleaner):
+        """tests for c character conversion
+        can't handle positive integers less than 32
+        """
+        values = [
+            32,
+            100,
+            5000000000000,
+            -1,
+            '"s"',
+            '"spam"'
+        ]
+        tests = ''.join([adjust("""
+                print('>>> "format this: %c" % {arg}')
+                try:
+                    print('format this: %c' % {arg})
+                except (ValueError, TypeError, OverflowError) as val_err:
+                    print(val_err)
+                print('Done.')
+                """.format(
+                    arg=v)) for v in values])
+
+        self.assertCodeExecution(tests, cleaner=cleaner)
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    @unittest.expectedFailure
+    def test_c_conversion_fails(self, cleaner):
+        """tests for c character conversion
+        that are presently expected to fail (0 < x < 32)
+        TODO: when this test passes, integrate this test into the other
+        """
+        values = [
+            1,
+            31
+        ]
+        tests = ''.join([adjust("""
+                print('>>> "format this: %c" % {arg}')
+                try:
+                    print('format this: %c' % {arg})
+                except (ValueError, TypeError, OverflowError) as val_err:
+                    print(val_err)
+                print('Done.')
+                """.format(
+                    arg=v)) for v in values])
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
