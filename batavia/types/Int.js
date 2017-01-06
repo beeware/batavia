@@ -48,7 +48,7 @@ Int.prototype.bigNumber = function() {
 }
 
 Int.prototype.valueOf = function() {
-    return this.val.valueOf();
+    return this.val;
 }
 
 Int.prototype.toString = function() {
