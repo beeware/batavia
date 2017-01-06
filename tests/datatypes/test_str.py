@@ -110,28 +110,36 @@ class StrTests(TranspileTestCase):
             """)
 
     def test_startswith(self):
-        # Single character
         self.assertCodeExecution("""
+            # Single character
             if 'BeeWare'.startswith('B'):
                 print('BeeWare starts with B')
             else:
                 print('BeeWare does not start with B')
-        """)
-
-        # Partial string
-        self.assertCodeExecution("""
+            # Substring
             if 'BeeWare'.startswith('Bee'):
                 print('BeeWare starts with Bee')
             else:
                 print('BeeWare does not start with Bee')
-        """)
-
-        # Invalid substring
-        self.assertCodeExecution("""
+            # Invalid substring
             if 'BeeWare'.startswith('Ware'):
                 print('BeeWare starts with Ware')
             else:
                 print('BeeWare does not start with Ware')
+            # Superstring
+            if 'BeeWare'.startswith('BeeWare-shaves-yaks'):
+                print('BeeWare starts with BeeWare-shaves-yaks')
+            else:
+                print('BeeWare does not start with BeeWare-shaves-yaks')
+            if 'BeeWare' startswith(''):
+                print('BeeWare starts with an empty string')
+            else:
+                print('BeeWare does not start with an empty string')
+            if 'BeeWare' startswith(5):
+                print('BeeWare starts with the number 5')
+            else:
+                print('BeeWare does not start with the number 5')
+            print('done.')
         """)
 
 
