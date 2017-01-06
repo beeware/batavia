@@ -236,6 +236,7 @@ class FormatTests(TranspileTestCase):
         5.0,
         -5.0,
         0.5,
+        0.50, # added this
         0.000005,
         0.000000000000000000005,
         -0.5,
@@ -260,7 +261,7 @@ class FormatTests(TranspileTestCase):
                 try:
                     print('format this: %{spec}' % {arg})
                 except (ValueError, TypeError, OverflowError) as val_err:
-                    print(val_err)
+                    print(err))
                 print('Done.')
                 """.format(
                     spec=comb[0]+comb[1], arg=comb[2])) for comb in combinations])
@@ -272,41 +273,18 @@ class FormatTests(TranspileTestCase):
         decimal = False,
         float_exp = False
     )
-    def test_c_conversion_normal(self, cleaner):
+    def test_c_conversion(self, cleaner):
         """tests for c character conversion
-        can't handle positive integers less than 32
+        in C Python there is an upper bound to what int or float can be provided
+        and this is platform specific. currently, Batavia is not enforcing any
+        kind of upper bound.
         """
         values = [
             32,
             100,
-            5000000000000,
             -1,
             '"s"',
-            '"spam"'
-        ]
-        tests = ''.join([adjust("""
-                print('>>> "format this: %c" % {arg}')
-                try:
-                    print('format this: %c' % {arg})
-                except (ValueError, TypeError, OverflowError) as val_err:
-                    print(val_err)
-                print('Done.')
-                """.format(
-                    arg=v)) for v in values])
-
-        self.assertCodeExecution(tests, cleaner=cleaner)
-    @js_transforms(
-        js_bool = False,
-        decimal = False,
-        float_exp = False
-    )
-    @unittest.expectedFailure
-    def test_c_conversion_fails(self, cleaner):
-        """tests for c character conversion
-        that are presently expected to fail (0 < x < 32)
-        TODO: when this test passes, integrate this test into the other
-        """
-        values = [
+            '"spam"',
             1,
             31
         ]
@@ -315,34 +293,46 @@ class FormatTests(TranspileTestCase):
                 try:
                     print('format this: %c' % {arg})
                 except (ValueError, TypeError, OverflowError) as val_err:
-                    print(val_err)
+                    print(err))
                 print('Done.')
                 """.format(
                     arg=v)) for v in values])
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
-    @unittest.skip("testing skipping")
-    def test_field_width(self):
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_field_width(self, cleaner):
 
         cases = (
             ('2s', '"s"'),
             ('2s', '"spam"'),
             ('2d', 5),
             ('2d', 1234),
+            ('5d', 0.5),
         )
 
         tests = ''.join([adjust("""
-            print('>>> format this: %{spec} % {arg}')
-            print('format this: %{spec}' % {arg})
+            print('>>> "format this: %{spec}" % {arg}')
+            try:
+                print('format this: %{spec}' % {arg})
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err))
+            print('Done.')
             """.format(
             spec=''.join(c[0]), arg=c[1])) for c in cases])
 
-        self.assertCodeExecution(tests)
+        self.assertCodeExecution(tests, cleaner=cleaner)
 
-    @unittest.expectedFailure # strings like "3.000" are truncated to "3.0"
-    @unittest.skip
-    def test_precision(self):
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_precision(self, cleaner):
 
         percisions = ('.5', '.21')
 
@@ -359,25 +349,32 @@ class FormatTests(TranspileTestCase):
             ('F', 3.5),
             ('g', 3),
             ('G', 3),
-            ('c', 3),
+            ('c', 35),
             ('r', '"s"'),
             ('s', '"s"')
         )
 
         combinations = product(percisions, cases)
         tests = ''.join([adjust("""
-            print('>>> format this: %{spec} % {arg}')
-            print('format this: %{spec}' % {arg})
+            print('>>> "format this: %{spec}" % {arg}')
+            try:
+                print('format this: %{spec}' % {arg})
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err))
+            print('Done.')s
             """.format(
                 spec=c[0]+c[1][0], arg=c[1][1]
                 )
             ) for c in combinations ])
 
-        self.assertCodeExecution(tests)
+        self.assertCodeExecution(tests, cleaner=cleaner)
 
-    @unittest.expectedFailure
-    @unittest.skip("testing skipping")
-    def test_left_adjust(self):
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_left_adjust(self, cleaner):
         """conversion flags for - and 0"""
 
         flags = ('-', '0')
@@ -403,18 +400,25 @@ class FormatTests(TranspileTestCase):
 
         combinations = product(flags, cases)
         tests = ''.join([adjust("""
-            print('>>> format this: %{spec} % {arg}')
-            print('format this: %{spec}' % {arg})
+            print('>>> "format this: %{spec}" % {arg}')
+            try:
+                print('format this: %{spec}' % {arg})
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err))
+            print('Done.')
             """.format(
                 spec=c[0]+c[1][0], arg=c[1][1]
                 )
             ) for c in combinations ])
 
-        self.assertCodeExecution(tests)
+        self.assertCodeExecution(tests, cleaner=cleaner)
 
-    @unittest.expectedFailure
-    @unittest.skip("testing skipping")
-    def test_plus_sign(self):
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_plus_sign(self, cleaner):
 
         flags = ('+', ' ')
 
@@ -451,23 +455,82 @@ class FormatTests(TranspileTestCase):
 
         combinations = product(flags, cases)
         tests = ''.join([adjust("""
-            print('>>> format this: %{spec} % {arg}')
-            print('format this: %{spec}' % {arg})
+            print('>>> "format this: %{spec}" % {arg}')
+            try:
+                print('format this: %{spec}' % {arg})
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err))
+            print('Done.')
             """.format(
                 spec=c[0]+c[1][0], arg=c[1][1]
                 )
             ) for c in combinations ])
 
-        self.assertCodeExecution(tests)
+        self.assertCodeExecution(tests, cleaner=cleaner)
 
-    @unittest.skip("testing skipping")
-    def test_literal_percent(self):
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_literal_percent(self, cleaner):
         test = adjust("""
             print(">>> '%s %%' % 'spam'")
             print('%s %%' % 'spam')
             """)
 
-        self.assertCodeExecution(test)
+        self.assertCodeExecution(test, cleaner=cleaner)
+
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_no_args(self, cleaner):
+        test = adjust("""
+            print(">>> 'nope' % ()")
+            try:
+                print('nope' % ())
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err)
+            print('Done.')
+            """)
+
+        self.assertCodeExecution(test, cleaner=cleaner)
+
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_too_many_args(self, cleaner):
+        test = adjust("""
+            print(">>> 'format this: %d' % (5, 5)")
+            try:
+                print('format this: %d' % (5, 5))
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err)
+            print('Done.')
+            """)
+
+        self.assertCodeExecution(test, cleaner=cleaner)
+
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_not_enough_args(self, cleaner):
+        test = adjust("""
+            print(">>> 'format this: %d %d' % 5")
+            try:
+                print('format this: %d %d' % 5)
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err)
+            print('Done.')
+            """)
+
+        self.assertCodeExecution(test, cleaner=cleaner)
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'

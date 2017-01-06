@@ -263,9 +263,14 @@ function _substitute(format, args){
           //  multi character strings are not allowed
           if ( types.isinstance(arg, types.Str) && arg.valueOf().length > 1 ){
             throw new exceptions.TypeError("%c requires int or char")
-          }
-        }
+          } else if ( types.isinstance(arg, [types.Int, types.Float]) ){
 
+            if ( arg < 0 ){
+              throw new exceptions.OverflowError("%c arg not in range(0xXXXXXXXX)")
+            }
+          }
+
+        } // end outer if
         // conversion types s and r are ok with anything
       } // end validateType
 
@@ -273,10 +278,23 @@ function _substitute(format, args){
         // bataviaType: a batavia type, must be int, float or str
         // returns the udnerlying JS type.
 
-        if ( types.isinstance(bataviaType, [types.Int, types.Float]) ){
-          return Number(bataviaType.valueOf());
+        if ( types.isinstance(bataviaType, types.Int) ){
+          return bataviaType.bigNumber().valueOf();
         } else {
           return bataviaType.valueOf();
+        }
+      }
+
+      function zeroPadExp(rawExponential){
+        // rawExponential (str) example: "5e+5"
+        // returns the correct zero padded exponential. example 5e+05
+
+        var re = /([-+]?[0-9]*\.?[0-9]*)(e[\+\-])(\d+)/;
+        var m = rawExponential.match(re);
+        if ( m[3] < 10 ){
+          return m[1] + m[2] + '0' + m[3];
+        } else {
+          return m[1] + m[2] + m[3];
         }
       }
 
@@ -303,10 +321,11 @@ function _substitute(format, args){
 
       validateType(conversionArgRaw, this.conversionType);
 
-      var conversionArgValue = conversionArgRaw.valueOf(); // the native type
+      var conversionArgValue = getJSValue(conversionArgRaw);
 
       // floats with no decimal: preserve!
       if ( types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 == 0 ){
+
         conversionArgValue = conversionArgValue.toFixed(1)
       }
 
@@ -322,7 +341,6 @@ function _substitute(format, args){
           if ( conversionArg == '-0' ){
             conversionArg = '0';
           }
-
 
           // percision determines leading 0s
           var numLeadingZeros = percision - conversionArg.length;
@@ -419,14 +437,11 @@ function _substitute(format, args){
 
           // exponent must have at least two digits
           var exp = expSplit[1]
-          if ( exp.length === 2 ){
-            exp = exp[0] + '0' + exp[1];
-          }
 
-        var conversionArg = this.conversionType === 'e' ?
-          `${base}e${exp}` :
-          `${base}E${exp}`
-          break;
+          var conversionArg = this.conversionType === 'e' ?
+            zeroPadExp(`${base}e${exp}`) :
+            zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
+            break;
 
         case('g'):
         case('G'):
@@ -444,16 +459,22 @@ function _substitute(format, args){
           if ( exp < -4 || exp >= percision ){
             // use the exponential
             // correctly zero pad the base
-            var base = percision === null || percision === 0 ?
-              Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
-              Number(base).toFixed(percision - 1);
 
-            if ( Math.abs(exp) < 10 ){
-              exp = exp[0] + '0' + exp[1];
+            if (this.conversionFlags['#']){
+              // use alternate format
+              var base = percision === null || percision === 0 ?
+                Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
+                Number(base).toFixed(percision - 1);
+
+            } else {
+              // don't use alternate format
+              var base = Number(base);
             }
+            var conversionArg = this.conversionType === 'g' ?
+            zeroPadExp(`${base}e${exp}`) :
+            zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
+            break;
 
-            var expMarker = this.conversionType === 'g' ? 'e' : 'E'
-            var conversionArg = `${base}${expMarker}${exp}`
           } else {
             // don't use exponential
 
@@ -501,7 +522,8 @@ function _substitute(format, args){
 
             } else {
               // non alternate format
-              var conversionArg = conversionArgValue;
+              var conversionArg = String(Number(conversionArgValue));
+
             }
           } // outer if
           break;
@@ -510,72 +532,75 @@ function _substitute(format, args){
             conversionArg = percision !== null ?
                 new BigNumber(conversionArgValue).toFixed(percision) :
                 new BigNumber(conversionArgValue).toFixed(6);
-
-//          var beforeDecimal = Math.floor(conversionArgValue);
-//          var afterDecimal = conversionArgValue % 1;
-//
-//
-//          afterDecimalLen = percision !== null ?
-//            percision - String(beforeDecimal).length : 6;
-//
-//          var numExtraZeros = afterDecimalLen - String(afterDecimal).length -2;  // exclude first two chars
-//
-//          var afterDecimalSliced = String(afterDecimal).slice(1,afterDecimal.length); // slice off 0 before .
-//          var conversionArg = beforeDecimal + afterDecimalSliced + '0'.repeat(numExtraZeros)
-////          var conversionArg = `${beforeDecimal}.${afterDecimal + '0'.repeat(numExtraZeros)}`
           break;
 
         case('c'):
 
-          switch (typeof conversionArgValue){
+          // in C Python there is an upper bound to what int or float can be provided
+          // and this is platform specific. currently, Batavia is not enforcing any
+          // kind of upper bound.
 
-            case('number'):
-              if ( conversionArgValue < 0 ){
-                throw new exceptions.OverflowError("%c arg not in range(0xXXXXXXXX)");
-              }
-              var conversionArg = String.fromCharCode(conversionArgValue);
-              break;
-
-            case('string'):
-              if ( conversionArgValue.length > 1 ){
-                throw new exceptions.TypeError("%c requires int or char")
-              }
-              var conversionArg = conversionArgValue;
-              break;
-          } // end inner switch
-
+          if ( types.isinstance(conversionArgRaw, [types.Int, types.Float]) ){
+            var conversionArg = String.fromCharCode(Number(conversionArgValue));
+          } else {
+            var conversionArg = conversionArgValue;
+          }
           break;
 
         case('r'):
-          var conversionArg = typeof conversionArgValue === 'string' ?
-            `'${conversionArgValue}'` : conversionArgValue;
+          if ( types.isinstance(conversionArgRaw, types.Str) ){
+            var conversionArg = `'${conversionArgValue}'`
+
+          } else {
+            // handle as a number
+            // if exponent would be < -4 use exponential
+
+            var asExp = Number(conversionArgValue).toExponential();
+            // if exponent is less than -4, use exponential
+            if ( Number(asExp.split('e')[1]) < -4 ){
+              var conversionArg = zeroPadExp(asExp);
+            } else {
+              var conversionArg = conversionArgValue
+            }
+          }
           break;
         case('s'):
-          var conversionArg = conversionArgValue;
+          if ( types.isinstance(conversionArgRaw, types.Str) ){
+            var conversionArg = conversionArgValue;
+
+          } else {
+            // handle as a number
+            // if exponent would be < -4 use exponential
+
+            var asExp = Number(conversionArgValue).toExponential();
+            // if exponent is less than -4, use exponential
+            if ( Number(asExp.split('e')[1]) < -4 ){
+              var conversionArg = zeroPadExp(asExp);
+            } else {
+              var conversionArg = conversionArgValue
+            }
+          }
           break;
       } // end switch
 
       // only do the below for numbers
-      if ( typeof conversionArgValue === 'number' ){
+      if ( types.isinstance(conversionArgRaw, [types.Int, types.Float]) ){
         if ( this.conversionFlags[' '] ) {
           // A blank should be left before a positive number (or empty string)
           // produced by a signed conversion.
           conversionArg = conversionArgValue >= 0 ?
-          ` ${conversionArg}` : `-${conversionArg}`;
+          ` ${conversionArg}` : `${conversionArg}`;
         } else if ( this.conversionFlags['+'] ){
           // sign character should proceed the conversion
           conversionArg = conversionArgValue >= 0 ?
-          `+${conversionArg}` : `-${conversionArg}`;
+          `+${conversionArg}` : `${conversionArg}`;
         }
       }
 
       var cellWidth = Math.max(minWidth, conversionArg.length);
       var padSize = cellWidth - conversionArg.length;
-      // var percisionPaddingSize = (percision - conversionArg.length) > 0 ?
-      //   percision - conversionArg.length : 0;
-      // var whiteSpaceSize = cellWidth - percisionPaddingSize - conversionArg.length;
 
-      if ( this.conversionFlags['0'] && typeof conversionArgValue === 'number' ){
+      if ( this.conversionFlags['0'] && types.isinstance(conversionArgRaw, [types.Int, types.Float])){
         // example: '00005'
         var retVal = '0'.repeat(padSize) + conversionArg;
 
@@ -586,11 +611,8 @@ function _substitute(format, args){
         // example: '   0005'
         var retVal = ' '.repeat(padSize) + conversionArg;
       }
-
       return retVal;
-
-
-    } // end transform
+    } // END TRANSFORM
 
     var nextStep = 1;
     var charArray = this.fullText.slice(1).split('')
