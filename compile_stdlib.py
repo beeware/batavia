@@ -37,8 +37,8 @@ def parse_args():
     ]
 
     # find the ouroboros directory
-    if os.path.exists('./node_modules/ouroboros'):
-        ouroboros = './node_modules/ouroboros'
+    if os.path.exists('./node_modules/@pybee/ouroboros'):
+        ouroboros = './node_modules/@pybee/ouroboros'
     else:
         exit("Please install the development dependencies with `npm install`.")
 

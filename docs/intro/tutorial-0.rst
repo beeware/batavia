@@ -8,10 +8,10 @@ You'll need to have Python 3.4 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
 <http://pybee.org/contributing/first-time/setup/>`_.
 
-1. Setup a `tutorial` folder to store everything::
+1. Setup a `pybee` folder to store everything::
 
-   $ mkdir tutorial
-   $ cd tutorial
+   $ mkdir pybee
+   $ cd pybee
 
 2. Get a copy of the Batavia code by running a :code:`git clone`::
 
@@ -21,7 +21,7 @@ how to set this up are `on our Environment setup guide
 
  * For Linux, MacOS::
 
-   $ virtualenv venv
+   $ virtualenv --python=$(which python3) venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
@@ -45,7 +45,7 @@ how to set this up are `on our Environment setup guide
    install Batavia's Javascript dependencies, and compile the Batavia library::
 
    $ npm install
-   
+
 5. Lastly, compile the Batavia library and bundle it’s dependencies::
 
    $ npm run build
