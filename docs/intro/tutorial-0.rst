@@ -21,7 +21,7 @@ how to set this up are `on our Environment setup guide
 
  * For Linux, MacOS::
 
-   $ virtualenv --python=`which python3` venv
+   $ virtualenv --python=$(which python3) venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
