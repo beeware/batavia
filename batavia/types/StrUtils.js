@@ -269,7 +269,16 @@ function _substitute(format, args){
         // conversion types s and r are ok with anything
       } // end validateType
 
-      // returns the substituted string
+      function getJSValue(bataviaType){
+        // bataviaType: a batavia type, must be int, float or str
+        // returns the udnerlying JS type.
+
+        if ( types.isinstance(bataviaType, [types.Int, types.Float]) ){
+          return Number(bataviaType.valueOf());
+        } else {
+          return bataviaType.valueOf();
+        }
+      }
 
       var workingArgs = this.args.slice();
 
@@ -291,9 +300,15 @@ function _substitute(format, args){
       }
 
       var conversionArgRaw = workingArgs.shift(); // the python representation of the arg
+
       validateType(conversionArgRaw, this.conversionType);
 
       var conversionArgValue = conversionArgRaw.valueOf(); // the native type
+
+      // floats with no decimal: preserve!
+      if ( types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 == 0 ){
+        conversionArgValue = conversionArgValue.toFixed(1)
+      }
 
       switch(this.conversionType){
         // handle the #
@@ -317,7 +332,7 @@ function _substitute(format, args){
           break;
 
         case('o'):
-//          var base = parseInt(Math.abs(conversionArgValue)).toString(8);
+
           var base = new BigNumber
             (Math.floor(
                 Math.abs(conversionArgValue)
@@ -479,7 +494,7 @@ function _substitute(format, args){
               }
 
               if ( isInt ){
-                var conversionArg = `${conversionArgValue}.${'0'.repeat(extraDigits)}`
+                var conversionArg = `${Number(conversionArgValue)}.${'0'.repeat(extraDigits)}`
               } else {
                 var conversionArg = conversionArgValue + '0'.repeat(extraDigits)
               }
@@ -511,13 +526,32 @@ function _substitute(format, args){
           break;
 
         case('c'):
-          conversionArg = conversionArgValue;
+
+          switch (typeof conversionArgValue){
+
+            case('number'):
+              if ( conversionArgValue < 0 ){
+                throw new exceptions.OverflowError("%c arg not in range(0xXXXXXXXX)");
+              }
+              var conversionArg = String.fromCharCode(conversionArgValue);
+              break;
+
+            case('string'):
+              if ( conversionArgValue.length > 1 ){
+                throw new exceptions.TypeError("%c requires int or char")
+              }
+              var conversionArg = conversionArgValue;
+              break;
+          } // end inner switch
+
+          break;
+
         case('r'):
-          conversionArg = typeof conversionArgValue === 'string' ?
+          var conversionArg = typeof conversionArgValue === 'string' ?
             `'${conversionArgValue}'` : conversionArgValue;
           break;
         case('s'):
-          conversionArg = conversionArgValue;
+          var conversionArg = conversionArgValue;
           break;
       } // end switch
 
@@ -606,7 +640,10 @@ function _substitute(format, args){
     var specObj = new Specfier(match[1], match.index, workingArgs);
 
     // do the substitution
+
+    // TODO: RESTORE THIS!!!
     result += specObj.transform();
+
     // update end of current specifier
     lastStop = match.index + specObj.parsedSpec.length;
     workingArgs = specObj.remainingArgs;
