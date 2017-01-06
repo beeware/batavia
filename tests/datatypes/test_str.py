@@ -109,6 +109,32 @@ class StrTests(TranspileTestCase):
             print(x[-1:0:-1])
             """)
 
+    def test_startswith(self):
+        # Single character
+        self.assertCodeExecution("""
+            if 'BeeWare'.startswith('B'):
+                print('BeeWare starts with B')
+            else:
+                print('BeeWare does not start with B')
+        """)
+
+        # Partial string
+        self.assertCodeExecution("""
+            if 'BeeWare'.startswith('Bee'):
+                print('BeeWare starts with Bee')
+            else:
+                print('BeeWare does not start with Bee')
+        """)
+
+        # Invalid substring
+        self.assertCodeExecution("""
+            if 'BeeWare'.startswith('Ware'):
+                print('BeeWare starts with Ware')
+            else:
+                print('BeeWare does not start with Ware')
+        """)
+
+
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
