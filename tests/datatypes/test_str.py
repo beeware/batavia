@@ -131,10 +131,12 @@ class StrTests(TranspileTestCase):
                 print('BeeWare starts with BeeWare-shaves-yaks')
             else:
                 print('BeeWare does not start with BeeWare-shaves-yaks')
+            # Empty string
             if 'BeeWare' startswith(''):
                 print('BeeWare starts with an empty string')
             else:
                 print('BeeWare does not start with an empty string')
+            # Invalid type
             if 'BeeWare' startswith(5):
                 print('BeeWare starts with the number 5')
             else:
