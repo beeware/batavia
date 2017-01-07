@@ -230,7 +230,7 @@ function _substitute(format, args){
         case 6:
           // conversion type
           var arg = this.remainingArgs.shift(); // grab an arg
-          if ( this.remainingArgs.length === 0 ){
+          if ( arg === undefined ){
             throw new exceptions.TypeError("not enough arguments for format string")
           }
           this.args.push(arg);
@@ -277,11 +277,30 @@ function _substitute(format, args){
         // bataviaType: a batavia type, must be int, float or str
         // returns the udnerlying JS type.
 
-        if ( types.isinstance(bataviaType, types.Int) ){
-          return bataviaType.bigNumber().valueOf();
-        } else {
-          return bataviaType.valueOf();
-        }
+        switch( type_name(bataviaType) ){
+          case("int"):
+            return bataviaType.bigNumber().valueOf();
+            break;
+
+          // case("float"):
+          // case("string"):
+          //   return bataviaType.valueOf();
+          //   break;
+
+          case("bytes"):
+            return bataviaType.__repr__()
+            break;
+
+          default:
+            return bataviaType.valueOf();
+            break;
+        };
+
+        // if ( types.isinstance(bataviaType, types.Int) ){
+        //   return bataviaType.bigNumber().valueOf();
+        // } else if ( types.isinstance(bataviaType, types.String) ) {
+        //   return bataviaType.valueOf();
+        // }
       }
 
       function zeroPadExp(rawExponential){
@@ -672,7 +691,14 @@ function _substitute(format, args){
   }
 
   if ( workingArgs.length !== 0 ){
-    throw new exceptions.TypeError("not all arguments converted during string formatting")
+    // its ok to having arguments left over if they are bytes, dict or list
+
+    workingArgs.forEach(function(arg){
+      if ( !types.isinstance(arg, [types.Bytes, types.Dict, types.List]) ){
+        throw new exceptions.TypeError("not all arguments converted during string formatting")
+      }
+    })
+
   }
 
   // get the last part of the string

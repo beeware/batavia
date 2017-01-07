@@ -248,6 +248,15 @@ class FormatTests(TranspileTestCase):
         -500000000000000000000
     )
 
+    template = """
+            print('>>> "format this: %{spec}" % {arg}')
+            try:
+                print('format this: %{spec}' % {arg})
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err)
+            print('Done.')
+            """
+
     @js_transforms(
         js_bool = False,
         decimal = False,
@@ -256,15 +265,12 @@ class FormatTests(TranspileTestCase):
     def test_basic(self, cleaner):
 
         combinations = (product(self.alternate, self.conversion_flags, self.args))
-        tests = ''.join([adjust("""
-                print('>>> "format this: %{spec}" % {arg}')
-                try:
-                    print('format this: %{spec}' % {arg})
-                except (ValueError, TypeError, OverflowError) as err:
-                    print(err)
-                print('Done.')
-                """.format(
-                    spec=comb[0]+comb[1], arg=comb[2])) for comb in combinations])
+        tests = ''.join([adjust(
+                        self.template
+                            .format(
+                                spec=comb[0]+comb[1], arg=comb[2])
+                            ) for comb in combinations]
+                        )
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
@@ -315,15 +321,11 @@ class FormatTests(TranspileTestCase):
             ('5d', 0.5),
         )
 
-        tests = ''.join([adjust("""
-            print('>>> "format this: %{spec}" % {arg}')
-            try:
-                print('format this: %{spec}' % {arg})
-            except (ValueError, TypeError, OverflowError) as err:
-                print(err)
-            print('Done.')
-            """.format(
-            spec=''.join(c[0]), arg=c[1])) for c in cases])
+        tests = ''.join([adjust(self.template
+                        .format(
+                            spec=''.join(c[0]), arg=c[1])
+                            ) for c in cases]
+                        )
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
@@ -355,17 +357,11 @@ class FormatTests(TranspileTestCase):
         )
 
         combinations = product(percisions, cases)
-        tests = ''.join([adjust("""
-            print('>>> "format this: %{spec}" % {arg}')
-            try:
-                print('format this: %{spec}' % {arg})
-            except (ValueError, TypeError, OverflowError) as err:
-                print(err)
-            print('Done.')
-            """.format(
-                spec=c[0]+c[1][0], arg=c[1][1]
-                )
-            ) for c in combinations ])
+        tests = ''.join([adjust(self.template
+                    .format(
+                        spec=c[0]+c[1][0], arg=c[1][1]
+                        )
+                    ) for c in combinations ])
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
@@ -399,17 +395,11 @@ class FormatTests(TranspileTestCase):
         )
 
         combinations = product(flags, cases)
-        tests = ''.join([adjust("""
-            print('>>> "format this: %{spec}" % {arg}')
-            try:
-                print('format this: %{spec}' % {arg})
-            except (ValueError, TypeError, OverflowError) as err:
-                print(err)
-            print('Done.')
-            """.format(
-                spec=c[0]+c[1][0], arg=c[1][1]
-                )
-            ) for c in combinations ])
+        tests = ''.join([adjust(self.template
+                    .format(
+                        spec=c[0]+c[1][0], arg=c[1][1]
+                        )
+                    ) for c in combinations ])
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
@@ -454,17 +444,11 @@ class FormatTests(TranspileTestCase):
         )
 
         combinations = product(flags, cases)
-        tests = ''.join([adjust("""
-            print('>>> "format this: %{spec}" % {arg}')
-            try:
-                print('format this: %{spec}' % {arg})
-            except (ValueError, TypeError, OverflowError) as err:
-                print(err)
-            print('Done.')
-            """.format(
-                spec=c[0]+c[1][0], arg=c[1][1]
-                )
-            ) for c in combinations ])
+        tests = ''.join([adjust(self.template
+                        .format(
+                            spec=c[0]+c[1][0], arg=c[1][1]
+                            )
+                        ) for c in combinations ])
 
         self.assertCodeExecution(tests, cleaner=cleaner)
 
@@ -525,6 +509,23 @@ class FormatTests(TranspileTestCase):
             print(">>> 'format this: %d %d' % 5")
             try:
                 print('format this: %d %d' % 5)
+            except (ValueError, TypeError, OverflowError) as err:
+                print(err)
+            print('Done.')
+            """)
+
+        self.assertCodeExecution(test, cleaner=cleaner)
+
+    @js_transforms(
+        js_bool = False,
+        decimal = False,
+        float_exp = False
+    )
+    def test_bogus_specifier(self, cleaner):
+        test = adjust("""
+            print(">>> 'format this: %t' % 5") # not actually a specifier!
+            try:
+                print('format this: %t' % 5)
             except (ValueError, TypeError, OverflowError) as err:
                 print(err)
             print('Done.')
