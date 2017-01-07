@@ -260,8 +260,8 @@ class FormatTests(TranspileTestCase):
                 print('>>> "format this: %{spec}" % {arg}')
                 try:
                     print('format this: %{spec}' % {arg})
-                except (ValueError, TypeError, OverflowError) as val_err:
-                    print(err))
+                except (ValueError, TypeError, OverflowError) as err:
+                    print(err)
                 print('Done.')
                 """.format(
                     spec=comb[0]+comb[1], arg=comb[2])) for comb in combinations])
@@ -292,8 +292,8 @@ class FormatTests(TranspileTestCase):
                 print('>>> "format this: %c" % {arg}')
                 try:
                     print('format this: %c' % {arg})
-                except (ValueError, TypeError, OverflowError) as val_err:
-                    print(err))
+                except (ValueError, TypeError, OverflowError) as err:
+                    print(err)
                 print('Done.')
                 """.format(
                     arg=v)) for v in values])
@@ -320,7 +320,7 @@ class FormatTests(TranspileTestCase):
             try:
                 print('format this: %{spec}' % {arg})
             except (ValueError, TypeError, OverflowError) as err:
-                print(err))
+                print(err)
             print('Done.')
             """.format(
             spec=''.join(c[0]), arg=c[1])) for c in cases])
@@ -360,8 +360,8 @@ class FormatTests(TranspileTestCase):
             try:
                 print('format this: %{spec}' % {arg})
             except (ValueError, TypeError, OverflowError) as err:
-                print(err))
-            print('Done.')s
+                print(err)
+            print('Done.')
             """.format(
                 spec=c[0]+c[1][0], arg=c[1][1]
                 )
@@ -404,7 +404,7 @@ class FormatTests(TranspileTestCase):
             try:
                 print('format this: %{spec}' % {arg})
             except (ValueError, TypeError, OverflowError) as err:
-                print(err))
+                print(err)
             print('Done.')
             """.format(
                 spec=c[0]+c[1][0], arg=c[1][1]
@@ -459,7 +459,7 @@ class FormatTests(TranspileTestCase):
             try:
                 print('format this: %{spec}' % {arg})
             except (ValueError, TypeError, OverflowError) as err:
-                print(err))
+                print(err)
             print('Done.')
             """.format(
                 spec=c[0]+c[1][0], arg=c[1][1]

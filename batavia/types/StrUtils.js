@@ -229,9 +229,8 @@ function _substitute(format, args){
 
         case 6:
           // conversion type
-
           var arg = this.remainingArgs.shift(); // grab an arg
-          if ( this.remainingArgs === [] ){
+          if ( this.remainingArgs.length === 0 ){
             throw new exceptions.TypeError("not enough arguments for format string")
           }
           this.args.push(arg);
@@ -651,10 +650,9 @@ function _substitute(format, args){
   var result = '';
   var lastStop = 0
 
-  // const re = /%+[^%]*?[diouxXeEfFgGcrs]/g;
   const re = /(%.+?)(\s|$)/g // grabs any chunk starting with %
   var match = re.exec(format);
-  // spec = specGen.next().value
+
   while(match){
     // grab everything between lastStop and current spec start
     result += format.slice(lastStop, match.index);
