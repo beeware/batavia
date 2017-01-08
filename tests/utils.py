@@ -165,16 +165,26 @@ PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
 FLOAT_PRECISION = re.compile('(\\.\d{5})\d+')
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
-def js_transforms(**transform_args):
+def transforms(**transform_args):
     """
-    injects a JSCleaner object into the function
+    injects a JSCleaner and PYCleaner object into the function
     use this as a decarator to configure which transformations should be performed
     """
     def real_decorator(function):
 
         def wrapper(self, *args, **kwargs):
-            cleaner = JSCleaner(**transform_args)
-            res = function(self, cleaner, *args, **kwargs)
+
+            # js_cleaner
+            js_excludes = ['py_test_script', 'py_str_excep']
+            js_params = {jsk : jsv for jsk, jsv in transform_args.items() if jsk not in js_excludes}
+            js_cleaner = JSCleaner(**js_params)
+
+            # py_cleaner
+            py_excludes = ['js_bool', 'decimal', 'float_exp']
+            py_params = {pyk : pyv for pyk, pyv in transform_args.items() if pyk not in py_excludes}
+            py_cleaner = PYCleaner(**py_params)
+
+            res = function(self, js_cleaner, py_cleaner, *args, **kwargs)
             return res
         wrapper.__name__ = function.__name__
         wrapper.__doc__ = function.__doc__
@@ -184,51 +194,34 @@ def js_transforms(**transform_args):
 
 
 class JSCleaner:
-    """
-    handles the cleaning of run as javascript output
-    """
 
-    def __init__(self, err_msg=True, memory_ref=True,
-        js_bool=True, decimal=True, float_exp=True, complex_num=True,
-        high_percision_float=True):
+    def __init__(self, err_msg=True, memory_ref=True, js_bool=True, decimal=True, float_exp=True, complex_num=True,
+        high_percision_float=True, custom=True):
 
 
         self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
-    def cleanse(self, input, substitutions):
+    def cleanse(self, js_input, substitutions):
         """
-        perform cleanse of javascript based on specifications
-        returns resulting cleansed javascript
+        perform cleanse of javascript output based on specifications
+        returns resulting cleansed javascript output
         """
 
-        self.out = input
+        self.js_in = self.js_out = js_input
+        self.substitutions = substitutions
 
         # call transformations if specified
         for t, v in self.transforms.items():
             if v:
                 getattr(self, 'fix_' + t)()
 
-        # Replace all the explicit data substitutions
-        if substitutions:
-            for to_value, from_values in substitutions.items():
-                for from_value in from_values:
-                    # check for regex
-                    if hasattr(from_value, 'pattern'):
-                        self.out = re.sub(from_value.pattern, re.escape(to_value), self.out, 0, re.MULTILINE)
-                    else:
-                        self.out = self.out.replace(from_value, to_value)
-
-        self.out = self.out.replace('\r\n', '\n')
-        # trim trailing whitespace on non-blank lines
-        self.out = '\n'.join(o.rstrip() for o in self.out.split('\n'))
-
-        return self.out
+        return self.js_out
 
     def fix_err_msg(self):
         """Test the specific message"""
 
-        self.out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.out)
-        stack = JS_STACK.findall(self.out)
+        self.js_out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.js_out)
+        stack = JS_STACK.findall(self.js_in)
 
         stacklines = []
         test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
@@ -241,8 +234,8 @@ class JSCleaner:
                 )
             )
 
-        self.out = '%s%s%s' % (
-            self.out,
+        self.js_out = '%s%s%s' % (
+            self.js_out,
             os.linesep.join(stacklines),
             os.linesep if stack else ''
         )
@@ -250,91 +243,148 @@ class JSCleaner:
     def fix_memory_ref(self):
         """Normalize memory references from output"""
 
-        self.out = MEMORY_REFERENCE.sub("0xXXXXXXXX", self.out)
+        self.js_out = MEMORY_REFERENCE.sub("0xXXXXXXXX", self.js_out)
 
     def fix_js_bool(self):
         """Normalize true and false to True and False"""
-        self.out = JS_BOOL_TRUE.sub("True", self.out)
-        self.out = JS_BOOL_FALSE.sub("False", self.out)
+        self.js_out = JS_BOOL_TRUE.sub("True", self.js_out)
+        self.js_out = JS_BOOL_FALSE.sub("False", self.js_out)
 
     def fix_decimal(self):
         """Replace floating point numbers in decimal form with
         the form used by python"""
-        for match in JS_FLOAT_DECIMAL.findall(self.out):
-            self.out = self.out.replace(match, str(float(match)))
+        for match in JS_FLOAT_DECIMAL.findall(self.js_out):
+            self.js_out = self.js_out.replace(match, str(float(match)))
 
     def fix_float_exp(self):
         """Format floating point numbers using a lower case e"""
 
         try:
-            self.out = JS_FLOAT_EXP.sub('\\1e\\2\\3', self.out)
+            self.js_out = JS_FLOAT_EXP.sub('\\1e\\2\\3', self.js_out)
         except:
             pass
 
     def fix_complex_num(self):
         """Replace large integers in a complex number with floating point."""
-        for match in JS_LARGE_COMPLEX.findall(self.out):
-            self.out = self.out.replace(match, str(float(match)))
+        for match in JS_LARGE_COMPLEX.findall(self.js_out):
+            self.js_out = self.js_out.replace(match, str(float(match)))
 
     def fix_high_percision_float(self):
         """Replace high precision floats with abbreviated forms"""
 
-        self.out = FLOAT_PRECISION.sub('\\1...', self.out)
+        self.js_out = FLOAT_PRECISION.sub('\\1...', self.js_out)
         # Replace references to the test script with something generic
-        self.out = self.out.replace("'test.py'", '***EXECUTABLE***')
 
-def cleanse_python(raw, substitutions):
-    # Test the specific message
-    out = PYTHON_EXCEPTION.sub(
-        '### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep),
-        raw
-    )
+        self.js_out = self.js_out.replace("'test.py'", '***EXECUTABLE***')
 
-    stack = PYTHON_STACK.findall(raw)
-    out = '%s%s%s' % (
-        out,
-        os.linesep.join(
-            [
-                "    %s:%s" % (s[0], s[1])
-                for s in stack
-            ]
-        ),
-        os.linesep if stack else ''
-    )
-    # Normalize memory references from output
-    out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
+    def fix_custom(self):
+        """
+        fixes for custom substitutions
+        """
+        if self.substitutions:
+            for to_value, from_values in self.substitutions.items():
+                for from_value in from_values:
+                    # check for regex
+                    if hasattr(from_value, 'pattern'):
+                        self.js_out = re.sub(from_value.pattern, re.escape(to_value), self.js_out, 0, re.MULTILINE)
+                    else:
+                        self.js_out = self.js_out.replace(from_value, to_value)
 
-    # Format floating point numbers using a lower case e
-    # out = PYTHON_FLOAT_EXP.sub('\\1e\\2\\3', out)
+        self.js_out = self.js_out.replace('\r\n', '\n')
+        # trim trailing whitespace on non-blank lines
+        self.js_out = '\n'.join(o.rstrip() for o in self.js_out.split('\n'))
 
-    # Replace "-0j" with "+0j"
-    out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
 
-    # Replace high precision floats with abbreviated forms
-    out = FLOAT_PRECISION.sub('\\1...', out)
+class PYCleaner:
 
-    # Replace references to the test script with something generic
-    out = out.replace("'test.py'", '***EXECUTABLE***')
+    def __init__(self, err_msg=True, memory_ref=True, complex_num=True, high_percision_float=True, custom=True):
 
-    # Python 3.4.4 changed the message describing strings in exceptions
-    out = out.replace(
-        'argument must be a string or',
-        'argument must be a string, a bytes-like object or'
-    )
+        self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
-    if substitutions:
-        for to_value, from_values in substitutions.items():
-            for from_value in from_values:
-                # check for regex
-                if hasattr(from_value, 'pattern'):
-                    out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
-                else:
-                    out = out.replace(from_value, to_value)
+    def cleanse(self, py_input, substitutions):
+        """
+        perform cleanse of python output based on specifications
+        returns resulting cleansed python output
+        """
 
-    out = out.replace('\r\n', '\n')
-    # trim trailing whitespace on non-blank lines
-    out = '\n'.join(o.rstrip() for o in out.split('\n'))
-    return out
+        self.py_in = self.py_out = py_input
+        self.substitutions = substitutions
+
+        # call transformations if specified
+        # don't run the following (they don't exist!)
+            # bool, decimal, float_exp
+        for t, v in self.transforms.items():
+            if v:
+                getattr(self, 'fix_' + t)()
+
+        self.py_out = self.py_out.replace("'test.py'", '***EXECUTABLE***')
+
+        self.py_out = self.py_out.replace(
+            'argument must be a string or',
+            'argument must be a string, a bytes-like object or'
+        )
+
+        return self.py_out
+
+    def fix_err_msg(self):
+        """Test the specific message"""
+
+        # Test the specific message
+        self.py_out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+
+        stack = PYTHON_STACK.findall(self.py_in)
+        self.py_out = '%s%s%s' % (
+            self.py_out,
+            os.linesep.join(
+                [
+                    "    %s:%s" % (s[0], s[1])
+                    for s in stack
+                ]
+            ),
+            os.linesep if stack else ''
+        )
+
+    def fix_memory_ref(self):
+        """Normalize memory references from output"""
+
+        self.py_out = MEMORY_REFERENCE.sub("0xXXXXXXXX", self.py_out)
+
+    def fix_js_bool(self):
+        """Normalize true and false to True and False"""
+        pass
+
+    def fix_decimal(self):
+        """Replace floating point numbers in decimal form with
+        the form used by python"""
+        pass
+
+    def fix_float_exp(self):
+        """Format floating point numbers using a lower case e"""
+        pass
+
+    def fix_complex_num(self):
+        """Replace large integers in a complex number with floating point."""
+
+        self.py_out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', self.py_out)
+
+    def fix_high_percision_float(self):
+        """Replace high precision floats with abbreviated forms"""
+
+        self.py_out = FLOAT_PRECISION.sub('\\1...', self.py_out)
+
+    def fix_substitutions(self):
+        if self.substitutions:
+            for to_value, from_values in self.substitutions.items():
+                for from_value in from_values:
+                    # check for regex
+                    if hasattr(from_value, 'pattern'):
+                        self.py_out = re.sub(from_value.pattern, re.escape(to_value), self.py_out, 0, re.MULTILINE)
+                    else:
+                        self.py_out = self.py_out.replace(from_value, to_value)
+
+        self.py_out = self.py_out.replace('\r\n', '\n')
+        # trim trailing whitespace on non-blank lines
+        self.py_out = '\n'.join(o.rstrip() for o in self.py_out.split('\n'))
 
 
 class TranspileTestCase(TestCase):
@@ -349,7 +399,7 @@ class TranspileTestCase(TestCase):
             message=None,
             extra_code=None,
             run_in_global=True, run_in_function=True,
-            args=None, substitutions=None, cleaner=JSCleaner()):
+            args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
 
         self.maxDiff = None
@@ -383,8 +433,8 @@ class TranspileTestCase(TestCase):
                 # print(js_out)
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleaner.cleanse(js_out, substitutions)
-            py_out = cleanse_python(py_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, substitutions)
+            py_out = py_cleaner.cleanse(py_out, substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -425,9 +475,8 @@ class TranspileTestCase(TestCase):
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
 
-            js_out = cleaner.cleanse(js_out, substitutions)
-
-            py_out = cleanse_python(py_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, substitutions)
+            py_out = py_cleaner.cleanse(py_out, substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -440,7 +489,7 @@ class TranspileTestCase(TestCase):
             self, code, out,
             extra_code=None, js=None,
             run_in_global=True, run_in_function=True,
-            args=None, substitutions=None, same=True):
+            args=None, substitutions=None, same=True, js_cleaner=JSCleaner()):
         "Run code under JavaScript and check the output is as expected"
         self.maxDiff = None
         # ==================================================
@@ -474,7 +523,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleanse_javascript(js_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, substitutions)
 
             # Compare the output of the JavaScript code with the Python code.
             if same:
@@ -506,7 +555,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out = cleanse_javascript(js_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, substitutions)
 
             # Compare the output of the JavaScript code with the Python code.
             if same:

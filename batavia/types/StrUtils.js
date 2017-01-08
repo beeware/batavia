@@ -3,6 +3,7 @@ var type_name = require('../core').type_name;
 var BigNumber = require('bignumber.js').BigNumber
 
 function _substitute(format, args){
+
   var types = require('../types');
   var workingArgs = args.slice();
 
@@ -279,13 +280,8 @@ function _substitute(format, args){
 
         switch( type_name(bataviaType) ){
           case("int"):
-            return bataviaType.bigNumber().valueOf();
+            return bataviaType.bigNumber().toFixed();
             break;
-
-          // case("float"):
-          // case("string"):
-          //   return bataviaType.valueOf();
-          //   break;
 
           case("bytes"):
             return bataviaType.__repr__()
@@ -296,11 +292,6 @@ function _substitute(format, args){
             break;
         };
 
-        // if ( types.isinstance(bataviaType, types.Int) ){
-        //   return bataviaType.bigNumber().valueOf();
-        // } else if ( types.isinstance(bataviaType, types.String) ) {
-        //   return bataviaType.valueOf();
-        // }
       }
 
       function zeroPadExp(rawExponential){
@@ -368,13 +359,10 @@ function _substitute(format, args){
           break;
 
         case('o'):
-
-          var base = new BigNumber
-            (Math.floor(
-                Math.abs(conversionArgValue)
-                )
-            )
-            .toString(8)
+          var base = new BigNumber(conversionArgValue)
+                      .abs()
+                      .floor()
+                      .toString(8)
 
           if ( base == '-0' ){
             base = '0';
@@ -401,12 +389,10 @@ function _substitute(format, args){
         case('x'):
         case('X'):
 
-          var base = new BigNumber
-            (Math.floor(
-                Math.abs(conversionArgValue)
-                )
-            )
-          .toString(16)
+          var base = new BigNumber(conversionArgValue)
+                      .abs()
+                      .floor()
+                      .toString(8)
 
           if ( this.conversionType == 'X' ){
             base = base.toUpperCase();
@@ -614,10 +600,9 @@ function _substitute(format, args){
           `+${conversionArg}` : `${conversionArg}`;
         }
       }
-
       var cellWidth = Math.max(minWidth, conversionArg.length);
-      var padSize = cellWidth - conversionArg.length;
 
+      var padSize = cellWidth - conversionArg.length;
       if ( this.conversionFlags['0'] && types.isinstance(conversionArgRaw, [types.Int, types.Float])){
         // example: '00005'
         var retVal = '0'.repeat(padSize) + conversionArg;
@@ -629,6 +614,7 @@ function _substitute(format, args){
         // example: '   0005'
         var retVal = ' '.repeat(padSize) + conversionArg;
       }
+
       return retVal;
     } // END TRANSFORM
 
