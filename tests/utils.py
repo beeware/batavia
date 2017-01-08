@@ -198,7 +198,7 @@ class JSCleaner:
     def __init__(self, err_msg=True, memory_ref=True, js_bool=True, decimal=True, float_exp=True, complex_num=True,
         high_percision_float=True, custom=True):
 
-
+        print(js_bool)
         self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
     def cleanse(self, js_input, substitutions):
@@ -220,7 +220,7 @@ class JSCleaner:
     def fix_err_msg(self):
         """Test the specific message"""
 
-        self.js_out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.js_out)
+        self.js_out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.js_in)
         stack = JS_STACK.findall(self.js_in)
 
         stacklines = []
@@ -330,7 +330,7 @@ class PYCleaner:
         """Test the specific message"""
 
         # Test the specific message
-        self.py_out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
+        self.py_out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.py_in)
 
         stack = PYTHON_STACK.findall(self.py_in)
         self.py_out = '%s%s%s' % (
@@ -372,7 +372,7 @@ class PYCleaner:
 
         self.py_out = FLOAT_PRECISION.sub('\\1...', self.py_out)
 
-    def fix_substitutions(self):
+    def fix_custom(self):
         if self.substitutions:
             for to_value, from_values in self.substitutions.items():
                 for from_value in from_values:
@@ -401,7 +401,6 @@ class TranspileTestCase(TestCase):
             run_in_global=True, run_in_function=True,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
-
         self.maxDiff = None
         # ==================================================
         # Pass 1 - run the code in the global context

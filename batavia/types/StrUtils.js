@@ -277,14 +277,29 @@ function _substitute(format, args){
       function getJSValue(bataviaType){
         // bataviaType: a batavia type, must be int, float or str
         // returns the udnerlying JS type.
-
         switch( type_name(bataviaType) ){
+
           case("int"):
             return bataviaType.bigNumber().toFixed();
             break;
 
           case("bytes"):
-            return bataviaType.__repr__()
+          case("bytearray"):
+          case("slice"):
+            return bataviaType.__repr__();
+            break;
+
+          case("type"):
+            // need to include name space of class if needed
+            return bataviaType.__repr__();
+            break;
+
+          case("NoneType"):
+            return 'None';
+            break;
+
+          case("NotImplementedType"):
+            return "NotImplemented"
             break;
 
           default:
@@ -327,14 +342,12 @@ function _substitute(format, args){
       }
 
       var conversionArgRaw = workingArgs.shift(); // the python representation of the arg
-
       validateType(conversionArgRaw, this.conversionType);
 
       var conversionArgValue = getJSValue(conversionArgRaw);
 
       // floats with no decimal: preserve!
       if ( types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 == 0 ){
-
         conversionArgValue = conversionArgValue.toFixed(1)
       }
 
@@ -392,7 +405,7 @@ function _substitute(format, args){
           var base = new BigNumber(conversionArgValue)
                       .abs()
                       .floor()
-                      .toString(8)
+                      .toString(16)
 
           if ( this.conversionType == 'X' ){
             base = base.toUpperCase();
@@ -422,7 +435,6 @@ function _substitute(format, args){
 
         case('e'):
         case('E'):
-
           // toExponential() will almost work here, but the digit here
           // has a minimum of 1 zero pad
           // example: 5 = '5.000000e+00'
@@ -445,7 +457,8 @@ function _substitute(format, args){
           var conversionArg = this.conversionType === 'e' ?
             zeroPadExp(`${base}e${exp}`) :
             zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
-            break;
+
+          break;
 
         case('g'):
         case('G'):
@@ -455,6 +468,7 @@ function _substitute(format, args){
           var bn = new BigNumber(conversionArgValue);
 
           var base = baseExpSplit[0];
+
           var exp = baseExpSplit[1];
           var expSign = exp > 0 ? "+" : "-";
 
@@ -463,9 +477,8 @@ function _substitute(format, args){
           if ( exp < -4 || exp >= percision ){
             // use the exponential
             // correctly zero pad the base
-
-            if (this.conversionFlags['#']){
-              // use alternate format
+            // use a decimal if alternate format or if one is needed
+            if (this.conversionFlags['#'] || base % 1 != 0){
               var base = percision === null || percision === 0 ?
                 Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
                 Number(base).toFixed(percision - 1);
@@ -677,10 +690,11 @@ function _substitute(format, args){
   }
 
   if ( workingArgs.length !== 0 ){
-    // its ok to having arguments left over if they are bytes, dict or list
+    // its ok to having arguments left over if they are any of the below
 
     workingArgs.forEach(function(arg){
-      if ( !types.isinstance(arg, [types.Bytes, types.Dict, types.List]) ){
+      if ( !types.isinstance(arg, [types.Bytes, types.Bytearray, types.Dict,
+        types.List, types.Range]) ){
         throw new exceptions.TypeError("not all arguments converted during string formatting")
       }
     })
