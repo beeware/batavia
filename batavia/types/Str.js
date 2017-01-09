@@ -427,20 +427,10 @@ Str.prototype.__imul__ = function(other) {
 
 Str.prototype.__imod__ = function(other) {
     var types = require('../types');
-
-    if (types.isinstance(other, [
-            types.Bool,
-            types.Float,
-            types.FrozenSet,
-            types.Int,
-            types.NoneType,
-            types.Set,
-            Str,
-            types.Tuple
-        ])) {
-        throw new exceptions.TypeError("not all arguments converted during string formatting");
+    if (types.isinstance(other, types.Tuple)) {
+        return StrUtils._substitute(this, other);
     } else {
-        throw new exceptions.NotImplementedError("str.__imod__ has not been implemented");
+        return StrUtils._substitute(this, [other]);
     }
 }
 
