@@ -184,6 +184,17 @@ class StrTests(TranspileTestCase):
                 print('No exception for multiple arguments')
          """)
 
+    @unittest.expectedFailure
+    def test_startswith_tuple(self):
+        self.assertCodeExecution("""
+            try:
+                assert 'BeeWare'.startswith(('e', 'B'))
+            except AssertionError:
+                print('BeeWare does not start with e or B')
+            else:
+                print('BeeWare starts with either e or B')
+         """)
+
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
