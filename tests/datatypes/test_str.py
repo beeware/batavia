@@ -142,16 +142,23 @@ class StrTests(TranspileTestCase):
                 print('BeeWare does not start with an empty string')
 
             # Starts with an int
-            if 'BeeWare'.startswith(5):
-                print('BeeWare starts with the number 5')
+            try:
+                'BeeWare'.startswith(5)
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.startswith() for non-str or non-tuple of str')
             else:
-                print('BeeWare does not start with the number 5')
+                print('No error thrown for invalid type!')
 
             # Starts with a dict
-            if 'BeeWare'.startswith({}):
-                print('BeeWare starts with an empty dict')
+            try:
+                'BeeWare'.startswith({})
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.startswith() for non-str or non-tuple of str')
             else:
-                print('BeeWare does not start with an empty dict')
+                print('No error thrown for invalid type!')
+
             print('done.')
         """)
 

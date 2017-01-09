@@ -623,7 +623,17 @@ Str.prototype.encode = function(encoding, errors) {
 }
 
 Str.prototype.startswith = function (str) {
-    return this.slice(0, str.length) === str;
+    var types = require('../types');
+
+    if (str !== None) {
+		if (types.isinstance(str, [types.Str])) {
+			return this.slice(0, str.length) === str;
+		} else {
+			throw new exceptions.TypeError(
+				"TypeError: startswith first arg must be str or a tuple of str, not " + type_name(str)
+			);
+		}
+	}
 }
 
 Str.prototype.endswith = function (str) {
