@@ -173,6 +173,16 @@ class StrTests(TranspileTestCase):
                 print('No exception for ommitted arguments')
          """)
 
+    @unittest.expectedFailure
+    def test_startswith_multiple_args(self):
+        self.assertCodeExecution("""
+            try:
+                'BeeWare'.startswith('B', 'e')
+            except TypeError as err:
+                print(err)
+            else:
+                print('No exception for multiple arguments')
+         """)
 
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
