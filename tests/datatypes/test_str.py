@@ -162,6 +162,17 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
+    @unittest.expectedFailure
+    def test_startswith_no_args(self):
+        self.assertCodeExecution("""
+            try:
+                'BeeWare'.startswith()
+            except TypeError as err:
+                print(err)
+            else:
+                print('No exception for ommitted arguments')
+         """)
+
 
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
