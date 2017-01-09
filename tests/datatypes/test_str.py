@@ -109,6 +109,92 @@ class StrTests(TranspileTestCase):
             print(x[-1:0:-1])
             """)
 
+    def test_startswith(self):
+        self.assertCodeExecution("""
+            # Single character
+            if 'BeeWare'.startswith('B'):
+                print('BeeWare starts with B')
+            else:
+                print('BeeWare does not start with B')
+
+            # Substring
+            if 'BeeWare'.startswith('Bee'):
+                print('BeeWare starts with Bee')
+            else:
+                print('BeeWare does not start with Bee')
+
+            # Invalid substring
+            if 'BeeWare'.startswith('Ware'):
+                print('BeeWare starts with Ware')
+            else:
+                print('BeeWare does not start with Ware')
+
+            # Superstring
+            if 'BeeWare'.startswith('BeeWare-shaves-yaks'):
+                print('BeeWare starts with BeeWare-shaves-yaks')
+            else:
+                print('BeeWare does not start with BeeWare-shaves-yaks')
+
+            # Empty string
+            if 'BeeWare'.startswith(''):
+                print('BeeWare starts with an empty string')
+            else:
+                print('BeeWare does not start with an empty string')
+
+            # Starts with an int
+            try:
+                'BeeWare'.startswith(5)
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.startswith() for non-str or non-tuple of str')
+            else:
+                print('No error thrown for invalid type!')
+
+            # Starts with a dict
+            try:
+                'BeeWare'.startswith({})
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.startswith() for non-str or non-tuple of str')
+            else:
+                print('No error thrown for invalid type!')
+
+            print('done.')
+        """)
+
+    @unittest.expectedFailure
+    def test_startswith_no_args(self):
+        self.assertCodeExecution("""
+            try:
+                'BeeWare'.startswith()
+            except TypeError as err:
+                print(err)
+            else:
+                print('No exception for ommitted arguments')
+         """)
+
+    @unittest.expectedFailure
+    def test_startswith_multiple_args(self):
+        self.assertCodeExecution("""
+            try:
+                'BeeWare'.startswith('B', 'e')
+            except TypeError as err:
+                print(err)
+            else:
+                print('No exception for multiple arguments')
+         """)
+
+    @unittest.expectedFailure
+    def test_startswith_tuple(self):
+        self.assertCodeExecution("""
+            try:
+                assert 'BeeWare'.startswith(('e', 'B'))
+            except AssertionError:
+                print('BeeWare does not start with e or B')
+            else:
+                print('BeeWare starts with either e or B')
+         """)
+
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
