@@ -146,6 +146,12 @@ class StrTests(TranspileTestCase):
                 print('BeeWare starts with the number 5')
             else:
                 print('BeeWare does not start with the number 5')
+
+            # Starts with a dict
+            if 'BeeWare'.startswith({}):
+                print('BeeWare starts with an empty dict')
+            else:
+                print('BeeWare does not start with an empty dict')
             print('done.')
         """)
 
