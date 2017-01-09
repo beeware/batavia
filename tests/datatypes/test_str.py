@@ -116,27 +116,32 @@ class StrTests(TranspileTestCase):
                 print('BeeWare starts with B')
             else:
                 print('BeeWare does not start with B')
+
             # Substring
             if 'BeeWare'.startswith('Bee'):
                 print('BeeWare starts with Bee')
             else:
                 print('BeeWare does not start with Bee')
+
             # Invalid substring
             if 'BeeWare'.startswith('Ware'):
                 print('BeeWare starts with Ware')
             else:
                 print('BeeWare does not start with Ware')
+
             # Superstring
             if 'BeeWare'.startswith('BeeWare-shaves-yaks'):
                 print('BeeWare starts with BeeWare-shaves-yaks')
             else:
                 print('BeeWare does not start with BeeWare-shaves-yaks')
+
             # Empty string
             if 'BeeWare'.startswith(''):
                 print('BeeWare starts with an empty string')
             else:
                 print('BeeWare does not start with an empty string')
-            # Invalid type
+
+            # Starts with an int
             if 'BeeWare'.startswith(5):
                 print('BeeWare starts with the number 5')
             else:
