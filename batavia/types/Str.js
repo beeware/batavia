@@ -426,12 +426,7 @@ Str.prototype.__imul__ = function(other) {
 };
 
 Str.prototype.__imod__ = function(other) {
-    var types = require('../types');
-    if (types.isinstance(other, types.Tuple)) {
-        return StrUtils._substitute(this, other);
-    } else {
-        return StrUtils._substitute(this, [other]);
-    }
+    return this.__mod__(other);
 }
 
 Str.prototype.__ipow__ = function(other) {
