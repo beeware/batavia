@@ -10,6 +10,7 @@ import os
 import py_compile
 import re
 import shutil
+import sre_constants
 import subprocess
 import sys
 import tempfile
@@ -165,72 +166,6 @@ PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
 # Prevent floating point discrepancies in very low significant digits from being an issue
 FLOAT_PRECISION = re.compile('(\\.\d{5})\d+')
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
-def cleanse_javascript(input, substitutions):
-    # Test the specific message
-    out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), input)
-
-    stack = JS_STACK.findall(input)
-
-    stacklines = []
-    test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
-    for filename, line in stack:
-        if filename.startswith(test_dir):
-            filename = filename[len(test_dir)+1:]
-        stacklines.append(
-            "    %s:%s" % (
-                filename, line
-            )
-        )
-
-    out = '%s%s%s' % (
-        out,
-        os.linesep.join(stacklines),
-        os.linesep if stack else ''
-    )
-
-    # Normalize memory references from output
-    out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
-
-    # Normalize true and false to True and False
-    out = JS_BOOL_TRUE.sub("True", out)
-    out = JS_BOOL_FALSE.sub("False", out)
-
-    # Replace floating point numbers in decimal form with
-    # the form used by python
-    for match in JS_FLOAT_DECIMAL.findall(out):
-        out = out.replace(match, str(float(match)))
-
-    # Format floating point numbers using a lower case e
-    try:
-        out = JS_FLOAT_EXP.sub('\\1e\\2\\3', out)
-    except:
-        pass
-
-    # Replace large integers in a complex number with floating point.
-    for match in JS_LARGE_COMPLEX.findall(out):
-        out = out.replace(match, str(float(match)))
-
-    # Replace high precision floats with abbreviated forms
-    out = FLOAT_PRECISION.sub('\\1...', out)
-
-    # Replace references to the test script with something generic
-    out = out.replace("'test.py'", '***EXECUTABLE***')
-
-    # Replace all the explicit data substitutions
-    if substitutions:
-        for to_value, from_values in substitutions.items():
-            for from_value in from_values:
-                # check for regex
-                if hasattr(from_value, 'pattern'):
-                    out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
-                else:
-                    out = out.replace(from_value, to_value)
-
-    out = out.replace('\r\n', '\n')
-    # trim trailing whitespace on non-blank lines
-    out = '\n'.join(o.rstrip() for o in out.split('\n'))
-    return out
-
 
 def cleanse_python(raw, substitutions):
     # Test the specific message
@@ -316,7 +251,7 @@ def transforms(**transform_args):
 class JSCleaner:
 
     def __init__(self, err_msg=True, memory_ref=True, js_bool=True, decimal=True, float_exp=True, complex_num=True,
-        high_percision_float=True, custom=True):
+        high_percision_float=True, test_ref=True, custom=True):
 
         # for arg in inspect.getargspec(self.__init__).args:
         #     print(arg)
@@ -324,183 +259,167 @@ class JSCleaner:
 
     def cleanse(self, js_input, substitutions):
         """
-        perform cleanse of javascript output based on specifications
-        returns resulting cleansed javascript output
+        cleanse output from javascript
         """
+        # Test the specific message
+        out = js_input
+        if self.transforms['err_msg']:
+            out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), js_input)
 
-        self.js_in = js_input
-        self.substitutions = substitutions
+            stack = JS_STACK.findall(js_input)
 
-        # call transformations in correct order, if specified
-        for arg in inspect.getargspec(self.__init__).args:
-            if arg != 'self' and self.transforms[arg]:
-                getattr(self, 'fix_' + arg)()
-                # print("after", arg, self.js_out)
-
-        return self.js_out
-
-    def fix_err_msg(self):
-        """Test the specific message"""
-
-        self.js_out = JS_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.js_in)
-        stack = JS_STACK.findall(self.js_in)
-
-        stacklines = []
-        test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
-        for filename, line in stack:
-            if filename.startswith(test_dir):
-                filename = filename[len(test_dir)+1:]
-            stacklines.append(
-                "    %s:%s" % (
-                    filename, line
+            stacklines = []
+            test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
+            for filename, line in stack:
+                if filename.startswith(test_dir):
+                    filename = filename[len(test_dir)+1:]
+                stacklines.append(
+                    "    %s:%s" % (
+                        filename, line
+                    )
                 )
+
+            out = '%s%s%s' % (
+                out,
+                os.linesep.join(stacklines),
+                os.linesep if stack else ''
             )
 
-        self.js_out = '%s%s%s' % (
-            self.js_out,
-            os.linesep.join(stacklines),
-            os.linesep if stack else ''
-        )
+        # Normalize memory references from output
+        if self.transforms['memory_ref']:
+            out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
 
-    def fix_memory_ref(self):
-        """Normalize memory references from output"""
+        if self.transforms['js_bool']:
+            # Normalize true and false to True and False
+            out = JS_BOOL_TRUE.sub("True", out)
+            out = JS_BOOL_FALSE.sub("False", out)
 
-        self.js_out = MEMORY_REFERENCE.sub("0xXXXXXXXX", self.js_out)
+        if self.transforms['decimal']:
+            # Replace floating point numbers in decimal form with
+            # the form used by python
+            for match in JS_FLOAT_DECIMAL.findall(out):
+                out = out.replace(match, str(float(match)))
 
-    def fix_js_bool(self):
-        """Normalize true and false to True and False"""
-        self.js_out = JS_BOOL_TRUE.sub("True", self.js_out)
-        self.js_out = JS_BOOL_FALSE.sub("False", self.js_out)
+        if self.transforms['float_exp']:
+            # Format floating point numbers using a lower case e
+            try:
+                out = JS_FLOAT_EXP.sub('\\1e\\2\\3', out)
+            except:
+                pass
 
-    def fix_decimal(self):
-        """Replace floating point numbers in decimal form with
-        the form used by python"""
-        for match in JS_FLOAT_DECIMAL.findall(self.js_out):
-            self.js_out = self.js_out.replace(match, str(float(match)))
+        if self.transforms['complex_num']:
+            # Replace large integers in a complex number with floating point.
+            for match in JS_LARGE_COMPLEX.findall(out):
+                out = out.replace(match, str(float(match)))
 
-    def fix_float_exp(self):
-        """Format floating point numbers using a lower case e"""
+        if self.transforms['high_percision_float']:
+            # Replace high precision floats with abbreviated forms
+            out = FLOAT_PRECISION.sub('\\1...', out)
 
-        try:
-            self.js_out = JS_FLOAT_EXP.sub('\\1e\\2\\3', self.js_out)
-        except:
-            pass
 
-    def fix_complex_num(self):
-        """Replace large integers in a complex number with floating point."""
-        for match in JS_LARGE_COMPLEX.findall(self.js_out):
-            self.js_out = self.js_out.replace(match, str(float(match)))
+        if self.transforms['test_ref']:
+            # Replace references to the test script with something generic
+            out = out.replace("'test.py'", '***EXECUTABLE***')
 
-    def fix_high_percision_float(self):
-        """Replace high precision floats with abbreviated forms"""
 
-        # out = FLOAT_PRECISION.sub('\\1...', out)
-        self.js_out = FLOAT_PRECISION.sub('\\1...', self.js_out)
-        # Replace references to the test script with something generic
+        if self.transforms['custom']:
+            # Replace all the explicit data substitutions
+            if substitutions:
+                for to_value, from_values in substitutions.items():
+                    for from_value in from_values:
+                        # check for regex
+                        if hasattr(from_value, 'pattern'):
+                            out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
+                        else:
+                            out = out.replace(from_value, to_value)
 
-        self.js_out = self.js_out.replace("'test.py'", '***EXECUTABLE***')
 
-    def fix_custom(self):
-        """
-        fixes for custom substitutions
-        """
-        if self.substitutions:
-            for to_value, from_values in self.substitutions.items():
-                for from_value in from_values:
-                    # check for regex
-                    if hasattr(from_value, 'pattern'):
-                        self.js_out = re.sub(from_value.pattern, re.escape(to_value), self.js_out, 0, re.MULTILINE)
-                    else:
-                        self.js_out = self.js_out.replace(from_value, to_value)
+            out = out.replace('\r\n', '\n')
+            # trim trailing whitespace on non-blank lines
+            out = '\n'.join(o.rstrip() for o in out.split('\n'))
 
-        self.js_out = self.js_out.replace('\r\n', '\n')
-        # trim trailing whitespace on non-blank lines
-        self.js_out = '\n'.join(o.rstrip() for o in self.js_out.split('\n'))
+        return out
 
 
 class PYCleaner:
 
-    def __init__(self, err_msg=True, memory_ref=True, complex_num=True, high_percision_float=True, custom=True):
+    def __init__(self, err_msg=True, memory_ref=True, float_exp=True, complex_num=True,
+        high_percision_float=True, test_ref=True, custom=True):
 
         self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
     def cleanse(self, py_input, substitutions):
         """
-        perform cleanse of python output based on specifications
-        returns resulting cleansed python output
+        cleanse output from python
         """
 
-        self.py_in = py_input
-        self.substitutions = substitutions
+        out = py_input
+        if self.transforms['err_msg']:
+            # Test the specific message
+            out = PYTHON_EXCEPTION.sub(
+                '### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep),
+                py_input
+            )
 
-        # call transformations if specified
-        # don't run the following (they don't exist!)
-            # bool, decimal, float_exp
-        for arg in inspect.getargspec(self.__init__).args:
-            if arg != 'self' and self.transforms[arg]:
-                getattr(self, 'fix_' + arg)()
-                # print("after", arg, self.py_out)
+            stack = PYTHON_STACK.findall(py_input)
+            out = '%s%s%s' % (
+                out,
+                os.linesep.join(
+                    [
+                        "    %s:%s" % (s[0], s[1])
+                        for s in stack
+                    ]
+                ),
+                os.linesep if stack else ''
+            )
 
-        self.py_out = self.py_out.replace("'test.py'", '***EXECUTABLE***')
+        if self.transforms['memory_ref']:
+            # Normalize memory references from output
+            out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
 
-        self.py_out = self.py_out.replace(
+        if self.transforms['float_exp']:
+            # Format floating point numbers using a lower case e
+
+            try:
+                out = PYTHON_FLOAT_EXP.sub('\\1e\\2\\3', out)
+            except sre_constants.error:
+                pass
+                
+        if self.transforms['complex_num']:
+            # Replace "-0j" with "+0j"
+            out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
+
+        if self.transforms['high_percision_float']:
+            # Replace high precision floats with abbreviated forms
+            out = FLOAT_PRECISION.sub('\\1...', out)
+
+
+        if self.transforms['test_ref']:
+            # Replace references to the test script with something generic
+            out = out.replace("'test.py'", '***EXECUTABLE***')
+
+
+        # Python 3.4.4 changed the message describing strings in exceptions
+        out = out.replace(
             'argument must be a string or',
             'argument must be a string, a bytes-like object or'
         )
 
-        return self.py_out
+        if self.transforms['custom']:
+            if substitutions:
+                for to_value, from_values in substitutions.items():
+                    for from_value in from_values:
+                        # check for regex
+                        if hasattr(from_value, 'pattern'):
+                            out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
+                        else:
+                            out = out.replace(from_value, to_value)
 
-    def fix_err_msg(self):
-        """Test the specific message"""
+            out = out.replace('\r\n', '\n')
+            # trim trailing whitespace on non-blank lines
+            out = '\n'.join(o.rstrip() for o in out.split('\n'))
 
-        # Test the specific message
-        self.py_out = PYTHON_EXCEPTION.sub('### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep), self.py_in)
-
-        stack = PYTHON_STACK.findall(self.py_in)
-        self.py_out = '%s%s%s' % (
-            self.py_out,
-            os.linesep.join(
-                [
-                    "    %s:%s" % (s[0], s[1])
-                    for s in stack
-                ]
-            ),
-            os.linesep if stack else ''
-        )
-
-    def fix_memory_ref(self):
-        """Normalize memory references from output"""
-
-        self.py_out = MEMORY_REFERENCE.sub("0xXXXXXXXX", self.py_out)
-
-    def fix_float_exp(self):
-        """Format floating point numbers using a lower case e"""
-        self.py_out = PYTHON_FLOAT_EXP.sub('\\1e\\2\\3', self.py_out)
-
-    def fix_complex_num(self):
-        """Replace large integers in a complex number with floating point."""
-
-        self.py_out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', self.py_out)
-
-    def fix_high_percision_float(self):
-        """Replace high precision floats with abbreviated forms"""
-
-        self.py_out = FLOAT_PRECISION.sub('\\1...', self.py_out)
-
-    def fix_custom(self):
-        if self.substitutions:
-            for to_value, from_values in self.substitutions.items():
-                for from_value in from_values:
-                    # check for regex
-                    if hasattr(from_value, 'pattern'):
-                        self.py_out = re.sub(from_value.pattern, re.escape(to_value), self.py_out, 0, re.MULTILINE)
-                    else:
-                        self.py_out = self.py_out.replace(from_value, to_value)
-
-        self.py_out = self.py_out.replace('\r\n', '\n')
-        # trim trailing whitespace on non-blank lines
-        self.py_out = '\n'.join(o.rstrip() for o in self.py_out.split('\n'))
-
+        return out
 
 class TranspileTestCase(TestCase):
     @classmethod
