@@ -1,6 +1,6 @@
 import unittest
 
-from .utils import adjust, cleanse_javascript, cleanse_python, TranspileTestCase
+from .utils import adjust, JSCleaner, PYCleaner, TranspileTestCase
 
 
 class AdjustTests(unittest.TestCase):
@@ -29,8 +29,8 @@ print('Done.')
 
 
 class JavaScriptNormalizationTests(unittest.TestCase):
-    def assertNormalized(self, actual, expected):
-        self.assertEqual(cleanse_javascript(adjust(actual), None), adjust(expected))
+    def assertNormalized(self, actual, expected, js_cleaner=JSCleaner()):
+        self.assertEqual(js_cleaner.cleanse(adjust(actual), None), adjust(expected))
 
     def test_no_exception(self):
         self.assertNormalized(
@@ -125,8 +125,8 @@ class JavaScriptNormalizationTests(unittest.TestCase):
 
 
 class PythonNormalizationTests(unittest.TestCase):
-    def assertNormalized(self, actual, expected):
-        self.assertEqual(cleanse_python(adjust(actual), None), adjust(expected))
+    def assertNormalized(self, actual, expected, py_cleaner=PYCleaner()):
+        self.assertEqual(py_cleaner.cleanse(adjust(actual), None), adjust(expected))
 
     def test_no_exception(self):
         self.assertNormalized(
@@ -243,4 +243,3 @@ class JavaScriptBootstrapTests(TranspileTestCase):
             Done.
             """,
         )
-
