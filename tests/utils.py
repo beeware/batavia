@@ -167,59 +167,6 @@ PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\)')
 FLOAT_PRECISION = re.compile('(\\.\d{5})\d+')
 MEMORY_REFERENCE = re.compile('0x[\dABCDEFabcdef]{4,16}')
 
-def cleanse_python(raw, substitutions):
-    # Test the specific message
-    out = PYTHON_EXCEPTION.sub(
-        '### EXCEPTION ###{linesep}\\g<exception>: \\g<message>'.format(linesep=os.linesep),
-        raw
-    )
-
-    stack = PYTHON_STACK.findall(raw)
-    out = '%s%s%s' % (
-        out,
-        os.linesep.join(
-            [
-                "    %s:%s" % (s[0], s[1])
-                for s in stack
-            ]
-        ),
-        os.linesep if stack else ''
-    )
-    # Normalize memory references from output
-    out = MEMORY_REFERENCE.sub("0xXXXXXXXX", out)
-
-    # Format floating point numbers using a lower case e
-    out = PYTHON_FLOAT_EXP.sub('\\1e\\2\\3', out)
-
-    # Replace "-0j" with "+0j"
-    out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
-
-    # Replace high precision floats with abbreviated forms
-    out = FLOAT_PRECISION.sub('\\1...', out)
-
-    # Replace references to the test script with something generic
-    out = out.replace("'test.py'", '***EXECUTABLE***')
-
-    # Python 3.4.4 changed the message describing strings in exceptions
-    out = out.replace(
-        'argument must be a string or',
-        'argument must be a string, a bytes-like object or'
-    )
-
-    if substitutions:
-        for to_value, from_values in substitutions.items():
-            for from_value in from_values:
-                # check for regex
-                if hasattr(from_value, 'pattern'):
-                    out = re.sub(from_value.pattern, re.escape(to_value), out, 0, re.MULTILINE)
-                else:
-                    out = out.replace(from_value, to_value)
-
-    out = out.replace('\r\n', '\n')
-    # trim trailing whitespace on non-blank lines
-    out = '\n'.join(o.rstrip() for o in out.split('\n'))
-    return out
-
 def transforms(**transform_args):
     """
     injects a JSCleaner and PYCleaner object into the function
@@ -253,8 +200,6 @@ class JSCleaner:
     def __init__(self, err_msg=True, memory_ref=True, js_bool=True, decimal=True, float_exp=True, complex_num=True,
         high_percision_float=True, test_ref=True, custom=True):
 
-        # for arg in inspect.getargspec(self.__init__).args:
-        #     print(arg)
         self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
     def cleanse(self, js_input, substitutions):
@@ -384,7 +329,7 @@ class PYCleaner:
                 out = PYTHON_FLOAT_EXP.sub('\\1e\\2\\3', out)
             except sre_constants.error:
                 pass
-                
+
         if self.transforms['complex_num']:
             # Replace "-0j" with "+0j"
             out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
@@ -393,11 +338,9 @@ class PYCleaner:
             # Replace high precision floats with abbreviated forms
             out = FLOAT_PRECISION.sub('\\1...', out)
 
-
         if self.transforms['test_ref']:
             # Replace references to the test script with something generic
             out = out.replace("'test.py'", '***EXECUTABLE***')
-
 
         # Python 3.4.4 changed the message describing strings in exceptions
         out = out.replace(
@@ -463,7 +406,6 @@ class TranspileTestCase(TestCase):
             finally:
                 # Clean up the test directory where the class file was written.
                 shutil.rmtree(self.temp_dir)
-                # print(js_out)
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
             js_out = js_cleaner.cleanse(js_out, substitutions)
@@ -503,7 +445,6 @@ class TranspileTestCase(TestCase):
             finally:
                 # Clean up the test directory where the class file was written.
                 shutil.rmtree(self.temp_dir)
-                # print(js_out)
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
