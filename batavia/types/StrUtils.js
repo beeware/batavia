@@ -8,32 +8,20 @@ function _substitute(format, args){
   var workingArgs = args.slice();
 
   function Specfier(fullText, index, args){
-    // fullText (str): full specifier including %
+    // fullText (str): full specifier including %, might not be legit!
     // index: starting index in the format string
     // args: the remaining available arguments in the conversion
 
     // returns object containing the specifier object and the remaining unused arguments
 
-    // ORDER OF SPECIFIERS
-    // 0) The '%' character, which marks the start of the specifier.
-    // 1) Mapping key (optional), consisting of a parenthesised sequence of characters (for example, (somename)).
-    // 2) Conversion flags (optional), which affect the result of some conversion types.
-      // # the value conversion will use the "alternate form" (where defined below) specific alternate form differs by conversion type
-      // '0' conversion is 0 padded for numerics
-      // - conversion is left adjusted (overrides 0)
-      // ' '(space) a blank should be left before positive number or empty string produced by sign conversion
-      // '+' positive or negative will precede the conversion (overrides space)
-    // 3) Minimum field width (optional). If specified as an '*' (asterisk), the actual width is read from the next element of the tuple in values, and the object to convert comes after the minimum field width and optional precision.
-    // 4) Precision (optional), given as a '.' (dot) followed by the precision. If specified as '*' (an asterisk), the actual width is read from the next element of the tuple in values, and the value to convert comes after the precision.
-    // 5) Length modifier (optional). IGNORED IN PYTHON
-    // 6) Conversion type.
+    // reference: https://docs.python.org/2/library/stdtypes.html#string-formatting
 
-    this.fullText = fullText; // full text starting with %
+    this.fullText = fullText; // full text of possible specifier starting with %
     this.index = index; // its position in the format string
     this.parsedSpec = '%'; // the parsed specifier
 
 
-    // exceptions are thrown like this:
+    // exceptions are handled like this:
       // scan one character at a time
       // if its illegal, throw that error! -> unsupported character
       // if its '*' there needs to be at least 2 args left (one for the * and another for the conversion)
@@ -43,7 +31,6 @@ function _substitute(format, args){
     this.args = []; // args to be used by this specifier
 
     // PARSED DATA FOR SPECIFIER
-
     this.conversionFlags = {
       '#': false,
       '0': false,
@@ -64,7 +51,7 @@ function _substitute(format, args){
 
     this.getNextStep = function(nextChar, currStep){
       // nextChar(str): the next character to be processed
-      // currSte(int): the current step we are on.
+      // currStep(int): the current step we are on.
       // return: nextStep(int): what step we should process nextChar on
 
       var steps = {
@@ -144,8 +131,8 @@ function _substitute(format, args){
         case 3:
           // min field width
           if (char === '*'){
-            // there needs to be atleast two args available
-            // (one for this, another for the conversion)
+            // there needs to be atleast two args available,
+            // (one for this, another for the actual conversion)
 
             // can't be using numerics or have another * already
             if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null){
@@ -259,7 +246,8 @@ function _substitute(format, args){
             throw new exceptions.TypeError("a float is required")
           }
         } else if ( conversion === 'c' ){
-          // this might be an error in C Python but floats ARE allowed.
+          // there might be a problem with the error
+          // message from C Python but floats ARE allowed.
           //  multi character strings are not allowed
           if ( types.isinstance(arg, types.Str) && arg.valueOf().length > 1 ){
             throw new exceptions.TypeError("%c requires int or char")
@@ -276,7 +264,7 @@ function _substitute(format, args){
 
       function getJSValue(bataviaType){
         // bataviaType: a batavia type, must be int, float or str
-        // returns the udnerlying JS type.
+        // returns the underlying JS type.
         switch( type_name(bataviaType) ){
 
           case("int"):
@@ -290,7 +278,7 @@ function _substitute(format, args){
             break;
 
           case("type"):
-            // need to include name space of class if needed
+            // TODO need to include name space of class if needed
             return bataviaType.__repr__();
             break;
 
@@ -324,7 +312,6 @@ function _substitute(format, args){
 
       var workingArgs = this.args.slice();
 
-
       if ( this.fieldWidth.value === '*' ){
         var minWidth = workingArgs.shift().valueOf();
       } else if ( !isNaN(this.fieldWidth.value ) ){
@@ -352,7 +339,6 @@ function _substitute(format, args){
       }
 
       switch(this.conversionType){
-        // handle the #
 
         case('d'):
         case('i'):
@@ -435,23 +421,20 @@ function _substitute(format, args){
 
         case('e'):
         case('E'):
-          // toExponential() will almost work here, but the digit here
-          // has a minimum of 1 zero pad
-          // example: 5 = '5.000000e+00'
+
           var argValueBig = new BigNumber(conversionArgValue)
           var argExp = Number(argValueBig).toExponential();
 
           var expSplit = argExp.split('e');
           var baseRaw = new BigNumber((expSplit[0]));
 
-          // this is a string!
+          // might need to add extra zeros to base
           if ( percision !== null ){
             var base = baseRaw.toFixed(percision);
           } else {
             var base = baseRaw.toFixed(6);
           }
 
-          // exponent must have at least two digits
           var exp = expSplit[1]
 
           var conversionArg = this.conversionType === 'e' ?
@@ -503,7 +486,7 @@ function _substitute(format, args){
               // The precision determines the number of significant digits
               //before and after the decimal point and defaults to 6.
 
-              // if its an int, tack on a . + zeros
+              // if its an int, tack on a `.` + zeros
               // if its a float just tack on zeros
               // get number of digits inherent in the value
               var isInt = conversionArgValue % 1 === 0;
@@ -553,7 +536,7 @@ function _substitute(format, args){
 
         case('c'):
 
-          // in C Python there is an upper bound to what int or float can be provided
+          // NOTE: in C Python there is an upper bound to what int or float can be provided
           // and this is platform specific. currently, Batavia is not enforcing any
           // kind of upper bound.
 
@@ -573,7 +556,7 @@ function _substitute(format, args){
             // if exponent would be < -4 use exponential
 
             var asExp = Number(conversionArgValue).toExponential();
-            // if exponent is less than -4, use exponential
+
             if ( Number(asExp.split('e')[1]) < -4 ){
               var conversionArg = zeroPadExp(asExp);
             } else {
@@ -590,7 +573,7 @@ function _substitute(format, args){
             // if exponent would be < -4 use exponential
 
             var asExp = Number(conversionArgValue).toExponential();
-            // if exponent is less than -4, use exponential
+
             if ( Number(asExp.split('e')[1]) < -4 ){
               var conversionArg = zeroPadExp(asExp);
             } else {
@@ -639,12 +622,11 @@ function _substitute(format, args){
       var nextChar = charArray[charIndex];
       this.parsedSpec += nextChar;
       try {
-
         var nextStep = this.getNextStep(nextChar, nextStep)
         this.step(nextChar, nextStep)
       } catch(err){
-        var charAsHex = nextChar.charCodeAt(0).toString(16)
         if (err.message === 'illegal character'){
+          var charAsHex = nextChar.charCodeAt(0).toString(16)
           throw new exceptions.ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
         } else {
           //its some other error
@@ -657,6 +639,7 @@ function _substitute(format, args){
         break;
       }
     } // end while loop
+
     // check that a conversion type was found. Otherwise throw error!
     if ( this.conversionType === undefined && !this.literalPercent ) {
       throw new exceptions.ValueError("incomplete format")
@@ -678,13 +661,16 @@ function _substitute(format, args){
     var specObj = new Specfier(match[1], match.index, workingArgs);
 
     // do the substitution
+    if ( !specObj.literalPercent ){
+      result += specObj.transform();
+      // update end of current specifier
+      lastStop = match.index + specObj.parsedSpec.length;
+      workingArgs = specObj.remainingArgs;
+    } else {
+      result += match[1];
+      lastStop = match.index + match[1].length;
+    }
 
-    // TODO: RESTORE THIS!!!
-    result += specObj.transform();
-
-    // update end of current specifier
-    lastStop = match.index + specObj.parsedSpec.length;
-    workingArgs = specObj.remainingArgs;
 
     var match = re.exec(format);
   }

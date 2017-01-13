@@ -489,6 +489,10 @@ class FormatTests(TranspileTestCase):
             test = adjust("""
                 print(">>> '%s %%' % 'spam'")
                 print('%s %%' % 'spam')
+                print(">>> '%%5.5d' % 5")
+                print('%%5.5d' % 5)
+                print(">>> '%s %% %s' % ('spam', 'beans')")
+                print('%s %% %s' % ('spam', 'beans'))
                 """)
 
             self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
@@ -576,7 +580,8 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_modulo_class',
-        
+        'test_modulo_slice'
+
     ]
 
 
@@ -584,6 +589,6 @@ class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
     not_implemented = [
-        'test_modulo_frozenset',
-        'test_modulo_set',
+        'test_modulo_class',
+        'test_modulo_slice'
     ]
