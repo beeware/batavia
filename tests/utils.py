@@ -493,7 +493,6 @@ class TranspileTestCase(TestCase):
             finally:
                 # Clean up the test directory where the class file was written.
                 shutil.rmtree(self.temp_dir)
-                # print(js_out)
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
@@ -525,7 +524,6 @@ class TranspileTestCase(TestCase):
             finally:
                 # Clean up the test directory where the class file was written.
                 shutil.rmtree(self.temp_dir)
-                # print(js_out)
 
             # Cleanse the JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
