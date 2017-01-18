@@ -198,7 +198,6 @@ class StrTests(TranspileTestCase):
          """)
 
 class FormatTests(TranspileTestCase):
-
         alternate = ('#',
                      ''
          )
@@ -260,26 +259,27 @@ class FormatTests(TranspileTestCase):
                 """
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_basic(self, js_cleaner, py_cleaner):
             combinations = (product(self.alternate, self.conversion_flags, self.args))
-            tests = ''.join([adjust(
-                self.template
-                    .format(
-                    spec=comb[0] + comb[1], arg=comb[2])
-            ) for comb in combinations]
-                            )
+            tests = ''.join(
+                [
+                    adjust(self.template
+                            .format(spec = comb[0] + comb[1], arg = comb[2])
+                    ) for comb in combinations
+                ]
+            )
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False
         )
         def test_c_conversion(self, js_cleaner, py_cleaner):
             """tests for c character conversion
@@ -294,22 +294,18 @@ class FormatTests(TranspileTestCase):
                 '"s"',
                 '"spam"'
             ]
-            tests = ''.join([adjust("""
-                    print('>>> "format this: %c" % {arg}')
-                    try:
-                        print('format this: %c' % {arg})
-                    except (ValueError, TypeError, OverflowError) as err:
-                        print(err)
-                    print('Done.')
-                    """.format(
-                arg=v)) for v in values])
+            tests = ''.join(
+                [
+                    adjust(self.template
+                    .format(
+                arg = 'c')) for v in values])
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False
         )
         @unittest.expectedFailure
         def test_c_conversion_bad(self, js_cleaner, py_cleaner):
@@ -320,23 +316,21 @@ class FormatTests(TranspileTestCase):
                 1,
                 31
             ]
-            tests = ''.join([adjust("""
-                    print('>>> "format this: %c" % {arg}')
-                    try:
-                        print('format this: %c' % {arg})
-                    except (ValueError, TypeError, OverflowError) as err:
-                        print(err)
-                    print('Done.')
-                    """.format(
-                arg=v)) for v in values])
+            tests = ''.join(
+                [
+                    adjust(self.template
+                        .format(spec = 'c', arg = v)
+                    ) for v in values
+                ]
+            )
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_field_width(self, js_cleaner, py_cleaner):
             cases = (
@@ -347,19 +341,21 @@ class FormatTests(TranspileTestCase):
                 ('5d', 0.5),
             )
 
-            tests = ''.join([adjust(self.template
-                .format(
-                spec=''.join(c[0]), arg=c[1])
-            ) for c in cases]
-                            )
+            tests = ''.join(
+                [
+                    adjust(self.template
+                        .format(spec = ''.join(c[0]), arg = c[1])
+                    ) for c in cases
+                ]
+            )
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_precision(self, js_cleaner, py_cleaner):
             percisions = ('.5', '.21')
@@ -383,19 +379,22 @@ class FormatTests(TranspileTestCase):
             )
 
             combinations = product(percisions, cases)
-            tests = ''.join([adjust(self.template
-                .format(
-                spec=c[0] + c[1][0], arg=c[1][1]
+            tests = ''.join(
+                [
+                    adjust(self.template
+                        .format(spec = c[0] + c[1][0], arg = c[1][1]
+                        )
+                    ) for c in combinations
+                ]
             )
-            ) for c in combinations])
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_left_adjust(self, js_cleaner, py_cleaner):
             """conversion flags for - and 0"""
@@ -422,19 +421,22 @@ class FormatTests(TranspileTestCase):
             )
 
             combinations = product(flags, cases)
-            tests = ''.join([adjust(self.template
-                .format(
-                spec=c[0] + c[1][0], arg=c[1][1]
+            tests = ''.join(
+                [
+                    adjust(self.template
+                        .format(spec = c[0] + c[1][0], arg = c[1][1]
+                        )
+                    ) for c in combinations
+                ]
             )
-            ) for c in combinations])
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_plus_sign(self, js_cleaner, py_cleaner):
             flags = ('+', ' ')
@@ -471,19 +473,22 @@ class FormatTests(TranspileTestCase):
             )
 
             combinations = product(flags, cases)
-            tests = ''.join([adjust(self.template
-                .format(
-                spec=c[0] + c[1][0], arg=c[1][1]
+            tests = ''.join(
+                [adjust
+                    (self.template
+                        .format(spec = c[0] + c[1][0], arg = c[1][1]
+                        )
+                    ) for c in combinations
+                ]
             )
-            ) for c in combinations])
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_literal_percent(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -495,13 +500,21 @@ class FormatTests(TranspileTestCase):
                 print('%s %% %s' % ('spam', 'beans'))
                 """)
 
-            self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            tests = ''.join(
+                [
+                    adjust(self.template
+                        .format(spec = ''.join(c[0]), arg = c[1])
+                    ) for c in cases
+                ]
+            )
+
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_no_args(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -513,13 +526,13 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_too_many_args(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -531,13 +544,13 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_not_enough_args(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -549,13 +562,13 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
         @transforms(
-            js_bool=False,
-            decimal=False,
-            float_exp=False,
-            memory_ref=False
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
         )
         def test_bogus_specifier(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -567,7 +580,7 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
@@ -581,9 +594,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_modulo_class',
         'test_modulo_slice'
-
     ]
-
 
 class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'str'

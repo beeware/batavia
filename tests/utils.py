@@ -178,12 +178,22 @@ def transforms(**transform_args):
 
             # js_cleaner
             js_excludes = ['py_test_script', 'py_str_excep']
-            js_params = {jsk : jsv for jsk, jsv in transform_args.items() if jsk not in js_excludes}
+            js_params = {
+                jsk : jsv
+                for jsk, jsv
+                in transform_args.items()
+                if jsk not in js_excludes
+            }
             js_cleaner = JSCleaner(**js_params)
 
             # py_cleaner
             py_excludes = ['js_bool', 'decimal', 'float_exp']
-            py_params = {pyk : pyv for pyk, pyv in transform_args.items() if pyk not in py_excludes}
+            py_params = {
+                pyk : pyv
+                for pyk, pyv
+                in transform_args.items()
+                if pyk not in py_excludes
+            }
             py_cleaner = PYCleaner(**py_params)
 
             res = function(self, js_cleaner, py_cleaner, *args, **kwargs)
@@ -196,9 +206,8 @@ def transforms(**transform_args):
 
 
 class JSCleaner:
-
-    def __init__(self, err_msg=True, memory_ref=True, js_bool=True, decimal=True, float_exp=True, complex_num=True,
-        high_percision_float=True, test_ref=True, custom=True):
+    def __init__(self, err_msg = True, memory_ref = True, js_bool = True, decimal = True, float_exp = True, complex_num = True,
+        high_percision_float = True, test_ref = True, custom = True):
 
         self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
@@ -217,7 +226,7 @@ class JSCleaner:
             test_dir = os.path.join(os.getcwd(), 'tests', 'temp')
             for filename, line in stack:
                 if filename.startswith(test_dir):
-                    filename = filename[len(test_dir)+1:]
+                    filename = filename[len(test_dir) + 1:]
                 stacklines.append(
                     "    %s:%s" % (
                         filename, line
@@ -287,9 +296,8 @@ class JSCleaner:
 
 
 class PYCleaner:
-
-    def __init__(self, err_msg=True, memory_ref=True, float_exp=True, complex_num=True,
-        high_percision_float=True, test_ref=True, custom=True):
+    def __init__(self, err_msg = True, memory_ref = True, float_exp = True, complex_num = True,
+        high_percision_float = True, test_ref = True, custom = True):
 
         self.transforms = {k:v for k, v in locals().items() if k != 'self'}
 
