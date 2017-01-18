@@ -172,7 +172,7 @@ def transforms(**transform_args):
     injects a JSCleaner and PYCleaner object into the function
     use this as a decarator to configure which transformations should be performed
     """
-    def real_decorator(function):
+    def _dec(function):
 
         def wrapper(self, *args, **kwargs):
 
@@ -202,7 +202,7 @@ def transforms(**transform_args):
         wrapper.__doc__ = function.__doc__
         return wrapper
 
-    return real_decorator
+    return _dec
 
 
 class JSCleaner:
