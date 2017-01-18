@@ -198,53 +198,17 @@ class StrTests(TranspileTestCase):
          """)
 
 class FormatTests(TranspileTestCase):
-        alternate = ('#',
-                     ''
-         )
+        alternate = ('#', '')
 
-        length_modifiers = (
-            'h',
-            'L',
-            'l',
-            ''
+        length_modifiers = ('h', 'L', 'l', '')
+
+        conversion_flags = ('d', 'i', 'o', 'u', 'x', 'X', 'e', 'E', 'f', 'F',
+            'g', 'G', 'r', 's'
         )
 
-        conversion_flags = (
-            'd',
-            'i',
-            'o',
-            'u',
-            'x',
-            'X',
-            'e',
-            'E',
-            'f',
-            'F',
-            'g',
-            'G',
-            'r',
-            's'
-        )
-
-        args = (
-            '"s"',
-            '"spam"',
-            '"5"',
-            5,
-            -5,
-            5.0,
-            -5.0,
-            0.5,
-            0.50,
-            0.000005,
-            0.000000000000000000005,
-            -0.5,
-            -0.000005,
-            -0.000000000000000000005,
-            500000,
-            -500000,
-            500000000000000000000,
-            -500000000000000000000,
+        args = ('"s"', '"spam"', '"5"', 5, -5, 5.0, -5.0, 0.5, 0.50, 0.000005,
+            0.000000000000000000005, -0.5, -0.000005, -0.000000000000000000005,
+            500000, -500000, 500000000000000000000, -500000000000000000000,
             1361129467683753853853498429727072845824,
             1361129467683753853853498429727072845824
         )
@@ -287,18 +251,18 @@ class FormatTests(TranspileTestCase):
             and this is platform specific. currently, Batavia is not enforcing any
             kind of upper bound.
             """
-            values = [
-                32,
-                100,
-                -1,
-                '"s"',
-                '"spam"'
-            ]
+
+            # the smallest representable value (32), a typical value ('d') and
+            # two unacceptable types
+            values = (32, 100, -1, '"s"', '"spam"')
             tests = ''.join(
                 [
                     adjust(self.template
-                    .format(
-                arg = 'c')) for v in values])
+                        .format(
+                            arg = 'c')
+                        ) for v in values
+                ]
+            )
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
@@ -312,10 +276,8 @@ class FormatTests(TranspileTestCase):
             """tests for c character conversion
             tests for values between 1-31 can't be properly represented
             """
-            values = [
-                1,
-                31
-            ]
+            values = (1, 31)
+
             tests = ''.join(
                 [
                     adjust(self.template
@@ -333,11 +295,7 @@ class FormatTests(TranspileTestCase):
             memory_ref = False
         )
         def test_field_width(self, js_cleaner, py_cleaner):
-            cases = (
-                ('2s', '"s"'),
-                ('2s', '"spam"'),
-                ('2d', 5),
-                ('2d', 1234),
+            cases = (('2s', '"s"'), ('2s', '"spam"'), ('2d', 5), ('2d', 1234),
                 ('5d', 0.5),
             )
 
@@ -358,27 +316,14 @@ class FormatTests(TranspileTestCase):
             memory_ref = False
         )
         def test_precision(self, js_cleaner, py_cleaner):
-            percisions = ('.5', '.21')
+            precisions = ('.5', '.21')
 
-            cases = (
-                ('d', 3),
-                ('i', 3),
-                ('o', 3),
-                ('u', 3),
-                ('x', 3),
-                ('X', 3),
-                ('e', 3),
-                ('E', 3),
-                ('f', 3.5),
-                ('F', 3.5),
-                ('g', 3),
-                ('G', 3),
-                ('c', 35),
-                ('r', '"s"'),
-                ('s', '"s"')
+            cases = (('d', 3), ('i', 3), ('o', 3), ('u', 3), ('x', 3), ('X', 3),
+                ('e', 3), ('E', 3), ('f', 3.5), ('F', 3.5), ('g', 3), ('G', 3),
+                ('c', 35), ('r', '"s"'), ('s', '"s"')
             )
 
-            combinations = product(percisions, cases)
+            combinations = product(precisions, cases)
             tests = ''.join(
                 [
                     adjust(self.template
@@ -401,23 +346,10 @@ class FormatTests(TranspileTestCase):
 
             flags = ('-', '0')
 
-            cases = (
-
-                ('3d', 3),
-                ('3i', 3),
-                ('3o', 3),
-                ('3u', 3),
-                ('3x', 3),
-                ('3X', 3),
-                ('10.1e', 3),
-                ('10.1E', 3),
-                ('10.1f', 3.5),
-                ('10.1F', 3.5),
-                ('10.1g', 3),
-                ('10.1G', 3),
-                ('3c', 3),
-                ('3r', '"s"'),
-                ('3s', '"s"')
+            cases = (('3d', 3), ('3i', 3), ('3o', 3), ('3u', 3), ('3x', 3),
+                ('3X', 3), ('10.1e', 3), ('10.1E', 3), ('10.1f', 3.5),
+                ('10.1F', 3.5), ('10.1g', 3), ('10.1G', 3), ('3c', 3),
+                ('3r', '"s"'), ('3s', '"s"')
             )
 
             combinations = product(flags, cases)
@@ -441,35 +373,11 @@ class FormatTests(TranspileTestCase):
         def test_plus_sign(self, js_cleaner, py_cleaner):
             flags = ('+', ' ')
 
-            cases = (
-
-                ('d', 3),
-                ('d', -3),
-                ('i', 3),
-                ('i', -3),
-                ('o', 3),
-                ('o', -3),
-                ('u', 3),
-                ('u', -3),
-                ('x', 3),
-                ('x', -3),
-                ('X', 3),
-                ('X', -3),
-                ('e', 3),
-                ('e', -3),
-                ('E', 3),
-                ('E', -3),
-                ('f', 3.5),
-                ('f', -3.5),
-                ('F', 3.5),
-                ('F', -3.5),
-                ('g', 3),
-                ('g', -3),
-                ('G', 3),
-                ('G', -3),
-                ('c', 3),
-                ('r', '"s"'),
-                ('s', '"s"')
+            cases = (('d', 3), ('d', -3), ('i', 3), ('i', -3), ('o', 3),
+                ('o', -3), ('u', 3), ('u', -3), ('x', 3), ('x', -3), ('X', 3),
+                ('X', -3), ('e', 3), ('e', -3), ('E', 3), ('E', -3), ('f', 3.5),
+                ('f', -3.5), ('F', 3.5), ('F', -3.5), ('g', 3), ('g', -3),
+                ('G', 3), ('G', -3), ('c', 3), ('r', '"s"'), ('s', '"s"')
             )
 
             combinations = product(flags, cases)
