@@ -259,7 +259,7 @@ class FormatTests(TranspileTestCase):
                 [
                     adjust(self.template
                         .format(
-                            arg = 'c')
+                            spec = 'c', arg = v)
                         ) for v in values
                 ]
             )
@@ -407,14 +407,6 @@ class FormatTests(TranspileTestCase):
                 print(">>> '%s %% %s' % ('spam', 'beans')")
                 print('%s %% %s' % ('spam', 'beans'))
                 """)
-
-            tests = ''.join(
-                [
-                    adjust(self.template
-                        .format(spec = ''.join(c[0]), arg = c[1])
-                    ) for c in cases
-                ]
-            )
 
             self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
