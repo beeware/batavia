@@ -5,7 +5,8 @@ var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var None = require('../core').None;
-
+var path = require('path')
+var StrUtils = require('./StrUtils')
 /*************************************************************************
  * Modify String to behave like a Python String
  *************************************************************************/
@@ -266,86 +267,12 @@ Str.prototype.__mul__ = function(other) {
     }
 }
 
-
-var _substitute = function(format, args) {
-    var types = require('../types');
-    var results = [];
-    var special_case_types = [
-        types.List,
-        types.Dict,
-        types.Bytes];
-
-    /* This is the general form regex for a sprintf-like string. */
-    var re = /\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/g;
-    var match;
-    var lastIndex = 0;
-    for (var i = 0; i < args.length; i++) {
-        var arg = args[i];
-
-        match = re.exec(format);
-        if (match) {
-            switch (match[8]) {
-                case "b":
-                    arg = arg.toString(2);
-                break;
-                case "c":
-                    arg = String.fromCharCode(arg);
-                break;
-                case "d":
-                case "i":
-                    arg = parseInt(arg, 10);
-                break;
-                case "j":
-                    arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6], 10) : 0);
-                break;
-                case "e":
-                    arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential();
-                break;
-                case "f":
-                    arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg);
-                break;
-                case "g":
-                    arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg);
-                break;
-                case "o":
-                    arg = arg.toString(8);
-                break;
-                case "s":
-                    arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg);
-                break;
-                case "u":
-                    arg = arg >>> 0;
-                break;
-                case "x":
-                    arg = arg.toString(16);
-                break;
-                case "X":
-                    arg = arg.toString(16).toUpperCase();
-                break;
-            }
-
-            results.push(format.slice(lastIndex, match.index));
-            lastIndex = re.lastIndex;
-            results.push(arg);
-        } else if (    (args.constructor === Array)
-                    && types.isinstance(args[0], special_case_types)) {
-            return format;
-        } else {
-            throw new exceptions.TypeError('not all arguments converted during string formatting');
-        }
-    }
-    // Push the rest of the string.
-    results.push(format.slice(re.lastIndex));
-    return results.join('');
-}
-
 Str.prototype.__mod__ = function(other) {
     var types = require('../types');
-
     if (types.isinstance(other, types.Tuple)) {
-        return _substitute(this, other);
+        return StrUtils._substitute(this, other);
     } else {
-        return _substitute(this, [other]);
+        return StrUtils._substitute(this, [other]);
     }
 }
 
@@ -499,22 +426,7 @@ Str.prototype.__imul__ = function(other) {
 };
 
 Str.prototype.__imod__ = function(other) {
-    var types = require('../types');
-
-    if (types.isinstance(other, [
-            types.Bool,
-            types.Float,
-            types.FrozenSet,
-            types.Int,
-            types.NoneType,
-            types.Set,
-            Str,
-            types.Tuple
-        ])) {
-        throw new exceptions.TypeError("not all arguments converted during string formatting");
-    } else {
-        throw new exceptions.NotImplementedError("str.__imod__ has not been implemented");
-    }
+    return this.__mod__(other);
 }
 
 Str.prototype.__ipow__ = function(other) {

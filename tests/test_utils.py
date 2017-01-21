@@ -1,6 +1,6 @@
 import unittest
 
-from .utils import adjust, cleanse_javascript, cleanse_python, TranspileTestCase
+from .utils import adjust, JSCleaner, PYCleaner, TranspileTestCase
 
 
 class AdjustTests(unittest.TestCase):
@@ -29,8 +29,8 @@ print('Done.')
 
 
 class JavaScriptNormalizationTests(unittest.TestCase):
-    def assertNormalized(self, actual, expected):
-        self.assertEqual(cleanse_javascript(adjust(actual), None), adjust(expected))
+    def assertNormalized(self, actual, expected, js_cleaner=JSCleaner()):
+        self.assertEqual(js_cleaner.cleanse(adjust(actual), None), adjust(expected))
 
     def test_no_exception(self):
         self.assertNormalized(
@@ -125,8 +125,8 @@ class JavaScriptNormalizationTests(unittest.TestCase):
 
 
 class PythonNormalizationTests(unittest.TestCase):
-    def assertNormalized(self, actual, expected):
-        self.assertEqual(cleanse_python(adjust(actual), None), adjust(expected))
+    def assertNormalized(self, actual, expected, py_cleaner=PYCleaner()):
+        self.assertEqual(py_cleaner.cleanse(adjust(actual), None), adjust(expected))
 
     def test_no_exception(self):
         self.assertNormalized(
@@ -244,3 +244,82 @@ class JavaScriptBootstrapTests(TranspileTestCase):
             """,
         )
 
+class JSCleanerTests(TranspileTestCase):
+    cleaner = JSCleaner()
+
+    def test_cleanse_err_msg(self):
+        js_in = adjust("""
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        NameError: name 'a' is not defined
+        """)
+
+        expected_out = adjust("""
+        ### EXCEPTION ###
+        NameError: name 'a' is not defined
+            <stdin>:1
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_cleanse_memory_ref(self):
+        js_in = adjust("""
+        <turtle.Turtle object at 0x10299c588>
+        """)
+
+        expected_out = adjust("""
+        <turtle.Turtle object at 0xXXXXXXXX>
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_cleanse_bool(self):
+        js_in = adjust("""
+        true
+        false
+        """)
+
+        expected_out = adjust("""
+        True
+        False
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_cleanse_decimal(self):
+        js_in = adjust("""
+        3.000
+        """)
+
+        expected_out = adjust("""
+        3.0
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_cleanse_float_exp(self):
+        js_in = adjust("""
+        55e-5
+        55e-05
+        55e-005
+        """)
+
+        expected_out = adjust("""
+        55e-5
+        55e-5
+        55e-05
+        """)
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_complex_num(self):
+        js_in = adjust("""
+        (1234567890123456-
+        (1234567890123456+
+        """)
+
+        expected_out = adjust("""
+        (1234567890123456.0.0-
+        (1234567890123456.0.0+
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
