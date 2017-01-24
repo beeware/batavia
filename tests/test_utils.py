@@ -323,3 +323,133 @@ class JSCleanerTests(TranspileTestCase):
         """)
 
         self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_high_percision_float(self):
+        js_in = adjust("""
+        4.00000000000000000001
+        """)
+
+        expected_out = adjust("""
+        4.0
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_memory_ref(self):
+        js_in = adjust("""
+        'test.py'
+        """)
+
+        expected_out = adjust("""
+        ***EXECUTABLE***
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
+
+    def test_custom(self):
+        js_in = adjust("""
+        'we are the knights'
+        """)
+
+        expected_out = adjust("""
+        'we are the knights who go NI'
+        """)
+
+        custom_replacement = {
+            'we are the knights who go NI': ['we are the knights']
+        }
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, custom_replacement))
+
+class PYCleanerTests(TranspileTestCase):
+    cleaner = PYCleaner()
+
+    def test_cleanse_err_msg(self):
+        py_in = adjust("""
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        NameError: name 'a' is not defined
+        """)
+
+        expected_out = adjust("""
+        Traceback (most recent call last):
+          File "<stdin>", line 1, in <module>
+        NameError: name 'a' is not defined
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
+
+    def test_cleanse_memory_ref(self):
+        py_in = adjust("""
+        <turtle.Turtle object at 0x10299c588>
+        """)
+
+        expected_out = adjust("""
+        <turtle.Turtle object at 0xXXXXXXXX>
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
+
+    def test_cleanse_float_exp(self):
+        py_in = adjust("""
+        55e-5
+        55e-05
+        55e-005
+        """)
+
+        expected_out = adjust("""
+        55e-5
+        55e-5
+        55e-05
+        """)
+        self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
+
+    def test_complex_num(self):
+        py_in = adjust("""
+        (1234567890123456-
+        (1234567890123456+
+        """)
+
+        expected_out = adjust("""
+        (1234567890123456-
+        (1234567890123456+
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
+
+    def test_high_percision_float(self):
+        py_in = adjust("""
+        4.00000000000000000001
+        """)
+
+        expected_out = adjust("""
+        4.00000...
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
+
+    def test_ref(self):
+        py_in = adjust("""
+        'test.py'
+        """)
+
+        expected_out = adjust("""
+        ***EXECUTABLE***
+        """)
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
+
+    def test_custom(self):
+        js_in = adjust("""
+        'we are the knights'
+        """)
+
+        expected_out = adjust("""
+        'we are the knights who go NI'
+        """)
+
+        custom_replacement = {
+            'we are the knights who go NI': ['we are the knights']
+        }
+
+        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, custom_replacement))
