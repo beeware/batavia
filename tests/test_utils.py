@@ -324,7 +324,7 @@ class JSCleanerTests(TranspileTestCase):
 
         self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
 
-    def test_high_percision_float(self):
+    def test_high_precision_float(self):
         js_in = adjust("""
         4.00000000000000000001
         """)
@@ -417,7 +417,7 @@ class PYCleanerTests(TranspileTestCase):
 
         self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
 
-    def test_high_percision_float(self):
+    def test_high_precision_float(self):
         py_in = adjust("""
         4.00000000000000000001
         """)
@@ -441,15 +441,15 @@ class PYCleanerTests(TranspileTestCase):
 
     def test_custom(self):
         js_in = adjust("""
-        'we are the knights'
+        'we are the knights who say NI'
         """)
 
         expected_out = adjust("""
-        'we are the knights who go NI'
+        'We are now the Knights Who Say Ecky-ecky-ecky-ecky-pikang-zoop-boing-goodem-zoo-owli-zhiv'
         """)
 
         custom_replacement = {
-            'we are the knights who go NI': ['we are the knights']
+            'We are now the Knights Who Say Ecky-ecky-ecky-ecky-pikang-zoop-boing-goodem-zoo-owli-zhiv': ['we are the knights who say NI']
         }
 
         self.assertEqual(expected_out, self.cleaner.cleanse(js_in, custom_replacement))
