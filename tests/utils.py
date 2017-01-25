@@ -207,9 +207,19 @@ def transforms(**transform_args):
 
 class JSCleaner:
     def __init__(self, err_msg = True, memory_ref = True, js_bool = True, decimal = True, float_exp = True, complex_num = True,
-        high_percision_float = True, test_ref = True, custom = True):
+        high_precision_float = True, test_ref = True, custom = True):
 
-        self.transforms = {k:v for k, v in locals().items() if k != 'self'}
+        self.transforms = {
+            'err_msg': err_msg,
+            'memory_ref': memory_ref,
+            'js_bool': js_bool,
+            'decimal': decimal,
+            'float_exp': float_exp,
+            'complex_num': complex_num,
+            'high_precision_float': high_precision_float,
+            'test_ref': test_ref,
+            'custom': custom
+        }
 
     def cleanse(self, js_input, substitutions):
         """
@@ -266,15 +276,13 @@ class JSCleaner:
             for match in JS_LARGE_COMPLEX.findall(out):
                 out = out.replace(match, str(float(match)))
 
-        if self.transforms['high_percision_float']:
+        if self.transforms['high_precision_float']:
             # Replace high precision floats with abbreviated forms
             out = FLOAT_PRECISION.sub('\\1...', out)
-
 
         if self.transforms['test_ref']:
             # Replace references to the test script with something generic
             out = out.replace("'test.py'", '***EXECUTABLE***')
-
 
         if self.transforms['custom']:
             # Replace all the explicit data substitutions
@@ -297,9 +305,17 @@ class JSCleaner:
 
 class PYCleaner:
     def __init__(self, err_msg = True, memory_ref = True, float_exp = True, complex_num = True,
-        high_percision_float = True, test_ref = True, custom = True):
+        high_precision_float = True, test_ref = True, custom = True):
 
-        self.transforms = {k:v for k, v in locals().items() if k != 'self'}
+        self.transforms = {
+            'err_msg': err_msg,
+            'memory_ref': memory_ref,
+            'float_exp': float_exp,
+            'complex_num': complex_num,
+            'high_precision_float': high_precision_float,
+            'test_ref': test_ref,
+            'custom': custom
+        }
 
     def cleanse(self, py_input, substitutions):
         """
@@ -342,7 +358,7 @@ class PYCleaner:
             # Replace "-0j" with "+0j"
             out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
 
-        if self.transforms['high_percision_float']:
+        if self.transforms['high_precision_float']:
             # Replace high precision floats with abbreviated forms
             out = FLOAT_PRECISION.sub('\\1...', out)
 
