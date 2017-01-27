@@ -3,11 +3,52 @@ var type_name = require('../core').type_name;
 var BigNumber = require('bignumber.js').BigNumber
 
 function _substitute(format, args){
-
     var types = require('../types');
-    var workingArgs = args.slice();
+    // does this conversion use key word or sequential args?
+    var kwRe = /%\(/;
+    var usesKwargs = (format.match(kwRe) !== null)
 
-    function Specfier(fullText, index, args, usesKwargs){
+    // if using kwargs, fail if first arg isn't a dict or more than 1 arg given
+    if ( usesKwargs && (
+            !types.isinstance(args[0], types.Dict) || args.length != 1
+        )
+    ){
+        throw new exceptions.TypeError("format requires a mapping")
+    }
+
+    function Args(args, usesKwargs) {
+        // represents either sequential or key word arguments.
+        // functions that need to grab arguments interface with this object
+        if (usesKwargs){
+            this.collection = args[0]
+        } else{
+            this.remainingArgs = args.slice(); // remaining args
+        }
+
+        this.getArg = function(key){
+            // get the next arg.
+            // if using sequental args, arg is shifted and returned
+            // if using kwargs, arg is simply returned.
+            if (usesKwargs){
+                return this.collection.__getitem__(key);
+            } else {
+                return this.remainingArgs.shift();
+            }
+        }
+
+        this.argsRemain = function(){
+            // returns if there are args remaining
+            if (usesKwargs){
+                return collection.keys().length > 0;
+            } else {
+                return this.remainingArgs.length > 0;
+            }
+        }
+    } // end Args
+
+    var workingArgs = new Args(args, usesKwargs)
+
+    function Specfier(fullText, index, args){
         // fullText (str): full specifier including %, might not be legit!
         // index: starting index in the format string
         // args: the remaining available argument s in the conversion
@@ -16,7 +57,20 @@ function _substitute(format, args){
 
         // reference: https://docs.python.org/2/library/stdtypes.html#string-formatting
 
-        this.fullText = fullText; // full text of possible specifier starting with %
+        if(usesKwargs){
+            // try to parse the key from this spec
+            var keyRe = /\((.+?)\)(.+)/;
+            var m = fullText.match(keyRe);
+            if(m === null){
+                throw new exceptions.TypeError("incomplete format key")
+            }
+            this.myKey = m[1];
+            this.fullText = "%" + m[2];
+        } else {
+            this.myKey = undefined
+            this.fullText = fullText; // full text of possible specifier starting with %
+        }
+
         this.index = index; // its position in the format string
         this.parsedSpec = '%'; // the parsed specifier
         this.usesKwargs = usesKwargs;
@@ -27,34 +81,7 @@ function _substitute(format, args){
             // if its '*' there needs to be at least 2 args left (one for the * and another for the conversion)
             // if its a conversion there needs to be atleast one left
 
-        function Args(collection, usesKwargs) {
-            // represents either sequential or key word arguments.
-            // functions that need to grab arguments interface with this object
-            this.args = collection; // all arguments
-            this.remainingArgs = collection.slice(); // remaining args
-
-            this.getArg = function(key){
-                // get the next arg.
-                // if using sequental args, arg is shifted and returned
-                // if using kwargs, arg is simply returned.
-                if (usesKwargs){
-                    return this.args[key];
-                } else {
-                    return this.remainingArgs.shift();
-                }
-            }
-
-            this.argsRemain = function(){
-                // returns if there are args remaining
-                if (usesKwargs){
-                    return Object.keys(this.args).length > 0;
-                } else {
-                    return this.remainingArgs.length > 0;
-                }
-            }
-        }
-
-        this.remainingArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
+        // this.remainingArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
         this.args = []; // args to be used by this specifier
 
         // PARSED DATA FOR SPECIFIER
@@ -159,11 +186,15 @@ function _substitute(format, args){
                   if (char === '*') {
                       // there needs to be atleast two args available,
                       // (one for this, another for the actual conversion)
-
+                      if(this.usesKwargs){
+                          // not allowed with kwargs!
+                          throw new exceptions.TypeError("* wants int")
+                      }
                       // can't be using numerics or have another * already
                       if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
 
-                        var arg = this.remainingArgs.shift(); // grab an arg
+                        // var arg = this.remainingArgs.shift(); // grab an arg
+                        var arg = workingArgs.getArg()
 
                         // arg must be an int
                         if (!types.isinstance(arg, types.Int)) {
@@ -200,11 +231,16 @@ function _substitute(format, args){
               case 4:
                   // percision
                   if (char === '*') {
+
+                      if(this.usesKwargs){
+                          // not allowed with kwargs!
+                          throw new exceptions.TypeError("* wants int")
+                      }
                       // can't be using numerics or have another * already
                       if (this.percision.value === '' && this.percision.numeric === undefined) {
 
-                          var arg = this.remainingArgs.shift(); // grab an arg
-
+                          //   var arg = this.remainingArgs.shift(); // grab an arg
+                          var arg = workingArgs.getArg()
                           // arg must be an int
                           if (!types.isinstance(arg, types.Int)) {
                               throw new exceptions.TypeError("* wants int")
@@ -243,7 +279,8 @@ function _substitute(format, args){
 
               case 6:
                   // conversion type
-                  var arg = this.remainingArgs.shift(); // grab an arg
+                //   var arg = this.remainingArgs.shift(); // grab an arg
+                  var arg = workingArgs.getArg(this.myKey)
                   if (arg === undefined) {
                       throw new exceptions.TypeError("not enough arguments for format string")
                   }
@@ -669,16 +706,12 @@ function _substitute(format, args){
           throw new exceptions.ValueError("incomplete format")
         }; // end parse main loop
 
-
     } // END SPECIFIER
 
     var result = '';
     var lastStop = 0
-
     const re = /(%.+?)(\s|$)/g // grabs any chunk starting with %
     var match = re.exec(format);
-
-    var usesKwargs = types.isinstance(other, types.Dict)
 
     while(match){
         // grab everything between lastStop and current spec start
@@ -690,8 +723,7 @@ function _substitute(format, args){
         if (!specObj.literalPercent) {
             result += specObj.transform();
             // update end of current specifier
-            lastStop = match.index + specObj.parsedSpec.length;
-            workingArgs = specObj.remainingArgs;
+            lastStop = match.index + match[1].length;
         } else {
             result += match[1];
             lastStop = match.index + match[1].length;
@@ -699,16 +731,15 @@ function _substitute(format, args){
         var match = re.exec(format);
     }
 
-    if (workingArgs.length !== 0) {
+    if (workingArgs.length !== 0 && !usesKwargs) {
         // its ok to having arguments left over if they are any of the below
 
-        workingArgs.forEach(function(arg) {
+        workingArgs.remainingArgs.forEach(function(arg) {
             if (!types.isinstance(arg, [types.Bytes, types.Bytearray, types.Dict,
                 types.List, types.Range])) {
                 throw new exceptions.TypeError("not all arguments converted during string formatting")
             }
         })
-
     }
 
     // get the last part of the string
