@@ -269,7 +269,7 @@ Str.prototype.__mul__ = function(other) {
 
 Str.prototype.__mod__ = function(other) {
     var types = require('../types');
-    if (types.isinstance(other, types.Tuple)) {
+    if (types.isinstance(other, [types.Tuple, types.Dict])) {
         return StrUtils._substitute(this, other);
     } else {
         return StrUtils._substitute(this, [other]);
