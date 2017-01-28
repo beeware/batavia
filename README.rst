@@ -36,6 +36,7 @@ Prerequisites
 ~~~~~~~~~~~~~~
 
 Batavia requires a Python 3.4 installation, and a virtualenv to run it all in.
+It also requires a pandoc executable to compile the docs.
 
 Check the `Setting up your environment
 <http://pybee.org/contributing/first-time/setup/>`_ for configuration help.
