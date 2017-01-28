@@ -14,6 +14,7 @@ distribute-*
 /batavia/stdlib.js
 /batavia/stdlib/*.js
 /tests/temp
+/tests/tmp*
 env
 .eggs/
 .python-version
