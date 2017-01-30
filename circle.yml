@@ -8,7 +8,7 @@ machine:
 
 dependencies:
   pre:
-    - sudo apt-get install pandoc
+    - npm install -g npm
   override:
     - npm install
 
