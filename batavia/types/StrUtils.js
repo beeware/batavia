@@ -4,6 +4,8 @@ var BigNumber = require('bignumber.js').BigNumber
 
 function _substitute(format, args){
     var types = require('../types');
+
+    // INITIAL SETUP
     // does this conversion use key word or sequential args?
     var kwRe = /%\(/;
     var usesKwargs = (format.match(kwRe) !== null)
@@ -28,8 +30,9 @@ function _substitute(format, args){
         this.getArg = function(key){
             // get the next arg.
             // if using sequental args, arg is shifted and returned
-            // if using kwargs, arg is simply returned.
+            // if using kwargs, get value of key
             if (usesKwargs){
+                var result = this.collection.__getitem__(key);
                 return this.collection.__getitem__(key);
             } else {
                 return this.remainingArgs.shift();
@@ -689,6 +692,8 @@ function _substitute(format, args){
             if (err.message === 'illegal character') {
               var charAsHex = nextChar.charCodeAt(0).toString(16)
               throw new exceptions.ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
+            } else if (err.name == "KeyError") {
+                throw new exceptions.KeyError(err.msg)
             } else {
               //its some other error
               throw err
