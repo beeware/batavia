@@ -504,7 +504,7 @@ class FormatTests(TranspileTestCase):
             )
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
-            
+
         @transforms(
             js_bool = False,
             decimal = False,
@@ -522,6 +522,27 @@ class FormatTests(TranspileTestCase):
                     adjust(self.template
                         .format(
                             spec = '(args', arg = v)
+                        ) for v in values
+                ]
+            )
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_kwargs_missing_key(self, js_cleaner, py_cleaner):
+            values = (
+                {'"spam"': '"eggs"'},
+            )
+            tests = ''.join(
+                [
+                    adjust(self.template
+                        .format(
+                            spec = '(beans)s', arg = v)
                         ) for v in values
                 ]
             )
