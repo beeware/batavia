@@ -489,19 +489,14 @@ class FormatTests(TranspileTestCase):
             memory_ref = False
         )
         def test_with_kwargs(self, js_cleaner, py_cleaner):
-            values = (
-                {'"arg"': '"spam"'},
-                {'"arg"': '"spam"', '"arg2"': '"eggs"'},
-                {}
-            )
-            tests = ''.join(
-                [
-                    adjust(self.template
-                        .format(
-                            spec = '(arg)s', arg = v)
-                        ) for v in values
-                ]
-            )
+
+            tests = adjust("""
+                print(">>> 'format this: %(arg)s' % {'arg':'spam'}")
+                print('format this: %(arg)s' % {'arg':'spam'})
+                print(">>> 'format this: %(arg)s' % {'arg':'spam', 'arg2':'eggs'}")
+                print('format this: %(arg)s' % {'arg':'spam', 'arg2':'eggs'})
+                print('Done.')
+                """)
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
@@ -511,20 +506,29 @@ class FormatTests(TranspileTestCase):
             float_exp = False,
             memory_ref = False
         )
-        def test_kwargs_broken_spec(self, js_cleaner, py_cleaner):
-            values = (
-                {'"arg"': '"spam"'},
-                {'"arg"': '"spam"', '"arg2"': '"eggs"'},
-                {}
-            )
-            tests = ''.join(
-                [
-                    adjust(self.template
-                        .format(
-                            spec = '(args', arg = v)
-                        ) for v in values
-                ]
-            )
+        def test_with_tuple_of_dicts(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> 'format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'})")
+                print('format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'}))
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_with_kwargs(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> 'format this: %(arg' % {'arg':'spam'}")
+                print('format this: %(arg' % {'arg':'spam'})
+                print('Done.')
+                """)
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
