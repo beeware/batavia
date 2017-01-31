@@ -1,6 +1,5 @@
 var PyObject = require('./types/Object');
 var Type = require('./types/Type').Type;
-var types = require('../types');
 
 var exceptions = {};
 
@@ -172,8 +171,6 @@ exceptions.KeyError = function (key) {
     var msg;
     if (key === null) {
         msg = "None";
-    } else if (types.isinstance(key, types.Str)) {
-        msg = key.__str__();
     } else if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
         msg = key.__repr__();
     } else {

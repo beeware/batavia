@@ -528,6 +528,7 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+        @unittest.expectedFailure
         @transforms(
             js_bool = False,
             decimal = False,
@@ -535,17 +536,12 @@ class FormatTests(TranspileTestCase):
             memory_ref = False
         )
         def test_kwargs_missing_key(self, js_cleaner, py_cleaner):
-            values = (
-                {'"spam"': '"eggs"'},
-            )
-            tests = ''.join(
-                [
-                    adjust(self.template
-                        .format(
-                            spec = '(beans)s', arg = v)
-                        ) for v in values
-                ]
-            )
+
+            tests = adjust("""
+                print(">>> 'format this: %(beans)s' % {'spam':'eggs'}")
+                print('format this: %(beans)s' % {'spam':'eggs'})
+                print('Done.')
+                """)
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
