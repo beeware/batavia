@@ -544,6 +544,8 @@ class FormatTests(TranspileTestCase):
             tests = adjust("""
                 print(">>> 'format this: %(beans)s' % {'spam':'eggs'}")
                 print('format this: %(beans)s' % {'spam':'eggs'})
+                print(">>> 'format this: %(1)s' % {'spam':'eggs'}")
+                print('format this: %(1)s' % {'spam':'eggs'})
                 print('Done.')
                 """)
 
