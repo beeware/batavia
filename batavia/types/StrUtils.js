@@ -65,7 +65,7 @@ function _substitute(format, args){
             var keyRe = /\((.+?)\)(.+)/;
             var m = fullText.match(keyRe);
             if(m === null){
-                throw new exceptions.TypeError("incomplete format key")
+                throw new exceptions.ValueError("incomplete format key")
             }
             this.myKey = m[1];
             this.fullText = "%" + m[2];
