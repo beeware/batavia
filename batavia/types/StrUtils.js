@@ -196,7 +196,6 @@ function _substitute(format, args){
                       // can't be using numerics or have another * already
                       if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
 
-                        // var arg = this.remainingArgs.shift(); // grab an arg
                         var arg = workingArgs.getArg()
 
                         // arg must be an int
@@ -242,7 +241,6 @@ function _substitute(format, args){
                       // can't be using numerics or have another * already
                       if (this.percision.value === '' && this.percision.numeric === undefined) {
 
-                          //   var arg = this.remainingArgs.shift(); // grab an arg
                           var arg = workingArgs.getArg()
                           // arg must be an int
                           if (!types.isinstance(arg, types.Int)) {
@@ -282,7 +280,6 @@ function _substitute(format, args){
 
               case 6:
                   // conversion type
-                //   var arg = this.remainingArgs.shift(); // grab an arg
                   var arg = workingArgs.getArg(this.myKey)
                   if (arg === undefined) {
                       throw new exceptions.TypeError("not enough arguments for format string")
@@ -678,10 +675,11 @@ function _substitute(format, args){
             return retVal;
         } // END TRANSFORM
 
+        // SPECIFIER MAIN LOOP
+
         var nextStep = 1;
         var charArray = this.fullText.slice(1).split('')
         var charIndex = 0;
-        // SPECIFIER MAIN LOOP
         while(charIndex < charArray.length && !this.literalPercent) {
           var nextChar = charArray[charIndex];
           this.parsedSpec += nextChar;
@@ -714,7 +712,7 @@ function _substitute(format, args){
     } // END SPECIFIER
 
     var result = '';
-    var lastStop = 0
+    var lastStop = 0 // as we do each subsitution remember where in string we are scanning
     const re = /(%.+?)(\s|$)/g // grabs any chunk starting with %
     var match = re.exec(format);
 
@@ -727,12 +725,11 @@ function _substitute(format, args){
         // do the substitution
         if (!specObj.literalPercent) {
             result += specObj.transform();
-            // update end of current specifier
-            lastStop = match.index + match[1].length;
         } else {
             result += match[1];
-            lastStop = match.index + match[1].length;
         }
+
+        lastStop = match.index + specObj.parsedSpec.length
         var match = re.exec(format);
     }
 

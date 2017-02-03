@@ -416,6 +416,24 @@ class FormatTests(TranspileTestCase):
             float_exp = False,
             memory_ref = False
         )
+        def test_unrelated_chars(self, js_cleaner, py_cleaner):
+            """
+            unrelated characters following a specifier
+            """
+
+            test = adjust("""
+                print(">>> '%s!' % 'spam'")
+                print('%s!' % 'spam')
+                """)
+
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
         def test_no_args(self, js_cleaner, py_cleaner):
             test = adjust("""
                 print(">>> 'nope' % ()")
