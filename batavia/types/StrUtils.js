@@ -84,7 +84,6 @@ function _substitute(format, args){
             // if its '*' there needs to be at least 2 args left (one for the * and another for the conversion)
             // if its a conversion there needs to be atleast one left
 
-        // this.remainingArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
         this.args = []; // args to be used by this specifier
 
         // PARSED DATA FOR SPECIFIER
