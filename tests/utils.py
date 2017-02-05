@@ -643,7 +643,7 @@ class TranspileTestCase(TestCase):
 
         with open(os.path.join(self.temp_dir, 'test.js'), 'w') as js_file:
             js_file.write(adjust("""
-                var batavia = require('../../batavia.js');
+                var batavia = require('../../dist/batavia.js');
                 %s
                 var modules = {
                 %s
