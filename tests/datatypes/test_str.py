@@ -550,6 +550,22 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_wildcard_with_kwargs(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> '%*(spam)s' % {'spam': 'eggs'}")
+                print('%*s' % {'spam': 'eggs'})
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
         @unittest.expectedFailure
         @transforms(
             js_bool = False,
