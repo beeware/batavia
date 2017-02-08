@@ -44,26 +44,51 @@ def parse_args():
 
     return ouroboros, enabled_modules
 
+def compileInDir(stdlibPath, module_dirname):
+    if not os.path.exists(stdlibPath) :
+        os.mkdir(stdlibPath)
+    for content in os.listdir(module_dirname) :
+        contentPath = os.path.join(module_dirname, content)
+        if os.path.isdir(contentPath) :
+            compileInDir(os.path.join(stdlibPath, content), contentPath)
+        else :
+            outfile = os.path.join(stdlibPath, os.path.splitext(content)[0] + '.js')
+            fp = tempfile.NamedTemporaryFile(delete=False)
+            fp.close()
+            try:
+                py_complie.compile(contentPath, cfile=fp.name)
+                with open(fp.name, 'rb') as fin:
+                    pyc = fin.read()
+            finally:
+                os.unlink(fp.name)
+            with open(outfile, 'w') as fout:
+                fout.write("module.exports = '" + base64.b64decode(pyc).decode('utf8') + "'\n")
 
 def compile_stdlib(ouroboros, enabled_modules):
     for module in enabled_modules:
         module_fname = os.path.join(ouroboros, 'ouroboros', module + '.py')
-        if not os.path.exists(module_fname):
-            exit("Could not find file for module " + module)
-        outfile = os.path.join('batavia', 'stdlib', module + '.js')
-        print("Compiling %s to %s" % (module_fname, outfile))
-        fp = tempfile.NamedTemporaryFile(delete=False)
-        fp.close()
-        try:
-            py_compile.compile(module_fname, cfile=fp.name)
-            with open(fp.name, 'rb') as fin:
-                pyc = fin.read()
-        finally:
-            # make sure we delete the file
-            os.unlink(fp.name)
+        module_dirname = os.path.join(ouroboros, 'ouroboros', module)
+        fbool = os.path.isfile(module_fname)
+        dirbool = os.path.isdir(module_dirname)
+        if not (fbool or dirbool) :
+            exit("Could not find file or directory for module " + module)
+        if fbool :
+            outfile = os.path.join('batavia', 'stdlib', module + '.js')
+            print("Compiling %s to %s" % (module_fname, outfile))
+            fp = tempfile.NamedTemporaryFile(delete=False)
+            fp.close()
+            try:
+                py_compile.compile(module_fname, cfile=fp.name)
+                with open(fp.name, 'rb') as fin:
+                    pyc = fin.read()
+            finally:
+                # make sure we delete the file
+                os.unlink(fp.name)
 
-        with open(outfile, 'w') as fout:
-            fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
+            with open(outfile, 'w') as fout:
+                fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
+        else :
+            compileInDir(os.path.join('batavia', 'stdlib', module), module_dirname)
 
     outfile = os.path.join('batavia', 'stdlib.js')
     print("Compiling stdlib index %s" % outfile)
