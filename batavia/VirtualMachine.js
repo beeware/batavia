@@ -8,6 +8,7 @@ var Frame = require('./core').Frame;
 var constants = require('./core').constants;
 var exceptions = require('./core').exceptions;
 var callables = require('./core').callables;
+var type_name = require('./core').type_name;
 var dis = require('./modules/dis');
 var marshal = require('./modules/marshal');
 var sys = require('./modules/sys');
@@ -1332,7 +1333,7 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     }
 
     // If the returned object is a descriptor, invoke it.
-    if (val.__get__) {
+    if (val.__get__ !== undefined) {
         val = val.__get__(obj, obj.__class__);
     }
 
@@ -1964,13 +1965,20 @@ var make_class = function(args, kwargs) {
     func.__call__.apply(this, [[], [], locals]);
 
     // Now construct the class, based on the constructed local context.
-    var unbound_pytype = function(vm, args, kwargs) {
-        Object.call(this);
-        if (this.__init__) {
-            this.__init__.__self__ = this;
-            this.__init__.__call__.apply(vm, [args, kwargs]);
-        }
-    };
+    var unbound_pytype = function(name) {
+        return function(vm, args, kwargs) {
+            Object.call(this);
+            if (this.__init__) {
+                this.__init__.__self__ = this;
+                this.__init__.__call__.apply(vm, [args, kwargs]);
+            }
+            Object.defineProperty(this, 'name', {
+                  get: function () {
+                      return name;
+                  }
+            });
+        };
+    }(name);
     unbound_pytype.__name__ = name;
 
     if (bases) {
@@ -2000,6 +2008,32 @@ var make_class = function(args, kwargs) {
         };
         __new__.__python__ = true;
         __new__.__class__ = unbound_pytype;
+        __new__.__getattr__ = function(attr) {
+            var val = this.__class__[attr];
+            if (val === undefined) {
+                throw new exceptions.AttributeError(
+                    "'" + type_name(this) + "' object has no attribute '" + attr + "'"
+                );
+            }
+            return val;
+        }
+        __new__.__setattr__ = function(attr, value) {
+            this.__class__[attr] = value;
+        }
+        __new__.__delattr__ = function(attr) {
+            // First Check the attribute exists
+            try {
+                this.__getattr__(attr);
+                // If it does, delete it.
+                delete this.__class__[attr];
+            } catch (e) {
+                if (e instanceof exceptions.AttributeError) {
+                    throw new exceptions.AttributeError(attr);
+                } else {
+                    throw e;
+                }
+            }
+        }
         return __new__;
     }(this, unbound_pytype, name);
     pytype.__class__ = unbound_pytype;

@@ -94,6 +94,7 @@ var type_name = function(arg) {
         case 'string':
             return 'str';
         case 'object':
+        case 'function':
             if (arg.__class__ != null && arg.__class__.__name__) {
                 return arg.__class__.__name__;
             }

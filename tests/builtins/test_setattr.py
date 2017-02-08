@@ -1,30 +1,28 @@
-from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+from .. utils import TranspileTestCase
 
 
 class SetattrTests(TranspileTestCase):
-    pass
+    def test_minimal(self):
+        self.assertCodeExecution("""
+            class MyClass(object):
+                class_value = 42
 
+                def __init__(self, val):
+                    self.value = val
 
-class BuiltinSetattrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["setattr"]
+            print("On class: ")
+            setattr(MyClass, 'class_value', 37)
+            setattr(MyClass, 'other_class_value', 42)
+            print('  class_value =', MyClass.class_value)
+            print('  other_class_value =', MyClass.other_class_value)
 
-    not_implemented = [
-        'test_noargs',
-        'test_bool',
-        'test_bytearray',
-        'test_bytes',
-        'test_class',
-        'test_complex',
-        'test_dict',
-        'test_float',
-        'test_frozenset',
-        'test_int',
-        'test_list',
-        'test_None',
-        'test_NotImplemented',
-        'test_range',
-        'test_set',
-        'test_slice',
-        'test_str',
-        'test_tuple',
-    ]
+            obj = MyClass(37)
+
+            print("On instance:")
+            setattr(obj, 'value', 37)
+            setattr(obj, 'other_value', 42)
+            print('  value =', obj.value)
+            print('  other_value =', obj.other_value)
+
+            print('Done.')
+            """, run_in_function=False)
