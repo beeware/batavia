@@ -1401,7 +1401,13 @@ VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
     if (obj.__delete__ !== undefined) {
         obj.__delete__(obj);
     } else {
-        delete obj[name];
+        if (obj[name] === undefined) {
+            throw new exceptions.AttributeError("'" + type_name(obj) +
+                            "' object has no attribute '" + name + "'"
+            );
+        } else {
+            delete obj[name];
+        }
     }
 };
 
@@ -1416,10 +1422,10 @@ VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
 
 VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
-    if (items[1].__delitem__) {
-        items[1].__delitem__(items[0]);
+    if (items[0].__delitem__) {
+        items[0].__delitem__(items[1]);
     } else {
-        delete items[1][items[0]];
+        delete items[0][items[1]];
     }
 };
 

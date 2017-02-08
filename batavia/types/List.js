@@ -404,6 +404,29 @@ List.prototype.__getitem__ = function(index) {
     }
 };
 
+List.prototype.__delitem__ = function(index) {
+    var types = require('../types');
+
+    if (types.isinstance(index, types.Int)) {
+        var idx = index.int32();
+        if (idx < 0) {
+            if (-idx > this.length) {
+                throw new exceptions.IndexError("list index out of range");
+            } else {
+                this.splice(this.length + idx, 1);
+            }
+        } else {
+            if (idx >= this.length) {
+                throw new exceptions.IndexError("list index out of range");
+            } else {
+                this.splice(idx, 1);
+            }
+        }
+    } else {
+        throw new exceptions.TypeError("list indices must be integers, not " + type_name(index));
+    }
+};
+
 List.prototype.__lshift__ = function(other) {
     throw new exceptions.TypeError("unsupported operand type(s) for <<: 'list' and '" + type_name(other) + "'");
 };
