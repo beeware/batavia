@@ -1331,6 +1331,11 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         val = obj.__getattr__(attr);
     }
 
+    // If the returned object is a descriptor, invoke it.
+    if (val.__get__) {
+        val = val.__get__(obj, obj.__class__);
+    }
+
     if (val instanceof types.Function) {
         // If this is a Python function, we need to know the current
         // context - if it's an attribute of an object (rather than
@@ -1381,16 +1386,22 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
 
 VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
-    if (items[1].__setattr__ === undefined) {
-        items[1][name] = items[0];
-    } else {
+    if (items[1].__setattr__ !== undefined) {
         items[1].__setattr__(name, items[0]);
+    } else if (items[1].__set__ !== undefined) {
+        items[1].__set__(name, items[0]);
+    } else {
+        items[1][name] = items[0];
     }
 };
 
 VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
     var obj = this.pop();
-    delete obj[name];
+    if (obj.__delete__ !== undefined) {
+        obj.__delete__(obj);
+    } else {
+        delete obj[name];
+    }
 };
 
 VirtualMachine.prototype.byte_STORE_SUBSCR = function() {

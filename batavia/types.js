@@ -9,6 +9,8 @@ types['Code'] = require('./types/Code');
 types['Module'] = require('./types/Module');
 types['JSDict'] = require('./types/JSDict');
 
+types['Property'] = require('./types/Property');
+
 types['SetIterator'] = require('./types/SetIterator');
 
 types['Bool'] = require('./types/Bool');
