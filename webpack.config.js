@@ -16,33 +16,22 @@ module.exports = {
     target: 'web',
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/,
-            minimize: true
+            include: /\.min\.js$/
+            // minimize: true,
+            // sourceMap: true
         })
     ],
     module: {
-        // preLoaders: [
-        //     {
-        //         test: /\.js$/,
-        //         loader: 'eslint',
-        //         exclude: /node_modules/,
-        //     }
-        // ],
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
-                loader: "babel-loader",
+                use: [
+                    {
+                        loader: "babel-loader"
+                    }
+                ],
                 exclude: /node_modules/
-            },
-            {
-                include: /\.json$/,
-                loader: "json-loader"
             }
         ]
     },
-    // eslint: {
-    //     configFile: './.eslintrc',
-    //     failOnWarning: false,
-    //     failOnError: true
-    // }
 }
