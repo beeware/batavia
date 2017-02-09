@@ -44,25 +44,27 @@ def parse_args():
 
     return ouroboros, enabled_modules
 
-def compileInDir(stdlibPath, module_dirname):
-    if not os.path.exists(stdlibPath) :
-        os.mkdir(stdlibPath)
-    for content in os.listdir(module_dirname) :
-        contentPath = os.path.join(module_dirname, content)
-        if os.path.isdir(contentPath) :
-            compileInDir(os.path.join(stdlibPath, content), contentPath)
-        else :
-            outfile = os.path.join(stdlibPath, os.path.splitext(content)[0] + '.js')
-            fp = tempfile.NamedTemporaryFile(delete=False)
-            fp.close()
-            try:
-                py_complie.compile(contentPath, cfile=fp.name)
-                with open(fp.name, 'rb') as fin:
-                    pyc = fin.read()
-            finally:
-                os.unlink(fp.name)
-            with open(outfile, 'w') as fout:
-                fout.write("module.exports = '" + base64.b64decode(pyc).decode('utf8') + "'\n")
+def convert_to_pyc(stdlibPath, module_path):
+    if os.path.isfile(module_path):
+        fp = tempfile.NamedTemporaryFile(delete=False)
+        fp.close()
+        try:
+            py_compile.compile(module_path, cfile=fp.name)
+            with open(fp.name, 'rb') as fin:
+                pyc=fin.read()
+        finally:
+            os.unlink(fp.name)
+        with open(stdlibPath, 'w') as fout:
+            fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
+    else:
+        if not os.path.exists(stdlibPath):
+            os.mkdir(stdlibPath)
+        for content in os.listdir(module_path):
+            contentPath = os.path.join(module_path, content)
+            if os.path.isdir(contentPath):
+                convert_to_pyc(os.path.join(stdlibPath, content), contentPath)
+            else:
+                convert_to_pyc(os.path.join(stdlibPath, os.path.splitext(content)[0] + '.js'), contentPath)
 
 def compile_stdlib(ouroboros, enabled_modules):
     for module in enabled_modules:
@@ -70,25 +72,13 @@ def compile_stdlib(ouroboros, enabled_modules):
         module_dirname = os.path.join(ouroboros, 'ouroboros', module)
         fbool = os.path.isfile(module_fname)
         dirbool = os.path.isdir(module_dirname)
-        if not (fbool or dirbool) :
+        if not (fbool or dirbool):
             exit("Could not find file or directory for module " + module)
-        if fbool :
-            outfile = os.path.join('batavia', 'stdlib', module + '.js')
-            print("Compiling %s to %s" % (module_fname, outfile))
-            fp = tempfile.NamedTemporaryFile(delete=False)
-            fp.close()
-            try:
-                py_compile.compile(module_fname, cfile=fp.name)
-                with open(fp.name, 'rb') as fin:
-                    pyc = fin.read()
-            finally:
-                # make sure we delete the file
-                os.unlink(fp.name)
-
-            with open(outfile, 'w') as fout:
-                fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
-        else :
-            compileInDir(os.path.join('batavia', 'stdlib', module), module_dirname)
+        else:
+            if fbool:
+                convert_to_pyc(os.path.join('batavia', 'stdlib', module + '.js'), module_fname)
+            else:
+                convert_to_pyc(os.path.join('batavia', 'stdlib', module), module_dirname)
 
     outfile = os.path.join('batavia', 'stdlib.js')
     print("Compiling stdlib index %s" % outfile)
