@@ -16,7 +16,6 @@ function Bytes(val) {
 
 Bytes.prototype = Object.create(PyObject.prototype);
 Bytes.prototype.__class__ = new Type('bytes');
-Bytes.prototype.constructor = Bytes;
 
 /**************************************************
  * Javascript compatibility methods
@@ -88,7 +87,7 @@ Bytes.prototype.__lt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val < other.val;
     } else {
-        throw new exceptions.TypeError("unorderable types: bytes() < " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bytes() < " + type_name(other) + "()");
     }
 };
 
@@ -98,7 +97,7 @@ Bytes.prototype.__le__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val <= other.val;
     } else {
-        throw new exceptions.TypeError("unorderable types: bytes() <= " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bytes() <= " + type_name(other) + "()");
     }
 };
 
@@ -109,7 +108,7 @@ Bytes.prototype.__eq__ = function(other) {
         var equal = (this.val.compare(other.val) == 0);
         return new types.Bool(equal);
     } else if (types.isinstance (other, types.Bytearray)) {
-        throw new exceptions.NotImplementedError(
+        throw new exceptions.NotImplementedError.$pyclass(
             "Comparison between bytes and bytearrays has not been implemented");
     } else {
         return new types.Bool(false);
@@ -126,7 +125,7 @@ Bytes.prototype.__gt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val > other.val;
     } else {
-        throw new exceptions.TypeError("unorderable types: bytes() > " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bytes() > " + type_name(other) + "()");
     }
 };
 
@@ -136,7 +135,7 @@ Bytes.prototype.__ge__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val >= other.val;
     } else {
-        throw new exceptions.TypeError("unorderable types: bytes() >= " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bytes() >= " + type_name(other) + "()");
     }
 };
 
@@ -148,7 +147,7 @@ Bytes.prototype.__contains__ = function(other) {
         if (other >= 0 && other <= 255) {
             other_value = parseInt(other.valueOf());
         } else {
-            throw new exceptions.ValueError(
+            throw new exceptions.ValueError.$pyclass(
                 "byte must be in range (0, 256)"
             );
         }
@@ -187,35 +186,35 @@ Bytes.prototype.__invert__ = function() {
  **************************************************/
 
 Bytes.prototype.__pow__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__pow__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__pow__ has not been implemented");
 };
 
 Bytes.prototype.__div__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__div__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__div__ has not been implemented");
 };
 
 Bytes.prototype.__floordiv__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__floordiv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__floordiv__ has not been implemented");
 };
 
 Bytes.prototype.__truediv__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__truediv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__truediv__ has not been implemented");
 };
 
 Bytes.prototype.__mul__ = function(other) {
-    throw new exceptions.TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'");
 };
 
 Bytes.prototype.__mod__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__mod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__mod__ has not been implemented");
 };
 
 Bytes.prototype.__add__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__add__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__add__ has not been implemented");
 };
 
 Bytes.prototype.__sub__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__sub__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__sub__ has not been implemented");
 };
 
 Bytes.prototype.__getitem__ = function(other) {
@@ -226,23 +225,23 @@ Bytes.prototype.__getitem__ = function(other) {
 };
 
 Bytes.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__lshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__lshift__ has not been implemented");
 };
 
 Bytes.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__rshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__rshift__ has not been implemented");
 };
 
 Bytes.prototype.__and__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__and__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__and__ has not been implemented");
 };
 
 Bytes.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__xor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__xor__ has not been implemented");
 };
 
 Bytes.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__or__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__or__ has not been implemented");
 };
 
 /**************************************************
@@ -250,51 +249,51 @@ Bytes.prototype.__or__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__ifloordiv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__ifloordiv__ has not been implemented");
 };
 
 Bytes.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__itruediv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__itruediv__ has not been implemented");
 };
 
 Bytes.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__iadd__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__iadd__ has not been implemented");
 };
 
 Bytes.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__isub__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__isub__ has not been implemented");
 };
 
 Bytes.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__imul__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__imul__ has not been implemented");
 };
 
 Bytes.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__imod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__imod__ has not been implemented");
 };
 
 Bytes.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__ipow__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__ipow__ has not been implemented");
 };
 
 Bytes.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__ilshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__ilshift__ has not been implemented");
 };
 
 Bytes.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__irshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__irshift__ has not been implemented");
 };
 
 Bytes.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__iand__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__iand__ has not been implemented");
 };
 
 Bytes.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__ixor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__ixor__ has not been implemented");
 };
 
 Bytes.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError("Bytes.__ior__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bytes.__ior__ has not been implemented");
 };
 
 /**************************************************
@@ -338,7 +337,6 @@ Bytes.prototype.BytesIterator = function(data) {
 
 Bytes.prototype.BytesIterator.prototype = Object.create(PyObject.prototype);
 Bytes.prototype.BytesIterator.prototype.__class__ = new Type('bytes_iterator');
-Bytes.prototype.BytesIterator.prototype.constructor = Bytes.prototype.BytesIterator;
 
 Bytes.prototype.BytesIterator.prototype.__iter__ = function() {
     return this;
@@ -348,7 +346,7 @@ Bytes.prototype.BytesIterator.prototype.__next__ = function() {
     var types = require('../types');
 
     if (this.index >= this.data.length) {
-        throw new exceptions.StopIteration();
+        throw new exceptions.StopIteration.$pyclass();
     }
     var retval = this.data[this.index];
     this.index++;

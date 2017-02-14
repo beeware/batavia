@@ -1,8 +1,8 @@
 var PyObject = require('../core').Object;
 var Type = require('../core').Type;
+var None = require('../core').None;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
-var callables = require('../core').callables;
 // var None = require('../core').None;
 
 /*************************************************************************
@@ -20,7 +20,6 @@ function Property(fget, fset, fdel, doc) {
 
 Property.prototype = Object.create(PyObject.prototype);
 Property.prototype.__class__ = new Type('property');
-Property.prototype.constructor = Property;
 
 /**************************************************
  * Javascript compatibility methods
@@ -57,40 +56,40 @@ Property.prototype.__str__ = function() {
 
 Property.prototype.__get__ = function(instance, klass) {
     // console.log("Property __get__ on " + instance);
-    if (this.fget != null) {
+    if (this.fget !== None) {
         try {
-            return callables.run_callable(null, this.fget, [instance], null);
+            return this.fget.__call__([instance], null);
         } catch (e) {
-            throw new exceptions.TypeError("'" + type_name(this) + "' object is not callable");
+            throw new exceptions.TypeError.$pyclass("'" + type_name(this) + "' object is not callable");
         }
     } else {
-        throw new exceptions.AttributeError("can't get attribute");
+        throw new exceptions.AttributeError.$pyclass("can't get attribute");
     }
 }
 
 Property.prototype.__set__ = function(instance, value) {
     // console.log("Property __set__ on " + instance);
-    if (this.fset != null) {
+    if (this.fset !== None) {
         try {
-            callables.run_callable(null, this.fset, [instance, value], null);
+            this.fset.__call__([instance, value], null);
         } catch (e) {
-            throw new exceptions.TypeError("'" + type_name(this) + "' object is not callable");
+            throw new exceptions.TypeError.$pyclass("'" + type_name(this) + "' object is not callable");
         }
     } else {
-        throw new exceptions.AttributeError("can't set attribute");
+        throw new exceptions.AttributeError.$pyclass("can't set attribute");
     }
 }
 
 Property.prototype.__delete__ = function(instance) {
     // console.log("Property __delete__ on " + instance);
-    if (this.fdel != null) {
+    if (this.fdel !== None) {
         try {
-            callables.run_callable(null, this.fdel, [instance], null);
+            this.fdel.__call__([instance], null);
         } catch (e) {
-            throw new exceptions.TypeError("'" + type_name(this) + "' object is not callable");
+            throw new exceptions.TypeError.$pyclass("'" + type_name(this) + "' object is not callable");
         }
     } else {
-        throw new exceptions.AttributeError("can't delete attribute");
+        throw new exceptions.AttributeError.$pyclass("can't delete attribute");
     }
 }
 

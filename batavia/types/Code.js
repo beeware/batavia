@@ -30,7 +30,6 @@ function Code(kwargs) {
 
 Code.prototype = Object.create(PyObject.prototype);
 Code.prototype.__class__ = new Type('code');
-Code.prototype.constructor = Code;
 
 /**************************************************
  * Module exports

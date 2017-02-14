@@ -140,12 +140,12 @@ function _substitute(format, args){
 
                         // arg must be an int
                         if (!types.isinstance(arg, types.Int)) {
-                          throw new exceptions.TypeError("* wants int")
+                          throw new exceptions.TypeError.$pyclass("* wants int")
                         }
 
                         // need to have at least one arg left
                         if (this.remainingArgs.length === 0) {
-                          throw new exceptions.TypeError("not enough arguments for format string")
+                          throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
                         }
                         this.args.push(arg);
 
@@ -180,12 +180,12 @@ function _substitute(format, args){
 
                           // arg must be an int
                           if (!types.isinstance(arg, types.Int)) {
-                              throw new exceptions.TypeError("* wants int")
+                              throw new exceptions.TypeError.$pyclass("* wants int")
                           }
 
                           // need to have at least one arg left
                           if (this.remainingArgs === []) {
-                              throw new exceptions.TypeError("not enough arguments for format string")
+                              throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
                           }
                           this.args.push(arg);
 
@@ -218,7 +218,7 @@ function _substitute(format, args){
                   // conversion type
                   var arg = this.remainingArgs.shift(); // grab an arg
                   if (arg === undefined) {
-                      throw new exceptions.TypeError("not enough arguments for format string")
+                      throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
                   }
                   this.args.push(arg);
                   this.conversionType = char;
@@ -238,22 +238,22 @@ function _substitute(format, args){
                 if (/[diouxX]/.test(conversion)) {
 
                     if (!types.isinstance(arg, [types.Int, types.Float])) {
-                        throw new exceptions.TypeError(`%${conversion} format: a number is required, not str`)
+                        throw new exceptions.TypeError.$pyclass(`%${conversion} format: a number is required, not str`)
                     }
                   } else if (/[eEfFgG]/.test(conversion)) {
                       if (!types.isinstance(arg, [types.Float, types.Int])) {
-                          throw new exceptions.TypeError("a float is required")
+                          throw new exceptions.TypeError.$pyclass("a float is required")
                       }
                   } else if (conversion === 'c') {
                       // there might be a problem with the error
                       // message from C Python but floats ARE allowed.
                       //  multi character strings are not allowed
                       if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
-                          throw new exceptions.TypeError("%c requires int or char")
+                          throw new exceptions.TypeError.$pyclass("%c requires int or char")
                       } else if (types.isinstance(arg, [types.Int, types.Float])) {
 
                           if (arg < 0) {
-                              throw new exceptions.OverflowError("%c arg not in range(0xXXXXXXXX)")
+                              throw new exceptions.OverflowError.$pyclass("%c arg not in range(0xXXXXXXXX)")
                           }
                       }
 
@@ -624,7 +624,7 @@ function _substitute(format, args){
           } catch(err) {
             if (err.message === 'illegal character') {
               var charAsHex = nextChar.charCodeAt(0).toString(16)
-              throw new exceptions.ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
+              throw new exceptions.ValueError.$pyclass(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
             } else {
               //its some other error
               throw err
@@ -639,7 +639,7 @@ function _substitute(format, args){
 
         // check that a conversion type was found. Otherwise throw error!
         if (this.conversionType === undefined && !this.literalPercent) {
-          throw new exceptions.ValueError("incomplete format")
+          throw new exceptions.ValueError.$pyclass("incomplete format")
         }; // end parse main loop
 
 
@@ -676,7 +676,7 @@ function _substitute(format, args){
         workingArgs.forEach(function(arg) {
             if (!types.isinstance(arg, [types.Bytes, types.Bytearray, types.Dict,
                 types.List, types.Range])) {
-                throw new exceptions.TypeError("not all arguments converted during string formatting")
+                throw new exceptions.TypeError.$pyclass("not all arguments converted during string formatting")
             }
         })
 

@@ -12,7 +12,7 @@ function filter(args, kwargs) {
     PyObject.call(this);
 
     if (args.length < 2) {
-        throw new exceptions.TypeError("filter expected 2 arguments, got " + args.length);
+        throw new exceptions.TypeError.$pyclass("filter expected 2 arguments, got " + args.length);
     }
     this._func = args[0];
     this._sequence = args[1];
@@ -20,7 +20,6 @@ function filter(args, kwargs) {
 
 filter.prototype = Object.create(PyObject.prototype);
 filter.prototype.__class__ = new Type('filter');
-filter.prototype.constructor = filter;
 
 /**************************************************
  * Javascript compatibility methods
@@ -45,13 +44,13 @@ filter.prototype.__next__ = function() {
         this._iter = builtins.iter([this._sequence], null);
     }
     if (!builtins.callable([this._func], null)) {
-        throw new exceptions.TypeError(type_name(this._func) + "' object is not callable");
+        throw new exceptions.TypeError.$pyclass(type_name(this._func) + "' object is not callable");
     }
 
     var sval = false;
     do {
-        sval = callables.run_callable(this._iter, this._iter.__next__, [], null);
-    } while (!callables.run_callable(false, this._func, [sval], null));
+        sval = this._iter.__next__();
+    } while (!this._func([sval], null));
 
     return sval;
 };

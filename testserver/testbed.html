@@ -332,6 +332,9 @@ PyErrConsole.prototype.write = function(args, kwargs) {
 
     err.appendChild(text)
     this.element.appendChild(err);
+
+    // Also echo to the console.
+    console.log(args[0])
 }
 
 PyErrConsole.prototype.flush = function(args, kwargs) {}

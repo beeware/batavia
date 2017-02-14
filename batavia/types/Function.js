@@ -14,11 +14,15 @@ var make_callable = function(func) {
         var retval;
         var callargs = inspect.getcallargs(func, args, kwargs);
 
+        if (locals === undefined) {
+            locals = new types.JSDict();
+        }
+
         var frame = this.make_frame({
             'code': func.__code__,
             'callargs': callargs,
             'f_globals': func.__globals__,
-            'f_locals': locals || new types.JSDict()
+            'f_locals': locals,
         });
 
         if (func.__code__.co_flags & dis.CO_GENERATOR) {
@@ -29,8 +33,8 @@ var make_callable = function(func) {
         }
         return retval;
     };
-    fn.__python__ = true;
-    return fn;
+    fn.$pyargs = true;
+    return fn.bind(func.$vm);
 }
 
 
@@ -40,8 +44,8 @@ function Function(name, code, globals, defaults, closure, vm) {
 
     PyObject.call(this);
 
-    this.__python__ = true;
-    this._vm = vm;
+    this.$pyargs = true;
+    this.$vm = vm;
     this.__code__ = code;
     this.__globals__ = globals;
     this.__defaults__ = defaults;
@@ -71,7 +75,16 @@ function Function(name, code, globals, defaults, closure, vm) {
 
 Function.prototype = Object.create(PyObject.prototype);
 Function.prototype.__class__ = new Type('function');
-Function.prototype.constructor = Function;
+
+Function.prototype.__get__ = function(instance, klass) {
+    var types = require('../types');
+
+    // Module functions don't need to be bound to the instance as methods.
+    if (instance instanceof types.Module) {
+        return this;
+    }
+    return new types.Method(instance, this);
+}
 
 /**************************************************
  * Module exports

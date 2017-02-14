@@ -10,10 +10,10 @@ function bytearray(args, kwargs) {
 //    bytearray() -> empty bytes array
 
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError("Batavia calling convention not used.");
+        throw new exceptions.BataviaError.$pyclass("Batavia calling convention not used.");
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("<fn>() doesn't accept keyword arguments.");
+        throw new exceptions.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
     }
 
 
@@ -21,7 +21,7 @@ function bytearray(args, kwargs) {
         // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
         return new types.Bytearray(args[0]);
     } else {
-        throw new exceptions.NotImplementedError(
+        throw new exceptions.NotImplementedError.$pyclass(
             "Not implemented"
         );
     }

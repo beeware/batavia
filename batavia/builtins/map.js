@@ -4,15 +4,15 @@ var types = require('../types');
 
 function map(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
 
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("map() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("map() doesn't accept keyword arguments");
     }
 
     if (!args || args.length < 2) {
-        throw new exceptions.TypeError('map() must have at least two arguments.');
+        throw new exceptions.TypeError.$pyclass('map() must have at least two arguments.');
     }
 
     return new types.map(args, kwargs);

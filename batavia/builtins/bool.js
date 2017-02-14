@@ -4,15 +4,15 @@ var types = require('../types');
 
 function bool(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("bool() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("bool() doesn't accept keyword arguments");
     }
     if (!args || args.length === 0) {
         return new types.Bool(false);
     } else if (args.length != 1) {
-        throw new exceptions.TypeError('bool() expected exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('bool() expected exactly 1 argument (' + args.length + ' given)');
     }
 
     if (args[0] === null) {

@@ -5,10 +5,10 @@ var repr = require('./repr');
 
 function int(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("int() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("int() doesn't accept keyword arguments");
     }
 
     var base = 10;
@@ -24,13 +24,13 @@ function int(args, kwargs) {
         value = args[0];
         base = args[1];
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "int() takes at most 2 arguments (" + args.length + " given)");
     }
     // TODO: this should be able to parse things longer than 53 bits
     var result = parseInt(value, base);
     if (isNaN(result)) {
-        throw new exceptions.ValueError(
+        throw new exceptions.ValueError.$pyclass(
             "invalid literal for int() with base " + base + ": " + repr([value], null)
         );
     }

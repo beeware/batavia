@@ -321,7 +321,6 @@ class PYCleaner:
         """
         cleanse output from python
         """
-
         out = py_input
         if self.transforms['err_msg']:
             # Test the specific message

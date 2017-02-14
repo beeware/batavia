@@ -4,13 +4,13 @@ var repr = require('./repr');
 
 function ascii(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("ascii() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("ascii() doesn't accept keyword arguments");
     }
     if (!args || args.length !== 1) {
-        throw new exceptions.TypeError('ascii() takes exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('ascii() takes exactly 1 argument (' + args.length + ' given)');
     }
 
     var repr_string = repr([args[0]], null);

@@ -5,6 +5,7 @@ var constants = require('../constants');
  *************************************************************************/
 
 var PYCFile = function(data) {
+    Object.call(this);
     this.magic = data.slice(0, 4);
     this.modtime = data.slice(4, 8);
     this.size = data.slice(8, 12);

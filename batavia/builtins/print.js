@@ -1,4 +1,6 @@
 var callables = require('../core').callables;
+var exceptions = require('../core').exceptions;
+var types = require('../types');
 
 
 function print(args, kwargs) {
@@ -8,7 +10,7 @@ function print(args, kwargs) {
     var file = kwargs['file'] || sys.stdout;
 
     if (args.length == 0) {
-        callables.run_callable(file, file.write, [end], {});
+        file.write([end]);
     } else {
         for (var i = 0; i < args.length; i++) {
             var elm = args[i];
@@ -17,24 +19,44 @@ function print(args, kwargs) {
             // output the content
             if (elm === null || elm === undefined) {
                 content = "None";
-            } else if (elm.__str__) {
-                content = callables.run_callable(elm, elm.__str__, [], {});
+            } else if (elm.__getattr__) {
+                try {
+                    var str_fn = elm.__getattr__('__str__');
+                    // var str_method;
+                    // if (str_fn instanceof types.Function) {
+                    //     str_method = new types.Method(elm, str_fn);
+                    // } else {
+                    //     str_method = str_fn;
+                    // }
+                    if (str_fn.__call__) {
+                        str_fn = str_fn.__call__;
+                    }
+                    content = str_fn([]);
+                } catch (e) {
+                    if (e instanceof exceptions.AttributeError.$pyclass) {
+                        content = elm.toString();
+                    } else {
+                        throw e;
+                    }
+                }
+            // } else if (elm.__str__) {
+            //     content = elm.__str__();
             } else {
                 content = elm.toString();
             }
-            callables.run_callable(file, file.write, [content], {});
+            file.write([content]);
 
             // output the separator (or end marker if at the end of line)
             if (i == args.length - 1) {
-                callables.run_callable(file, file.write, [end], {});
+                file.write([end]);
             } else {
-                callables.run_callable(file, file.write, [sep], {});
+                file.write([sep]);
             }
         }
     }
 
     if (kwargs['flush']) {
-        callables.run_callable(file, file.flush, [], {});
+        file.flush();
     }
 }
 print.__doc__ = "print(value, ..., sep=' ', end='\\n', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.\nOptional keyword arguments:\nfile:  a file-like object (stream); defaults to the current sys.stdout.\nsep:   string inserted between values, default a space.\nend:   string appended after the last value, default a newline.\nflush: whether to forcibly flush the stream.";

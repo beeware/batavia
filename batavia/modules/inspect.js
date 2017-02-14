@@ -48,7 +48,7 @@ inspect._signature_bound_method = function(sig) {
     var params = sig.parameters.values();
 
     if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-        throw new exceptions.ValueError('invalid method signature');
+        throw new exceptions.ValueError.$pyclass('invalid method signature');
     }
 
     var kind = params[0].kind;
@@ -60,7 +60,7 @@ inspect._signature_bound_method = function(sig) {
         if (kind !== _VAR_POSITIONAL) {
             // Unless we add a new parameter type we never
             // get here
-            throw new exceptions.ValueError('invalid argument type');
+            throw new exceptions.ValueError.$pyclass('invalid argument type');
         }
         // It's a var-positional parameter.
         // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
@@ -389,7 +389,7 @@ inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, val
  * values from 'positional' and 'named'.
  */
 inspect.getcallargs = function(func, positional, named) {
-    var arg2value = {};
+    var arg2value = new types.JSDict();
 
     // if ismethod(func) and func.__self__ is not None:
     if (func.__self__) {
@@ -422,14 +422,14 @@ inspect.getcallargs = function(func, positional, named) {
         if (named.hasOwnProperty(kw)) {
             if (!possible_kwargs.__contains__(new types.Str(kw)).valueOf()) {
                 if (!func.argspec.varkw) {
-                    throw new exceptions.TypeError("%s() got an unexpected keyword argument %r" %
+                    throw new exceptions.TypeError.$pyclass("%s() got an unexpected keyword argument %r" %
                                 (func.__name__, kw));
                 }
                 arg2value[func.argspec.varkw][kw] = named[kw];
                 continue;
             }
             if (kw in arg2value) {
-                throw new exceptions.TypeError("%s() got multiple values for argument %r" %
+                throw new exceptions.TypeError.$pyclass("%s() got multiple values for argument %r" %
                                 (func.__name__, kw));
             }
             arg2value[kw] = named[kw];

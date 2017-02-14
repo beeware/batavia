@@ -1,7 +1,9 @@
+var exceptions = require('./core/exceptions');
+
 var types = {}
 
 types['Type'] = require('./core').Type;
-types['PyObject'] = require('./core').Object;
+types['Object'] = require('./core').Object;
 types['NoneType'] = require('./core').NoneType;
 types['NotImplementedType'] = require('./core').NotImplementedType;
 
@@ -106,7 +108,7 @@ types.issubclass = function(cls, type) {
                 } else {
                     var mro = cls.mro();
                     for (t in mro) {
-                        if (type != null && type.prototype != null && mro[t] === type.prototype.__class__) {
+                        if (mro[t] === type) {
                             return true;
                         }
                     }
@@ -158,7 +160,7 @@ types.js2py = function(arg) {
                 return dict;
             }
         default:
-            throw new exceptions.BataviaError("Unknown type " + (typeof arg));
+            throw new exceptions.BataviaError.$pyclass("Unknown type " + (typeof arg));
     }
 }
 

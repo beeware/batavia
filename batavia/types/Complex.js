@@ -52,7 +52,7 @@ function Complex(re, im) {
         var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i;
         var match = regex.exec(re);
         if (match == null || re == "") {
-            throw new exceptions.ValueError("complex() arg is a malformed string");
+            throw new exceptions.ValueError.$pyclass("complex() arg is a malformed string");
         }
         this.real = parseFloat(part_from_str(match[1]));
         this.imag = parseFloat(part_from_str(match[3]));
@@ -60,11 +60,11 @@ function Complex(re, im) {
             this.imag = -this.imag;
         }
     } else if (!types.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "complex() argument must be a string, a bytes-like object or a number, not '" + type_name(re) + "'"
         );
     } else if (!types.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "complex() argument must be a string, a bytes-like object or a number, not '" + type_name(im) + "'"
         );
     } else if (typeof re == 'number' && typeof im == 'number') {
@@ -80,13 +80,12 @@ function Complex(re, im) {
         this.real = re.real;
         this.imag = re.imag;
     } else {
-        throw new exceptions.NotImplementedError("Complex initialization from complex argument(s) has not been implemented");
+        throw new exceptions.NotImplementedError.$pyclass("Complex initialization from complex argument(s) has not been implemented");
     }
 }
 
 Complex.prototype = Object.create(PyObject.prototype);
 Complex.prototype.__class__ = new Type('complex');
-Complex.prototype.constructor = Complex;
 
 /**************************************************
  * Javascript compatibility methods
@@ -121,11 +120,11 @@ Complex.prototype.__str__ = function() {
  **************************************************/
 
 Complex.prototype.__lt__ = function(other) {
-    throw new exceptions.TypeError("unorderable types: complex() < " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: complex() < " + type_name(other) + "()");
 };
 
 Complex.prototype.__le__ = function(other) {
-    throw new exceptions.TypeError("unorderable types: complex() <= " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: complex() <= " + type_name(other) + "()");
 };
 
 Complex.prototype.__eq__ = function(other) {
@@ -151,11 +150,11 @@ Complex.prototype.__ne__ = function(other) {
 };
 
 Complex.prototype.__gt__ = function(other) {
-    throw new exceptions.TypeError("unorderable types: complex() > " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: complex() > " + type_name(other) + "()");
 };
 
 Complex.prototype.__ge__ = function(other) {
-    throw new exceptions.TypeError("unorderable types: complex() >= " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: complex() >= " + type_name(other) + "()");
 };
 
 
@@ -176,7 +175,7 @@ Complex.prototype.__not__ = function() {
 };
 
 Complex.prototype.__invert__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary ~: 'complex'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'complex'");
 };
 
 Complex.prototype.__abs__ = function() {
@@ -191,7 +190,7 @@ Complex.prototype.__abs__ = function() {
 
 Complex.prototype.__pow__ = function(other) {
     // http://mathworld.wolfram.com/ComplexExponentiation.html
-    throw new exceptions.NotImplementedError(
+    throw new exceptions.NotImplementedError.$pyclass(
         "Complex.__pow__ has not been implemented yet; if you need it, you need to reevaluate your life-choices."
     );
 };
@@ -203,19 +202,19 @@ function __div__(x, y, inplace) {
         if (!y.val.isZero()) {
             return new Complex(x.real / y.__float__().val, x.imag / y.__float__().val);
         } else {
-            throw new exceptions.ZeroDivisionError("complex division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("complex division by zero");
         }
     } else if (types.isinstance(y, types.Float)) {
         if (y.valueOf()) {
             return new Complex(x.real / y.valueOf(), x.imag / y.valueOf());
         } else {
-            throw new exceptions.ZeroDivisionError("complex division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("complex division by zero");
         }
     } else if (types.isinstance(y, types.Bool)) {
         if (y.valueOf()) {
             return new Complex(x.real, x.imag);
         } else {
-            throw new exceptions.ZeroDivisionError("complex division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("complex division by zero");
         }
     } else if (types.isinstance(y, types.Complex)) {
         var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2);
@@ -225,7 +224,7 @@ function __div__(x, y, inplace) {
         var imag = num_imag / den;
         return new Complex(real, imag);
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for /" + (inplace ? "=" : "") + ": 'complex' and '" + type_name(y) + "'"
         );
     }
@@ -236,7 +235,7 @@ Complex.prototype.__div__ = function(other) {
 };
 
 Complex.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError("can't take floor of complex number.");
+    throw new exceptions.TypeError.$pyclass("can't take floor of complex number.");
 };
 
 Complex.prototype.__truediv__ = function(other) {
@@ -267,9 +266,9 @@ function __mul__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real);
     } else if (types.isinstance(y, [types.List, types.Str, types.Tuple])) {
-        throw new exceptions.TypeError("can't multiply sequence by non-int of type 'complex'");
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'");
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for *" + (inplace ? "=" : "") + ": 'complex' and '" + type_name(y) + "'"
         );
     }
@@ -280,7 +279,7 @@ Complex.prototype.__mul__ = function(other) {
 };
 
 Complex.prototype.__mod__ = function(other) {
-    throw new exceptions.TypeError("can't mod complex numbers.");
+    throw new exceptions.TypeError.$pyclass("can't mod complex numbers.");
 };
 
 function __add__(x, y, inplace) {
@@ -295,7 +294,7 @@ function __add__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real + y.real, x.imag + y.imag);
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for +" + (inplace ? "=" : "") + ": 'complex' and '" + type_name(y) + "'"
         );
     }
@@ -317,7 +316,7 @@ function __sub__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real - y.real, x.imag - y.imag);
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for -" + (inplace ? "=" : "") + ": 'complex' and '" + type_name(y) + "'"
         );
     }
@@ -328,35 +327,35 @@ Complex.prototype.__sub__ = function(other) {
 };
 
 Complex.prototype.__getitem__ = function(other) {
-    throw new exceptions.TypeError("'complex' object is not subscriptable")
+    throw new exceptions.TypeError.$pyclass("'complex' object is not subscriptable")
 };
 
 Complex.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for <<: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for >>: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for &: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for ^: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for |: 'complex' and '" + type_name(other) + "'"
     );
 };
@@ -366,7 +365,7 @@ Complex.prototype.__or__ = function(other) {
  **************************************************/
 
 Complex.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError("can't take floor of complex number.");
+    throw new exceptions.TypeError.$pyclass("can't take floor of complex number.");
 };
 
 Complex.prototype.__itruediv__ = function(other) {
@@ -386,39 +385,39 @@ Complex.prototype.__imul__ = function(other) {
 };
 
 Complex.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError("can't mod complex numbers.");
+    throw new exceptions.TypeError.$pyclass("can't mod complex numbers.");
 };
 
 Complex.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError("Complex.__ipow__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Complex.__ipow__ has not been implemented");
 };
 
 Complex.prototype.__ilshift__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for <<=: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__irshift__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for >>=: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__iand__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for &=: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__ixor__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for ^=: 'complex' and '" + type_name(other) + "'"
     );
 };
 
 Complex.prototype.__ior__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for |=: 'complex' and '" + type_name(other) + "'"
     );
 };

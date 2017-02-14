@@ -6,19 +6,21 @@ var exceptions = {};
 /*****************************************************************
  * Root exception
  *****************************************************************/
-exceptions.BaseException = function(name, msg) {
+var BaseException = function(name, msg) {
+    PyObject.call(this);
     this.name = name;
     this.msg = msg;
 }
 
-exceptions.BaseException.__class__ = new Type('BaseException', [PyObject]);
-exceptions.BaseException.prototype.__class__ = exceptions.BaseException.__class__;
+BaseException.prototype = Object.create(PyObject.prototype);
+BaseException.prototype.__class__ = new Type('BaseException');
+BaseException.prototype.__class__.$pyclass = BaseException;
 
-exceptions.BaseException.prototype.toString = function() {
+BaseException.prototype.toString = function() {
     return this.__str__();
 }
 
-exceptions.BaseException.prototype.__str__ = function() {
+BaseException.prototype.__str__ = function() {
     if (this.msg) {
         return this.msg;
     } else {
@@ -26,7 +28,7 @@ exceptions.BaseException.prototype.__str__ = function() {
     }
 }
 
-exceptions.BaseException.prototype.__repr__ = function() {
+BaseException.prototype.__repr__ = function() {
     if (this.msg) {
         return this.name + "(" + this.msg + ")";
     } else {
@@ -34,140 +36,174 @@ exceptions.BaseException.prototype.__repr__ = function() {
     }
 }
 
+exceptions.BaseException = BaseException.prototype.__class__
+
 /*****************************************************************
  * Top level exceptions
  *****************************************************************/
 
-exceptions.SystemExit = function (msg) {
-    exceptions.BaseException.call(this, 'SystemExit', msg);
+var SystemExit = function (msg) {
+    BaseException.call(this, 'SystemExit', msg);
 }
-exceptions.SystemExit.prototype = Object.create(exceptions.BaseException.prototype);
-exceptions.SystemExit.__class__ = new Type('SystemExit', [exceptions.BaseException]);
-exceptions.SystemExit.prototype.__class__ = exceptions.SystemExit.__class__;
+SystemExit.prototype = Object.create(BaseException.prototype);
+SystemExit.prototype.__class__ = new Type('SystemExit', [BaseException.prototype.__class__]);
+SystemExit.prototype.__class__.$pyclass = SystemExit;
 
-exceptions.KeyboardInterrupt = function (msg) {
-    exceptions.BaseException.call(this, 'KeyboardInterrupt', msg);
+exceptions.SystemExit = SystemExit.prototype.__class__
+
+var KeyboardInterrupt = function (msg) {
+    BaseException.call(this, 'KeyboardInterrupt', msg);
 }
-exceptions.KeyboardInterrupt.prototype = Object.create(exceptions.BaseException.prototype);
-exceptions.KeyboardInterrupt.__class__ = new Type('KeyboardInterrupt', [exceptions.BaseException]);
-exceptions.KeyboardInterrupt.prototype.__class__ = exceptions.KeyboardInterrupt.__class__;
+KeyboardInterrupt.prototype = Object.create(BaseException.prototype);
+KeyboardInterrupt.prototype.__class__ = new Type('KeyboardInterrupt', [BaseException.prototype.__class__]);
+KeyboardInterrupt.prototype.__class__.$pyclass = KeyboardInterrupt;
 
-exceptions.GeneratorExit = function (msg) {
-    exceptions.BaseException.call(this, 'GeneratorExit', msg);
+exceptions.KeyboardInterrupt = KeyboardInterrupt.prototype.__class__
+
+var GeneratorExit = function (msg) {
+    BaseException.call(this, 'GeneratorExit', msg);
 }
-exceptions.GeneratorExit.prototype = Object.create(exceptions.BaseException.prototype);
-exceptions.GeneratorExit.__class__ = new Type('GeneratorExit', [exceptions.BaseException]);
-exceptions.GeneratorExit.prototype.__class__ = exceptions.GeneratorExit.__class__;
+GeneratorExit.prototype = Object.create(BaseException.prototype);
+GeneratorExit.prototype.__class__ = new Type('GeneratorExit', [BaseException.prototype.__class__]);
+GeneratorExit.prototype.__class__.$pyclass = GeneratorExit;
 
-exceptions.Exception = function (name, msg) {
+GeneratorExit = GeneratorExit.prototype.__class__
+
+var Exception = function (name, msg) {
     if (arguments.length == 1) {
         // If only one argument is provided, it will be the message.
-        exceptions.BaseException.call(this, 'Exception', name);
+        BaseException.call(this, 'Exception', name);
     } else {
-        exceptions.BaseException.call(this, name, msg);
+        BaseException.call(this, name, msg);
     }
 }
-exceptions.Exception.prototype = Object.create(exceptions.BaseException.prototype);
-exceptions.Exception.__class__ = new Type('Exception', [exceptions.BaseException]);
-exceptions.Exception.prototype.__class__ = exceptions.Exception.__class__;
+Exception.prototype = Object.create(BaseException.prototype);
+Exception.prototype.__class__ = new Type('Exception', [BaseException.prototype.__class__]);
+Exception.prototype.__class__.$pyclass = Exception;
+
+exceptions.Exception = Exception.prototype.__class__
 
 /*****************************************************************
  * All other exceptions
  *****************************************************************/
 
-exceptions.BataviaError = function (msg) {
-    exceptions.Exception.call(this, 'BataviaError', msg);
+var BataviaError = function (msg) {
+    Exception.call(this, 'BataviaError', msg);
 }
-exceptions.BataviaError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.BataviaError.__class__ = new Type('BataviaError', [exceptions.Exception]);
-exceptions.BataviaError.prototype.__class__ = exceptions.BataviaError.__class__;
+BataviaError.prototype = Object.create(Exception.prototype);
+BataviaError.prototype.__class__ = new Type('BataviaError', [Exception.prototype.__class__]);
+BataviaError.prototype.__class__.$pyclass = BataviaError;
 
-exceptions.ArithmeticError = function (msg) {
-    exceptions.Exception.call(this, 'ArithmeticError', msg);
-}
-exceptions.ArithmeticError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.ArithmeticError.__class__ = new Type('ArithmeticError', [exceptions.Exception]);
-exceptions.ArithmeticError.prototype.__class__ = exceptions.ArithmeticError.__class__;
+exceptions.BataviaError = BataviaError.prototype.__class__
 
-exceptions.AssertionError = function (msg) {
-    exceptions.Exception.call(this, 'AssertionError', msg);
+var ArithmeticError = function (msg) {
+    Exception.call(this, 'ArithmeticError', msg);
 }
-exceptions.AssertionError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.AssertionError.__class__ = new Type('AssertionError', [exceptions.Exception]);
-exceptions.AssertionError.prototype.__class__ = exceptions.AssertionError.__class__;
+ArithmeticError.prototype = Object.create(Exception.prototype);
+ArithmeticError.prototype.__class__ = new Type('ArithmeticError', [Exception.prototype.__class__]);
+ArithmeticError.prototype.__class__.$pyclass = ArithmeticError;
 
-exceptions.AttributeError = function (msg) {
-    exceptions.Exception.call(this, 'AttributeError', msg);
-}
-exceptions.AttributeError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.AttributeError.__class__ = new Type('AttributeError', [exceptions.Exception]);
-exceptions.AttributeError.prototype.__class__ = exceptions.AttributeError.__class__;
+exceptions.ArithmeticError = ArithmeticError.prototype.__class__
 
-exceptions.BufferError = function (msg) {
-    exceptions.Exception.call(this, 'BufferError', msg);
+var AssertionError = function (msg) {
+    Exception.call(this, 'AssertionError', msg);
 }
-exceptions.BufferError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.BufferError.__class__ = new Type('BufferError', [exceptions.Exception]);
-exceptions.BufferError.prototype.__class__ = exceptions.BufferError.__class__;
+AssertionError.prototype = Object.create(Exception.prototype);
+AssertionError.prototype.__class__ = new Type('AssertionError', [Exception.prototype.__class__]);
+AssertionError.prototype.__class__.$pyclass = AssertionError;
+
+exceptions.AssertionError = AssertionError.prototype.__class__
+
+var AttributeError = function (msg) {
+    Exception.call(this, 'AttributeError', msg);
+}
+AttributeError.prototype = Object.create(Exception.prototype);
+AttributeError.prototype.__class__ = new Type('AttributeError', [Exception.prototype.__class__]);
+AttributeError.prototype.__class__.$pyclass = AttributeError;
+
+exceptions.AttributeError = AttributeError.prototype.__class__
+
+var BufferError = function (msg) {
+    Exception.call(this, 'BufferError', msg);
+}
+BufferError.prototype = Object.create(Exception.prototype);
+BufferError.prototype.__class__ = new Type('BufferError', [Exception.prototype.__class__]);
+BufferError.prototype.__class__.$pyclass = BufferError;
+
+exceptions.BufferError = BufferError.prototype.__class__
 
 exceptions.BytesWarning = undefined;
 
 exceptions.DeprecationWarning = undefined;
 
-exceptions.EOFError = function (msg) {
-    exceptions.Exception.call(this, 'EOFError', msg);
+var EOFError = function (msg) {
+    Exception.call(this, 'EOFError', msg);
 }
-exceptions.EOFError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.EOFError.__class__ = new Type('EOFError', [exceptions.Exception]);
-exceptions.EOFError.prototype.__class__ = exceptions.EOFError.__class__;
+EOFError.prototype = Object.create(Exception.prototype);
+EOFError.prototype.__class__ = new Type('EOFError', [Exception.prototype.__class__]);
+EOFError.prototype.__class__.$pyclass = EOFError;
 
-exceptions.EnvironmentError = function (msg) {
-    exceptions.Exception.call(this, 'EnvironmentError', msg);
-}
-exceptions.EnvironmentError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.EnvironmentError.__class__ = new Type('EnvironmentError', [exceptions.Exception]);
-exceptions.EnvironmentError.prototype.__class__ = exceptions.EnvironmentError.__class__;
+exceptions.EOFError = EOFError.prototype.__class__
 
-exceptions.FloatingPointError = function (msg) {
-    exceptions.Exception.call(this, 'FloatingPointError', msg);
+var EnvironmentError = function (msg) {
+    Exception.call(this, 'EnvironmentError', msg);
 }
-exceptions.FloatingPointError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.FloatingPointError.__class__ = new Type('FloatingPointError', [exceptions.Exception]);
-exceptions.FloatingPointError.prototype.__class__ = exceptions.FloatingPointError.__class__;
+EnvironmentError.prototype = Object.create(Exception.prototype);
+EnvironmentError.prototype.__class__ = new Type('EnvironmentError', [Exception.prototype.__class__]);
+EnvironmentError.prototype.__class__.$pyclass = EnvironmentError;
+
+exceptions.EnvironmentError = EnvironmentError.prototype.__class__
+
+var FloatingPointError = function (msg) {
+    Exception.call(this, 'FloatingPointError', msg);
+}
+FloatingPointError.prototype = Object.create(Exception.prototype);
+FloatingPointError.prototype.__class__ = new Type('FloatingPointError', [Exception.prototype.__class__]);
+FloatingPointError.prototype.__class__.$pyclass = FloatingPointError;
+
+exceptions.FloatingPointError = FloatingPointError.prototype.__class__
 
 exceptions.FutureWarning = undefined;
 
-exceptions.IOError = function (msg) {
-    exceptions.Exception.call(this, 'IOError', msg);
+var IOError = function (msg) {
+    Exception.call(this, 'IOError', msg);
 }
-exceptions.IOError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.IOError.__class__ = new Type('IOError', [exceptions.Exception]);
-exceptions.IOError.prototype.__class__ = exceptions.IOError.__class__;
+IOError.prototype = Object.create(Exception.prototype);
+IOError.prototype.__class__ = new Type('IOError', [Exception.prototype.__class__]);
+IOError.prototype.__class__.$pyclass = IOError;
 
-exceptions.ImportError = function (msg) {
-    exceptions.Exception.call(this, 'ImportError', msg);
+exceptions.IOError = IOError.prototype.__class__
+
+var ImportError = function (msg) {
+    Exception.call(this, 'ImportError', msg);
 }
-exceptions.ImportError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.ImportError.__class__ = new Type('ImportError', [exceptions.Exception]);
-exceptions.ImportError.prototype.__class__ = exceptions.ImportError.__class__;
+ImportError.prototype = Object.create(Exception.prototype);
+ImportError.prototype.__class__ = new Type('ImportError', [Exception.prototype.__class__]);
+ImportError.prototype.__class__.$pyclass = ImportError;
+
+exceptions.ImportError = ImportError.prototype.__class__
 
 exceptions.ImportWarning = undefined;
 
-exceptions.IndentationError = function (msg) {
-    exceptions.Exception.call(this, 'IndentationError', msg);
+var IndentationError = function (msg) {
+    Exception.call(this, 'IndentationError', msg);
 }
-exceptions.IndentationError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.IndentationError.__class__ = new Type('IndentationError', [exceptions.Exception]);
-exceptions.IndentationError.prototype.__class__ = exceptions.IndentationError.__class__;
+IndentationError.prototype = Object.create(Exception.prototype);
+IndentationError.prototype.__class__ = new Type('IndentationError', [Exception.prototype.__class__]);
+IndentationError.prototype.__class__.$pyclass = IndentationError;
 
-exceptions.IndexError = function (msg) {
-    exceptions.Exception.call(this, 'IndexError', msg);
+exceptions.IndentationError = IndentationError.prototype.__class__
+
+var IndexError = function (msg) {
+    Exception.call(this, 'IndexError', msg);
 }
-exceptions.IndexError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.IndexError.__class__ = new Type('IndexError', [exceptions.Exception]);
-exceptions.IndexError.prototype.__class__ = exceptions.IndexError.__class__;
+IndexError.prototype = Object.create(Exception.prototype);
+IndexError.prototype.__class__ = new Type('IndexError', [Exception.prototype.__class__]);
+IndexError.prototype.__class__.$pyclass = IndexError;
 
-exceptions.KeyError = function (key) {
+exceptions.IndexError = IndexError.prototype.__class__
+
+var KeyError = function (key) {
     var msg;
     if (key === null) {
         msg = "None";
@@ -176,183 +212,232 @@ exceptions.KeyError = function (key) {
     } else {
         msg = key.toString();
     }
-    exceptions.Exception.call(this, 'KeyError', msg);
+    Exception.call(this, 'KeyError', msg);
 }
-exceptions.KeyError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.KeyError.__class__ = new Type('KeyError', [exceptions.Exception], null, exceptions.KeyError);
-exceptions.KeyError.prototype.__class__ = exceptions.KeyError.__class__;
+KeyError.prototype = Object.create(Exception.prototype);
+KeyError.prototype.__class__ = new Type('KeyError', [Exception.prototype.__class__]);
+KeyError.prototype.__class__.$pyclass = KeyError;
 
-exceptions.LookupError = function (msg) {
-    exceptions.Exception.call(this, 'LookupError', msg);
-}
-exceptions.LookupError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.LookupError.__class__ = new Type('LookupError', [exceptions.Exception]);
-exceptions.LookupError.prototype.__class__ = exceptions.LookupError.__class__;
+exceptions.KeyError = KeyError.prototype.__class__
 
-exceptions.MemoryError = function (msg) {
-    exceptions.Exception.call(this, 'MemoryError', msg);
+var LookupError = function (msg) {
+    Exception.call(this, 'LookupError', msg);
 }
-exceptions.MemoryError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.MemoryError.__class__ = new Type('MemoryError', [exceptions.Exception]);
-exceptions.MemoryError.prototype.__class__ = exceptions.MemoryError.__class__;
+LookupError.prototype = Object.create(Exception.prototype);
+LookupError.prototype.__class__ = new Type('LookupError', [Exception.prototype.__class__]);
+LookupError.prototype.__class__.$pyclass = LookupError;
 
-exceptions.NameError = function (msg) {
-    exceptions.Exception.call(this, 'NameError', msg);
-}
-exceptions.NameError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.NameError.__class__ = new Type('NameError', [exceptions.Exception]);
-exceptions.NameError.prototype.__class__ = exceptions.NameError.__class__;
+exceptions.LookupError = LookupError.prototype.__class__
 
-exceptions.NotImplementedException = function (msg) {
-    exceptions.Exception.call(this, 'NotImplementedException', msg);
+var MemoryError = function (msg) {
+    Exception.call(this, 'MemoryError', msg);
 }
-exceptions.NotImplementedException.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.NotImplementedException.__class__ = new Type('NotImplementedException', [exceptions.Exception]);
-exceptions.NotImplementedException.prototype.__class__ = exceptions.NotImplementedException.__class__;
+MemoryError.prototype = Object.create(Exception.prototype);
+MemoryError.prototype.__class__ = new Type('MemoryError', [Exception.prototype.__class__]);
+MemoryError.prototype.__class__.$pyclass = MemoryError;
 
-exceptions.NotImplementedError = function (msg) {
-    exceptions.Exception.call(this, 'NotImplementedError', msg);
-}
-exceptions.NotImplementedError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.NotImplementedError.__class__ = new Type('NotImplementedError', [exceptions.Exception]);
-exceptions.NotImplementedError.prototype.__class__ = exceptions.NotImplementedError.__class__;
+exceptions.MemoryError = MemoryError.prototype.__class__
 
-exceptions.OSError = function (msg) {
-    exceptions.Exception.call(this, 'OSError', msg);
+var NameError = function (msg) {
+    Exception.call(this, 'NameError', msg);
 }
-exceptions.OSError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.OSError.__class__ = new Type('OSError', [exceptions.Exception]);
-exceptions.OSError.prototype.__class__ = exceptions.OSError.__class__;
+NameError.prototype = Object.create(Exception.prototype);
+NameError.prototype.__class__ = new Type('NameError', [Exception.prototype.__class__]);
+NameError.prototype.__class__.$pyclass = NameError;
 
-exceptions.OverflowError = function (msg) {
-    exceptions.Exception.call(this, 'OverflowError', msg);
+exceptions.NameError = NameError.prototype.__class__
+
+var NotImplementedException = function (msg) {
+    Exception.call(this, 'NotImplementedException', msg);
 }
-exceptions.OverflowError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.OverflowError.__class__ = new Type('OverflowError', [exceptions.Exception]);
-exceptions.OverflowError.prototype.__class__ = exceptions.OverflowError.__class__;
+NotImplementedException.prototype = Object.create(Exception.prototype);
+NotImplementedException.prototype.__class__ = new Type('NotImplementedException', [Exception.prototype.__class__]);
+NotImplementedException.prototype.__class__.$pyclass = NotImplementedException;
+
+exceptions.NotImplementedException = NotImplementedException.prototype.__class__
+
+var NotImplementedError = function (msg) {
+    Exception.call(this, 'NotImplementedError', msg);
+}
+NotImplementedError.prototype = Object.create(Exception.prototype);
+NotImplementedError.prototype.__class__ = new Type('NotImplementedError', [Exception.prototype.__class__]);
+NotImplementedError.prototype.__class__.$pyclass = NotImplementedError;
+
+exceptions.NotImplementedError = NotImplementedError.prototype.__class__
+
+var OSError = function (msg) {
+    Exception.call(this, 'OSError', msg);
+}
+OSError.prototype = Object.create(Exception.prototype);
+OSError.prototype.__class__ = new Type('OSError', [Exception.prototype.__class__]);
+OSError.prototype.__class__.$pyclass = OSError;
+
+exceptions.OSError = OSError.prototype.__class__
+
+
+var OverflowError = function (msg) {
+    Exception.call(this, 'OverflowError', msg);
+}
+OverflowError.prototype = Object.create(Exception.prototype);
+OverflowError.prototype.__class__ = new Type('OverflowError', [Exception.prototype.__class__]);
+OverflowError.prototype.__class__.$pyclass = OverflowError;
+exceptions.OverflowError = OverflowError.prototype.__class__
+
 
 exceptions.PendingDeprecationWarning = undefined;
 
-exceptions.PolyglotError = function (msg) {
-    exceptions.Exception.call(this, 'PolyglotError', msg);
+var PolyglotError = function (msg) {
+    Exception.call(this, 'PolyglotError', msg);
 }
-exceptions.PolyglotError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.PolyglotError.__class__ = new Type('PolyglotError', [exceptions.Exception]);
-exceptions.PolyglotError.prototype.__class__ = exceptions.PolyglotError.__class__;
+PolyglotError.prototype = Object.create(Exception.prototype);
+PolyglotError.prototype.__class__ = new Type('PolyglotError', [Exception.prototype.__class__]);
+PolyglotError.prototype.__class__.$pyclass = PolyglotError;
 
-exceptions.ReferenceError = function (msg) {
-    exceptions.Exception.call(this, 'ReferenceError', msg);
-}
-exceptions.ReferenceError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.ReferenceError.__class__ = new Type('ReferenceError', [exceptions.Exception]);
-exceptions.ReferenceError.prototype.__class__ = exceptions.ReferenceError.__class__;
+exceptions.PolyglotError = PolyglotError.prototype.__class__
 
-exceptions.RuntimeError = function (msg) {
-    exceptions.Exception.call(this, 'RuntimeError', msg);
+var ReferenceError = function (msg) {
+    Exception.call(this, 'ReferenceError', msg);
 }
-exceptions.RuntimeError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.RuntimeError.__class__ = new Type('RuntimeError', [exceptions.Exception]);
-exceptions.RuntimeError.prototype.__class__ = exceptions.RuntimeError.__class__;
+ReferenceError.prototype = Object.create(Exception.prototype);
+ReferenceError.prototype.__class__ = new Type('ReferenceError', [Exception.prototype.__class__]);
+ReferenceError.prototype.__class__.$pyclass = ReferenceError;
+
+exceptions.ReferenceError = ReferenceError.prototype.__class__
+
+var RuntimeError = function (msg) {
+    Exception.call(this, 'RuntimeError', msg);
+}
+RuntimeError.prototype = Object.create(Exception.prototype);
+RuntimeError.prototype.__class__ = new Type('RuntimeError', [Exception.prototype.__class__]);
+RuntimeError.prototype.__class__.$pyclass = RuntimeError;
+
+exceptions.RuntimeError = RuntimeError.prototype.__class__
 
 exceptions.RuntimeWarning = undefined;
 
-exceptions.StandardError = function (msg) {
-    exceptions.Exception.call(this, 'StandardError', msg);
+var StandardError = function (msg) {
+    Exception.call(this, 'StandardError', msg);
 }
-exceptions.StandardError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.StandardError.__class__ = new Type('StandardError', [exceptions.Exception]);
-exceptions.StandardError.prototype.__class__ = exceptions.StandardError.__class__;
+StandardError.prototype = Object.create(Exception.prototype);
+StandardError.prototype.__class__ = new Type('StandardError', [Exception.prototype.__class__]);
+StandardError.prototype.__class__.$pyclass = StandardError;
 
-exceptions.StopIteration = function (msg) {
-    exceptions.Exception.call(this, 'StopIteration', msg);
-}
-exceptions.StopIteration.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.StopIteration.__class__ = new Type('StopIteration', [exceptions.Exception]);
-exceptions.StopIteration.prototype.__class__ = exceptions.StopIteration.__class__;
+exceptions.StandardError = StandardError.prototype.__class__
 
-exceptions.SyntaxError = function (msg) {
-    exceptions.Exception.call(this, 'SyntaxError', msg);
+var StopIteration = function (msg) {
+    Exception.call(this, 'StopIteration', msg);
 }
-exceptions.SyntaxError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.SyntaxError.__class__ = new Type('SyntaxError', [exceptions.Exception]);
-exceptions.SyntaxError.prototype.__class__ = exceptions.SyntaxError.__class__;
+StopIteration.prototype = Object.create(Exception.prototype);
+StopIteration.prototype.__class__ = new Type('StopIteration', [Exception.prototype.__class__]);
+StopIteration.prototype.__class__.$pyclass = StopIteration;
+
+exceptions.StopIteration = StopIteration.prototype.__class__
+
+var SyntaxError = function (msg) {
+    Exception.call(this, 'SyntaxError', msg);
+}
+SyntaxError.prototype = Object.create(Exception.prototype);
+SyntaxError.prototype.__class__ = new Type('SyntaxError', [Exception.prototype.__class__]);
+SyntaxError.prototype.__class__.$pyclass = SyntaxError;
+
+exceptions.SyntaxError = SyntaxError.prototype.__class__
 
 exceptions.SyntaxWarning = undefined;
 
-exceptions.SystemError = function (msg) {
-    exceptions.Exception.call(this, 'SystemError', msg);
+var SystemError = function (msg) {
+    Exception.call(this, 'SystemError', msg);
 }
-exceptions.SystemError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.SystemError.__class__ = new Type('SystemError', [exceptions.Exception]);
-exceptions.SystemError.prototype.__class__ = exceptions.SystemError.__class__;
+SystemError.prototype = Object.create(Exception.prototype);
+SystemError.prototype.__class__ = new Type('SystemError', [Exception.prototype.__class__]);
+SystemError.prototype.__class__.$pyclass = SystemError;
 
-exceptions.TabError = function (msg) {
-    exceptions.Exception.call(this, 'TabError', msg);
-}
-exceptions.TabError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.TabError.__class__ = new Type('TabError', [exceptions.Exception]);
-exceptions.TabError.prototype.__class__ = exceptions.TabError.__class__;
+exceptions.SystemError = SystemError.prototype.__class__
 
-exceptions.TypeError = function (msg) {
-    exceptions.Exception.call(this, 'TypeError', msg);
+var TabError = function (msg) {
+    Exception.call(this, 'TabError', msg);
 }
-exceptions.TypeError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.TypeError.__class__ = new Type('TypeError', [exceptions.Exception]);
-exceptions.TypeError.prototype.__class__ = exceptions.TypeError.__class__;
+TabError.prototype = Object.create(Exception.prototype);
+TabError.prototype.__class__ = new Type('TabError', [Exception.prototype.__class__]);
+TabError.prototype.__class__.$pyclass = TabError;
 
-exceptions.UnboundLocalError = function (msg) {
-    exceptions.Exception.call(this, 'UnboundLocalError', msg);
-}
-exceptions.UnboundLocalError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.UnboundLocalError.__class__ = new Type('UnboundLocalError', [exceptions.Exception]);
-exceptions.UnboundLocalError.prototype.__class__ = exceptions.UnboundLocalError.__class__;
+exceptions.TabError = TabError.prototype.__class__
 
-exceptions.UnicodeDecodeError = function (msg) {
-    exceptions.Exception.call(this, 'UnicodeDecodeError', msg);
+var TypeError = function (msg) {
+    Exception.call(this, 'TypeError', msg);
 }
-exceptions.UnicodeDecodeError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.UnicodeDecodeError.__class__ = new Type('UnicodeDecodeError', [exceptions.Exception]);
-exceptions.UnicodeDecodeError.prototype.__class__ = exceptions.UnicodeDecodeError.__class__;
+TypeError.prototype = Object.create(Exception.prototype);
+TypeError.prototype.__class__ = new Type('TypeError', [Exception.prototype.__class__]);
+TypeError.prototype.__class__.$pyclass = TypeError;
 
-exceptions.UnicodeEncodeError = function (msg) {
-    exceptions.Exception.call(this, 'UnicodeEncodeError', msg);
-}
-exceptions.UnicodeEncodeError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.UnicodeEncodeError.__class__ = new Type('UnicodeEncodeError', [exceptions.Exception]);
-exceptions.UnicodeEncodeError.prototype.__class__ = exceptions.UnicodeEncodeError.__class__;
+exceptions.TypeError = TypeError.prototype.__class__
 
-exceptions.UnicodeError = function (msg) {
-    exceptions.Exception.call(this, 'UnicodeError', msg);
+var UnboundLocalError = function (msg) {
+    Exception.call(this, 'UnboundLocalError', msg);
 }
-exceptions.UnicodeError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.UnicodeError.__class__ = new Type('UnicodeError', [exceptions.Exception]);
-exceptions.UnicodeError.prototype.__class__ = exceptions.UnicodeError.__class__;
+UnboundLocalError.prototype = Object.create(Exception.prototype);
+UnboundLocalError.prototype.__class__ = new Type('UnboundLocalError', [Exception.prototype.__class__]);
+UnboundLocalError.prototype.__class__.$pyclass = UnboundLocalError;
 
-exceptions.UnicodeTranslateError = function (msg) {
-    exceptions.Exception.call(this, 'UnicodeTranslateError', msg);
+exceptions.UnboundLocalError = UnboundLocalError.prototype.__class__
+
+var UnicodeDecodeError = function (msg) {
+    Exception.call(this, 'UnicodeDecodeError', msg);
 }
-exceptions.UnicodeTranslateError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.UnicodeTranslateError.__class__ = new Type('UnicodeTranslateError', [exceptions.Exception]);
-exceptions.UnicodeTranslateError.prototype.__class__ = exceptions.UnicodeTranslateError.__class__;
+UnicodeDecodeError.prototype = Object.create(Exception.prototype);
+UnicodeDecodeError.prototype.__class__ = new Type('UnicodeDecodeError', [Exception.prototype.__class__]);
+UnicodeDecodeError.prototype.__class__.$pyclass = UnicodeDecodeError;
+
+exceptions.UnicodeDecodeError = UnicodeDecodeError.prototype.__class__
+
+var UnicodeEncodeError = function (msg) {
+    Exception.call(this, 'UnicodeEncodeError', msg);
+}
+UnicodeEncodeError.prototype = Object.create(Exception.prototype);
+UnicodeEncodeError.prototype.__class__ = new Type('UnicodeEncodeError', [Exception.prototype.__class__]);
+UnicodeEncodeError.prototype.__class__.$pyclass = UnicodeEncodeError;
+
+exceptions.UnicodeEncodeError = UnicodeEncodeError.prototype.__class__
+
+var UnicodeError = function (msg) {
+    Exception.call(this, 'UnicodeError', msg);
+}
+UnicodeError.prototype = Object.create(Exception.prototype);
+UnicodeError.prototype.__class__ = new Type('UnicodeError', [Exception.prototype.__class__]);
+UnicodeError.prototype.__class__.$pyclass = UnicodeError;
+
+exceptions.UnicodeError = UnicodeError.prototype.__class__
+
+var UnicodeTranslateError = function (msg) {
+    Exception.call(this, 'UnicodeTranslateError', msg);
+}
+UnicodeTranslateError.prototype = Object.create(Exception.prototype);
+UnicodeTranslateError.prototype.__class__ = new Type('UnicodeTranslateError', [Exception.prototype.__class__]);
+UnicodeTranslateError.prototype.__class__.$pyclass = UnicodeTranslateError;
+
+exceptions.UnicodeTranslateError = UnicodeTranslateError.prototype.__class__
 
 exceptions.UnicodeWarning = undefined;
 
 exceptions.UserWarning = undefined;
 
-exceptions.ValueError = function (msg) {
-    exceptions.Exception.call(this, 'ValueError', msg);
+var ValueError = function (msg) {
+    Exception.call(this, 'ValueError', msg);
 }
-exceptions.ValueError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.ValueError.__class__ = new Type('ValueError', [exceptions.Exception]);
-exceptions.ValueError.prototype.__class__ = exceptions.ValueError.__class__;
+ValueError.prototype = Object.create(Exception.prototype);
+ValueError.prototype.__class__ = new Type('ValueError', [Exception.prototype.__class__]);
+ValueError.prototype.__class__.$pyclass = ValueError;
+
+exceptions.ValueError = ValueError.prototype.__class__
 
 exceptions.Warning = undefined;
 
-exceptions.ZeroDivisionError = function (msg) {
-    exceptions.Exception.call(this, 'ZeroDivisionError', msg);
+var ZeroDivisionError = function (msg) {
+    Exception.call(this, 'ZeroDivisionError', msg);
 }
-exceptions.ZeroDivisionError.prototype = Object.create(exceptions.Exception.prototype);
-exceptions.ZeroDivisionError.__class__ = new Type('ZeroDivisionError', [exceptions.Exception]);
-exceptions.ZeroDivisionError.prototype.__class__ = exceptions.ZeroDivisionError.__class__;
+ZeroDivisionError.prototype = Object.create(Exception.prototype);
+ZeroDivisionError.prototype.__class__ = new Type('ZeroDivisionError', [Exception.prototype.__class__]);
+ZeroDivisionError.prototype.__class__.$pyclass = ZeroDivisionError;
+
+exceptions.ZeroDivisionError = ZeroDivisionError.prototype.__class__
 
 module.exports = exceptions;

@@ -4,13 +4,13 @@ var types = require('../types');
 
 var type = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("type() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("type() doesn't accept keyword arguments");
     }
     if (!args || (args.length != 1 && args.length != 3)) {
-        throw new exceptions.TypeError('type() takes 1 or 3 arguments');
+        throw new exceptions.TypeError.$pyclass('type() takes 1 or 3 arguments');
     }
 
     if (args.length === 1) {
