@@ -1,57 +1,58 @@
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
-var BigNumber = require('bignumber.js').BigNumber
+var BigNumber = require('bignumber.js').BigNumber;
 
-function _substitute(format, args){
+function _substitute(format, args) {
     var types = require('../types');
 
     // INITIAL SETUP
     // does this conversion use key word or sequential args?
     var kwRe = /%\(/;
-    var usesKwargs = (format.match(kwRe) !== null)
+    var usesKwargs = (format.match(kwRe) !== null);
 
     // if using kwargs, fail if first arg isn't a dict or more than 1 arg given
     if ( usesKwargs && (
-            !types.isinstance(args[0], types.Dict) || args.length != 1
+            !types.isinstance(args[0], types.Dict) || args.length !== 1
+            )
         )
-    ){
-        throw new exceptions.TypeError("format requires a mapping")
+    {
+        throw new exceptions.TypeError('format requires a mapping');
     }
 
-    function Args(args, usesKwargs) {
+    function Args(workingArgs) {
         // represents either sequential or key word arguments.
         // functions that need to grab arguments interface with this object
-        if (usesKwargs){
-            this.collection = args[0]
-        } else{
-            this.remainingArgs = args.slice(); // remaining args
+        if (usesKwargs) {
+            this.collection = workingArgs[0];
+        } else {
+            this.remainingArgs = workingArgs.slice(); // remaining args
         }
 
-        this.getArg = function(key){
-            // get the next arg.
-            // if using sequental args, arg is shifted and returned
-            // if using kwargs, get value of key
-            if (usesKwargs){
-                var result = this.collection.__getitem__(key);
-                return this.collection.__getitem__(key);
-            } else {
-                return this.remainingArgs.shift();
-            }
-        }
-
-        this.argsRemain = function(){
-            // returns if there are args remaining
-            if (usesKwargs){
-                return collection.keys().length > 0;
-            } else {
-                return this.remainingArgs.length > 0;
-            }
-        }
     } // end Args
 
-    var workingArgs = new Args(args, usesKwargs)
+    Args.prototype.getArg = function(key) {
+      // get the next arg.
+      // if using sequental args, arg is shifted and returned
+      // if using kwargs, get value of key
+      if (usesKwargs) {
+        return this.collection.__getitem__(key);
+      }
 
-    function Specfier(fullText, index, args){
+      return this.remainingArgs.shift();
+    };
+
+    Args.prototype.argsRemain = function() {
+      // returns if there are args remaining
+      if (usesKwargs) {
+        return collection.keys().length > 0;
+      } else {
+        return this.remainingArgs.length > 0;
+      }
+    }
+
+    var workingArgs = new Args(args)
+
+    function Specfier(fullText, index, args) {
         // fullText (str): full specifier including %, might not be legit!
         // index: starting index in the format string
         // args: the remaining available argument s in the conversion
@@ -60,11 +61,11 @@ function _substitute(format, args){
 
         // reference: https://docs.python.org/2/library/stdtypes.html#string-formatting
 
-        if(usesKwargs){
+        if (usesKwargs) {
             // try to parse the key from this spec
             var keyRe = /\((.+?)\)(.+)/;
             var m = fullText.match(keyRe);
-            if(m === null){
+            if (m === null) {
                 throw new exceptions.ValueError("incomplete format key")
             }
             this.myKey = m[1];
@@ -136,7 +137,7 @@ function _substitute(format, args){
             // nextChar(str): the next character to be processed
             // nextChar is processed under the appropriate step number.
 
-            switch(step) {
+            switch (step) {
 
                 case 1:
                     // handle literal %
@@ -145,7 +146,7 @@ function _substitute(format, args){
 
                 case 2:
                     // conversion flags
-                    switch(char) {
+                    switch (char) {
 
                         case '#':
                             this.conversionFlags['#'] = true;
@@ -183,109 +184,109 @@ function _substitute(format, args){
                     } // end inner switch 2
                   break;
 
-              case 3:
-                  // min field width
-                  if (char === '*') {
-                      // there needs to be atleast two args available,
-                      // (one for this, another for the actual conversion)
-                      if(this.usesKwargs){
-                          // not allowed with kwargs!
-                          throw new exceptions.TypeError("* wants int")
-                      }
-                      // can't be using numerics or have another * already
-                      if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
-
-                        var arg = workingArgs.getArg()
-
-                        // arg must be an int
-                        if (!types.isinstance(arg, types.Int)) {
-                          throw new exceptions.TypeError("* wants int")
+                case 3:
+                    // min field width
+                    if (char === '*') {
+                        // there needs to be atleast two args available,
+                        // (one for this, another for the actual conversion)
+                        if (this.usesKwargs) {
+                            // not allowed with kwargs!
+                            throw new exceptions.TypeError("* wants int")
                         }
+                        // can't be using numerics or have another * already
+                        if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
 
-                        // need to have at least one arg left
-                        if (this.remainingArgs.length === 0) {
-                          throw new exceptions.TypeError("not enough arguments for format string")
-                        }
-                        this.args.push(arg);
+                            var arg = workingArgs.getArg();
 
-                        this.fieldWidth.value = "*";
-                        this.fieldWidth.numeric = false;
-                    } else {
-                        throw new Error("illegal character")
-                    }
-
-                  } else if (!isNaN(char)) {
-                      // value is numeric
-                      if (this.fieldWidth.numeric !== false) {
-
-                          // assign if null else concatentate
-                          this.fieldWidth.value += char;
-                          this.fieldWidth.numeric = true;
-                      } else {
-                          throw new Error("illegal character")
-                      }
-                  } else {
-                      throw new Error("illegal character")
-                  } // end if
-                  break;
-
-              case 4:
-                  // percision
-                  if (char === '*') {
-
-                      if(this.usesKwargs){
-                          // not allowed with kwargs!
-                          throw new exceptions.TypeError("* wants int")
-                      }
-                      // can't be using numerics or have another * already
-                      if (this.percision.value === '' && this.percision.numeric === undefined) {
-
-                          var arg = workingArgs.getArg()
-                          // arg must be an int
-                          if (!types.isinstance(arg, types.Int)) {
+                            // arg must be an int
+                            if (!types.isinstance(arg, types.Int)) {
                               throw new exceptions.TypeError("* wants int")
-                          }
+                            }
 
-                          // need to have at least one arg left
-                          if (this.remainingArgs === []) {
+                            // need to have at least one arg left
+                            if (this.remainingArgs.length === 0) {
                               throw new exceptions.TypeError("not enough arguments for format string")
-                          }
-                          this.args.push(arg);
+                            }
+                            this.args.push(arg);
 
-                          this.percision.value = "*";
-                          this.percision.numeric = false;
+                            this.fieldWidth.value = "*";
+                            this.fieldWidth.numeric = false;
+                        } else {
+                            throw new Error("illegal character")
+                        }
+
+                    } else if (!isNaN(char)) {
+                        // value is numeric
+                        if (this.fieldWidth.numeric !== false) {
+
+                            // assign if null else concatentate
+                            this.fieldWidth.value += char;
+                            this.fieldWidth.numeric = true;
+                        } else {
+                            throw new Error("illegal character")
+                        }
                     } else {
                         throw new Error("illegal character")
+                    } // end if
+                    break;
+
+                case 4:
+                    // percision
+                    if (char === '*') {
+
+                        if (this.usesKwargs) {
+                            // not allowed with kwargs!
+                            throw new exceptions.TypeError("* wants int")
+                        }
+                        // can't be using numerics or have another * already
+                        if (this.percision.value === '' && this.percision.numeric === undefined) {
+
+                            var arg = workingArgs.getArg()
+                            // arg must be an int
+                            if (!types.isinstance(arg, types.Int)) {
+                                throw new exceptions.TypeError("* wants int")
+                            }
+
+                            // need to have at least one arg left
+                            if (this.remainingArgs === []) {
+                                throw new exceptions.TypeError("not enough arguments for format string")
+                            }
+                            this.args.push(arg);
+
+                            this.percision.value = "*";
+                            this.percision.numeric = false;
+                        } else {
+                            throw new Error("illegal character")
+                        }
+
+                    } else if (!isNaN(char)) {
+                        // value is numeric
+                        if (this.percision.numeric !== false) {
+
+                            // assign if null else concatentate
+                            this.percision.value += char;
+                            this.percision.numeric = true;
+                        } else {
+                            throw new Error("illegal character")
+                        }
+                    } else if (char !== '.') {
+                        throw new Error("illegal character")
+                    };
+                    break;
+
+                case 5:
+                    // length modifier. Skip!
+                    break;
+
+                case 6:
+                    // conversion type
+                    var arg = workingArgs.getArg(this.myKey)
+                    if (arg === undefined) {
+                        throw new exceptions.TypeError("not enough arguments for format string")
                     }
-
-                  } else if (!isNaN(char)) {
-                      // value is numeric
-                      if (this.percision.numeric !== false) {
-
-                          // assign if null else concatentate
-                          this.percision.value += char;
-                          this.percision.numeric = true;
-                      } else {
-                          throw new Error("illegal character")
-                      }
-                  } else if (char !== '.') {
-                      throw new Error("illegal character")
-                  };
-                  break;
-
-              case 5:
-                  // length modifier. Skip!
-                  break;
-
-              case 6:
-                  // conversion type
-                  var arg = workingArgs.getArg(this.myKey)
-                  if (arg === undefined) {
-                      throw new exceptions.TypeError("not enough arguments for format string")
-                  }
-                  this.args.push(arg);
-                  this.conversionType = char;
-                  break;
+                    this.args.push(arg);
+                    this.conversionType = char;
+                    break;
 
             } // end switch
 
@@ -303,22 +304,22 @@ function _substitute(format, args){
                     if (!types.isinstance(arg, [types.Int, types.Float])) {
                         throw new exceptions.TypeError(`%${conversion} format: a number is required, not str`)
                     }
-                  } else if (/[eEfFgG]/.test(conversion)) {
-                      if (!types.isinstance(arg, [types.Float, types.Int])) {
-                          throw new exceptions.TypeError("a float is required")
-                      }
-                  } else if (conversion === 'c') {
-                      // there might be a problem with the error
-                      // message from C Python but floats ARE allowed.
-                      //  multi character strings are not allowed
-                      if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
-                          throw new exceptions.TypeError("%c requires int or char")
-                      } else if (types.isinstance(arg, [types.Int, types.Float])) {
+                } else if (/[eEfFgG]/.test(conversion)) {
+                    if (!types.isinstance(arg, [types.Float, types.Int])) {
+                        throw new exceptions.TypeError("a float is required")
+                    }
+                } else if (conversion === 'c') {
+                    // there might be a problem with the error
+                    // message from C Python but floats ARE allowed.
+                    //  multi character strings are not allowed
+                    if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
+                        throw new exceptions.TypeError("%c requires int or char")
+                    } else if (types.isinstance(arg, [types.Int, types.Float])) {
 
-                          if (arg < 0) {
-                              throw new exceptions.OverflowError("%c arg not in range(0xXXXXXXXX)")
-                          }
-                      }
+                        if (arg < 0) {
+                            throw new exceptions.OverflowError("%c arg not in range(0xXXXXXXXX)")
+                        }
+                    }
 
                 } // end outer if
                 // conversion types s and r are ok with anything
@@ -356,7 +357,6 @@ function _substitute(format, args){
                       return bataviaType.valueOf();
                       break;
                 };
-
             }
 
             function zeroPadExp(rawExponential) {
@@ -397,7 +397,7 @@ function _substitute(format, args){
 
             // floats with no decimal: preserve!
             if (types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 == 0) {
-                conversionArgValue = conversionArgValue.toFixed(1)
+                conversionArgValue = conversionArgValue.toFixed(1);
             }
 
             switch(this.conversionType) {
@@ -679,7 +679,7 @@ function _substitute(format, args){
         var nextStep = 1;
         var charArray = this.fullText.slice(1).split('')
         var charIndex = 0;
-        while(charIndex < charArray.length && !this.literalPercent) {
+        while (charIndex < charArray.length && !this.literalPercent) {
           var nextChar = charArray[charIndex];
           this.parsedSpec += nextChar;
           try {
@@ -715,7 +715,7 @@ function _substitute(format, args){
     const re = /(%.+?)(\s|$)/g // grabs any chunk starting with %
     var match = re.exec(format);
 
-    while(match){
+    while (match) {
         // grab everything between lastStop and current spec start
         result += format.slice(lastStop, match.index);
         // parse the specifier. DON'T ASSUME IT IS COMPLETE OR LEGIT!

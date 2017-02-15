@@ -560,7 +560,7 @@ class FormatTests(TranspileTestCase):
 
             tests = adjust("""
                 print(">>> '%*(spam)s' % {'spam': 'eggs'}")
-                print('%*s' % {'spam': 'eggs'})
+                print('%*(spam)s' % {'spam': 'eggs'})
                 print('Done.')
                 """)
 
