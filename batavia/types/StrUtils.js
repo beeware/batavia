@@ -1,13 +1,58 @@
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
-var BigNumber = require('bignumber.js').BigNumber
+var BigNumber = require('bignumber.js').BigNumber;
 
-function _substitute(format, args){
-
+function _substitute(format, args) {
     var types = require('../types');
-    var workingArgs = args.slice();
 
-    function Specfier(fullText, index, args){
+    // INITIAL SETUP
+    // does this conversion use key word or sequential args?
+    var kwRe = /%\(/;
+    var usesKwargs = (format.match(kwRe) !== null);
+
+    // if using kwargs, fail if first arg isn't a dict or more than 1 arg given
+    if ( usesKwargs && (
+            !types.isinstance(args[0], types.Dict) || args.length !== 1
+            )
+        )
+    {
+        throw new exceptions.TypeError.$pyclass('format requires a mapping');
+    }
+
+    function Args(workingArgs) {
+        // represents either sequential or key word arguments.
+        // functions that need to grab arguments interface with this object
+        if (usesKwargs) {
+            this.collection = workingArgs[0];
+        } else {
+            this.remainingArgs = workingArgs.slice(); // remaining args
+        }
+
+    } // end Args
+
+    Args.prototype.getArg = function(key) {
+      // get the next arg.
+      // if using sequental args, arg is shifted and returned
+      // if using kwargs, get value of key
+      if (usesKwargs) {
+        return this.collection.__getitem__(key);
+      }
+
+      return this.remainingArgs.shift();
+    };
+
+    Args.prototype.argsRemain = function() {
+      // returns if there are args remaining
+      if (usesKwargs) {
+        return collection.keys().length > 0;
+      } else {
+        return this.remainingArgs.length > 0;
+      }
+    }
+
+    var workingArgs = new Args(args)
+
+    function Specfier(fullText, index, args) {
         // fullText (str): full specifier including %, might not be legit!
         // index: starting index in the format string
         // args: the remaining available argument s in the conversion
@@ -16,10 +61,23 @@ function _substitute(format, args){
 
         // reference: https://docs.python.org/2/library/stdtypes.html#string-formatting
 
-        this.fullText = fullText; // full text of possible specifier starting with %
+        if (usesKwargs) {
+            // try to parse the key from this spec
+            var keyRe = /\((.+?)\)(.+)/;
+            var m = fullText.match(keyRe);
+            if (m === null) {
+                throw new exceptions.ValueError.$pyclass("incomplete format key")
+            }
+            this.myKey = m[1];
+            this.fullText = "%" + m[2];
+        } else {
+            this.myKey = undefined
+            this.fullText = fullText; // full text of possible specifier starting with %
+        }
+
         this.index = index; // its position in the format string
         this.parsedSpec = '%'; // the parsed specifier
-
+        this.usesKwargs = usesKwargs;
 
         // exceptions are handled like this:
             // scan one character at a time
@@ -27,7 +85,6 @@ function _substitute(format, args){
             // if its '*' there needs to be at least 2 args left (one for the * and another for the conversion)
             // if its a conversion there needs to be atleast one left
 
-        this.remainingArgs = args.slice();  // as args are needed, shift them from this array, then return what's left
         this.args = []; // args to be used by this specifier
 
         // PARSED DATA FOR SPECIFIER
@@ -73,14 +130,14 @@ function _substitute(format, args){
             }
 
             // getting here means its an illegal character!
-            throw new Error("illegal character")
+            throw new exceptions.TypeError.$pyclass("illegal character")
         } // end getNextStep
 
         this.step = function(char, step) {
             // nextChar(str): the next character to be processed
             // nextChar is processed under the appropriate step number.
 
-            switch(step) {
+            switch (step) {
 
                 case 1:
                     // handle literal %
@@ -89,7 +146,7 @@ function _substitute(format, args){
 
                 case 2:
                     // conversion flags
-                    switch(char) {
+                    switch (char) {
 
                         case '#':
                             this.conversionFlags['#'] = true;
@@ -123,107 +180,112 @@ function _substitute(format, args){
                             /* this isn't a python error. I'm just throwing an exception to the
                             * caller that the conversion flag isn't legal
                             */
-                            throw new Error("illegal character")
+                            throw new exceptions.TypeError.$pyclass("illegal character")
                     } // end inner switch 2
                   break;
 
-              case 3:
-                  // min field width
-                  if (char === '*') {
-                      // there needs to be atleast two args available,
-                      // (one for this, another for the actual conversion)
-
-                      // can't be using numerics or have another * already
-                      if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
-
-                        var arg = this.remainingArgs.shift(); // grab an arg
-
-                        // arg must be an int
-                        if (!types.isinstance(arg, types.Int)) {
-                          throw new exceptions.TypeError.$pyclass("* wants int")
+                case 3:
+                    // min field width
+                    if (char === '*') {
+                        // there needs to be atleast two args available,
+                        // (one for this, another for the actual conversion)
+                        if (this.usesKwargs) {
+                            // not allowed with kwargs!
+                            throw new exceptions.TypeError.$pyclass("* wants int")
                         }
+                        // can't be using numerics or have another * already
+                        if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
 
-                        // need to have at least one arg left
-                        if (this.remainingArgs.length === 0) {
-                          throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
-                        }
-                        this.args.push(arg);
+                            var arg = workingArgs.getArg();
 
-                        this.fieldWidth.value = "*";
-                        this.fieldWidth.numeric = false;
-                    } else {
-                        throw new Error("illegal character")
-                    }
-
-                  } else if (!isNaN(char)) {
-                      // value is numeric
-                      if (this.fieldWidth.numeric !== false) {
-
-                          // assign if null else concatentate
-                          this.fieldWidth.value += char;
-                          this.fieldWidth.numeric = true;
-                      } else {
-                          throw new Error("illegal character")
-                      }
-                  } else {
-                      throw new Error("illegal character")
-                  } // end if
-                  break;
-
-              case 4:
-                  // percision
-                  if (char === '*') {
-                      // can't be using numerics or have another * already
-                      if (this.percision.value === '' && this.percision.numeric === undefined) {
-
-                          var arg = this.remainingArgs.shift(); // grab an arg
-
-                          // arg must be an int
-                          if (!types.isinstance(arg, types.Int)) {
+                            // arg must be an int
+                            if (!types.isinstance(arg, types.Int)) {
                               throw new exceptions.TypeError.$pyclass("* wants int")
-                          }
+                            }
 
-                          // need to have at least one arg left
-                          if (this.remainingArgs === []) {
+                            // need to have at least one arg left
+                            if (this.remainingArgs.length === 0) {
                               throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
-                          }
-                          this.args.push(arg);
+                            }
+                            this.args.push(arg);
 
-                          this.percision.value = "*";
-                          this.percision.numeric = false;
+                            this.fieldWidth.value = "*";
+                            this.fieldWidth.numeric = false;
+                        } else {
+                            throw new exceptions.TypeError.$pyclass("illegal character")
+                        }
+
+                    } else if (!isNaN(char)) {
+                        // value is numeric
+                        if (this.fieldWidth.numeric !== false) {
+
+                            // assign if null else concatentate
+                            this.fieldWidth.value += char;
+                            this.fieldWidth.numeric = true;
+                        } else {
+                            throw new exceptions.Error.$pyclass("illegal character")
+                        }
                     } else {
+                        throw new exceptions.Error.$pyclass("illegal character")
+                    } // end if
+                    break;
+
+                case 4:
+                    // percision
+                    if (char === '*') {
+
+                        if (this.usesKwargs) {
+                            // not allowed with kwargs!
+                            throw new exceptions.TypeError.$pyclass("* wants int")
+                        }
+                        // can't be using numerics or have another * already
+                        if (this.percision.value === '' && this.percision.numeric === undefined) {
+
+                            var arg = workingArgs.getArg()
+                            // arg must be an int
+                            if (!types.isinstance(arg, types.Int)) {
+                                throw new exceptions.TypeError.$pyclass("* wants int")
+                            }
+
+                            // need to have at least one arg left
+                            if (this.remainingArgs === []) {
+                                throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
+                            }
+                            this.args.push(arg);
+
+                            this.percision.value = "*";
+                            this.percision.numeric = false;
+                        } else {
+                            throw new exceptions.TypeError.$pyclass("illegal character")
+                        }
+
+                    } else if (!isNaN(char)) {
+                        // value is numeric
+                        if (this.percision.numeric !== false) {
+                            // assign if null else concatentate
+                            this.percision.value += char;
+                            this.percision.numeric = true;
+                        } else {
+                            throw new Error("illegal character")
+                        }
+                    } else if (char !== '.') {
                         throw new Error("illegal character")
+                    };
+                    break;
+
+                case 5:
+                    // length modifier. Skip!
+                    break;
+
+                case 6:
+                    // conversion type
+                    var arg = workingArgs.getArg(this.myKey)
+                    if (arg === undefined) {
+                        throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
                     }
-
-                  } else if (!isNaN(char)) {
-                      // value is numeric
-                      if (this.percision.numeric !== false) {
-
-                          // assign if null else concatentate
-                          this.percision.value += char;
-                          this.percision.numeric = true;
-                      } else {
-                          throw new Error("illegal character")
-                      }
-                  } else if (char !== '.') {
-                      throw new Error("illegal character")
-                  };
-                  break;
-
-              case 5:
-                  // length modifier. Skip!
-                  break;
-
-              case 6:
-                  // conversion type
-                  var arg = this.remainingArgs.shift(); // grab an arg
-                  if (arg === undefined) {
-                      throw new exceptions.TypeError.$pyclass("not enough arguments for format string")
-                  }
-                  this.args.push(arg);
-                  this.conversionType = char;
-                  break;
-
+                    this.args.push(arg);
+                    this.conversionType = char;
+                    break;
             } // end switch
 
         } // end this.step
@@ -240,23 +302,22 @@ function _substitute(format, args){
                     if (!types.isinstance(arg, [types.Int, types.Float])) {
                         throw new exceptions.TypeError.$pyclass(`%${conversion} format: a number is required, not str`)
                     }
-                  } else if (/[eEfFgG]/.test(conversion)) {
-                      if (!types.isinstance(arg, [types.Float, types.Int])) {
-                          throw new exceptions.TypeError.$pyclass("a float is required")
-                      }
-                  } else if (conversion === 'c') {
-                      // there might be a problem with the error
-                      // message from C Python but floats ARE allowed.
-                      //  multi character strings are not allowed
-                      if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
-                          throw new exceptions.TypeError.$pyclass("%c requires int or char")
-                      } else if (types.isinstance(arg, [types.Int, types.Float])) {
+                } else if (/[eEfFgG]/.test(conversion)) {
+                    if (!types.isinstance(arg, [types.Float, types.Int])) {
+                        throw new exceptions.TypeError.$pyclass("a float is required")
+                    }
+                } else if (conversion === 'c') {
+                    // there might be a problem with the error
+                    // message from C Python but floats ARE allowed.
+                    //  multi character strings are not allowed
+                    if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
+                        throw new exceptions.TypeError.$pyclass("%c requires int or char")
+                    } else if (types.isinstance(arg, [types.Int, types.Float])) {
 
-                          if (arg < 0) {
-                              throw new exceptions.OverflowError.$pyclass("%c arg not in range(0xXXXXXXXX)")
-                          }
-                      }
-
+                        if (arg < 0) {
+                            throw new exceptions.OverflowError.$pyclass("%c arg not in range(0xXXXXXXXX)")
+                        }
+                    }
                 } // end outer if
                 // conversion types s and r are ok with anything
             } // end validateType
@@ -293,7 +354,6 @@ function _substitute(format, args){
                       return bataviaType.valueOf();
                       break;
                 };
-
             }
 
             function zeroPadExp(rawExponential) {
@@ -334,7 +394,7 @@ function _substitute(format, args){
 
             // floats with no decimal: preserve!
             if (types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 == 0) {
-                conversionArgValue = conversionArgValue.toFixed(1)
+                conversionArgValue = conversionArgValue.toFixed(1);
             }
 
             switch(this.conversionType) {
@@ -611,11 +671,12 @@ function _substitute(format, args){
             return retVal;
         } // END TRANSFORM
 
+        // SPECIFIER MAIN LOOP
+
         var nextStep = 1;
         var charArray = this.fullText.slice(1).split('')
         var charIndex = 0;
-        // SPECIFIER MAIN LOOP
-        while(charIndex < charArray.length && !this.literalPercent) {
+        while (charIndex < charArray.length && !this.literalPercent) {
           var nextChar = charArray[charIndex];
           this.parsedSpec += nextChar;
           try {
@@ -625,6 +686,8 @@ function _substitute(format, args){
             if (err.message === 'illegal character') {
               var charAsHex = nextChar.charCodeAt(0).toString(16)
               throw new exceptions.ValueError.$pyclass(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
+            } else if (err.name == "KeyError") {
+                throw new exceptions.KeyError.$pyclass(err.msg)
             } else {
               //its some other error
               throw err
@@ -642,44 +705,39 @@ function _substitute(format, args){
           throw new exceptions.ValueError.$pyclass("incomplete format")
         }; // end parse main loop
 
-
     } // END SPECIFIER
 
     var result = '';
-    var lastStop = 0
-
+    var lastStop = 0 // as we do each subsitution remember where in string we are scanning
     const re = /(%.+?)(\s|$)/g // grabs any chunk starting with %
     var match = re.exec(format);
 
-    while(match){
+    while (match) {
         // grab everything between lastStop and current spec start
         result += format.slice(lastStop, match.index);
         // parse the specifier. DON'T ASSUME IT IS COMPLETE OR LEGIT!
-        var specObj = new Specfier(match[1], match.index, workingArgs);
+        var specObj = new Specfier(match[1], match.index, workingArgs, usesKwargs);
 
         // do the substitution
         if (!specObj.literalPercent) {
             result += specObj.transform();
-            // update end of current specifier
-            lastStop = match.index + specObj.parsedSpec.length;
-            workingArgs = specObj.remainingArgs;
         } else {
             result += match[1];
-            lastStop = match.index + match[1].length;
         }
+
+        lastStop = match.index + specObj.parsedSpec.length
         var match = re.exec(format);
     }
 
-    if (workingArgs.length !== 0) {
+    if (workingArgs.length !== 0 && !usesKwargs) {
         // its ok to having arguments left over if they are any of the below
 
-        workingArgs.forEach(function(arg) {
+        workingArgs.remainingArgs.forEach(function(arg) {
             if (!types.isinstance(arg, [types.Bytes, types.Bytearray, types.Dict,
                 types.List, types.Range])) {
                 throw new exceptions.TypeError.$pyclass("not all arguments converted during string formatting")
             }
         })
-
     }
 
     // get the last part of the string

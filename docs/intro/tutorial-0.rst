@@ -63,3 +63,18 @@ Next Steps
 
 Next, we can `setup the sandbox </intro/tutorial-1>`, and try out
 running Python in your browser.
+
+Troubleshooting Tips
+----------
+
+After running "npm run build", if  you recieve the error:: 
+
+   "Module not found: Error: Cannot resolve 'file' or 'directory' ./stdlib"
+  
+Run this command::
+ 
+   $ python compile_stdlib.py
+   
+Then try compiling the Batavia library again::
+   
+   $ npm run build
