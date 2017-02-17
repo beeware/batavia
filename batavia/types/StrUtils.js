@@ -12,10 +12,7 @@ function _substitute(format, args) {
     var usesKwargs = (format.match(kwRe) !== null);
 
     // if using kwargs, fail if first arg isn't a dict or more than 1 arg given
-    if ( usesKwargs && (
-            !types.isinstance(args[0], types.Dict) || args.length !== 1
-            )
-        )
+    if (usesKwargs && (!types.isinstance(args[0], types.Dict) || args.length !== 1))
     {
         throw new exceptions.TypeError.$pyclass('format requires a mapping');
     }
@@ -32,23 +29,23 @@ function _substitute(format, args) {
     } // end Args
 
     Args.prototype.getArg = function(key) {
-      // get the next arg.
-      // if using sequental args, arg is shifted and returned
-      // if using kwargs, get value of key
-      if (usesKwargs) {
-        return this.collection.__getitem__(key);
-      }
+        // get the next arg.
+        // if using sequental args, arg is shifted and returned
+        // if using kwargs, get value of key
+        if (usesKwargs) {
+            return this.collection.__getitem__(key);
+        }
 
-      return this.remainingArgs.shift();
+        return this.remainingArgs.shift();
     };
 
     Args.prototype.argsRemain = function() {
-      // returns if there are args remaining
-      if (usesKwargs) {
-        return collection.keys().length > 0;
-      } else {
-        return this.remainingArgs.length > 0;
-      }
+        // returns if there are args remaining
+        if (usesKwargs) {
+            return collection.keys().length > 0;
+        } else {
+            return this.remainingArgs.length > 0;
+        }
     }
 
     var workingArgs = new Args(args)
@@ -678,32 +675,32 @@ function _substitute(format, args) {
         var charArray = this.fullText.slice(1).split('')
         var charIndex = 0;
         while (charIndex < charArray.length && !this.literalPercent) {
-          var nextChar = charArray[charIndex];
-          this.parsedSpec += nextChar;
-          try {
-            var nextStep = this.getNextStep(nextChar, nextStep)
-            this.step(nextChar, nextStep)
-          } catch(err) {
-            if (err.message === 'illegal character') {
-              var charAsHex = nextChar.charCodeAt(0).toString(16)
-              throw new exceptions.ValueError.$pyclass(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
-            } else if (err.name == "KeyError") {
-                throw new exceptions.KeyError.$pyclass(err.msg)
-            } else {
-              //its some other error
-              throw err
+            var nextChar = charArray[charIndex];
+            this.parsedSpec += nextChar;
+            try {
+                var nextStep = this.getNextStep(nextChar, nextStep)
+                this.step(nextChar, nextStep)
+            } catch (err) {
+                if (err.msg === 'illegal character') {
+                    var charAsHex = nextChar.charCodeAt(0).toString(16)
+                    throw new exceptions.ValueError.$pyclass(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
+                } else if (err.name == "KeyError") {
+                    throw new exceptions.KeyError.$pyclass(err.msg)
+                } else {
+                  //its some other error
+                  throw err
+                }
             }
-          }
 
-          charIndex++;
-          if (nextStep === 6) {
-            break;
-          }
+            charIndex++;
+            if (nextStep === 6) {
+                break;
+            }
         } // end while loop
 
         // check that a conversion type was found. Otherwise throw error!
         if (this.conversionType === undefined && !this.literalPercent) {
-          throw new exceptions.ValueError.$pyclass("incomplete format")
+            throw new exceptions.ValueError.$pyclass("incomplete format")
         }; // end parse main loop
 
     } // END SPECIFIER
