@@ -416,6 +416,24 @@ class FormatTests(TranspileTestCase):
             float_exp = False,
             memory_ref = False
         )
+        def test_unrelated_chars(self, js_cleaner, py_cleaner):
+            """
+            unrelated characters following a specifier
+            """
+
+            test = adjust("""
+                print(">>> '%s!' % 'spam'")
+                print('%s!' % 'spam')
+                """)
+
+            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
         def test_no_args(self, js_cleaner, py_cleaner):
             test = adjust("""
                 print(">>> 'nope' % ()")
@@ -482,6 +500,90 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_with_kwargs(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> 'format this: %(arg)s' % {'arg':'spam'}")
+                print('format this: %(arg)s' % {'arg':'spam'})
+                print(">>> 'format this: %(arg)s' % {'arg':'spam', 'arg2':'eggs'}")
+                print('format this: %(arg)s' % {'arg':'spam', 'arg2':'eggs'})
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_with_tuple_of_dicts(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> 'format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'})")
+                print('format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'}))
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_with_kwargs(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> 'format this: %(arg' % {'arg':'spam'}")
+                print('format this: %(arg' % {'arg':'spam'})
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_wildcard_with_kwargs(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> '%*(spam)s' % {'spam': 'eggs'}")
+                print('%*(spam)s' % {'spam': 'eggs'})
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+
+        @unittest.expectedFailure
+        @transforms(
+            js_bool = False,
+            decimal = False,
+            float_exp = False,
+            memory_ref = False
+        )
+        def test_kwargs_missing_key(self, js_cleaner, py_cleaner):
+
+            tests = adjust("""
+                print(">>> 'format this: %(beans)s' % {'spam':'eggs'}")
+                print('format this: %(beans)s' % {'spam':'eggs'})
+                print(">>> 'format this: %(1)s' % {'spam':'eggs'}")
+                print('format this: %(1)s' % {'spam':'eggs'})
+                print('Done.')
+                """)
+
+            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
