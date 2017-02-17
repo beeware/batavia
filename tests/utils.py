@@ -49,24 +49,27 @@ def setUpSuite():
     atexit.register(remove_output_dir)
     _output_dir = tempfile.mkdtemp(dir=TESTS_DIR)
 
-    print("building 'batavia.js'")
-    proc = subprocess.Popen(
-        [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail"],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True,
-    )
+    if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
+        print("building 'batavia.js'")
+        proc = subprocess.Popen(
+            [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True,
+        )
 
-    try:
-        out, err = proc.communicate(timeout=60)
-    except subprocess.TimeoutExpired:
-        proc.kill()
-        out, err = proc.communicate()
-        raise
+        try:
+            out, err = proc.communicate(timeout=60)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            out, err = proc.communicate()
+            raise
 
-    if proc.returncode != 0:
-        raise Exception("Error compiling batavia sources: " + out.decode('ascii'))
+        if proc.returncode != 0:
+            raise Exception("Error compiling batavia sources: " + out.decode('ascii'))
+    else:
+        print("Not precompiling 'batavia.js' as part of test run")
 
     _suite_configured = True
 
