@@ -2,6 +2,7 @@ var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var BigNumber = require('bignumber.js').BigNumber;
 
+
 function _substitute(format, args) {
     var types = require('../types');
 
@@ -101,7 +102,7 @@ function _substitute(format, args) {
             numeric: null
         }
 
-        this.percision = {
+        this.precision = {
             value: '',
             numeric: null
         }
@@ -116,7 +117,7 @@ function _substitute(format, args) {
                 1: /%/, //literal percentage
                 2: /[#0-\s\+]/, // conversion flags
                 3: /[\d\*]/, // min field width
-                4: /[\d\*\.]/, // percision
+                4: /[\d\*\.]/, // precision
                 5: /[hHl]/, // length modifier (not used)
                 6: /[diouxXeEfFgGcrs]/, // conversion type
             }
@@ -231,7 +232,7 @@ function _substitute(format, args) {
                     break;
 
                 case 4:
-                    // percision
+                    // precision
                     if (char === '*') {
 
                         if (this.usesKwargs) {
@@ -239,7 +240,7 @@ function _substitute(format, args) {
                             throw new exceptions.TypeError.$pyclass("* wants int")
                         }
                         // can't be using numerics or have another * already
-                        if (this.percision.value === '' && this.percision.numeric === undefined) {
+                        if (this.precision.value === '' && this.precision.numeric === undefined) {
 
                             var arg = workingArgs.getArg()
                             // arg must be an int
@@ -253,18 +254,18 @@ function _substitute(format, args) {
                             }
                             this.args.push(arg);
 
-                            this.percision.value = "*";
-                            this.percision.numeric = false;
+                            this.precision.value = "*";
+                            this.precision.numeric = false;
                         } else {
                             throw new exceptions.TypeError.$pyclass("illegal character")
                         }
 
                     } else if (!isNaN(char)) {
                         // value is numeric
-                        if (this.percision.numeric !== false) {
+                        if (this.precision.numeric !== false) {
                             // assign if null else concatentate
-                            this.percision.value += char;
-                            this.percision.numeric = true;
+                            this.precision.value += char;
+                            this.precision.numeric = true;
                         } else {
                             throw new Error("illegal character")
                         }
@@ -379,12 +380,12 @@ function _substitute(format, args) {
                 var minWidth = 0;
             }
 
-            if (this.percision.value === '*') {
-                var percision = workingArgs.shift().valueOf();
-            } else if (this.percision.value !== '') {
-                var percision = Number(this.percision.value);
+            if (this.precision.value === '*') {
+                var precision = workingArgs.shift().valueOf();
+            } else if (this.precision.value !== '') {
+                var precision = Number(this.precision.value);
             } else {
-                var percision = null;
+                var precision = null;
             }
 
             var conversionArgRaw = workingArgs.shift(); // the python representation of the arg
@@ -409,8 +410,8 @@ function _substitute(format, args) {
                         conversionArg = '0';
                     }
 
-                    // percision determines leading 0s
-                    var numLeadingZeros = percision - conversionArg.length;
+                    // precision determines leading 0s
+                    var numLeadingZeros = precision - conversionArg.length;
                     if (numLeadingZeros > 0) {
                         conversionArg = '0'.repeat(numLeadingZeros) + conversionArg;
                     }
@@ -437,8 +438,8 @@ function _substitute(format, args) {
                         conversionArg = '-' + conversionArg;
                     }
 
-                    // percision determines leading 0s
-                    var numLeadingZeros = percision - String(base).length;
+                    // precision determines leading 0s
+                    var numLeadingZeros = precision - String(base).length;
                     if (numLeadingZeros > 0) {
                         conversionArg = '0'.repeat(numLeadingZeros) + conversionArg;
                     }
@@ -471,8 +472,8 @@ function _substitute(format, args) {
                         conversionArg = '-' + conversionArg;
                     }
 
-                    // percision determines leading 0s
-                    var numLeadingZeros = percision - String(base).length;
+                    // precision determines leading 0s
+                    var numLeadingZeros = precision - String(base).length;
                     if (numLeadingZeros > 0) {
                         conversionArg = '0'.repeat(numLeadingZeros) + conversionArg;
                     }
@@ -488,8 +489,8 @@ function _substitute(format, args) {
                     var baseRaw = new BigNumber((expSplit[0]));
 
                     // might need to add extra zeros to base
-                    if (percision !== null) {
-                        var base = baseRaw.toFixed(percision);
+                    if (precision !== null) {
+                        var base = baseRaw.toFixed(precision);
                     } else {
                         var base = baseRaw.toFixed(6);
                     }
@@ -514,16 +515,16 @@ function _substitute(format, args) {
                     var exp = baseExpSplit[1];
                     var expSign = exp > 0 ? "+" : "-";
 
-                    percision = percision || 6;  // percision defaults to 6
+                    precision = precision || 6;  // precision defaults to 6
 
-                    if (exp < -4 || exp >= percision) {
+                    if (exp < -4 || exp >= precision) {
                         // use the exponential
                         // correctly zero pad the base
                         // use a decimal if alternate format or if one is needed
                         if (this.conversionFlags['#'] || base % 1 != 0) {
-                            var base = percision === null || percision === 0 ?
+                            var base = precision === null || precision === 0 ?
                               Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
-                              Number(base).toFixed(percision - 1);
+                              Number(base).toFixed(precision - 1);
 
                         } else {
                             // don't use alternate format
@@ -564,8 +565,8 @@ function _substitute(format, args) {
                             }
 
                             // how many extra digits?
-                            var extraDigits = percision !== null ?
-                                percision - numInherentDigits :
+                            var extraDigits = precision !== null ?
+                                precision - numInherentDigits :
                                 6 - numInherentDigits;
 
                             // less than 0 makes no sense!
@@ -587,8 +588,8 @@ function _substitute(format, args) {
                     break;
                 case('f'):
                 case('F'):
-                    conversionArg = percision !== null ?
-                        new BigNumber(conversionArgValue).toFixed(percision) :
+                    conversionArg = precision !== null ?
+                        new BigNumber(conversionArgValue).toFixed(precision) :
                         new BigNumber(conversionArgValue).toFixed(6);
                     break;
 
