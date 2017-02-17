@@ -22,6 +22,7 @@ function Method(instance, func) {
 
 Method.prototype = Object.create(Function.prototype);
 Method.prototype.__class__ = new Type('method');
+Method.prototype.__class__.$pyclass = Method;
 
 /**************************************************
  * Module exports

@@ -31,6 +31,17 @@ NoneType.prototype.__str__ = function() {
     var types = require('../../types');
     return new types.Str("None");
 }
+ /**************************************************
+ * Attribute manipulation
+ **************************************************/
+
+NoneType.prototype.__setattr__ = function(attr, value) {
+    if (Object.getPrototypeOf(this)[attr] === undefined) {
+        throw new exceptions.AttributeError.$pyclass("'NoneType' object has no attribute '" + attr + "'");
+    } else {
+        throw new exceptions.AttributeError.$pyclass("'NoneType' object attribute '" + attr + "' is read-only");
+    }
+}
 
 /**************************************************
  * Comparison operators

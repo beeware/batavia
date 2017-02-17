@@ -86,6 +86,7 @@ function Complex(re, im) {
 
 Complex.prototype = Object.create(PyObject.prototype);
 Complex.prototype.__class__ = new Type('complex');
+Complex.prototype.__class__.$pyclass = Complex;
 
 /**************************************************
  * Javascript compatibility methods

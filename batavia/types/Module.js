@@ -16,6 +16,7 @@ function Module(name, filename, pkg) {
 
 Module.prototype = Object.create(JSDict.prototype)
 Module.prototype.__class__ = new Type('module');
+Module.prototype.__class__.$pyclass = Module;
 
 /**************************************************
  * Module exports

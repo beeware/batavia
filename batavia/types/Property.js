@@ -2,6 +2,7 @@ var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var None = require('../core').None;
 var exceptions = require('../core').exceptions;
+var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 // var None = require('../core').None;
 
@@ -20,6 +21,7 @@ function Property(fget, fset, fdel, doc) {
 
 Property.prototype = Object.create(PyObject.prototype);
 Property.prototype.__class__ = new Type('property');
+Property.prototype.__class__.$pyclass = Property;
 
 /**************************************************
  * Javascript compatibility methods
@@ -58,7 +60,7 @@ Property.prototype.__get__ = function(instance, klass) {
     // console.log("Property __get__ on " + instance);
     if (this.fget !== None) {
         try {
-            return this.fget.__call__([instance], null);
+            return callables.call_function(this.fget, [instance], null);
         } catch (e) {
             throw new exceptions.TypeError.$pyclass("'" + type_name(this) + "' object is not callable");
         }
@@ -71,7 +73,7 @@ Property.prototype.__set__ = function(instance, value) {
     // console.log("Property __set__ on " + instance);
     if (this.fset !== None) {
         try {
-            this.fset.__call__([instance, value], null);
+            callables.call_function(this.fset, [instance, value], null);
         } catch (e) {
             throw new exceptions.TypeError.$pyclass("'" + type_name(this) + "' object is not callable");
         }
@@ -84,7 +86,7 @@ Property.prototype.__delete__ = function(instance) {
     // console.log("Property __delete__ on " + instance);
     if (this.fdel !== None) {
         try {
-            this.fdel.__call__([instance], null);
+            callables.call_function(this.fdel, [instance], null);
         } catch (e) {
             throw new exceptions.TypeError.$pyclass("'" + type_name(this) + "' object is not callable");
         }

@@ -1,3 +1,5 @@
+from unittest import expectedFailure
+
 from ..utils import TranspileTestCase
 
 
@@ -180,6 +182,7 @@ class DescriptorTests(TranspileTestCase):
             print("Done.")
             """)
 
+    @expectedFailure
     def test_with_factory(self):
         self.assertCodeExecution("""
             def make_attr(name, multiplier):

@@ -69,12 +69,15 @@ Type.prototype.__getattr__ = function(name) {
     var exceptions = require('../exceptions');
     var native = require('../native');
 
-    var attr = native.getattr(this, name);
+    var attr = native.getattr_raw(this, name);
     if (attr === undefined) {
-        attr = native.getattr(this.$pyclass.prototype, name);
+        // if the Type doesn't have the attribute, look to the prototype
+        // of the instance. However, exclude functions; this step is
+        // only required for class attributes.
+        attr = native.getattr_raw(this.$pyclass.prototype, name, true);
         if (attr === undefined) {
             throw new exceptions.AttributeError.$pyclass(
-                "type object '" + type_name(this) + "' has no attribute '" + name + "'"
+                "type object '" + this.__name__ + "' has no attribute '" + name + "'"
             );
         }
     }
@@ -93,21 +96,30 @@ Type.prototype.__getattr__ = function(name) {
 Type.prototype.__setattr__ = function(name, value) {
     var type_name = require('./Type').type_name;
     var exceptions = require('../exceptions');
+    var native = require('../native');
 
-    throw new exceptions.TypeError.$pyclass(
-        "can't set attributes of built-in/extension type '" + type_name(this) + "'"
-    );
+    if (Object.getPrototypeOf(this) === Type) {
+        throw new exceptions.TypeError.$pyclass(
+            "can't set attributes of built-in/extension type '" + this.__name__ + "'"
+        );
+    }
+
+    native.setattr(this.$pyclass.prototype, name, value)
 }
 
 Type.prototype.__delattr__ = function(name) {
     var type_name = require('./Type').type_name;
     var exceptions = require('../exceptions');
+    var native = require('../native');
 
+    var attr = native.getattr_raw(this.$pyclass.prototype, name);
     if (attr === undefined) {
         throw new exceptions.AttributeError.$pyclass(
-            "type object '" + type_name(this) + "' has no attribute '" + name + "'"
+            "type object '" + this.__name__ + "' has no attribute '" + name + "'"
         );
     }
+
+    native.delattr(this.$pyclass.prototype, name);
 }
 
 Type.prototype.valueOf = function() {

@@ -314,30 +314,33 @@ function PyConsole(element) {
     this.element = document.getElementById('pyconsole');
 }
 
-PyConsole.prototype.write = function(args, kwargs) {
-    var text = document.createTextNode(args[0]);
+PyConsole.prototype.write = function(buffer) {
+    var text = document.createTextNode(buffer);
     this.element.appendChild(text);
+
+    // Also echo to the console.
+    console.log(buffer)
 }
 
-PyConsole.prototype.flush = function(args, kwargs) {}
+PyConsole.prototype.flush = function() {}
 
 function PyErrConsole(element) {
     this.element = document.getElementById('pyconsole');
 }
 
-PyErrConsole.prototype.write = function(args, kwargs) {
+PyErrConsole.prototype.write = function(buffer) {
     var err = document.createElement('span');
     err.className = "error";
-    var text = document.createTextNode(args[0])
+    var text = document.createTextNode(buffer)
 
     err.appendChild(text)
     this.element.appendChild(err);
 
     // Also echo to the console.
-    console.log(args[0])
+    console.log(buffer)
 }
 
-PyErrConsole.prototype.flush = function(args, kwargs) {}
+PyErrConsole.prototype.flush = function() {}
 
 function bootstrap() {
     console.log('Create VM');

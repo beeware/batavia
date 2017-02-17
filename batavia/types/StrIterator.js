@@ -3,35 +3,34 @@ var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 
 /**************************************************
- * Set Iterator
+ * Str Iterator
  **************************************************/
 
-function SetIterator(data) {
+function StrIterator(data) {
     PyObject.call(this);
     this.index = 0;
     this.data = data;
-    this.keys = data.data.keys();
 }
 
-SetIterator.prototype = Object.create(PyObject.prototype);
-SetIterator.prototype.__class__ = new Type('set_iterator');
-SetIterator.prototype.__class__.$pyclass = SetIterator;
+StrIterator.prototype = Object.create(PyObject.prototype);
+StrIterator.__class__ = new Type('str_iterator');
+StrIterator.prototype.__class__.$pyclass = StrIterator;
 
-SetIterator.prototype.__next__ = function() {
-    var key = this.keys[this.index];
-    if (key === undefined) {
+StrIterator.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
         throw new exceptions.StopIteration.$pyclass();
     }
     this.index++;
-    return key;
+    return retval;
 }
 
-SetIterator.prototype.__str__ = function() {
-    return "<set_iterator object at 0x99999999>";
+StrIterator.prototype.__str__ = function() {
+    return "<str_iterator object at 0x99999999>";
 }
 
 /**************************************************
  * Module exports
  **************************************************/
 
-module.exports = SetIterator;
+module.exports = StrIterator;

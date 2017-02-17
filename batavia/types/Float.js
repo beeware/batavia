@@ -16,6 +16,7 @@ function Float(val) {
 
 Float.prototype = Object.create(PyObject.prototype);
 Float.prototype.__class__ = new Type('float');
+Float.prototype.__class__.$pyclass = Float;
 
 function python_modulo(n, M) {
     return ((n % M) + M) % M;

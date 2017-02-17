@@ -12,7 +12,7 @@ function callable(args, kwargs) {
     if (!args || args.length != 1) {
         throw new exceptions.TypeError.$pyclass('callable() expected exactly 1 argument (' + args.length + ' given)');
     }
-    if (typeof(args[0]) === "function" || (args[0] && args[0].__call__)) {
+    if ((args[0] instanceof Function) || (args[0] instanceof types.Function)) {
         return new types.Bool(true);
     } else {
         return new types.Bool(false);

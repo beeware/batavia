@@ -20,6 +20,7 @@ function map(args, kwargs) {
 
 map.prototype = Object.create(PyObject.prototype);
 map.prototype.__class__ = new Type('map');
+map.prototype.__class__.$pyclass = map;
 
 /**************************************************
  * Javascript compatibility methods
@@ -48,8 +49,8 @@ map.prototype.__next__ = function() {
             type_name(this._func) + "' object is not callable");
     }
 
-    var sval = this._iter.__next__();
-    return this._func([sval], null);
+    var val = callables.call_method(this._iter, "__next__", []);
+    return callables.call_function(this._func, [val], null);
 };
 
 map.prototype.__str__ = function() {

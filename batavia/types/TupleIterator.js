@@ -3,35 +3,34 @@ var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 
 /**************************************************
- * Set Iterator
+ * Tuple Iterator
  **************************************************/
 
-function SetIterator(data) {
+function TupleIterator(data) {
     PyObject.call(this);
     this.index = 0;
     this.data = data;
-    this.keys = data.data.keys();
 }
 
-SetIterator.prototype = Object.create(PyObject.prototype);
-SetIterator.prototype.__class__ = new Type('set_iterator');
-SetIterator.prototype.__class__.$pyclass = SetIterator;
+TupleIterator.prototype = Object.create(PyObject.prototype);
+TupleIterator.prototype.__class__ = new Type('tuple_iterator');
+TupleIterator.prototype.__class__.$pyclass = TupleIterator;
 
-SetIterator.prototype.__next__ = function() {
-    var key = this.keys[this.index];
-    if (key === undefined) {
+TupleIterator.prototype.__next__ = function() {
+    var retval = this.data[this.index];
+    if (retval === undefined) {
         throw new exceptions.StopIteration.$pyclass();
     }
     this.index++;
-    return key;
+    return retval;
 }
 
-SetIterator.prototype.__str__ = function() {
-    return "<set_iterator object at 0x99999999>";
+TupleIterator.prototype.__str__ = function() {
+    return "<tuple_iterator object at 0x99999999>";
 }
 
 /**************************************************
  * Module exports
  **************************************************/
 
-module.exports = SetIterator;
+module.exports = TupleIterator;

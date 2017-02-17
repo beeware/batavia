@@ -4,6 +4,7 @@ var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
 var type_name = require('../core').type_name;
+var TupleIterator = require('./TupleIterator');
 
 /*************************************************************************
  * A Python Tuple type
@@ -38,6 +39,7 @@ Array_.prototype = [];
 Tuple.prototype = Object.create(Array_.prototype);
 Tuple.prototype.length = 0;
 Tuple.prototype.__class__ = new Type('tuple');
+Tuple.prototype.__class__.$pyclass = Tuple;
 Tuple.prototype.constructor = Tuple;
 
 /**************************************************
@@ -53,7 +55,7 @@ Tuple.prototype.toString = function() {
  **************************************************/
 
 Tuple.prototype.__iter__ = function() {
-    return new Tuple.prototype.TupleIterator(this);
+    return new TupleIterator(this);
 }
 
 Tuple.prototype.__len__ = function () {
@@ -398,33 +400,6 @@ Tuple.prototype.index = function(value, start, stop) {
         }
     }
     throw new exceptions.ValueError.$pyclass("tuple.index(x): x not in tuple");
-}
-
-/**************************************************
- * Tuple Iterator
- **************************************************/
-
-Tuple.prototype.TupleIterator = function (data) {
-    Object.call(this);
-    this.index = 0;
-    this.data = data;
-}
-
-Tuple.prototype.TupleIterator.prototype = Object.create(PyObject.prototype);
-Tuple.prototype.TupleIterator.prototype.__class__ = new Type('tuple_iterator');
-Tuple.prototype.TupleIterator.prototype.constructor = Tuple.prototype.TupleIterator;
-
-Tuple.prototype.TupleIterator.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new exceptions.StopIteration.$pyclass();
-    }
-    this.index++;
-    return retval;
-}
-
-Tuple.prototype.TupleIterator.prototype.__str__ = function() {
-    return "<tuple_iterator object at 0x99999999>";
 }
 
 /**************************************************

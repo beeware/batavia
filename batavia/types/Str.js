@@ -6,8 +6,10 @@ var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
 var None = require('../core').None;
-var path = require('path')
-var StrUtils = require('./StrUtils')
+var path = require('path');
+var StrIterator = require('./StrIterator');
+var StrUtils = require('./StrUtils');
+
 /*************************************************************************
  * Modify String to behave like a Python String
  *************************************************************************/
@@ -15,6 +17,7 @@ var StrUtils = require('./StrUtils')
 var Str = String;
 
 Str.prototype.__class__ = new Type('str');
+Str.prototype.__class__.$pyclass = Str;
 
 /**************************************************
  * Type conversions
@@ -25,7 +28,7 @@ Str.prototype.__bool__ = function() {
 }
 
 Str.prototype.__iter__ = function() {
-    return new Str.prototype.StrIterator(this);
+    return new StrIterator(this);
 }
 
 Str.prototype.__repr__ = function() {
@@ -55,6 +58,22 @@ Str.prototype.__repr__ = function() {
 
 Str.prototype.__str__ = function() {
     return this.toString();
+}
+
+ /**************************************************
+ * Attribute manipulation
+ **************************************************/
+
+Str.prototype.__getattr__ = function(attr) {
+    return PyObject.prototype.__getattr__.call(this, attr);
+}
+
+Str.prototype.__setattr__ = function(attr, value) {
+    if (Object.getPrototypeOf(this)[attr] === undefined) {
+        throw new exceptions.AttributeError.$pyclass("'str' object has no attribute '" + attr + "'");
+    } else {
+        throw new exceptions.AttributeError.$pyclass("'str' object attribute '" + attr + "' is read-only");
+    }
 }
 
 /**************************************************
@@ -455,31 +474,6 @@ Str.prototype.join = function(iter) {
     return l.join(this);
 }
 
-/**************************************************
- * Str Iterator
- **************************************************/
-
-Str.prototype.StrIterator = function (data) {
-    PyObject.call(this);
-    this.index = 0;
-    this.data = data;
-}
-
-Str.prototype.StrIterator.prototype = Object.create(PyObject.prototype);
-Str.prototype.StrIterator.__class__ = new Type('str_iterator');
-
-Str.prototype.StrIterator.prototype.__next__ = function() {
-    var retval = this.data[this.index];
-    if (retval === undefined) {
-        throw new exceptions.StopIteration.$pyclass();
-    }
-    this.index++;
-    return retval;
-}
-
-Str.prototype.StrIterator.prototype.__str__ = function() {
-    return "<str_iterator object at 0x99999999>";
-}
 
 /**************************************************
  * Methods

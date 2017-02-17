@@ -75,6 +75,7 @@ function Function(name, code, globals, defaults, closure, vm) {
 
 Function.prototype = Object.create(PyObject.prototype);
 Function.prototype.__class__ = new Type('function');
+Function.prototype.__class__.$pyclass = Function;
 
 Function.prototype.__get__ = function(instance, klass) {
     var types = require('../types');

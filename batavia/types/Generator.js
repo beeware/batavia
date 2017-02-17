@@ -17,6 +17,7 @@ function Generator(frame, vm) {
 
 Generator.prototype = Object.create(PyObject.prototype);
 Generator.prototype.__class__ = new Type('generator');
+Generator.prototype.__class__.$pyclass = Generator;
 
 Generator.prototype.__iter__ = function() {
     return this;

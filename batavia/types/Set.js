@@ -21,6 +21,7 @@ function Set(args, kwargs) {
 
 Set.prototype = Object.create(PyObject.prototype);
 Set.prototype.__class__ = new Type('set');
+Set.prototype.__class__.$pyclass = Set;
 
 /**************************************************
  * Javascript compatibility methods

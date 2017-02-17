@@ -3,6 +3,7 @@ var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
+var BytesIterator = require('./BytesIterator');
 
 /*************************************************************************
  * A Python bytes type
@@ -16,6 +17,7 @@ function Bytes(val) {
 
 Bytes.prototype = Object.create(PyObject.prototype);
 Bytes.prototype.__class__ = new Type('bytes');
+Bytes.prototype.__class__.$pyclass = Bytes;
 
 /**************************************************
  * Javascript compatibility methods
@@ -74,7 +76,7 @@ Bytes.prototype.__str__ = function() {
 };
 
 Bytes.prototype.__iter__ = function() {
-    return new Bytes.prototype.BytesIterator(this.val);
+    return new BytesIterator(this.val);
 };
 
 /**************************************************
@@ -323,38 +325,6 @@ Bytes.prototype.decode = function(encoding, errors) {
             "encoding not implemented or incorrect encoding"
         );
     }
-};
-
-/**************************************************
- * Bytes Iterator
- **************************************************/
-
-Bytes.prototype.BytesIterator = function(data) {
-    PyObject.call(this);
-    this.index = 0;
-    this.data = data;
-};
-
-Bytes.prototype.BytesIterator.prototype = Object.create(PyObject.prototype);
-Bytes.prototype.BytesIterator.prototype.__class__ = new Type('bytes_iterator');
-
-Bytes.prototype.BytesIterator.prototype.__iter__ = function() {
-    return this;
-};
-
-Bytes.prototype.BytesIterator.prototype.__next__ = function() {
-    var types = require('../types');
-
-    if (this.index >= this.data.length) {
-        throw new exceptions.StopIteration.$pyclass();
-    }
-    var retval = this.data[this.index];
-    this.index++;
-    return new types.Int(retval);
-};
-
-Bytes.prototype.BytesIterator.prototype.__str__ = function() {
-    return "<bytes_iterator object at 0x99999999>";
 };
 
 /**************************************************

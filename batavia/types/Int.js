@@ -17,7 +17,7 @@ function Int(val) {
 
 Int.prototype = Object.create(PyObject.prototype);
 Int.prototype.__class__ = new Type('int');
-
+Int.prototype.__class__.$pyclass = Int;
 
 var REASONABLE_SHIFT = new Int("8192");
 var MAX_SHIFT = new Int("9223372036854775807");

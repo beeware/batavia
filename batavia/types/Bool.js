@@ -9,6 +9,7 @@ var type_name = require('../core').type_name;
 var Bool = Boolean;
 
 Bool.prototype.__class__ = new Type('bool');
+Bool.prototype.__class__.$pyclass = Bool;
 
 /**************************************************
  * Type conversions

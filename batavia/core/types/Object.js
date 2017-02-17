@@ -25,6 +25,14 @@ PyObject.prototype.toString = function() {
     return '<' + this.__class__.__name__ + ' 0x...>';
 }
 
+PyObject.prototype.__repr__ = function() {
+    return '<' + this.__class__.__name__ + ' 0x...>';
+}
+
+PyObject.prototype.__str__ = function() {
+    return '<' + this.__class__.__name__ + ' 0x...>';
+}
+
 PyObject.prototype.__getattr__ = function(name) {
     var native = require('../native');
 

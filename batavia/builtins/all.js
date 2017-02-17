@@ -18,22 +18,19 @@ function all(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('all() takes exactly one argument (' + args.length + ' given)');
     }
 
-    if (!args[0].__iter__) {
-        throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable");
-    }
-
-    var iterobj = args[0].__iter__();
     try {
+        var iterobj = callables.call_method(args[0], "__iter__", []);
+
         while (true) {
-            var next = iterobj.__next__();
-            var bool_next = next.__bool__();
+            var next = callables.call_method(iterobj, "__next__", []);
+            var bool_next = callables.call_method(next, "__bool__", []);
             if (!bool_next) {
                 return false;
             }
         }
     } catch (err) {
         if (!(err instanceof exceptions.StopIteration.$pyclass)) {
-            throw err;
+            throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable");
         }
     }
 

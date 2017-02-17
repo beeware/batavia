@@ -22,6 +22,7 @@ function FrozenSet(args, kwargs) {
 
 FrozenSet.prototype = Object.create(PyObject.prototype);
 FrozenSet.prototype.__class__ = new Type('frozenset');
+FrozenSet.prototype.__class__.$pyclass = FrozenSet;
 
 /**************************************************
  * Javascript compatibility methods
@@ -210,7 +211,7 @@ FrozenSet.prototype.__getitem__ = function(other) {
         throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing");
     } else if (types.isinstance(other, [types.Int])){
         if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
-            throw new exceptoins.IndexError.$pyclass("cannot fit 'int' into an index-sized integer");
+            throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer");
         } else {
             throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing");
         }

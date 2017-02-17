@@ -28,6 +28,7 @@ function Dict(args, kwargs) {
 
 Dict.prototype = Object.create(PyObject.prototype);
 Dict.prototype.__class__ = new Type('dict');
+Dict.prototype.__class__.$pyclass = Dict;
 
 var MAX_LOAD_FACTOR = 0.75;
 var INITIAL_SIZE = 8; // after size 0

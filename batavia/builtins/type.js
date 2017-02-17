@@ -20,7 +20,25 @@ var type = function(args, kwargs) {
             return args[0].__class__;
         }
     } else {
-        return new types.Type(args[0], args[1], args[2]);
+        return function (name, bases, dict) {
+            var new_type = new types.Type(args[0], args[1], args[2]);
+
+            function NewType() {
+                types.Object.call(this);
+            }
+
+            NewType.prototype = Object.create(types.Object.prototype);
+            NewType.prototype.__class__ = new_type
+            NewType.prototype.__class__.$pyclass = NewType;
+
+            for (var attr in dict) {
+                if (dict.hasOwnProperty(attr)) {
+                    NewType.prototype[attr] = dict[attr];
+                }
+            }
+
+            return new_type;
+        }(args[0], args[1], args[2]);
     }
 }
 type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type";

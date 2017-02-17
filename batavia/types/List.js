@@ -5,6 +5,7 @@ var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
 var type_name = require('../core').type_name;
 var None = require('../core').None;
+var ListIterator = require('./ListIterator');
 
 /*************************************************************************
  * A Python list type
@@ -38,6 +39,7 @@ Array_.prototype = [];
 List.prototype = Object.create(Array_.prototype);
 List.prototype.length = 0;
 List.prototype.__class__ = new Type('list');
+List.prototype.__class__.$pyclass = List;
 List.prototype.constructor = List;
 
 /**************************************************
@@ -53,7 +55,7 @@ List.prototype.toString = function() {
  **************************************************/
 
 List.prototype.__iter__ = function() {
-    return new List.prototype.ListIterator(this);
+    return new ListIterator(this);
 };
 
 List.prototype.__len__ = function () {
@@ -546,34 +548,6 @@ List.prototype.extend = function(values) {
     }
 };
 
-/**************************************************
- * List Iterator
- **************************************************/
-
-List.prototype.ListIterator = function (data) {
-    PyObject.call(this);
-    this.index = 0;
-    this.data = data;
-};
-
-List.prototype.ListIterator.prototype.__class__ = new Type('list_iterator');
-
-List.prototype.ListIterator.prototype.__iter__ = function() {
-    return this;
-};
-
-List.prototype.ListIterator.prototype.__next__ = function() {
-    if (this.index >= this.data.length) {
-        throw new exceptions.StopIteration.$pyclass();
-    }
-    var retval = this.data[this.index];
-    this.index++;
-    return retval;
-};
-
-List.prototype.ListIterator.prototype.__str__ = function() {
-    return "<list_iterator object at 0x99999999>";
-};
 
 /**************************************************
  * Module exports

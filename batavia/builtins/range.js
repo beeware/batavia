@@ -13,7 +13,7 @@ function range(args, kwargs){
         throw new exceptions.TypeError.$pyclass('range() expected 1 arguments, got ' + args.length);
     }
     if (args.length > 3) {
-     throw new exceptions.TypeError.$pyclass('range() expected at most 3 arguments, got ' + args.length);
+        throw new exceptions.TypeError.$pyclass('range() expected at most 3 arguments, got ' + args.length);
     }
 
     return new types.Range(args[0], args[1], args[2]);

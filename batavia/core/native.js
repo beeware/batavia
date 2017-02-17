@@ -2,15 +2,14 @@ var exceptions = require('./exceptions');
 
 var native = {};
 
-native.getattr = function(obj, attr) {
+native.getattr_raw = function(obj, attr, attributes_only) {
     var type_name = require('../core').type_name;
 
     var val = obj[attr];
-    if (val === undefined) {
-        throw new exceptions.AttributeError.$pyclass(
-            "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
-        );
-    } else if (val instanceof Function) {
+    if (val instanceof Function) {
+        if (attributes_only) {
+            return undefined;
+        }
         // If this is a native Javascript function, wrap the function
         // so that the Python calling convention is used. If it's a
         // class constructor, wrap it in a method that uses the Python
@@ -44,6 +43,18 @@ native.getattr = function(obj, attr) {
     return val;
 }
 
+native.getattr = function(obj, attr) {
+    var type_name = require('../core').type_name;
+
+    var val = native.getattr_raw(obj, attr);
+    if (val === undefined) {
+        throw new exceptions.AttributeError.$pyclass(
+            "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
+        );
+    }
+    return val;
+}
+
 native.setattr = function(obj, attr, value) {
     obj[attr] = value;
 }
@@ -51,12 +62,12 @@ native.setattr = function(obj, attr, value) {
 native.delattr = function(obj, attr) {
     var type_name = require('../core').type_name;
 
-    if (obj[name] === undefined) {
+    if (obj[attr] === undefined) {
         throw new exceptions.AttributeError.$pyclass("'" + type_name(obj) +
-                        "' object has no attribute '" + name + "'"
+                        "' object has no attribute '" + attr + "'"
         );
     } else {
-        delete obj[name];
+        delete obj[attr];
     }
 }
 

@@ -5,6 +5,7 @@ var PyObject = require('../core').Object;
 var Type = require('../core').Type;
 var exceptions = require('../core').exceptions;
 var type_name = require('../core').type_name;
+var RangeIterator = require('./RangeIterator');
 
 /*************************************************************************
  * An implementation of range
@@ -35,6 +36,7 @@ function Range(start, stop, step) {
 
 Range.prototype = Object.create(PyObject.prototype);
 Range.prototype.__class__ = new Type('range');
+Range.prototype.__class__.$pyclass = Range;
 
 /**************************************************
  * Javascript compatibility methods
@@ -53,7 +55,7 @@ Range.prototype.__len__ = function () {
 }
 
 Range.prototype.__iter__ = function() {
-   return new Range.prototype.RangeIterator(this);
+   return new RangeIterator(this);
 }
 
 Range.prototype.__repr__ = function() {
@@ -148,37 +150,6 @@ Range.prototype.__getitem__ = function(index) {
         var msg = "range indices must be integers or slices, not ";
         throw new exceptions.TypeError.$pyclass(msg + type_name(index));
     }
-}
-
-/**************************************************
- * Range Iterator
- **************************************************/
-
-Range.prototype.RangeIterator = function (data) {
-    PyObject.call(this);
-    this.index = data.start;
-    this.step = data.step;
-    this.stop = data.stop;
-}
-
-Range.prototype.RangeIterator.prototype = Object.create(PyObject.prototype);
-Range.prototype.RangeIterator.prototype.__class__ = new Type('range_iterator');
-Range.prototype.RangeIterator.prototype.constructor = Range.prototype.RangeIterator;
-
-Range.prototype.RangeIterator.prototype.__next__ = function() {
-    var types = require('../types');
-
-    var retval = new BigNumber(this.index);
-    if ((this.step.gt(0) && this.index.lt(this.stop)) ||
-        (this.step.lt(0) && this.index.gt(this.stop))) {
-        this.index = this.index.add(this.step);
-        return new types.Int(retval);
-    }
-    throw new exceptions.StopIteration.$pyclass();
-}
-
-Range.prototype.RangeIterator.prototype.__str__ = function() {
-    return "<range_iterator object at 0x99999999>";
 }
 
 /**************************************************

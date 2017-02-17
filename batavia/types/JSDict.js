@@ -9,14 +9,15 @@ var None = require('../core').None;
  *************************************************************************/
 
 function JSDict(args, kwargs) {
-    PyObject.call(this);
+    Object.call(this);
     if (args) {
         this.update(args);
     }
 }
 
-JSDict.prototype = Object.create(PyObject.prototype)
-JSDict.prototype.__class__ = new Type('jsdict');
+JSDict.prototype = Object.create(Object.prototype);
+// JSDict doesn't need to appear as a Python type,
+// so we don't need to set __class__ or define a Type().
 
 /**************************************************
  * Javascript compatibility methods
