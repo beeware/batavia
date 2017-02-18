@@ -157,7 +157,7 @@ List.prototype.__eq__ = function(other) {
             return false
         } else {
             for (var i = 0; i < this.length; i++) {
-                if (this[i] !== other[i]) { return false }
+                if (!this[i].__eq__(other[i])) { return false }
             }
             return true
         }
