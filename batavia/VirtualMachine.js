@@ -1934,14 +1934,6 @@ var make_class = function(vm) {
             return function() {
                 if (bases.length === 0) {
                     types.Object.call(this);
-
-                    // In order to have the class represent itself accurately in
-                    // stacktraces/debug, override the `name` property.
-                    Object.defineProperty(this, 'name', {
-                          get: function () {
-                              return name;
-                          }
-                    });
                 } else {
                     for (var b in bases) {
                         bases[b].$pyclass.call(this);
