@@ -4,7 +4,6 @@ var webpack = require('webpack');
 module.exports = {
     entry: {
         "batavia": "./batavia/batavia.js",
-        "batavia.min": "./batavia/batavia.js"
     },
     devtool: 'source-map',
     output: {
@@ -16,9 +15,8 @@ module.exports = {
     target: 'web',
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/
-            // minimize: true,
-            // sourceMap: true
+            minimize: true,
+            sourceMap: true
         })
     ],
     module: {
@@ -30,7 +28,7 @@ module.exports = {
                         loader: "babel-loader"
                     }
                 ],
-                exclude: /node_modules/
+                exclude: "/node_modules/"
             }
         ]
     },
