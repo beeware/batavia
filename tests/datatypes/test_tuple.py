@@ -229,24 +229,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_subscr_bool',
         'test_subscr_slice',
-
-        'test_xor_bool',
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
-        'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_None',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
-        'test_xor_str',
-        'test_xor_tuple',
     ]
 
 
