@@ -108,7 +108,24 @@ Tuple.prototype.__lt__ = function(other) {
 }
 
 Tuple.prototype.__le__ = function(other) {
-    return this.__lt__(other).__or__(this.__eq__(other))
+    var types = require('../types');
+
+    if (!types.isinstance(other, types.Tuple)) {
+        throw new exceptions.TypeError('unorderable types: tuple() <= ' + type_name(other) + '()')
+    }
+    for (var i = 0; i < this.length; i++) {
+        if (i >= other.length) {
+            return new types.Bool(false);
+        }
+        if (this[i].__eq__(other[i]).valueOf()) {
+            continue;
+        } else if (this[i].__le__(other[i]).valueOf()) {
+            return new types.Bool(true);
+        } else {
+            return new types.Bool(false);
+        }
+    }
+    return new types.Bool(this.length <= other.length)
 }
 
 Tuple.prototype.__eq__ = function(other) {
@@ -145,19 +162,37 @@ Tuple.prototype.__gt__ = function(other) {
         if (i >= other.length) {
             return new types.Bool(true)
         }
-        if (this[i].__lt__(other[i]).valueOf()) {
-            return new types.Bool(false)
+        // we need to use __gt__ so it throws right exception message if types are unorderable
+        if (this[i].__gt__(other[i]).valueOf()) {
+            return new types.Bool(true);
         } else if (this[i].__eq__(other[i]).valueOf()) {
             continue
         } else {
-            return new types.Bool(true)
+            return new types.Bool(false)
         }
     }
     return new types.Bool(this.length > other.length)
 }
 
 Tuple.prototype.__ge__ = function(other) {
-    return this.__gt__(other).__or__(this.__eq__(other))
+    var types = require('../types');
+
+    if (!types.isinstance(other, types.Tuple)) {
+        throw new exceptions.TypeError('unorderable types: tuple() >= ' + type_name(other) + '()')
+    }
+    for (var i = 0; i < this.length; i++) {
+        if (i >= other.length) {
+            return new types.Bool(true)
+        }
+        if (this[i].__eq__(other[i]).valueOf()) {
+            continue;
+        } else if (this[i].__ge__(other[i]).valueOf()) {
+            return new types.Bool(true)
+        } else {
+            return new types.Bool(false)
+        }
+    }
+    return new types.Bool(this.length >= other.length)
 }
 
 Tuple.prototype.__contains__ = function(other) {
