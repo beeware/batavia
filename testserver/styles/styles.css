@@ -9,7 +9,7 @@
 
 @font-face {
     font-family: cutive_regular;
-    src: url(/static/testserver/styles/cutive/Cutive-Regular.ttf);
+    src: url(/static/styles/cutive/Cutive-Regular.ttf);
 }
 
 body {
