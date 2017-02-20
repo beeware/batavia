@@ -308,7 +308,7 @@ Tuple.prototype.__and__ = function(other) {
 }
 
 Tuple.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass("Tuple.__xor__ has not been implemented");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'tuple' and '" + type_name(other) + "'");
 }
 
 Tuple.prototype.__or__ = function(other) {
