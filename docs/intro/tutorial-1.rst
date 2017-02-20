@@ -109,7 +109,7 @@ That string is the base64 encoded version of the bytecode for the Python
 program you submitted. The browser then takes this base64 string, decodes it
 back into a bytestring, and runs it through Batavia -- a Javascript module
 that does the same thing in a browser that CPython does on the desktop:
-iterprets Python bytecode as a running program.
+interprets Python bytecode as a running program.
 
 Push the button...
 ------------------
