@@ -10,7 +10,7 @@ function chr(args, kwargs) {
         throw new exceptions.TypeError("chr() takes no keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new exceptions.TypeError('chr() takes exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError('chr() takes exactly one argument (' + args.length + ' given)');
     }
     return new types.Str(String.fromCharCode(args[0]));
     // After tests pass, let's try saving one object creation
