@@ -68,11 +68,13 @@ Frame.prototype.__class__ = new basic_types.Type('frame')
 Frame.prototype.constructor = Frame
 
 Frame.prototype.toString = function() {
-    return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename + ' @ ' + this.f_lineno + '>'
+    // return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename + ' @ ' + this.f_lineno + '>'
+    return '<Frame at 0x99999999: ' + this.f_code.co_filename + ' @ ' + this.f_lineno + '>'
 }
 
 Frame.prototype.__repr__ = function() {
-    return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename + ' @ ' + this.f_lineno + '>'
+    // return '<Frame at 0x' + id(self) + ': ' + this.f_code.co_filename + ' @ ' + this.f_lineno + '>'
+    return '<Frame at 0x99999999: ' + this.f_code.co_filename + ' @ ' + this.f_lineno + '>'
 }
 
 Frame.prototype.line_number = function() {
@@ -83,8 +85,8 @@ Frame.prototype.line_number = function() {
     var byte_increments = [] // six.iterbytes(lnotab[0::2]);
     var line_increments = [] // six.iterbytes(lnotab[1::2]);
 
-    byte_num = 0
-    line_num = this.f_code.co_firstlineno
+    var byte_num = 0
+    var line_num = this.f_code.co_firstlineno
 
     for (var incr in byte_increments) {
         var byte_incr = byte_increments[incr]

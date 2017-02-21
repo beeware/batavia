@@ -1,5 +1,4 @@
 var exceptions = require('../core').exceptions
-var callables = require('../core').callables
 var type_name = require('../core').type_name
 var None = require('../core').None
 var tuple = require('./tuple')
@@ -12,13 +11,14 @@ function max(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('max expected 1 arguments, got ' + args.length)
     }
 
+    var iterobj
     if (args.length > 1) {
-        var iterobj = tuple([args], None).__iter__()
+        iterobj = tuple([args], None).__iter__()
     } else {
         if (!args[0].__iter__) {
             throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
         }
-        var iterobj = args[0].__iter__()
+        iterobj = args[0].__iter__()
     }
 
     // If iterator is empty returns arror or default value

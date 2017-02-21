@@ -158,18 +158,15 @@ tokenizer.TOKEN_NAMES[tokenizer.N_TOKENS] = 'N_TOKENS'
 tokenizer.TOKEN_NAMES[tokenizer.NT_OFFSET] = 'NT_OFFSET'
 
 var is_potential_identifier_start = function(c) {
-    return (c >= 'a' && c <= 'z')
-           || (c >= 'A' && c <= 'Z')
-           || c === '_'
-           || (c >= 128)
+    return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c === '_' || (c >= 128)
 }
 
 var is_potential_identifier_char = function(c) {
-    return (c >= 'a' && c <= 'z')
-           || (c >= 'A' && c <= 'Z')
-           || (c >= '0' && c <= '9')
-           || c === '_'
-           || (c >= 128)
+    return (c >= 'a' && c <= 'z') ||
+        (c >= 'A' && c <= 'Z') ||
+        (c >= '0' && c <= '9') ||
+        c === '_' ||
+        (c >= 128)
 }
 
 var isdigit = function(c) {
@@ -417,11 +414,11 @@ Tokenizer.prototype.get_token = function() {
             for (;;) {
                 c = tok.tok_nextc()
                 if (c === ' ') {
-                    col++, altcol++
+                    col++
+                    altcol++
                 } else if (c === '\t') {
                     col = (Math.floor(col / tok.tabsize) + 1) * tok.tabsize
-                    altcol = (Math.floor(altcol / tok.alttabsize) + 1)
-                        * tok.alttabsize
+                    altcol = (Math.floor(altcol / tok.alttabsize) + 1) * tok.alttabsize
                 } else if (c === '\x0f') { // Control-L (formfeed)
                     col = 0 // For Emacs users
                     altcol = 0
@@ -460,8 +457,7 @@ Tokenizer.prototype.get_token = function() {
                     tok.altindstack[tok.indent] = altcol
                 } else { // col < tok.indstack[tok.indent]
                     // Dedent -- any number, must be consistent
-                    while (tok.indent > 0 &&
-                        col < tok.indstack[tok.indent]) {
+                    while (tok.indent > 0 && col < tok.indstack[tok.indent]) {
                         tok.pendin--
                         tok.indent--
                     }
@@ -492,15 +488,15 @@ Tokenizer.prototype.get_token = function() {
             }
         }
 
-        if (tok.async_def
-            && !tok.blankline
-            && tok.level === 0
-            /* There was a NEWLINE after ASYNC DEF,
-               so we're past the signature. */
-            && tok.async_def_nl
-            /* Current indentation level is less than where
-               the async function was defined */
-            && tok.async_def_indent >= tok.indent) {
+        if (tok.async_def &&
+                !tok.blankline &&
+                tok.level === 0 &&
+                /* There was a NEWLINE after ASYNC DEF,
+                   so we're past the signature. */
+                tok.async_def_nl &&
+                /* Current indentation level is less than where
+                   the async function was defined */
+                tok.async_def_indent >= tok.indent) {
             tok.async_def = 0
             tok.async_def_indent = 0
             tok.async_def_nl = 0
@@ -540,7 +536,13 @@ Tokenizer.prototype.again = function() {
 
     // Check for EOF and errors now
     if (c === tokenizer.EOF) {
-        return [tok.done === tokenizer.E_EOF ? tokenizer.ENDMARKER : tokenizer.ERRORTOKEN, builtins.None, builtins.None, 5]
+        var marker
+        if (tok.done === tokenizer.E_EOF) {
+            marker = tokenizer.ENDMARKER
+        } else {
+            marker = tokenizer.ERRORTOKEN
+        }
+        return [marker, builtins.None, builtins.None, 5]
     }
 
     // Identifier (most frequent token!)
@@ -598,14 +600,16 @@ Tokenizer.prototype.again = function() {
             if (c === 'x' || c === 'X') {
                 // Hex
                 c = tok.tok_nextc()
-                if (!isxdigit(c)) {
+                // FIXME - the undefined symbol shouldn't be...
+                if (!isxdigit(c)) {  // eslint-disable-line no-undef
                     tok.done = tokenizer.E_TOKEN
                     tok.tok_backup(c)
                     return [tokenizer.ERRORTOKEN, p_start, p_end, 6]
                 }
                 do {
                     c = tok.tok_nextc()
-                } while (isxdigit(c))
+                // FIXME - the undefined symbol shouldn't be...
+                } while (isxdigit(c))  // eslint-disable-line no-undef
             } else if (c === 'o' || c === 'O') {
                 // Octal
                 c = tok.tok_nextc()
@@ -729,14 +733,12 @@ Tokenizer.prototype.parse_identifier = function(c) {
     while (1) {
         if (!(saw_b || saw_u || saw_f) && (c === 'b' || c === 'B')) {
             saw_b = 1
-        }
         // Since this is a backwards compatibility support literal we don't
         //   want to support it in arbitrary order like byte literals.
-        else if (!(saw_b || saw_u || saw_r || saw_f) && (c === 'u' || c === 'U')) {
+        } else if (!(saw_b || saw_u || saw_r || saw_f) && (c === 'u' || c === 'U')) {
             saw_u = 1
-        }
         // ur"" and ru"" are not supported
-        else if (!(saw_r || saw_u) && (c === 'r' || c === 'R')) {
+        } else if (!(saw_r || saw_u) && (c === 'r' || c === 'R')) {
             saw_r = 1
         } else if (!(saw_f || saw_b || saw_u) && (c === 'f' || c === 'F')) { saw_f = 1 } else { break }
         c = tok.tok_nextc()
@@ -751,7 +753,10 @@ Tokenizer.prototype.parse_identifier = function(c) {
         c = tok.tok_nextc()
     }
     tok.tok_backup(c)
-    if (nonascii && !verify_identifier(tok)) {
+    // FIXME - the undefined symbol shouldn't be...
+    if (nonascii && !verify_identifier(tok)) {  // eslint-disable-line no-undef
+        var p_start = tok.start
+        var p_end = tok.cur
         return [tokenizer.ERRORTOKEN, p_start, p_end, 10]
     }
 

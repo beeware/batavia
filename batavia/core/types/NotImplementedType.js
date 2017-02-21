@@ -34,7 +34,8 @@ NotImplementedType.prototype.__repr__ = function() {
 }
 
 NotImplementedType.prototype.__str__ = function() {
-    var result = '{', values = []
+    var result = '{'
+    var values = []
     for (var key in this) {
         if (this.hasOwnProperty(key)) {
             values.push(exceptions.repr(key))
@@ -82,19 +83,19 @@ NotImplementedType.prototype.__contains__ = function(other) {
  **************************************************/
 
 NotImplementedType.prototype.__pos__ = function() {
-    return new NotImplemented(+this.valueOf())
+    return new NotImplementedType(+this.valueOf())
 }
 
 NotImplementedType.prototype.__neg__ = function() {
-    return new NotImplemented(-this.valueOf())
+    return new NotImplementedType(-this.valueOf())
 }
 
 NotImplementedType.prototype.__not__ = function() {
-    return new NotImplemented(!this.valueOf())
+    return new NotImplementedType(!this.valueOf())
 }
 
 NotImplementedType.prototype.__invert__ = function() {
-    return new NotImplemented(~this.valueOf())
+    return new NotImplementedType(~this.valueOf())
 }
 
 /**************************************************

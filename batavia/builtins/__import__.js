@@ -35,7 +35,7 @@ function __import__(args, kwargs) {
             }
 
             if (context.length < level) {
-                throw new SystemError("Parent module '' not loaded, cannot perform relative import")
+                throw new exceptions.SystemError.$pyclass("Parent module '' not loaded, cannot perform relative import")
             } else {
                 context = context.slice(0, context.length - level)
             }
@@ -89,7 +89,6 @@ function __import__(args, kwargs) {
             if (root_module === undefined) {
                 root_module = modules.sys.modules[name]
                 leaf_module = root_module
-                var payload, code, frame
                 if (root_module === undefined) {
                     payload = this.loader(name)
                     if (payload === null) {

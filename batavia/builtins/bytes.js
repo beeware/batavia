@@ -56,7 +56,7 @@ function bytes(args, kwargs) {
             }
         } else if (types.isinstance(arg, types.Bool)) {
             // Python bool is subclassed from int, but Batavia's Boolean is a fake int:
-            return new bytes([arg.__int__()], [])
+            return bytes([arg.__int__()], [])
         } else if (types.isinstance(arg, types.Bytes)) {
             // bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
             return new types.Bytes(Buffer.from(arg.val))
@@ -81,7 +81,11 @@ function bytes(args, kwargs) {
                 if (types.isinstance(val, types.Int) && (val >= 0) && (val <= 255)) {
                     buffer_args.push(val)
                 } else if (types.isinstance(val, types.Bool)) {
-                    buffer_args.push(val ? 1 : 0)
+                    if (val) {
+                        buffer_args.push(1)
+                    } else {
+                        buffer_args.push(0)
+                    }
                 } else {
                     if (!types.isinstance(val, types.Int)) {
                         throw new exceptions.TypeError.$pyclass(

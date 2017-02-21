@@ -18,7 +18,6 @@ function ascii(args, kwargs) {
 
     for (var i = 0; i < repr_string.length; i++) {
         var char_code = repr_string[i].charCodeAt(0)
-        var combined_char_code
         var current_character
         var hex_code
         var zeroes = ''

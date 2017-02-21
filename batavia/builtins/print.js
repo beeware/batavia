@@ -1,6 +1,4 @@
-var callables = require('../core').callables
 var exceptions = require('../core').exceptions
-var types = require('../types')
 
 function print(args, kwargs) {
     var sys = require('../modules/sys')

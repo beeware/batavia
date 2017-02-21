@@ -232,7 +232,7 @@ marshal.r_float = function(vm, p) {
     fhi = (buf[6] & 0xF) << 24
 
     if (e === 2047) {
-        throw "can't unpack IEEE 754 special value on non-IEEE platform"
+        throw builtins.RuntimeError.$pyclass("can't unpack IEEE 754 special value on non-IEEE platform")
     }
 
     /* Third byte */
@@ -325,7 +325,8 @@ marshal.r_object = function(vm, p) {
     var retval, v
     var idx = 0
     var i, n
-    var type, code = marshal.r_byte(vm, p)
+    var type
+    var code = marshal.r_byte(vm, p)
     var flag = 0
 
     if (code === PYCFile.EOF) {
@@ -423,7 +424,7 @@ marshal.r_object = function(vm, p) {
             fhi = (buf[6] & 0xF) << 24
 
             if (e === 2047) {
-                throw "can't unpack IEEE 754 special value on non-IEEE platform"
+                throw builtins.RuntimeError.$pyclass("can't unpack IEEE 754 special value on non-IEEE platform")
             }
 
             /* Third byte */
@@ -647,11 +648,11 @@ marshal.r_object = function(vm, p) {
             retval = new types.Dict()
             for (;;) {
                 var key, val
-                key = r_object(p)
+                key = marshal.r_object(p)
                 if (key === undefined) {
                     break
                 }
-                val = r_object(p)
+                val = marshal.r_object(p)
                 if (val === undefined) {
                     break
                 }
@@ -689,12 +690,12 @@ marshal.r_object = function(vm, p) {
                  */
                 idx = marshal.r_ref_reserve(flag, p)
                 if (idx < 0) {
-                    Py_CLEAR(v) /* signal error */
+                    marshal.Py_CLEAR(v) /* signal error */
                 }
             }
 
             for (i = 0; i < n; i++) {
-                retval.add(r_object(p))
+                retval.add(marshal.r_object(p))
             }
 
             if (type !== marshal.TYPE_SET) {

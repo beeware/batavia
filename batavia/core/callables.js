@@ -1,6 +1,5 @@
 var exceptions = require('./exceptions')
 var native = require('./native')
-var type_name = require('./types/Type').type_name
 
 var callables = {}
 

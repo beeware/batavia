@@ -2,8 +2,10 @@ var exceptions = require('../core').exceptions
 var types = require('../types')
 
 function oct(args, kwargs) {
-    if (!args || args.length !== 1) {
-        throw new exceptions.TypeError.$pyclass('oct() takes exactly one argument (' + (args ? args.length : 0) + ' given)')
+    if (!args) {
+        throw new exceptions.TypeError.$pyclass('oct() takes exactly one argument (0 given)')
+    } else if (args.length !== 1) {
+        throw new exceptions.TypeError.$pyclass('oct() takes exactly one argument (' + args.length + ' given)')
     }
     var value = args[0]
     if (types.isinstance(value, types.Int)) {

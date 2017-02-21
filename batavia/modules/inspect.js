@@ -26,7 +26,7 @@ inspect.FullArgSpec = function(kwargs) {
     this.annotations = kwargs.annotations || {}
 }
 
-inspect._signature_get_user_defined_method = function(cls, method_name) {
+// inspect._signature_get_user_defined_method = function(cls, method_name) {
     // try:
     //     meth = getattr(cls, method_name)
     // catch (err) {
@@ -39,35 +39,35 @@ inspect._signature_get_user_defined_method = function(cls, method_name) {
     //         return meth
     //     }
     // }
-}
+// }
 
-inspect._signature_bound_method = function(sig) {
-    // Internal helper to transform signatures for unbound
-    // functions to bound methods
+// inspect._signature_bound_method = function(sig) {
+//     // Internal helper to transform signatures for unbound
+//     // functions to bound methods
 
-    var params = sig.parameters.values()
+//     var params = sig.parameters.values()
 
-    if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-        throw new exceptions.ValueError.$pyclass('invalid method signature')
-    }
+//     if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
+//         throw new exceptions.ValueError.$pyclass('invalid method signature')
+//     }
 
-    var kind = params[0].kind
-    if (kind in (_POSITIONAL_OR_KEYWORD, _POSITIONAL_ONLY)) {
-        // Drop first parameter:
-        // '(p1, p2[, ...])' -> '(p2[, ...])'
-        params = params.slice(1)
-    } else {
-        if (kind !== _VAR_POSITIONAL) {
-            // Unless we add a new parameter type we never
-            // get here
-            throw new exceptions.ValueError.$pyclass('invalid argument type')
-        }
-        // It's a var-positional parameter.
-        // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
-    }
+//     var kind = params[0].kind
+//     if (kind in (_POSITIONAL_OR_KEYWORD, _POSITIONAL_ONLY)) {
+//         // Drop first parameter:
+//         // '(p1, p2[, ...])' -> '(p2[, ...])'
+//         params = params.slice(1)
+//     } else {
+//         if (kind !== _VAR_POSITIONAL) {
+//             // Unless we add a new parameter type we never
+//             // get here
+//             throw new exceptions.ValueError.$pyclass('invalid argument type')
+//         }
+//         // It's a var-positional parameter.
+//         // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
+//     }
 
-    return sig.replace(parameters = params)
-}
+//     return sig.replace(parameters = params)
+// }
 
 inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_arg) {
     // if (!callable(obj)) {
@@ -335,7 +335,7 @@ inspect.getfullargspec = function(func) {
 }
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw 'Missing arguments'
+    throw exceptions.RuntimeError.$pyclass('Missing arguments')
     // var names = [];
     // for (var name in argnames) {
     //     if (!name in values) {
@@ -359,7 +359,7 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw 'FIXME: Too many arguments'
+    throw exceptions.RuntimeError.$pyclass('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
@@ -398,7 +398,12 @@ inspect.getcallargs = function(func, positional, named) {
     }
     var num_pos = positional.length
     var num_args = func.argspec.args.length
-    var num_defaults = func.argspec.defaults ? func.argspec.defaults.length : 0
+    var num_defaults
+    if (func.argspec.defaults) {
+        num_defaults = func.argspec.defaults.length
+    } else {
+        num_defaults = 0
+    }
 
     var i, arg
     var n = Math.min(num_pos, num_args)
@@ -407,7 +412,7 @@ inspect.getcallargs = function(func, positional, named) {
     }
 
     if (func.argspec.varargs) {
-        arg2value[varargs] = positional.slice(n)
+        arg2value[func.argspec.varargs] = positional.slice(n)
     }
 
     var possible_kwargs = new types.Set()

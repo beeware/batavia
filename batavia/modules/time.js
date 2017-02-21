@@ -38,18 +38,18 @@ time.struct_time = function(sequence) {
     /*
         copied from https://docs.python.org/3/library/time.html#time.struct_time
 
-        Index 	Attribute 	Values
-        0 	    tm_year 	(for example, 1993)
-        1 	    tm_mon 	    range [1, 12]
-        2 	    tm_mday 	range [1, 31]
-        3 	    tm_hour 	range [0, 23]
-        4 	    tm_min 	    range [0, 59]
-        5 	    tm_sec 	    range [0, 61]; see (2) in strftime() description
-        6 	    tm_wday 	range [0, 6], Monday is 0
-        7 	    tm_yday 	range [1, 366]
-        8 	    tm_isdst 	0, 1 or -1; see below
-        N/A 	tm_zone 	abbreviation of timezone name
-        N/A 	tm_gmtoff 	offset east of UTC in seconds
+        Index   Attribute   Values
+        0       tm_year     (for example, 1993)
+        1       tm_mon      range [1, 12]
+        2       tm_mday     range [1, 31]
+        3       tm_hour     range [0, 23]
+        4       tm_min      range [0, 59]
+        5       tm_sec      range [0, 61]; see (2) in strftime() description
+        6       tm_wday     range [0, 6], Monday is 0
+        7       tm_yday     range [1, 366]
+        8       tm_isdst    0, 1 or -1; see below
+        N/A     tm_zone     abbreviation of timezone name
+        N/A     tm_gmtoff   offset east of UTC in seconds
     */
 
     if (types.isinstance(sequence, [types.Bytearray, types.Bytes, types.Dict,
@@ -190,6 +190,7 @@ time.gmtime = function(seconds) {
         throw new exceptions.TypeError.$pyclass('gmtime() takes at most 1 argument (' + arguments.length + ' given)')
     }
 
+    var date
     if (arguments.length === 1) {
         // catching bad types
         if (types.isinstance(seconds, [types.Complex])) {
@@ -198,14 +199,14 @@ time.gmtime = function(seconds) {
             throw new exceptions.TypeError.$pyclass('an integer is required (got type ' + type_name(seconds) + ')')
         }
 
-        var date = new Date(seconds * 1000)
+        date = new Date(seconds * 1000)
         if (isNaN(date)) {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
             throw new exceptions.OSError.$pyclass('Value too large to be stored in data type')
         }
     } else if (seconds === undefined) {
-        var date = new Date()
+        date = new Date()
     }
 
     var sequence = [
@@ -227,7 +228,7 @@ time.gmtime = function(seconds) {
 
     sequence.push(0)  // dst for UTC, always off
 
-    return new time.struct_time(new types.Tuple(sequence))
+    return new time.struct_time(new types.Tuple(sequence))  // eslint-disable-line new-cap
 }
 
 time.localtime = function(seconds) {
@@ -237,7 +238,7 @@ time.localtime = function(seconds) {
     if (arguments.length > 1) {
         throw new exceptions.TypeError.$pyclass('localtime() takes at most 1 argument (' + arguments.length + ' given)')
     }
-
+    var date
     if (arguments.length === 1) {
         // catching bad types
         if (types.isinstance(seconds, [types.Complex])) {
@@ -246,14 +247,14 @@ time.localtime = function(seconds) {
             throw new exceptions.TypeError.$pyclass('an integer is required (got type ' + type_name(seconds) + ')')
         }
 
-        var date = new Date(seconds * 1000)
+        date = new Date(seconds * 1000)
         if (isNaN(date)) {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
             throw new exceptions.OSError.$pyclass('Value too large to be stored in data type')
         }
     } else if (seconds === undefined) {
-        var date = new Date()
+        date = new Date()
     }
 
     var sequence = [
@@ -278,7 +279,7 @@ time.localtime = function(seconds) {
     var isDST = moment(date.getTime()).tz(tz).isDST()
     sequence.push(Number(isDST))
 
-    return new time.struct_time(new types.Tuple(sequence))
+    return new time.struct_time(new types.Tuple(sequence))  // eslint-disable-line new-cap
 }
 
 module.exports = time

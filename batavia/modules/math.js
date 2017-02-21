@@ -445,7 +445,9 @@ math.gamma = function(x) {
         var den = 1.0
 
         var z = y - 1
-        for (var i = 0; i < 8; i++) {
+        var i
+
+        for (i = 0; i < 8; i++) {
             num = (num + p[i]) * z
             den = den * z + q[i]
         }
@@ -459,7 +461,7 @@ math.gamma = function(x) {
             result /= (y - 1.0)
         } else {
             // Use the identity gamma(z+n) = z*(z+1)* ... *(z+n-1)*gamma(z)
-            for (var i = 0; i < n; i++) {
+            for (i = 0; i < n; i++) {
                 result *= y++
             }
         }
@@ -674,12 +676,20 @@ math.log = function(x, base) {
 
     // special case if x is bool it should behave like integer
     if (types.isinstance(x, types.Bool)) {
-        x = x.valueOf() ? new types.Int(1) : new types.Int(0)
+        if (x.valueOf()) {
+            x = new types.Int(1)
+        } else {
+            x = new types.Int(0)
+        }
     }
 
     // special base is bool it should behave like integer
     if (types.isinstance(base, types.Bool)) {
-        base = base.valueOf() ? new types.Int(1) : new types.Int(0)
+        if (base.valueOf()) {
+            base = new types.Int(1)
+        } else {
+            base = new types.Int(0)
+        }
     }
 
     _checkFloat(x)

@@ -1,6 +1,4 @@
 var exceptions = require('../core').exceptions
-var callables = require('../core').callables
-var types = require('../types')
 
 function make_super(frame, args) {
     // I guess we have to examine the stack to find out which class we are in?

@@ -1,6 +1,6 @@
 var types = require('../types')
 
-function zip(args, undefined) {
+function zip(args, kwargs) {
     if (args === undefined) {
         return new types.List()
     }

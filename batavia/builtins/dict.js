@@ -19,6 +19,7 @@ function dict(args, kwargs) {
 
     // if multiple bool case
 
+    var i
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {
@@ -28,7 +29,7 @@ function dict(args, kwargs) {
         }
     } else {
         // iterate through array to find any errors
-        for (var i = 0; i < args[0].length; i++) {
+        for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number or bool in an iterable throws different error
                 if (types.isinstance(args[0][i], [types.Bool, types.Int])) {
@@ -47,7 +48,7 @@ function dict(args, kwargs) {
     // passing a list as argument
     if (args.length === 1) {
         var dict = new types.Dict()
-        for (var i = 0; i < args[0].length; i++) {
+        for (i = 0; i < args[0].length; i++) {
             var sub_array = args[0][i]
             if (sub_array.length === 2) {
                 dict.__setitem__(sub_array[0], sub_array[1])

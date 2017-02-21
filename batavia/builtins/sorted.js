@@ -1,7 +1,7 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
-function _validateInput(args, kwargs, undefined) {
+function _validateInput(args, kwargs) {
     var bigger = 1
     var smaller = -1
 

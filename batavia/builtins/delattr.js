@@ -10,11 +10,10 @@ function delattr(args, kwargs) {
                 throw new exceptions.TypeError.$pyclass("attribute name must be string, not '" + type_name(args[1]) + "'")
             }
 
-            var val
             if (args[0].__delattr__ === undefined) {
                 native.delattr(args[0], args[1])
             } else {
-                val = args[0].__delattr__(args[1])
+                args[0].__delattr__(args[1])
             }
         } else {
             throw new exceptions.TypeError.$pyclass('delattr expected exactly 2 arguments, got ' + args.length)

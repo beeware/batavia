@@ -1,6 +1,5 @@
 var exceptions = require('../core').exceptions
 var native = require('../core').native
-var type_name = require('../core').type_name
 var types = require('../types')
 
 function getattr(args, kwargs) {

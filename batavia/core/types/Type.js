@@ -64,7 +64,6 @@ Type.prototype.__call__ = function(args, kwargs) {
 }
 
 Type.prototype.__getattr__ = function(name) {
-    var type_name = require('./Type').type_name
     var exceptions = require('../exceptions')
     var native = require('../native')
 
@@ -93,7 +92,6 @@ Type.prototype.__getattr__ = function(name) {
 }
 
 Type.prototype.__setattr__ = function(name, value) {
-    var type_name = require('./Type').type_name
     var exceptions = require('../exceptions')
     var native = require('../native')
 
@@ -107,7 +105,6 @@ Type.prototype.__setattr__ = function(name, value) {
 }
 
 Type.prototype.__delattr__ = function(name) {
-    var type_name = require('./Type').type_name
     var exceptions = require('../exceptions')
     var native = require('../native')
 

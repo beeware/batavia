@@ -3,8 +3,6 @@ var exceptions = require('./exceptions')
 var native = {}
 
 native.getattr_raw = function(obj, attr, attributes_only) {
-    var type_name = require('../core').type_name
-
     var val = obj[attr]
     if (val instanceof Function) {
         if (attributes_only) {

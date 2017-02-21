@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 var PyObject = require('./types/Object')
 var Type = require('./types/Type').Type
 
