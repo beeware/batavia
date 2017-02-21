@@ -173,9 +173,9 @@ time.mktime = function(sequence) {
     // This is because Javascript (and browsers) know about timezones,
     // but Python datetimes are naive without PyTZ.
     // So, adjust the answer accordingly.
-    if (m.isDST() && sequence[8] === 0 && tz_name !== 'UTC') {
+    if (m.isDST() && sequence[8].val.eq(0) && tz_name !== 'UTC') {
         seconds = seconds + 3600
-    } else if (!m.isDST() && sequence[8] === 1 && tz_name !== 'UTC') {
+    } else if (!m.isDST() && sequence[8].val.eq(1) && tz_name !== 'UTC') {
         seconds = seconds - 3600
     }
 

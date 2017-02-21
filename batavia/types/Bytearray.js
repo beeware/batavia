@@ -3,6 +3,7 @@ var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
+var Bool = require('./Bool')
 var BytearrayIterator = require('./BytearrayIterator')
 
 /*************************************************************************
@@ -35,7 +36,7 @@ Bytearray.prototype.valueOf = function() {
  **************************************************/
 
 Bytearray.prototype.__bool__ = function() {
-    return this.val.length > 0
+    return this.val.__bool__()
 }
 
 Bytearray.prototype.__repr__ = function() {

@@ -250,7 +250,7 @@ Int.prototype.__pow__ = function(other) {
             var base = this.val.add(0)
             while (y.length > 0) {
                 var bit = y.pop()
-                if (bit === 1) {
+                if (bit === "1") {
                     result = result.mul(base)
                 }
                 base = base.mul(base)
@@ -348,8 +348,8 @@ Int.prototype.__mul__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__mul__(other.val)
     } else if (types.isinstance(other, types.Bool)) {
-        if (this.val.sub(other.valueOf())) {
-            return new Int(1)
+        if (other.valueOf()) {
+            return this
         } else {
             return new Int(0)
         }
@@ -452,10 +452,10 @@ Int.prototype.__add__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__add__(other)
     } else if (types.isinstance(other, types.Bool)) {
-        if (this.val.add(other.valueOf())) {
-            return new Int(1)
+        if (other.valueOf()) {
+            return new Int(this.val.add(1))
         } else {
-            return new Int(0)
+            return this
         }
     } else if (types.isinstance(other, types.Complex)) {
         if (this.__float__() > MAX_FLOAT || this.__float__() < MIN_FLOAT) {
@@ -476,10 +476,10 @@ Int.prototype.__sub__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__sub__(other)
     } else if (types.isinstance(other, types.Bool)) {
-        if (this.val.sub(other.valueOf())) {
-            return new Int(1)
+        if (other.valueOf()) {
+            return new Int(this.val.sub(1))
         } else {
-            return new Int(0)
+            return this
         }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")

@@ -296,10 +296,11 @@ Float.prototype.__mul__ = function(other) {
     if (other === null) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and 'NoneType'")
     } else if (types.isinstance(other, types.Bool)) {
+        return new Float(this.valueOf() * (other.valueOf() ? 1 : 0));
         if (other.valueOf()) {
-            return new Float(this.valueOf())
+            return new Float(this.valueOf() * 1)
         } else {
-            return new Float(0)
+            return new Float(this.valueOf() * 0)
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf())

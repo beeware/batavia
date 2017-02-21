@@ -55,16 +55,31 @@ Bool.prototype.__le__ = function(other) {
 }
 
 Bool.prototype.__eq__ = function(other) {
-    return this.valueOf() === other
+    var types = require('../types')
+
+    if (types.isinstance(other, Bool)) {
+        return this.valueOf() === other.__bool__()
+    } else if (types.isinstance(other, types.Float)) {
+        if (other.valueOf() === 0.0) {
+            return this.valueOf() === false
+        } else {
+            return false
+        }
+    } else if (types.isinstance(other, types.Int)) {
+        if (other.val.eq(0)) {
+            return this.valueOf() === false
+        } else if (other.val.eq(1)) {
+            return this.valueOf() === true
+        } else {
+            return false
+        }
+    } else {
+        return false
+    }
 }
 
 Bool.prototype.__ne__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Str)) {
-        return Bool(true)
-    }
-    return this.valueOf() !== other
+    return this.__eq__(other).__not__()
 }
 
 Bool.prototype.__gt__ = function(other) {
@@ -241,6 +256,11 @@ Bool.prototype.__mul__ = function(other) {
         }
         return new types.Float(this_bool * other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
         return new types.Int(this_bool * other.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
@@ -270,7 +290,12 @@ Bool.prototype.__add__ = function(other) {
         }
         return new types.Float(this_bool + other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
-        return new types.Int(other.val.addthis_bool)
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        return new types.Int(other.val.add(this_bool))
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'")
     }
@@ -298,7 +323,12 @@ Bool.prototype.__sub__ = function(other) {
         }
         return new types.Float(this_bool - other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
-        return new types.Int(other.val.subthis_bool.neg())
+        if (this.valueOf()) {
+            this_bool = 1.0
+        } else {
+            this_bool = 0.0
+        }
+        return new types.Int(other.val.sub(this_bool).neg())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'")
     }
