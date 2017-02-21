@@ -3,7 +3,7 @@
     <title>Batavia testbed</title>
 
     <!-- A native module to use for testing imports -->
-    <script src="/static/testserver/native.js"></script>
+    <script src="/static/native.js"></script>
     <!--
         To run this demo:
 
@@ -20,13 +20,13 @@
       -->
 
     <!--These three are from CodeMirror, - https://codemirror.net/ - for adding syntax highlighting to text area -->
-    <script src="/static/testserver/CodeMirror/lib/codemirror.js"></script>
-    <script src="/static/testserver/CodeMirror/mode/python/python.js"></script>
-    <link rel=stylesheet href="/static/testserver/CodeMirror/lib/codemirror.css">
+    <script src="/static/CodeMirror/lib/codemirror.js"></script>
+    <script src="/static/CodeMirror/mode/python/python.js"></script>
+    <link rel=stylesheet href="/static/CodeMirror/lib/codemirror.css">
 
     <!--Main styles for this site-->
-    <link rel=stylesheet href="/static/testserver/styles/styles.css">
-    <link rel="shortcut icon" href="/static/testserver/styles/favicon.png">
+    <link rel=stylesheet href="/static/styles/styles.css">
+    <link rel="shortcut icon" href="/static/styles/favicon.png">
 
     <!--Adding Font Awesome to give some zest to headings etc -->
     <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
@@ -314,27 +314,33 @@ function PyConsole(element) {
     this.element = document.getElementById('pyconsole');
 }
 
-PyConsole.prototype.write = function(args, kwargs) {
-    var text = document.createTextNode(args[0]);
+PyConsole.prototype.write = function(buffer) {
+    var text = document.createTextNode(buffer);
     this.element.appendChild(text);
+
+    // Also echo to the console.
+    console.log(buffer)
 }
 
-PyConsole.prototype.flush = function(args, kwargs) {}
+PyConsole.prototype.flush = function() {}
 
 function PyErrConsole(element) {
     this.element = document.getElementById('pyconsole');
 }
 
-PyErrConsole.prototype.write = function(args, kwargs) {
+PyErrConsole.prototype.write = function(buffer) {
     var err = document.createElement('span');
     err.className = "error";
-    var text = document.createTextNode(args[0])
+    var text = document.createTextNode(buffer)
 
     err.appendChild(text)
     this.element.appendChild(err);
+
+    // Also echo to the console.
+    console.log(buffer)
 }
 
-PyErrConsole.prototype.flush = function(args, kwargs) {}
+PyErrConsole.prototype.flush = function() {}
 
 function bootstrap() {
     console.log('Create VM');

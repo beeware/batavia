@@ -9,14 +9,15 @@ var None = require('../core').None;
  *************************************************************************/
 
 function JSDict(args, kwargs) {
-    PyObject.call(this);
+    Object.call(this);
     if (args) {
         this.update(args);
     }
 }
 
-JSDict.prototype = Object.create(PyObject.prototype);
-JSDict.prototype.__class__ = new Type('jsdict');
+JSDict.prototype = Object.create(Object.prototype);
+// JSDict doesn't need to appear as a Python type,
+// so we don't need to set __class__ or define a Type().
 
 /**************************************************
  * Javascript compatibility methods
@@ -65,12 +66,12 @@ JSDict.prototype.__lt__ = function(other) {
                     types.Int, types.JSDict, types.List,
                     types.NoneType, types.Str, types.Tuple
                ])) {
-            throw new exceptions.TypeError("unorderable types: dict() < " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: dict() < " + type_name(other) + "()");
         } else {
             return this.valueOf() < other.valueOf();
         }
     }
-    throw new exceptions.TypeError("unorderable types: dict() < NoneType()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: dict() < NoneType()");
 }
 
 JSDict.prototype.__le__ = function(other) {
@@ -82,12 +83,12 @@ JSDict.prototype.__le__ = function(other) {
                     types.Int, types.JSDict, types.List,
                     types.NoneType, types.Str, types.Tuple
                ])) {
-            throw new exceptions.TypeError("unorderable types: dict() <= " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: dict() <= " + type_name(other) + "()");
         } else {
             return this.valueOf() <= other.valueOf();
         }
     }
-    throw new exceptions.TypeError("unorderable types: dict() <= NoneType()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: dict() <= NoneType()");
 }
 
 JSDict.prototype.__eq__ = function(other) {
@@ -108,12 +109,12 @@ JSDict.prototype.__gt__ = function(other) {
                     types.NoneType, types.Set, types.Str,
                     types.Tuple
                 ])) {
-            throw new exceptions.TypeError("unorderable types: dict() > " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: dict() > " + type_name(other) + "()");
         } else {
             return this.valueOf() > other.valueOf();
         }
     } else {
-        throw new exceptions.TypeError("unorderable types: dict() > NoneType()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: dict() > NoneType()");
     }
 }
 
@@ -126,12 +127,12 @@ JSDict.prototype.__ge__ = function(other) {
                     types.Int, types.JSDict, types.List,
                     types.NoneType, types.Str, types.Tuple
                ])) {
-            throw new exceptions.TypeError("unorderable types: dict() >= " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: dict() >= " + type_name(other) + "()");
         } else {
             return this.valueOf() >= other.valueOf();
         }
     } else {
-        throw new exceptions.TypeError("unorderable types: dict() >= NoneType()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: dict() >= NoneType()");
     }
 }
 
@@ -144,11 +145,11 @@ JSDict.prototype.__contains__ = function(other) {
  **************************************************/
 
 JSDict.prototype.__pos__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary +: 'jsdict'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'jsdict'");
 }
 
 JSDict.prototype.__neg__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary -: 'jsdict'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'jsdict'");
 }
 
 JSDict.prototype.__not__ = function() {
@@ -156,7 +157,7 @@ JSDict.prototype.__not__ = function() {
 }
 
 JSDict.prototype.__invert__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary ~: 'jsdict'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'jsdict'");
 }
 
 /**************************************************
@@ -164,7 +165,7 @@ JSDict.prototype.__invert__ = function() {
  **************************************************/
 
 JSDict.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__div__ = function(other) {
@@ -172,11 +173,11 @@ JSDict.prototype.__div__ = function(other) {
 }
 
 JSDict.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__mul__ = function(other) {
@@ -185,22 +186,22 @@ JSDict.prototype.__mul__ = function(other) {
     if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
             types.JSDict, types.Int, types.NoneType])) {
-        throw new exceptions.TypeError("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'");
     } else {
-        throw new exceptions.TypeError("can't multiply sequence by non-int of type 'jsdict'");
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'jsdict'");
     }
 }
 
 JSDict.prototype.__mod__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__mod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__mod__ has not been implemented");
 }
 
 JSDict.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__setitem__ = function(key, value) {
@@ -208,23 +209,23 @@ JSDict.prototype.__setitem__ = function(key, value) {
 }
 
 JSDict.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__lshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__lshift__ has not been implemented");
 }
 
 JSDict.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__rshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__rshift__ has not been implemented");
 }
 
 JSDict.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__xor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__xor__ has not been implemented");
 }
 
 JSDict.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__or__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__or__ has not been implemented");
 }
 
 /**************************************************
@@ -232,64 +233,64 @@ JSDict.prototype.__or__ = function(other) {
  **************************************************/
 
 JSDict.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ifloordiv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ifloordiv__ has not been implemented");
 }
 
 JSDict.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__itruediv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__itruediv__ has not been implemented");
 }
 
 JSDict.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__iadd__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__iadd__ has not been implemented");
 }
 
 JSDict.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__isub__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__isub__ has not been implemented");
 }
 
 JSDict.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__imul__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__imul__ has not been implemented");
 }
 
 JSDict.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__imod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__imod__ has not been implemented");
 }
 
 JSDict.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ipow__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ipow__ has not been implemented");
 }
 
 JSDict.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ilshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ilshift__ has not been implemented");
 }
 
 JSDict.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__irshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__irshift__ has not been implemented");
 }
 
 JSDict.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__iand__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__iand__ has not been implemented");
 }
 
 JSDict.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ixor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ixor__ has not been implemented");
 }
 
 JSDict.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ior__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ior__ has not been implemented");
 }
 
 JSDict.prototype.__getitem__ = function(other) {
     var value = this[other];
     if (value === undefined) {
-        throw new exceptions.KeyError(other === null ? 'None': other.__str__());
+        throw new exceptions.KeyError.$pyclass(other === null ? 'None': other.__str__());
     }
     return value;
 }
 
 JSDict.prototype.__delitem__ = function(key) {
     if (!this.__contains__(key)) {
-        throw new exceptions.KeyError(key === null ? 'None': key);
+        throw new exceptions.KeyError.$pyclass(key === null ? 'None': key);
     }
     delete this[key];
 }
@@ -302,7 +303,7 @@ JSDict.prototype.get = function(key, backup) {
     if (this.__contains__(key)) {
         return this[key];
     } else if (typeof backup === 'undefined') {
-        throw new exceptions.KeyError(key === null ? 'None': key);
+        throw new exceptions.KeyError.$pyclass(key === null ? 'None': key);
     } else {
         return backup;
     }

@@ -18,6 +18,7 @@
  */
 
 var Cell = function(value) {
+    Object.call(this);
     this.contents = value;
 }
 

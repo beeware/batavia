@@ -4,13 +4,13 @@ var types = require('../types');
 
 function chr(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("chr() takes no keyword arguments");
+        throw new exceptions.TypeError.$pyclass("chr() takes no keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new exceptions.TypeError('chr() takes exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('chr() takes exactly 1 argument (' + args.length + ' given)');
     }
     return new types.Str(String.fromCharCode(args[0]));
     // After tests pass, let's try saving one object creation

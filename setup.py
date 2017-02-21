@@ -12,7 +12,7 @@ with io.open('package.json', encoding='utf8') as package:
 
 setup(
     name='batavia',
-    version=data['version'],
+    version=data['version'].replace('dev.', 'dev'),
     description=data['description'],
     long_description=long_description,
     author=data['author'],

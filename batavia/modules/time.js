@@ -23,7 +23,7 @@ time.time = function() {
 
 time.sleep = function(secs) {
     if (secs < 0) {
-        throw new exceptions.ValueError('sleep length must be non-negative');
+        throw new exceptions.ValueError.$pyclass('sleep length must be non-negative');
     }
 
     var start = new Date().getTime();
@@ -56,9 +56,9 @@ time.struct_time = function(sequence) {
             types.FrozenSet, types.List, types.Range, types.Set, types.Str,
             types.Tuple])) {
         if (sequence.length < 9) {
-            throw new exceptions.TypeError("time.struct_time() takes an at least 9-sequence (" + sequence.length + "-sequence given)")
+            throw new exceptions.TypeError.$pyclass("time.struct_time() takes an at least 9-sequence (" + sequence.length + "-sequence given)")
         } else if (sequence.length > 11) {
-            throw new exceptions.TypeError("time.struct_time() takes an at most 11-sequence (" + sequence.length + "-sequence given)")
+            throw new exceptions.TypeError.$pyclass("time.struct_time() takes an at most 11-sequence (" + sequence.length + "-sequence given)")
         }
 
         var items;
@@ -67,7 +67,7 @@ time.struct_time = function(sequence) {
             // dict won't work until .keys() is implemented
             // bytearray won't work until .__iter__ is implemented
 
-            throw new exceptions.NotImplementedError("not implemented for "+ type_name(sequence)+".")
+            throw new exceptions.NotImplementedError.$pyclass("not implemented for "+ type_name(sequence)+".")
 
         } else if (types.isinstance(sequence, [types.Bytes, types.FrozenSet,
             types.Set, types.Range])) {
@@ -98,7 +98,7 @@ time.struct_time = function(sequence) {
         }
     } else {
         //some other, unacceptable type
-        throw new exceptions.TypeError("constructor requires a sequence");
+        throw new exceptions.TypeError.$pyclass("constructor requires a sequence");
     }
 }
 
@@ -118,29 +118,29 @@ time.mktime = function(sequence) {
 
     //Validations
     if (arguments.length != 1) {
-        throw new exceptions.TypeError("mktime() takes exactly one argument ("+arguments.length+" given)");
+        throw new exceptions.TypeError.$pyclass("mktime() takes exactly one argument ("+arguments.length+" given)");
     }
 
     if (!types.isinstance(sequence, [types.Tuple, time.struct_time])) {
-        throw new exceptions.TypeError("Tuple or struct_time argument required");
+        throw new exceptions.TypeError.$pyclass("Tuple or struct_time argument required");
     }
 
     if (sequence.length !== 9) {
-        throw new exceptions.TypeError("function takes exactly 9 arguments ("+sequence.length+" given)");
+        throw new exceptions.TypeError.$pyclass("function takes exactly 9 arguments ("+sequence.length+" given)");
     }
 
     if (sequence[0] < 1900) {
         // because the earliest possible date is system dependant, use an arbitrary cut off for now.
-        throw new exceptions.OverflowError("mktime argument out of range");
+        throw new exceptions.OverflowError.$pyclass("mktime argument out of range");
     }
 
     // all items must be integers
     for (var i = 0; i < sequence.length; i++) {
         var item = sequence[i];
         if (types.isinstance(item, types.Float)) {
-            throw new exceptions.TypeError("integer argument expected, got float")
+            throw new exceptions.TypeError.$pyclass("integer argument expected, got float")
         } else if (!types.isinstance(item, types.Int)) {
-            throw new exceptions.TypeError("an integer is required (got type " + type_name(item) + ")");
+            throw new exceptions.TypeError.$pyclass("an integer is required (got type " + type_name(item) + ")");
         }
     }
 
@@ -163,7 +163,7 @@ time.mktime = function(sequence) {
     if (isNaN(d)) {
         // d is too large per ECMA specs
         // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
-        throw new exceptions.OverflowError("signed integer is greater than maximum")
+        throw new exceptions.OverflowError.$pyclass("signed integer is greater than maximum")
     }
 
     var seconds = d.getTime() / 1000;
@@ -189,23 +189,23 @@ time.gmtime = function(seconds) {
 
     // 0-1 arguments allowed
     if (arguments.length > 1) {
-        throw new exceptions.TypeError("gmtime() takes at most 1 argument (" + arguments.length + " given)")
+        throw new exceptions.TypeError.$pyclass("gmtime() takes at most 1 argument (" + arguments.length + " given)")
     }
 
     if (arguments.length == 1) {
         // catching bad types
         if (types.isinstance(seconds, [types.Complex])) {
-            throw new exceptions.TypeError("can't convert " + type_name(seconds) + " to int")
+            throw new exceptions.TypeError.$pyclass("can't convert " + type_name(seconds) + " to int")
 
         } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
-            throw new exceptions.TypeError("an integer is required (got type " + type_name(seconds) + ")")
+            throw new exceptions.TypeError.$pyclass("an integer is required (got type " + type_name(seconds) + ")")
         }
 
         var date = new Date(seconds * 1000)
         if (isNaN(date)) {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
-            throw new exceptions.OSError("Value too large to be stored in data type")
+            throw new exceptions.OSError.$pyclass("Value too large to be stored in data type")
         }
 
     } else if (seconds === undefined) {
@@ -239,23 +239,23 @@ time.localtime = function(seconds) {
 
     // 0-1 arguments allowed
     if (arguments.length > 1) {
-        throw new exceptions.TypeError("localtime() takes at most 1 argument (" + arguments.length + " given)")
+        throw new exceptions.TypeError.$pyclass("localtime() takes at most 1 argument (" + arguments.length + " given)")
     }
 
     if (arguments.length == 1) {
         // catching bad types
         if (types.isinstance(seconds, [types.Complex])) {
-            throw new exceptions.TypeError("can't convert " + type_name(seconds) + " to int")
+            throw new exceptions.TypeError.$pyclass("can't convert " + type_name(seconds) + " to int")
 
         } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
-            throw new exceptions.TypeError("an integer is required (got type " + type_name(seconds) + ")")
+            throw new exceptions.TypeError.$pyclass("an integer is required (got type " + type_name(seconds) + ")")
         }
 
         var date = new Date(seconds * 1000)
         if (isNaN(date)) {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
-            throw new exceptions.OSError("Value too large to be stored in data type")
+            throw new exceptions.OSError.$pyclass("Value too large to be stored in data type")
         }
 
     } else if (seconds === undefined) {

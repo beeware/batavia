@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions;
 var callables = require('../core').callables;
+var types = require('../types');
 
 
 function make_super(frame, args) {
@@ -7,36 +8,54 @@ function make_super(frame, args) {
     // this seems suboptimal...
     // what does CPython do?
     if (args.length != 0) {
-        throw new exceptions.NotImplementedError("super does not support arguments yet")
+        throw new exceptions.NotImplementedError.$pyclass("super does not support arguments yet")
     }
     if (frame.f_code.co_name != '__init__') {
-        throw new exceptions.NotImplementedError("super not implemented outside of __init__ yet");
+        throw new exceptions.NotImplementedError.$pyclass("super not implemented outside of __init__ yet");
     }
     if (frame.f_code.co_argcount == 0) {
-        throw new exceptions.TypeError("no self found in super in __init__");
+        throw new exceptions.TypeError.$pyclass("no self found in super in __init__");
     }
     var self_name = frame.f_code.co_varnames[0];
     var self = frame.f_locals[self_name];
-    var klass = self.__class__;
-    if (klass.__bases__.length != 1) {
-        throw new exceptions.NotImplementedError("super not implemented for multiple inheritance yet");
+    if (self.__bases__.length != 1) {
+        throw new exceptions.NotImplementedError.$pyclass("super not implemented for multiple inheritance yet");
     }
 
-    var base = klass.__base__;
+    var base = self.__base__;
 
     var obj = {
-        '__init__': function(args, kwargs) {
-            return callables.run_callable(self, base.__init__, args, kwargs);
+        // __init__: base.$pyclass.__init__.bind(self);
+        __getattr__: function(name) {
+            var type_name = require('../core/types/Type').type_name;
+
+            var attr = base.$pyclass[name];
+            if (attr === undefined) {
+                throw new exceptions.AttributeError.$pyclass(
+                    "'" + type_name(self) + "' object has no attribute '" + name + "'"
+                );
+            }
+
+            // If the returned object is a descriptor, invoke it.
+            // Otherwise, the returned object *is* the value.
+            var value;
+            if (attr.__get__ !== undefined) {
+                value = attr.__get__(self, self.__class__);
+            } else {
+                value = attr;
+            }
+
+            return value;
         }
     };
-    obj.__init__.__python__ = true;
+    // obj.__init__.$pyargs = true;
     return obj;
 }
 
 
 function super_(args, kwargs) {
     if (args.length > 0) {
-        throw new exceptions.NotImplementedError("Builtin Batavia function 'super' with arguments not implemented");
+        throw new exceptions.NotImplementedError.$pyclass("Builtin Batavia function 'super' with arguments not implemented");
     }
 
     return make_super(this.frame, args);

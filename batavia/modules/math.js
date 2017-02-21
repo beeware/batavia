@@ -23,9 +23,9 @@ var math = {
 
 var _checkFloat = function(x) {
     if (types.isinstance(x, types.Complex)) {
-        throw new exceptions.TypeError("can't convert complex to float");
+        throw new exceptions.TypeError.$pyclass("can't convert complex to float");
     } else if (!types.isinstance(x, [types.Bool, types.Float, types.Int])) {
-        throw new exceptions.TypeError('a float is required');
+        throw new exceptions.TypeError.$pyclass('a float is required');
     }
 }
 
@@ -39,7 +39,7 @@ math.acosh = function(x) {
     _checkFloat(x);
     var result = Math.acosh(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(result);
 }
@@ -76,7 +76,7 @@ math.atanh = function(x) {
     _checkFloat(x);
     var result = Math.atanh(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(Math.atanh(x.__float__().val));
 }
@@ -113,7 +113,7 @@ math.cosh = function(x) {
     _checkFloat(x);
     var result = Math.cosh(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.OverflowError("math range error");
+        throw new exceptions.OverflowError.$pyclass("math range error");
     }
     return new types.Float(Math.cosh(x.__float__().val));
 }
@@ -219,7 +219,7 @@ math.exp = function(x) {
     _checkFloat(x);
     var result = Math.exp(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.OverflowError("math range error");
+        throw new exceptions.OverflowError.$pyclass("math range error");
     }
     return new types.Float(result);
 }
@@ -229,7 +229,7 @@ math.expm1 = function(x) {
     _checkFloat(x);
     var result = Math.expm1(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.OverflowError("math range error");
+        throw new exceptions.OverflowError.$pyclass("math range error");
     }
     return new types.Float(Math.expm1(x.__float__().val));
 }
@@ -268,21 +268,21 @@ math.factorial = function(x) {
         num = x.val;
     } else if (types.isinstance(x, types.Float)) {
         if (!x.is_integer().valueOf()) {
-            throw new exceptions.ValueError("factorial() only accepts integral values");
+            throw new exceptions.ValueError.$pyclass("factorial() only accepts integral values");
         }
         num = new BigNumber(x.valueOf());
     } else if (types.isinstance(x, types.Bool)) {
         return new types.Int(1);
     } else if (types.isinstance(x, types.Complex)) {
-        throw new exceptions.TypeError("can't convert complex to int");
+        throw new exceptions.TypeError.$pyclass("can't convert complex to int");
     } else if (x == null) {
-        throw new exceptions.TypeError("an integer is required (got type NoneType)");
+        throw new exceptions.TypeError.$pyclass("an integer is required (got type NoneType)");
     } else {
-        throw new exceptions.TypeError("an integer is required (got type " + x.__class__.__name__ + ")");
+        throw new exceptions.TypeError.$pyclass("an integer is required (got type " + x.__class__.__name__ + ")");
     }
 
     if (num.isNegative()) {
-        throw new exceptions.ValueError("factorial() not defined for negative values");
+        throw new exceptions.ValueError.$pyclass("factorial() not defined for negative values");
     }
 
     if (num.isZero()) {
@@ -314,7 +314,7 @@ math.fmod = function(x, y) {
     _checkFloat(x);
     var xx = x.__float__().val;
     if (yy === 0.0) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(xx % yy);
 }
@@ -358,7 +358,7 @@ math.fsum = function(iterable) {
     var sum = 0.0;
     callables.iter_for_each(iterobj, function(val) {
         if (!types.isinstance(val, [types.Bool, types.Float, types.Int])) {
-            throw new exceptions.TypeError('a float is required');
+            throw new exceptions.TypeError.$pyclass('a float is required');
         }
         sum += val.__float__().val;
     });
@@ -374,7 +374,7 @@ math.gamma = function(x) {
 
     if (xx <= 0.0) {
         if (Number.isInteger(xx)) {
-            throw new exceptions.ValueError('math domain error');
+            throw new exceptions.ValueError.$pyclass('math domain error');
         }
         // analytic continuation using reflection formula
         // gamma(z) * gamma(1-z) = pi / sin(pi * z)
@@ -472,7 +472,7 @@ math.gamma = function(x) {
 
     if (xx > 171.624) {
         // Correct answer too large to display.
-        throw new exceptions.OverflowError("math range error");
+        throw new exceptions.OverflowError.$pyclass("math range error");
     }
 
     return math.exp(math.lgamma(x));
@@ -481,10 +481,10 @@ math.gamma.__doc__ = 'gamma(x)\n\nGamma function at x.';
 
 math.gcd = function(x, y) {
     if (!types.isinstance(x, [types.Bool, types.Int])) {
-        throw new exceptions.TypeError("'" + type_name(x) + "' object cannot be interpreted as an integer");
+        throw new exceptions.TypeError.$pyclass("'" + type_name(x) + "' object cannot be interpreted as an integer");
     }
     if (!types.isinstance(y, [types.Bool, types.Int])) {
-        throw new exceptions.TypeError("'" + type_name(y) + "' object cannot be interpreted as an integer");
+        throw new exceptions.TypeError.$pyclass("'" + type_name(y) + "' object cannot be interpreted as an integer");
     }
     var xx = x.__trunc__().val.abs();
     var yy = y.__trunc__().val.abs();
@@ -515,34 +515,34 @@ math.hypot.__doc__ = 'hypot(x, y)\n\nReturn the Euclidean distance, sqrt(x*x + y
 
 math.isclose = function(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError("Batavia calling convention not used.");
+        throw new exceptions.BataviaError.$pyclass("Batavia calling convention not used.");
     }
     if (args.length == 0) {
-        throw new exceptions.TypeError("Required argument 'a' (pos 1) not found");
+        throw new exceptions.TypeError.$pyclass("Required argument 'a' (pos 1) not found");
     }
     if (args.length == 1) {
-        throw new exceptions.TypeError("Required argument 'b' (pos 2) not found");
+        throw new exceptions.TypeError.$pyclass("Required argument 'b' (pos 2) not found");
     }
     if (args.length > 2) {
-        throw new exceptions.TypeError("Function takes at most 2 positional arguments (" + args.length + " given)");
+        throw new exceptions.TypeError.$pyclass("Function takes at most 2 positional arguments (" + args.length + " given)");
     }
     var rel_tol = 1e-09;
     if ('rel_tol' in kwargs) {
         if (!types.isinstance(kwargs.rel_tol, [types.Bool, types.Float, types.Int])) {
-            throw new exceptions.TypeError("a float is required");
+            throw new exceptions.TypeError.$pyclass("a float is required");
         }
         rel_tol = kwargs.rel_tol.__float__().val;
     }
     var abs_tol = 0.0;
     if ('abs_tol' in kwargs) {
         if (!types.isinstance(kwargs.abs_tol, [types.Bool, types.Float, types.Int])) {
-            throw new exceptions.TypeError("a float is required");
+            throw new exceptions.TypeError.$pyclass("a float is required");
         }
         abs_tol = kwargs.abs_tol.__float__().val;
     }
 
     if (abs_tol < 0.0 || rel_tol < 0.0) {
-        throw new exceptions.ValueError("tolerances must be non-negative");
+        throw new exceptions.ValueError.$pyclass("tolerances must be non-negative");
     }
 
     var a = args[0].__float__().val;
@@ -564,7 +564,7 @@ math.isclose = function(args, kwargs) {
     }
     return new types.Bool(false);
 }
-math.isclose.__python__ = true;
+math.isclose.$pyargs = true;
 math.isclose.__doc__ = 'is_close(a, b, *, rel_tol=1e-9, abs_tol=0.0) -> bool\n\nDetermine whether two floating point numbers are close in value.\n\n   rel_tol\n       maximum difference for being considered "close", relative to the\n       magnitude of the input values\n    abs_tol\n       maximum difference for being considered "close", regardless of the\n       magnitude of the input values\n\nReturn True if a is close in value to b, and False otherwise.\n\nFor the values to be considered close, the difference between them\nmust be smaller than at least one of the tolerances.\n\n-inf, inf and NaN behave similarly to the IEEE 754 Standard.  That\nis, NaN is not close to anything, even itself.  inf and -inf are\nonly close to themselves.';
 
 math.isfinite = function(x) {
@@ -591,7 +591,7 @@ math.ldexp = function(x, i) {
     _checkFloat(x);
     var xx = x.__float__();
     if (!types.isinstance(i, [types.Bool, types.Int])) {
-        throw new exceptions.TypeError("Expected an int as second argument to ldexp.");
+        throw new exceptions.TypeError.$pyclass("Expected an int as second argument to ldexp.");
     }
     if (xx.val == 0.0) {
         return xx;
@@ -604,7 +604,7 @@ math.ldexp = function(x, i) {
     }
     var result = x.__float__().val * Math.pow(2, ii);
     if (!isFinite(result)) {
-        throw new exceptions.OverflowError("math range error");
+        throw new exceptions.OverflowError.$pyclass("math range error");
     }
     return new types.Float(result);
 }
@@ -618,7 +618,7 @@ math.lgamma = function(x) {
 
     if (xx <= 0.0) {
         if (Number.isInteger(xx)) {
-            throw new exceptions.ValueError('math domain error');
+            throw new exceptions.ValueError.$pyclass('math domain error');
         }
         // analytic continuation using reflection formula
         // gamma(z) * gamma(1-z) = pi / sin(pi * z)
@@ -663,7 +663,7 @@ math.lgamma.__doc__ = 'lgamma(x)\n\nNatural logarithm of absolute value of Gamma
 
 math.log = function(x, base) {
     if (x == null) {
-        throw new exceptions.TypeError("a float is required");
+        throw new exceptions.TypeError.$pyclass("a float is required");
     }
 
     // special case if both arguments are very large integers
@@ -684,7 +684,7 @@ math.log = function(x, base) {
 
     _checkFloat(x);
     if (x.__le__(new types.Float(0.0))) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     if (x.__eq__(new types.Float(1.0)) && types.isinstance(base, types.Int) && base.val.gt(1)) {
         return new types.Float(0.0);
@@ -692,7 +692,7 @@ math.log = function(x, base) {
     if (typeof base !== 'undefined') {
         _checkFloat(base);
         if (base.__le__(new types.Float(0.0))) {
-            throw new exceptions.ValueError("math domain error");
+            throw new exceptions.ValueError.$pyclass("math domain error");
         }
         var lg_base;
         if (types.isinstance(base, types.Int)) {
@@ -700,19 +700,19 @@ math.log = function(x, base) {
         } else {
             var bb = base.__float__().val;
             if (bb <= 0.0) {
-                throw new exceptions.ValueError("math domain error");
+                throw new exceptions.ValueError.$pyclass("math domain error");
             }
             lg_base = Math.log2(bb);
         }
         if (lg_base == 0.0) {
-            throw new exceptions.ZeroDivisionError("float division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("float division by zero");
         }
         return new types.Float(math.log2(x).val / lg_base);
     }
 
     if (types.isinstance(x, types.Int)) {
         if (x.val.isZero() || x.val.isNeg()) {
-            throw new exceptions.ValueError("math domain error");
+            throw new exceptions.ValueError.$pyclass("math domain error");
         }
         if (x.__ge__(types.Int.prototype.MAX_FLOAT)) {
             return _log2_int(x).__mul__(new types.Float(0.6931471805599453));
@@ -726,7 +726,7 @@ math.log10 = function(x) {
     _checkFloat(x);
     if (types.isinstance(x, types.Int)) {
         if (x.val.isZero() || x.val.isNeg()) {
-            throw new exceptions.ValueError("math domain error");
+            throw new exceptions.ValueError.$pyclass("math domain error");
         }
         if (x.__ge__(types.Int.prototype.MAX_FLOAT)) {
             return _log2_int(x) * 0.30102999566398114;
@@ -734,7 +734,7 @@ math.log10 = function(x) {
     }
     var xx = x.__float__().val;
     if (xx <= 0.0) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(Math.log10(xx));
 }
@@ -744,7 +744,7 @@ math.log1p = function(x) {
     _checkFloat(x);
     var xx = x.__float__().val;
     if (xx <= -1.0) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(Math.log1p(xx));
 }
@@ -753,7 +753,7 @@ math.log1p.__doc__ = 'log1p(x)\n\nReturn the natural logarithm of 1+x (base e).\
 // compute log2 of the (possibly large) integer argument
 var _log2_int = function(x) {
     if (x.val.isNeg() || x.val.isZero()) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     var bits = x._bits();
     if (bits.length < 54) {
@@ -774,7 +774,7 @@ math.log2 = function(x) {
     }
     var result = Math.log2(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(Math.log2(x.__float__().val));
 }
@@ -797,13 +797,13 @@ math.pow = function(x, y) {
     var xx = x.__float__().val;
     var result = Math.pow(x, y);
     if (xx < 0 && !Number.isInteger(yy) && yy != 0.0) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     if (xx == 0.0 && yy < 0.0) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     if (!isFinite(result)) {
-        throw new exceptions.OverflowError("math range error");
+        throw new exceptions.OverflowError.$pyclass("math range error");
     }
     return new types.Float(result);
 }
@@ -826,7 +826,7 @@ math.sinh = function(x) {
   _checkFloat(x);
   var result = Math.sinh(x.__float__().val);
   if (!isFinite(result)) {
-      throw new exceptions.OverflowError("math range error");
+      throw new exceptions.OverflowError.$pyclass("math range error");
   }
   return new types.Float(result);
 }
@@ -836,7 +836,7 @@ math.sqrt = function(x) {
     _checkFloat(x);
     var result = Math.sqrt(x.__float__().val);
     if (!isFinite(result)) {
-        throw new exceptions.ValueError("math domain error");
+        throw new exceptions.ValueError.$pyclass("math domain error");
     }
     return new types.Float(result);
 }
@@ -856,9 +856,9 @@ math.tanh.__doc__ = 'tanh(x)\n\nReturn the hyperbolic tangent of x.';
 
 math.trunc = function(x) {
     if (x === null) {
-        throw new exceptions.TypeError("type NoneType doesn't define __trunc__ method");
+        throw new exceptions.TypeError.$pyclass("type NoneType doesn't define __trunc__ method");
     } else if (!x.__trunc__) {
-        throw new exceptions.TypeError("type " + type_name(x) + " doesn't define __trunc__ method");
+        throw new exceptions.TypeError.$pyclass("type " + type_name(x) + " doesn't define __trunc__ method");
     }
     return x.__trunc__();
 }

@@ -191,24 +191,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_multiply_int',
 
-        'test_or_bool',
-        'test_or_bytearray',
-        'test_or_bytes',
-        'test_or_class',
-        'test_or_complex',
-        'test_or_dict',
-        'test_or_float',
-        'test_or_frozenset',
-        'test_or_int',
-        'test_or_list',
-        'test_or_None',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
-        'test_or_str',
-        'test_or_tuple',
-
         'test_rshift_bool',
         'test_rshift_bytearray',
         'test_rshift_bytes',
@@ -229,24 +211,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_subscr_bool',
         'test_subscr_slice',
-
-        'test_xor_bool',
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
-        'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_None',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
-        'test_xor_str',
-        'test_xor_tuple',
     ]
 
 

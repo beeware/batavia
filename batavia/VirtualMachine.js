@@ -7,7 +7,9 @@ var builtins = require('./builtins');
 var Frame = require('./core').Frame;
 var constants = require('./core').constants;
 var exceptions = require('./core').exceptions;
+var native = require('./core').native;
 var callables = require('./core').callables;
+var type_name = require('./core').type_name;
 var dis = require('./modules/dis');
 var marshal = require('./modules/marshal');
 var sys = require('./modules/sys');
@@ -43,7 +45,7 @@ var VirtualMachine = function(args) {
             // Strip all the whitespace out of the text content of
             // the script tag.
             return {
-                '__python__': true,
+                '$pyclass': true,
                 'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, "").trim(),
                 'filename': new types.Str(filename)
             };
@@ -64,7 +66,6 @@ var VirtualMachine = function(args) {
 
     this.return_value = null;
     this.last_exception = null;
-    this.is_vm = true;
 
     this.frames = [];
 
@@ -143,7 +144,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     };
                 default:
-                    throw new builtins.BataviaError("Unknown unary operator " + operator_name);
+                    throw new builtins.BataviaError.$pyclass("Unknown unary operator " + operator_name);
             }
         } else if (opcode in dis.binary_ops) {
             operator_name = opname.slice(7);
@@ -292,7 +293,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     };
                 default:
-                    throw new builtins.BataviaError("Unknown binary operator " + operator_name);
+                    throw new builtins.BataviaError.$pyclass("Unknown binary operator " + operator_name);
             }
         } else if (opcode in dis.inplace_ops) {
             operator_name = opname.slice(8);
@@ -502,7 +503,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         this.push(result);
                     };
                 default:
-                    throw new builtins.BataviaError("Unknown inplace operator " + operator_name);
+                    throw new builtins.BataviaError.$pyclass("Unknown inplace operator " + operator_name);
             }
         } else {
             // dispatch
@@ -511,7 +512,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                 return bytecode_fn;
             } else {
                 return function() {
-                    throw new builtins.BataviaError("Unknown opcode " + opcode + " (" + opname + ")");
+                    throw new builtins.BataviaError.$pyclass("Unknown opcode " + opcode + " (" + opname + ")");
                 };
             }
         }
@@ -538,7 +539,7 @@ VirtualMachine.prototype.run = function(tag, args) {
         return this.run_code({'code': code});
 
     } catch (e) {
-        if (e instanceof builtins.BataviaError) {
+        if (e instanceof builtins.BataviaError.$pyclass) {
             sys.stderr.write([e.msg + '\n']);
         } else {
             throw e;
@@ -571,7 +572,7 @@ VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_gl
         });
 
     } catch (e) {
-        if (e instanceof builtins.BataviaError) {
+        if (e instanceof builtins.BataviaError.$pyclass) {
             sys.stderr.write([e.msg + '\n']);
         } else {
             throw e;
@@ -661,7 +662,7 @@ VirtualMachine.prototype.pop_block = function() {
 
 VirtualMachine.prototype.make_frame = function(kwargs) {
     var code = kwargs.code;
-    var callargs = kwargs.callargs || {};
+    var callargs = kwargs.callargs || new types.JSDict();;
     var f_globals = kwargs.f_globals || null;
     var f_locals = kwargs.f_locals || null;
 
@@ -855,15 +856,15 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         // Check some invariants
         if (this.has_session) {
             if (this.frames.length > 1) {
-                throw new builtins.BataviaError("Frames left over in session!");
+                throw new builtins.BataviaError.$pyclass("Frames left over in session!");
             }
         } else {
             if (this.frames.length > 0) {
-                throw new builtins.BataviaError("Frames left over!");
+                throw new builtins.BataviaError.$pyclass("Frames left over!");
             }
         }
         if (this.frame && this.frame.stack.length > 0) {
-            throw new builtins.BataviaError("Data left on stack! " + this.frame.stack);
+            throw new builtins.BataviaError.$pyclass("Data left on stack! " + this.frame.stack);
         }
         return val;
     } catch (e) {
@@ -1016,7 +1017,7 @@ VirtualMachine.prototype.run_frame = function(frame) {
             why = operation.op_method.apply(this, operation.args);
         } catch (err) {
             // deal with exceptions encountered while executing the op.
-            if (err instanceof builtins.BataviaError) {
+            if (err instanceof builtins.BataviaError.$pyclass) {
                 // Batavia errors are a major problem; ABORT HARD
                 this.last_exception = null;
                 throw err;
@@ -1116,8 +1117,12 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
         val = frame.f_globals[name];
     } else if (name in frame.f_builtins) {
         val = frame.f_builtins[name];
+        // Functions loaded from builtins need to be bound to this VM.
+        if (val instanceof Function) {
+            val = val.bind(this);
+        }
     } else {
-        throw new builtins.NameError("name '" + name + "' is not defined");
+        throw new builtins.NameError.$pyclass("name '" + name + "' is not defined");
     }
     this.push(val);
 };
@@ -1135,7 +1140,7 @@ VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name];
     } else {
-        throw new builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment");
+        throw new builtins.UnboundLocalError.$pyclass("local variable '" + name + "' referenced before assignment");
     }
     this.push(val);
 };
@@ -1158,8 +1163,12 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
         val = this.frame.f_globals[name];
     } else if (name in this.frame.f_builtins) {
         val = this.frame.f_builtins[name];
+        // Functions loaded from builtins need to be bound to this VM.
+        if (val instanceof Function) {
+            val = val.bind(this);
+        }
     } else {
-        throw new builtins.NameError("name '" + name + "' is not defined");
+        throw new builtins.NameError.$pyclass("name '" + name + "' is not defined");
     }
     this.push(val);
 };
@@ -1254,7 +1263,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[1] === null;
                 break;
             default:
-                throw new builtins.BataviaError('Unknown operator ' + opnum);
+                throw new builtins.BataviaError.$pyclass('Unknown operator ' + opnum);
         }
     } else {
         switch(opnum) {
@@ -1310,7 +1319,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = types.issubclass(items[0], items[1]);
                 break;
             default:
-                throw new builtins.BataviaError('Unknown operator ' + opnum);
+                throw new builtins.BataviaError.$pyclass('Unknown operator ' + opnum);
         }
     }
 
@@ -1321,68 +1330,19 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop();
     var val;
     if (obj.__getattr__ === undefined) {
-        val = obj[attr];
-        if (val === undefined) {
-            throw new builtins.AttributeError(
-                "'" + obj.__class__.__name__ + "' object has no attribute '" + attr + "'"
-            );
-        }
+        // No __getattr__(), so it's a native object.
+        val = native.getattr(obj, attr);
     } else {
         val = obj.__getattr__(attr);
     }
 
-    if (val instanceof types.Function) {
-        // If this is a Python function, we need to know the current
-        // context - if it's an attribute of an object (rather than
-        // a module) we need to upgrade the Function to a Method.
-        if (!(obj instanceof types.Module)) {
-            val = new types.Method(obj, val);
-        }
-    } else if (val instanceof Function) {
-        // If this is a native Javascript function, wrap the function
-        // so that the Python calling convention is used. If it's a
-        // class, wrap it in a method that uses the Python calling
-        // convention, but instantiates the object rather than just
-        // proxying the call.
-        if (val.prototype && Object.keys(val.prototype).length > 0) {
-            // Python class
-            val = function(fn) {
-                return function(args, kwargs) {
-                    var obj = Object.create(fn.prototype);
-                    fn.apply(obj, args);
-                    return obj;
-                };
-            }(val);
-        } else {
-            // Native javascript method
-            var doc = val.__doc__;
-            if (val.__python__) {
-                // this accepts Batavia-style arguments
-                val = function(fn) {
-                    var f = function(args, kwargs) {
-                        return fn.apply(obj, [args, kwargs]);
-                    };
-                    f.__doc__ = doc;
-                    return f;
-                }(val);
-            } else {
-                val = function(fn) {
-                    var f = function(args, kwargs) {
-                        return fn.apply(obj, args);
-                    };
-                    f.__doc__ = doc;
-                    return f;
-                }(val);
-            }
-        }
-    }
     this.push(val);
 };
 
 VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
     var items = this.popn(2);
     if (items[1].__setattr__ === undefined) {
-        items[1][name] = items[0];
+        native.setattr(items[1], name, items[0]);
     } else {
         items[1].__setattr__(name, items[0]);
     }
@@ -1390,7 +1350,11 @@ VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
 
 VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
     var obj = this.pop();
-    delete obj[name];
+    if (obj.__delattr__ === undefined) {
+        native.delattr(obj, name);
+    } else {
+        obj.__delattr__(name);
+    }
 };
 
 VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
@@ -1404,10 +1368,10 @@ VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
 
 VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
     var items = this.popn(2);
-    if (items[1].__delitem__) {
-        items[1].__delitem__(items[0]);
+    if (items[0].__delitem__) {
+        items[0].__delitem__(items[1]);
     } else {
-        delete items[1][items[0]];
+        delete items[0][items[1]];
     }
 };
 
@@ -1448,7 +1412,7 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
             return;
 
         default:
-            throw new builtins.BataviaError(
+            throw new builtins.BataviaError.$pyclass(
                 "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)"
             );
     }
@@ -1458,7 +1422,7 @@ VirtualMachine.prototype.byte_STORE_MAP = function() {
     switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_35:
         case constants.BATAVIA_MAGIC_353:
-            throw new builtins.BataviaError(
+            throw new builtins.BataviaError.$pyclass(
                 "STORE_MAP is unsupported with BATAVIA_MAGIC"
             );
 
@@ -1475,7 +1439,7 @@ VirtualMachine.prototype.byte_STORE_MAP = function() {
             return;
 
         default:
-            throw new builtins.BataviaError(
+            throw new builtins.BataviaError.$pyclass(
                 "Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)"
             );
     }
@@ -1506,7 +1470,7 @@ VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
         var items = this.popn(count);
         this.push(builtins.slice(items));
     } else {
-        throw new builtins.BataviaError("Strange BUILD_SLICE count: " + count);
+        throw new builtins.BataviaError.$pyclass("Strange BUILD_SLICE count: " + count);
     }
 };
 
@@ -1636,7 +1600,7 @@ VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
         var v = iterobj.__next__();
         this.push(v);
     } catch (err) {
-        if (err instanceof builtins.StopIteration) {
+        if (err instanceof builtins.StopIteration.$pyclass) {
             this.pop();
             this.jump(jump);
         } else {
@@ -1675,7 +1639,7 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
         why = null;
     } else {
         value = this.pop();
-        if (value instanceof builtins.BaseException) {
+        if (value instanceof builtins.BaseException.$pyclass) {
             traceback = this.pop();
             this.last_exception = {
                 'exc_type': exc_type,
@@ -1684,7 +1648,7 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
             };
             why = 'reraise';
         } else {
-            throw new builtins.BataviaError("Confused END_FINALLY: " + value.toString());
+            throw new builtins.BataviaError.$pyclass("Confused END_FINALLY: " + value.toString());
         }
     }
     return why;
@@ -1713,7 +1677,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         } else {
             return 'reraise';
         }
-    } else if (exc instanceof builtins.BaseException) {
+    } else if (exc instanceof builtins.BaseException.$pyclass) {
         // As in `throw ValueError('foo')`
         exc_type = exc.__class__;
         val = exc;
@@ -1858,8 +1822,11 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     }
 
     var func = this.pop();
-    // frame = this.frame
-    var retval = callables.run_callable(this, func, posargs, namedargs);
+    if (func.__call__ !== undefined) {
+        func = func.__call__.bind(func);
+    }
+
+    var retval = func(posargs, namedargs);
     this.push(retval);
 };
 
@@ -1915,17 +1882,19 @@ VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
 };
 
 VirtualMachine.prototype.byte_IMPORT_STAR = function() {
+    // Although modules may not be native, the native getattr works
+    // because it's a simple object subscript.
     // TODO: this doesn't use __all__ properly.
     var mod = this.pop();
     if ('__all__' in mod) {
         for (var n = 0; n < mod.__all__.length; n++) {
             var name = mod.__all__[n];
-            this.frame.f_locals[name] = mod[name];
+            this.frame.f_locals[name] = native.getattr(mod, name);
         }
     } else {
-        for (var attr in mod) {
-            if (attr[0] !== '_') {
-                this.frame.f_locals[attr] = mod[attr];
+        for (var name in mod) {
+            if (name[0] !== '_') {
+                this.frame.f_locals[name] = native.getattr(mod, name);
             }
         }
     }
@@ -1933,7 +1902,10 @@ VirtualMachine.prototype.byte_IMPORT_STAR = function() {
 
 VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
     var mod = this.top();
-    this.push(mod[name]);
+    // Although modules may not be native, the native getattr works
+    // because it's a simple object subscript.
+    var val = native.getattr(mod, name);
+    this.push(val);
 };
 
 // VirtualMachine.prototype.byte_EXEC_STMT = function() {
@@ -1941,65 +1913,75 @@ VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
 //     six.exec_(stmt, globs, locs) f
 // };
 
-var make_class = function(args, kwargs) {
-    var func = args[0];
-    var name = args[1];
-    var bases = kwargs.bases || args[2];
-    // var metaclass = kwargs.metaclass || args[3];
-    // var kwds = kwargs.kwds || args[4] || [];
+var make_class = function(vm) {
+    return function(args, kwargs) {
+        var func = args[0];
+        var name = args[1];
+        var bases = kwargs.bases || args.slice(2,args.length);
+        // var metaclass = kwargs.metaclass || args[3];
+        // var kwds = kwargs.kwds || args[4] || [];
 
-    // Create a locals context, and run the class function in it.
-    var locals = new types.Dict();
-    func.__call__.apply(this, [[], [], locals]);
+        // Create a locals context, and run the class function in it.
+        var locals = new types.Dict();
+        func.__call__.apply(this, [[], [], locals]);
 
-    // Now construct the class, based on the constructed local context.
-    var unbound_pytype = function(vm, args, kwargs) {
-        Object.call(this);
-        if (this.__init__) {
-            this.__init__.__self__ = this;
-            this.__init__.__call__.apply(vm, [args, kwargs]);
+        // Now construct the class, based on the constructed local context.
+        // The *Javascript* constructor isn't the same as the *Python*
+        // constructor. The Javascript constructor just sets up the object.
+        // The Python __init__ invocation is done outside the constructor, as part
+        // of the __call__ that invokes the constructor.
+        var pyclass = function(vm, name, bases) {
+            return function() {
+                if (bases.length === 0) {
+                    types.Object.call(this);
+                } else {
+                    for (var b in bases) {
+                        bases[b].$pyclass.call(this);
+                    }
+                }
+            }
+        }(vm, name, bases);
+
+        // If there are no explicitly named bases, the class
+        // inherits from `object`. Otherwise, populate __base__
+        // and __bases__, and copy in all the methods from
+        // any base class so that the prototype of pyclass
+        // has all the available methods.
+        if (bases.length === 0) {
+            pyclass.prototype.__bases__ = [types.Object.prototype.__class__];
+            pyclass.prototype.__base__ = types.Object.prototype.__class__;
+        } else {
+            pyclass.prototype.__bases__ = bases;
+            pyclass.prototype.__base__ = bases[0];
         }
-    };
-    unbound_pytype.__name__ = name;
 
-    if (bases) {
-        // load up the base attributes
-        if (Array.isArray(bases)) {
-            throw new exceptions.NotImplementedError("multiple inheritance not supported yet");
-        }
-        var base = bases.__class__;
-        for (var attr in base) {
-            if (base.hasOwnProperty(attr)) {
-                unbound_pytype[attr] = base[attr];
-                unbound_pytype.prototype[attr] = base[attr];
+        // Set the type of the object
+        var pytype = new types.Type(name, bases);
+        pyclass.prototype.__class__ = pytype;
+
+        // Close the loop so the type knows about the class,
+        // track the virtual machine that was used to create the type,
+        // and set the type to use Python style initialization.
+        pytype.$pyclass = pyclass;
+        pytype.$vm = vm;
+        pytype.$pyinit = true
+
+        // Copy in all the attributes that were created
+        // as part of object construction.
+        for (var attr in locals) {
+            if (locals.hasOwnProperty(attr)) {
+                pyclass[attr] = locals[attr];
+                pyclass.prototype[attr] = locals[attr];
             }
         }
-    }
-    for (var attr in locals) {
-        if (locals.hasOwnProperty(attr)) {
-            unbound_pytype[attr] = locals[attr];
-            unbound_pytype.prototype[attr] = locals[attr];
-        }
-    }
-    unbound_pytype.prototype.__class__ = new types.Type(name, bases);
 
-    var pytype = function(vm, unbound_pytype, name) {
-        var __new__ = function(args, kwargs) {
-            return new unbound_pytype(vm, args, kwargs);
-        };
-        __new__.__python__ = true;
-        __new__.__class__ = unbound_pytype;
-        return __new__;
-    }(this, unbound_pytype, name);
-    pytype.__class__ = unbound_pytype;
-    pytype.__python__ = true;
-
-    return pytype
+        // Return the type. Calling the type will construct instances.
+        return pytype;
+    }
 }
 
 VirtualMachine.prototype.byte_LOAD_BUILD_CLASS = function() {
-    var pytype = make_class.bind(this);
-    pytype.__python__ = true;
+    var pytype = make_class(this);
     this.push(pytype);
 };
 

@@ -11,7 +11,7 @@ function DictView(args, kwargs) {
 
 DictView.prototype = Object.create(PyObject.prototype);
 DictView.prototype.__class__ = new Type('dictview');
-DictView.prototype.constructor = DictView;
+DictView.prototype.__class__.$pyclass = DictView;
 
 /**************************************************
  * Module exports

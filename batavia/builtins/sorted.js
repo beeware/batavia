@@ -15,7 +15,7 @@ function _validateInput(args, kwargs, undefined) {
 
     if (kwargs !== undefined) {
         if (kwargs['iterable'] !== undefined) {
-            throw new exceptions.TypeError("'iterable' is an invalid keyword argument for this function");
+            throw new exceptions.TypeError.$pyclass("'iterable' is an invalid keyword argument for this function");
         }
 
         if (kwargs["reverse"] !== undefined && kwargs["reverse"] === true) {
@@ -26,10 +26,10 @@ function _validateInput(args, kwargs, undefined) {
 
         if (kwargs["key"] !== undefined) {
             //TODO: Fix context of python functions calling with proper vm
-            throw new exceptions.NotImplementedError('Builtin Batavia sorted function "key" function is not implemented.');
+            throw new exceptions.NotImplementedError.$pyclass('Builtin Batavia sorted function "key" function is not implemented.');
             //preparingFunction = function (value) {
             //    return {
-            //        "key": kwargs["key"].__call__.apply(kwargs["key"]._vm, [value], null),
+            //        "key": kwargs["key"].__call__.apply(kwargs["key"].$vm, [value], null),
             //        "value": value
             //    };
             //}
@@ -37,7 +37,7 @@ function _validateInput(args, kwargs, undefined) {
     }
 
     if (args === undefined || args.length === 0) {
-        throw new exceptions.TypeError("Required argument 'iterable' (pos 1) not found");
+        throw new exceptions.TypeError.$pyclass("Required argument 'iterable' (pos 1) not found");
     }
 
     return {
@@ -77,7 +77,7 @@ function sorted(args, kwargs) {
         }));
     }
 
-    throw new exceptions.NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects");
+    throw new exceptions.NotImplementedError.$pyclass("Builtin Batavia function 'sorted' not implemented for objects");
 }
 sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list';
 

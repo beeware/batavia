@@ -14,9 +14,9 @@ function Module(name, filename, pkg) {
     this.__package__ = pkg;
 }
 
-Module.prototype = Object.create(JSDict.prototype);
+Module.prototype = Object.create(JSDict.prototype)
 Module.prototype.__class__ = new Type('module');
-Module.prototype.constructor = Module;
+Module.prototype.__class__.$pyclass = Module;
 
 /**************************************************
  * Module exports

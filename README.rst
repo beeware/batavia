@@ -35,7 +35,13 @@ Quick Start
 Prerequisites
 ~~~~~~~~~~~~~~
 
-Batavia requires a Python 3.4 installation, and a virtualenv to run it all in.
+Batavia requires a Python 3.4 or Python 3.5 installation, and a virtualenv to
+run it all in.  Python 3.6 is not yet supported.
+
+You also need to have a recent install of `Node.js <https://nodejs.org>`_. If
+your version of Node is outdated, you can update it using the command::
+
+   $ npm install npm@latest -g
 
 Check the `Setting up your environment
 <http://pybee.org/contributing/first-time/setup/>`_ for configuration help.

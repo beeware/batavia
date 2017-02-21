@@ -4,7 +4,7 @@ var types = require('../types');
 
 function oct(args, kwargs) {
     if (!args || args.length !== 1) {
-        throw new exceptions.TypeError("oct() takes exactly one argument (" + (args ? args.length : 0) + " given)");
+        throw new exceptions.TypeError.$pyclass("oct() takes exactly one argument (" + (args ? args.length : 0) + " given)");
     }
     var value = args[0];
     if (types.isinstance(value, types.Int)) {
@@ -21,7 +21,7 @@ function oct(args, kwargs) {
         if (value.__index__) {
              value = value.__index__();
         } else {
-            throw new exceptions.TypeError("__index__ method needed for non-integer inputs");
+            throw new exceptions.TypeError.$pyclass("__index__ method needed for non-integer inputs");
         }
     }
     if (value < 0) {

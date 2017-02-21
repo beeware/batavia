@@ -1,5 +1,6 @@
 
 var Block = function(type, handler, level) {
+    Object.call(this);
     this.type = type;
     this.handler = handler;
     this.level = level || 0;

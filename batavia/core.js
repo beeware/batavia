@@ -16,6 +16,7 @@ core['type_name'] = require('./core/types/Type').type_name;
 
 core['exceptions'] = require('./core/exceptions');
 core['callables'] = require('./core/callables');
+core['native'] = require('./core/native');
 
 core['NoneType'] = require('./core/types/NoneType').NoneType;
 core['NotImplementedType'] = require('./core/types/NotImplementedType').NotImplementedType;

@@ -7,7 +7,7 @@ var types = require('../types');
 function round(args, kwargs) {
     var p = 0; // Precision
     if (!args) {
-      throw new exceptions.TypeError("Required argument 'number' (pos 1) not found");
+      throw new exceptions.TypeError.$pyclass("Required argument 'number' (pos 1) not found");
     }
     if (args.length == 2) {
         p = args[1];

@@ -3,7 +3,7 @@ var exceptions = require('../core').exceptions;
 
 function hex(args, kwargs) {
     if (args.length !== 1) {
-        throw new exceptions.TypeError("hex() takes exactly one argument (" + args.length + " given)");
+        throw new exceptions.TypeError.$pyclass("hex() takes exactly one argument (" + args.length + " given)");
     };
     var int = args[0].val
     return "0x" + int.toString(16);

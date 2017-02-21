@@ -23,7 +23,7 @@ function compile(args, kwargs) {
     } else if (mode == "single") {
         compile_mode = 2;
     } else {
-        throw new exceptions.ValueError("compile() mode must be 'exec', 'eval' or 'single'");
+        throw new exceptions.ValueError.$pyclass("compile() mode must be 'exec', 'eval' or 'single'");
     }
 
     var ast_check = _compile.ast_check(source);

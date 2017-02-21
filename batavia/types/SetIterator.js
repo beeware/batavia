@@ -15,12 +15,12 @@ function SetIterator(data) {
 
 SetIterator.prototype = Object.create(PyObject.prototype);
 SetIterator.prototype.__class__ = new Type('set_iterator');
-SetIterator.prototype.constructor = SetIterator;
+SetIterator.prototype.__class__.$pyclass = SetIterator;
 
 SetIterator.prototype.__next__ = function() {
     var key = this.keys[this.index];
     if (key === undefined) {
-        throw new exceptions.StopIteration();
+        throw new exceptions.StopIteration.$pyclass();
     }
     this.index++;
     return key;

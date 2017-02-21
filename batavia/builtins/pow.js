@@ -5,7 +5,7 @@ var types = require('../types');
 function pow(args, kwargs) {
     var x, y, z;
     if (!args) {
-      throw new exceptions.TypeError("pow expected at least 2 arguments, got 0");
+      throw new exceptions.TypeError.$pyclass("pow expected at least 2 arguments, got 0");
     }
     if (args.length === 2) {
         x = args[0];
@@ -19,10 +19,10 @@ function pow(args, kwargs) {
         if (!types.isinstance(x, types.Int) ||
             !types.isinstance(y, types.Int) ||
             !types.isinstance(y, types.Int)) {
-            throw new exceptions.TypeError("pow() requires all arguments be integers when 3 arguments are present");
+            throw new exceptions.TypeError.$pyclass("pow() requires all arguments be integers when 3 arguments are present");
         }
         if (y < 0) {
-          throw new exceptions.TypeError("Builtin Batavia does not support negative exponents");
+          throw new exceptions.TypeError.$pyclass("Builtin Batavia does not support negative exponents");
         }
         if (y == 0) {
           return 1;
@@ -44,7 +44,7 @@ function pow(args, kwargs) {
         }
         return result;
     } else {
-        throw new exceptions.TypeError("pow expected at least 2 arguments, got " + args.length);
+        throw new exceptions.TypeError.$pyclass("pow expected at least 2 arguments, got " + args.length);
     }
 }
 pow.__doc__ = 'pow(x, y[, z]) -> number\n\nWith two arguments, equivalent to x**y.  With three arguments,\nequivalent to (x**y) % z, but may be more efficient (e.g. for ints).';

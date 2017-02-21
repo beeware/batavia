@@ -15,10 +15,10 @@ function bytes(args, kwargs) {
 //    bytes() -> empty bytes object
 
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError("Batavia calling convention not used.");
+        throw new exceptions.BataviaError.$pyclass("Batavia calling convention not used.");
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("<fn>() doesn't accept keyword arguments.");
+        throw new exceptions.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
     }
 
     if (args.length == 0) {
@@ -27,7 +27,7 @@ function bytes(args, kwargs) {
     } else if (args.length == 1) {
         var arg = args[0];
         if (arg === null) {
-            throw new exceptions.TypeError("'NoneType' object is not iterable");
+            throw new exceptions.TypeError.$pyclass("'NoneType' object is not iterable");
         } else if (types.isinstance(arg, types.Int)) {
             // bytes(int) -> bytes array of size given by the parameter initialized with null bytes
             // Batavia ints are BigNumbers, so we need to unpack the value from the BigNumber Array.
@@ -37,7 +37,7 @@ function bytes(args, kwargs) {
             var bignumexp = arg.val.e;
             var too_large = false;
             if (bignumsign == -1) {
-                throw new exceptions.ValueError(
+                throw new exceptions.ValueError.$pyclass(
                     "negative count"
                 );
             }
@@ -52,7 +52,7 @@ function bytes(args, kwargs) {
                 }
             }
             if (too_large) {
-                throw new exceptions.OverflowError("byte string is too large");
+                throw new exceptions.OverflowError.$pyclass("byte string is too large");
             } else {
                 return new types.Bytes(bytesbuffer);
             }
@@ -67,11 +67,11 @@ function bytes(args, kwargs) {
         } else if (types.isinstance(arg, types.Bytearray)) {
             // byte(bytes_or_buffer) -> mutable copy of bytes_or_buffer
             // but bytearrray is still not implemented, so...
-            throw new exceptions.NotImplementedError(
+            throw new exceptions.NotImplementedError.$pyclass(
                 "Not implemented"
             );
         } else if (types.isinstance(arg, types.Str )){
-            throw new exceptions.TypeError("string argument without an encoding");
+            throw new exceptions.TypeError.$pyclass("string argument without an encoding");
         // is the argument iterable and not a Str, Bytes, Bytearray (dealt with above)?
         } else if (arg.__iter__ !== undefined) {
             // bytearray(iterable_of_ints) -> bytearray
@@ -86,17 +86,17 @@ function bytes(args, kwargs) {
                     buffer_args.push(val ? 1 : 0);
                 } else {
                     if (!types.isinstance(val, types.Int)) {
-                        throw new exceptions.TypeError(
+                        throw new exceptions.TypeError.$pyclass(
                             "'" + type_name(val) + "' object cannot be interpreted as an integer");
                     } else {
-                        throw new exceptions.ValueError('bytes must be in range(0, 256)');
+                        throw new exceptions.ValueError.$pyclass('bytes must be in range(0, 256)');
                     }
                 }
             });
             return new types.Bytes(Buffer.from(buffer_args));
         } else {
             // the argument is not one of the special cases, and not an iterable, so...
-            throw new exceptions.TypeError(
+            throw new exceptions.TypeError.$pyclass(
             //    "'" + type_name(val) + "' object is not iterable");
             "'" + type_name(arg) + "' object is not iterable");
         }

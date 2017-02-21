@@ -6,7 +6,7 @@ var types = require('../types');
 function __import__(args, kwargs) {
     // console.log("IMPORT", args[0], args[1], args[4]);
     if (arguments.length !== 2) {
-        throw new exceptions.BataviaError("Batavia calling convention not used.");
+        throw new exceptions.BataviaError.$pyclass("Batavia calling convention not used.");
     }
 
     // The root module is the top level namespace (the first
@@ -94,7 +94,7 @@ function __import__(args, kwargs) {
                 if (root_module === undefined) {
                     payload = this.loader(name);
                     if (payload === null) {
-                        throw new exceptions.ImportError("No module name '" + name + "'");
+                        throw new exceptions.ImportError.$pyclass("No module name '" + name + "'");
                     } else if (payload.javascript) {
                         root_module = payload.javascript;
                         leaf_module = root_module;
@@ -126,7 +126,7 @@ function __import__(args, kwargs) {
                 if (new_module === undefined) {
                     payload = this.loader(name);
                     if (payload === null) {
-                        throw new exceptions.ImportError("No module name '" + name + "'");
+                        throw new exceptions.ImportError.$pyclass("No module name '" + name + "'");
                     } else if (payload.javascript) {
                         new_module = payload.javascript;
                         leaf_module[path[n]] = new_module;
