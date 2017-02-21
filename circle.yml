@@ -26,3 +26,4 @@ test:
     - "py.test tests":
         timeout: 60
         parallel: true
+    - "node_modules/.bin/eslint batavia"
