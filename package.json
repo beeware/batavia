@@ -28,19 +28,18 @@
   },
   "homepage": "http://pybee.org/batavia",
   "devDependencies": {
+    "@pybee/ouroboros": "~3.4.1-dev.5",
     "babel-core": "6.18.2",
     "babel-loader": "6.2.8",
     "babel-preset-latest": "6.16.0",
     "eslint": "3.9.1",
-    "eslint-config-airbnb": "13.0.0",
+    "eslint-config-standard": "^6.2.1",
     "eslint-loader": "1.6.1",
-    "eslint-plugin-import": "2.1.0",
-    "eslint-plugin-jsx-a11y": "2.2.3",
-    "eslint-plugin-react": "6.6.0",
+    "eslint-plugin-promise": "^3.4.2",
+    "eslint-plugin-standard": "^2.0.1",
     "json-loader": "0.5.4",
     "uglifyjs": "2.4.10",
-    "webpack-dev-server": "1.16.2",
-    "@pybee/ouroboros": "~3.4.1-dev.5"
+    "webpack-dev-server": "1.16.2"
   },
   "dev": "webpack-dev-server",
   "dependencies": {
