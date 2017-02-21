@@ -17,6 +17,7 @@ function Generator(frame, vm) {
 
 Generator.prototype = Object.create(PyObject.prototype);
 Generator.prototype.__class__ = new Type('generator');
+Generator.prototype.__class__.$pyclass = Generator;
 
 Generator.prototype.__iter__ = function() {
     return this;
@@ -41,7 +42,7 @@ Generator.prototype.send = function(value) {
     this.gi_frame.stack.push(value);
     var yieldval = this.vm.run_frame(this.gi_frame)
     if (this.finished) {
-        throw new exceptions.StopIteration();
+        throw new exceptions.StopIteration.$pyclass();
     }
     return yieldval;
 }
@@ -54,7 +55,7 @@ Generator.prototype['throw'] = function(type, value, traceback) {
     }
     var yieldval = this.vm.run_frame(this.gi_frame)
     if (this.finished) {
-        throw new exceptions.StopIteration();
+        throw new exceptions.StopIteration.$pyclass();
     }
     return yieldval;
 }

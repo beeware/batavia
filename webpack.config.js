@@ -4,7 +4,6 @@ var webpack = require('webpack');
 module.exports = {
     entry: {
         "batavia": "./batavia/batavia.js",
-        "batavia.min": "./batavia/batavia.js"
     },
     devtool: 'source-map',
     output: {
@@ -16,33 +15,21 @@ module.exports = {
     target: 'web',
     plugins: [
         new webpack.optimize.UglifyJsPlugin({
-            include: /\.min\.js$/,
-            minimize: true
+            minimize: true,
+            sourceMap: true
         })
     ],
     module: {
-        // preLoaders: [
-        //     {
-        //         test: /\.js$/,
-        //         loader: 'eslint',
-        //         exclude: /node_modules/,
-        //     }
-        // ],
-        loaders: [
+        rules: [
             {
                 test: /\.js$/,
-                loader: "babel-loader",
-                exclude: /node_modules/
-            },
-            {
-                include: /\.json$/,
-                loader: "json-loader"
+                use: [
+                    {
+                        loader: "babel-loader"
+                    }
+                ],
+                exclude: "/node_modules/"
             }
         ]
     },
-    // eslint: {
-    //     configFile: './.eslintrc',
-    //     failOnWarning: false,
-    //     failOnError: true
-    // }
 }

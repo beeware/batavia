@@ -28,7 +28,7 @@ function Dict(args, kwargs) {
 
 Dict.prototype = Object.create(PyObject.prototype);
 Dict.prototype.__class__ = new Type('dict');
-Dict.prototype.constructor = Dict;
+Dict.prototype.__class__.$pyclass = Dict;
 
 var MAX_LOAD_FACTOR = 0.75;
 var INITIAL_SIZE = 8; // after size 0
@@ -160,24 +160,24 @@ Dict.prototype.__lt__ = function(other) {
     var types = require('../types');
    if (other !== None) {
         if (types.isbataviainstance(other)) {
-            throw new exceptions.TypeError("unorderable types: dict() < " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: dict() < " + type_name(other) + "()");
         } else {
             return this.valueOf() < other.valueOf();
         }
     }
-    throw new exceptions.TypeError("unorderable types: dict() < NoneType()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: dict() < NoneType()");
 }
 
 Dict.prototype.__le__ = function(other) {
     var types = require('../types');
    if (other !== None) {
         if (types.isbataviainstance(other)) {
-            throw new exceptions.TypeError("unorderable types: dict() <= " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: dict() <= " + type_name(other) + "()");
         } else {
             return this.valueOf() <= other.valueOf();
         }
     }
-    throw new exceptions.TypeError("unorderable types: dict() <= NoneType()");
+    throw new exceptions.TypeError.$pyclass("unorderable types: dict() <= NoneType()");
 }
 
 Dict.prototype.__eq__ = function(other) {
@@ -192,12 +192,12 @@ Dict.prototype.__gt__ = function(other) {
     var types = require('../types');
     if (other !== None) {
          if (types.isbataviainstance(other)) {
-             throw new exceptions.TypeError("unorderable types: dict() > " + type_name(other) + "()");
+             throw new exceptions.TypeError.$pyclass("unorderable types: dict() > " + type_name(other) + "()");
          } else {
              return this.valueOf() > other.valueOf();
          }
      } else {
-         throw new exceptions.TypeError("unorderable types: dict() > NoneType()");
+         throw new exceptions.TypeError.$pyclass("unorderable types: dict() > NoneType()");
      }
 }
 
@@ -205,12 +205,12 @@ Dict.prototype.__ge__ = function(other) {
     var types = require('../types');
     if (other !== None) {
          if (types.isbataviainstance(other)) {
-             throw new exceptions.TypeError("unorderable types: dict() >= " + type_name(other) + "()");
+             throw new exceptions.TypeError.$pyclass("unorderable types: dict() >= " + type_name(other) + "()");
          } else {
              return this.valueOf() >= other.valueOf();
          }
      } else {
-         throw new exceptions.TypeError("unorderable types: dict() >= NoneType()");
+         throw new exceptions.TypeError.$pyclass("unorderable types: dict() >= NoneType()");
      }
 }
 
@@ -219,11 +219,11 @@ Dict.prototype.__ge__ = function(other) {
  **************************************************/
 
 Dict.prototype.__pos__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary +: 'dict'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'dict'");
 }
 
 Dict.prototype.__neg__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary -: 'dict'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'dict'");
 }
 
 Dict.prototype.__not__ = function() {
@@ -231,7 +231,7 @@ Dict.prototype.__not__ = function() {
 }
 
 Dict.prototype.__invert__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary ~: 'dict'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'dict'");
 }
 
 /**************************************************
@@ -239,7 +239,7 @@ Dict.prototype.__invert__ = function() {
  **************************************************/
 
 Dict.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'");
 }
 
 Dict.prototype.__div__ = function(other) {
@@ -247,11 +247,11 @@ Dict.prototype.__div__ = function(other) {
 }
 
 Dict.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'");
 }
 
 Dict.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for /: 'dict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'dict' and '" + type_name(other) + "'");
 }
 
 Dict.prototype.__mul__ = function(other) {
@@ -260,43 +260,43 @@ Dict.prototype.__mul__ = function(other) {
     if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
             types.JSDict, types.Int, types.NoneType])) {
-        throw new exceptions.TypeError("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'");
     } else {
-        throw new exceptions.TypeError("can't multiply sequence by non-int of type 'dict'");
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'dict'");
     }
 }
 
 Dict.prototype.__mod__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__mod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__mod__ has not been implemented");
 }
 
 Dict.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for +: 'dict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'dict' and '" + type_name(other) + "'");
 }
 
 Dict.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for -: 'dict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'dict' and '" + type_name(other) + "'");
 }
 
 
 Dict.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__lshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__lshift__ has not been implemented");
 }
 
 Dict.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__rshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__rshift__ has not been implemented");
 }
 
 Dict.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for &: 'dict' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'dict' and '" + type_name(other) + "'");
 }
 
 Dict.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__xor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__xor__ has not been implemented");
 }
 
 Dict.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__or__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__or__ has not been implemented");
 }
 
 Dict.prototype.__setitem__ = function(key, value) {
@@ -339,51 +339,51 @@ Dict.prototype.__setitem__ = function(key, value) {
  **************************************************/
 
 Dict.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ifloordiv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ifloordiv__ has not been implemented");
 }
 
 Dict.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__itruediv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__itruediv__ has not been implemented");
 }
 
 Dict.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__iadd__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__iadd__ has not been implemented");
 }
 
 Dict.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__isub__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__isub__ has not been implemented");
 }
 
 Dict.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__imul__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__imul__ has not been implemented");
 }
 
 Dict.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__imod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__imod__ has not been implemented");
 }
 
 Dict.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ipow__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ipow__ has not been implemented");
 }
 
 Dict.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ilshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ilshift__ has not been implemented");
 }
 
 Dict.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__irshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__irshift__ has not been implemented");
 }
 
 Dict.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__iand__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__iand__ has not been implemented");
 }
 
 Dict.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ixor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ixor__ has not been implemented");
 }
 
 Dict.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError("Dict.__ior__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Dict.__ior__ has not been implemented");
 }
 
 Dict.prototype._find_index = function(other) {
@@ -427,7 +427,7 @@ Dict.prototype.__contains__ = function(key) {
 Dict.prototype.__getitem__ = function(key) {
     var i = this._find_index(key);
     if (i === null) {
-        throw new exceptions.KeyError(key === null ? 'None': key);
+        throw new exceptions.KeyError.$pyclass(key === null ? 'None': key);
     }
     return this.data_values[i];
 }
@@ -435,7 +435,7 @@ Dict.prototype.__getitem__ = function(key) {
 Dict.prototype.__delitem__ = function(key) {
     var i = this._find_index(key);
     if (i === null) {
-        throw new exceptions.KeyError(key === null ? 'None': key);
+        throw new exceptions.KeyError.$pyclass(key === null ? 'None': key);
     }
     this.data_keys[i] = DELETED;
     this.data_values[i] = null;
@@ -451,7 +451,7 @@ Dict.prototype.get = function(key, backup) {
     if (i !== null) {
         return this.data_values[i];
     } else if (typeof backup === 'undefined') {
-        throw new exceptions.KeyError(key === null ? 'None': key);
+        throw new exceptions.KeyError.$pyclass(key === null ? 'None': key);
     } else {
         return backup;
     }
@@ -472,7 +472,7 @@ Dict.prototype.update = function(values) {
     callables.iter_for_each(updates, function(val) {
         var pieces = new types.Tuple(val);
         if (pieces.length != 2) {
-            throw new exceptions.ValueError("dictionary update sequence element #" + i + " has length " + pieces.length + "; 2 is required");
+            throw new exceptions.ValueError.$pyclass("dictionary update sequence element #" + i + " has length " + pieces.length + "; 2 is required");
         }
         var key = pieces[0];
         var value = pieces[1];

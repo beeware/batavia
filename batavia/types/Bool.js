@@ -9,6 +9,7 @@ var type_name = require('../core').type_name;
 var Bool = Boolean;
 
 Bool.prototype.__class__ = new Type('bool');
+Bool.prototype.__class__.$pyclass = Bool;
 
 /**************************************************
  * Type conversions
@@ -82,7 +83,7 @@ Bool.prototype.__gt__ = function(other) {
     ];
 
     if (types.isinstance(other, invalid_types)) {
-      throw new exceptions.TypeError('unorderable types: bool() > ' + type_name(other) + '()');
+      throw new exceptions.TypeError.$pyclass('unorderable types: bool() > ' + type_name(other) + '()');
     }
 
     return this.valueOf() > other;
@@ -153,7 +154,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         } else {
             if (other.__lt__(new types.Float(0.0))) {
-                throw new exceptions.ZeroDivisionError("0.0 cannot be raised to a negative power");
+                throw new exceptions.ZeroDivisionError.$pyclass("0.0 cannot be raised to a negative power");
             } else if (types.isinstance(other, types.Int)) {
                 return new types.Int(Math.pow(0, other.valueOf()));
             } else {
@@ -161,7 +162,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         }
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for pow: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for pow: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -174,7 +175,7 @@ Bool.prototype.__floordiv__ = function(other) {
 
     if (types.isinstance(other, Bool)) {
         if (!other.valueOf()) {
-            throw new exceptions.ZeroDivisionError("integer division or modulo by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("integer division or modulo by zero");
         } else if (this.valueOf() && other.valueOf()) {
             return new types.Int(1);
         } else {
@@ -195,19 +196,19 @@ Bool.prototype.__floordiv__ = function(other) {
         var roundedVal = Math.floor(thisValue / other);
 
         if (other === 0) {
-            throw new exceptions.ZeroDivisionError(message);
+            throw new exceptions.ZeroDivisionError.$pyclass(message);
         } else if (types.isinstance(other, types.Int)) {
             return new types.Int(roundedVal);
         } else {
             return new types.Float(roundedVal);
         }
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'");
     }
 }
 
 Bool.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'");
 }
 
 Bool.prototype.__mul__ = function(other) {
@@ -224,11 +225,11 @@ Bool.prototype.__mul__ = function(other) {
     } else if (types.isinstance(other, types.Int)) {
         return new types.Int((this.valueOf() ? 1 : 0) * other.valueOf());
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'");
     }}
 
 Bool.prototype.__mod__ = function(other) {
-    throw new exceptions.TypeError("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'");
 }
 
 Bool.prototype.__add__ = function(other) {
@@ -247,7 +248,7 @@ Bool.prototype.__add__ = function(other) {
     } else if (types.isinstance(other, types.Int)) {
         return new types.Int(other.val.add(this.valueOf() ? 1 : 0));
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -269,12 +270,12 @@ Bool.prototype.__sub__ = function(other) {
     } else if (types.isinstance(other, types.Int)) {
         return new types.Int(other.val.sub(this.valueOf() ? 1 : 0).neg());
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'");
     }
 }
 
 Bool.prototype.__getitem__ = function(other) {
-    throw new exceptions.TypeError("'bool' object is not subscriptable");
+    throw new exceptions.TypeError.$pyclass("'bool' object is not subscriptable");
 }
 
 Bool.prototype.__lshift__ = function(other) {
@@ -293,7 +294,7 @@ Bool.prototype.__lshift__ = function(other) {
     } else if (types.isinstance(other, types.Int)) {
         return new types.Int((this.valueOf() ? 1 : 0) << other.valueOf());
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for <<: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'bool' and '" + type_name(other) + "'");
     }}
 
 Bool.prototype.__rshift__ = function(other) {
@@ -308,7 +309,7 @@ Bool.prototype.__rshift__ = function(other) {
     } else if (types.isinstance(other, types.Int)) {
         return new types.Int((this.valueOf() ? 1 : 0) >> other.valueOf());
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for >>: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'bool' and '" + type_name(other) + "'");
     }}
 
 Bool.prototype.__and__ = function(other) {
@@ -319,7 +320,7 @@ Bool.prototype.__and__ = function(other) {
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) & (other.valueOf() ? 1 : 0));
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for &: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -331,7 +332,7 @@ Bool.prototype.__xor__ = function(other) {
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) ^ (other.valueOf() ? 1 : 0));
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for ^: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -343,7 +344,7 @@ Bool.prototype.__or__ = function(other) {
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) | (other.valueOf() ? 1 : 0));
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -357,9 +358,9 @@ Bool.prototype.__ge__ = function(other) {
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) >= (other.valueOf() ? 1 : 0));
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError("unorderable types: bool() >= " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bool() >= " + type_name(other) + "()");
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -373,9 +374,9 @@ Bool.prototype.__le__ = function(other) {
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) <= (other.valueOf() ? 1 : 0));
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError("unorderable types: bool() <= " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bool() <= " + type_name(other) + "()");
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -389,9 +390,9 @@ Bool.prototype.__lt__ = function(other) {
     } else if (types.isinstance(other, Bool)) {
         return new Boolean((this.valueOf() ? 1 : 0) < (other.valueOf() ? 1 : 0));
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError("unorderable types: bool() < " + type_name(other) + "()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: bool() < " + type_name(other) + "()");
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'");
     }
 }
 
@@ -400,51 +401,51 @@ Bool.prototype.__lt__ = function(other) {
  **************************************************/
 
 Bool.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__ifloordiv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__ifloordiv__ has not been implemented");
 }
 
 Bool.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__itruediv__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__itruediv__ has not been implemented");
 }
 
 Bool.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__iadd__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__iadd__ has not been implemented");
 }
 
 Bool.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__isub__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__isub__ has not been implemented");
 }
 
 Bool.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__imul__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__imul__ has not been implemented");
 }
 
 Bool.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__imod__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__imod__ has not been implemented");
 }
 
 Bool.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__ipow__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__ipow__ has not been implemented");
 }
 
 Bool.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__ilshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__ilshift__ has not been implemented");
 }
 
 Bool.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__irshift__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__irshift__ has not been implemented");
 }
 
 Bool.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__iand__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__iand__ has not been implemented");
 }
 
 Bool.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__ixor__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__ixor__ has not been implemented");
 }
 
 Bool.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError("Bool.__ior__ has not been implemented");
+    throw new exceptions.NotImplementedError.$pyclass("Bool.__ior__ has not been implemented");
 }
 
 /**************************************************

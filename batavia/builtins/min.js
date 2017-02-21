@@ -7,30 +7,30 @@ var tuple = require('./tuple');
 
 function min(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (!args || args.length === 0) {
-        throw new exceptions.TypeError('min expected 1 arguments, got ' + args.length);
+        throw new exceptions.TypeError.$pyclass('min expected 1 arguments, got ' + args.length);
     }
 
     if (args.length > 1) {
         var iterobj = tuple([args], None).__iter__();
     } else {
         if (!args[0].__iter__) {
-            throw new exceptions.TypeError("'" + type_name(args[0]) + "' object is not iterable");
+            throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable");
         }
         var iterobj = args[0].__iter__();
     }
 
     //If iterator is empty returns arror or default value
     try {
-        var min = callables.run_callable(iterobj, iterobj.__next__, [], null);
+        var min = iterobj.__next__();
     } catch (err) {
-        if (err instanceof exceptions.StopIteration) {
+        if (err instanceof exceptions.StopIteration.$pyclass) {
           if ('default' in kwargs) {
               return kwargs['default'];
           } else {
-              throw new exceptions.ValueError("min() arg is an empty sequence");
+              throw new exceptions.ValueError.$pyclass("min() arg is an empty sequence");
           }
         } else {
             throw err;
@@ -39,13 +39,13 @@ function min(args, kwargs) {
 
     try {
         while (true) {
-            var next = callables.run_callable(iterobj, iterobj.__next__, [], null);
+            var next = iterobj.__next__();
             if (next.__lt__(min)) {
                 min = next
             }
         }
     } catch (err) {
-        if (!(err instanceof exceptions.StopIteration)) {
+        if (!(err instanceof exceptions.StopIteration.$pyclass)) {
             throw err;
         }
     }

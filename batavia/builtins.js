@@ -5,18 +5,18 @@ General builtin format:
 
 var <fn> = function(<args>, <kwargs>) {
     if (arguments.length != 2) {
-        throw new builtins.BataviaError("Batavia calling convention not used.");
+        throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new builtins.TypeError("<fn>() doesn't accept keyword arguments.");
+        throw new builtins.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
     }
     if (!args || args.length != 1) {
-        throw new builtins.TypeError("<fn>() expected exactly 1 argument (" + args.length + " given)");
+        throw new builtins.TypeError.$pyclass("<fn>() expected exactly 1 argument (" + args.length + " given)");
     }
     // if the function only works with a specific object type, add a test
     var obj = args[0];
     if (!types.isinstance(obj, types.<type>)) {
-        throw new builtins.TypeError(
+        throw new builtins.TypeError.$pyclass(
             "<fn>() expects a <type> (" + type_name(obj) + " given)");
     }
     // actual code goes here
@@ -76,7 +76,6 @@ var builtins = {
     'memoryview': require('./builtins/memoryview'),
     'min': require('./builtins/min'),
     'next': require('./builtins/next'),
-    'object': require('./builtins/object'),
     'oct': require('./builtins/oct'),
     'open': require('./builtins/open'),
     'ord': require('./builtins/ord'),
@@ -103,13 +102,16 @@ var builtins = {
 
 // Mark all builtins as Python methods.
 for (var fn in builtins) {
-    builtins[fn].__python__ = true;
+    builtins[fn].$pyargs = true;
 }
 
 // Copy in core symbols that need to be in the builtins.
 builtins['None'] = require('./core').None;
 builtins['NotImplemented'] = require('./core').NotImplemented;
 builtins['dom'] = require('./modules/dom');
+
+// Copy in the core types
+builtins['object'] = require('./core').Object.prototype.__class__;
 
 // Copy the exceptions into the builtin namespace.
 var exceptions = require('./core').exceptions;

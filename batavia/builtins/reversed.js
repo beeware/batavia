@@ -10,7 +10,7 @@ function reversed(args, kwargs) {
         return new types.List(new_iterable);
     }
 
-    throw new exceptions.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects");
+    throw new exceptions.NotImplementedError.$pyclass("Builtin Batavia function 'reversed' not implemented for objects");
 }
 reversed.__doc__ = 'reversed(sequence) -> reverse iterator over values of the sequence\n\nReturn a reverse iterator';
 

@@ -5,13 +5,13 @@ var types = require('../types');
 
 function abs(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("abs() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("abs() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new exceptions.TypeError('abs() takes exactly one argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('abs() takes exactly one argument (' + args.length + ' given)');
     }
 
     var value = args[0];
@@ -22,7 +22,7 @@ function abs(args, kwargs) {
                                           types.Complex])) {
         return value.__abs__();
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "bad operand type for abs(): '" + type_name(value) + "'");
     }
 }

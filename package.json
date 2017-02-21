@@ -37,9 +37,8 @@
     "eslint-plugin-import": "2.1.0",
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-react": "6.6.0",
-    "json-loader": "0.5.4",
     "uglifyjs": "2.4.10",
-    "webpack-dev-server": "1.16.2",
+    "webpack-dev-server": "2.3.0",
     "@pybee/ouroboros": "~3.4.1-dev.5"
   },
   "dev": "webpack-dev-server",
@@ -49,6 +48,6 @@
     "buffer": "5.0.0",
     "moment": "2.17.0",
     "moment-timezone": "0.5.10",
-    "webpack": "1.13.3"
+    "webpack": "2.2.1"
   }
 }

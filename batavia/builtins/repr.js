@@ -3,13 +3,13 @@ var exceptions = require('../core').exceptions;
 
 function repr(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("repr() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("repr() doesn't accept keyword arguments");
     }
     if (!args || args.length !== 1) {
-        throw new exceptions.TypeError('repr() takes exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('repr() takes exactly 1 argument (' + args.length + ' given)');
     }
 
     if (args[0] === null) {

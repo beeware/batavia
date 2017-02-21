@@ -28,6 +28,7 @@ IOBuffer.prototype.write = function(args, kwargs) {
         this.buf = lines[lines.length - 1];
     }
 }
+IOBuffer.prototype.write.$pyargs = true;
 
 IOBuffer.prototype.flush = function(args, kwargs) {
     if (this.buf) {
@@ -35,6 +36,7 @@ IOBuffer.prototype.flush = function(args, kwargs) {
         this.buf = '';
     }
 }
+IOBuffer.prototype.flush.$pyargs = true;
 
 // Define an instance of the buffer that works on the console.
 var console_output = new IOBuffer(console);

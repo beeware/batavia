@@ -5,19 +5,19 @@ var types = require('../types');
 
 function bin(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("bin() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("bin() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new exceptions.TypeError('bin() expected exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('bin() expected exactly 1 argument (' + args.length + ' given)');
     }
 
     var obj = args[0];
 
     if (!types.isinstance(obj, types.Int)) {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "'" + type_name(obj) + "' object cannot be interpreted as an integer");
     }
 

@@ -3,10 +3,10 @@ var exceptions = require('../core').exceptions;
 
 function enumerate(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("enumerate() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("enumerate() doesn't accept keyword arguments");
     }
     var result = [];
     var values = args[0];

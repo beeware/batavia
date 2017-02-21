@@ -16,7 +16,7 @@ function Float(val) {
 
 Float.prototype = Object.create(PyObject.prototype);
 Float.prototype.__class__ = new Type('float');
-Float.prototype.constructor = Float;
+Float.prototype.__class__.$pyclass = Float;
 
 function python_modulo(n, M) {
     return ((n % M) + M) % M;
@@ -94,12 +94,12 @@ Float.prototype.__lt__ = function(other) {
                     types.NoneType, types.Str, types.NotImplementedType,
                     types.Range, types.Set, types.Slice
                 ])) {
-            throw new exceptions.TypeError("unorderable types: float() < " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: float() < " + type_name(other) + "()");
         } else {
             return this.valueOf() < other.valueOf();
         }
     } else {
-        throw new exceptions.TypeError("unorderable types: float() < NoneType()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: float() < NoneType()");
     }
 };
 
@@ -112,12 +112,12 @@ Float.prototype.__le__ = function(other) {
                     types.NoneType, types.Str, types.NotImplementedType,
                     types.Range, types.Set, types.Slice
                 ])) {
-            throw new exceptions.TypeError("unorderable types: float() <= " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: float() <= " + type_name(other) + "()");
         } else {
             return this.valueOf() <= other.valueOf();
         }
     } else {
-        throw new exceptions.TypeError("unorderable types: float() <= NoneType()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: float() <= NoneType()");
     }
 };
 
@@ -151,12 +151,12 @@ Float.prototype.__gt__ = function(other) {
                     types.NoneType, types.Str, types.NotImplementedType,
                     types.Range, types.Set, types.Slice
                 ])) {
-            throw new exceptions.TypeError("unorderable types: float() > " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: float() > " + type_name(other) + "()");
         } else {
             return this.valueOf() > other.valueOf();
         }
     } else {
-        throw new exceptions.TypeError("unorderable types: float() > NoneType()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: float() > NoneType()");
     }
 };
 
@@ -169,12 +169,12 @@ Float.prototype.__ge__ = function(other) {
                     types.NoneType, types.Str, types.NotImplementedType,
                     types.Range, types.Set, types.Slice
                 ])) {
-            throw new exceptions.TypeError("unorderable types: float() >= " + type_name(other) + "()");
+            throw new exceptions.TypeError.$pyclass("unorderable types: float() >= " + type_name(other) + "()");
         } else {
             return this.valueOf() >= other.valueOf();
         }
     } else {
-        throw new exceptions.TypeError("unorderable types: float() >= NoneType()");
+        throw new exceptions.TypeError.$pyclass("unorderable types: float() >= NoneType()");
     }
 };
 
@@ -199,7 +199,7 @@ Float.prototype.__not__ = function() {
 };
 
 Float.prototype.__invert__ = function() {
-    throw new exceptions.TypeError("bad operand type for unary ~: 'float'");
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'float'");
 };
 
 Float.prototype.__abs__ = function() {
@@ -217,12 +217,12 @@ Float.prototype.__pow__ = function(other) {
         return new Float(Math.pow(this.valueOf(), other.valueOf() ? 1 : 0));
     } else if (types.isinstance(other, [Float, types.Int])) {
         if (this.valueOf() == 0 && other.valueOf() < 0) {
-            throw new exceptions.ZeroDivisionError("0.0 cannot be raised to a negative power");
+            throw new exceptions.ZeroDivisionError.$pyclass("0.0 cannot be raised to a negative power");
         } else {
             return new Float(Math.pow(this.valueOf(), other.valueOf()));
         }
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for ** or pow(): 'float' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'float' and '" + type_name(other) + "'");
     }
 };
 
@@ -237,22 +237,22 @@ Float.prototype.__floordiv__ = function(other) {
         if (!other.val.isZero()) {
             return new Float(Math.floor(this.valueOf() / other.valueOf()));
         } else {
-            throw new exceptions.ZeroDivisionError("float divmod()");
+            throw new exceptions.ZeroDivisionError.$pyclass("float divmod()");
         }
     } else if (types.isinstance(other, Float)) {
         if (other.valueOf()) {
             return new Float(Math.floor(this.valueOf() / other.valueOf()));
         } else {
-            throw new exceptions.ZeroDivisionError("float divmod()");
+            throw new exceptions.ZeroDivisionError.$pyclass("float divmod()");
         }
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(Math.floor(this.valueOf()));
         } else {
-            throw new exceptions.ZeroDivisionError("float divmod()");
+            throw new exceptions.ZeroDivisionError.$pyclass("float divmod()");
         }
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for //: 'float' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'float' and '" + type_name(other) + "'");
     }
 };
 
@@ -263,22 +263,22 @@ Float.prototype.__truediv__ = function(other) {
         if (!other.val.isZero()) {
             return new Float(this.valueOf() / other.valueOf());
         } else {
-            throw new exceptions.ZeroDivisionError("float division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("float division by zero");
         }
     } else if (types.isinstance(other, Float)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() / other.valueOf());
         } else {
-            throw new exceptions.ZeroDivisionError("float division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("float division by zero");
         }
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf());
         } else {
-            throw new exceptions.ZeroDivisionError("float division by zero");
+            throw new exceptions.ZeroDivisionError.$pyclass("float division by zero");
         }
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for /: 'float' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'float' and '" + type_name(other) + "'");
     }
 };
 
@@ -286,15 +286,15 @@ Float.prototype.__mul__ = function(other) {
     var types = require('../types');
 
     if (other === null) {
-        throw new exceptions.TypeError("unsupported operand type(s) for *: 'float' and 'NoneType'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and 'NoneType'");
     } else if (types.isinstance(other, types.Bool)) {
         return new Float(this.valueOf() * (other.valueOf() ? 1 : 0));
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf());
     } else if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
-        throw new exceptions.TypeError("can't multiply sequence by non-int of type 'float'");
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'");
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'");
     }
 };
 
@@ -304,13 +304,13 @@ Float.prototype.__mod__ = function(other) {
     /* TODO: Fix case for -0.0, which is coming out 0.0 */
     if (types.isinstance(other, types.Int)) {
         if (other.val.isZero()) {
-            throw new exceptions.ZeroDivisionError("float modulo");
+            throw new exceptions.ZeroDivisionError.$pyclass("float modulo");
         } else {
             return new Float(python_modulo(this.valueOf(), parseFloat(other.val)));
         }
     } else if (types.isinstance(other, Float)) {
         if (other.valueOf() === 0) {
-            throw new exceptions.ZeroDivisionError("float modulo");
+            throw new exceptions.ZeroDivisionError.$pyclass("float modulo");
         } else {
             return new Float(python_modulo(this.valueOf(), other.valueOf()));
         }
@@ -318,10 +318,10 @@ Float.prototype.__mod__ = function(other) {
         if (other.valueOf()) {
             return new Float(python_modulo(this.valueOf(), other.valueOf()));
         } else {
-            throw new exceptions.ZeroDivisionError("float modulo");
+            throw new exceptions.ZeroDivisionError.$pyclass("float modulo");
         }
     } else {
-        throw new exceptions.TypeError(
+        throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for %: 'float' and '" + type_name(other) + "'"
         );
     }
@@ -335,7 +335,7 @@ Float.prototype.__add__ = function(other) {
     } else if (types.isinstance(other, types.Bool)) {
         return new Float(this.valueOf() + (other.valueOf() ? 1.0 : 0.0));
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'");
     }
 };
 
@@ -347,40 +347,40 @@ Float.prototype.__sub__ = function(other) {
     } else if (types.isinstance(other, types.Bool)) {
         return new Float(this.valueOf() - (other.valueOf() ? 1.0 : 0.0));
     } else {
-        throw new exceptions.TypeError("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'");
     }
 };
 
 Float.prototype.__getitem__ = function(other) {
-    throw new exceptions.TypeError("'float' object is not subscriptable")
+    throw new exceptions.TypeError.$pyclass("'float' object is not subscriptable")
 };
 
 Float.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for <<: 'float' and '" + type_name(other) + "'"
     );
 };
 
 Float.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for >>: 'float' and '" + type_name(other) + "'"
     );
 };
 
 Float.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for &: 'float' and '" + type_name(other) + "'"
     );
 };
 
 Float.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for ^: 'float' and '" + type_name(other) + "'"
     );
 };
 
 Float.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError(
+    throw new exceptions.TypeError.$pyclass(
         "unsupported operand type(s) for |: 'float' and '" + type_name(other) + "'"
     );
 };
@@ -394,8 +394,8 @@ Float.prototype.__call_binary_operator__ = function(f, operator_str, other) {
     try {
         return this[f](other);
     } catch (error) {
-        if (error instanceof exceptions.TypeError) {
-            throw new exceptions.TypeError(
+        if (error instanceof exceptions.TypeError.$pyclass) {
+            throw new exceptions.TypeError.$pyclass(
                 "unsupported operand type(s) for " + operator_str + ": 'float' and '" + type_name(other) + "'");
         } else {
             throw error;
@@ -423,7 +423,7 @@ Float.prototype.__imul__ = function(other) {
     var types = require('../types');
 
     if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
-        throw new exceptions.TypeError("can't multiply sequence by non-int of type 'float'");
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'");
     } else {
         return this.__call_binary_operator__('__mul__', "*=", other);
     }

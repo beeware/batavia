@@ -11,7 +11,7 @@ function Ellipsis(args, kwargs) {
 
 Ellipsis.prototype = Object.create(PyObject.prototype);
 Ellipsis.prototype.__class__ = new Type('ellipsis');
-Ellipsis.prototype.constructor = Ellipsis;
+Ellipsis.prototype.__class__.$pyclass = Ellipsis;
 
 /**************************************************
  * Module exports

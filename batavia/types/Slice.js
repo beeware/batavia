@@ -17,7 +17,7 @@ function Slice(kwargs) {
 
 Slice.prototype = Object.create(PyObject.prototype);
 Slice.prototype.__class__ = new Type('slice');
-Slice.prototype.constructor = Slice;
+Slice.prototype.__class__.$pyclass = Slice;
 
 /**************************************************
  * Javascript compatibility methods

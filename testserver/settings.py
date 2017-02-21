@@ -88,7 +88,6 @@ STATICFILES_DIRS = [
     os.path.join(os.path.dirname(BASE_DIR), 'testserver'),
 ]
 
-
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',

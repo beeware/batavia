@@ -5,13 +5,13 @@ var types = require('../types');
 // TODO: this should return a proper dictionary
 function globals(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("globals() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("globals() doesn't accept keyword arguments");
     }
     if (args && args.length != 0) {
-        throw new exceptions.TypeError('globals() takes no arguments (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('globals() takes no arguments (' + args.length + ' given)');
     }
     var gbl = this.frame.f_globals;
 

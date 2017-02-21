@@ -3,13 +3,13 @@ var exceptions = require('../core').exceptions;
 
 function dir(args, kwargs) {
     if (arguments.length != 2) {
-        throw new exceptions.BataviaError('Batavia calling convention not used.');
+        throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.');
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError("dir() doesn't accept keyword arguments");
+        throw new exceptions.TypeError.$pyclass("dir() doesn't accept keyword arguments");
     }
     if (!args || args.length != 1) {
-        throw new exceptions.TypeError('dir() expected exactly 1 argument (' + args.length + ' given)');
+        throw new exceptions.TypeError.$pyclass('dir() expected exactly 1 argument (' + args.length + ' given)');
     }
     return Object.keys(args[0]);
 }
