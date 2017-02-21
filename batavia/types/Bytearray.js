@@ -3,7 +3,6 @@ var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
-var Bool = require('./Bool')
 var BytearrayIterator = require('./BytearrayIterator')
 
 /*************************************************************************

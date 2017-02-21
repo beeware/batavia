@@ -45,6 +45,10 @@ Type.prototype.__str__ = function() {
     return this.__repr__()
 }
 
+Type.prototype.__bool__ = function() {
+    return true
+}
+
 Type.prototype.__call__ = function(args, kwargs) {
     var instance
     if (this.$pyinit) {

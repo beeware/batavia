@@ -250,7 +250,7 @@ Int.prototype.__pow__ = function(other) {
             var base = this.val.add(0)
             while (y.length > 0) {
                 var bit = y.pop()
-                if (bit === "1") {
+                if (bit === '1') {
                     result = result.mul(base)
                 }
                 base = base.mul(base)

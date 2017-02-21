@@ -72,6 +72,11 @@ Range.prototype.__str__ = function() {
     }
 }
 
+Range.prototype.__bool__ = function() {
+    var types = require('../types')
+    return new types.Bool(!(this.start.eq(0) && this.stop.eq(0)))
+}
+
 /**************************************************
  * Binary operators
  **************************************************/
