@@ -1,5 +1,3 @@
-var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
@@ -42,7 +40,8 @@ JSDict.prototype.__repr__ = function() {
 JSDict.prototype.__str__ = function() {
     var builtins = require('../builtins')
 
-    var result = '{', values = []
+    var result = '{'
+    var values = []
     for (var key in this) {
         if (this.hasOwnProperty(key)) {
             values.push(builtins.repr([key], null) + ': ' + builtins.repr([this[key]], null))
@@ -283,14 +282,22 @@ JSDict.prototype.__ior__ = function(other) {
 JSDict.prototype.__getitem__ = function(other) {
     var value = this[other]
     if (value === undefined) {
-        throw new exceptions.KeyError.$pyclass(other === null ? 'None' : other.__str__())
+        if (other === null) {
+            throw new exceptions.KeyError.$pyclass('None')
+        } else {
+            throw new exceptions.KeyError.$pyclass(other.__str__())
+        }
     }
     return value
 }
 
 JSDict.prototype.__delitem__ = function(key) {
     if (!this.__contains__(key)) {
-        throw new exceptions.KeyError.$pyclass(key === null ? 'None' : key)
+        if (key === null) {
+            throw new exceptions.KeyError.$pyclass('None')
+        } else {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
     }
     delete this[key]
 }
@@ -303,7 +310,11 @@ JSDict.prototype.get = function(key, backup) {
     if (this.__contains__(key)) {
         return this[key]
     } else if (typeof backup === 'undefined') {
-        throw new exceptions.KeyError.$pyclass(key === null ? 'None' : key)
+        if (key === null) {
+            throw new exceptions.KeyError.$pyclass('None')
+        } else {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
     } else {
         return backup
     }

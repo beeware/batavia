@@ -14,7 +14,7 @@ function map(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('map() must have at least two arguments.')
     }
 
-    return new types.map(args, kwargs)
+    return new types.Map(args, kwargs)
 }
 map.__doc__ = 'map(func, *iterables) --> map object\n\nMake an iterator that computes the function using arguments from\neach of the iterables.  Stops when the shortest iterable is exhausted.'
 

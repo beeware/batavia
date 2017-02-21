@@ -19,6 +19,9 @@
         quotes: ["error", "single", {
             avoidEscape: true,
             allowTemplateLiterals: false
-        }]
+        }],
+
+        // Disallow ternary operators
+        no-ternary: "error"
     }
 }

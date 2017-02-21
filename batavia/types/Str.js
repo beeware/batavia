@@ -258,7 +258,11 @@ Str.prototype.__mul__ = function(other) {
         }
         return result
     } else if (types.isinstance(other, types.Bool)) {
-        result = other === true ? this.valueOf() : ''
+        if (other === true) {
+            result = this.valueOf()
+        } else {
+            result = ''
+        }
         return result
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
@@ -311,8 +315,16 @@ Str.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
-        start = index.start === null ? undefined : index.start.valueOf()
-        stop = index.stop === null ? undefined : index.stop.valueOf()
+        if (index.start === null) {
+            start = undefined
+        } else {
+            start = index.start.valueOf()
+        }
+        if (index.stop === null) {
+            stop = undefined
+        } else {
+            stop = index.stop.valueOf()
+        }
         step = index.step.valueOf()
 
         if (step === 0) {

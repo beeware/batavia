@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions

@@ -96,7 +96,11 @@ Int.prototype.__lt__ = function(other) {
 
     if (other !== None) {
         if (types.isinstance(other, types.Bool)) {
-            return this.val.lt(other ? 1 : 0)
+            if (other) {
+                return this.val.lt(1)
+            } else {
+                return this.val.lt(0)
+            }
         } else if (types.isinstance(other, Int)) {
             return this.val.lt(other.val)
         } else if (types.isinstance(other, types.Float)) {
@@ -114,7 +118,11 @@ Int.prototype.__le__ = function(other) {
 
     if (other !== None) {
         if (types.isinstance(other, types.Bool)) {
-            return this.val.lte(other ? 1 : 0)
+            if (other) {
+                return this.val.lte(new Int(1))
+            } else {
+                return this.val.lte(new Int(0))
+            }
         } else if (types.isinstance(other, Int)) {
             return this.val.lte(other.val)
         } else if (types.isinstance(other, types.Float)) {
@@ -133,7 +141,11 @@ Int.prototype.__eq__ = function(other) {
     if (types.isinstance(other, [types.Float, Int])) {
         return this.val.eq(other.val)
     } else if (types.isinstance(other, types.Bool)) {
-        return this.val.eq(other ? 1 : 0)
+        if (other) {
+            return this.val.eq(new Int(1))
+        } else {
+            return this.val.eq(new Int(0))
+        }
     } else {
         return false
     }
@@ -148,7 +160,11 @@ Int.prototype.__gt__ = function(other) {
 
     if (other !== None) {
         if (types.isinstance(other, types.Bool)) {
-            return this.val.gt(other ? 1 : 0)
+            if (other) {
+                return this.val.gt(new Int(1))
+            } else {
+                return this.val.gt(new Int(0))
+            }
         } else if (types.isinstance(other, Int)) {
             return this.val.gt(other.val)
         } else if (types.isinstance(other, types.Float)) {
@@ -166,7 +182,11 @@ Int.prototype.__ge__ = function(other) {
 
     if (other !== None) {
         if (types.isinstance(other, types.Bool)) {
-            return this.val.gte(other ? 1 : 0)
+            if (other) {
+                return this.val.gte(new Int(1))
+            } else {
+                return this.val.gte(new Int(0))
+            }
         } else if (types.isinstance(other, Int)) {
             return this.val.gte(other.val)
         } else if (types.isinstance(other, types.Float)) {
@@ -309,7 +329,11 @@ Int.prototype.__truediv__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__div__(other)
     } else if (types.isinstance(other, types.Bool)) {
-        return this.__truediv__(new Int(other.valueOf() ? 1 : 0))
+        if (other.valueOf()) {
+            return this.__truediv__(new Int(1))
+        } else {
+            return this.__truediv__(new Int(0))
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
     }
@@ -317,13 +341,18 @@ Int.prototype.__truediv__ = function(other) {
 
 Int.prototype.__mul__ = function(other) {
     var types = require('../types')
+    var result, i
 
     if (types.isinstance(other, Int)) {
         return new Int(this.val.mul(other.val))
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__mul__(other.val)
     } else if (types.isinstance(other, types.Bool)) {
-        return new Int(this.val.mul(other.valueOf() ? 1 : 0))
+        if (this.val.sub(other.valueOf())) {
+            return new Int(1)
+        } else {
+            return new Int(0)
+        }
     } else if (types.isinstance(other, types.List)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
             throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
@@ -334,8 +363,8 @@ Int.prototype.__mul__ = function(other) {
         if (this.valueOf() > 4294967295) {
             throw new exceptions.MemoryError.$pyclass('')
         }
-        var result = new types.List()
-        for (var i = 0; i < this.valueOf(); i++) {
+        result = new types.List()
+        for (i = 0; i < this.valueOf(); i++) {
             result.extend(other)
         }
         return result
@@ -357,8 +386,8 @@ Int.prototype.__mul__ = function(other) {
             throw new exceptions.MemoryError.$pyclass('')
         }
 
-        var result = ''
-        for (var i = 0; i < this.valueOf(); i++) {
+        result = ''
+        for (i = 0; i < this.valueOf(); i++) {
             result += other.valueOf()
         }
         return result
@@ -372,8 +401,8 @@ Int.prototype.__mul__ = function(other) {
         if (this.valueOf() > 4294967295) {
             throw new exceptions.MemoryError.$pyclass('')
         }
-        var result = new types.Tuple()
-        for (var i = 0; i < this.valueOf(); i++) {
+        result = new types.Tuple()
+        for (i = 0; i < this.valueOf(); i++) {
             result = result.__add__(other)
         }
         return result
@@ -423,7 +452,11 @@ Int.prototype.__add__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__add__(other)
     } else if (types.isinstance(other, types.Bool)) {
-        return new Int(this.val.add(other.valueOf() ? 1 : 0))
+        if (this.val.add(other.valueOf())) {
+            return new Int(1)
+        } else {
+            return new Int(0)
+        }
     } else if (types.isinstance(other, types.Complex)) {
         if (this.__float__() > MAX_FLOAT || this.__float__() < MIN_FLOAT) {
             throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
@@ -443,7 +476,11 @@ Int.prototype.__sub__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__sub__(other)
     } else if (types.isinstance(other, types.Bool)) {
-        return new Int(this.val.sub(other.valueOf() ? 1 : 0))
+        if (this.val.sub(other.valueOf())) {
+            return new Int(1)
+        } else {
+            return new Int(0)
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")
     }

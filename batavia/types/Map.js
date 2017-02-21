@@ -1,3 +1,4 @@
+/* eslint-disable no-extend-native */
 var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
@@ -8,7 +9,7 @@ var type_name = require('../core').type_name
  * A Python map builtin is a type
  *************************************************************************/
 
-function map(args, kwargs) {
+function Map(args, kwargs) {
     PyObject.call(this)
 
     if (args.length < 2) {
@@ -18,15 +19,15 @@ function map(args, kwargs) {
     this._sequence = args[1]
 }
 
-map.prototype = Object.create(PyObject.prototype)
-map.prototype.__class__ = new Type('map')
-map.prototype.__class__.$pyclass = map
+Map.prototype = Object.create(PyObject.prototype)
+Map.prototype.__class__ = new Type('map')
+Map.prototype.__class__.$pyclass = Map
 
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
 
-map.prototype.toString = function() {
+Map.prototype.toString = function() {
     return this.__str__()
 }
 
@@ -34,11 +35,11 @@ map.prototype.toString = function() {
  * Type conversions
  **************************************************/
 
-map.prototype.__iter__ = function() {
+Map.prototype.__iter__ = function() {
     return this
 }
 
-map.prototype.__next__ = function() {
+Map.prototype.__next__ = function() {
     var builtins = require('../builtins')
 
     if (!this._iter) {
@@ -53,7 +54,7 @@ map.prototype.__next__ = function() {
     return callables.call_function(this._func, [val], null)
 }
 
-map.prototype.__str__ = function() {
+Map.prototype.__str__ = function() {
     return '<map object at 0x99999999>'
 }
 
@@ -61,4 +62,4 @@ map.prototype.__str__ = function() {
  * Module exports
  **************************************************/
 
-module.exports = map
+module.exports = Map

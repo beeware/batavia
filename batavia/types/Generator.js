@@ -35,7 +35,7 @@ Generator.prototype.send = function(value) {
         if (value !== null) {
             // It's illegal to send a non-None value on first call.
             // TODO: raise a proper TypeError
-            throw 'lolnope'
+            throw new exceptions.TypeError.$pyclass('lolnope')
         }
         this.started = true
     }
@@ -47,10 +47,13 @@ Generator.prototype.send = function(value) {
     return yieldval
 }
 
-Generator.prototype['throw'] = function(type, value, traceback) {
+Generator.prototype['throw'] = function(ExcType, value, traceback) {
+    if (value === null) {
+        value = new ExcType()
+    }
     this.vm.last_exception = {
-        'exc_type': type,
-        'value': value !== null ? value : new type(),
+        'exc_type': ExcType,
+        'value': value,
         'traceback': traceback
     }
     var yieldval = this.vm.run_frame(this.gi_frame)
@@ -61,7 +64,7 @@ Generator.prototype['throw'] = function(type, value, traceback) {
 }
 
 Generator.prototype['close'] = function() {
-    return this['throw'](new exceptions.StopIteration())
+    return this['throw'](new exceptions.StopIteration.$pyclass())
 }
 
 /**************************************************

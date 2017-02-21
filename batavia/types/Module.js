@@ -1,4 +1,3 @@
-var PyObject = require('../core').Object
 var Type = require('../core').Type
 var JSDict = require('./JSDict')
 

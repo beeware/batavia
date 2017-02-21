@@ -1,5 +1,4 @@
 var constants = require('../core').constants
-var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
@@ -311,14 +310,15 @@ List.prototype.__mod__ = function(other) {
 
 List.prototype.__add__ = function(other) {
     var types = require('../types')
+    var i
 
     if (types.isinstance(other, types.List)) {
         var result = new List()
-        for (var i = 0; i < this.length; i++) {
+        for (i = 0; i < this.length; i++) {
             result.push(this[i])
         }
 
-        for (var i = 0; i < other.length; i++) {
+        for (i = 0; i < other.length; i++) {
             result.push(other[i])
         }
 
@@ -352,8 +352,16 @@ List.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
-        start = index.start === null ? undefined : index.start
-        stop = index.stop === null ? undefined : index.stop
+        if (index.start === null) {
+            start = undefined
+        } else {
+            start = index.start
+        }
+        if (index.stop === null) {
+            stop = undefined
+        } else {
+            stop = index.stop
+        }
         step = index.step
 
         if (step === 0) {
@@ -491,7 +499,11 @@ List.prototype.__imul__ = function(other) {
             return this
         }
     } else if (types.isinstance(other, types.Bool)) {
-        return other === true ? this : new List()
+        if (other === true) {
+            return this
+        } else {
+            return new List()
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }

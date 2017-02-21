@@ -127,7 +127,11 @@ Float.prototype.__eq__ = function(other) {
     if (other !== null && !types.isinstance(other, types.Str)) {
         var val
         if (types.isinstance(other, types.Bool)) {
-            val = other.valueOf() ? 1.0 : 0.0
+            if (other.valueOf()) {
+                val = 1.0
+            } else {
+                val = 0.0
+            }
         } else if (types.isinstance(other, types.Int)) {
             val = parseFloat(other.val)
         } else {
@@ -214,7 +218,11 @@ Float.prototype.__pow__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, types.Bool)) {
-        return new Float(Math.pow(this.valueOf(), other.valueOf() ? 1 : 0))
+        if (other.valueOf()) {
+            return new Float(Math.pow(this.valueOf(), 1))
+        } else {
+            return new Float(Math.pow(this.valueOf(), 0))
+        }
     } else if (types.isinstance(other, [Float, types.Int])) {
         if (this.valueOf() === 0 && other.valueOf() < 0) {
             throw new exceptions.ZeroDivisionError.$pyclass('0.0 cannot be raised to a negative power')
@@ -288,7 +296,11 @@ Float.prototype.__mul__ = function(other) {
     if (other === null) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and 'NoneType'")
     } else if (types.isinstance(other, types.Bool)) {
-        return new Float(this.valueOf() * (other.valueOf() ? 1 : 0))
+        if (other.valueOf()) {
+            return new Float(this.valueOf())
+        } else {
+            return new Float(0)
+        }
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf())
     } else if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
@@ -333,7 +345,11 @@ Float.prototype.__add__ = function(other) {
     if (types.isinstance(other, [types.Int, Float])) {
         return new Float(this.valueOf() + parseFloat(other.valueOf()))
     } else if (types.isinstance(other, types.Bool)) {
-        return new Float(this.valueOf() + (other.valueOf() ? 1.0 : 0.0))
+        if (other.valueOf()) {
+            return new Float(this.valueOf() + 1.0)
+        } else {
+            return new Float(this.valueOf())
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'")
     }
@@ -345,7 +361,11 @@ Float.prototype.__sub__ = function(other) {
     if (types.isinstance(other, [types.Int, Float])) {
         return new Float(this.valueOf() - other.valueOf())
     } else if (types.isinstance(other, types.Bool)) {
-        return new Float(this.valueOf() - (other.valueOf() ? 1.0 : 0.0))
+        if (other.valueOf()) {
+            return new Float(this.valueOf() - 1.0)
+        } else {
+            return new Float(this.valueOf())
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
     }

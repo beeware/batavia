@@ -110,7 +110,13 @@ Complex.prototype.__repr__ = function() {
 
 Complex.prototype.__str__ = function() {
     if (this.real.valueOf() || Object.is(this.real, -0)) {
-        return '(' + part_to_str(this.real) + (this.imag >= 0 ? '+' : '-') + part_to_str(Math.abs(this.imag)) + 'j)'
+        var sign
+        if (this.imag >= 0) {
+            sign = '+'
+        } else {
+            sign = '-'
+        }
+        return '(' + part_to_str(this.real) + sign + part_to_str(Math.abs(this.imag)) + 'j)'
     } else {
         return part_to_str(this.imag) + 'j'
     }
@@ -137,7 +143,11 @@ Complex.prototype.__eq__ = function(other) {
         }
         var val
         if (types.isinstance(other, types.Bool)) {
-            val = other.valueOf() ? 1.0 : 0.0
+            if (other.valueOf()) {
+                val = 1.0
+            } else {
+                val = 0.0
+            }
         } else {
             val = other.valueOf()
         }
@@ -224,8 +234,14 @@ function __div__(x, y, inplace) {
         var imag = num_imag / den
         return new Complex(real, imag)
     } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
         throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for /' + (inplace ? '=' : '') + ": 'complex' and '" + type_name(y) + "'"
+            'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
     }
 }
@@ -268,8 +284,14 @@ function __mul__(x, y, inplace) {
     } else if (types.isinstance(y, [types.List, types.Str, types.Tuple])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'")
     } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
         throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for *' + (inplace ? '=' : '') + ": 'complex' and '" + type_name(y) + "'"
+            'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
     }
 }
@@ -290,12 +312,22 @@ function __add__(x, y, inplace) {
     } else if (types.isinstance(y, types.Float)) {
         return new Complex(x.real + y.valueOf(), x.imag)
     } else if (types.isinstance(y, types.Bool)) {
-        return new Complex(x.real + (y.valueOf() ? 1.0 : 0.0), x.imag)
+        if (y.valueOf()) {
+            return new Complex(x.real + 1.0, x.imag)
+        } else {
+            return new Complex(x.real, x.imag)
+        }
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real + y.real, x.imag + y.imag)
     } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
         throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for +' + (inplace ? '=' : '') + ": 'complex' and '" + type_name(y) + "'"
+            'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
     }
 }
@@ -312,12 +344,22 @@ function __sub__(x, y, inplace) {
     } else if (types.isinstance(y, types.Float)) {
         return new Complex(x.real - y.valueOf(), x.imag)
     } else if (types.isinstance(y, types.Bool)) {
-        return new Complex(x.real - (y.valueOf() ? 1.0 : 0.0), x.imag)
+        if (y.valueOf()) {
+            return new Complex(x.real - 1.0, x.imag)
+        } else {
+            return new Complex(x.real, x.imag)
+        }
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real - y.real, x.imag - y.imag)
     } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
         throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for -' + (inplace ? '=' : '') + ": 'complex' and '" + type_name(y) + "'"
+            'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
     }
 }

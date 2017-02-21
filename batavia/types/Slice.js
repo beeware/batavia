@@ -10,8 +10,16 @@ function Slice(kwargs) {
     PyObject.call(this)
 
     // BUG: slices can support arbitrary-sized arguments.
-    this.start = kwargs.start === None ? null : kwargs.start.int32()
-    this.stop = kwargs.stop === None ? null : kwargs.stop.int32()
+    if (kwargs.start === None) {
+        this.start = null
+    } else {
+        this.start = kwargs.start.int32()
+    }
+    if (kwargs.stop === None) {
+        this.stop = null
+    } else {
+        this.stop = kwargs.stop.int32()
+    }
     this.step = (kwargs.step || 1) | 0
 }
 

@@ -60,6 +60,7 @@ var DELETED = {
 
 Dict.prototype._increase_size = function() {
     var builtins = require('../builtins')
+    var i
 
     // increase the table size and rehash
     if (this.data_keys.length === 0) {
@@ -67,7 +68,7 @@ Dict.prototype._increase_size = function() {
         this.data_keys = new Array(INITIAL_SIZE)
         this.data_values = new Array(INITIAL_SIZE)
 
-        for (var i = 0; i < INITIAL_SIZE; i++) {
+        for (i = 0; i < INITIAL_SIZE; i++) {
             this.data_keys[i] = EMPTY
         }
         return
@@ -76,7 +77,7 @@ Dict.prototype._increase_size = function() {
     var new_keys = new Array(this.data_keys.length * 2)
     var new_values = new Array(this.data_keys.length * 2)
     var new_mask = this.data_keys.length * 2 - 1 // assumes power of two
-    for (var i = 0; i < new_keys.length; i++) {
+    for (i = 0; i < new_keys.length; i++) {
         new_keys[i] = EMPTY
     }
     callables.iter_for_each(builtins.iter([this.items()], null), function(val) {
@@ -425,7 +426,11 @@ Dict.prototype.__contains__ = function(key) {
 Dict.prototype.__getitem__ = function(key) {
     var i = this._find_index(key)
     if (i === null) {
-        throw new exceptions.KeyError.$pyclass(key === null ? 'None' : key)
+        if (key === null) {
+            throw new exceptions.KeyError.$pyclass('None')
+        } else {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
     }
     return this.data_values[i]
 }
@@ -433,7 +438,11 @@ Dict.prototype.__getitem__ = function(key) {
 Dict.prototype.__delitem__ = function(key) {
     var i = this._find_index(key)
     if (i === null) {
-        throw new exceptions.KeyError.$pyclass(key === null ? 'None' : key)
+        if (key === null) {
+            throw new exceptions.KeyError.$pyclass('None')
+        } else {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
     }
     this.data_keys[i] = DELETED
     this.data_values[i] = null
@@ -449,7 +458,11 @@ Dict.prototype.get = function(key, backup) {
     if (i !== null) {
         return this.data_values[i]
     } else if (typeof backup === 'undefined') {
-        throw new exceptions.KeyError.$pyclass(key === null ? 'None' : key)
+        if (key === null) {
+            throw new exceptions.KeyError.$pyclass('None')
+        } else {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
     } else {
         return backup
     }

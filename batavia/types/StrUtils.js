@@ -39,7 +39,7 @@ function _substitute(format, args) {
     Args.prototype.argsRemain = function() {
         // returns if there are args remaining
         if (usesKwargs) {
-            return collection.keys().length > 0
+            return this.collection.keys().length > 0
         } else {
             return this.remainingArgs.length > 0
         }
@@ -109,9 +109,9 @@ function _substitute(format, args) {
             var steps = {
                 // regex to search for the FIRST character in each step
                 1: /%/, // literal percentage
-                2: /[#0-\s\+]/, // conversion flags
-                3: /[\d\*]/, // min field width
-                4: /[\d\*\.]/, // precision
+                2: /[#0-\s+]/, // conversion flags
+                3: /[\d*]/, // min field width
+                4: /[\d*.]/, // precision
                 5: /[hHl]/, // length modifier (not used)
                 6: /[diouxXeEfFgGcrs]/ // conversion type
             }
@@ -131,9 +131,8 @@ function _substitute(format, args) {
         this.step = function(char, step) {
             // nextChar(str): the next character to be processed
             // nextChar is processed under the appropriate step number.
-
+            var arg
             switch (step) {
-
                 case 1:
                     // handle literal %
                     this.literalPercent = true
@@ -190,7 +189,7 @@ function _substitute(format, args) {
                         }
                         // can't be using numerics or have another * already
                         if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
-                            var arg = workingArgs.getArg()
+                            arg = workingArgs.getArg()
 
                             // arg must be an int
                             if (!types.isinstance(arg, types.Int)) {
@@ -231,7 +230,7 @@ function _substitute(format, args) {
                         }
                         // can't be using numerics or have another * already
                         if (this.precision.value === '' && this.precision.numeric === undefined) {
-                            var arg = workingArgs.getArg()
+                            arg = workingArgs.getArg()
                             // arg must be an int
                             if (!types.isinstance(arg, types.Int)) {
                                 throw new exceptions.TypeError.$pyclass('* wants int')
@@ -268,7 +267,7 @@ function _substitute(format, args) {
 
                 case 6:
                     // conversion type
-                    var arg = workingArgs.getArg(this.myKey)
+                    arg = workingArgs.getArg(this.myKey)
                     if (arg === undefined) {
                         throw new exceptions.TypeError.$pyclass('not enough arguments for format string')
                     }
@@ -292,10 +291,10 @@ function _substitute(format, args) {
                     if (!types.isinstance(arg, [types.Float, types.Int])) {
                         throw new exceptions.TypeError.$pyclass('a float is required')
                     }
-                } else if (conversion === 'c') {
+                } else if (conversion === 'c') {
                     // there might be a problem with the error
                     // message from C Python but floats ARE allowed.
-                    //  multi character strings are not allowed
+                    // multi character strings are not allowed
                     if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
                         throw new exceptions.TypeError.$pyclass('%c requires int or char')
                     } else if (types.isinstance(arg, [types.Int, types.Float])) {
@@ -311,41 +310,34 @@ function _substitute(format, args) {
                 // bataviaType: a batavia type, must be int, float or str
                 // returns the underlying JS type.
                 switch (type_name(bataviaType)) {
-
                     case ('int'):
                         return bataviaType.bigNumber().toFixed()
-                        break
 
                     case ('bytes'):
                     case ('bytearray'):
                     case ('slice'):
                         return bataviaType.__repr__()
-                        break
 
                     case ('type'):
                         // TODO need to include name space of class if needed
                         return bataviaType.__repr__()
-                        break
 
                     case ('NoneType'):
                         return 'None'
-                        break
 
                     case ('NotImplementedType'):
                         return 'NotImplemented'
-                        break
 
                     default:
                         return bataviaType.valueOf()
-                        break
-                };
+                }
             }
 
             function zeroPadExp(rawExponential) {
                 // rawExponential (str) example: "5e+5"
                 // returns the correct zero padded exponential. example 5e+05
 
-                var re = /([-+]?[0-9]*\.?[0-9]*)(e[\+\-])(\d+)/
+                var re = /([-+]?[0-9]*\.?[0-9]*)(e[+-])(\d+)/
                 var m = rawExponential.match(re)
                 if (m[3] < 10) {
                     return m[1] + m[2] + '0' + m[3]
@@ -355,28 +347,29 @@ function _substitute(format, args) {
             } // end zeroPadExp
 
             var workingArgs = this.args.slice()
-
+            var minWidth
             if (this.fieldWidth.value === '*') {
-                var minWidth = workingArgs.shift().valueOf()
+                minWidth = workingArgs.shift().valueOf()
             } else if (!isNaN(this.fieldWidth.value)) {
-                var minWidth = Number(this.fieldWidth.value)
+                minWidth = Number(this.fieldWidth.value)
             } else {
-                var minWidth = 0
+                minWidth = 0
             }
 
+            var precision
             if (this.precision.value === '*') {
-                var precision = workingArgs.shift().valueOf()
+                precision = workingArgs.shift().valueOf()
             } else if (this.precision.value !== '') {
-                var precision = Number(this.precision.value)
+                precision = Number(this.precision.value)
             } else {
-                var precision = null
+                precision = null
             }
 
             var conversionArgRaw = workingArgs.shift() // the python representation of the arg
             validateType(conversionArgRaw, this.conversionType)
 
             var conversionArgValue = getJSValue(conversionArgRaw)
-
+            var conversionArg, base, exp, asExp, numLeadingZeros
             // floats with no decimal: preserve!
             if (types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 === 0) {
                 conversionArgValue = conversionArgValue.toFixed(1)
@@ -388,33 +381,30 @@ function _substitute(format, args) {
                 case ('i'):
                 case ('u'):
 
-                    var conversionArg = new BigNumber(conversionArgValue).toFixed(0)
+                    conversionArg = new BigNumber(conversionArgValue).toFixed(0)
 
                     if (conversionArg === '-0') {
                         conversionArg = '0'
                     }
 
                     // precision determines leading 0s
-                    var numLeadingZeros = precision - conversionArg.length
+                    numLeadingZeros = precision - conversionArg.length
                     if (numLeadingZeros > 0) {
                         conversionArg = '0'.repeat(numLeadingZeros) + conversionArg
                     }
                     break
 
                 case ('o'):
-                    var base = new BigNumber(conversionArgValue)
-                                .abs()
-                                .floor()
-                                .toString(8)
+                    base = new BigNumber(conversionArgValue).abs().floor().toString(8)
 
                     if (base === '-0') {
                         base = '0'
                     }
 
                     if (this.conversionFlags['#']) {
-                        var conversionArg = '0o' + base
+                        conversionArg = '0o' + base
                     } else {
-                        var conversionArg = base
+                        conversionArg = base
                     }
 
                     // handle the minus sign
@@ -423,7 +413,7 @@ function _substitute(format, args) {
                     }
 
                     // precision determines leading 0s
-                    var numLeadingZeros = precision - String(base).length
+                    numLeadingZeros = precision - String(base).length
                     if (numLeadingZeros > 0) {
                         conversionArg = '0'.repeat(numLeadingZeros) + conversionArg
                     }
@@ -431,11 +421,7 @@ function _substitute(format, args) {
 
                 case ('x'):
                 case ('X'):
-
-                    var base = new BigNumber(conversionArgValue)
-                                .abs()
-                                .floor()
-                                .toString(16)
+                    base = new BigNumber(conversionArgValue).abs().floor().toString(16)
 
                     if (this.conversionType === 'X') {
                         base = base.toUpperCase()
@@ -446,9 +432,9 @@ function _substitute(format, args) {
                     }
 
                     if (this.conversionFlags['#']) {
-                        var conversionArg = '0' + this.conversionType + base
+                        conversionArg = '0' + this.conversionType + base
                     } else {
-                        var conversionArg = base
+                        conversionArg = base
                     }
 
                     // handle the minus sign
@@ -457,7 +443,7 @@ function _substitute(format, args) {
                     }
 
                     // precision determines leading 0s
-                    var numLeadingZeros = precision - String(base).length
+                    numLeadingZeros = precision - String(base).length
                     if (numLeadingZeros > 0) {
                         conversionArg = '0'.repeat(numLeadingZeros) + conversionArg
                     }
@@ -474,16 +460,17 @@ function _substitute(format, args) {
 
                     // might need to add extra zeros to base
                     if (precision !== null) {
-                        var base = baseRaw.toFixed(precision)
+                        base = baseRaw.toFixed(precision)
                     } else {
-                        var base = baseRaw.toFixed(6)
+                        base = baseRaw.toFixed(6)
                     }
+                    exp = expSplit[1]
 
-                    var exp = expSplit[1]
-
-                    var conversionArg = this.conversionType === 'e' ?
-                        zeroPadExp(`${base}e${exp}`) :
-                        zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
+                    if (this.conversionType === 'e') {
+                        conversionArg = zeroPadExp(base + 'e' + exp)
+                    } else {
+                        conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
+                    }
 
                     break
 
@@ -492,12 +479,8 @@ function _substitute(format, args) {
                     var conversionExp = Number(conversionArgValue).toExponential()
                     var baseExpSplit = conversionExp.split('e')
 
-                    var bn = new BigNumber(conversionArgValue)
-
-                    var base = baseExpSplit[0]
-
-                    var exp = baseExpSplit[1]
-                    var expSign = exp > 0 ? '+' : '-'
+                    base = baseExpSplit[0]
+                    exp = baseExpSplit[1]
 
                     precision = precision || 6  // precision defaults to 6
 
@@ -506,16 +489,20 @@ function _substitute(format, args) {
                         // correctly zero pad the base
                         // use a decimal if alternate format or if one is needed
                         if (this.conversionFlags['#'] || base % 1 !== 0) {
-                            var base = precision === null || precision === 0 ?
-                              Number(base).toFixed(5) : // one's place + 5 decimals = 6 (default)
-                              Number(base).toFixed(precision - 1)
+                            if (precision === null || precision === 0) {
+                                base = Number(base).toFixed(5)
+                            } else {
+                                base = Number(base).toFixed(precision - 1) // one's place + 5 decimals = 6 (default)
+                            }
                         } else {
                             // don't use alternate format
-                            var base = Number(base)
+                            base = Number(base)
                         }
-                        var conversionArg = this.conversionType === 'g' ?
-                        zeroPadExp(`${base}e${exp}`) :
-                        zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
+                        if (this.conversionType === 'g') {
+                            conversionArg = zeroPadExp(`${base}e${exp}`)
+                        } else {
+                            conversionArg = zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
+                        }
                         break
                     } else {
                         // don't use exponential
@@ -534,12 +521,13 @@ function _substitute(format, args) {
                             var isInt = conversionArgValue % 1 === 0
 
                             var conversionArgAbsolute = Math.abs(conversionArgValue)
+                            var numInherentDigits
 
                             if (isInt) {
                                 // its an integer
-                                var numInherentDigits = String(conversionArgAbsolute).length
+                                numInherentDigits = String(conversionArgAbsolute).length
                             } else {
-                                var numInherentDigits = String(conversionArgAbsolute).length - 1 // exclude the decimal
+                                numInherentDigits = String(conversionArgAbsolute).length - 1 // exclude the decimal
 
                                 if (conversionArgAbsolute < 1) {
                                     numInherentDigits -= 1 // the leading 0 is not significant
@@ -547,9 +535,12 @@ function _substitute(format, args) {
                             }
 
                             // how many extra digits?
-                            var extraDigits = precision !== null ?
-                                precision - numInherentDigits :
-                                6 - numInherentDigits
+                            var extraDigits
+                            if (precision !== null) {
+                                extraDigits = precision - numInherentDigits
+                            } else {
+                                extraDigits = 6 - numInherentDigits
+                            }
 
                             // less than 0 makes no sense!
                             if (extraDigits < 0) {
@@ -557,21 +548,23 @@ function _substitute(format, args) {
                             }
 
                             if (isInt) {
-                                var conversionArg = `${Number(conversionArgValue)}.${'0'.repeat(extraDigits)}`
+                                conversionArg = `${Number(conversionArgValue)}.${'0'.repeat(extraDigits)}`
                             } else {
-                                var conversionArg = conversionArgValue + '0'.repeat(extraDigits)
+                                conversionArg = conversionArgValue + '0'.repeat(extraDigits)
                             }
                         } else {
                             // non alternate format
-                            var conversionArg = String(Number(conversionArgValue))
+                            conversionArg = String(Number(conversionArgValue))
                         }
                     } // outer if
                     break
                 case ('f'):
                 case ('F'):
-                    conversionArg = precision !== null ?
-                        new BigNumber(conversionArgValue).toFixed(precision) :
-                        new BigNumber(conversionArgValue).toFixed(6)
+                    if (precision !== null) {
+                        conversionArg = new BigNumber(conversionArgValue).toFixed(precision)
+                    } else {
+                        conversionArg = new BigNumber(conversionArgValue).toFixed(6)
+                    }
                     break
 
                 case ('c'):
@@ -581,41 +574,41 @@ function _substitute(format, args) {
                     // kind of upper bound.
 
                     if (types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
-                        var conversionArg = String.fromCharCode(Number(conversionArgValue))
+                        conversionArg = String.fromCharCode(Number(conversionArgValue))
                     } else {
-                        var conversionArg = conversionArgValue
+                        conversionArg = conversionArgValue
                     }
                     break
 
                 case ('r'):
                     if (types.isinstance(conversionArgRaw, types.Str)) {
-                        var conversionArg = `'${conversionArgValue}'`
+                        conversionArg = `'${conversionArgValue}'`
                     } else {
                         // handle as a number
                         // if exponent would be < -4 use exponential
 
-                        var asExp = Number(conversionArgValue).toExponential()
+                        asExp = Number(conversionArgValue).toExponential()
 
                         if (Number(asExp.split('e')[1]) < -4) {
-                            var conversionArg = zeroPadExp(asExp)
+                            conversionArg = zeroPadExp(asExp)
                         } else {
-                            var conversionArg = conversionArgValue
+                            conversionArg = conversionArgValue
                         }
                     }
                     break
                 case ('s'):
                     if (types.isinstance(conversionArgRaw, types.Str)) {
-                        var conversionArg = conversionArgValue
+                        conversionArg = conversionArgValue
                     } else {
                         // handle as a number
                         // if exponent would be < -4 use exponential
 
-                        var asExp = Number(conversionArgValue).toExponential()
+                        asExp = Number(conversionArgValue).toExponential()
 
                         if (Number(asExp.split('e')[1]) < -4) {
-                            var conversionArg = zeroPadExp(asExp)
+                            conversionArg = zeroPadExp(asExp)
                         } else {
-                            var conversionArg = conversionArgValue
+                            conversionArg = conversionArgValue
                         }
                     }
                     break
@@ -626,26 +619,29 @@ function _substitute(format, args) {
                 if (this.conversionFlags[' ']) {
                     // A blank should be left before a positive number (or empty string)
                     // produced by a signed conversion.
-                    conversionArg = conversionArgValue >= 0 ?
-                    ` ${conversionArg}` : `${conversionArg}`
+                    if (conversionArgValue >= 0) {
+                        conversionArg = ' ' + conversionArg
+                    }
                 } else if (this.conversionFlags['+']) {
                     // sign character should proceed the conversion
-                    conversionArg = conversionArgValue >= 0 ?
-                    `+${conversionArg}` : `${conversionArg}`
+                    if (conversionArgValue >= 0) {
+                        conversionArg = '+' + conversionArg
+                    }
                 }
             }
             var cellWidth = Math.max(minWidth, conversionArg.length)
 
             var padSize = cellWidth - conversionArg.length
+            var retVal
             if (this.conversionFlags['0'] && types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
                 // example: '00005'
-                var retVal = '0'.repeat(padSize) + conversionArg
+                retVal = '0'.repeat(padSize) + conversionArg
             } else if (this.conversionFlags['-']) {
                 // exmaple:  '00005     '
-                var retVal = conversionArg + ' '.repeat(padSize)
+                retVal = conversionArg + ' '.repeat(padSize)
             } else {
                 // example: '   0005'
-                var retVal = ' '.repeat(padSize) + conversionArg
+                retVal = ' '.repeat(padSize) + conversionArg
             }
 
             return retVal
@@ -660,7 +656,7 @@ function _substitute(format, args) {
             var nextChar = charArray[charIndex]
             this.parsedSpec += nextChar
             try {
-                var nextStep = this.getNextStep(nextChar, nextStep)
+                nextStep = this.getNextStep(nextChar, nextStep)
                 this.step(nextChar, nextStep)
             } catch (err) {
                 if (err.msg === 'illegal character') {
@@ -705,7 +701,7 @@ function _substitute(format, args) {
         }
 
         lastStop = match.index + specObj.parsedSpec.length
-        var match = re.exec(format)
+        match = re.exec(format)
     }
 
     if (workingArgs.length !== 0 && !usesKwargs) {

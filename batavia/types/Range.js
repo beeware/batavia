@@ -1,6 +1,5 @@
 var BigNumber = require('bignumber.js')
 
-var constants = require('../core').constants
 var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
@@ -12,8 +11,6 @@ var RangeIterator = require('./RangeIterator')
  *************************************************************************/
 
 function Range(start, stop, step) {
-    var types = require('../types')
-
     PyObject.call(this)
 
     this.start = start.bigNumber()
@@ -31,7 +28,11 @@ function Range(start, stop, step) {
 
     var difference = this.stop.sub(this.start)
     var length = difference.div(this.step).ceil()
-    this.length = length.lt(0) ? new BigNumber(0) : length
+    if (length.lt(0)) {
+        this.length = new BigNumber(0)
+    } else {
+        this.length = length
+    }
 }
 
 Range.prototype = Object.create(PyObject.prototype)
@@ -51,6 +52,7 @@ Range.prototype.toString = function() {
  **************************************************/
 
 Range.prototype.__len__ = function() {
+    var types = require('../types')
     return new types.Int(this.length.toString())
 }
 
@@ -124,8 +126,16 @@ Range.prototype.__getitem__ = function(index) {
 
         var newStart, newStop
         if (step > 0) {
-            newStart = start !== null ? get_single_item(start, this) : get_single_item(0, this)
-            newStop = stop !== null ? get_single_item(stop, this) : get_single_item(this.length, this)
+            if (start !== null) {
+                newStart = get_single_item(start, this)
+            } else {
+                newStart = get_single_item(0, this)
+            }
+            if (stop !== null) {
+                newStop = get_single_item(stop, this)
+            } else {
+                newStop = get_single_item(this.length, this)
+            }
         } else {
             if (start === null) {
                 newStart = get_single_item(this.length, this).sub(this.step)

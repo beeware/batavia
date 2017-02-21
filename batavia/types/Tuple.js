@@ -68,10 +68,15 @@ Tuple.prototype.__repr__ = function() {
 
 Tuple.prototype.__str__ = function() {
     var builtins = require('../builtins')
-
+    var close
+    if (this.length === 1) {
+        close = ',)'
+    } else {
+        close = ')'
+    }
     return '(' + this.map(function(obj) {
         return builtins.repr([obj], null)
-    }).join(', ') + (this.length === 1 ? ',)' : ')')
+    }).join(', ') + close
 }
 
 /**************************************************

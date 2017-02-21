@@ -34,8 +34,8 @@ types['Complex'] = require('./types/Complex')
 types['DictView'] = require('./types/DictView')
 types['Ellipsis'] = require('./types/Ellipsis')
 
-types['filter'] = require('./types/Filter')
-types['map'] = require('./types/Map')
+types['Filter'] = require('./types/Filter')
+types['Map'] = require('./types/Map')
 
 types['Function'] = require('./types/Function')
 types['Method'] = require('./types/Method')
@@ -97,11 +97,11 @@ types.issubclass = function(cls, type) {
     } else {
         switch (typeof cls) {
             case 'boolean':
-                return type === Bool
+                return type === types.Bool
             case 'number':
-                return type === Int
+                return type === types.Int
             case 'string':
-                return type === Str
+                return type === types.Str
             case 'object':
                 if (type === null || type === types.NoneType) {
                     return cls === null
