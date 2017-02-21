@@ -1,5 +1,5 @@
-var Type = require('../core').Type;
-var Function = require('./Function');
+var Type = require('../core').Type
+var Function = require('./Function')
 
 /*************************************************************************
  * A Python method type
@@ -14,18 +14,18 @@ function Method(instance, func) {
         func.__defaults__,
         func.__closure__,
         func.$vm
-    );
-    this.__self__ = instance;
-    this.__func__ = func;
-    this.__class__ = instance.prototype;
+    )
+    this.__self__ = instance
+    this.__func__ = func
+    this.__class__ = instance.prototype
 }
 
-Method.prototype = Object.create(Function.prototype);
-Method.prototype.__class__ = new Type('method');
-Method.prototype.__class__.$pyclass = Method;
+Method.prototype = Object.create(Function.prototype)
+Method.prototype.__class__ = new Type('method')
+Method.prototype.__class__.$pyclass = Method
 
 /**************************************************
  * Module exports
  **************************************************/
 
-module.exports = Method;
+module.exports = Method

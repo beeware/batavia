@@ -4,13 +4,13 @@ General builtin format:
 // Example: a function that accepts exactly one argument, and no keyword arguments
 
 var <fn> = function(<args>, <kwargs>) {
-    if (arguments.length != 2) {
+    if (arguments.length !== 2) {
         throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new builtins.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
     }
-    if (!args || args.length != 1) {
+    if (!args || args.length !== 1) {
         throw new builtins.TypeError.$pyclass("<fn>() expected exactly 1 argument (" + args.length + " given)");
     }
     // if the function only works with a specific object type, add a test
@@ -97,27 +97,27 @@ var builtins = {
     'tuple': require('./builtins/tuple'),
     'type': require('./builtins/type'),
     'vars': require('./builtins/vars'),
-    'zip': require('./builtins/zip'),
-};
+    'zip': require('./builtins/zip')
+}
 
 // Mark all builtins as Python methods.
 for (var fn in builtins) {
-    builtins[fn].$pyargs = true;
+    builtins[fn].$pyargs = true
 }
 
 // Copy in core symbols that need to be in the builtins.
-builtins['None'] = require('./core').None;
-builtins['NotImplemented'] = require('./core').NotImplemented;
-builtins['dom'] = require('./modules/dom');
+builtins['None'] = require('./core').None
+builtins['NotImplemented'] = require('./core').NotImplemented
+builtins['dom'] = require('./modules/dom')
 
 // Copy in the core types
-builtins['object'] = require('./core').Object.prototype.__class__;
+builtins['object'] = require('./core').Object.prototype.__class__
 
 // Copy the exceptions into the builtin namespace.
-var exceptions = require('./core').exceptions;
+var exceptions = require('./core').exceptions
 for (var exc in exceptions) {
-    builtins[exc] = exceptions[exc];
+    builtins[exc] = exceptions[exc]
 }
 
 // And export all the builtins.
-module.exports = builtins;
+module.exports = builtins

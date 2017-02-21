@@ -1,26 +1,26 @@
-var PyObject = require('../core').Object;
-var Type = require('../core').Type;
-var exceptions = require('../core').exceptions;
+var PyObject = require('../core').Object
+var Type = require('../core').Type
+var exceptions = require('../core').exceptions
 
 /*************************************************************************
  * A Python generator type.
  *************************************************************************/
 
 function Generator(frame, vm) {
-    PyObject.call(this);
+    PyObject.call(this)
 
-    this.vm = vm;
-    this.gi_frame = frame;
-    this.started = false;
-    this.finished = false;
+    this.vm = vm
+    this.gi_frame = frame
+    this.started = false
+    this.finished = false
 };
 
-Generator.prototype = Object.create(PyObject.prototype);
-Generator.prototype.__class__ = new Type('generator');
-Generator.prototype.__class__.$pyclass = Generator;
+Generator.prototype = Object.create(PyObject.prototype)
+Generator.prototype.__class__ = new Type('generator')
+Generator.prototype.__class__.$pyclass = Generator
 
 Generator.prototype.__iter__ = function() {
-    return this;
+    return this
 }
 
 Generator.prototype.__next__ = function() {
@@ -29,7 +29,7 @@ Generator.prototype.__next__ = function() {
 
 Generator.prototype.send = function(value) {
     if (typeof value === 'undefined') {
-        value = null;
+        value = null
     }
     if (!this.started) {
         if (value !== null) {
@@ -39,12 +39,12 @@ Generator.prototype.send = function(value) {
         }
         this.started = true
     }
-    this.gi_frame.stack.push(value);
+    this.gi_frame.stack.push(value)
     var yieldval = this.vm.run_frame(this.gi_frame)
     if (this.finished) {
-        throw new exceptions.StopIteration.$pyclass();
+        throw new exceptions.StopIteration.$pyclass()
     }
-    return yieldval;
+    return yieldval
 }
 
 Generator.prototype['throw'] = function(type, value, traceback) {
@@ -55,18 +55,17 @@ Generator.prototype['throw'] = function(type, value, traceback) {
     }
     var yieldval = this.vm.run_frame(this.gi_frame)
     if (this.finished) {
-        throw new exceptions.StopIteration.$pyclass();
+        throw new exceptions.StopIteration.$pyclass()
     }
-    return yieldval;
+    return yieldval
 }
 
 Generator.prototype['close'] = function() {
-    return this['throw'](new exceptions.StopIteration());
+    return this['throw'](new exceptions.StopIteration())
 }
-
 
 /**************************************************
  * Module exports
  **************************************************/
 
-module.exports = Generator;
+module.exports = Generator
