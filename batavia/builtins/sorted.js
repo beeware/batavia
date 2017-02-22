@@ -59,12 +59,16 @@ function sorted(args, kwargs) {
             // CPython's sorted is stable and efficient. See:
             // * https://docs.python.org/3/library/functions.html#sorted
             // * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
-            if (a['key'].__gt__(b['key'])) {
-                return validatedInput['bigger']
-            }
 
-            if (a['key'].__lt__(b['key'])) {
-                return validatedInput['smaller']
+            // Order of conditions does matter here.
+            // Because if we get unorderable types, CPython gives always '<' in Exception:
+            // TypeError: unorderable types: str() < int()
+            if (a["key"].__lt__(b["key"])) {
+                return validatedInput["smaller"]
+            }
+            
+            if (a["key"].__gt__(b["key"])) {
+                return validatedInput["bigger"]
             }
             return 0
         })

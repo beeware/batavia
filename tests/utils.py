@@ -822,7 +822,7 @@ SAMPLE_DATA = {
             '(3, 1.2, True, )',
             '(1, 2.3456, "another")',
             '((1, 2), (3, 4))',
-            '((3, 4), (2, 1))'
+            '((3, 4), (1, 2))'
         ],
     'None': [
             'None',
@@ -850,7 +850,7 @@ SAMPLE_SUBSTITUTIONS = {
         "{'another', 2.3456}",
     ],
     "{'1': 1, 1: 2}": [
-        "{1: 2, '1': 1}",
+        "{1: 2, '1': 1}"
     ],
     "{'1', 1}": [
         "{1, '1'}",
@@ -887,6 +887,10 @@ SAMPLE_SUBSTITUTIONS = {
     #created after dict() call on nested set and list
     "{1: 2, 3: 4}":[
         "{3: 4, 1: 2}",
+    ],
+    #created after list() call on dict
+    "['a', 'b']" : [
+        "['b', 'a']",
     ],
 
     # Normalize set to list ordering
