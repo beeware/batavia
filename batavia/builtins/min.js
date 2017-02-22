@@ -39,7 +39,7 @@ function min(args, kwargs) {
     try {
         while (true) {
             var next = iterobj.__next__()
-            if (next.__lt__(min)) {
+            if (next.__lt__(min).valueOf()) {
                 min = next
             }
         }
