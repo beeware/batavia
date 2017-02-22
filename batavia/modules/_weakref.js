@@ -1,31 +1,31 @@
 var weakref = {
-    '__doc__': "",
-    '__file__': "batavia/modules/sys.js",
-    '__name__': "sys",
-    '__package__': "",
+    '__doc__': '',
+    '__file__': 'batavia/modules/sys.js',
+    '__name__': 'sys',
+    '__package__': '',
 
     'CallableProxyType': null,  // not used directly in stdlib
 
     'ProxyType': null,  // not used directly in stdlib
 
     'ReferenceType': null  // not used directly in stdlib
-};
+}
 
 weakref.getweakrefs = function(object) {
-    return [];
+    return []
 }
 
 weakref.getweakrefcount = function(object) {
-    return 0;
+    return 0
 }
 
 weakref.proxy = function(object, callback) {
     // TODO: support the finalize callback
-    return object;
+    return object
 }
 
 weakref.ref = function(object) {
-    return object;
+    return object
 }
 
-module.exports = weakref;
+module.exports = weakref

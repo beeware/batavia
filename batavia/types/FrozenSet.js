@@ -1,35 +1,35 @@
-var PyObject = require('../core').Object;
-var Type = require('../core').Type;
-var exceptions = require('../core').exceptions;
-var callables = require('../core').callables;
-var type_name = require('../core').type_name;
-var SetIterator = require('./SetIterator');
+var PyObject = require('../core').Object
+var Type = require('../core').Type
+var exceptions = require('../core').exceptions
+var callables = require('../core').callables
+var type_name = require('../core').type_name
+var SetIterator = require('./SetIterator')
 
 /*************************************************************************
  * A Python FrozenSet type, with an underlying Dict.
  *************************************************************************/
 
 function FrozenSet(args, kwargs) {
-    var types = require('../types');
+    var types = require('../types')
 
-    PyObject.call(this);
+    PyObject.call(this)
 
-    this.data = new types.Dict();
+    this.data = new types.Dict()
     if (args) {
-        this._update(args);
+        this._update(args)
     }
 }
 
-FrozenSet.prototype = Object.create(PyObject.prototype);
-FrozenSet.prototype.__class__ = new Type('frozenset');
-FrozenSet.prototype.__class__.$pyclass = FrozenSet;
+FrozenSet.prototype = Object.create(PyObject.prototype)
+FrozenSet.prototype.__class__ = new Type('frozenset')
+FrozenSet.prototype.__class__.$pyclass = FrozenSet
 
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
 
 FrozenSet.prototype.toString = function() {
-    return this.__str__();
+    return this.__str__()
 }
 
 /**************************************************
@@ -37,25 +37,25 @@ FrozenSet.prototype.toString = function() {
  **************************************************/
 
 FrozenSet.prototype.__bool__ = function() {
-    return this.data.__bool__();
+    return this.data.__bool__()
 }
 
 FrozenSet.prototype.__iter__ = function() {
-    return new SetIterator(this);
+    return new SetIterator(this)
 }
 
 FrozenSet.prototype.__repr__ = function() {
-    return this.__str__();
+    return this.__str__()
 }
 
 FrozenSet.prototype.__str__ = function() {
-    var keys = this.data.keys();
-    if (keys.length == 0) {
-        return "frozenset()";
+    var keys = this.data.keys()
+    if (keys.length === 0) {
+        return 'frozenset()'
     }
-    return "frozenset({" +
-        keys.map(function(x) { return x.__repr__(); }).join(", ") +
-        "})";
+    return 'frozenset({' +
+        keys.map(function(x) { return x.__repr__() }).join(', ') +
+        '})'
 }
 
 /**************************************************
@@ -63,75 +63,74 @@ FrozenSet.prototype.__str__ = function() {
  **************************************************/
 
 FrozenSet.prototype.__lt__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
-        return new types.Bool(this.data.keys().length < other.data.keys().length);
+        return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass("unorderable types: frozenset() < " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() < ' + type_name(other) + '()')
 }
 
 FrozenSet.prototype.__le__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
-        return new types.Bool(this.data.keys().length <= other.data.keys().length);
+        return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass("unorderable types: frozenset() <= " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() <= ' + type_name(other) + '()')
 }
 
 FrozenSet.prototype.__eq__ = function(other) {
-    var types = require('../types');
-    var builtins = require('../builtins');
+    var types = require('../types')
+    var builtins = require('../builtins')
 
     if (!types.isinstance(other, [types.FrozenSet, types.Set])) {
-        return new types.Bool(false);
+        return new types.Bool(false)
     }
-    if (this.data.keys().length != other.data.keys().length) {
-        return new types.Bool(false);
+    if (this.data.keys().length !== other.data.keys().length) {
+        return new types.Bool(false)
     }
-    var iterobj = builtins.iter([this], null);
-    var equal = true;
+    var iterobj = builtins.iter([this], null)
+    var equal = true
     callables.iter_for_each(iterobj, function(val) {
-        equal = equal && other.__contains__(val).valueOf();
-    });
+        equal = equal && other.__contains__(val).valueOf()
+    })
 
-    return new types.Bool(equal);
+    return new types.Bool(equal)
 }
 
 FrozenSet.prototype.__ne__ = function(other) {
-    return this.__eq__(other).__not__();
+    return this.__eq__(other).__not__()
 }
 
 FrozenSet.prototype.__gt__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
-        return new types.Bool(this.data.keys().length > other.data.keys().length);
+        return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass("unorderable types: frozenset() > " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() > ' + type_name(other) + '()')
 }
 
 FrozenSet.prototype.__ge__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
-        return new types.Bool(this.data.keys().length >= other.data.keys().length);
+        return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass("unorderable types: frozenset() >= " + type_name(other) + "()");
+    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() >= ' + type_name(other) + '()')
 }
 
 FrozenSet.prototype.__contains__ = function(other) {
-    return this.data.__contains__(other);
+    return this.data.__contains__(other)
 }
-
 
 /**************************************************
  * Unary operators
  **************************************************/
 
 FrozenSet.prototype.__not__ = function() {
-    return this.__bool__().__not__();
+    return this.__bool__().__not__()
 }
 
 /**************************************************
@@ -139,151 +138,151 @@ FrozenSet.prototype.__not__ = function() {
  **************************************************/
 
 FrozenSet.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__div__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__floordiv__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
 FrozenSet.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__mul__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
     if (types.isinstance(other, [
         types.Bytearray, types.Bytes, types.List,
         types.Str, types.Tuple
     ])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'frozenset'");
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'frozenset'")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
 FrozenSet.prototype.__mod__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
-    if (types.isinstance(other, types.Complex)){
+    if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'");
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
 FrozenSet.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__sub__ = function(other) {
-    var types = require('../types');
-    var builtins = require('../builtins');
+    var types = require('../types')
+    var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])){
-        var both = [];
-        var iterobj1 = builtins.iter([this], null);
+    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
+        var both = []
+        var iterobj1 = builtins.iter([this], null)
         callables.iter_for_each(iterobj1, function(val) {
             if (!(other.__contains__(val).valueOf())) {
-                both.push(val);
+                both.push(val)
             }
-        });
-        return new FrozenSet(both);
+        })
+        return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__getitem__ = function(other) {
-    var types = require('../types');
+    var types = require('../types')
 
-    if (types.isinstance(other, [types.Bool])){
-        throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing");
-    } else if (types.isinstance(other, [types.Int])){
+    if (types.isinstance(other, [types.Bool])) {
+        throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing")
+    } else if (types.isinstance(other, [types.Int])) {
         if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
-            throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer");
+            throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
         } else {
-            throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing");
+            throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing")
         }
     }
-    throw new exceptions.TypeError.$pyclass("'frozenset' object is not subscriptable");
+    throw new exceptions.TypeError.$pyclass("'frozenset' object is not subscriptable")
 }
 
 FrozenSet.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__and__ = function(other) {
-    var types = require('../types');
-    var builtins = require('../builtins');
+    var types = require('../types')
+    var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])){
-        var both = [];
-        var iterobj = builtins.iter([this], null);
+    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
+        var both = []
+        var iterobj = builtins.iter([this], null)
         callables.iter_for_each(iterobj, function(val) {
             if (other.__contains__(val).valueOf()) {
-                both.push(val);
+                both.push(val)
             }
-        });
-        return new FrozenSet(both);
+        })
+        return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__xor__ = function(other) {
-    var types = require('../types');
-    var builtins = require('../builtins');
+    var types = require('../types')
+    var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])){
-        var both = [];
-        var iterobj1 = builtins.iter([this], null);
+    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
+        var both = []
+        var iterobj1 = builtins.iter([this], null)
         callables.iter_for_each(iterobj1, function(val) {
             if (!(other.__contains__(val).valueOf())) {
-                both.push(val);
+                both.push(val)
             }
-        });
-        var iterobj2 = builtins.iter([other], null);
+        })
+        var iterobj2 = builtins.iter([other], null)
         callables.iter_for_each(iterobj2, function(val) {
             if (!(this.__contains__(val).valueOf())) {
-                both.push(val);
+                both.push(val)
             }
-        }.bind(this));
-        return new FrozenSet(both);
+        }.bind(this))
+        return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__or__ = function(other) {
-    var types = require('../types');
-    var builtins = require('../builtins');
+    var types = require('../types')
+    var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])){
-        var both = [];
-        var iterobj1 = builtins.iter([this], null);
+    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
+        var both = []
+        var iterobj1 = builtins.iter([this], null)
         callables.iter_for_each(iterobj1, function(val) {
-            both.push(val);
-        });
-        var iterobj2 = builtins.iter([other], null);
+            both.push(val)
+        })
+        var iterobj2 = builtins.iter([other], null)
         callables.iter_for_each(iterobj2, function(val) {
-            both.push(val);
-        }.bind(this));
-        return new FrozenSet(both);
+            both.push(val)
+        })
+        return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'");
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -291,18 +290,18 @@ FrozenSet.prototype.__or__ = function(other) {
  **************************************************/
 
 FrozenSet.prototype._update = function(args) {
-    var types = require('../types');
-    var builtins = require('../builtins');
+    var types = require('../types')
+    var builtins = require('../builtins')
 
-    var new_args = types.js2py(args);
+    var new_args = types.js2py(args)
     if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Str, types.Tuple])) {
-        var iterobj = builtins.iter([new_args], null);
-        var self = this;
+        var iterobj = builtins.iter([new_args], null)
+        var self = this
         callables.iter_for_each(iterobj, function(val) {
-            self.data.__setitem__(val, val);
-        });
+            self.data.__setitem__(val, val)
+        })
     } else {
-        throw new exceptions.TypeError.$pyclass("'" + type_name(new_args) + "' object is not iterable");
+        throw new exceptions.TypeError.$pyclass("'" + type_name(new_args) + "' object is not iterable")
     }
 }
 
@@ -310,4 +309,4 @@ FrozenSet.prototype._update = function(args) {
  * Module exports
  **************************************************/
 
-module.exports = FrozenSet;
+module.exports = FrozenSet

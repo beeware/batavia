@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Javascript DOM module.
  *

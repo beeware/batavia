@@ -1,21 +1,21 @@
-var base64js = require('base64-js');
+var base64js = require('base64-js')
 
-var exceptions = require('../core').exceptions;
-var types = require('../types');
+var exceptions = require('../core').exceptions
+var types = require('../types')
 
 var base64 = {
-    __doc__: "",
-    __file__: "batavia/modules/base64.js",
-    __name__: "base64",
-    __package__: ""
+    __doc__: '',
+    __file__: 'batavia/modules/base64.js',
+    __name__: 'base64',
+    __package__: ''
 }
 
 base64.b64encode = function(data) {
-    var encode = base64js.fromByteArray(data.val);
-    var bytes = [];
-    for (var i = 0; i < encode.length; i ++) {
-        var code = encode.charCodeAt(i);
-        bytes = bytes.concat([code]);
+    var encode = base64js.fromByteArray(data.val)
+    var bytes = []
+    for (var i = 0; i < encode.length; i++) {
+        var code = encode.charCodeAt(i)
+        bytes = bytes.concat([code])
     };
     return new types.Bytes(bytes)
 }
@@ -24,9 +24,9 @@ base64.b64encode.__doc__ = "Decode the Base64 encoded bytes-like object or ASCII
 base64.b64decode = function(data) {
     var data_str = String.fromCharCode.apply(null, data.val)
     if (data_str.length % 4 !== 0) {
-        throw new exceptions.ValueError.$pyclass("Incorrect padding");
+        throw new exceptions.ValueError.$pyclass('Incorrect padding')
     }
-    var encode = base64js.toByteArray(data_str);
+    var encode = base64js.toByteArray(data_str)
     return new types.Bytes(encode)
 }
 base64.b64decode.__doc__ = "Encode the bytes-like object s using Base64 and return a bytes object.\n\n    Optional altchars should be a byte string of length 2 which specifies an\n    alternative alphabet for the '+' and '/' characters.  This allows an\n    application to e.g. generate url or filesystem safe Base64 strings.\n    "
@@ -58,7 +58,7 @@ base64.decode = function() {}
 base64.decodebytes = function() {}
 
 base64.decodestring = function(data) {
-    return this.b64decode(data);
+    return this.b64decode(data)
 }
 
 base64.encode = function() {}
@@ -72,19 +72,19 @@ base64.struct = function() {}
 base64.test = function() {}
 
 base64.urlsafe_b64encode = function(data) {
-    var encode = base64js.fromByteArray(data.val);
-    var bytes = [];
-    for (var i = 0; i < encode.length; i ++) {
-        var code = encode.charCodeAt(i);
-        bytes = bytes.concat([code]);
+    var encode = base64js.fromByteArray(data.val)
+    var bytes = []
+    for (var i = 0; i < encode.length; i++) {
+        var code = encode.charCodeAt(i)
+        bytes = bytes.concat([code])
     };
-    return new types.Bytes(bytes);
+    return new types.Bytes(bytes)
 }
 
 base64.urlsafe_b64decode = function(data) {
     var data_str = String.fromCharCode.apply(null, data.val)
-    var encode = base64js.toByteArray(data_str);
+    var encode = base64js.toByteArray(data_str)
     return new types.Bytes(encode)
 }
 
-module.exports = base64;
+module.exports = base64

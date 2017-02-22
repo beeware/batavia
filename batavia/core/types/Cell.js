@@ -18,20 +18,20 @@
  */
 
 var Cell = function(value) {
-    Object.call(this);
-    this.contents = value;
+    Object.call(this)
+    this.contents = value
 }
 
 Cell.prototype.get = function() {
-    return this.contents;
+    return this.contents
 }
 
 Cell.prototype.set = function(value) {
-    this.contents = value;
+    this.contents = value
 }
 
 Cell.prototype.toString = function() {
-    return '<Cell>';
+    return '<Cell>'
 }
 
-module.exports = Cell;
+module.exports = Cell

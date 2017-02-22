@@ -1,49 +1,49 @@
-var exceptions = require('./core/exceptions');
+var exceptions = require('./core/exceptions')
 
 var types = {}
 
-types['Type'] = require('./core').Type;
-types['Object'] = require('./core').Object;
-types['NoneType'] = require('./core').NoneType;
-types['NotImplementedType'] = require('./core').NotImplementedType;
+types['Type'] = require('./core').Type
+types['Object'] = require('./core').Object
+types['NoneType'] = require('./core').NoneType
+types['NotImplementedType'] = require('./core').NotImplementedType
 
-types['Code'] = require('./types/Code');
-types['Module'] = require('./types/Module');
-types['JSDict'] = require('./types/JSDict');
+types['Code'] = require('./types/Code')
+types['Module'] = require('./types/Module')
+types['JSDict'] = require('./types/JSDict')
 
-types['Property'] = require('./types/Property');
+types['Property'] = require('./types/Property')
 
-types['SetIterator'] = require('./types/SetIterator');
+types['SetIterator'] = require('./types/SetIterator')
 
-types['Bool'] = require('./types/Bool');
-types['Float'] = require('./types/Float');
-types['Int'] = require('./types/Int');
+types['Bool'] = require('./types/Bool')
+types['Float'] = require('./types/Float')
+types['Int'] = require('./types/Int')
 
-types['Dict'] = require('./types/Dict');
-types['List'] = require('./types/List');
-types['Set'] = require('./types/Set');
-types['Tuple'] = require('./types/Tuple');
-types['FrozenSet'] = require('./types/FrozenSet');
+types['Dict'] = require('./types/Dict')
+types['List'] = require('./types/List')
+types['Set'] = require('./types/Set')
+types['Tuple'] = require('./types/Tuple')
+types['FrozenSet'] = require('./types/FrozenSet')
 
-types['Str'] = require('./types/Str');
-types['Bytes'] = require('./types/Bytes');
-types['Bytearray'] = require('./types/Bytearray');
+types['Str'] = require('./types/Str')
+types['Bytes'] = require('./types/Bytes')
+types['Bytearray'] = require('./types/Bytearray')
 
-types['Complex'] = require('./types/Complex');
+types['Complex'] = require('./types/Complex')
 
-types['DictView'] = require('./types/DictView');
-types['Ellipsis'] = require('./types/Ellipsis');
+types['DictView'] = require('./types/DictView')
+types['Ellipsis'] = require('./types/Ellipsis')
 
-types['filter'] = require('./types/Filter');
-types['map'] = require('./types/Map');
+types['Filter'] = require('./types/Filter')
+types['Map'] = require('./types/Map')
 
-types['Function'] = require('./types/Function');
-types['Method'] = require('./types/Method');
+types['Function'] = require('./types/Function')
+types['Method'] = require('./types/Method')
 
-types['Generator'] = require('./types/Generator');
+types['Generator'] = require('./types/Generator')
 
-types['Range'] = require('./types/Range');
-types['Slice'] = require('./types/Slice');
+types['Range'] = require('./types/Range')
+types['Slice'] = require('./types/Slice')
 
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
@@ -53,22 +53,22 @@ types.isinstance = function(obj, type) {
     if (type instanceof Array) {
         for (var t in type) {
             if (types.isinstance(obj, type[t])) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     } else {
         switch (typeof obj) {
             case 'boolean':
-                return type === types.Bool;
+                return type === types.Bool
             case 'number':
-                return type === types.Int;
+                return type === types.Int
             case 'string':
-                return type === types.Str;
+                return type === types.Str
             case 'object':
-                return obj instanceof type;
+                return obj instanceof type
             default:
-                return false;
+                return false
         }
     }
 }
@@ -82,86 +82,86 @@ types.isbataviainstance = function(obj) {
         types.Str, types.Set, types.Range,
         types.FrozenSet, types.Complex,
         types.NotImplementedType
-    ]);
+    ])
 }
 
 types.issubclass = function(cls, type) {
-    var t;
+    var t
     if (type instanceof Array) {
         for (t in type) {
             if (types.issubclass(cls, type[t])) {
-                return true;
+                return true
             }
         }
-        return false;
+        return false
     } else {
         switch (typeof cls) {
             case 'boolean':
-                return type === Bool;
+                return type === types.Bool
             case 'number':
-                return type === Int;
+                return type === types.Int
             case 'string':
-                return type === Str;
+                return type === types.Str
             case 'object':
                 if (type === null || type === types.NoneType) {
-                    return cls === null;
+                    return cls === null
                 } else {
-                    var mro = cls.mro();
+                    var mro = cls.mro()
                     for (t in mro) {
                         if (mro[t] === type) {
-                            return true;
+                            return true
                         }
                     }
                 }
-                return false;
+                return false
             default:
-                return false;
+                return false
         }
     }
 }
 
 types.js2py = function(arg) {
-    var types = require('./types');
+    var types = require('./types')
 
     if (Array.isArray(arg)) {
         // recurse
-        var arr = new types.List();
+        var arr = new types.List()
         for (var i = 0; i < arg.length; i++) {
-            arr.append(types.js2py(arg[i]));
+            arr.append(types.js2py(arg[i]))
         }
-        return arr;
+        return arr
     }
 
     switch (typeof arg) {
         case 'boolean':
-            return arg;
+            return arg
         case 'number':
             if (Number.isInteger(arg)) {
-                return new types.Int(arg);
+                return new types.Int(arg)
             } else {
-              return new types.Float(arg);
+                return new types.Float(arg)
             }
         case 'string':
-            return new types.Str(arg);
+            return new types.Str(arg)
         case 'object':
             if (arg === null || arg === types.NoneType) {
-                return null;
-            } else if (arg.__class__ != null && arg.__class__.__name__) {
+                return null
+            } else if (arg.__class__ !== null && arg.__class__.__name__) {
                 // already a Python object
-                return arg;
+                return arg
             } else {
                 // this is a generic object; turn it into a dictionary
-                var dict = new types.Dict();
+                var dict = new types.Dict()
                 for (var k in arg) {
                     if (arg.hasOwnProperty(k)) {
                         dict[types.js2py(k)] = types.js2py(arg[k])
                     }
                 }
-                return dict;
+                return dict
             }
         default:
-            throw new exceptions.BataviaError.$pyclass("Unknown type " + (typeof arg));
+            throw new exceptions.BataviaError.$pyclass('Unknown type ' + (typeof arg))
     }
 }
 
-module.exports = types;
+module.exports = types

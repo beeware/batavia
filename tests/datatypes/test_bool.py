@@ -30,8 +30,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_add_complex',
 
-        'test_eq_str',
-
         'test_floor_divide_complex',
         'test_floor_divide_float',
         'test_floor_divide_int',

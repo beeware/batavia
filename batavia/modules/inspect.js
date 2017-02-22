@@ -1,11 +1,11 @@
-var exceptions = require('../core').exceptions;
-var types = require('../types');
+var exceptions = require('../core').exceptions
+var types = require('../types')
 
 var inspect = {
-    __doc__: "",
-    __file__: "batavia/modules/inspect.js",
-    __name__: "inspect",
-    __package__: "",
+    __doc__: '',
+    __file__: 'batavia/modules/inspect.js',
+    __name__: 'inspect',
+    __package__: '',
 
     'CO_OPTIMIZED': 0x1,
     'CO_NEWLOCALS': 0x2,
@@ -17,16 +17,16 @@ var inspect = {
 }
 
 inspect.FullArgSpec = function(kwargs) {
-    this.args = kwargs.args || [];
-    this.varargs = kwargs.getcallargs;
-    this.varkw = kwargs.varkw;
-    this.defaults = kwargs.defaults || {};
-    this.kwonlyargs = kwargs.kwonlyargs || [];
-    this.kwonlydefaults = kwargs.kwonlydefaults || {};
-    this.annotations = kwargs.annotations || {};
+    this.args = kwargs.args || []
+    this.varargs = kwargs.getcallargs
+    this.varkw = kwargs.varkw
+    this.defaults = kwargs.defaults || {}
+    this.kwonlyargs = kwargs.kwonlyargs || []
+    this.kwonlydefaults = kwargs.kwonlydefaults || {}
+    this.annotations = kwargs.annotations || {}
 }
 
-inspect._signature_get_user_defined_method = function(cls, method_name) {
+// inspect._signature_get_user_defined_method = function(cls, method_name) {
     // try:
     //     meth = getattr(cls, method_name)
     // catch (err) {
@@ -39,35 +39,35 @@ inspect._signature_get_user_defined_method = function(cls, method_name) {
     //         return meth
     //     }
     // }
-}
+// }
 
-inspect._signature_bound_method = function(sig) {
-    // Internal helper to transform signatures for unbound
-    // functions to bound methods
+// inspect._signature_bound_method = function(sig) {
+//     // Internal helper to transform signatures for unbound
+//     // functions to bound methods
 
-    var params = sig.parameters.values();
+//     var params = sig.parameters.values()
 
-    if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-        throw new exceptions.ValueError.$pyclass('invalid method signature');
-    }
+//     if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
+//         throw new exceptions.ValueError.$pyclass('invalid method signature')
+//     }
 
-    var kind = params[0].kind;
-    if (kind in (_POSITIONAL_OR_KEYWORD, _POSITIONAL_ONLY)) {
-        // Drop first parameter:
-        // '(p1, p2[, ...])' -> '(p2[, ...])'
-        params = params.slice(1);
-    } else {
-        if (kind !== _VAR_POSITIONAL) {
-            // Unless we add a new parameter type we never
-            // get here
-            throw new exceptions.ValueError.$pyclass('invalid argument type');
-        }
-        // It's a var-positional parameter.
-        // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
-    }
+//     var kind = params[0].kind
+//     if (kind in (_POSITIONAL_OR_KEYWORD, _POSITIONAL_ONLY)) {
+//         // Drop first parameter:
+//         // '(p1, p2[, ...])' -> '(p2[, ...])'
+//         params = params.slice(1)
+//     } else {
+//         if (kind !== _VAR_POSITIONAL) {
+//             // Unless we add a new parameter type we never
+//             // get here
+//             throw new exceptions.ValueError.$pyclass('invalid argument type')
+//         }
+//         // It's a var-positional parameter.
+//         // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
+//     }
 
-    return sig.replace(parameters=params);
-}
+//     return sig.replace(parameters = params)
+// }
 
 inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_arg) {
     // if (!callable(obj)) {
@@ -129,7 +129,7 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     // if isfunction(obj) or _signature_is_functionlike(obj):
     //     # If it's a pure Python function, or an object that is duck type
     //     # of a Python function (Cython functions, for instance), then:
-        return inspect.Signature.from_function(obj);
+    return inspect.Signature.from_function(obj)
 
     // if _signature_is_builtin(obj):
     //     return inspect._signature_from_builtin(Signature, obj,
@@ -262,67 +262,67 @@ inspect.getfullargspec = function(func) {
         // getfullargspec() historically ignored __wrapped__ attributes,
         // so we ensure that remains the case in 3.3+
 
-        var sig = inspect._signature_internal(func, false, false);
+    var sig = inspect._signature_internal(func, false, false)
 
-        var args = [];
-        var varargs = null;
-        var varkw = null;
-        var kwonlyargs = [];
-        var defaults = [];
-        var annotations = {};
-        var kwdefaults = {};
+    var args = []
+    var varargs = null
+    var varkw = null
+    var kwonlyargs = []
+    var defaults = []
+    var annotations = {}
+    var kwdefaults = {}
 
-        if (sig.return_annotation.length > 0) {
-            annotations['return'] = sig.return_annotation;
-        }
+    if (sig.return_annotation.length > 0) {
+        annotations['return'] = sig.return_annotation
+    }
 
-        for (var p in sig.parameters) {
-            if (sig.parameters.hasOwnProperty(p)) {
-                var param = sig.parameters[p];
+    for (var p in sig.parameters) {
+        if (sig.parameters.hasOwnProperty(p)) {
+            var param = sig.parameters[p]
 
-                if (param.kind === inspect.Parameter.POSITIONAL_ONLY) {
-                    args.push(param.name);
-                } else if (param.kind === inspect.Parameter.POSITIONAL_OR_KEYWORD) {
-                    args.push(param.name);
-                    if (param.default !== undefined) {
-                        defaults.push(param.default);
-                    }
-                } else if (param.kind === inspect.Parameter.VAR_POSITIONAL) {
-                    varargs = param.name;
-                } else if (param.kind === inspect.Parameter.KEYWORD_ONLY) {
-                    kwonlyargs.push(param.name);
-                    if (param.default !== undefined) {
-                        kwdefaults[param.name] = param.default;
-                    }
-                } else if (param.kind === inspect.Parameter.VAR_KEYWORD) {
-                    varkw = param.name;
+            if (param.kind === inspect.Parameter.POSITIONAL_ONLY) {
+                args.push(param.name)
+            } else if (param.kind === inspect.Parameter.POSITIONAL_OR_KEYWORD) {
+                args.push(param.name)
+                if (param.default !== undefined) {
+                    defaults.push(param.default)
                 }
-
-                if (param.annotation !== undefined) {
-                    annotations[param.name] = param.annotation;
+            } else if (param.kind === inspect.Parameter.VAR_POSITIONAL) {
+                varargs = param.name
+            } else if (param.kind === inspect.Parameter.KEYWORD_ONLY) {
+                kwonlyargs.push(param.name)
+                if (param.default !== undefined) {
+                    kwdefaults[param.name] = param.default
                 }
+            } else if (param.kind === inspect.Parameter.VAR_KEYWORD) {
+                varkw = param.name
+            }
+
+            if (param.annotation !== undefined) {
+                annotations[param.name] = param.annotation
             }
         }
+    }
 
-        if (kwdefaults.length === 0) {
+    if (kwdefaults.length === 0) {
             // compatibility with 'func.__kwdefaults__'
-            kwdefaults = null;
-        }
+        kwdefaults = null
+    }
 
-        if (defaults.length === 0) {
+    if (defaults.length === 0) {
             // compatibility with 'func.__defaults__'
-            defaults = null;
-        }
+        defaults = null
+    }
 
-        return new inspect.FullArgSpec({
-            'args': args,
-            'varargs': varargs,
-            'varkw': varkw,
-            'defaults': defaults,
-            'kwonlyargs': kwonlyargs,
-            'kwdefaults': kwdefaults,
-            'annotations': annotations
-        });
+    return new inspect.FullArgSpec({
+        'args': args,
+        'varargs': varargs,
+        'varkw': varkw,
+        'defaults': defaults,
+        'kwonlyargs': kwonlyargs,
+        'kwdefaults': kwdefaults,
+        'annotations': annotations
+    })
 
     // } catch (ex) {
         // Most of the times 'signature' will raise ValueError.
@@ -335,7 +335,7 @@ inspect.getfullargspec = function(func) {
 }
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw "Missing arguments";
+    throw exceptions.RuntimeError.$pyclass('Missing arguments')
     // var names = [];
     // for (var name in argnames) {
     //     if (!name in values) {
@@ -343,7 +343,7 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
     //     }
     // }
     // var missing = names.length;
-    // if (missing == 1) {
+    // if (missing === 1) {
     //     s = names[0];
     // } else if (missing === 2) {
     //     s = "{} and {}".format(*names)
@@ -355,30 +355,30 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
     // raise TypeError("%s() missing %i required %s argument%s: %s" %
     //                 (f_name, missing,
     //                   "positional" if pos else "keyword-only",
-    //                   "" if missing == 1 else "s", s))
+    //                   "" if missing === 1 else "s", s))
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw "FIXME: Too many arguments";
+    throw exceptions.RuntimeError.$pyclass('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
-    //     plural = atleast != 1
+    //     plural = atleast !== 1
     //     sig = "at least %d" % (atleast,)
     // elif defcount:
     //     plural = True
     //     sig = "from %d to %d" % (atleast, len(args))
     // else:
-    //     plural = len(args) != 1
+    //     plural = len(args) !== 1
     //     sig = str(len(args))
     // kwonly_sig = ""
     // if kwonly_given:
     //     msg = " positional argument%s (and %d keyword-only argument%s)"
-    //     kwonly_sig = (msg % ("s" if given != 1 else "", kwonly_given,
-    //                          "s" if kwonly_given != 1 else ""))
+    //     kwonly_sig = (msg % ("s" if given !== 1 else "", kwonly_given,
+    //                          "s" if kwonly_given !== 1 else ""))
     // raise TypeError("%s() takes %s positional argument%s but %d%s %s given" %
     //         (f_name, sig, "s" if plural else "", given, kwonly_sig,
-    //          "was" if given == 1 and not kwonly_given else "were"))
+    //          "was" if given === 1 and not kwonly_given else "were"))
 }
 
 /*
@@ -389,90 +389,94 @@ inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, val
  * values from 'positional' and 'named'.
  */
 inspect.getcallargs = function(func, positional, named) {
-    var arg2value = new types.JSDict();
+    var arg2value = new types.JSDict()
 
     // if ismethod(func) and func.__self__ is not None:
     if (func.__self__) {
         // implicit 'self' (or 'cls' for classmethods) argument
-        positional = [func.__self__].concat(positional);
+        positional = [func.__self__].concat(positional)
     }
-    var num_pos = positional.length;
-    var num_args = func.argspec.args.length;
-    var num_defaults = func.argspec.defaults ? func.argspec.defaults.length : 0;
+    var num_pos = positional.length
+    var num_args = func.argspec.args.length
+    var num_defaults
+    if (func.argspec.defaults) {
+        num_defaults = func.argspec.defaults.length
+    } else {
+        num_defaults = 0
+    }
 
-    var i, arg;
-    var n = Math.min(num_pos, num_args);
+    var i, arg
+    var n = Math.min(num_pos, num_args)
     for (i = 0; i < n; i++) {
-        arg2value[func.argspec.args[i]] = positional[i];
+        arg2value[func.argspec.args[i]] = positional[i]
     }
 
     if (func.argspec.varargs) {
-        arg2value[varargs] = positional.slice(n);
+        arg2value[func.argspec.varargs] = positional.slice(n)
     }
 
-    var possible_kwargs = new types.Set();
-    possible_kwargs.update(func.argspec.args);
-    possible_kwargs.update(func.argspec.kwonlyargs);
+    var possible_kwargs = new types.Set()
+    possible_kwargs.update(func.argspec.args)
+    possible_kwargs.update(func.argspec.kwonlyargs)
 
     if (func.argspec.varkw) {
-        arg2value[func.argspec.varkw] = {};
+        arg2value[func.argspec.varkw] = {}
     }
 
     for (var kw in named) {
         if (named.hasOwnProperty(kw)) {
             if (!possible_kwargs.__contains__(new types.Str(kw)).valueOf()) {
                 if (!func.argspec.varkw) {
-                    throw new exceptions.TypeError.$pyclass("%s() got an unexpected keyword argument %r" %
-                                (func.__name__, kw));
+                    throw new exceptions.TypeError.$pyclass('%s() got an unexpected keyword argument %r' %
+                                (func.__name__, kw))
                 }
-                arg2value[func.argspec.varkw][kw] = named[kw];
-                continue;
+                arg2value[func.argspec.varkw][kw] = named[kw]
+                continue
             }
             if (kw in arg2value) {
-                throw new exceptions.TypeError.$pyclass("%s() got multiple values for argument %r" %
-                                (func.__name__, kw));
+                throw new exceptions.TypeError.$pyclass('%s() got multiple values for argument %r' %
+                                (func.__name__, kw))
             }
-            arg2value[kw] = named[kw];
+            arg2value[kw] = named[kw]
         }
     }
 
     if (num_pos > num_args && (func.argspec.varargs === undefined || func.argspec.varargs.length === 0)) {
-        inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value);
+        inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value)
     }
     if (num_pos < num_args) {
-        var req = func.argspec.args.slice(0, num_args - num_defaults);
+        var req = func.argspec.args.slice(0, num_args - num_defaults)
         for (arg in req) {
             if (req.hasOwnProperty(arg)) {
                 if (!(req[arg] in arg2value)) {
-                    inspect._missing_arguments(func.__name__, req, true, arg2value);
+                    inspect._missing_arguments(func.__name__, req, true, arg2value)
                 }
             }
         }
         for (i = num_args - num_defaults; i < func.argspec.args.length; i++) {
-            arg = func.argspec.args[i];
+            arg = func.argspec.args[i]
             if (!arg2value.hasOwnProperty(arg)) {
-                arg2value[arg] = func.argspec.defaults[i - num_pos];
+                arg2value[arg] = func.argspec.defaults[i - num_pos]
             }
         }
     }
-    var missing = 0;
+    var missing = 0
     for (var kwarg in func.argspec.kwonlyargs) {
         if (func.argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
             if (!arg2value.hasOwnProperty(kwarg)) {
                 if (func.argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
-                    arg2value[kwarg] = func.argspec.kwonlydefaults[kwarg];
+                    arg2value[kwarg] = func.argspec.kwonlydefaults[kwarg]
                 } else {
-                    missing += 1;
+                    missing += 1
                 }
             }
         }
     }
     if (missing) {
-        inspect._missing_arguments(func.__name__, func.argspec.kwonlyargs, false, arg2value);
+        inspect._missing_arguments(func.__name__, func.argspec.kwonlyargs, false, arg2value)
     }
-    return arg2value;
+    return arg2value
 }
-
 
 /*
 Represents a parameter in a function signature.
@@ -496,10 +500,10 @@ Possible values: `Parameter.POSITIONAL_ONLY`,
 `Parameter.KEYWORD_ONLY`, `Parameter.VAR_KEYWORD`.
 */
 inspect.Parameter = function(kwargs) {
-    this.name = kwargs.name;
-    this.kind = kwargs.kind;
-    this.annotation = kwargs.annotation;
-    this.default = kwargs.default;
+    this.name = kwargs.name
+    this.kind = kwargs.kind
+    this.annotation = kwargs.annotation
+    this.default = kwargs.default
 
     // if kind not in (POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD,
     //                 _VAR_POSITIONAL, _KEYWORD_ONLY, _VAR_KEYWORD):
@@ -518,24 +522,23 @@ inspect.Parameter = function(kwargs) {
 
     // if not name.isidentifier():
     //     raise ValueError('{!r} is not a valid parameter name'.format(name))
+}
 
-};
-
-inspect.Parameter.POSITIONAL_ONLY = 0;
-inspect.Parameter.POSITIONAL_OR_KEYWORD = 1;
-inspect.Parameter.VAR_POSITIONAL = 2;
-inspect.Parameter.KEYWORD_ONLY = 3;
-inspect.Parameter.VAR_KEYWORD = 4;
+inspect.Parameter.POSITIONAL_ONLY = 0
+inspect.Parameter.POSITIONAL_OR_KEYWORD = 1
+inspect.Parameter.VAR_POSITIONAL = 2
+inspect.Parameter.KEYWORD_ONLY = 3
+inspect.Parameter.VAR_KEYWORD = 4
 
 //    '''Creates a customized copy of the Parameter.'''
 inspect.Parameter.prototype.replace = function(kwargs) {
-    var name = kwargs.name || this.name;
-    var kind = kwargs.kind || this.kind;
-    var annotation = kwargs.annotation || this.annotation;
-    var def = kwargs.default || this.default;
+    var name = kwargs.name || this.name
+    var kind = kwargs.kind || this.kind
+    var annotation = kwargs.annotation || this.annotation
+    var def = kwargs.default || this.default
 
-    return new inspect.Paramter(name, kind, def, annotation);
-};
+    return new inspect.Paramter(name, kind, def, annotation)
+}
 
 // def __str__(self):
 //     kind = self.kind
@@ -549,9 +552,9 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 //     if self._default is not _empty:
 //         formatted = '{}={}'.format(formatted, repr(self._default))
 
-//     if kind == _VAR_POSITIONAL:
+//     if kind === _VAR_POSITIONAL:
 //         formatted = '*' + formatted
-//     elif kind == _VAR_KEYWORD:
+//     elif kind === _VAR_KEYWORD:
 //         formatted = '**' + formatted
 
 //     return formatted
@@ -562,10 +565,10 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 
 // def __eq__(self, other):
 //     return (issubclass(other.__class__, Parameter) and
-//             self._name == other._name and
-//             self._kind == other._kind and
-//             self._default == other._default and
-//             self._annotation == other._annotation)
+//             self._name === other._name and
+//             self._kind === other._kind and
+//             self._default === other._default and
+//             self._annotation === other._annotation)
 
 // def __ne__(self, other):
 //     return not self.__eq__(other)
@@ -609,7 +612,7 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 //                 # will be mapped in 'BoundArguments.kwargs'
 //                 break
 //             else:
-//                 if param.kind == _VAR_POSITIONAL:
+//                 if param.kind === _VAR_POSITIONAL:
 //                     # *args
 //                     args.extend(arg)
 //                 else:
@@ -639,7 +642,7 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 //             except KeyError:
 //                 pass
 //             else:
-//                 if param.kind == _VAR_KEYWORD:
+//                 if param.kind === _VAR_KEYWORD:
 //                     # **kwargs
 //                     kwargs.update(arg)
 //                 else:
@@ -650,12 +653,11 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 
 //     def __eq__(self, other):
 //         return (issubclass(other.__class__, BoundArguments) and
-//                 self.signature == other.signature and
-//                 self.arguments == other.arguments)
+//                 self.signature === other.signature and
+//                 self.arguments === other.arguments)
 
 //     def __ne__(self, other):
 //         return not self.__eq__(other)
-
 
 /*
  * A Signature object represents the overall signature of a function.
@@ -683,7 +685,7 @@ A Signature object has the following public attributes and methods:
 * objects and 'return_annotation'.  All arguments are optional.
 */
 inspect.Signature = function(parameters, return_annotation, __validate_parameters__) {
-    this.parameters = {};
+    this.parameters = {}
     if (parameters !== null) {
         if (__validate_parameters__) {
             // params = OrderedDict()
@@ -724,14 +726,14 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
             // params = OrderedDict(((param.name, param) for param in parameters));
             for (var p in parameters) {
                 if (parameters.hasOwnProperty(p)) {
-                    this.parameters[parameters[p].name] = parameters[p];
+                    this.parameters[parameters[p].name] = parameters[p]
                 }
             }
         }
     }
 
-    this.return_annotation = return_annotation;
-};
+    this.return_annotation = return_annotation
+}
 
 // inspect.Signature._parameter_cls = Parameter;
 // inspect.Signature._bound_arguments_cls = BoundArguments;
@@ -740,7 +742,7 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
 * Constructs Signature for the given python function
 */
 inspect.Signature.from_function = function(func) {
-    var is_duck_function = false;
+    var is_duck_function = false
     // if (!isfunction(func)) {
     //     if (_signature_is_functionlike(func)) {
     //         is_duck_function = true;
@@ -754,98 +756,97 @@ inspect.Signature.from_function = function(func) {
     // Parameter = cls._parameter_cls
 
     // Parameter information.
-    var func_code = func.__code__;
-    var pos_count = func_code.co_argcount;
-    var arg_names = func_code.co_varnames;
-    var positional = arg_names.slice(0, pos_count);
-    var keyword_only_count = func_code.co_kwonlyargcount;
-    var keyword_only = arg_names.slice(pos_count, pos_count + keyword_only_count);
-    var annotations = func.__annotations__;
-    var defs = func.__defaults__;
-    var kwdefaults = func.__kwdefaults__;
+    var func_code = func.__code__
+    var pos_count = func_code.co_argcount
+    var arg_names = func_code.co_varnames
+    var positional = arg_names.slice(0, pos_count)
+    var keyword_only_count = func_code.co_kwonlyargcount
+    var keyword_only = arg_names.slice(pos_count, pos_count + keyword_only_count)
+    var annotations = func.__annotations__
+    var defs = func.__defaults__
+    var kwdefaults = func.__kwdefaults__
 
-    var pos_default_count;
+    var pos_default_count
     if (defs) {
-        pos_default_count = defs.length;
+        pos_default_count = defs.length
     } else {
-        pos_default_count = 0;
+        pos_default_count = 0
     }
 
-    var parameters = [];
-    var n, name, annotation, def, offset;
+    var parameters = []
+    var n, name, annotation, def, offset
 
     // Non-keyword-only parameters w/o defaults.
-    var non_default_count = pos_count - pos_default_count;
+    var non_default_count = pos_count - pos_default_count
     for (n = 0; n < non_default_count; n++) {
-        name = positional[n];
-        annotation = annotations[name];
+        name = positional[n]
+        annotation = annotations[name]
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': inspect.Parameter.POSITIONAL_OR_KEYWORD
-        }));
+        }))
     }
 
     // ... w/ defaults.
-    for (offset=0, n = non_default_count; n < positional.length; offset++, n++) {
-        name = positional[n];
-        annotation = annotations[name];
+    for (offset = 0, n = non_default_count; n < positional.length; offset++, n++) {
+        name = positional[n]
+        annotation = annotations[name]
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': inspect.Parameter.POSITIONAL_OR_KEYWORD,
             'default': defs[offset]
-        }));
+        }))
     }
 
     // *args
     if (func_code.co_flags & inspect.CO_VARARGS) {
-        name = arg_names[pos_count + keyword_only_count];
-        annotation = annotations[name];
+        name = arg_names[pos_count + keyword_only_count]
+        annotation = annotations[name]
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': inspect.Parameter.VAR_POSITIONAL
-        }));
+        }))
     }
 
     // Keyword-only parameters.
     for (n = 0; n < keyword_only.length; n++) {
-        def = null;
+        def = null
         if (kwdefaults !== null) {
-            def = kwdefaults[name];
+            def = kwdefaults[name]
         }
 
-        annotation = annotations[name];
+        annotation = annotations[name]
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': inspect.Parameter.KEYWORD_ONLY,
             'default': def
-        }));
+        }))
     }
 
     // **kwargs
     if (func_code.co_flags & inspect.CO_VARKEYWORDS) {
-        var index = pos_count + keyword_only_count;
+        var index = pos_count + keyword_only_count
         if (func_code.co_flags & inspect.CO_VARARGS) {
-            index += 1;
+            index += 1
         }
 
-        name = arg_names[index];
-        annotation = annotations[name];
+        name = arg_names[index]
+        annotation = annotations[name]
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
             'kind': inspect.Parameter.VAR_KEYWORD
-        }));
+        }))
     }
 
     // Is 'func' is a pure Python function - don't validate the
-    //parameters list (for correct order and defaults), it should be OK.
-    return new inspect.Signature(parameters, annotations['return'] || {}, is_duck_function);
+    // parameters list (for correct order and defaults), it should be OK.
+    return new inspect.Signature(parameters, annotations['return'] || {}, is_duck_function)
 }
-
 
     // @classmethod
     // def from_builtin(cls, func):
@@ -868,21 +869,21 @@ inspect.Signature.from_function = function(func) {
 
     // def __eq__(self, other):
     //     if (not issubclass(type(other), Signature) or
-    //                 self.return_annotation != other.return_annotation or
-    //                 len(self.parameters) != len(other.parameters)):
+    //                 self.return_annotation !== other.return_annotation or
+    //                 len(self.parameters) !== len(other.parameters)):
     //         return false
 
     //     other_positions = {param: idx
     //                        for idx, param in enumerate(other.parameters.keys())}
 
     //     for idx, (param_name, param) in enumerate(self.parameters.items()):
-    //         if param.kind == _KEYWORD_ONLY:
+    //         if param.kind === _KEYWORD_ONLY:
     //             try:
     //                 other_param = other.parameters[param_name]
     //             except KeyError:
     //                 return false
     //             else:
-    //                 if param != other_param:
+    //                 if param !== other_param:
     //                     return false
     //         else:
     //             try:
@@ -890,8 +891,8 @@ inspect.Signature.from_function = function(func) {
     //             except KeyError:
     //                 return false
     //             else:
-    //                 if (idx != other_idx or
-    //                                 param != other.parameters[param_name]):
+    //                 if (idx !== other_idx or
+    //                                 param !== other.parameters[param_name]):
     //                     return false
 
     //     return True
@@ -922,19 +923,19 @@ inspect.Signature.from_function = function(func) {
     //                 # we have no `kwargs` after this while loop
     //                 break
     //             else:
-    //                 if param.kind == _VAR_POSITIONAL:
+    //                 if param.kind === _VAR_POSITIONAL:
     //                     # That's OK, just empty *args.  Let's start parsing
     //                     # kwargs
     //                     break
     //                 elif param.name in kwargs:
-    //                     if param.kind == _POSITIONAL_ONLY:
+    //                     if param.kind === _POSITIONAL_ONLY:
     //                         msg = '{arg!r} parameter is positional only, ' \
     //                               'but was passed as a keyword'
     //                         msg = msg.format(arg=param.name)
     //                         raise TypeError(msg) from None
     //                     parameters_ex = (param,)
     //                     break
-    //                 elif (param.kind == _VAR_KEYWORD or
+    //                 elif (param.kind === _VAR_KEYWORD or
     //                                             param.default is not _empty):
     //                     # That's fine too - we have a default value for this
     //                     # parameter.  So, lets start parsing `kwargs`, starting
@@ -963,7 +964,7 @@ inspect.Signature.from_function = function(func) {
     //                     # argument
     //                     raise TypeError('too many positional arguments')
 
-    //                 if param.kind == _VAR_POSITIONAL:
+    //                 if param.kind === _VAR_POSITIONAL:
     //                     # We have an '*args'-like argument, let's fill it with
     //                     # all positional arguments we have left and move on to
     //                     # the next phase
@@ -982,12 +983,12 @@ inspect.Signature.from_function = function(func) {
     //     # keyword arguments
     //     kwargs_param = None
     //     for param in itertools.chain(parameters_ex, parameters):
-    //         if param.kind == _VAR_KEYWORD:
+    //         if param.kind === _VAR_KEYWORD:
     //             # Memorize that we have a '**kwargs'-like parameter
     //             kwargs_param = param
     //             continue
 
-    //         if param.kind == _VAR_POSITIONAL:
+    //         if param.kind === _VAR_POSITIONAL:
     //             # Named arguments don't refer to '*args'-like parameters.
     //             # We only arrive here if the positional arguments ended
     //             # before reaching the last parameter before *args.
@@ -1001,13 +1002,13 @@ inspect.Signature.from_function = function(func) {
     //             # if it has a default value, or it is an '*args'-like
     //             # parameter, left alone by the processing of positional
     //             # arguments.
-    //             if (not partial and param.kind != _VAR_POSITIONAL and
+    //             if (not partial and param.kind !== _VAR_POSITIONAL and
     //                                                 param.default is _empty):
     //                 raise TypeError('{arg!r} parameter lacking default value'. \
     //                                 format(arg=param_name)) from None
 
     //         else:
-    //             if param.kind == _POSITIONAL_ONLY:
+    //             if param.kind === _POSITIONAL_ONLY:
     //                 # This should never happen in case of a properly built
     //                 # Signature object (but let's have this check here
     //                 # to ensure correct behaviour just in case)
@@ -1049,7 +1050,7 @@ inspect.Signature.from_function = function(func) {
 
     //         kind = param.kind
 
-    //         if kind == _POSITIONAL_ONLY:
+    //         if kind === _POSITIONAL_ONLY:
     //             render_pos_only_separator = True
     //         elif render_pos_only_separator:
     //             # It's not a positional-only parameter, and the flag
@@ -1057,11 +1058,11 @@ inspect.Signature.from_function = function(func) {
     //             result.push('/')
     //             render_pos_only_separator = false
 
-    //         if kind == _VAR_POSITIONAL:
+    //         if kind === _VAR_POSITIONAL:
     //             # OK, we have an '*args'-like parameter, so we won't need
     //             # a '*' to separate keyword-only arguments
     //             render_kw_only_separator = false
-    //         elif kind == _KEYWORD_ONLY and render_kw_only_separator:
+    //         elif kind === _KEYWORD_ONLY and render_kw_only_separator:
     //             # We have a keyword-only parameter to render and we haven't
     //             # rendered an '*args'-like parameter before, so add a '*'
     //             # separator to the parameters list ("foo(arg1, *, arg2)" case)
@@ -1085,4 +1086,4 @@ inspect.Signature.from_function = function(func) {
 
     //     return rendered
 
-module.exports = inspect;
+module.exports = inspect
