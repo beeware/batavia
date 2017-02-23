@@ -111,7 +111,7 @@ Tuple.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError('unorderable types: tuple() <= ' + type_name(other) + '()')
+        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() <= ' + type_name(other) + '()')
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
@@ -178,7 +178,7 @@ Tuple.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError('unorderable types: tuple() >= ' + type_name(other) + '()')
+        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() >= ' + type_name(other) + '()')
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
