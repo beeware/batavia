@@ -63,12 +63,12 @@ function sorted(args, kwargs) {
             // Order of conditions does matter here.
             // Because if we get unorderable types, CPython gives always '<' in Exception:
             // TypeError: unorderable types: str() < int()
-            if (a["key"].__lt__(b["key"])) {
-                return validatedInput["smaller"]
+            if (a['key'].__lt__(b['key'])) {
+                return validatedInput['smaller']
             }
-            
-            if (a["key"].__gt__(b["key"])) {
-                return validatedInput["bigger"]
+
+            if (a['key'].__gt__(b['key'])) {
+                return validatedInput['bigger']
             }
             return 0
         })
