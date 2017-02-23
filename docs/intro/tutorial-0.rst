@@ -1,5 +1,5 @@
-Getting Started
-===============
+Tutorial: Preparing your Environment for Batavia Development
+============================================================
 
 Getting a working local copy of Batavia requires a few steps: getting a copy of
 the Batavia code, and the ouroboros dependency within a virtual environment.
@@ -40,7 +40,7 @@ how to set this up are `on our Environment setup guide
    $ source activate batavia
    $ pip install -e .
 
-4. In addition, you need to install `Node.js`_. You need to have a recent version
+4. In addition, you need to install `Node.js <https://nodejs.org>`_. You need to have a recent version
    of Node; we test using v6.9.1. Once you've installed node, you can use it to
    install Batavia's Javascript dependencies, and compile the Batavia library::
 
@@ -61,20 +61,20 @@ You now have a working Batavia environment!
 Next Steps
 ----------
 
-Next, we can `setup the sandbox </intro/tutorial-1>`, and try out
+Next, we can :doc:`setup the sandbox <tutorial-1>`, and try out
 running Python in your browser.
 
 Troubleshooting Tips
-----------
+--------------------
 
-After running "npm run build", if  you recieve the error:: 
+After running "npm run build", if  you recieve the error::
 
    "Module not found: Error: Cannot resolve 'file' or 'directory' ./stdlib"
-  
+
 Run this command::
- 
+
    $ python compile_stdlib.py
-   
+
 Then try compiling the Batavia library again::
-   
+
    $ npm run build
