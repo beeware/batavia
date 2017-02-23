@@ -1,5 +1,5 @@
-Getting Started
-===============
+Tutorial: Preparing your Environment for Batavia Development
+============================================================
 
 Getting a working local copy of Batavia requires a few steps: getting a copy of
 the Batavia code, and the ouroboros dependency within a virtual environment.
