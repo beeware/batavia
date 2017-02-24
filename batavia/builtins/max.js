@@ -39,7 +39,7 @@ function max(args, kwargs) {
     try {
         while (true) {
             var next = iterobj.__next__()
-            if (next.__gt__(max)) {
+            if (next.__gt__(max).valueOf()) {
                 max = next
             }
         }
