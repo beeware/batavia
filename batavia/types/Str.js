@@ -198,7 +198,19 @@ Str.prototype.__ge__ = function(other) {
 }
 
 Str.prototype.__contains__ = function(other) {
-    return false
+    var types = require('../types')
+    if (types.isinstance(other, [
+        types.Bool, types.Int, types.Float,
+        types.List, types.Dict, types.Tuple,
+        types.Set, types.Bytearray, types.Bytes,
+        types.Type, types.Complex, types.NotImplementedType,
+        types.Range, types.Slice, types.FrozenSet
+
+    ])) {
+        throw new exceptions.TypeError.$pyclass('cannot search type ' + type_name(other) + ' in string')
+    } else {
+        return this.valueOf().search(other.valueOf()) >= 0
+    }
 }
 
 /**************************************************
@@ -517,26 +529,9 @@ Str.prototype.encode = function(encoding, errors) {
 Str.prototype.startswith = function(str) {
     var types = require('../types')
 
-    if (arguments.length > 1) {
-        throw new exceptions.TypeError.$pyclass(
-            'slice indices must be integers or None or have an __index__ method'
-        )
-    } else if (arguments.length === 0) {
-        throw new exceptions.TypeError.$pyclass(
-            'startswith() takes at least 1 argument (0 given)'
-        )
-    }
-
     if (str !== None) {
         if (types.isinstance(str, [types.Str])) {
             return this.slice(0, str.length) === str
-        } else if (types.isinstance(str, [types.Tuple])) {
-            for (var i = 0; i < str.length; i++) {
-                if (this.startswith(str[i])) {
-                    return true
-                }
-            }
-            return false
         } else {
             throw new exceptions.TypeError.$pyclass(
                 'TypeError: startswith first arg must be str or a tuple of str, not ' + type_name(str)
