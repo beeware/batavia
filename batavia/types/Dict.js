@@ -181,11 +181,35 @@ Dict.prototype.__le__ = function(other) {
 }
 
 Dict.prototype.__eq__ = function(other) {
-    return this.valueOf() === other
+    var types = require('../types')
+
+    if (!types.isinstance(other, [types.Dict])) {
+        return new types.Bool(false)
+    }
+    if (this.data_keys.length !== other.data_keys.length) {
+        return new types.Bool(false)
+    }
+
+    for (var i = 0; i < this.data_keys.length; i++) {
+        var key = this.data_keys[i]
+        if (isEmpty(key) || isDeleted(key)) {
+            continue
+        }
+        if (!other.__contains__(key).valueOf()) {
+            return new types.Bool(false)
+        }
+        var this_value = this.__getitem__(key)
+        var other_value = other.__getitem__(key)
+        if (!this_value.__eq__(other_value)) {
+            return new types.Bool(false)
+        }
+    }
+
+    return new types.Bool(true)
 }
 
 Dict.prototype.__ne__ = function(other) {
-    return this.valueOf() !== other
+    return this.__eq__(other).__not__()
 }
 
 Dict.prototype.__gt__ = function(other) {
@@ -267,7 +291,12 @@ Dict.prototype.__mul__ = function(other) {
 }
 
 Dict.prototype.__mod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__mod__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    }
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__add__ = function(other) {
@@ -279,11 +308,11 @@ Dict.prototype.__sub__ = function(other) {
 }
 
 Dict.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__lshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__rshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__and__ = function(other) {
@@ -291,11 +320,11 @@ Dict.prototype.__and__ = function(other) {
 }
 
 Dict.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__xor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__or__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__setitem__ = function(key, value) {

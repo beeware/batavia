@@ -167,7 +167,6 @@ class DictTests(TranspileTestCase):
             x = dict([('a', 1), False, ('b', 2)])
             """, run_in_function=False)
 
-
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
 
@@ -176,47 +175,7 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
 
     not_implemented = [
-
-        'test_eq_dict',
-
         'test_floor_divide_complex',
-
-        'test_lshift_bool',
-        'test_lshift_bytearray',
-        'test_lshift_bytes',
-        'test_lshift_class',
-        'test_lshift_complex',
-        'test_lshift_dict',
-        'test_lshift_float',
-        'test_lshift_frozenset',
-        'test_lshift_int',
-        'test_lshift_list',
-        'test_lshift_None',
-        'test_lshift_NotImplemented',
-        'test_lshift_range',
-        'test_lshift_set',
-        'test_lshift_slice',
-        'test_lshift_str',
-        'test_lshift_tuple',
-
-        'test_modulo_bool',
-        'test_modulo_bytearray',
-        'test_modulo_bytes',
-        'test_modulo_bytes',
-        'test_modulo_class',
-        'test_modulo_complex',
-        'test_modulo_dict',
-        'test_modulo_float',
-        'test_modulo_frozenset',
-        'test_modulo_int',
-        'test_modulo_list',
-        'test_modulo_None',
-        'test_modulo_NotImplemented',
-        'test_modulo_range',
-        'test_modulo_set',
-        'test_modulo_slice',
-        'test_modulo_str',
-        'test_modulo_tuple',
 
         'test_multiply_class',
         'test_multiply_complex',
@@ -226,46 +185,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_set',
         'test_multiply_slice',
 
-        'test_ne_dict',
-
-        'test_or_bool',
-        'test_or_bytearray',
-        'test_or_bytes',
-        'test_or_bytes',
-        'test_or_class',
-        'test_or_complex',
-        'test_or_dict',
-        'test_or_float',
-        'test_or_frozenset',
-        'test_or_int',
-        'test_or_list',
-        'test_or_None',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
-        'test_or_str',
-        'test_or_tuple',
-
-        'test_rshift_bool',
-        'test_rshift_bytearray',
-        'test_rshift_bytes',
-        'test_rshift_bytes',
-        'test_rshift_class',
-        'test_rshift_complex',
-        'test_rshift_dict',
-        'test_rshift_float',
-        'test_rshift_frozenset',
-        'test_rshift_int',
-        'test_rshift_list',
-        'test_rshift_None',
-        'test_rshift_NotImplemented',
-        'test_rshift_range',
-        'test_rshift_set',
-        'test_rshift_slice',
-        'test_rshift_str',
-        'test_rshift_tuple',
-
         'test_subscr_bytearray',
         'test_subscr_class',
         'test_subscr_dict',
@@ -273,25 +192,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_list',
         'test_subscr_set',
         'test_subscr_slice',
-
-        'test_xor_bool',
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
-        'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_None',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
-        'test_xor_str',
-        'test_xor_tuple',
     ]
 
 
