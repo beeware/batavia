@@ -841,10 +841,6 @@ SAMPLE_SUBSTITUTIONS = {
         "{2.3456, 'another', 1}",
         "{'another', 1, 2.3456}",
         "{'another', 2.3456, 1}",
-        "{{1, 2}, {1, 2}}",
-        "{{1, 2}, {2, 1}}",
-        "{{2, 1}, {1, 2}}",
-        "{{2, 1}, {2, 1}}",
     ],
     "{2.3456, 'another'}": [
         "{'another', 2.3456}",
@@ -892,7 +888,10 @@ SAMPLE_SUBSTITUTIONS = {
     "['a', 'b']" : [
         "['b', 'a']",
     ],
-
+    #created after tuple() call on dict
+    "('a', 'b')" : [
+        "('b', 'a')",
+    ],
     # Normalize set to list ordering
     "[1, 2.3456, 'another']": [
         "[1, 'another', 2.3456]",
