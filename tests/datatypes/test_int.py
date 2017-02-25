@@ -55,7 +55,6 @@ class IntTests(TranspileTestCase):
             """)
 
 
-
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
 

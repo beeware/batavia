@@ -258,7 +258,6 @@ Int.prototype.__pow__ = function(other) {
             return new Int(result)
         }
     } else if (types.isinstance(other, types.Float)) {
-        console.log("TEST")
         other = this.__complex__(other)
         return this.__float__().__pow__(other)
     } else {
