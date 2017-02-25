@@ -521,10 +521,10 @@ Str.prototype.startswith = function(str) {
         throw new exceptions.TypeError.$pyclass(
             'slice indices must be integers or None or have an __index__ method'
         )
-    } else if (arguments.length == 0) {
+    } else if (arguments.length === 0) {
         throw new exceptions.TypeError.$pyclass(
             'startswith() takes at least 1 argument (0 given)'
-        )        
+        )
     }
 
     if (str !== None) {
