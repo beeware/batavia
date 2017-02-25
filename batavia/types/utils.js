@@ -1,9 +1,9 @@
 var utils = {}
 
-utils.inplace_call = function(f, operand_str, this, other) {
+utils.inplace_call = function(f, operand_str, this_obj, other) {
     // Call the method named "f" with argument "other"; if a type error is raised, throw a different type error
     try {
-        return this[f](other)
+        return this_obj[f](other)
     } catch (error) {
         if (error instanceof exceptions.TypeError.$pyclass) {
             throw new exceptions.TypeError.$pyclass(
@@ -16,4 +16,4 @@ utils.inplace_call = function(f, operand_str, this, other) {
 
 
 
-module.export = utils
+module.exports = utils

@@ -1,7 +1,7 @@
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
-var utils = require('../utils')
+var utils = require('./utils')
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
  *************************************************************************/
