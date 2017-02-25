@@ -164,7 +164,6 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
-    @unittest.expectedFailure
     def test_startswith_no_args(self):
         self.assertCodeExecution("""
             try:
@@ -175,7 +174,6 @@ class StrTests(TranspileTestCase):
                 print('No exception for ommitted arguments')
          """)
 
-    @unittest.expectedFailure
     def test_startswith_multiple_args(self):
         self.assertCodeExecution("""
             try:
