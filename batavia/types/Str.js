@@ -517,6 +517,12 @@ Str.prototype.encode = function(encoding, errors) {
 Str.prototype.startswith = function(str) {
     var types = require('../types')
 
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'slice indices must be integers or None or have an __index__ method'
+        )
+    }
+
     if (str !== None) {
         if (types.isinstance(str, [types.Str])) {
             return this.slice(0, str.length) === str
