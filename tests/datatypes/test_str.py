@@ -186,7 +186,7 @@ class StrTests(TranspileTestCase):
                 print('No exception for multiple arguments')
          """)
 
-    @unittest.expectedFailure
+
     def test_startswith_tuple(self):
         self.assertCodeExecution("""
             try:
