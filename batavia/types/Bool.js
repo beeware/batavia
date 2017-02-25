@@ -1,7 +1,7 @@
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
-
+var utils = require('./utils')
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
  *************************************************************************/
@@ -562,7 +562,7 @@ Bool.prototype.__itruediv__ = function(other) {
 }
 
 Bool.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__iadd__ has not been implemented')
+    return utils.inplace_call('__add__', '+=', this, other)
 }
 
 Bool.prototype.__isub__ = function(other) {
