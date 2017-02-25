@@ -91,7 +91,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
 
         'test_power_complex',
-        'test_power_float',
 
         'test_rshift_int', # this works, but some of the cases are too large
                            # until we replace bignumber.js
