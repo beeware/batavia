@@ -55,6 +55,7 @@ class IntTests(TranspileTestCase):
             """)
 
 
+
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
@@ -70,7 +71,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_multiply_complex',
 
         'test_power_complex',
-        'test_power_float',
 
         'test_subtract_complex',
 
