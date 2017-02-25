@@ -197,6 +197,59 @@ class StrTests(TranspileTestCase):
                 print('BeeWare starts with either e or B')
          """)
 
+    def test_instring(self):
+        self.assertCodeExecution("""
+            # Single character at the start of the string
+            if 'B' in 'BeeWare':
+                print('BeeWare contains B')
+            else:
+                print('BeeWare does not contain B')
+
+            # Single character elsewhere in the string
+            if 'W' in 'BeeWare':
+                print('BeeWare contains W')
+            else:
+                print('BeeWare does not contain W')
+
+            # Substring at the start
+            if 'Bee' in 'BeeWare':
+                print('BeeWare contains Bee')
+            else:
+                print('BeeWare does not contain Bee')
+
+            # Substring elsewhere
+            if 'eWa' in 'BeeWare':
+                print('BeeWare contains eWa')
+            else:
+                print('BeeWare does not contain eWa')
+
+            # Empty string
+            if '' in 'BeeWare':
+                print('BeeWare contains an empty string')
+            else:
+                print('BeeWare does not contain an empty string')
+
+            # Contains int
+            try:
+                5 in 'BeeWare'
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                       'in str for non-str or non-tuple of str')
+            else:
+                print('No error thrown for invalid type!')
+
+            # Contains a dict
+            try:
+                {} in 'BeeWare'
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'in str for non-str or non-tuple of str')
+            else:
+                print('No error thrown for invalid type!')
+
+            print('done.')
+        """)
+
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')
 
