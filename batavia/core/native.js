@@ -27,7 +27,9 @@ native.getattr_raw = function(obj, attr, attributes_only) {
                 return fn
             }(val, val.__doc__))
         } else if (val.$pyargs) {
+            var doc = val.__doc__
             val = val.bind(obj)
+            val.__doc__ = doc
         } else {
             val = (function(obj, func, doc) {
                 var fn = function(args, kwargs) {
