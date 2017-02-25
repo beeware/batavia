@@ -1,3 +1,5 @@
+var exceptions = require('../core').exceptions
+var type_name = require('../core').type_name
 var utils = {}
 
 utils.inplace_call = function(f, operand_str, this_obj, other) {
@@ -13,7 +15,5 @@ utils.inplace_call = function(f, operand_str, this_obj, other) {
         }
     }
 }
-
-
 
 module.exports = utils
