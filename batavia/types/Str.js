@@ -542,6 +542,13 @@ Str.prototype.startswith = function(str) {
     if (str !== None) {
         if (types.isinstance(str, [types.Str])) {
             return this.slice(0, str.length) === str
+        } else if (types.isinstance(str, [types.Tuple])) {
+            for (var i = 0; i < str.length; i++) {
+                if (this.startswith(str[i])) {
+                    return true
+                }
+            }
+            return false
         } else {
             throw new exceptions.TypeError.$pyclass(
                 'TypeError: startswith first arg must be str or a tuple of str, not ' + type_name(str)
