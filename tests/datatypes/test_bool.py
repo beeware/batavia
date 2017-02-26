@@ -86,7 +86,6 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_float',
         'test_add_frozenset',
         'test_add_list',
-        'test_add_int',
         'test_add_None',
         'test_add_NotImplemented',
         'test_add_range',
