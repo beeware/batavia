@@ -200,7 +200,7 @@ Str.prototype.__ge__ = function(other) {
 Str.prototype.__contains__ = function(other) {
     var types = require('../types')
     if (!types.isinstance(other, [types.Str])) {
-        throw new exceptions.TypeError.$pyclass("'in <string>' requires string as left operand, not " +type_name(other))
+        throw new exceptions.TypeError.$pyclass("'in <string>' requires string as left operand, not " + type_name(other))
     } else {
         return this.valueOf().search(other.valueOf()) >= 0
     }
