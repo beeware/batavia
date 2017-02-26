@@ -195,6 +195,165 @@ class StrTests(TranspileTestCase):
                 print('BeeWare starts with either e or B')
          """)
 
+    def test_instring(self):
+        self.assertCodeExecution("""
+            # Single character at the start of the string
+            if 'B' in 'BeeWare':
+                print('BeeWare contains B')
+            else:
+                print('BeeWare does not contain B')
+
+            # Single character elsewhere in the string
+            if 'W' in 'BeeWare':
+                print('BeeWare contains W')
+            else:
+                print('BeeWare does not contain W')
+
+            # Substring at the start
+            if 'Bee' in 'BeeWare':
+                print('BeeWare contains Bee')
+            else:
+                print('BeeWare does not contain Bee')
+
+            # Substring elsewhere
+            if 'eWa' in 'BeeWare':
+                print('BeeWare contains eWa')
+            else:
+                print('BeeWare does not contain eWa')
+
+            # Empty string
+            if '' in 'BeeWare':
+                print('BeeWare contains an empty string')
+            else:
+                print('BeeWare does not contain an empty string')
+
+            # Contains int
+            try:
+                5 in 'BeeWare'
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                       'in str for non-str or non-tuple of str')
+            else:
+                print('No error thrown for invalid type!')
+
+            # Contains a dict
+            try:
+                {} in 'BeeWare'
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'in str for non-str or non-tuple of str')
+            else:
+                print('No error thrown for invalid type!')
+
+            print('done.')
+        """)
+
+    def test_isupper(self):
+        self.assertCodeExecution("""
+            # Single capital
+            if 'B'.isupper():
+                print('B is uppercase')
+            else:
+                print('B is not uppercase')
+
+            # Single lowercase
+            if 'b'.isupper():
+                print('b is uppercase')
+            else:
+                print('b is not uppercase')
+
+            # Multiple character, all caps
+            if 'BEE'.isupper():
+                print('BEE is uppercase')
+            else:
+                print('BEE is not uppercase')
+
+            # Multiple character, all lowercase
+            if 'bee'.isupper():
+                print('bee is uppercase')
+            else:
+                print('bee is not uppercase')
+
+            # Multiple character, mixed case
+            if 'Bee'.isupper():
+                print('Bee is uppercase')
+            else:
+                print('Bee is not uppercase')
+
+            # Multiple character, all caps with digits and punctuation
+            if 'B1E2E!'.isupper():
+                print('B1E2E! is uppercase')
+            else:
+                print('B1E2E! is not uppercase')
+
+            # Multiple character, mixed case with digits and punctuation
+            if 'B1e2E!'.isupper():
+                print('B1e2E! is uppercase')
+            else:
+                print('B1e2E! is not uppercase')
+
+            # Only numbers and punctuation
+            if '12!3_4'.isupper():
+                print('12!3_4 is uppercase')
+            else:
+                print('12!3_4 is not uppercase')
+
+            print('done.')
+        """)
+
+        def test_islower(self):
+            self.assertCodeExecution("""
+                # Single capital
+                if 'B'.islower():
+                    print('B is lowercase')
+                else:
+                    print('B is not lowercase')
+
+                # Single lowercase
+                if 'b'.islower():
+                    print('b is lowercase')
+                else:
+                    print('b is not lowercase')
+
+                # Multiple character, all caps
+                if 'BEE'.islower():
+                    print('BEE is lowercase')
+                else:
+                    print('BEE is not lowercase')
+
+                # Multiple character, all lowercase
+                if 'bee'.islower():
+                    print('bee is lowercase')
+                else:
+                    print('bee is not lowercase')
+
+                # Multiple character, mixed case
+                if 'Bee'.islower():
+                    print('Bee is lowercase')
+                else:
+                    print('Bee is not lowercase')
+
+                # Multiple character, all caps with digits and punctuation
+                if 'B1E2E!'.islower():
+                    print('B1E2E! is lowercase')
+                else:
+                    print('B1E2E! is not lowercase')
+
+                # Multiple character, mixed case with digits and punctuation
+                if 'B1e2E!'.islower():
+                    print('B1e2E! is lowercase')
+                else:
+                    print('B1e2E! is not lowercase')
+
+                # Only numbers and punctuation
+                if '12!3_4'.islower():
+                    print('12!3_4 is lowercase')
+                else:
+                    print('12!3_4 is not lowercase')
+
+                print('done.')
+            """)
+
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')
 
