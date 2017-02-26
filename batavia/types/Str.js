@@ -198,7 +198,12 @@ Str.prototype.__ge__ = function(other) {
 }
 
 Str.prototype.__contains__ = function(other) {
-    return false
+    var types = require('../types')
+    if (!types.isinstance(other, [types.Str])) {
+        throw new exceptions.TypeError.$pyclass("'in <string>' requires string as left operand, not " + type_name(other))
+    } else {
+        return this.valueOf().search(other.valueOf()) >= 0
+    }
 }
 
 /**************************************************
@@ -547,6 +552,22 @@ Str.prototype.startswith = function(str) {
 
 Str.prototype.endswith = function(str) {
     return this.slice(this.length - str.length) === str
+}
+
+Str.prototype.isupper = function() {
+    if (!this.match('[a-zA-Z]')) {
+        return false
+    } else {
+        return (this.valueOf() === this.valueOf().toUpperCase())
+    }
+}
+
+Str.prototype.islower = function() {
+    if (!this.match('[a-zA-Z]')) {
+        return false
+    } else {
+        return (this.valueOf() === this.valueOf().toLowerCase())
+    }
 }
 
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
