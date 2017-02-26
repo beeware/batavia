@@ -23,7 +23,7 @@ function bool(args, kwargs) {
         // *not* a native Javascript function. Therefore we can't call it in
         // the seemingly obvious way, with __bool__().
         var output = callables.call_method(args[0], '__bool__', [])
-        if (type_name(output) === 'bool') {
+        if (types.isinstance(output, types.Bool)) {
             return output
         } else {
             throw new exceptions.TypeError.$pyclass('__bool__ should return bool, returned ' + type_name(output))
@@ -34,7 +34,7 @@ function bool(args, kwargs) {
         output = callables.call_method(args[0], '__len__', [])
         var output_type = type_name(output)
 
-        if (output_type === 'int') {
+        if (types.isinstance(output, types.Int)) {
             // Yes, the value under the hood can have been cast to string
             // even if the output type is int and the value __len__ appears to
             // output in the browser is an integer.
