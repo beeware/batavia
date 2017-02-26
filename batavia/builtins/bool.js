@@ -31,7 +31,7 @@ function bool(args, kwargs) {
     // Python bool() checks for __bool__ and then, if __bool__ is not defined,
     // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
     } else if (args[0].__len__) {
-        var output = callables.call_method(args[0], '__len__', [])
+        output = callables.call_method(args[0], '__len__', [])
         var output_type = type_name(output)
 
         if (output_type === 'int') {
@@ -39,9 +39,8 @@ function bool(args, kwargs) {
             // even if the output type is int and the value __len__ appears to
             // output in the browser is an integer.
             return !!parseInt(output.valueOf())
-
         } else {
-            throw new exceptions.TypeError.$pyclass("'" + output_type + "' object cannot be interpreted as an integer")                
+            throw new exceptions.TypeError.$pyclass("'" + output_type + "' object cannot be interpreted as an integer")
         }
     } else {
         return new types.Bool((!!args[0].valueOf()))
