@@ -1115,7 +1115,9 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
         val = frame.f_builtins[name]
         // Functions loaded from builtins need to be bound to this VM.
         if (val instanceof Function) {
+            var doc = val.__doc__
             val = val.bind(this)
+            val.__doc__ = doc
         }
     } else {
         throw new builtins.NameError.$pyclass("name '" + name + "' is not defined")
@@ -1161,7 +1163,9 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
         val = this.frame.f_builtins[name]
         // Functions loaded from builtins need to be bound to this VM.
         if (val instanceof Function) {
+            var doc = val.__doc__
             val = val.bind(this)
+            val.__doc__ = doc
         }
     } else {
         throw new builtins.NameError.$pyclass("name '" + name + "' is not defined")
