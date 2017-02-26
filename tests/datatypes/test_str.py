@@ -248,6 +248,112 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
+    def test_isupper(self):
+        self.assertCodeExecution("""
+            # Single capital
+            if 'B'.isupper():
+                print('B is uppercase')
+            else:
+                print('B is not uppercase')
+
+            # Single lowercase
+            if 'b'.isupper():
+                print('b is uppercase')
+            else:
+                print('b is not uppercase')
+
+            # Multiple character, all caps
+            if 'BEE'.isupper():
+                print('BEE is uppercase')
+            else:
+                print('BEE is not uppercase')
+
+            # Multiple character, all lowercase
+            if 'bee'.isupper():
+                print('bee is uppercase')
+            else:
+                print('bee is not uppercase')
+
+            # Multiple character, mixed case
+            if 'Bee'.isupper():
+                print('Bee is uppercase')
+            else:
+                print('Bee is not uppercase')
+
+            # Multiple character, all caps with digits and punctuation
+            if 'B1E2E!'.isupper():
+                print('B1E2E! is uppercase')
+            else:
+                print('B1E2E! is not uppercase')
+
+            # Multiple character, mixed case with digits and punctuation
+            if 'B1e2E!'.isupper():
+                print('B1e2E! is uppercase')
+            else:
+                print('B1e2E! is not uppercase')
+
+            # Only numbers and punctuation
+            if '12!3_4'.isupper():
+                print('12!3_4 is uppercase')
+            else:
+                print('12!3_4 is not uppercase')
+
+            print('done.')
+        """)
+
+        def test_islower(self):
+            self.assertCodeExecution("""
+                # Single capital
+                if 'B'.islower():
+                    print('B is lowercase')
+                else:
+                    print('B is not lowercase')
+
+                # Single lowercase
+                if 'b'.islower():
+                    print('b is lowercase')
+                else:
+                    print('b is not lowercase')
+
+                # Multiple character, all caps
+                if 'BEE'.islower():
+                    print('BEE is lowercase')
+                else:
+                    print('BEE is not lowercase')
+
+                # Multiple character, all lowercase
+                if 'bee'.islower():
+                    print('bee is lowercase')
+                else:
+                    print('bee is not lowercase')
+
+                # Multiple character, mixed case
+                if 'Bee'.islower():
+                    print('Bee is lowercase')
+                else:
+                    print('Bee is not lowercase')
+
+                # Multiple character, all caps with digits and punctuation
+                if 'B1E2E!'.islower():
+                    print('B1E2E! is lowercase')
+                else:
+                    print('B1E2E! is not lowercase')
+
+                # Multiple character, mixed case with digits and punctuation
+                if 'B1e2E!'.islower():
+                    print('B1e2E! is lowercase')
+                else:
+                    print('B1e2E! is not lowercase')
+
+                # Only numbers and punctuation
+                if '12!3_4'.islower():
+                    print('12!3_4 is lowercase')
+                else:
+                    print('12!3_4 is not lowercase')
+
+                print('done.')
+            """)
+
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')
 

@@ -529,6 +529,16 @@ Str.prototype.encode = function(encoding, errors) {
 Str.prototype.startswith = function(str) {
     var types = require('../types')
 
+    if (arguments.length > 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'slice indices must be integers or None or have an __index__ method'
+        )
+    } else if (arguments.length === 0) {
+        throw new exceptions.TypeError.$pyclass(
+            'startswith() takes at least 1 argument (0 given)'
+        )
+    }
+
     if (str !== None) {
         if (types.isinstance(str, [types.Str])) {
             return this.slice(0, str.length) === str
@@ -542,6 +552,22 @@ Str.prototype.startswith = function(str) {
 
 Str.prototype.endswith = function(str) {
     return this.slice(this.length - str.length) === str
+}
+
+Str.prototype.isupper = function() {
+    if (!this.match('[a-zA-Z]')) {
+        return false
+    } else {
+        return (this.valueOf() === this.valueOf().toUpperCase())
+    }
+}
+
+Str.prototype.islower = function() {
+    if (!this.match('[a-zA-Z]')) {
+        return false
+    } else {
+        return (this.valueOf() === this.valueOf().toLowerCase())
+    }
 }
 
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
