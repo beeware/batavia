@@ -9,7 +9,7 @@ utils.inplace_call = function(f, operand_str, this_obj, other) {
     } catch (error) {
         if (error instanceof exceptions.TypeError.$pyclass) {
             throw new exceptions.TypeError.$pyclass(
-                'unsupported operand type(s) for ' + operand_str + ":" + type_name(this_obj) + " and '" + type_name(other) + "'")
+                'unsupported operand type(s) for ' + operand_str + ': ' + "'" + type_name(this_obj) + "'" + ' and ' + "'" + type_name(other) + "'")
         } else {
             throw error
         }
