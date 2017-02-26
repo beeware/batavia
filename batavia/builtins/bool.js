@@ -23,7 +23,7 @@ function bool(args, kwargs) {
         // *not* a native Javascript function. Therefore we can't call it in
         // the seemingly obvious way, with __bool__().
         var output = callables.call_method(args[0], '__bool__', [])
-        if ((output === true) || (output === false)) {
+        if (type_name(output) === 'bool') {
             return output
         } else {
             throw new exceptions.TypeError.$pyclass('__bool__ should return bool, returned ' + type_name(output))
