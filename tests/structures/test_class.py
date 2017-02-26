@@ -62,21 +62,45 @@ class ClassTests(TranspileTestCase):
             print(obj.x)
         """)
 
+    @unittest.expectedFailure
     def test_getattribute(self):
         self.assertCodeExecution("""
+            class MyDesc:
+                def __init__(self, val, name):
+                    self.name = name
+                    self.val = val
+
+                def __get__(self):
+                    print("Getting "+self.name)
+                    return self.val
+
+                def __set__(self, newval):
+                    print("Setting "+self.name+" to "+newval)
+                    self.val = newval
+
+                def __delete__(self):
+                    print("Deleting "+self.name)
+                    del self.val
+
             class MyClass:
                 def __init__(self):
-                    self.x = 7
+                    self.x = MyDesc(7, "descriptor 'x'")
+                    self.y = 'regular attribute'
 
                 def __getattr__(self, attr):
-                    self.x = attr
+                    print("That attribute doesn't exist")
                     return attr
 
                 def __getattribute__(self, attr):
-                    self.x = 42
-                    return 42
+                    val = object.__getattribute__(self, attr)
+                    if attr == 'x':
+                        return val.__get__()
+                    return val
 
             obj = MyClass()
+            print(obj.x)
+            print(obj.y)
+            print(obj.fail)
             print(obj.x)
         """)
 
