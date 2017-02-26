@@ -78,7 +78,6 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
-        'test_add_bool',
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_class',

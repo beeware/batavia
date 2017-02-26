@@ -237,7 +237,13 @@ Tuple.prototype.__div__ = function(other) {
 }
 
 Tuple.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
+    var types = require('../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
+    }
 }
 
 Tuple.prototype.__truediv__ = function(other) {
@@ -337,11 +343,11 @@ Tuple.prototype.__getitem__ = function(index) {
 }
 
 Tuple.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__lshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__rshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__and__ = function(other) {
