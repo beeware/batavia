@@ -5,6 +5,7 @@ var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
+var utils = require('./utils')
 
 /*************************************************************************
  * A Python int type
@@ -258,7 +259,6 @@ Int.prototype.__pow__ = function(other) {
             return new Int(result)
         }
     } else if (types.isinstance(other, types.Float)) {
-        other = this.__complex__(other)
         return this.__float__().__pow__(other)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
@@ -737,42 +737,28 @@ Int.prototype.__or__ = function(other) {
  * Inplace operators
  **************************************************/
 
-// Call the method named "f" with argument "other"; if a type error is raised, throw a different type error
-Int.prototype.__call_type_error_str__ = function(f, operand_str, other) {
-    try {
-        return this[f](other)
-    } catch (error) {
-        if (error instanceof exceptions.TypeError.$pyclass) {
-            throw new exceptions.TypeError.$pyclass(
-                'unsupported operand type(s) for ' + operand_str + ": 'int' and '" + type_name(other) + "'")
-        } else {
-            throw error
-        }
-    }
-}
-
 Int.prototype.__ifloordiv__ = function(other) {
-    return this.__call_type_error_str__('__floordiv__', '//=', other)
+    return utils.inplace_call('__floordiv__', '//=', this, other)
 }
 
 Int.prototype.__itruediv__ = function(other) {
-    return this.__call_type_error_str__('__truediv__', '/=', other)
+    return utils.inplace_call('__truediv__', '/=', this, other)
 }
 
 Int.prototype.__iadd__ = function(other) {
-    return this.__call_type_error_str__('__add__', '+=', other)
+    return utils.inplace_call('__add__', '+=', this, other)
 }
 
 Int.prototype.__isub__ = function(other) {
-    return this.__call_type_error_str__('__sub__', '-=', other)
+    return utils.inplace_call('__sub__', '-=', this, other)
 }
 
 Int.prototype.__imul__ = function(other) {
-    return this.__call_type_error_str__('__mul__', '*=', other)
+    return utils.inplace_call('__mul__', '*=', this, other)
 }
 
 Int.prototype.__imod__ = function(other) {
-    return this.__call_type_error_str__('__mod__', '%=', other)
+    return utils.inplace_call('__mod__', '%=', this, other)
 }
 
 Int.prototype.__ipow__ = function(other) {
@@ -780,23 +766,23 @@ Int.prototype.__ipow__ = function(other) {
 }
 
 Int.prototype.__ilshift__ = function(other) {
-    return this.__call_type_error_str__('__lshift__', '<<=', other)
+    return utils.inplace_call('__lshift__', '<<=', this, other)
 }
 
 Int.prototype.__irshift__ = function(other) {
-    return this.__call_type_error_str__('__rshift__', '>>=', other)
+    return utils.inplace_call('__rshift__', '>>=', this, other)
 }
 
 Int.prototype.__iand__ = function(other) {
-    return this.__call_type_error_str__('__and__', '&=', other)
+    return utils.inplace_call('__and__', '&=', this, other)
 }
 
 Int.prototype.__ixor__ = function(other) {
-    return this.__call_type_error_str__('__xor__', '^=', other)
+    return utils.inplace_call('__xor__', '^=', this, other)
 }
 
 Int.prototype.__ior__ = function(other) {
-    return this.__call_type_error_str__('__or__', '|=', other)
+    return utils.inplace_call('__or__', '|=', this, other)
 }
 
 /**************************************************
