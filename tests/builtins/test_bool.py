@@ -9,7 +9,6 @@ class BoolTests(TranspileTestCase):
             print(bool())
             """)
 
-    @unittest.expectedFailure
     def test_bool_like(self):
         self.assertCodeExecution("""
             class BoolLike:
@@ -18,12 +17,10 @@ class BoolTests(TranspileTestCase):
 
                 def __bool__(self):
                     return self.val == 1
-
             print(bool(BoolLike(0)))
             print(bool(BoolLike(1)))
             """)
 
-    @unittest.expectedFailure
     def test_len_only(self):
         self.assertCodeExecution("""
             class LenButNoBool:

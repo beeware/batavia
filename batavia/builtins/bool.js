@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var callables = require('../core').callables
 var types = require('../types')
 
 function bool(args, kwargs) {
@@ -17,7 +18,16 @@ function bool(args, kwargs) {
     if (args[0] === null) {
         return new types.NoneType.__bool__()
     } else if (args[0].__bool__) {
-        return args[0].__bool__()
+        // args[0].__bool__, if it exists, is a batavia.types.Function.js,
+        // *not* a native Javascript function. Therefore we can't call it in
+        // the seemingly obvious way, with __bool__().
+        return callables.call_method(args[0], '__bool__', [])
+    // Python bool() checks for __bool__ and then, if __bool__ is not defined,
+    // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
+    } else if (args[0].__len__) {
+        // valueOf() can return a string even when __len__ was set to an
+        // integer (as in builtins.test_bool.BoolTests.test_len_only).
+        return !!parseInt(callables.call_method(args[0], '__len__', []).valueOf())
     } else {
         return new types.Bool((!!args[0].valueOf()))
     }
