@@ -58,6 +58,7 @@ class BoolTests(TranspileTestCase):
         print(bool(BoolHate("zero")))
         print(bool(BoolHate([1, 2, 3])))
         print(bool(BoolHate({1: 2})))
+        print(bool(BoolHate(1.2)))
         """)
 
     def test_len_malicious(self):
@@ -72,6 +73,7 @@ class BoolTests(TranspileTestCase):
         print(bool(LenHate("zero")))
         print(bool(LenHate([1, 2, 3])))
         print(bool(LenHate({1: 2})))
+        print(bool(LenHate(1.2)))
         """)
 
 class BuiltinBoolFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
