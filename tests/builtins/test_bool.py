@@ -46,6 +46,33 @@ class BoolTests(TranspileTestCase):
             print(bool(NoLenNoBool(-2)))
             """)
 
+    def test_bool_malicious(self):
+        self.assertCodeExecution("""
+        class BoolHate:
+            def __init__(self, val):
+                self.val = val
+
+            def __bool__(self):
+                return self.val
+
+        print(bool(BoolHate("zero")))
+        print(bool(BoolHate([1, 2, 3])))
+        print(bool(BoolHate({1: 2})))
+        """)
+
+    def test_len_malicious(self):
+        self.assertCodeExecution("""
+        class LenHate:
+            def __init__(self, val):
+                self.val = val
+
+            def __len__(self):
+                return self.val
+
+        print(bool(LenHate("zero")))
+        print(bool(LenHate([1, 2, 3])))
+        print(bool(LenHate({1: 2})))
+        """)
 
 class BuiltinBoolFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["bool"]
