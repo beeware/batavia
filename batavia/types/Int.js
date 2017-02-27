@@ -258,6 +258,7 @@ Int.prototype.__pow__ = function(other) {
             return new Int(result)
         }
     } else if (types.isinstance(other, types.Float)) {
+        other = this.__complex__(other)
         return this.__float__().__pow__(other)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
