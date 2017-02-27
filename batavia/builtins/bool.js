@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
+var type_name = require('../core').type_name
 var types = require('../types')
 
 function bool(args, kwargs) {
@@ -21,13 +22,26 @@ function bool(args, kwargs) {
         // args[0].__bool__, if it exists, is a batavia.types.Function.js,
         // *not* a native Javascript function. Therefore we can't call it in
         // the seemingly obvious way, with __bool__().
-        return callables.call_method(args[0], '__bool__', [])
+        var output = callables.call_method(args[0], '__bool__', [])
+        if (types.isinstance(output, types.Bool)) {
+            return output
+        } else {
+            throw new exceptions.TypeError.$pyclass('__bool__ should return bool, returned ' + type_name(output))
+        }
     // Python bool() checks for __bool__ and then, if __bool__ is not defined,
     // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
     } else if (args[0].__len__) {
-        // valueOf() can return a string even when __len__ was set to an
-        // integer (as in builtins.test_bool.BoolTests.test_len_only).
-        return !!parseInt(callables.call_method(args[0], '__len__', []).valueOf())
+        output = callables.call_method(args[0], '__len__', [])
+        var output_type = type_name(output)
+
+        if (types.isinstance(output, types.Int)) {
+            // Yes, the value under the hood can have been cast to string
+            // even if the output type is int and the value __len__ appears to
+            // output in the browser is an integer.
+            return !!parseInt(output.valueOf())
+        } else {
+            throw new exceptions.TypeError.$pyclass("'" + output_type + "' object cannot be interpreted as an integer")
+        }
     } else {
         return new types.Bool((!!args[0].valueOf()))
     }
