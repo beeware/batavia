@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 import unittest
@@ -48,32 +49,34 @@ class BoolTests(TranspileTestCase):
 
     def test_bool_malicious(self):
         self.assertCodeExecution("""
-        class BoolHate:
-            def __init__(self, val):
-                self.val = val
+            class BoolHate:
+                def __init__(self, val):
+                    self.val = val
 
-            def __bool__(self):
-                return self.val
+                def __bool__(self):
+                    return self.val
 
-        print(bool(BoolHate("zero")))
-        print(bool(BoolHate([1, 2, 3])))
-        print(bool(BoolHate({1: 2})))
-        print(bool(BoolHate(1.2)))
+            print(bool(BoolHate("zero")))
+            print(bool(BoolHate([1, 2, 3])))
+            print(bool(BoolHate({1: 2})))
+            print(bool(BoolHate(1.2)))
+            print(bool(BoolHate("👿")))
         """)
 
     def test_len_malicious(self):
         self.assertCodeExecution("""
-        class LenHate:
-            def __init__(self, val):
-                self.val = val
+            class LenHate:
+                def __init__(self, val):
+                    self.val = val
 
-            def __len__(self):
-                return self.val
+                def __len__(self):
+                    return self.val
 
-        print(bool(LenHate("zero")))
-        print(bool(LenHate([1, 2, 3])))
-        print(bool(LenHate({1: 2})))
-        print(bool(LenHate(1.2)))
+            print(bool(LenHate("zero")))
+            print(bool(LenHate([1, 2, 3])))
+            print(bool(LenHate({1: 2})))
+            print(bool(LenHate(1.2)))
+            print(bool(BoolHate("👿")))
         """)
 
 class BuiltinBoolFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
