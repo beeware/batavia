@@ -83,7 +83,6 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_class',
         'test_add_complex',
         'test_add_dict',
-        'test_add_float',
         'test_add_frozenset',
         'test_add_list',
         'test_add_None',
