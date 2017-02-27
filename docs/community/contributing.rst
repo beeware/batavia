@@ -169,6 +169,11 @@ Or, to run all the datatypes tests:
 
     $ python setup.py test -s tests.datatypes
 
+Running the linter
+----------------------
+.. code-block:: bash
+
+    $ npm run lint
 
 Troubleshooting
 ---------------
