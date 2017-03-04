@@ -301,289 +301,289 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
-        def test_islower(self):
-            self.assertCodeExecution("""
-                # Single capital
-                if 'B'.islower():
-                    print('B is lowercase')
-                else:
-                    print('B is not lowercase')
+    def test_islower(self):
+        self.assertCodeExecution("""
+            # Single capital
+            if 'B'.islower():
+                print('B is lowercase')
+            else:
+                print('B is not lowercase')
 
-                # Single lowercase
-                if 'b'.islower():
-                    print('b is lowercase')
-                else:
-                    print('b is not lowercase')
+            # Single lowercase
+            if 'b'.islower():
+                print('b is lowercase')
+            else:
+                print('b is not lowercase')
 
-                # Multiple character, all caps
-                if 'BEE'.islower():
-                    print('BEE is lowercase')
-                else:
-                    print('BEE is not lowercase')
+            # Multiple character, all caps
+            if 'BEE'.islower():
+                print('BEE is lowercase')
+            else:
+                print('BEE is not lowercase')
 
-                # Multiple character, all lowercase
-                if 'bee'.islower():
-                    print('bee is lowercase')
-                else:
-                    print('bee is not lowercase')
+            # Multiple character, all lowercase
+            if 'bee'.islower():
+                print('bee is lowercase')
+            else:
+                print('bee is not lowercase')
 
-                # Multiple character, mixed case
-                if 'Bee'.islower():
-                    print('Bee is lowercase')
-                else:
-                    print('Bee is not lowercase')
+            # Multiple character, mixed case
+            if 'Bee'.islower():
+                print('Bee is lowercase')
+            else:
+                print('Bee is not lowercase')
 
-                # Multiple character, all caps with digits and punctuation
-                if 'B1E2E!'.islower():
-                    print('B1E2E! is lowercase')
-                else:
-                    print('B1E2E! is not lowercase')
+            # Multiple character, all caps with digits and punctuation
+            if 'B1E2E!'.islower():
+                print('B1E2E! is lowercase')
+            else:
+                print('B1E2E! is not lowercase')
 
-                # Multiple character, mixed case with digits and punctuation
-                if 'B1e2E!'.islower():
-                    print('B1e2E! is lowercase')
-                else:
-                    print('B1e2E! is not lowercase')
+            # Multiple character, mixed case with digits and punctuation
+            if 'B1e2E!'.islower():
+                print('B1e2E! is lowercase')
+            else:
+                print('B1e2E! is not lowercase')
 
-                # Only numbers and punctuation
-                if '12!3_4'.islower():
-                    print('12!3_4 is lowercase')
-                else:
-                    print('12!3_4 is not lowercase')
+            # Only numbers and punctuation
+            if '12!3_4'.islower():
+                print('12!3_4 is lowercase')
+            else:
+                print('12!3_4 is not lowercase')
 
-                print('done.')
+            print('done.')
+        """)
+
+    def test_lstrip(self):
+        # No argument passed, strip whitespace only
+        self.assertCodeExecution("""
+            x = ' Bee'
+            print(s.lstrip())
+            """)
+        # No argument passed,string contains leading whitespace as well as whitespace in between text
+        self.assertCodeExecution("""
+            x = ' Bee Ware'
+            print(s.lstrip())
+            """)
+        # No argument passed, strip mixed types of whicespaces
+        self.assertCodeExecution("""
+            x = '\\n \\t\\r Bee'
+            print(s.lstrip())
+            """)
+        # No arguments passed, no leading spaces to be stripped
+        self.assertCodeExecution("""
+            x = 'Bee'
+            print(s.lstrip())
+            """)
+        # One character string passed as argument to be stripped
+        self.assertCodeExecution("""
+            x = '! Bee'
+            print(x.lstrip('!'))
+            """)
+        # Multiple character string passed as argument to be stripped
+        self.assertCodeExecution("""
+            x = '!=-* Bee'
+            print(x.lstrip('*-=!'))
+            """)
+        # Multiple character string passed as argument with leading whitespace (nothing should get stripped)
+        self.assertCodeExecution("""
+            x = ' !=-*Bee'
+            print(x.lstrip('*-=!'))
+            """)
+        # Int passed as argument (error)
+        self.assertCodeExecution("""
+            x = '111Bee'
+            print(x.lstrip(1))
+            """)
+        # Tuple passed as argument (error)
+        self.assertCodeExecution("""
+            x = '!=-* Bee'
+            print(x.lstrip(('!','=')))
+            """)
+        # List passed as argument (error)
+        self.assertCodeExecution("""
+            x = '!=-* Bee'
+            print(x.lstrip((['!','='])))
+            """)
+        # Dict passed as argument (error)
+        self.assertCodeExecution("""
+            x = ' Bee'
+            print(x.lstrip({}))
+            """)
+        # Multiple arguments passed (error)
+        self.assertCodeExecution("""
+            x = '!=-* Bee'
+            print(x.lstrip('!','='))
             """)
 
-        def test_lstrip(self):
-            # No argument passed, strip whitespace only
-            self.assertCodeExecution("""
-                x = ' Bee'
-                print(s.lstrip())
-                """)
-            # No argument passed,string contains leading whitespace as well as whitespace in between text
-            self.assertCodeExecution("""
-                x = ' Bee Ware'
-                print(s.lstrip())
-                """)
-            # No argument passed, strip mixed types of whicespaces
-            self.assertCodeExecution("""
-                x = '\n \t\r Bee'
-                print(s.lstrip())
-                """)
-            # No arguments passed, no leading spaces to be stripped
-            self.assertCodeExecution("""
-                x = 'Bee'
-                print(s.lstrip())
-                """)
-            # One character string passed as argument to be stripped
-            self.assertCodeExecution("""
-                x = '! Bee'
-                print(x.lstrip('!'))
-                """)
-            # Multiple character string passed as argument to be stripped
-            self.assertCodeExecution("""
-                x = '!=-* Bee'
-                print(x.lstrip('*-=!'))
-                """)
-            # Multiple character string passed as argument with leading whitespace (nothing should get stripped)
-            self.assertCodeExecution("""
-                x = ' !=-*Bee'
-                print(x.lstrip('*-=!'))
-                """)
-            # Int passed as argument (error)
-            self.assertCodeExecution("""
-                x = '111Bee'
-                print(x.lstrip(1))
-                """)
-            # Tuple passed as argument (error)
-            self.assertCodeExecution("""
-                x = '!=-* Bee'
-                print(x.lstrip(('!','=')))
-                """)
-            # List passed as argument (error)
-            self.assertCodeExecution("""
-                x = '!=-* Bee'
-                print(x.lstrip((['!','='])))
-                """)
-            # Dict passed as argument (error)
-            self.assertCodeExecution("""
-                x = ' Bee'
-                print(x.lstrip({}))
-                """)
-            # Multiple arguments passed (error)
-            self.assertCodeExecution("""
-                x = '!=-* Bee'
-                print(x.lstrip('!','='))
-                """)
+    def test_rstrip(self):
+        # No argument passed, strip whitespace only
+        self.assertCodeExecution("""
+            x = 'Bee '
+            print(s.rstrip())
+            """)
+        # No argument passed,string contains trailing whitespace as well as whitespace in between text
+        self.assertCodeExecution("""
+            x = 'Bee Ware '
+            print(s.lstrip())
+            """)
+        # No argument passed, strip mixed types of whicespaces
+        self.assertCodeExecution("""
+            x = 'Bee\\n \\t\\r '
+            print(s.rstrip())
+            """)
+        # No arguments passed, no traling spaces to be stripped
+        self.assertCodeExecution("""
+            x = 'Bee'
+            print(s.rstrip())
+            """)
+        # One character string passed as argument to be stripped
+        self.assertCodeExecution("""
+            x = 'Bee !'
+            print(x.rstrip('!'))
+            """)
+        # Multiple character string passed as argument to be stripped
+        self.assertCodeExecution("""
+            x = 'Bee !=-*'
+            print(x.rstrip('*-=!'))
+            """)
+        # Multiple character string passed as argument with trailing whitespace (nothing should get stripped)
+        self.assertCodeExecution("""
+            x = 'Bee!=-* '
+            print(x.rstrip('*-=!'))
+            """)
+        # Int passed as argument (error)
+        self.assertCodeExecution("""
+            x = 'Bee111'
+            print(x.rstrip(1))
+            """)
+        # Tuple passed as argument (error)
+        self.assertCodeExecution("""
+            x = 'Bee !=-*'
+            print(x.rstrip(('!','=')))
+            """)
+        # List passed as argument (error)
+        self.assertCodeExecution("""
+            x = 'Bee!=-*'
+            print(x.rstrip((['!','='])))
+            """)
+        # Dict passed as argument (error)
+        self.assertCodeExecution("""
+            x = 'Bee '
+            print(x.rstrip({}))
+            """)
+        # Multiple arguments passed (error)
+        self.assertCodeExecution("""
+            x = 'Bee !=-*'
+            print(x.rstrip('!','='))
+            """)
 
-        def test_rstrip(self):
-            # No argument passed, strip whitespace only
-            self.assertCodeExecution("""
-                x = 'Bee '
-                print(s.rstrip())
-                """)
-            # No argument passed,string contains trailing whitespace as well as whitespace in between text
-            self.assertCodeExecution("""
-                x = 'Bee Ware '
-                print(s.lstrip())
-                """)
-            # No argument passed, strip mixed types of whicespaces
-            self.assertCodeExecution("""
-                x = 'Bee\n \t\r '
-                print(s.rstrip())
-                """)
-            # No arguments passed, no traling spaces to be stripped
-            self.assertCodeExecution("""
-                x = 'Bee'
-                print(s.rstrip())
-                """)
-            # One character string passed as argument to be stripped
-            self.assertCodeExecution("""
-                x = 'Bee !'
-                print(x.rstrip('!'))
-                """)
-            # Multiple character string passed as argument to be stripped
-            self.assertCodeExecution("""
-                x = 'Bee !=-*'
-                print(x.rstrip('*-=!'))
-                """)
-            # Multiple character string passed as argument with trailing whitespace (nothing should get stripped)
-            self.assertCodeExecution("""
-                x = 'Bee!=-* '
-                print(x.rstrip('*-=!'))
-                """)
-            # Int passed as argument (error)
-            self.assertCodeExecution("""
-                x = 'Bee111'
-                print(x.rstrip(1))
-                """)
-            # Tuple passed as argument (error)
-            self.assertCodeExecution("""
-                x = 'Bee !=-*'
-                print(x.rstrip(('!','=')))
-                """)
-            # List passed as argument (error)
-            self.assertCodeExecution("""
-                x = 'Bee!=-*'
-                print(x.rstrip((['!','='])))
-                """)
-            # Dict passed as argument (error)
-            self.assertCodeExecution("""
-                x = 'Bee '
-                print(x.rstrip({}))
-                """)
-            # Multiple arguments passed (error)
-            self.assertCodeExecution("""
-                x = 'Bee !=-*'
-                print(x.rstrip('!','='))
-                """)
-
-        def test_strip(self):
-            # No argument passed, strip whitespace only
-            self.assertCodeExecution("""
-                x = ' Bee '
-                print(s.strip())
-                """)
-            # No argument passed,string contains leading/trailing whitespaces as well as whitespace in between text
-            self.assertCodeExecution("""
-                x = ' Bee Ware '
-                print(s.lstrip())
-                """)
-            # No argument passed, strip mixed types of whicespaces
-            self.assertCodeExecution("""
-                x = '\n \t\r Bee\n \t\r '
-                print(s.strip())
-                """)
-            # No arguments passed, no spaces to be stripped
-            self.assertCodeExecution("""
-                x = 'Bee'
-                print(s.strip())
-                """)
-            # One character string passed as argument to be stripped
-            self.assertCodeExecution("""
-                x = '!!! Bee !!'
-                print(x.strip('!'))
-                """)
-            # Multiple character string passed as argument to be stripped
-            self.assertCodeExecution("""
-                x = '!=-* Bee !=-*'
-                print(x.strip('*-=!'))
-                """)
-            # No argument passed, strip whitespace only, with only leading whitespace
-            self.assertCodeExecution("""
-                x = ' Bee'
-                print(s.strip())
-                """)
-            # No argument passed, strip leading mixed types of whicespaces
-            self.assertCodeExecution("""
-                x = '\n \t\r Bee'
-                print(s.strip())
-                """)
-            # One character string passed as argument to be stripped, occurring on the left
-            self.assertCodeExecution("""
-                x = '!!! Bee'
-                print(x.strip('!'))
-                """)
-            # Multiple character string passed as argument to be stripped, occurring on the left
-            self.assertCodeExecution("""
-                x = '!=-* Bee'
-                print(x.strip('*-=!'))
-                """)
-            # Multiple character string passed as argument with only leading whitespace (nothing should get stripped on the left)
-            self.assertCodeExecution("""
-                x = ' !=-*Bee!=-*'
-                print(x.strip('*-=!'))
-                """)
-            # No argument passed, strip whitespace only, with only trailing whitespace
-            self.assertCodeExecution("""
-                x = 'Bee '
-                print(s.strip())
-                """)
-            # No argument passed, strip trailing mixed types of whicespaces
-            self.assertCodeExecution("""
-                x = 'Bee \n \t\r'
-                print(s.strip())
-                """)
-            # One character string passed as argument to be stripped, occurring on the right
-            self.assertCodeExecution("""
-                x = 'Bee !!!'
-                print(x.strip('!'))
-                """)
-            # Multiple character string passed as argument to be stripped, occurring on the right
-            self.assertCodeExecution("""
-                x = 'Bee !=-*'
-                print(x.strip('*-=!'))
-                """)
-            # Multiple character string passed as argument with only trailing whitespace (nothing should get stripped on the right)
-            self.assertCodeExecution("""
-                x = '!=-*Bee!=-* '
-                print(x.strip('*-=!'))
-                """)
-            # Int passed as argument (error)
-            self.assertCodeExecution("""
-                x = '111Bee111'
-                print(x.strip(1))
-                """)
-            # Tuple passed as argument (error)
-            self.assertCodeExecution("""
-                x = '!=-* Bee !=-*'
-                print(x.strip(('!','=')))
-                """)
-            # List passed as argument (error)
-            self.assertCodeExecution("""
-                x = '!=-*Bee!=-*'
-                print(x.strip((['!','='])))
-                """)
-            # Dict passed as argument (error)
-            self.assertCodeExecution("""
-                x = ' Bee '
-                print(x.strip({}))
-                """)
-            # Multiple arguments passed (error)
-            self.assertCodeExecution("""
-                x = '!=-*Bee !=-*'
-                print(x.strip('!','='))
-                """)
+    def test_strip(self):
+        # No argument passed, strip whitespace only
+        self.assertCodeExecution("""
+            x = ' Bee '
+            print(s.strip())
+            """)
+        # No argument passed,string contains leading/trailing whitespaces as well as whitespace in between text
+        self.assertCodeExecution("""
+            x = ' Bee Ware '
+            print(s.lstrip())
+            """)
+        # No argument passed, strip mixed types of whicespaces
+        self.assertCodeExecution("""
+            x = '\\n \\t\\r Bee\\n \\t\\r '
+            print(s.strip())
+            """)
+        # No arguments passed, no spaces to be stripped
+        self.assertCodeExecution("""
+            x = 'Bee'
+            print(s.strip())
+            """)
+        # One character string passed as argument to be stripped
+        self.assertCodeExecution("""
+            x = '!!! Bee !!'
+            print(x.strip('!'))
+            """)
+        # Multiple character string passed as argument to be stripped
+        self.assertCodeExecution("""
+            x = '!=-* Bee !=-*'
+            print(x.strip('*-=!'))
+            """)
+        # No argument passed, strip whitespace only, with only leading whitespace
+        self.assertCodeExecution("""
+            x = ' Bee'
+            print(s.strip())
+            """)
+        # No argument passed, strip leading mixed types of whicespaces
+        self.assertCodeExecution("""
+            x = '\\n \\t\\r Bee'
+            print(s.strip())
+            """)
+        # One character string passed as argument to be stripped, occurring on the left
+        self.assertCodeExecution("""
+            x = '!!! Bee'
+            print(x.strip('!'))
+            """)
+        # Multiple character string passed as argument to be stripped, occurring on the left
+        self.assertCodeExecution("""
+            x = '!=-* Bee'
+            print(x.strip('*-=!'))
+            """)
+        # Multiple character string passed as argument with only leading whitespace (nothing should get stripped on the left)
+        self.assertCodeExecution("""
+            x = ' !=-*Bee!=-*'
+            print(x.strip('*-=!'))
+            """)
+        # No argument passed, strip whitespace only, with only trailing whitespace
+        self.assertCodeExecution("""
+            x = 'Bee '
+            print(s.strip())
+            """)
+        # No argument passed, strip trailing mixed types of whicespaces
+        self.assertCodeExecution("""
+            x = 'Bee \\n \\t\\r'
+            print(s.strip())
+            """)
+        # One character string passed as argument to be stripped, occurring on the right
+        self.assertCodeExecution("""
+            x = 'Bee !!!'
+            print(x.strip('!'))
+            """)
+        # Multiple character string passed as argument to be stripped, occurring on the right
+        self.assertCodeExecution("""
+            x = 'Bee !=-*'
+            print(x.strip('*-=!'))
+            """)
+        # Multiple character string passed as argument with only trailing whitespace (nothing should get stripped on the right)
+        self.assertCodeExecution("""
+            x = '!=-*Bee!=-* '
+            print(x.strip('*-=!'))
+            """)
+        # Int passed as argument (error)
+        self.assertCodeExecution("""
+            x = '111Bee111'
+            print(x.strip(1))
+            """)
+        # Tuple passed as argument (error)
+        self.assertCodeExecution("""
+            x = '!=-* Bee !=-*'
+            print(x.strip(('!','=')))
+            """)
+        # List passed as argument (error)
+        self.assertCodeExecution("""
+            x = '!=-*Bee!=-*'
+            print(x.strip((['!','='])))
+            """)
+        # Dict passed as argument (error)
+        self.assertCodeExecution("""
+            x = ' Bee '
+            print(x.strip({}))
+            """)
+        # Multiple arguments passed (error)
+        self.assertCodeExecution("""
+            x = '!=-*Bee !=-*'
+            print(x.strip('!','='))
+            """)
 
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')
