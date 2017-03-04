@@ -519,6 +519,69 @@ Str.prototype.encode = function(encoding, errors) {
     }
 }
 
+Str.prototype.lstrip = function() {
+    var types = require('../types')
+
+    if (arguments.length === 0) {
+        return this.valueOf().trimLeft()
+    } else if (arguments.length === 1) {
+        var charsToTrim = arguments[0]
+        if (!types.isinstance(charsToTrim, [types.Str])) {
+            throw new exceptions.TypeError.$pyclass('lstrip arg must be None or str')
+        }
+        var result = this.valueOf()
+        while (charsToTrim.indexOf(result[0]) > -1) {
+            result = result.slice(1)
+        }
+        return result
+    } else {
+        throw new exceptions.TypeError.$pyclass('lstrip() takes at most 1 argument (' + arguments.length + ' given)')
+    }
+}
+
+Str.prototype.rstrip = function() {
+    var types = require('../types')
+
+    if (arguments.length === 0) {
+        return this.valueOf().trimRight()
+    } else if (arguments.length === 1) {
+        var charsToTrim = arguments[0]
+        if (!types.isinstance(charsToTrim, [types.Str])) {
+            throw new exceptions.TypeError.$pyclass('rstrip arg must be None or str')
+        }
+        var result = this.valueOf()
+        while (charsToTrim.indexOf(result[-1]) > -1) {
+            result = result.slice(0, -1)
+        }
+        return result
+    } else {
+        throw new exceptions.TypeError.$pyclass('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
+    }
+}
+
+Str.prototype.strip = function() {
+    var types = require('../types')
+
+    if (arguments.length === 0) {
+        return this.valueOf().trim()
+    } else if (arguments.length === 1) {
+        var charsToTrim = arguments[0]
+        if (!types.isinstance(charsToTrim, [types.Str])) {
+            throw new exceptions.TypeError.$pyclass('strip arg must be None or str')
+        }
+        var result = this.valueOf()
+        while (charsToTrim.indexOf(result[0]) > -1) {
+            result = result.slice(1)
+        }
+        while (charsToTrim.indexOf(result[-1]) > -1) {
+            result = result.slice(0, -1)
+        }
+        return result
+    } else {
+        throw new exceptions.TypeError.$pyclass('strip() takes at most 1 argument (' + arguments.length + ' given)')
+    }
+}
+
 Str.prototype.startswith = function(str) {
     var types = require('../types')
 
