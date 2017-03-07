@@ -530,10 +530,11 @@ Str.prototype.lstrip = function() {
             throw new exceptions.TypeError.$pyclass('lstrip arg must be None or str')
         }
         var result = this.valueOf()
-        while (charsToTrim.indexOf(result[0]) > -1) {
-            result = result.slice(1)
+        var i = 0
+        while (charsToTrim.indexOf(result[i]) > -1) {
+            i++
         }
-        return result
+        return result.slice(i)
     } else {
         throw new exceptions.TypeError.$pyclass('lstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
@@ -550,10 +551,11 @@ Str.prototype.rstrip = function() {
             throw new exceptions.TypeError.$pyclass('rstrip arg must be None or str')
         }
         var result = this.valueOf()
-        while (charsToTrim.indexOf(result[result.length - 1]) > -1) {
-            result = result.slice(0, -1)
+        var i = result.length
+        while (charsToTrim.indexOf(result[i-1]) > -1) {
+            i --
         }
-        return result
+        return result.slice(0,i)
     } else {
         throw new exceptions.TypeError.$pyclass('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
@@ -570,13 +572,15 @@ Str.prototype.strip = function() {
             throw new exceptions.TypeError.$pyclass('strip arg must be None or str')
         }
         var result = this.valueOf()
-        while (charsToTrim.indexOf(result[0]) > -1) {
-            result = result.slice(1)
+        var i = 0
+        while (charsToTrim.indexOf(result[i]) > -1) {
+            i ++
         }
-        while (charsToTrim.indexOf(result[result.length - 1]) > -1) {
-            result = result.slice(0, -1)
+        var j = result.length
+        while (charsToTrim.indexOf(result[j-1]) > -1) {
+            j --
         }
-        return result
+        return result.slice(i,j)
     } else {
         throw new exceptions.TypeError.$pyclass('strip() takes at most 1 argument (' + arguments.length + ' given)')
     }
