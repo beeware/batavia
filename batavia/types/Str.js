@@ -550,7 +550,7 @@ Str.prototype.rstrip = function() {
             throw new exceptions.TypeError.$pyclass('rstrip arg must be None or str')
         }
         var result = this.valueOf()
-        while (charsToTrim.indexOf(result[result.length-1]) > -1) {
+        while (charsToTrim.indexOf(result[result.length - 1]) > -1) {
             result = result.slice(0, -1)
         }
         return result
@@ -573,7 +573,7 @@ Str.prototype.strip = function() {
         while (charsToTrim.indexOf(result[0]) > -1) {
             result = result.slice(1)
         }
-        while (charsToTrim.indexOf(result[result.length-1]) > -1) {
+        while (charsToTrim.indexOf(result[result.length - 1]) > -1) {
             result = result.slice(0, -1)
         }
         return result
