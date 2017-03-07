@@ -552,10 +552,10 @@ Str.prototype.rstrip = function() {
         }
         var result = this.valueOf()
         var i = result.length
-        while (charsToTrim.indexOf(result[i-1]) > -1) {
-            i --
+        while (charsToTrim.indexOf(result[i - 1]) > -1) {
+            i--
         }
-        return result.slice(0,i)
+        return result.slice(0, i)
     } else {
         throw new exceptions.TypeError.$pyclass('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
@@ -574,13 +574,13 @@ Str.prototype.strip = function() {
         var result = this.valueOf()
         var i = 0
         while (charsToTrim.indexOf(result[i]) > -1) {
-            i ++
+            i++
         }
         var j = result.length
-        while (charsToTrim.indexOf(result[j-1]) > -1) {
-            j --
+        while (charsToTrim.indexOf(result[j - 1]) > -1) {
+            j--
         }
-        return result.slice(i,j)
+        return result.slice(i, j)
     } else {
         throw new exceptions.TypeError.$pyclass('strip() takes at most 1 argument (' + arguments.length + ' given)')
     }
