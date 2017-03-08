@@ -133,8 +133,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
     not_implemented = [
-        'test_modulo_complex',
-
         'test_multiply_int',
 
         'test_subscr_bool',
