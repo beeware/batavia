@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var type_name = require('../core').type_name
 var types = require('../types')
 
 function float(args, kwargs) {
@@ -12,7 +13,9 @@ function float(args, kwargs) {
     var value = args[0]
 
     if (types.isinstance(value, types.Str)) {
-        if (value.search(/[^0-9.]/g) === -1) {
+        if (value.length === 0) {
+            throw new exceptions.ValueError.$pyclass('could not convert string to float: ')
+        } else if (value.search(/[^0-9.]/g) === -1) {
             return new types.Float(parseFloat(value))
         } else {
             if (value === 'nan' || value === '+nan' || value === '-nan') {
@@ -26,6 +29,9 @@ function float(args, kwargs) {
         }
     } else if (types.isinstance(value, [types.Int, types.Bool, types.Float])) {
         return args[0].__float__()
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "float() argument must be a string, a bytes-like object or a number, not '" + type_name(args[0]) + "'")
     }
 }
 float.__doc__ = 'float([x]) -> Convert a string or a number to floating point.'
