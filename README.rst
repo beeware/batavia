@@ -65,6 +65,12 @@ Linux/Unix/Mac::
    $ cd batavia
    $ pip install -e .
 
+If you don't have Python 3.4 activated then use::
+   $ python3 -m venv myvenv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
+
 Windows::
 
    > virtualenv venv
