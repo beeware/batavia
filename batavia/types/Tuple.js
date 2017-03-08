@@ -271,7 +271,13 @@ Tuple.prototype.__mul__ = function(other) {
 }
 
 Tuple.prototype.__mod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'tuple' and '" + type_name(other) + "'")
+    var types = require('../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'tuple' and '" + type_name(other) + "'")
+    }
 }
 
 Tuple.prototype.__add__ = function(other) {
