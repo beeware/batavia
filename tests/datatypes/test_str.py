@@ -280,13 +280,13 @@ class StrTests(TranspileTestCase):
             else:
                 print('Bee is not uppercase')
 
-            # Multiple character, all caps with digits and punctuation
+            # Multiple characters, all caps with digits and punctuation
             if 'B1E2E!'.isupper():
                 print('B1E2E! is uppercase')
             else:
                 print('B1E2E! is not uppercase')
 
-            # Multiple character, mixed case with digits and punctuation
+            # Multiple characters, mixed case with digits and punctuation
             if 'B1e2E!'.isupper():
                 print('B1e2E! is uppercase')
             else:
@@ -301,57 +301,313 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
-        def test_islower(self):
-            self.assertCodeExecution("""
-                # Single capital
-                if 'B'.islower():
-                    print('B is lowercase')
-                else:
-                    print('B is not lowercase')
+    def test_islower(self):
+        self.assertCodeExecution("""
+            # Single capital
+            if 'B'.islower():
+                print('B is lowercase')
+            else:
+                print('B is not lowercase')
 
-                # Single lowercase
-                if 'b'.islower():
-                    print('b is lowercase')
-                else:
-                    print('b is not lowercase')
+            # Single lowercase
+            if 'b'.islower():
+                print('b is lowercase')
+            else:
+                print('b is not lowercase')
 
-                # Multiple character, all caps
-                if 'BEE'.islower():
-                    print('BEE is lowercase')
-                else:
-                    print('BEE is not lowercase')
+            # Multiple character, all caps
+            if 'BEE'.islower():
+                print('BEE is lowercase')
+            else:
+                print('BEE is not lowercase')
 
-                # Multiple character, all lowercase
-                if 'bee'.islower():
-                    print('bee is lowercase')
-                else:
-                    print('bee is not lowercase')
+            # Multiple character, all lowercase
+            if 'bee'.islower():
+                print('bee is lowercase')
+            else:
+                print('bee is not lowercase')
 
-                # Multiple character, mixed case
-                if 'Bee'.islower():
-                    print('Bee is lowercase')
-                else:
-                    print('Bee is not lowercase')
+            # Multiple character, mixed case
+            if 'Bee'.islower():
+                print('Bee is lowercase')
+            else:
+                print('Bee is not lowercase')
 
-                # Multiple character, all caps with digits and punctuation
-                if 'B1E2E!'.islower():
-                    print('B1E2E! is lowercase')
-                else:
-                    print('B1E2E! is not lowercase')
+            # Multiple character, all caps with digits and punctuation
+            if 'B1E2E!'.islower():
+                print('B1E2E! is lowercase')
+            else:
+                print('B1E2E! is not lowercase')
 
-                # Multiple character, mixed case with digits and punctuation
-                if 'B1e2E!'.islower():
-                    print('B1e2E! is lowercase')
-                else:
-                    print('B1e2E! is not lowercase')
+            # Multiple character, mixed case with digits and punctuation
+            if 'B1e2E!'.islower():
+                print('B1e2E! is lowercase')
+            else:
+                print('B1e2E! is not lowercase')
 
-                # Only numbers and punctuation
-                if '12!3_4'.islower():
-                    print('12!3_4 is lowercase')
-                else:
-                    print('12!3_4 is not lowercase')
+            # Only numbers and punctuation
+            if '12!3_4'.islower():
+                print('12!3_4 is lowercase')
+            else:
+                print('12!3_4 is not lowercase')
 
-                print('done.')
+            print('done.')
+        """)
+
+    def test_lstrip(self):
+        self.assertCodeExecution("""
+            # No argument passed, strip whitespace only
+            x = ' Bee'
+            print(x.lstrip())
+
+            # No argument passed,string contains leading whitespace as well as whitespace in between text
+            x = ' Bee Ware'
+            print(x.lstrip())
+
+            # No argument passed, strip mixed types of whicespaces
+            x = '\\n \\t\\r Bee'
+            print(x.lstrip())
+
+            # No arguments passed, no leading spaces to be stripped
+            x = 'Bee'
+            print(x.lstrip())
+
+            # One character string passed as argument to be stripped
+            x = '! Bee'
+            print(x.lstrip('!'))
+
+            # Multiple character string passed as argument to be stripped
+            x = '!=-* Bee'
+            print(x.lstrip('*-=!'))
+
+            # Multiple character string passed as argument with leading whitespace (nothing should get stripped)
+            x = ' !=-*Bee'
+            print(x.lstrip('*-=!'))
+
+            # Int passed as argument (error)
+            x = '111Bee'
+            try:
+                print(x.lstrip(1))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.lstrip() with non-str argument')
+
+            # Tuple passed as argument (error)
+            x = '!=-* Bee'
+            try:
+                print(x.lstrip(('!','=')))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.lstrip() with non-str argument')
+
+            # List passed as argument (error)
+            x = '!=-* Bee'
+            try:
+                print(x.lstrip((['!','='])))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.lstrip() with non-str argument')
+
+            # Dict passed as argument (error)
+            x = ' Bee'
+            try:
+                print(x.lstrip({}))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.lstrip() with non-str argument')
+
+            # Multiple arguments passed (error)
+            x = '!=-* Bee'
+            try:
+                print(x.lstrip('!','='))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.lstrip() with multiple arguments')
+
+            print('done.')
+            """)
+
+    def test_rstrip(self):
+        self.assertCodeExecution("""
+            # No argument passed, strip whitespace only
+            x = 'Bee '
+            print(x.rstrip())
+
+            # No argument passed,string contains trailing whitespace as well as whitespace in between text
+            x = 'Bee Ware '
+            print(x.lstrip())
+            
+            # No argument passed, strip mixed types of whicespaces
+            x = 'Bee\\n \\t\\r '
+            print(x.rstrip())
+            
+            # No arguments passed, no traling spaces to be stripped
+            x = 'Bee'
+            print(x.rstrip())
+            
+            # One character string passed as argument to be stripped
+            x = 'Bee !'
+            print(x.rstrip('!'))
+            
+            # Multiple character string passed as argument to be stripped
+            x = 'Bee !=-*'
+            print(x.rstrip('*-=!'))
+            
+            # Multiple character string passed as argument with trailing whitespace (nothing should get stripped)
+            x = 'Bee!=-* '
+            print(x.rstrip('*-=!'))
+            
+            # Int passed as argument (error)
+            x = 'Bee111'
+            try:
+                print(x.rstrip(1))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.rstrip() with non-str argument')
+            
+            # Tuple passed as argument (error)
+            
+            x = 'Bee !=-*'
+            try:
+                print(x.rstrip(('!','=')))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.rstrip() with non-str argument')
+            
+            # List passed as argument (error)
+            x = 'Bee!=-*'
+            try:
+                print(x.rstrip((['!','='])))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.rstrip() with non-str argument')
+            
+            # Dict passed as argument (error)
+            x = 'Bee '
+            try:
+                print(x.rstrip({}))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.rstrip() with non-str argument')
+            
+            # Multiple arguments passed (error)
+            x = 'Bee !=-*'
+            try:
+                print(x.rstrip('!','='))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.rstrip() with multiple arguments')
+
+            print('done.')
+            """)
+
+    def test_strip(self):
+        self.assertCodeExecution("""
+            # No argument passed, strip whitespace only
+            x = ' Bee '
+            print(x.strip())
+
+            # No argument passed,string contains leading/trailing whitespaces as well as whitespace in between text
+            x = ' Bee Ware '
+            print(x.lstrip())
+            
+            # No argument passed, strip mixed types of whicespaces
+            x = '\\n \\t\\r Bee\\n \\t\\r '
+            print(x.strip())
+            
+            # No arguments passed, no spaces to be stripped
+            x = 'Bee'
+            print(x.strip())
+            
+            # One character string passed as argument to be stripped
+            x = '!!! Bee !!'
+            print(x.strip('!'))
+            
+            # Multiple character string passed as argument to be stripped
+            x = '!=-* Bee !=-*'
+            print(x.strip('*-=!'))
+            
+            # No argument passed, strip whitespace only, with only leading whitespace
+            x = ' Bee'
+            print(x.strip())
+            
+            # No argument passed, strip leading mixed types of whicespaces
+            x = '\\n \\t\\r Bee'
+            print(x.strip())
+            
+            # One character string passed as argument to be stripped, occurring on the left
+            x = '!!! Bee'
+            print(x.strip('!'))
+            
+            # Multiple character string passed as argument to be stripped, occurring on the left
+            x = '!=-* Bee'
+            print(x.strip('*-=!'))
+            
+            # Multiple character string passed as argument with only leading whitespace (nothing should get stripped on the left)
+            x = ' !=-*Bee!=-*'
+            print(x.strip('*-=!'))
+            
+            # No argument passed, strip whitespace only, with only trailing whitespace
+            x = 'Bee '
+            print(x.strip())
+            
+            # No argument passed, strip trailing mixed types of whicespaces
+            x = 'Bee \\n \\t\\r'
+            print(x.strip())
+
+            # One character string passed as argument to be stripped, occurring on the right
+            x = 'Bee !!!'
+            print(x.strip('!'))
+            
+            # Multiple character string passed as argument to be stripped, occurring on the right
+            x = 'Bee !=-*'
+            print(x.strip('*-=!'))
+            
+            # Multiple character string passed as argument with only trailing whitespace (nothing should get stripped on the right)
+            x = '!=-*Bee!=-* '
+            print(x.strip('*-=!'))
+            
+            # Int passed as argument (error)
+            x = '111Bee111'
+            try:
+                print(x.strip(1))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.strip() with non-str argument')
+            
+            # Tuple passed as argument (error)
+            x = '!=-* Bee !=-*'
+            try:
+                print(x.strip(('!','=')))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.strip() with non-str argument')
+            
+            # List passed as argument (error)
+            x = '!=-*Bee!=-*'
+            try:
+                print(x.strip((['!','='])))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.strip() with non-str argument')
+            
+            # Dict passed as argument (error)
+            x = ' Bee '
+            try:
+                print(x.strip({}))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.strip() with non-str argument')
+            
+            # Multiple arguments passed (error)
+            x = '!=-*Bee !=-*'
+            try:
+                print(x.strip('!','='))
+            except TypeError:
+                print('TypeError thrown appropriately for '
+                      'str.strip() with multiple arguments')
+
+            print('done.')
             """)
 
 class FormatTests(TranspileTestCase):
