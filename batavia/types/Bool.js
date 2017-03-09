@@ -296,6 +296,13 @@ Bool.prototype.__add__ = function(other) {
             this_bool = 0
         }
         return new types.Int(other.val.add(this_bool))
+    } else if (types.isinstance(other, types.Complex)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        return new types.Complex(this_bool + other.real, other.imag)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'")
     }
@@ -329,6 +336,13 @@ Bool.prototype.__sub__ = function(other) {
             this_bool = 0.0
         }
         return new types.Int(other.val.sub(this_bool).neg())
+    } else if (types.isinstance(other, types.Complex)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        return new types.Complex(this_bool - other.real, 0 - other.imag)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'")
     }
