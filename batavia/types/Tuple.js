@@ -256,7 +256,9 @@ Tuple.prototype.__mul__ = function(other) {
     if (types.isinstance(other, types.Int)) {
         var result = new Tuple()
         for (var i = 0; i < other.valueOf(); i++) {
-            result.extend(this)
+            for (var j = 0; j < this.length; j++) {
+                result.push(this[j])
+            }
         }
         return result
     } else if (types.isinstance(other, types.Bool)) {
