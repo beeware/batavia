@@ -280,13 +280,13 @@ class StrTests(TranspileTestCase):
             else:
                 print('Bee is not uppercase')
 
-            # Multiple character, all caps with digits and punctuation
+            # Multiple characters, all caps with digits and punctuation
             if 'B1E2E!'.isupper():
                 print('B1E2E! is uppercase')
             else:
                 print('B1E2E! is not uppercase')
 
-            # Multiple character, mixed case with digits and punctuation
+            # Multiple characters, mixed case with digits and punctuation
             if 'B1e2E!'.isupper():
                 print('B1e2E! is uppercase')
             else:
