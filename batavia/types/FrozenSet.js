@@ -141,6 +141,10 @@ FrozenSet.prototype.__neg__ = function() {
     throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'frozenset'")
 }
 
+FrozenSet.prototype.__invert__ = function() {
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'frozenset'")
+}
+
 /**************************************************
  * Binary operators
  **************************************************/
