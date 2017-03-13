@@ -14,12 +14,6 @@ class FrozensetTests(TranspileTestCase):
 class UnaryFrozensetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'frozenset'
 
-    not_implemented = [
-        'test_unary_positive',
-        'test_unary_negative',
-        'test_unary_invert',
-    ]
-
 
 class BinaryFrozensetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'frozenset'
