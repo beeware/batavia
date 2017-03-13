@@ -267,6 +267,21 @@ Bool.prototype.__mul__ = function(other) {
     } }
 
 Bool.prototype.__mod__ = function(other) {
+    var types = require('../types')
+    var result
+    if (types.isinstance(other, types.Bool)) {
+        if (this.valueOf()) {
+            result = 0
+        } else {
+            result = new types.Bool(0)
+        }
+        if (other.valueOf()) {
+            return result
+        } else {
+            throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
+        }
+    }
+
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
 }
 
