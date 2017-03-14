@@ -609,6 +609,22 @@ class StrTests(TranspileTestCase):
 
             print('done.')
             """)
+        
+    def test_capitalize_no_args(self):
+        self.assertCodeExecution("""
+        x = 'abcde'
+        print(x.capicapitalize())
+        """)
+
+    def test_capitalize_multiple_args(self):
+        self.assertCodeExecution("""
+        try:
+            x.capitalize(1)
+        except TypeError as err:
+            print(err)
+        else:
+            print('No exception for str.capitalize() with multiple arguments')
+        """)
 
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')
