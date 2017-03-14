@@ -613,7 +613,7 @@ class StrTests(TranspileTestCase):
     def test_capitalize_no_args(self):
         self.assertCodeExecution("""
         x = 'abcde'
-        print(x.capicapitalize())
+        print(x.capitalize())
         """)
 
     def test_capitalize_multiple_args(self):
