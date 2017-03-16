@@ -656,7 +656,7 @@ Str.prototype.__hash__ = function() {
 
 Str.prototype.capitalize = function() {
     if (arguments.length === 0) {
-        return this.charAt(0).toUpperCase() + this.slice(1)
+        return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
     } else {
         throw new exceptions.TypeError.$pyclass('capitalize() takes no arguments (' + arguments.length + ' given)')
     }
