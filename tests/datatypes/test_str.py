@@ -615,7 +615,8 @@ class StrTests(TranspileTestCase):
         simple_strings = ['aaa', 'AAA', 'AaAaA', 'Aa. Aa. aA.', '1a', '1A']
         unicode_strings = [u'aaa', u'AAA', u'AaAaA', u'Aa. Aa. aA.', u'1a', u'1A']
         raw_strings = [r'aaa', r'AAA', r'AaAaA', r'Aa. AA. aA.', r'1a', r'1A']
-        strings = unicode_strings + simple_strings + raw_strings    
+        exotic_strings = ['ыы', 'ää', 'ßß', 'ああ', 'ññ']
+        strings = unicode_strings + simple_strings + raw_strings + exotic_strings  
         for i in strings:
             print(i.capitalize())
         """)
@@ -628,16 +629,6 @@ class StrTests(TranspileTestCase):
             print(err)
         else:
             print('No exception for str.capitalize() with multiple arguments')
-        """)
-
-    @unittest.expectedFailure
-    def test_capitalize_exotic_strings(self):
-        # 'ß'.upper() == 'SS' in python, but
-        # 'ß'.toUpperCase() == 'ß' in js
-        self.assertCodeExecution("""
-        exotic_strings = ['ыы', 'ää', 'ßß', 'ああ', 'ññ']
-        for i in exotic_strings:
-            print(i.capitalize())
         """)
 
 class FormatTests(TranspileTestCase):
