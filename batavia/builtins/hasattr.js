@@ -11,10 +11,10 @@ function hasattr(args, kwargs) {
 
             var val
             try {
-                if (args[0].__getattr__ === undefined) {
+                if (args[0].__getattribute__ === undefined) {
                     val = native.getattr(args[0], args[1])
                 } else {
-                    val = args[0].__getattr__(args[1])
+                    val = args[0].__getattribute__(args[1])
                 }
             } catch (err) {
                 if (err instanceof exceptions.AttributeError.$pyclass) {

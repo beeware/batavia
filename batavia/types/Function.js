@@ -77,7 +77,7 @@ Function.prototype = Object.create(PyObject.prototype)
 Function.prototype.__class__ = new Type('function')
 Function.prototype.__class__.$pyclass = Function
 
-Function.prototype.__get__ = function(instance, klass) {
+Function.prototype.__get__ = function(instance) {
     var types = require('../types')
 
     // Module functions don't need to be bound to the instance as methods.

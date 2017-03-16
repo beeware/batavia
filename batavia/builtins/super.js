@@ -23,7 +23,7 @@ function make_super(frame, args) {
 
     var obj = {
         // __init__: base.$pyclass.__init__.bind(self);
-        __getattr__: function(name) {
+        __getattribute__: function(name) {
             var type_name = require('../core/types/Type').type_name
 
             var attr = base.$pyclass[name]
@@ -37,7 +37,7 @@ function make_super(frame, args) {
             // Otherwise, the returned object *is* the value.
             var value
             if (attr.__get__ !== undefined) {
-                value = attr.__get__(self, self.__class__)
+                value = attr.__get__(self)
             } else {
                 value = attr
             }

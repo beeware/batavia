@@ -22,8 +22,8 @@ callables.call_function = function(func, args, kwargs) {
 
 callables.call_method = function(obj, method_name, args, kwargs) {
     var method
-    if (obj.__getattr__) {
-        method = obj.__getattr__(method_name)
+    if (obj.__getattribute__) {
+        method = obj.__getattribute__(method_name)
     } else {
         method = native.getattr(obj, method_name)
     }

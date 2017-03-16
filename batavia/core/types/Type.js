@@ -67,7 +67,7 @@ Type.prototype.__call__ = function(args, kwargs) {
     return instance
 }
 
-Type.prototype.__getattr__ = function(name) {
+/*Type.prototype.__getattr__ = function(name) {
     var exceptions = require('../exceptions')
     var native = require('../native')
 
@@ -88,6 +88,30 @@ Type.prototype.__getattr__ = function(name) {
     var value
     if (attr.__get__ !== undefined) {
         value = attr.__get__(this, this.__class__)
+    } else {
+        value = attr
+    }
+
+    return value
+}*/
+
+Type.prototype.__getattribute__ = function(obj, name) {
+    var exceptions = require('../exceptions')
+    var native = require('../native')
+
+    var attr = native.getattr_raw(obj, name)
+    if (attr === undefined) {
+        if (obj.__getattr__ === undefined) {
+            throw new exceptions.AttributeError.$pyclass(
+                "'" + obj.__class__.__name__ + "' object has no attribute '" + name + "'"
+            )
+        } else {
+            attr = obj.__getattr__.__call__(obj, attr)
+        }
+    }
+    var value
+    if (attr.__get__) {
+        value = attr.__get__(obj, obj.__class__)
     } else {
         value = attr
     }
