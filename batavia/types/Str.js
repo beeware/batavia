@@ -637,6 +637,18 @@ Str.prototype.islower = function() {
     }
 }
 
+Str.prototype.swapcase = function() {
+    var swapped = ""
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] === this[i].toLowerCase()) {
+            swapped += this[i].toUpperCase()
+        } else {
+            swapped += this[i].toLowerCase()
+        }
+    }
+    return swapped
+}
+
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
 // and http://www.cse.yorku.ca/~oz/hash.html.
 //
