@@ -13,7 +13,11 @@ function getattr(args, kwargs) {
                 if (args[0].__getattribute__ === undefined) {
                     return native.getattr(args[0], args[1])
                 } else {
-                    return args[0].__getattribute__(args[1])
+                    if (args[0].__class__ !== undefined) {
+                        return args[0].__class__.__getattribute__(args[0], args[1])
+                    } else {
+                        return args[0].__getattribute__(args[1])
+                    }
                 }
             } catch (e) {
                 if (e instanceof exceptions.AttributeError.$pyclass && args.length === 3) {

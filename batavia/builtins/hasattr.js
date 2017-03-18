@@ -14,7 +14,11 @@ function hasattr(args, kwargs) {
                 if (args[0].__getattribute__ === undefined) {
                     val = native.getattr(args[0], args[1])
                 } else {
-                    val = args[0].__getattribute__(args[1])
+                    if (args[0].__class__ !== undefined) {
+                        val = args[0].__class__.__getattribute__(args[0], args[1])
+                    } else {
+                        val = args[0].__getattribute__(args[1])
+                    }
                 }
             } catch (err) {
                 if (err instanceof exceptions.AttributeError.$pyclass) {

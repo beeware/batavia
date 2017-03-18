@@ -1325,11 +1325,15 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
     var obj = this.pop()
     var val
-    if (obj.__class__.__getattribute__ === undefined) {
+    if (obj.__getattribute__ === undefined) {
         // No __getattribute__(), so it's a native object.
         val = native.getattr(obj, attr)
     } else {
-        val = obj.__class__.__getattribute__(obj, attr)
+        if (obj.__class__ !== undefined) {
+            val = obj.__class__.__getattribute__(obj, attr)
+        } else {
+            val = obj.__getattribute__(attr)
+        }
     }
 
     this.push(val)

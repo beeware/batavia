@@ -22,11 +22,17 @@ callables.call_function = function(func, args, kwargs) {
 
 callables.call_method = function(obj, method_name, args, kwargs) {
     var method
-    if (obj.__getattribute__) {
-        method = obj.__getattribute__(method_name)
-    } else {
+    if (obj.__getattribute__ === undefined) {
+        // No __getattribute__(), so it's a native object.
         method = native.getattr(obj, method_name)
+    } else {
+        if (obj.__class__ !== undefined) {
+            method = obj.__class__.__getattribute__(obj, method_name)
+        } else {
+            method = obj.__getattribute__(method_name)
+        }
     }
+
 
     var retval = callables.call_function(method, args, kwargs)
     return retval

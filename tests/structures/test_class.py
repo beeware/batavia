@@ -1,6 +1,6 @@
 from ..utils import TranspileTestCase
 
-import unittest
+from unittest import expectedFailure
 
 
 class ClassTests(TranspileTestCase):
@@ -54,7 +54,7 @@ class ClassTests(TranspileTestCase):
 
                 def __getattr__(self, attr):
                     self.x = 42
-                    return self.x+1
+                    return attr
 
             obj = MyClass()
             print(obj.x)
@@ -62,56 +62,45 @@ class ClassTests(TranspileTestCase):
             print(obj.x)
         """)
 
-    @unittest.expectedFailure
     def test_getattribute(self):
         self.assertCodeExecution("""
-            class MyDesc:
-                def __init__(self, val, name):
-                    self.name = name
-                    self.val = val
-
-                def __get__(self):
-                    print("Getting "+self.name)
-                    return self.val
-
-                def __set__(self, newval):
-                    print("Setting "+self.name+" to "+newval)
-                    self.val = newval
-
-                def __delete__(self):
-                    print("Deleting "+self.name)
-                    del self.val
-
             class MyClass:
                 def __init__(self):
-                    self.x = MyDesc(7, "descriptor 'x'")
-                    self.y = 'regular attribute'
+                    self.x = 42
+                    self.y = 41
 
                 def __getattr__(self, attr):
                     print("That attribute doesn't exist")
                     return attr
 
                 def __getattribute__(self, attr):
-                    val = object.__getattribute__(self, attr)
-                    if attr == 'x':
-                        return val.__get__()
+                    if attr in 'xy':
+                        print("x or y")
+                        val = object.__getattribute__(self, attr)
+                    else:
+                        print("something else")
+                        val = object.__getattribute__(self, "fail")
                     return val
 
             obj = MyClass()
+            obj2 = MyClassRec(42)
+
             print(obj.x)
             print(obj.y)
-            print(obj.fail)
+            print(obj.z)
             print(obj.x)
         """)
 
     def test_attributeerror(self):
         self.assertCodeExecution("""
             class MyClass:
+                foo = 'bar'
                 def __init__(self):
                     self.a = 42
 
             obj = MyClass()
 
+            print(MyClass.foo)
             print(obj.a)
             print(obj.fail)
         """)
