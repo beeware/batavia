@@ -210,9 +210,9 @@ Complex.prototype.__pow__ = function(exponent) {
         } else {
             return new Complex(1, 0)
         }
-    //} else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
-    // {do some stuff}
-    } else
+    // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
+    // { do some stuff }
+    } else {
         throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
     )
