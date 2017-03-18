@@ -609,6 +609,27 @@ class StrTests(TranspileTestCase):
 
             print('done.')
             """)
+        
+    def test_capitalize_no_args(self):
+        self.assertCodeExecution("""
+        simple_strings = ['aaa', 'AAA', 'AaAaA', 'Aa. Aa. aA.', '1a', '1A']
+        unicode_strings = [u'aaa', u'AAA', u'AaAaA', u'Aa. Aa. aA.', u'1a', u'1A']
+        raw_strings = [r'aaa', r'AAA', r'AaAaA', r'Aa. AA. aA.', r'1a', r'1A']
+        exotic_strings = ['ыы', 'ää', 'ßß', 'ああ', 'ññ']
+        strings = unicode_strings + simple_strings + raw_strings + exotic_strings  
+        for i in strings:
+            print(i.capitalize())
+        """)
+
+    def test_capitalize_multiple_args(self):
+        self.assertCodeExecution("""
+        try:
+            'x'.capitalize(1)
+        except TypeError as err:
+            print(err)
+        else:
+            print('No exception for str.capitalize() with multiple arguments')
+        """)
 
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')

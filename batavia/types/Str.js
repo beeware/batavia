@@ -654,6 +654,14 @@ Str.prototype.__hash__ = function() {
     return new types.Int(h)
 }
 
+Str.prototype.capitalize = function() {
+    if (arguments.length === 0) {
+        return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
+    } else {
+        throw new exceptions.TypeError.$pyclass('capitalize() takes no arguments (' + arguments.length + ' given)')
+    }
+}
+
 /**************************************************
  * Module exports
  **************************************************/
