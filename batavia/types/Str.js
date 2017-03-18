@@ -638,7 +638,7 @@ Str.prototype.islower = function() {
 }
 
 Str.prototype.swapcase = function() {
-    var swapped = ""
+    var swapped = ''
     for (var i = 0; i < this.length; i++) {
         if (this[i] === this[i].toLowerCase()) {
             swapped += this[i].toUpperCase()
