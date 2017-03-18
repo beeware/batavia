@@ -215,7 +215,8 @@ Complex.prototype.__pow__ = function(exponent) {
     } else {
         throw new exceptions.TypeError.$pyclass(
             "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
-    )
+        )
+    }
 }
 
 function __div__(x, y, inplace) {
