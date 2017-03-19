@@ -164,6 +164,14 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
+    def test_swapcase(self):
+        self.assertCodeExecution("""
+            test = ["test", "Test", "This Is a, Test", "", "Êć What is This?", ",./12"]
+            for x in test:
+                print(x.swapcase())
+            print("test passed")
+        """)
+
     def test_startswith_no_args(self):
         self.assertCodeExecution("""
             try:
