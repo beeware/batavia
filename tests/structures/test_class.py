@@ -46,25 +46,52 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
+    @expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
-            class MyClass:
+            class MyClass1:
+                def __init__(self):
+                    self.foo = 'bar'
+
+                def __getattr__(self, name):
+                    self.foo = 'foo_bar'
+                    return name
+
+            class MyClass2:
                 def __init__(self):
                     self.x = 1
 
-                def __getattr__(self, attr):
+            class MyClass3:
+                def __init__(self):
                     self.x = 42
-                    return attr
 
-            obj = MyClass()
-            print(obj.x)
-            print(obj.fail)
-            print(obj.x)
+            def g(instance, name):
+                instance.x += 41
+                return name
+
+            MyClass2.__getattr__ = g
+            obj1 = MyClass1()
+            obj2 = MyClass2()
+            obj3 = MyClass3()
+            obj3.__getattr__ = g
+
+            print(obj1.foo)
+            print(obj1.fail)
+            print(obj1.foo)
+
+            print(obj2.x)
+            print(obj2.fail)
+            print(obj2.x)
+
+            print(obj3.x)
+            print(obj3.fail)
+            print(obj3.x)
         """)
 
+    @expectedFailure
     def test_getattribute(self):
         self.assertCodeExecution("""
-            class MyClass:
+            class MyClass1:
                 def __init__(self):
                     self.x = 42
                     self.y = 41
@@ -82,13 +109,29 @@ class ClassTests(TranspileTestCase):
                         val = object.__getattribute__(self, "fail")
                     return val
 
-            obj = MyClass()
-            obj2 = MyClassRec(42)
+            class MyClass2:
+                def __init__(self):
+                    self.foo = 'bar'
 
-            print(obj.x)
-            print(obj.y)
-            print(obj.z)
-            print(obj.x)
+            def g(instance, name):
+                if name == 'foo':
+                    return object.__getattribute__(instance, 'foo')
+                else:
+                    return name
+
+            MyClass2.__getattribute__ = g
+
+            obj1 = MyClass1()
+            obj2 = MyClass2()
+
+            print(obj1.x)
+            print(obj1.y)
+            print(obj1.z)
+            print(obj1.x)
+
+            print(obj2.foo)
+            print(obj2.fail)
+            print(obj2.foo)
         """)
 
     def test_attributeerror(self):

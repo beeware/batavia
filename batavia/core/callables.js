@@ -33,7 +33,6 @@ callables.call_method = function(obj, method_name, args, kwargs) {
         }
     }
 
-
     var retval = callables.call_function(method, args, kwargs)
     return retval
 }
