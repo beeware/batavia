@@ -2,7 +2,6 @@ from ..utils import TranspileTestCase
 
 from unittest import expectedFailure
 
-
 class ClassTests(TranspileTestCase):
     def test_minimal(self):
         self.assertCodeExecution("""
@@ -88,7 +87,6 @@ class ClassTests(TranspileTestCase):
             print(obj3.x)
         """)
 
-    @expectedFailure
     def test_getattribute(self):
         self.assertCodeExecution("""
             class MyClass1:
@@ -106,7 +104,7 @@ class ClassTests(TranspileTestCase):
                         val = object.__getattribute__(self, attr)
                     else:
                         print("something else")
-                        val = object.__getattribute__(self, "fail")
+                        val = object.__getattribute__(self, 'fail')
                     return val
 
             class MyClass2:

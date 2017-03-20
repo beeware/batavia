@@ -1330,6 +1330,9 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         val = native.getattr(obj, attr)
     } else {
         if (obj.__class__ !== undefined) {
+            // if obj has a __getattribute__ method, call it,
+            // otherwise, call the object.__getattribute__ function
+            // defined in Types.prototype.__getattribute__
             if (obj.__class__.__getattribute__(obj, '__getattribute__') instanceof types.Method) {
                 val = obj.__class__.__getattribute__(obj, '__getattribute__').__call__(attr)
             } else {
