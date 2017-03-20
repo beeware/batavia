@@ -1330,7 +1330,11 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         val = native.getattr(obj, attr)
     } else {
         if (obj.__class__ !== undefined) {
-            val = obj.__class__.__getattribute__(obj, attr)
+            if (obj.__class__.__getattribute__(obj, '__getattribute__') instanceof types.Method) {
+                val = obj.__class__.__getattribute__(obj, '__getattribute__').__call__(attr)
+            } else {
+                val = obj.__class__.__getattribute__(obj, attr)
+            }
         } else {
             val = obj.__getattribute__(attr)
         }

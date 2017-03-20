@@ -14,7 +14,11 @@ function getattr(args, kwargs) {
                     return native.getattr(args[0], args[1])
                 } else {
                     if (args[0].__class__ !== undefined) {
-                        return args[0].__class__.__getattribute__(args[0], args[1])
+                        if (args[0].__class__.__getattribute__(args[0], '__getattribute__') instanceof types.Method) {
+                            return args[0].__class__.__getattribute__(args[0], '__getattribute__').__call__(args[1])
+                        } else {
+                            return args[0].__class__.__getattribute__(args[0], args[1])
+                        }
                     } else {
                         return args[0].__getattribute__(args[1])
                     }

@@ -113,6 +113,10 @@ class ClassTests(TranspileTestCase):
                 def __init__(self):
                     self.foo = 'bar'
 
+            class MyClass3:
+                def __init__(self):
+                    self.foo = 7000
+
             def g(instance, name):
                 if name == 'foo':
                     return object.__getattribute__(instance, 'foo')
@@ -123,6 +127,8 @@ class ClassTests(TranspileTestCase):
 
             obj1 = MyClass1()
             obj2 = MyClass2()
+            obj3 = MyClass3()
+            obj3.__getattribute__ = g
 
             print(obj1.x)
             print(obj1.y)
@@ -132,6 +138,13 @@ class ClassTests(TranspileTestCase):
             print(obj2.foo)
             print(obj2.fail)
             print(obj2.foo)
+
+            print(obj3.foo)
+            try:
+                print(obj3.fail)
+            except AttributeError:
+                print("AttributeError")
+            print(obj3.foo)
         """)
 
     def test_attributeerror(self):
