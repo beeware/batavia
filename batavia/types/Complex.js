@@ -198,11 +198,25 @@ Complex.prototype.__abs__ = function() {
  * Binary operators
  **************************************************/
 
-Complex.prototype.__pow__ = function(other) {
-    // http://mathworld.wolfram.com/ComplexExponentiation.html
-    throw new exceptions.NotImplementedError.$pyclass(
-        'Complex.__pow__ has not been implemented yet; if you need it, you need to reevaluate your life-choices.'
-    )
+Complex.prototype.__pow__ = function(exponent) {
+    var types = require('../types')
+
+    // types.Bool?? Yes, really; under the hood cpython checks to see if the
+    // exponent is a numeric type, and bool subclasses int.
+    // See cpython/Objects/abstract.c.
+    if (types.isinstance(exponent, types.Bool)) {
+        if (exponent.valueOf()) {
+            return this
+        } else {
+            return new Complex(1, 0)
+        }
+    // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
+    // { do some stuff }
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
+        )
+    }
 }
 
 function __div__(x, y, inplace) {
