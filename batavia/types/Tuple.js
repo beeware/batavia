@@ -326,21 +326,54 @@ Tuple.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
-        start = index.start
-
+        if (index.start === null) {
+            start = undefined
+        } else {
+            start = index.start
+        }
         if (index.stop === null) {
-            stop = this.length
+            stop = undefined
         } else {
             stop = index.stop
         }
-
         step = index.step
 
-        if (step !== 1) {
-            throw new exceptions.NotImplementedError.$pyclass('Tuple.__getitem__ with a stepped slice has not been implemented')
+        if (step === 0) {
+            throw new exceptions.ValueError.$pyclass('slice step cannot be zero')
         }
 
-        return new Tuple(Array_.prototype.slice.call(this, start, stop))
+        // clone tuple
+        var result = Array_.prototype.slice.call(this)
+
+        // handle step
+        if (step === undefined || step === 1) {
+            return new Tuple(result.slice(start, stop))
+        } else if (step > 0) {
+            result = result.slice(start, stop)
+        } else if (step < 0) {
+            // adjust start/stop to swap inclusion/exlusion in slice
+            if (start !== undefined && start !== -1) {
+                start = start + 1
+            } else if (start === -1) {
+                start = result.length
+            }
+            if (stop !== undefined && stop !== -1) {
+                stop = stop + 1
+            } else if (stop === -1) {
+                stop = result.length
+            }
+
+            result = result.slice(stop, start).reverse()
+        }
+
+        var steppedResult = []
+        for (var i = 0; i < result.length; i = i + Math.abs(step)) {
+            steppedResult.push(result[i])
+        }
+
+        result = steppedResult
+
+        return new Tuple(result)
     } else {
         var msg = 'tuple indices must be integers or slices, not '
         if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
