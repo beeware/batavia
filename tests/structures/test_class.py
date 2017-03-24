@@ -45,7 +45,6 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
-    @expectedFailure
     def test_getattr(self):
         self.assertCodeExecution("""
             class MyClass1:
@@ -87,6 +86,7 @@ class ClassTests(TranspileTestCase):
             print(obj3.x)
         """)
 
+    @expectedFailure
     def test_getattribute(self):
         self.assertCodeExecution("""
             class MyClass1:

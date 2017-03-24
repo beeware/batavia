@@ -1115,7 +1115,9 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
         val = frame.f_builtins[name]
         // Functions loaded from builtins need to be bound to this VM.
         if (val instanceof Function) {
+            var doc = val.__doc__
             val = val.bind(this)
+            val.__doc__ = doc
         }
     } else {
         throw new builtins.NameError.$pyclass("name '" + name + "' is not defined")
@@ -1161,7 +1163,9 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
         val = this.frame.f_builtins[name]
         // Functions loaded from builtins need to be bound to this VM.
         if (val instanceof Function) {
+            var doc = val.__doc__
             val = val.bind(this)
+            val.__doc__ = doc
         }
     } else {
         throw new builtins.NameError.$pyclass("name '" + name + "' is not defined")
@@ -1323,6 +1327,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 }
 
 VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
+    var PyObject = require('./core/types/Object')
     var obj = this.pop()
     var val
     if (obj.__getattribute__ === undefined) {
@@ -1330,13 +1335,16 @@ VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
         val = native.getattr(obj, attr)
     } else {
         if (obj.__class__ !== undefined) {
-            // if obj has a __getattribute__ method, call it,
-            // otherwise, call the object.__getattribute__ function
-            // defined in Types.prototype.__getattribute__
-            if (obj.__class__.__getattribute__(obj, '__getattribute__') instanceof types.Method) {
-                val = obj.__class__.__getattribute__(obj, '__getattribute__').__call__(attr)
+            var getattro = native.getattr_raw(obj.__class__.$pyclass.prototype,
+                '__getattribute__')
+
+            // if class of object has getattribute method,
+            // call that, otherwise, call
+            // object.__getattribute__
+            if (getattro !== undefined && getattro.__get__ !== undefined) {
+                val = getattro.__get__(obj).__call__(attr)
             } else {
-                val = obj.__class__.__getattribute__(obj, attr)
+                val = PyObject.__class__.__getattribute__(obj, attr)
             }
         } else {
             val = obj.__getattribute__(attr)

@@ -72,13 +72,15 @@ Type.prototype.__getattribute__ = function(obj, name) {
     var native = require('../native')
 
     var attr = native.getattr_raw(obj, name)
+    var getattr = native.getattr_raw(obj.__class__.$pyclass.prototype, '__getattr__')
+
     if (attr === undefined && obj.$pyclass !== undefined) {
         // if it's a 'type' object and doesn't have attr,
         // look to the prototype of the instance, but exclude functions
         attr = native.getattr_raw(obj.$pyclass.prototype, name, true)
     }
     if (attr === undefined) {
-        if (obj.__getattr__ === undefined) {
+        if (getattr === undefined) {
             if (obj.$pyclass === undefined) {
                 throw new exceptions.AttributeError.$pyclass(
                     "'" + type_name(obj) + "' object has no attribute '" + name + "'"
@@ -90,7 +92,11 @@ Type.prototype.__getattribute__ = function(obj, name) {
             }
         } else {
             // call __getattr__ as a method
-            attr = obj.__class__.__getattribute__(obj, '__getattr__').__call__(name)
+            if (getattr.__get__) {
+                attr = getattr.__get__(obj).__call__(name)
+            } else {
+                attr = getattr(obj, attr)
+            }
         }
     }
 
