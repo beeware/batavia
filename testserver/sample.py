@@ -18,26 +18,28 @@ def do_stuff(count, size=3):
         print("HELLO", i)
         other.wiggle(i)
 
-
 def try_builtins():
-    print('sum(0,1,2,3,4)', sum([0, 1, 2, 3, 4]))
-    print('abs(-1)', abs(-1))
-    print(bool.__doc__)
-    print('min(1,2,3,4)', min([1, 2, 3, 4]))
-    print('max(1,2,3,4)', max([1, 2, 3, 4]))
-    print('all([True, True, False])', all([True, True, False]))
-    print('any([True, True, False])', any([True, True, False]))
-    print('bool("String")', bool("String"))
-    print('bool(false)', bool(False))
-    print('hex(14)', hex(14))
-    print('oct(14)', oct(14))
-    print('bin(14)', bin(14))
-    print('divmod(5,2)', divmod(5, 2))
-    print('pow(2, 3)', pow(2, 3))
-    print('pow(2, 3, 3)', pow(2, 3, 3))
+    try:
+        print('sum(0,1,2,3,4)', sum([0, 1, 2, 3, 4]))
+        print('abs(-1)', abs(-1))
+        print(bool.__doc__)
+        print('min(1,2,3,4)', min([1, 2, 3, 4]))
+        print('max(1,2,3,4)', max([1, 2, 3, 4]))
+        print('all([True, True, False])', all([True, True, False]))
+        print('any([True, True, False])', any([True, True, False]))
+        print('bool("String")', bool("String"))
+        print('bool(false)', bool(False))
+        print('hex(14)', hex(14))
+        print('oct(14)', oct(14))
+        print('bin(14)', bin(14))
+        print('divmod(5,2)', divmod(5, 2))
+        print('pow(2, 3)', pow(2, 3))
+        print('pow(2, 3, 3)', pow(2, 3, 3))
 
-    print('abs(None)', abs(None))  # known failure
-
+        print('abs(None)', abs(None))  # known failure 
+    
+    except: TypeError:
+        print "Type Error: Invalid Argument"
 
 def main(argv):
     print('Use default')
