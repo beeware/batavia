@@ -14,15 +14,7 @@ function hasattr(args, kwargs) {
                 if (args[0].__getattribute__ === undefined) {
                     val = native.getattr(args[0], args[1])
                 } else {
-                    if (args[0].__class__ !== undefined) {
-                        if (args[0].__class__.__getattribute__(args[0], '__getattribute__') instanceof types.Method) {
-                            val = args[0].__class__.__getattribute__(args[0], '__getattribute__').__call__(args[1])
-                        } else {
-                            val = args[0].__class__.__getattribute__(args[0], args[1])
-                        }
-                    } else {
-                        val = args[0].__getattribute__(args[1])
-                    }
+                    val = native.getattr_py(args[0], args[1])
                 }
             } catch (err) {
                 if (err instanceof exceptions.AttributeError.$pyclass) {

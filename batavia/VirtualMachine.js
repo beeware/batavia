@@ -1327,28 +1327,13 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 }
 
 VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
-    var PyObject = require('./core/types/Object')
     var obj = this.pop()
     var val
     if (obj.__getattribute__ === undefined) {
         // No __getattribute__(), so it's a native object.
         val = native.getattr(obj, attr)
     } else {
-        if (obj.__class__ !== undefined) {
-            var getattro = native.getattr_raw(obj.__class__.$pyclass.prototype,
-                '__getattribute__')
-
-            // if class of object has getattribute method,
-            // call that, otherwise, call
-            // object.__getattribute__
-            if (getattro !== undefined && getattro.__get__ !== undefined) {
-                val = getattro.__get__(obj).__call__(attr)
-            } else {
-                val = PyObject.__class__.__getattribute__(obj, attr)
-            }
-        } else {
-            val = obj.__getattribute__(attr)
-        }
+        val = native.getattr_py(obj, attr)
     }
 
     this.push(val)

@@ -55,6 +55,35 @@ native.getattr = function(obj, attr) {
     return val
 }
 
+native.getattr_py = function(obj, attr) {
+    // not actually a native function, but usually called in the
+    // same place as native.getattr, so this is convenient
+    var PyObject = require('./types/Object')
+    var val
+    var getattro
+
+    if (obj.__class__ !== undefined) {
+        if (obj.__class__.$pyclass !== undefined) {
+            getattro = native.getattr_raw(obj.__class__.$pyclass.prototype,
+                '__getattribute__')
+        } else {
+            getattro = native.getattr_raw(obj.__class__,
+                '__getattribute__')
+        }
+        // if class of object has getattribute method,
+        // call that, otherwise, call
+        // object.__getattribute__
+        if (getattro !== undefined && getattro.__get__ !== undefined) {
+            val = getattro.__get__(obj).__call__(attr)
+        } else {
+            val = PyObject.__class__.__getattribute__(obj, attr)
+        }
+    } else {
+        val = obj.__getattribute__(attr)
+    }
+    return val
+}
+
 native.setattr = function(obj, attr, value) {
     obj[attr] = value
 }

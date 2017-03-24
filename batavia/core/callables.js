@@ -26,16 +26,7 @@ callables.call_method = function(obj, method_name, args, kwargs) {
         // No __getattribute__(), so it's a native object.
         method = native.getattr(obj, method_name)
     } else {
-        if (obj.__class__ !== undefined) {
-            var types = require('../types')
-            if (obj.__class__.__getattribute__(obj, '__getattribute__') instanceof types.Method) {
-                method = obj.__class__.__getattribute__(obj, '__getattribute__').__call__(method_name)
-            } else {
-                method = obj.__class__.__getattribute__(obj, method_name)
-            }
-        } else {
-            method = obj.__getattribute__(method_name)
-        }
+        method = native.getattr_py(obj, method_name)
     }
 
     var retval = callables.call_function(method, args, kwargs)

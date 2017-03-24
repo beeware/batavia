@@ -72,7 +72,13 @@ Type.prototype.__getattribute__ = function(obj, name) {
     var native = require('../native')
 
     var attr = native.getattr_raw(obj, name)
-    var getattr = native.getattr_raw(obj.__class__.$pyclass.prototype, '__getattr__')
+    var getattr
+    if (obj.__class__.$pyclass !== undefined) {
+        getattr = native.getattr_raw(obj.__class__.$pyclass.prototype,
+            '__getattr__')
+    } else {
+        getattr = native.getattr_raw(obj.__class__, '__getattr__')
+    }
 
     if (attr === undefined && obj.$pyclass !== undefined) {
         // if it's a 'type' object and doesn't have attr,
