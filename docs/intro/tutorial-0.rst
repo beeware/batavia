@@ -6,7 +6,7 @@ the Batavia code, and the ouroboros dependency within a virtual environment.
 
 You'll need to have Python 3.4 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
-<http://pybee.org/contributing/first-time/setup/>`_.
+<http://pybee.org/contributing/how/first-time/setup/>`_.
 
 1. Setup a `pybee` folder to store everything::
 
