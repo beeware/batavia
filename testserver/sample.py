@@ -18,7 +18,6 @@ def do_stuff(count, size=3):
         print("HELLO", i)
         other.wiggle(i)
 
-
 def try_builtins():
     print('sum(0,1,2,3,4)', sum([0, 1, 2, 3, 4]))
     print('abs(-1)', abs(-1))
@@ -35,9 +34,11 @@ def try_builtins():
     print('divmod(5,2)', divmod(5, 2))
     print('pow(2, 3)', pow(2, 3))
     print('pow(2, 3, 3)', pow(2, 3, 3))
-
-    print('abs(None)', abs(None))  # known failure
-
+    
+    try:
+        print('abs(None)', abs(None))  # known failure
+    except TypeError:
+        print("Error: Bad operand")
 
 def main(argv):
     print('Use default')
