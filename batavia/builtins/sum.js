@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
+var type_name = require('../core').type_name
 
 function sum(args, kwargs) {
     if (arguments.length !== 2) {
@@ -13,6 +14,9 @@ function sum(args, kwargs) {
     }
     if (args.length > 2) {
         throw new exceptions.TypeError.$pyclass('sum() expected at most 2 argument, got ' + args.length)
+    }
+    if (!args[0].__iter__) {
+        throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
     }
 
     try {
