@@ -42,9 +42,7 @@ class BuiltinSumFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_bytes',
         'test_dict',
         'test_frozenset',
-        'test_list',
         'test_range',
         'test_set',
         'test_str',
-        'test_tuple',
     ]
