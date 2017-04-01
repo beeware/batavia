@@ -64,8 +64,8 @@ function Complex(re, im) {
             "complex() argument must be a string, a bytes-like object or a number, not '" + type_name(im) + "'"
         )
     } else if (typeof re === 'number' && typeof im === 'number') {
-        this.real = re
-        this.imag = im     
+        this.real=re
+        this.imag=im
     } else if (types.isinstance(re, [types.Float, types.Int, types.Bool]) &&
         types.isinstance(im, [types.Float, types.Int, types.Bool])) {
         // console.log(2000, re, im);
@@ -209,22 +209,30 @@ function hyp(x, y) {
     }
 }
 function quot(a, b) {
-    const abs_breal = b.real < 0 ? -b.real : b.real
-    const abs_bimag = b.imag < 0 ? -b.imag : b.imag
+    if (b.real < 0) {
+        const abs_breal = -b.real
+    } else {
+        const abs_breal = b.real
+    }
+    if (b.imag < 0) {
+        const abs_bimag = -b.imag
+    } else {
+        const abs_bimag = b.imag
+    }
     if (abs_breal >= abs_bimag) {
-        if(abs_brea === 0) {
-            var r = new Complex(0, 0)
+        if(abs_breal === 0) {
+             r = new Complex(0, 0)
         } else {
             const ratio = b.imag / b.real
             const denom = b.real + b.imag * ratio
-            var r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
+            r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
     }
 } else if (abs_bimag >= abs_breal) {
     const ratio = b.real / b.imag
     const denom = b.real * ratio + b.imag
-    var r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
+    r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
 } else {
-    var r = new Complex(NaN, NaN)
+    r = new Complex(NaN, NaN)
     }
     return r
 }
@@ -242,16 +250,16 @@ function powu(x, y) {
     return r
 }
 function powcFloat(x, y) {
-        if (y.real == 0 && y.imag == 0){
+        if (y.real === 0 && y.imag === 0){
               return new Complex(1, 0)
-          } else if (x.real == 0 && x.imag == 0) {
-              if(y.imag != 0 || y.real < 0){
-                  throw new exceptions.ZeroDivisionError.$pyclass(
-                      '0.0 to a negative or complex power'
-                  )
-              }
-              return new Complex(0, 0)
-          }
+            } else if (x.real === 0 && x.imag === 0) {
+                if(y.imag !== 0 || y.real < 0){
+                    throw new exceptions.ZeroDivisionError.$pyclass(
+                        '0.0 to a negative or complex power'
+                        )
+                    }
+                    return new Complex(0, 0)
+                }
           var vabs = hyp(x.real, x.imag)
           var l = Math.pow(vabs, y.real)
           var at = Math.atan2(x.imag, x.real)
@@ -269,11 +277,11 @@ function powcFloat(x, y) {
           return new Complex(r, im)
 }
 function powc(x,y){
-        if(y.real == 0 && y.imag == 0){
+        if(y.real === 0 && y.imag === 0){
               return new Complex(1, 0)
           }
-          else if(x.real == 0 && x.imag == 0)  {
-              if(y.imag != 0 || y.real < 0){
+          else if(x.real === 0 && x.imag === 0)  {
+              if(y.imag !== 0 || y.real < 0){
                   throw new exceptions.ZeroDivisionError.$pyclass(
                       '0.0 to a negative or complex power'
                   )
@@ -284,7 +292,7 @@ function powc(x,y){
           var l = Math.pow(vabs, y.real)
           var at = Math.atan2(x.imag, x.real)
           var phase = at * y.real
-          if (y.imag != 0) {
+          if (y.imag !== 0) {
               l /= Math.exp(at * y.imag)
               phase += y.imag * Math.log(vabs)
           }
@@ -294,7 +302,7 @@ function powc(x,y){
 }
 function powi(x, y) {
     if (y > 100 || y < -100){
-        var cn=new Complex(y, 0)
+        var cn = new Complex(y, 0)
         return powc(x, cn)
     } else if (y > 0) {
         return powu(x, y)
