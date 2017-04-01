@@ -201,7 +201,7 @@ function hyp(x, y) {
         x = y
         y = temp
     }
-    if (x===0) {
+    if (x === 0) {
         return 0
     } else {
         var yx = y / x
@@ -209,32 +209,32 @@ function hyp(x, y) {
     }
 }
 function quot(a, b) {
-    const abs_breal = b.real < 0?-b.real:b.real
-    const abs_bimag = b.imag < 0?-b.imag:b.imag
-    if (abs_breal >= abs_bimag){
-        if(abs_breal===0){
-            var r = new Complex(0,0)
+    const abs_breal = b.real < 0 ? -b.real : b.real
+    const abs_bimag = b.imag < 0 ? -b.imag : b.imag
+    if (abs_breal >= abs_bimag) {
+        if(abs_brea === 0) {
+            var r = new Complex(0, 0)
         } else {
             const ratio = b.imag / b.real
             const denom = b.real + b.imag * ratio
-            var r = new Complex((a.real + a.imag * ratio) / denom,(a.imag - a.real * ratio) / denom)
+            var r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
     }
 } else if (abs_bimag >= abs_breal) {
     const ratio = b.real / b.imag
     const denom = b.real * ratio + b.imag
-    var r = new Complex((a.real * ratio + a.imag) / denom,(a.imag * ratio - a.real) / denom)
+    var r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
 } else {
-    var r = new Complex(NaN,NaN)
+    var r = new Complex(NaN, NaN)
     }
     return r
 }
 function powu(x, y) {
     var mask = 1
-    var r = new Complex(1,0)
+    var r = new Complex(1, 0)
     var p = x
     while(mask > 0 && y >= mask){
         if(y & mask){
-            r=__mul__(r,p)
+            r=__mul__(r, p)
         }
         mask <<= 1
         p = __mul__(p, p)
@@ -243,14 +243,14 @@ function powu(x, y) {
 }
 function powcFloat(x, y) {
         if (y.real == 0 && y.imag == 0){
-              return new Complex(1,0)
+              return new Complex(1, 0)
           } else if (x.real == 0 && x.imag == 0) {
               if(y.imag != 0 || y.real < 0){
                   throw new exceptions.ZeroDivisionError.$pyclass(
                       '0.0 to a negative or complex power'
                   )
               }
-              return new Complex(0,0)
+              return new Complex(0, 0)
           }
           var vabs = hyp(x.real, x.imag)
           var l = Math.pow(vabs, y.real)
@@ -305,7 +305,7 @@ function powi(x, y) {
 function __pow__(x, y, inplace) {
     var types = require('../types')
     if (types.isinstance(y, types.Int)) {
-        return powi(x,y.val)
+        return powi(x, y.val)
       }else if (types.isinstance(y, types.Bool)) {
           if (y.valueOf()) {
               return new Complex(x.real, x.imag)
