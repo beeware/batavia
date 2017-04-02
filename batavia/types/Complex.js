@@ -231,12 +231,12 @@ function quot(a, b) {
             r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
         }
     } else if (abs_bimag >= abs_breal) {
-    const ratio = b.real / b.imag
-    const denom = b.real * ratio + b.imag
-    r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
-} else {
-    r = new Complex(NaN, NaN)
-}
+        const ratio = b.real / b.imag
+        const denom = b.real * ratio + b.imag
+        r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
+    } else {
+        r = new Complex(NaN, NaN)
+    }
     return r
 }
 function powu(x, y) {
@@ -256,13 +256,13 @@ function powcFloat(x, y) {
     if (y.real === 0 && y.imag === 0) {
         return new Complex(1, 0)
     } else if (x.real === 0 && x.imag === 0) {
-             if (y.imag !== 0 || y.real < 0) {
+        if (y.imag !== 0 || y.real < 0) {
                  throw new exceptions.ZeroDivisionError.$pyclass(
                      '0.0 to a negative or complex power'
                      )
-                    }
-                    return new Complex(0, 0)
-                }
+             }
+        return new Complex(0, 0)
+    }
     var vabs = hyp(x.real, x.imag)
     var l = Math.pow(vabs, y.real)
     var at = Math.atan2(x.imag, x.real)
@@ -282,14 +282,14 @@ function powcFloat(x, y) {
 function powc(x, y) {
     if (y.real === 0 && y.imag === 0) {
         return new Complex(1, 0)
-    } else if(x.real === 0 && x.imag === 0)  {
+    } else if (x.real === 0 && x.imag === 0) {
         if (y.imag !== 0 || y.real < 0) {
             throw new exceptions.ZeroDivisionError.$pyclass(
                 '0.0 to a negative or complex power'
                 )
-            }
-            return new Complex(0, 0)
         }
+        return new Complex(0, 0)
+    }
     var vabs = hyp(x.real, x.imag)
     var l = Math.pow(vabs, y.real)
     var at = Math.atan2(x.imag, x.real)
@@ -317,26 +317,26 @@ function __pow__(x, y, inplace) {
     if (types.isinstance(y, types.Int)) {
         return powi(x, y.val)
     } else if (types.isinstance(y, types.Bool)) {
-          if (y.valueOf()) {
+        if (y.valueOf()) {
               return new Complex(x.real, x.imag)
           } else {
               return new Complex(1, 0)
           }
-      } else if (types.isinstance(y, types.Complex)) {
+    } else if (types.isinstance(y, types.Complex)) {
           return powc(x, y)
       } else if (types.isinstance(y, types.Float)) {
           return powcFloat(x, new Complex(y.valueOf(), 0))
-        } else {
+      } else {
           var prefix
           if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
+              prefix = '='
+          } else {
+              prefix = ''
+          }
+          throw new exceptions.TypeError.$pyclass(
             'unsupported operand type(s) for ** or pow()' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
-    }
+      }
 }
 
 Complex.prototype.__pow__ = function(other) {
