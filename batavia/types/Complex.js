@@ -2,7 +2,6 @@ var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
-
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
@@ -28,7 +27,7 @@ function part_to_str(x) {
         var abs_len = Math.abs(x.valueOf()).toString().length
         if (abs_len >= 19) {
             // force conversion to scientific
-            var new_str = x.valueOf().toExponential()
+            var new_str = x.valueOf()
             if (new_str.length < x_str.length) {
                 x_str = new_str
             }
@@ -40,12 +39,9 @@ function part_to_str(x) {
     }
     return x_str
 }
-
 function Complex(re, im) {
     var types = require('../types')
-
     PyObject.call(this)
-
     // console.log(100000, re, im);
     if (types.isinstance(re, types.Str)) {
         // console.log(1000, re, im);
@@ -197,26 +193,153 @@ Complex.prototype.__abs__ = function() {
 /**************************************************
  * Binary operators
  **************************************************/
-
-Complex.prototype.__pow__ = function(exponent) {
-    var types = require('../types')
-
-    // types.Bool?? Yes, really; under the hood cpython checks to see if the
-    // exponent is a numeric type, and bool subclasses int.
-    // See cpython/Objects/abstract.c.
-    if (types.isinstance(exponent, types.Bool)) {
-        if (exponent.valueOf()) {
-            return this
-        } else {
-            return new Complex(1, 0)
-        }
-    // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
-    // { do some stuff }
+function hyp(x, y) {
+    x = Math.abs(x)
+    y = Math.abs(y)
+    if (x < y) {
+        var temp = x
+        x = y
+        y = temp
+    }
+    if (x === 0) {
+        return 0
     } else {
+        var yx = y / x
+        return x * Math.sqrt(1 + yx * yx)
+    }
+}
+function quot(a, b) {
+    var r = new Complex(0, 0)
+    if (b.real < 0) {
+        const abs_breal = -b.real
+    } else {
+        const abs_breal = b.real
+    }
+    if (b.imag < 0) {
+        const abs_bimag = -b.imag
+    } else {
+        const abs_bimag = b.imag
+    }
+    if (abs_breal >= abs_bimag) {
+        if (abs_breal === 0) {
+             r = new Complex(0, 0)
+        } else {
+            const ratio = b.imag / b.real
+            const denom = b.real + b.imag * ratio
+            r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
+    }
+} else if (abs_bimag >= abs_breal) {
+    const ratio = b.real / b.imag
+    const denom = b.real * ratio + b.imag
+    r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
+} else {
+    r = new Complex(NaN, NaN)
+    }
+    return r
+}
+function powu(x, y) {
+    var mask = 1
+    var r = new Complex(1, 0)
+    var p = x
+    while (mask > 0 && y >= mask) {
+        if (y & mask) {
+            r=__mul__(r, p)
+        }
+        mask <<= 1
+        p = __mul__(p, p)
+    }
+    return r
+}
+function powcFloat(x, y) {
+    if (y.real === 0 && y.imag === 0) {
+        return new Complex(1, 0)
+         } else if (x.real === 0 && x.imag === 0) {
+             if (y.imag !== 0 || y.real < 0) {
+                 throw new exceptions.ZeroDivisionError.$pyclass(
+                     '0.0 to a negative or complex power'
+                        )
+                    }
+                    return new Complex(0, 0)
+                }
+    var vabs = hyp(x.real, x.imag)
+    var l = Math.pow(vabs, y.real)
+    var at = Math.atan2(x.imag, x.real)
+    at = String(at)
+    var b = parseInt(at[at.length-1]) + 1
+    at = at.substr(0, at.length-1) + b
+    at = parseFloat(at)
+    var phase = at * y.real
+    if(y.imag !== 0) {
+        l /= Math.exp(at * y.imag)
+        phase += y.imag * Math.log(vabs)
+    }
+    var r = l * Math.cos(phase)
+    var im = l * Math.sin(phase)
+    return new Complex(r, im)
+}
+function powc(x, y) {
+    if (y.real === 0 && y.imag === 0) {
+        return new Complex(1, 0)
+    } else if(x.real === 0 && x.imag === 0)  {
+        if(y.imag !== 0 || y.real < 0){
+            throw new exceptions.ZeroDivisionError.$pyclass(
+                '0.0 to a negative or complex power'
+                )
+            }
+            return new Complex(0, 0)
+        }
+    var vabs = hyp(x.real, x.imag)
+    var l = Math.pow(vabs, y.real)
+    var at = Math.atan2(x.imag, x.real)
+    var phase = at * y.real
+    if (y.imag !== 0) {
+        l /= Math.exp(at * y.imag)
+        phase += y.imag * Math.log(vabs)
+    }
+    var r = l * Math.cos(phase)
+    var im = l * Math.sin(phase)
+    return new Complex(r, im)
+}
+function powi(x, y) {
+    if (y > 100 || y < -100){
+        var cn = new Complex(y, 0)
+        return powc(x, cn)
+    } else if (y > 0) {
+        return powu(x, y)
+    } else {
+        return quot(new Complex(1, 0),powu(x, -y))
+    }
+}
+function __pow__(x, y, inplace) {
+    var types = require('../types')
+    if (types.isinstance(y, types.Int)) {
+        return powi(x, y.val)
+      } else if (types.isinstance(y, types.Bool)) {
+          if (y.valueOf()) {
+              return new Complex(x.real, x.imag)
+          } else {
+              return new Complex(1, 0)
+          }
+      } else if (types.isinstance(y, types.Complex)) {
+          return powc(x, y)
+      } else if (types.isinstance(y, types.Float)) {
+          return powcFloat(x, new Complex(y.valueOf(), 0))
+        }
+      else {
+          var prefix
+          if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
         throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
+            'unsupported operand type(s) for ** or pow()' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
     }
+}
+
+Complex.prototype.__pow__ = function(other) {
+    return __pow__(this, other)
 }
 
 function __div__(x, y, inplace) {
