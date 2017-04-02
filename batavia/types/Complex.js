@@ -2,9 +2,15 @@ var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
+var Int=require('./Int.js')
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
+
+var MAX_INT = new Int('9223372036854775807')
+var MIN_INT = new Int('-9223372036854775808')
+var MAX_FLOAT = new Int('179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
+var MIN_FLOAT = new Int('-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
 
 function part_from_str(s) {
     var types = require('../types')
@@ -252,33 +258,6 @@ function powu(x, y) {
     }
     return r
 }
-function powcFloat(x, y) {
-    if (y.real === 0 && y.imag === 0) {
-        return new Complex(1, 0)
-    } else if (x.real === 0 && x.imag === 0) {
-        if (y.imag !== 0 || y.real < 0) {
-            throw new exceptions.ZeroDivisionError.$pyclass(
-                '0.0 to a negative or complex power'
-                )
-        }
-        return new Complex(0, 0)
-    }
-    var vabs = hyp(x.real, x.imag)
-    var l = Math.pow(vabs, y.real)
-    var at = Math.atan2(x.imag, x.real)
-    at = String(at)
-    var b = parseInt(at[at.length - 1]) + 1
-    at = at.substr(0, at.length - 1) + b
-    at = parseFloat(at)
-    var phase = at * y.real
-    if (y.imag !== 0) {
-        l /= Math.exp(at * y.imag)
-        phase += y.imag * Math.log(vabs)
-    }
-    var r = l * Math.cos(phase)
-    var im = l * Math.sin(phase)
-    return new Complex(r, im)
-}
 function powc(x, y) {
     if (y.real === 0 && y.imag === 0) {
         return new Complex(1, 0)
@@ -303,8 +282,24 @@ function powc(x, y) {
     return new Complex(r, im)
 }
 function powi(x, y) {
+    if (y > MAX_INT) {
+        if (y <= MAX_FLOAT) {
+            throw new exceptions.OverflowError.$pyclass(
+                'OverflowError: complex exponentiation'
+            )
+        } else {
+            throw new exceptions.OverflowError.$pyclass(
+                'OverflowError: int too large to convert to float'
+            )
+        }
+    }
+    if (y < MIN_FLOAT) {
+        throw new exceptions.OverflowError.$pyclass(
+            'OverflowError: int too large to convert to float'
+        )
+    }
     if (y > 100 || y < -100) {
-        var cn = new Complex(y, 0)
+        var cn = new Complex(y.val, 0)
         return powc(x, cn)
     } else if (y > 0) {
         return powu(x, y)
@@ -325,7 +320,7 @@ function __pow__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return powc(x, y)
     } else if (types.isinstance(y, types.Float)) {
-        return powcFloat(x, new Complex(y.valueOf(), 0))
+        return powc(x, new Complex(y.valueOf(), 0))
     } else {
         var prefix
         if (inplace) {
