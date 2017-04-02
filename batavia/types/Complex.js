@@ -210,8 +210,8 @@ function hyp(x, y) {
 }
 function quot(a, b) {
     var r = new Complex(0, 0)
-    const abs_bimag
-    const abs_breal
+    var abs_bimag = 0
+    var abs_breal = 0
     if (b.real < 0) {
         abs_breal = -b.real
     } else {
