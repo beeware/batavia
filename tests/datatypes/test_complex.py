@@ -36,11 +36,7 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
         # TODO: re-implement the Python float printing function.
 
         'test_multiply_bytearray',
-        'test_multiply_bytes',
-
-        'test_power_complex',
-        'test_power_float',
-        'test_power_int',
+        'test_multiply_bytes'
     ]
 
 
