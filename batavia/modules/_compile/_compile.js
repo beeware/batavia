@@ -4,6 +4,7 @@
 var tokenizer = require('./tokenizer')
 var types = require('../../types')
 var exceptions = require('../../core/exceptions')
+var _PyParser_Grammar = require('./ast/graminit')
 
 var _compile = {
     '__doc__': '',
@@ -149,7 +150,7 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
             c = tok.buf[tok.cur];
 
             for (;;) {
-                while (c == ' ' || c == '\t' || c == '\n' || c == '\014') {
+                while (c == ' ' || c == '\t' || c == '\n' || c == '\x0c') {
                     c = tok.buf[++tok.cur];
                 }
 
