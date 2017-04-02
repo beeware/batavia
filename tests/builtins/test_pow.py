@@ -155,10 +155,6 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_class_str',
         'test_class_tuple',
 
-        'test_complex_complex',
-        'test_complex_float',
-        'test_complex_int',
-
         'test_float_complex',
         'test_float_float',
         'test_float_int',
