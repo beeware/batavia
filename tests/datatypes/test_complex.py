@@ -53,14 +53,6 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'complex'
 
     not_implemented = [
-        # These two work, but print floats not *quite* right due to JS
-        # Python differences
-        # TODO: re-implement the Python float printing function.
-
-        'test_power_complex',
-        'test_power_float',
-        'test_power_int',
-
         # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
         "test_multiply_bytearray",
         "test_multiply_bytes",
@@ -74,8 +66,4 @@ class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
         # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
         "test_multiply_bytearray",
         "test_multiply_bytes",
-
-        'test_power_complex',
-        'test_power_float',
-        'test_power_int',
     ]
