@@ -3,13 +3,17 @@ var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
+var Int = require('./Int.js')
 
 // Helper function defined in Float.js
 var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
-
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
+
+var MAX_INT = new Int('9223372036854775807')
+var MAX_FLOAT = new Int('179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
+var MIN_FLOAT = new Int('-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
 
 function part_from_str(s) {
     var types = require('../types')
@@ -60,9 +64,7 @@ function under_js_precision(complex) {
 
 function Complex(re, im) {
     var types = require('../types')
-
     PyObject.call(this)
-
     // console.log(100000, re, im);
     if (types.isinstance(re, types.Str)) {
         // console.log(1000, re, im);
@@ -271,26 +273,150 @@ Complex.prototype.__abs__ = function() {
 /**************************************************
  * Binary operators
  **************************************************/
-
-Complex.prototype.__pow__ = function(exponent) {
+function hyp(x, y) {
+    x = Math.abs(x)
+    y = Math.abs(y)
+    if (x < y) {
+        var temp = x
+        x = y
+        y = temp
+    }
+    if (x === 0) {
+        return 0
+    } else {
+        var yx = y / x
+        return x * Math.sqrt(1 + yx * yx)
+    }
+}
+function quot(a, b) {
+    var r = new Complex(0, 0)
+    var abs_bimag = 0
+    var abs_breal = 0
+    if (b.real < 0) {
+        abs_breal = -b.real
+    } else {
+        abs_breal = b.real
+    }
+    if (b.imag < 0) {
+        abs_bimag = -b.imag
+    } else {
+        abs_bimag = b.imag
+    }
+    if (abs_breal >= abs_bimag) {
+        if (abs_breal === 0) {
+            r = new Complex(0, 0)
+        } else {
+            const ratio = b.imag / b.real
+            const denom = b.real + b.imag * ratio
+            r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
+        }
+    } else if (abs_bimag >= abs_breal) {
+        const ratio = b.real / b.imag
+        const denom = b.real * ratio + b.imag
+        r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
+    } else {
+        r = new Complex(NaN, NaN)
+    }
+    return r
+}
+function powu(x, y) {
+    var mask = 1
+    var r = new Complex(1, 0)
+    var p = x
+    while (mask > 0 && y >= mask) {
+        if (y & mask) {
+            r = __mul__(r, p)
+        }
+        mask <<= 1
+        p = __mul__(p, p)
+    }
+    return r
+}
+function powc(x, y) {
+    if (y.real === 0 && y.imag === 0) {
+        return new Complex(1, 0)
+    } else if (x.real === 0 && x.imag === 0) {
+        if (y.imag !== 0 || y.real < 0) {
+            throw new exceptions.ZeroDivisionError.$pyclass(
+                '0.0 to a negative or complex power'
+                )
+        }
+        return new Complex(0, 0)
+    }
+    var vabs = hyp(x.real, x.imag)
+    var l = Math.pow(vabs, y.real)
+    var at = Math.atan2(x.imag, x.real)
+    var phase = at * y.real
+    if (y.imag !== 0) {
+        l /= Math.exp(at * y.imag)
+        phase += y.imag * Math.log(vabs)
+    }
+    var r = l * Math.cos(phase)
+    var im = l * Math.sin(phase)
+    return new Complex(r, im)
+}
+function powi(x, y) {
+    var cn
+    if (x.real === 0 && x.imag === 0) {
+        return new Complex(0, 0)
+    }
+    if (Number(y) >= MAX_INT) {
+        if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
+            return powc(x, new Complex(Number(y), 0))
+        }
+        if (Number(y) <= MAX_FLOAT) {
+            throw new exceptions.OverflowError.$pyclass(
+                'complex exponentiation'
+            )
+        } else {
+            throw new exceptions.OverflowError.$pyclass(
+                'int too large to convert to float'
+            )
+        }
+    } else if (Number(y) <= MIN_FLOAT) {
+        throw new exceptions.OverflowError.$pyclass(
+            'int too large to convert to float'
+        )
+    } else {
+        if (y > 100 || y < -100) {
+            cn = new Complex(Number(y), 0)
+            return powc(x, cn)
+        } else if (y > 0) {
+            return powu(x, y)
+        } else {
+            return quot(new Complex(1, 0), powu(x, -y))
+        }
+    }
+}
+function __pow__(x, y, inplace) {
     var types = require('../types')
-
-    // types.Bool?? Yes, really; under the hood cpython checks to see if the
-    // exponent is a numeric type, and bool subclasses int.
-    // See cpython/Objects/abstract.c.
-    if (types.isinstance(exponent, types.Bool)) {
-        if (exponent.valueOf()) {
-            return this
+    if (types.isinstance(y, types.Int)) {
+        return powi(x, y.val)
+    } else if (types.isinstance(y, types.Bool)) {
+        if (y.valueOf()) {
+            return new Complex(x.real, x.imag)
         } else {
             return new Complex(1, 0)
         }
-    // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
-    // { do some stuff }
+    } else if (types.isinstance(y, types.Complex)) {
+        return powc(x, y)
+    } else if (types.isinstance(y, types.Float)) {
+        return powc(x, new Complex(y.valueOf(), 0))
     } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
         throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
+            'unsupported operand type(s) for ** or pow()' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
     }
+}
+
+Complex.prototype.__pow__ = function(other) {
+    return __pow__(this, other)
 }
 
 function __div__(x, y, inplace) {
