@@ -257,10 +257,10 @@ function powcFloat(x, y) {
         return new Complex(1, 0)
     } else if (x.real === 0 && x.imag === 0) {
         if (y.imag !== 0 || y.real < 0) {
-                 throw new exceptions.ZeroDivisionError.$pyclass(
-                     '0.0 to a negative or complex power'
-                     )
-             }
+            throw new exceptions.ZeroDivisionError.$pyclass(
+                '0.0 to a negative or complex power'
+                )
+        }
         return new Complex(0, 0)
     }
     var vabs = hyp(x.real, x.imag)
@@ -318,13 +318,13 @@ function __pow__(x, y, inplace) {
         return powi(x, y.val)
     } else if (types.isinstance(y, types.Bool)) {
         if (y.valueOf()) {
-              return new Complex(x.real, x.imag)
-          } else {
-              return new Complex(1, 0)
-          }
+            return new Complex(x.real, x.imag)
+        } else {
+            return new Complex(1, 0)
+        }
     } else if (types.isinstance(y, types.Complex)) {
-          return powc(x, y)
-      } else if (types.isinstance(y, types.Float)) {
+        return powc(x, y)
+    } else if (types.isinstance(y, types.Float)) {
           return powcFloat(x, new Complex(y.valueOf(), 0))
       } else {
           var prefix
