@@ -325,18 +325,18 @@ function __pow__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return powc(x, y)
     } else if (types.isinstance(y, types.Float)) {
-          return powcFloat(x, new Complex(y.valueOf(), 0))
-      } else {
-          var prefix
-          if (inplace) {
-              prefix = '='
-          } else {
-              prefix = ''
-          }
-          throw new exceptions.TypeError.$pyclass(
+        return powcFloat(x, new Complex(y.valueOf(), 0))
+    } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
+        throw new exceptions.TypeError.$pyclass(
             'unsupported operand type(s) for ** or pow()' + prefix + ": 'complex' and '" + type_name(y) + "'"
         )
-      }
+    }
 }
 
 Complex.prototype.__pow__ = function(other) {
