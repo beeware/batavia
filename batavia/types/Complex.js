@@ -319,7 +319,7 @@ function __pow__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return powc(x, y)
     } else if (types.isinstance(y, types.Float)) {
-        return powc(x, new Complex(y.valueOf().val, 0))
+        return powc(x, new Complex(y.valueOf(), 0))
     } else {
         var prefix
         if (inplace) {
