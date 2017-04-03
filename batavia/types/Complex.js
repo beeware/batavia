@@ -282,7 +282,6 @@ function powc(x, y) {
 }
 function powi(x, y) {
     if (parseInt(y) > MAX_INT) {
-        console.log('y is greatear than max_int')
         if (parseInt(y) <= MAX_FLOAT) {
             throw new exceptions.OverflowError.$pyclass(
                 'OverflowError: complex exponentiation'
@@ -299,7 +298,7 @@ function powi(x, y) {
         )
     }
     if (y > 100 || y < -100) {
-        var cn = new Complex(String(y), 0)
+        var cn = new Complex(parseInt(y), 0)
         return powc(x, cn)
     } else if (y > 0) {
         return powu(x, y)
