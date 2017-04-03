@@ -281,21 +281,26 @@ function powc(x, y) {
     return new Complex(r, im)
 }
 function powi(x, y) {
-    if (Number(y) > MAX_INT) {
-        if (Number(y) <= MAX_FLOAT) {
-            throw new exceptions.OverflowError.$pyclass(
-                'complex exponentiation'
-            )
-        } else {
+    if (x.real === 0 && x.imag === 0) {
+        return new Complex(0,0)
+    }
+    if (!(x.real === 0 && (y.imag === 1 || y.imag === -1))) {
+        if (Number(y) >= MAX_INT) {
+            if (Number(y) <= MAX_FLOAT) {
+                throw new exceptions.OverflowError.$pyclass(
+                    'complex exponentiation'
+                )
+            } else {
+                throw new exceptions.OverflowError.$pyclass(
+                    'int too large to convert to float'
+                )
+            }
+        }
+        if (Number(y) <= MIN_FLOAT) {
             throw new exceptions.OverflowError.$pyclass(
                 'int too large to convert to float'
             )
         }
-    }
-    if (Number(y) < MIN_FLOAT) {
-        throw new exceptions.OverflowError.$pyclass(
-            'int too large to convert to float'
-        )
     }
     if (y > 100 || y < -100) {
         var cn = new Complex(Number(y), 0)
