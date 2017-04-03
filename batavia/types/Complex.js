@@ -2,13 +2,12 @@ var PyObject = require('../core').Object
 var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
-var Int=require('./Int.js')
+var Int = require('./Int.js')
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
 
 var MAX_INT = new Int('9223372036854775807')
-var MIN_INT = new Int('-9223372036854775808')
 var MAX_FLOAT = new Int('179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
 var MIN_FLOAT = new Int('-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
 
@@ -282,8 +281,9 @@ function powc(x, y) {
     return new Complex(r, im)
 }
 function powi(x, y) {
-    if (y > MAX_INT) {
-        if (y <= MAX_FLOAT) {
+    if (parseInt(y) > MAX_INT) {
+        console.log('y is greatear than max_int')
+        if (parseInt(y) <= MAX_FLOAT) {
             throw new exceptions.OverflowError.$pyclass(
                 'OverflowError: complex exponentiation'
             )
@@ -293,13 +293,13 @@ function powi(x, y) {
             )
         }
     }
-    if (y < MIN_FLOAT) {
+    if (parseInt(y) < MIN_FLOAT) {
         throw new exceptions.OverflowError.$pyclass(
             'OverflowError: int too large to convert to float'
         )
     }
     if (y > 100 || y < -100) {
-        var cn = new Complex(y.val, 0)
+        var cn = new Complex(String(y), 0)
         return powc(x, cn)
     } else if (y > 0) {
         return powu(x, y)
