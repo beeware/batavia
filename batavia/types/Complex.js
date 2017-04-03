@@ -281,24 +281,24 @@ function powc(x, y) {
     return new Complex(r, im)
 }
 function powi(x, y) {
-    if (parseInt(y) > MAX_INT) {
-        if (parseInt(y) <= MAX_FLOAT) {
+    if (Number(y) > MAX_INT) {
+        if (Number(y) <= MAX_FLOAT) {
             throw new exceptions.OverflowError.$pyclass(
-                'OverflowError: complex exponentiation'
+                'complex exponentiation'
             )
         } else {
             throw new exceptions.OverflowError.$pyclass(
-                'OverflowError: int too large to convert to float'
+                'int too large to convert to float'
             )
         }
     }
-    if (parseInt(y) < MIN_FLOAT) {
+    if (Number(y) < MIN_FLOAT) {
         throw new exceptions.OverflowError.$pyclass(
-            'OverflowError: int too large to convert to float'
+            'int too large to convert to float'
         )
     }
     if (y > 100 || y < -100) {
-        var cn = new Complex(parseInt(y), 0)
+        var cn = new Complex(Number(y), 0)
         return powc(x, cn)
     } else if (y > 0) {
         return powu(x, y)
@@ -319,7 +319,7 @@ function __pow__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return powc(x, y)
     } else if (types.isinstance(y, types.Float)) {
-        return powc(x, new Complex(y.valueOf(), 0))
+        return powc(x, new Complex(y.valueOf().val, 0))
     } else {
         var prefix
         if (inplace) {
