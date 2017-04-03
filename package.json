@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prepare": "python compile_stdlib.py",
+    "prepare": "python compile_stdlib.py && python batavia/modules/_compile/ast/asdl_js.py -c batavia/modules/_compile/ast/  batavia/modules/_compile/ast/Python.asdl",
     "prepublishOnly": "pandoc --from=rst --to=markdown_github README.rst -o README.md",
     "build": "node_modules/.bin/webpack --progress",
     "watch": "node_modules/.bin/webpack --progress --watch",

@@ -5,6 +5,7 @@ var tokenizer = require('./tokenizer')
 var types = require('../../types')
 var exceptions = require('../../core/exceptions')
 var _PyParser_Grammar = require('./ast/graminit')
+var ast_check = require('./ast/Python-ast').ast_check
 
 var _compile = {
     '__doc__': '',
@@ -26,7 +27,7 @@ _compile.single_input = function() {
 }
 
 _compile.ast_check = function(obj) {
-    throw new exceptions.NotImplementedError.$pyclass('_compile.ast_check is not implemented yet')
+  return ast_check(obj)
 }
 
 _compile.compile_string_object = function(str, filename, compile_mode, cf, optimize) {
