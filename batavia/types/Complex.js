@@ -282,7 +282,7 @@ function powc(x, y) {
 }
 function powi(x, y) {
     if (x.real === 0 && x.imag === 0) {
-        return new Complex(0,0)
+        return new Complex(0, 0)
     }
     if (!(x.real === 0 && (y.imag === 1 || y.imag === -1))) {
         if (Number(y) >= MAX_INT) {
