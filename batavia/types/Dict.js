@@ -289,8 +289,8 @@ Dict.prototype.__mul__ = function(other) {
 
     if (types.isinstance(other, [
         types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType, 
-        types.Slice, types.Set, types.FrozenSet, 
+        types.JSDict, types.Int, types.NoneType,
+        types.Slice, types.Set, types.FrozenSet,
         types.NotImplementedType, types.Complex, types.Range])) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
     } else {
@@ -387,7 +387,6 @@ Dict.prototype.__ifloordiv__ = function(other) {
 
 Dict.prototype.__itruediv__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'dict' and '" + type_name(other) + "'")
-
 }
 
 Dict.prototype.__iadd__ = function(other) {
@@ -408,7 +407,7 @@ Dict.prototype.__imod__ = function(other) {
     if (types.isinstance(other, [types.Complex])) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     }
-    
+
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'dict' and '" + type_name(other) + "'")
 }
 
@@ -476,11 +475,12 @@ Dict.prototype.__contains__ = function(key) {
 
 Dict.prototype.__getitem__ = function(key) {
     var types = require('../types')
-    if (!types.isinstance(key, [types.Str, types.Int, types.Bool, 
-	                        types.Float, types.Range, types.Tuple,
-                                types.FrozenSet, types.NoneType, types.Complex,
-                                types.Bytes])) {
-        throw new exceptions.TypeError.$pyclass("unhashable type: '" + type_name(key) + "'")   
+    if (!types.isinstance(key, [
+        types.Str, types.Int, types.Bool,
+        types.Float, types.Range, types.Tuple,
+        types.FrozenSet, types.NoneType, types.Complex,
+        types.Bytes])) {
+        throw new exceptions.TypeError.$pyclass("unhashable type: '" + type_name(key) + "'")
     }
 
     var i = this._find_index(key)
