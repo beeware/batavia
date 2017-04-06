@@ -198,6 +198,7 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
 
     not_implemented = [
+        'test_subscr_bool',
     ]
 
 
