@@ -197,7 +197,7 @@ class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
 
-
+    
 class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
 

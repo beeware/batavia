@@ -187,7 +187,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_subscr_bytearray',
         'test_subscr_class',
-        'test_subscr_dict',
         'test_subscr_NotImplemented',
         'test_subscr_list',
         'test_subscr_set',
