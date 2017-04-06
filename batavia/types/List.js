@@ -484,7 +484,12 @@ List.prototype.__or__ = function(other) {
  **************************************************/
 
 List.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
+    }
 }
 
 List.prototype.__itruediv__ = function(other) {
