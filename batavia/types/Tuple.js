@@ -337,7 +337,14 @@ Tuple.prototype.__getitem__ = function(index) {
         step = index.step
 
         if (step !== 1) {
-            throw new exceptions.NotImplementedError.$pyclass('Tuple.__getitem__ with a stepped slice has not been implemented')
+            let slicedArray = (step > 0) ? Array_.prototype.slice.call(this, start, stop) : Array_.prototype.reverse.call(this).slice.call(this, stop, start)
+
+            if (!slicedArray.length || this.length < start) return new Tuple()
+
+            const steppedArray = []
+            for (let i = 0; i < slicedArray.length; i += Math.abs(step)) steppedArray.push(slicedArray[i])
+
+            return new Tuple(steppedArray)
         }
 
         return new Tuple(Array_.prototype.slice.call(this, start, stop))
@@ -383,7 +390,17 @@ Tuple.prototype.__itruediv__ = function(other) {
 }
 
 Tuple.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__iadd__ has not been implemented')
+    var types = require('../types')
+    var i
+
+    if (types.isinstance(other, types.Tuple)) {
+        for (i = 0; i < other.length; i++) {
+            this.push(other[i])
+        }
+        return this
+    } else {
+        throw new exceptions.TypeError.$pyclass('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
+    }
 }
 
 Tuple.prototype.__isub__ = function(other) {
