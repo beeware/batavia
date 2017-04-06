@@ -271,6 +271,12 @@ Dict.prototype.__div__ = function(other) {
 }
 
 Dict.prototype.__floordiv__ = function(other) {
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    }
+
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'")
 }
 
@@ -283,7 +289,9 @@ Dict.prototype.__mul__ = function(other) {
 
     if (types.isinstance(other, [
         types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType])) {
+        types.JSDict, types.Int, types.NoneType, 
+        types.Slice, types.Set, types.FrozenSet, 
+        types.NotImplementedType, types.Complex, types.Range])) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'dict'")
@@ -335,6 +343,7 @@ Dict.prototype.__setitem__ = function(key, value) {
     }
     var hash = builtins.hash([key], null)
     var h = hash.int32() & this.mask
+
     while (true) {
         var current_key = this.data_keys[h]
         if (isEmpty(current_key) || isDeleted(current_key)) {
@@ -367,51 +376,64 @@ Dict.prototype.__setitem__ = function(key, value) {
  **************************************************/
 
 Dict.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ifloordiv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    }
+
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__itruediv__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'dict' and '" + type_name(other) + "'")
+
 }
 
 Dict.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__iadd__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__isub__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__imul__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__imod__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    }
+    
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ipow__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ilshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__irshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__iand__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ixor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ior__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype._find_index = function(other) {
@@ -453,7 +475,16 @@ Dict.prototype.__contains__ = function(key) {
 }
 
 Dict.prototype.__getitem__ = function(key) {
+    var types = require('../types')
+    if (!types.isinstance(key, [types.Str, types.Int, types.Bool, 
+	                        types.Float, types.Range, types.Tuple,
+                                types.FrozenSet, types.NoneType, types.Complex,
+                                types.Bytes])) {
+        throw new exceptions.TypeError.$pyclass("unhashable type: '" + type_name(key) + "'")   
+    }
+
     var i = this._find_index(key)
+
     if (i === null) {
         if (key === null) {
             throw new exceptions.KeyError.$pyclass('None')
