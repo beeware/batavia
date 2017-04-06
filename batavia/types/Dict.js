@@ -453,6 +453,11 @@ Dict.prototype.__contains__ = function(key) {
 }
 
 Dict.prototype.__getitem__ = function(key) {
+    var types = require('../types')
+    if (types.isinstance(key, types.Dict)) {
+        throw new exceptions.TypeError.$pyclass("unhashable type: 'dict' ")
+    }
+
     var i = this._find_index(key)
     if (i === null) {
         if (key === null) {
