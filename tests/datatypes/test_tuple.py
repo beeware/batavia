@@ -134,7 +134,6 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_subscr_bool',
-        'test_subscr_slice',
     ]
 
 
