@@ -29,7 +29,6 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution(set_up + ''.join(comparisons))
 
-    @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
             x = [1, 2, 3]

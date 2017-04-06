@@ -56,6 +56,14 @@ native.getattr = function(obj, attr) {
 }
 
 native.setattr = function(obj, attr, value) {
+    var type_name = require('../core').type_name
+
+    var val = native.getattr_raw(obj, attr)
+    if (val === undefined) {
+        throw new exceptions.AttributeError.$pyclass(
+            "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
+        )
+    }
     obj[attr] = value
 }
 
