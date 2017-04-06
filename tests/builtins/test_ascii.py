@@ -18,5 +18,4 @@ class BuiltinAsciiFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_noargs',
         'test_class',
         'test_NotImplemented',
-        'test_slice',
     ]

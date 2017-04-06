@@ -10,17 +10,9 @@ function Slice(kwargs) {
     PyObject.call(this)
 
     // BUG: slices can support arbitrary-sized arguments.
-    if (kwargs.start === None) {
-        this.start = null
-    } else {
-        this.start = kwargs.start.int32()
-    }
-    if (kwargs.stop === None) {
-        this.stop = null
-    } else {
-        this.stop = kwargs.stop.int32()
-    }
-    this.step = (kwargs.step || 1) | 0
+    this.start = kwargs.start
+    this.stop = kwargs.stop
+    this.step = kwargs.step
 }
 
 Slice.prototype = Object.create(PyObject.prototype)
@@ -44,11 +36,30 @@ Slice.prototype.__repr__ = function() {
 }
 
 Slice.prototype.__str__ = function() {
-    if (this.step) {
-        return '(' + this.start + ', ' + this.stop + ', ' + this.step + ')'
+    var types = require('../types')
+    var start, stop, step
+
+    if (this.stop === None) {
+        stop = 'None'
+    } else if (types.isinstance(this.stop, types.Str)) {
+        stop = this.stop.__repr__()
     } else {
-        return '(' + this.start + ', ' + this.stop + ')'
+        stop = this.stop.__str__()
     }
+
+    if (this.start === None) {
+        start = 'None'
+    } else {
+        start = this.start
+    }
+
+    if (this.step === None) {
+        step = 'None'
+    } else {
+        step = this.step
+    }
+
+    return 'slice(' + start + ', ' + stop + ', ' + step + ')'
 }
 
 /**************************************************

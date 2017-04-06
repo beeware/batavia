@@ -5,6 +5,7 @@ var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var RangeIterator = require('./RangeIterator')
+var None = require('../core').None
 
 /*************************************************************************
  * An implementation of range
@@ -121,28 +122,61 @@ Range.prototype.__getitem__ = function(index) {
             }
         }
     } else if (types.isinstance(index, types.Slice)) {
-        var start = index.start
-        var stop = index.stop
-        var step = index.step || 1
+        var start, stop, step
 
-        if (step === 0) {
-            throw new exceptions.ValueError.$pyclass('slice step cannot be zero')
+        if (index.start === None) {
+            start = index.start
+        } else if (!types.isinstance(index.start, types.Int)) {
+            if (index.start.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                start = index.start.__index__()
+            }
+        } else {
+            start = index.start.int32()
+        }
+
+        if (index.stop === None) {
+            stop = index.stop
+        } else if (!types.isinstance(index.stop, types.Int)) {
+            if (index.stop.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                stop = index.stop.__index__()
+            }
+        } else {
+            stop = index.stop.int32()
+        }
+
+        if (index.step === None) {
+            step = 1
+        } else if (!(types.isinstance(index.step, types.Int))) {
+            if (index.step.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                step = index.step.__index__()
+            }
+        } else {
+            step = index.step.int32()
+            if (step === 0) {
+                throw new exceptions.ValueError.$pyclass('slice step cannot be zero')
+            }
         }
 
         var newStart, newStop
         if (step > 0) {
-            if (start !== null) {
+            if (start !== None) {
                 newStart = get_single_item(start, this)
             } else {
                 newStart = get_single_item(0, this)
             }
-            if (stop !== null) {
+            if (stop !== None) {
                 newStop = get_single_item(stop, this)
             } else {
                 newStop = get_single_item(this.length, this)
             }
         } else {
-            if (start === null) {
+            if (start === None) {
                 newStart = get_single_item(this.length, this).sub(this.step)
             } else if (this.length.lte(-start) || this.length.lt(start)) {
                 newStart = get_single_item(start, this).sub(this.step)
@@ -150,7 +184,7 @@ Range.prototype.__getitem__ = function(index) {
                 newStart = get_single_item(start, this)
             }
 
-            if (stop === null) {
+            if (stop === None) {
                 newStop = get_single_item(0, this).sub(this.step)
             } else if (this.length.lte(-stop) || this.length.lt(stop)) {
                 newStop = get_single_item(stop, this).sub(this.step)
