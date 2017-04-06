@@ -204,7 +204,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_ne_list',
 
-        'test_subscr_bool',
     ]
 
 
