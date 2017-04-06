@@ -199,12 +199,8 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_floor_divide_complex',
-
         'test_modulo_complex',
-
         'test_ne_list',
-
-        'test_subscr_bool',
     ]
 
 
