@@ -392,6 +392,7 @@ List.prototype.__getitem__ = function(index) {
             result = result.slice(stop, start).reverse()
         }
 
+
         var steppedResult = []
         for (var i = 0; i < result.length; i = i + Math.abs(step)) {
             steppedResult.push(result[i])
@@ -400,6 +401,23 @@ List.prototype.__getitem__ = function(index) {
         result = steppedResult
 
         return new List(result)
+    } else if (types.isinstance(index, types.Bool)) {
+        if (index) {
+          var idx = 1
+        } else {
+          var idx = 0
+        }
+        if (this.length === 0) {
+          throw new exceptions.IndexError.$pyclass('list index out of range')
+        } else if (this.length === 1) {
+              if (idx === 1) {
+                throw new exceptions.IndexError.$pyclass('list index out of range')
+              } else {
+                  return this[0]
+              }
+        } else {
+          return this[idx]
+        }
     } else {
         var msg = 'list indices must be integers or slices, not '
         if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
