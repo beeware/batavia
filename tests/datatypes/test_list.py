@@ -209,8 +209,5 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_frozenset',
         'test_add_range',
         'test_add_set',
-
         'test_floor_divide_complex',
-
-        'test_modulo_complex',
     ]

@@ -537,7 +537,12 @@ List.prototype.__imul__ = function(other) {
 }
 
 List.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
+    }
 }
 
 List.prototype.__ipow__ = function(other) {
