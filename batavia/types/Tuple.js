@@ -337,7 +337,19 @@ Tuple.prototype.__getitem__ = function(index) {
         step = index.step
 
         if (step !== 1) {
-            throw new exceptions.NotImplementedError.$pyclass('Tuple.__getitem__ with a stepped slice has not been implemented')
+            let slicedArray = []
+            if (step >= 0) {
+                slicedArray = Array_.prototype.slice.call(this, start, stop)
+            } else {
+                slicedArray = Array_.prototype.reverse.call(this).slice.call(this, stop, start)
+            }
+
+            if (!slicedArray.length || this.length < start) return new Tuple()
+
+            const steppedArray = []
+            for (let i = 0; i < slicedArray.length; i += Math.abs(step)) steppedArray.push(slicedArray[i])
+
+            return new Tuple(steppedArray)
         }
 
         return new Tuple(Array_.prototype.slice.call(this, start, stop))
