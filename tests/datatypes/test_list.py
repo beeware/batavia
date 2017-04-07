@@ -212,12 +212,15 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_add_bytearray',
         'test_add_bytes',
-        'test_add_dict',
         'test_add_frozenset',
         'test_add_range',
     ]
 
-    test_set = {1, 2.3456, 'another'}
+    test_sets = [
+        {1, 2.3456, 'another'},
+        {'a', 'c', 'd'},
+        {'a', 'b'},
+    ]
     test_lists = [
         [],
         [1],
@@ -230,4 +233,5 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     substitutions = {}
 
     for test_list in test_lists:
-        substitutions[str((test_list) + list(test_set))] = string_permutations(test_list, test_set)
+        for test_set in test_sets:
+            substitutions[str((test_list) + list(test_set))] = string_permutations(test_list, test_set)
