@@ -662,8 +662,6 @@ function _substitute(format, args) {
                 if (err.msg === 'illegal character') {
                     var charAsHex = nextChar.charCodeAt(0).toString(16)
                     throw new exceptions.ValueError.$pyclass(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
-                } else if (err.name === 'KeyError') {
-                    throw new exceptions.KeyError.$pyclass(err.msg)
                 } else {
                   // its some other error
                     throw err

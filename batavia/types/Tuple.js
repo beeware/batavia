@@ -383,7 +383,17 @@ Tuple.prototype.__itruediv__ = function(other) {
 }
 
 Tuple.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__iadd__ has not been implemented')
+    var types = require('../types')
+    var i
+
+    if (types.isinstance(other, types.Tuple)) {
+        for (i = 0; i < other.length; i++) {
+            this.push(other[i])
+        }
+        return this
+    } else {
+        throw new exceptions.TypeError.$pyclass('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
+    }
 }
 
 Tuple.prototype.__isub__ = function(other) {
