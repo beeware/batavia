@@ -401,7 +401,29 @@ Tuple.prototype.__isub__ = function(other) {
 }
 
 Tuple.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__imul__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, types.Int)) {
+        let arrayChange = this
+        const otherVal = other.int32()
+
+        if (otherVal <= 0) {
+            return new Tuple()
+        }
+
+        let arrays = Array.apply(arrayChange, new Array(other.int32()))
+        arrays = arrays.map(function() { return (arrayChange || []) })
+        const concatedArray = arrays.concat.apply([], arrays.map(function(arr) { return [].concat.apply([], arr) }))
+        return new Tuple(concatedArray)
+    } else if (types.isinstance(other, types.Bool)) {
+        if (other) {
+            return this
+        } else {
+            return new Tuple()
+        }
+    } else {
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+    }
 }
 
 Tuple.prototype.__imod__ = function(other) {
