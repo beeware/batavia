@@ -16,3 +16,11 @@ class ExceptionTests(TranspileTestCase):
                 print("Got a Key Error")
             print('Done.')
             """)
+
+    def test_raise_class(self):
+        self.assertCodeExecution("""
+            try:
+                raise Exception
+            except Exception as err:
+                print(err)
+        """)

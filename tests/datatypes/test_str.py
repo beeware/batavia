@@ -1008,7 +1008,6 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
-        @unittest.expectedFailure
         @transforms(
             js_bool = False,
             decimal = False,

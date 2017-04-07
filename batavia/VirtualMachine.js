@@ -1681,6 +1681,10 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         // As in `throw ValueError('foo')`
         exc_type = exc.__class__
         val = exc
+    } else if (exc.$pyclass.prototype instanceof builtins.BaseException.$pyclass ||
+               exc.$pyclass === builtins.BaseException.$pyclass) {
+        exc_type = exc
+        val = new exc_type.$pyclass()
     } else {
         return 'exception'  // error
     }
