@@ -337,7 +337,12 @@ Tuple.prototype.__getitem__ = function(index) {
         step = index.step
 
         if (step !== 1) {
-            let slicedArray = (step > 0) ? Array_.prototype.slice.call(this, start, stop) : Array_.prototype.reverse.call(this).slice.call(this, stop, start)
+            let slicedArray = []
+            if (step >= 0) {
+                slicedArray = Array_.prototype.slice.call(this, start, stop)
+            } else {
+                slicedArray = Array_.prototype.reverse.call(this).slice.call(this, stop, start)
+            }
 
             if (!slicedArray.length || this.length < start) return new Tuple()
 
