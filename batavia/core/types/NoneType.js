@@ -166,7 +166,13 @@ NoneType.prototype.__or__ = function(other) {
  **************************************************/
 
 NoneType.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    var types = require('../../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    }
 }
 
 NoneType.prototype.__itruediv__ = function(other) {
