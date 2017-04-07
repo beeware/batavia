@@ -56,27 +56,41 @@ native.getattr = function(obj, attr) {
 }
 
 native.getattr_py = function(obj, attr) {
-    // not actually a native function, but usually called in the
-    // same place as native.getattr, so this is convenient
     var PyObject = require('./types/Object')
     var val
-    var getattro
+    var getattribute
+    var getattr
 
     if (obj.__class__ !== undefined) {
         if (obj.__class__.$pyclass !== undefined) {
-            getattro = native.getattr_raw(obj.__class__.$pyclass.prototype,
+            getattribute = native.getattr_raw(obj.__class__.$pyclass.prototype,
                 '__getattribute__')
+            getattr = native.getattr_raw(obj.__class__.$pyclass.prototype,
+                '__getattr__')
         } else {
-            getattro = native.getattr_raw(obj.__class__,
+            getattribute = native.getattr_raw(obj.__class__,
                 '__getattribute__')
+            getattr = native.getattr_raw(obj.__class__,
+                '__getattr__')
         }
-        // if class of object has getattribute method,
+        // if class of object has __getattribute__ method,
         // call that, otherwise, call
         // object.__getattribute__
-        if (getattro !== undefined && getattro.__get__ !== undefined) {
-            val = getattro.__get__(obj).__call__(attr)
-        } else {
-            val = PyObject.__class__.__getattribute__(obj, attr)
+        // if they fail with an AttributeError,
+        // call __getattr__ (if it exists)
+        try {
+            if (getattribute !== undefined && getattribute.__get__ !== undefined) {
+                val = getattribute.__get__(obj).__call__(attr)
+            } else {
+                val = PyObject.__class__.__getattribute__(obj, attr)
+            }
+        } catch (err) {
+            if (err instanceof exceptions.AttributeError.$pyclass &&
+                getattr !== undefined && getattr.__get__ !== undefined) {
+                val = getattr.__get__(obj).__call__(attr)
+            } else {
+                throw err
+            }
         }
     } else {
         val = obj.__getattribute__(attr)
