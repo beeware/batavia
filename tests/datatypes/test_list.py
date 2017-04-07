@@ -1,4 +1,8 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, adjust
+from .. utils import TranspileTestCase,\
+    UnaryOperationTestCase,\
+    BinaryOperationTestCase,\
+    InplaceOperationTestCase,\
+    adjust
 
 import unittest
 import itertools
@@ -172,27 +176,28 @@ class ListTests(TranspileTestCase):
     def test_list_list_comparisons(self):
 
         # `this` (left list) is empty.
-        self.assertOrdering([], [1,2,3])
+        self.assertOrdering([], [1, 2, 3])
 
         # `other` (right list) is empty
-        self.assertOrdering([1,2,3], [])
+        self.assertOrdering([1, 2, 3], [])
 
         # both lists are empty
-        self.assertOrdering([],[])
+        self.assertOrdering([], [])
 
         # `this` (left list) is shorter
-        self.assertOrdering([1,2], [1,2,3])
+        self.assertOrdering([1, 2], [1, 2, 3])
 
         # `other` (right list) is shorter
-        self.assertOrdering([1,2,3], [1,2])
+        self.assertOrdering([1, 2, 3], [1, 2])
 
         # comparable items aren't equal
-        self.assertOrdering([1,2], [1,3])
+        self.assertOrdering([1, 2], [1, 3])
 
-        self.assertOrdering([1,3], [1,2])
+        self.assertOrdering([1, 3], [1, 2])
 
         # all items are equal
-        self.assertOrdering([1,2,3], [1,2,3])
+        self.assertOrdering([1, 2, 3], [1, 2, 3])
+
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
