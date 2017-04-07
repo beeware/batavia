@@ -190,7 +190,7 @@ NoneType.prototype.__isub__ = function(other) {
 NoneType.prototype.__imul__ = function(other) {
     var types = require('../../types')
 
-    if (types.isinstance(other, [types.List, types.Tuple, types.Str])) {
+    if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'NoneType'")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'NoneType' and '" + basic_types.type_name(other) + "'")
