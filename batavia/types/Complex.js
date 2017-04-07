@@ -284,11 +284,16 @@ function powi(x, y) {
     if (x.real === 0 && x.imag === 0) {
         return new Complex(0, 0)
     }
-    if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
-        return powu(x, y)
-    }
     if (Number(y) >= MAX_INT) {
+        if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
+            return powu(x,y)
+        }
         if (Number(y) <= MAX_FLOAT) {
+            if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
+                throw new exceptions.ZeroDivisionError.$pyclass(
+                    '0.0 to a negative or complex power'
+                )
+            }
             throw new exceptions.OverflowError.$pyclass(
                 'complex exponentiation'
             )
