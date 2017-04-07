@@ -20,7 +20,7 @@ class CompileTests(TranspileTestCase):
     def test_compile(self):
         self.assertJavaScriptExecution("""
             src = 'x = 1'
-            print(compile(src, 'testing.py', 'single', 0))
+            compile(src, 'testing.py', 'single', 0)
             """, "")
 
     def test_basic_tokenize(self):
