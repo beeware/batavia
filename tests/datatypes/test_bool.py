@@ -28,15 +28,7 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
-        'test_floor_divide_complex',
-        'test_floor_divide_float',
-        'test_floor_divide_int',
-
         'test_lshift_int',
-
-        'test_modulo_complex',
-        'test_modulo_float',
-        'test_modulo_int',
 
         'test_multiply_bytearray',
         'test_multiply_bytes',
@@ -61,11 +53,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_tuple',
 
         'test_rshift_int',
-
-        'test_true_divide_bool',
-        'test_true_divide_complex',
-        'test_true_divide_float',
-        'test_true_divide_int',
     ]
 
 
