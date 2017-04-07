@@ -253,15 +253,19 @@ Bool.prototype.__pow__ = function(other) {
         } else {
             return new types.Int(1)
         }
-    } else if (types.isinstance(other, [types.Float, types.Int])) {
+    } else if (types.isinstance(other, [types.Float, types.Int, types.Complex])) {
         if (this.valueOf()) {
             if (types.isinstance(other, types.Int) && other.__ge__(new types.Float(0.0))) {
                 return new types.Int(Math.pow(1, other.valueOf()))
+            } else if (types.isinstance(other, types.Complex)) {
+                return new types.Complex("1")
             } else {
                 return new types.Float(Math.pow(1.0, other.valueOf()))
             }
         } else {
-            if (other.__lt__(new types.Float(0.0))) {
+            if (types.isinstance(other, types.Complex)) {
+                throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
+            } else if (other.__lt__(new types.Float(0.0))) {
                 throw new exceptions.ZeroDivisionError.$pyclass('0.0 cannot be raised to a negative power')
             } else if (types.isinstance(other, types.Int)) {
                 return new types.Int(Math.pow(0, other.valueOf()))
@@ -270,7 +274,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for pow: 'bool' and '" + type_name(other) + "'")
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -651,7 +655,7 @@ Bool.prototype.__imod__ = function(other) {
 }
 
 Bool.prototype.__ipow__ = function(other) {
-    return utils.inplace_call('__pow__', '**=', this, other)
+    return utils.inplace_call('__pow__', '** or pow()', this, other)
 }
 
 Bool.prototype.__ilshift__ = function(other) {
