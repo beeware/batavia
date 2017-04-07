@@ -484,7 +484,12 @@ List.prototype.__or__ = function(other) {
  **************************************************/
 
 List.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
+    }
 }
 
 List.prototype.__itruediv__ = function(other) {
@@ -494,14 +499,20 @@ List.prototype.__itruediv__ = function(other) {
 List.prototype.__iadd__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
-        for (var i = 0; i < other.length; i++) {
-            this.push(other[i])
+    if (types.isinstance(other, [types.Set, types.Dict, types.Range, types.FrozenSet, types.Bytes, types.Bytearray])) {
+        var right_operand = new types.List(other)
+    } else {
+        right_operand = other
+    }
+
+    if (types.isinstance(right_operand, [types.List, types.Str, types.Tuple])) {
+        for (var i = 0; i < right_operand.length; i++) {
+            this.push(right_operand[i])
         }
-        return this
     } else {
         throw new exceptions.TypeError.$pyclass("'" + type_name(other) + "' object is not iterable")
     }
+    return this
 }
 
 List.prototype.__isub__ = function(other) {
@@ -537,7 +548,12 @@ List.prototype.__imul__ = function(other) {
 }
 
 List.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
+    }
 }
 
 List.prototype.__ipow__ = function(other) {

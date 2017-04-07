@@ -1,6 +1,17 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, adjust
+from .. utils import TranspileTestCase,\
+    UnaryOperationTestCase,\
+    BinaryOperationTestCase,\
+    InplaceOperationTestCase,\
+    adjust
 
 import unittest
+import itertools
+
+
+def string_permutations(test_list, list_to_permutate):
+    """Takes a list and a set,  and returns a list of all the permutations as strings"""
+    str_perms = [list(permutation) for permutation in itertools.permutations(list_to_permutate)]
+    return [str(test_list + str_perm) for str_perm in str_perms]
 
 
 class ListTests(TranspileTestCase):
@@ -165,27 +176,28 @@ class ListTests(TranspileTestCase):
     def test_list_list_comparisons(self):
 
         # `this` (left list) is empty.
-        self.assertOrdering([], [1,2,3])
+        self.assertOrdering([], [1, 2, 3])
 
         # `other` (right list) is empty
-        self.assertOrdering([1,2,3], [])
+        self.assertOrdering([1, 2, 3], [])
 
         # both lists are empty
-        self.assertOrdering([],[])
+        self.assertOrdering([], [])
 
         # `this` (left list) is shorter
-        self.assertOrdering([1,2], [1,2,3])
+        self.assertOrdering([1, 2], [1, 2, 3])
 
         # `other` (right list) is shorter
-        self.assertOrdering([1,2,3], [1,2])
+        self.assertOrdering([1, 2, 3], [1, 2])
 
         # comparable items aren't equal
-        self.assertOrdering([1,2], [1,3])
+        self.assertOrdering([1, 2], [1, 3])
 
-        self.assertOrdering([1,3], [1,2])
+        self.assertOrdering([1, 3], [1, 2])
 
         # all items are equal
-        self.assertOrdering([1,2,3], [1,2,3])
+        self.assertOrdering([1, 2, 3], [1, 2, 3])
+
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
@@ -202,15 +214,24 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
 
     not_implemented = [
-
-        'test_add_bytearray',
-        'test_add_bytes',
-        'test_add_dict',
-        'test_add_frozenset',
-        'test_add_range',
-        'test_add_set',
-
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
     ]
+
+    test_sets = [
+        {1, 2.3456, 'another'},
+        {'a', 'c', 'd'},
+        {'a', 'b'},
+    ]
+    test_lists = [
+        [],
+        [1],
+        [3, 4, 5],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        ['a', 'b', 'c'],
+        [[1, 2], [3, 4]]
+    ]
+
+    substitutions = {}
+
+    for test_list in test_lists:
+        for test_set in test_sets:
+            substitutions[str((test_list) + list(test_set))] = string_permutations(test_list, test_set)
