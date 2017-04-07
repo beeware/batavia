@@ -499,14 +499,20 @@ List.prototype.__itruediv__ = function(other) {
 List.prototype.__iadd__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
-        for (var i = 0; i < other.length; i++) {
-            this.push(other[i])
+    if (types.isinstance(other, types.Set)) {
+        var right_operand = new types.List(other)
+    } else {
+        right_operand = other
+    }
+
+    if (types.isinstance(right_operand, [types.List, types.Str, types.Tuple])) {
+        for (var i = 0; i < right_operand.length; i++) {
+            this.push(right_operand[i])
         }
-        return this
     } else {
         throw new exceptions.TypeError.$pyclass("'" + type_name(other) + "' object is not iterable")
     }
+    return this
 }
 
 List.prototype.__isub__ = function(other) {

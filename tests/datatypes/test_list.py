@@ -1,6 +1,13 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, adjust
 
 import unittest
+import itertools
+
+
+def string_permutations(test_list, list_to_permutate):
+    """Takes a list and a set,  and returns a list of all the permutations as strings"""
+    str_perms = [list(permutation) for permutation in itertools.permutations(list_to_permutate)]
+    return [str(test_list + str_perm) for str_perm in str_perms]
 
 
 class ListTests(TranspileTestCase):
@@ -208,5 +215,19 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_dict',
         'test_add_frozenset',
         'test_add_range',
-        'test_add_set',
     ]
+
+    test_set = {1, 2.3456, 'another'}
+    test_lists = [
+        [],
+        [1],
+        [3, 4, 5],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+        ['a', 'b', 'c'],
+        [[1, 2], [3, 4]]
+    ]
+
+    substitutions = {}
+
+    for test_list in test_lists:
+        substitutions[str((test_list) + list(test_set))] = string_permutations(test_list, test_set)
