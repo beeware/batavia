@@ -210,8 +210,7 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
     not_implemented = [
 
-        'test_add_bytearray',
-        'test_add_bytes',
+        '',
     ]
 
     test_sets = [
