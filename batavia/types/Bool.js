@@ -46,14 +46,6 @@ Bool.prototype.__float__ = function() {
  * Comparison operators
  **************************************************/
 
-Bool.prototype.__lt__ = function(other) {
-    return this.valueOf() < other
-}
-
-Bool.prototype.__le__ = function(other) {
-    return this.valueOf() <= other
-}
-
 Bool.prototype.__eq__ = function(other) {
     var types = require('../types')
 
@@ -82,35 +74,132 @@ Bool.prototype.__ne__ = function(other) {
     return this.__eq__(other).__not__()
 }
 
-Bool.prototype.__gt__ = function(other) {
+Bool.prototype.__ge__ = function(other) {
     var types = require('../types')
+    var this_bool, other_bool
 
-    var invalid_types = [
-        types.Bytearray,
-        types.Bytes,
-        types.Complex,
-        types.Dict,
-        types.FrozenSet,
-        types.List,
-        types.NoneType,
-        types.NotImplementedType,
-        types.Range,
-        types.Set,
-        types.Slice,
-        types.Str,
-        types.Tuple,
-        types.Type
-    ]
-
-    if (types.isinstance(other, invalid_types)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() > ' + type_name(other) + '()')
+    if (types.isinstance(other, types.Float)) {
+        if (this.valueOf()) {
+            this_bool = 1.0
+        } else {
+            this_bool = 0.0
+        }
+        return new types.Float(this_bool >= other.valueOf())
+    } else if (types.isinstance(other, types.Int)) {
+        return this.__int__().__ge__(other)
+    } else if (types.isinstance(other, Bool)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        if (other.valueOf()) {
+            other_bool = 1
+        } else {
+            other_bool = 0
+        }
+        return new Bool(this_bool >= other_bool)
+    } else if (types.isbataviainstance(other)) {
+        throw new exceptions.TypeError.$pyclass('unorderable types: bool() >= ' + type_name(other) + '()')
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >=: 'bool' and '" + type_name(other) + "'")
     }
-
-    return this.valueOf() > other
 }
 
-Bool.prototype.__ge__ = function(other) {
-    return this.valueOf() >= other
+Bool.prototype.__gt__ = function(other) {
+    var types = require('../types')
+    var this_bool, other_bool
+
+    if (types.isinstance(other, types.Float)) {
+        if (this.valueOf()) {
+            this_bool = 1.0
+        } else {
+            this_bool = 0.0
+        }
+        return new types.Float(this_bool > other.valueOf())
+    } else if (types.isinstance(other, types.Int)) {
+        return this.__int__().__gt__(other)
+    } else if (types.isinstance(other, Bool)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        if (other.valueOf()) {
+            other_bool = 1
+        } else {
+            other_bool = 0
+        }
+        return new Bool(this_bool > other_bool)
+    } else if (types.isbataviainstance(other)) {
+        throw new exceptions.TypeError.$pyclass('unorderable types: bool() > ' + type_name(other) + '()')
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >: 'bool' and '" + type_name(other) + "'")
+    }
+}
+
+Bool.prototype.__le__ = function(other) {
+    var types = require('../types')
+    var this_bool, other_bool
+
+    if (types.isinstance(other, types.Float)) {
+        if (this.valueOf()) {
+            this_bool = 1.0
+        } else {
+            this_bool = 0.0
+        }
+        return new types.Float(this_bool <= other.valueOf())
+    } else if (types.isinstance(other, types.Int)) {
+        return this.__int__().__le__(other)
+    } else if (types.isinstance(other, Bool)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        if (other.valueOf()) {
+            other_bool = 1
+        } else {
+            other_bool = 0
+        }
+        return new Bool(this_bool <= other_bool)
+    } else if (types.isbataviainstance(other)) {
+        throw new exceptions.TypeError.$pyclass('unorderable types: bool() <= ' + type_name(other) + '()')
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <=: 'bool' and '" + type_name(other) + "'")
+    }
+}
+
+Bool.prototype.__lt__ = function(other) {
+    var types = require('../types')
+    var this_bool, other_bool
+
+    if (types.isinstance(other, types.Float)) {
+        if (this.valueOf()) {
+            this_bool = 1.0
+        } else {
+            this_bool = 0.0
+        }
+        return new types.Float(this_bool < other.valueOf())
+    } else if (types.isinstance(other, types.Int)) {
+        return this.__int__().__lt__(other)
+    } else if (types.isinstance(other, Bool)) {
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        if (other.valueOf()) {
+            other_bool = 1
+        } else {
+            other_bool = 0
+        }
+        return new Bool(this_bool < other_bool)
+    } else if (types.isbataviainstance(other)) {
+        throw new exceptions.TypeError.$pyclass('unorderable types: bool() < ' + type_name(other) + '()')
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <: 'bool' and '" + type_name(other) + "'")
+    }
 }
 
 Bool.prototype.__contains__ = function(other) {
@@ -192,50 +281,35 @@ Bool.prototype.__div__ = function(other) {
 Bool.prototype.__floordiv__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, Bool)) {
-        if (!other.valueOf()) {
-            throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
-        } else if (this.valueOf() && other.valueOf()) {
-            return new types.Int(1)
-        } else {
-            return new types.Int(0)
-        }
-    } else if (types.isinstance(other, [types.Float, types.Int])) {
+    if (types.isinstance(other, [types.Float, types.Int, types.Bool])) {
         var thisValue
-        var message = ''
-
-        if (types.isinstance(other, types.Int)) {
-            if (this.valueOf()) {
-                thisValue = 1
-            } else {
-                thisValue = 0
-            }
-            message = 'integer division or modulo by zero'
+        if (this.valueOf()) {
+            thisValue = new types.Int(1)
         } else {
-            if (this.valueOf()) {
-                thisValue = 1.0
-            } else {
-                thisValue = 0.0
-            }
-            message = 'float divmod()'
+            thisValue = new types.Int(0)
         }
-
-        var roundedVal = Math.floor(thisValue / other)
-
-        if (other === 0) {
-            throw new exceptions.ZeroDivisionError.$pyclass(message)
-        } else if (types.isinstance(other, types.Int)) {
-            return new types.Int(roundedVal)
-        } else {
-            return new types.Float(roundedVal)
-        }
+        return thisValue.__floordiv__(other)
+    } else if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'")
     }
 }
 
 Bool.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'")
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Float, types.Int, types.Bool, types.Complex])) {
+        var thisValue
+        if (this.valueOf()) {
+            thisValue = new types.Int(1)
+        } else {
+            thisValue = new types.Int(0)
+        }
+        return thisValue.__truediv__(other)
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'")
+    }
 }
 
 Bool.prototype.__mul__ = function(other) {
@@ -268,21 +342,41 @@ Bool.prototype.__mul__ = function(other) {
 
 Bool.prototype.__mod__ = function(other) {
     var types = require('../types')
-    var result
-    if (types.isinstance(other, types.Bool)) {
-        if (this.valueOf()) {
-            result = 0
-        } else {
-            result = new types.Bool(0)
-        }
-        if (other.valueOf()) {
-            return result
-        } else {
-            throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
-        }
-    }
 
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
+        throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
+    } else if (this.valueOf() && (types.isinstance(other, types.Int) && other.valueOf() > 1)) {
+        return new types.Bool(true)
+    } else if (this.valueOf() && (types.isinstance(other, types.Bool) && other.valueOf())) {
+        return new types.Int(0)
+    } else if (!this.valueOf() && types.isinstance(other, [types.Bool, types.Int]) && other.valueOf()) {
+        return new types.Bool(false)
+    } else if (types.isinstance(other, types.Int)) {
+        var this_val
+        if (this.valueOf()) {
+            this_val = new types.Int(1)
+        } else {
+            this_val = new types.Int(0)
+        }
+        return new types.Int(this_val.val.mod(other.val).add(other.val).mod(other.val))
+    } else if (types.isinstance(other, types.Float)) {
+        var this_val2
+        if (this.valueOf()) {
+            this_val2 = new types.Int(1)
+        } else {
+            this_val2 = new types.Int(0)
+        }
+        var result = ((this_val2 % other) + other) % other
+        if (other.valueOf() === 0.0) {
+            throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
+        } else {
+            return new types.Float(result)
+        }
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
+    }
 }
 
 Bool.prototype.__add__ = function(other) {
@@ -482,112 +576,21 @@ Bool.prototype.__or__ = function(other) {
     }
 }
 
-Bool.prototype.__ge__ = function(other) {
-    var types = require('../types')
-    var this_bool, other_bool
-
-    if (types.isinstance(other, types.Float)) {
-        if (this.valueOf()) {
-            this_bool = 1.0
-        } else {
-            this_bool = 0.0
-        }
-        return new types.Float(this_bool >= other.valueOf())
-    } else if (types.isinstance(other, types.Int)) {
-        return this.__int__().__ge__(other)
-    } else if (types.isinstance(other, Bool)) {
-        if (this.valueOf()) {
-            this_bool = 1
-        } else {
-            this_bool = 0
-        }
-        if (other.valueOf()) {
-            other_bool = 1
-        } else {
-            other_bool = 0
-        }
-        return new Bool(this_bool >= other_bool)
-    } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() >= ' + type_name(other) + '()')
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'")
-    }
-}
-
-Bool.prototype.__le__ = function(other) {
-    var types = require('../types')
-    var this_bool, other_bool
-
-    if (types.isinstance(other, types.Float)) {
-        if (this.valueOf()) {
-            this_bool = 1.0
-        } else {
-            this_bool = 0.0
-        }
-        return new types.Float(this_bool <= other.valueOf())
-    } else if (types.isinstance(other, types.Int)) {
-        return this.__int__().__le__(other)
-    } else if (types.isinstance(other, Bool)) {
-        if (this.valueOf()) {
-            this_bool = 1
-        } else {
-            this_bool = 0
-        }
-        if (other.valueOf()) {
-            other_bool = 1
-        } else {
-            other_bool = 0
-        }
-        return new Bool(this_bool <= other_bool)
-    } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() <= ' + type_name(other) + '()')
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'")
-    }
-}
-
-Bool.prototype.__lt__ = function(other) {
-    var types = require('../types')
-    var this_bool, other_bool
-
-    if (types.isinstance(other, types.Float)) {
-        if (this.valueOf()) {
-            this_bool = 1.0
-        } else {
-            this_bool = 0.0
-        }
-        return new types.Float(this_bool < other.valueOf())
-    } else if (types.isinstance(other, types.Int)) {
-        return this.__int__().__lt__(other)
-    } else if (types.isinstance(other, Bool)) {
-        if (this.valueOf()) {
-            this_bool = 1
-        } else {
-            this_bool = 0
-        }
-        if (other.valueOf()) {
-            other_bool = 1
-        } else {
-            other_bool = 0
-        }
-        return new Bool(this_bool < other_bool)
-    } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() < ' + type_name(other) + '()')
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'")
-    }
-}
-
 /**************************************************
  * Inplace operators
  **************************************************/
 
 Bool.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ifloordiv__ has not been implemented')
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        return utils.inplace_call('__floordiv__', '//=', this, other)
+    }
 }
 
 Bool.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__itruediv__ has not been implemented')
+    return utils.inplace_call('__truediv__', '/=', this, other)
 }
 
 Bool.prototype.__iadd__ = function(other) {
@@ -595,39 +598,44 @@ Bool.prototype.__iadd__ = function(other) {
 }
 
 Bool.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__isub__ has not been implemented')
+    return utils.inplace_call('__sub__', '-=', this, other)
 }
 
 Bool.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__imul__ has not been implemented')
+    return utils.inplace_call('__mul__', '*=', this, other)
 }
 
 Bool.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__imod__ has not been implemented')
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        return utils.inplace_call('__mod__', '%=', this, other)
+    }
 }
 
 Bool.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ipow__ has not been implemented')
+    return utils.inplace_call('__pow__', '**=', this, other)
 }
 
 Bool.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ilshift__ has not been implemented')
+    return utils.inplace_call('__lshift__', '<<=', this, other)
 }
 
 Bool.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__irshift__ has not been implemented')
+    return utils.inplace_call('__rshift__', '>>=', this, other)
 }
 
 Bool.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__iand__ has not been implemented')
+    return utils.inplace_call('__and__', '&=', this, other)
 }
 
 Bool.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ixor__ has not been implemented')
+    return utils.inplace_call('__xor__', '^=', this, other)
 }
 
 Bool.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ior__ has not been implemented')
+    return utils.inplace_call('__or__', '|=', this, other)
 }
 
 /**************************************************
