@@ -30,13 +30,6 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_lshift_int',
 
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
-        'test_multiply_complex',
-        'test_multiply_list',
-        'test_multiply_str',
-        'test_multiply_tuple',
-
         'test_power_bytearray',
         'test_power_bytes',
         'test_power_class',
@@ -64,14 +57,6 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         'test_lshift_int',
-
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
-        'test_multiply_complex',
-        'test_multiply_list',
-        'test_multiply_str',
-        'test_multiply_tuple',
-
 
         'test_power_bytearray',
         'test_power_bytes',

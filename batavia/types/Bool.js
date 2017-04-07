@@ -336,6 +336,42 @@ Bool.prototype.__mul__ = function(other) {
             this_bool = 0
         }
         return new types.Int(this_bool * other.valueOf())
+    } else if (types.isinstance(other, types.Complex)) {
+        if (this.valueOf()) {
+            return other
+        } else {
+            return new types.Complex("0j")
+        }
+    } else if (types.isinstance(other, types.Str)) {
+        if (this.valueOf()) {
+            return other
+        } else {
+            return new types.Str()
+        }
+    } else if (types.isinstance(other, types.Bytes)) {
+        if (this.valueOf()) {
+            return other
+        } else {
+            return new types.Bytes("")
+        }
+    } else if (types.isinstance(other, types.Tuple)) {
+        if (this.valueOf()) {
+            return other
+        } else {
+            return new types.Tuple()
+        }
+    } else if (types.isinstance(other, types.List)) {
+        if (this.valueOf()) {
+            return new types.List(other.valueOf())
+        } else {
+            return new types.List([])
+        }
+    } else if (types.isinstance(other, types.Bytearray)) {
+        if (this.valueOf()) {
+            return new types.Bytearray(other.valueOf())
+        } else {
+            return new types.Bytearray(new types.Bytes(""))
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
     } }
