@@ -213,7 +213,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_bytearray',
         'test_add_bytes',
         'test_add_frozenset',
-        'test_add_range',
     ]
 
     test_sets = [

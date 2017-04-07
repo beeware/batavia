@@ -499,7 +499,7 @@ List.prototype.__itruediv__ = function(other) {
 List.prototype.__iadd__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.Set, types.Dict])) {
+    if (types.isinstance(other, [types.Set, types.Dict, types.Range])) {
         var right_operand = new types.List(other)
     } else {
         right_operand = other
