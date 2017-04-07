@@ -53,6 +53,8 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_tuple',
 
         'test_rshift_int',
+
+        'test_true_divide_complex',
     ]
 
 

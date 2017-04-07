@@ -284,6 +284,8 @@ Bool.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, [types.Float, types.Int, types.Bool])) {
         var thisValue = new types.Int(this.valueOf() ? 1 : 0)
         return thisValue.__floordiv__(other)
+    } else if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'")
     }
@@ -292,7 +294,7 @@ Bool.prototype.__floordiv__ = function(other) {
 Bool.prototype.__truediv__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.Float, types.Int, types.Bool])) {
+    if (types.isinstance(other, [types.Float, types.Int, types.Bool, types.Complex])) {
         var thisValue = new types.Int(this.valueOf() ? 1 : 0)
         return thisValue.__truediv__(other)
     } else {
@@ -332,16 +334,26 @@ Bool.prototype.__mod__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.");
-    } else if (this.valueOf() && types.isinstance(other, types.Int) && other.valueOf() > 1) {
-        return new types.Bool(true);
-    } else if (!this.valueOf() && !other.val.isZero() && types.isinstance(other, [types.Bool, types.Int])) {
-        return new types.Bool(false);
-    } else if (!other || other.val.isZero()) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
         throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
-    } else if (types.isinstance(other, [types.Float, types.Int, types.Bool])) {
+    } else if (this.valueOf() && (types.isinstance(other, types.Int) && other.valueOf() > 1)) {
+        return new types.Bool(true)
+    } else if (this.valueOf() && (types.isinstance(other, types.Bool) && other.valueOf())) {
+        return new types.Int(0)
+    } else if (!this.valueOf() && types.isinstance(other, [types.Bool, types.Int]) && other.valueOf()) {
+        return new types.Bool(false);
+    } else if (types.isinstance(other, types.Int)) {
         var this_val = new types.Int(this.valueOf() ? 1 : 0)
         return new types.Int(this_val.val.mod(other.val).add(other.val).mod(other.val))
+    } else if (types.isinstance(other, types.Float)) {
+        var this_val = this.valueOf() ? 1 : 0
+        var result = ((this_val % other) + other) % other
+        if (other.valueOf() === 0.0) {
+            throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
+        } else {
+            return new types.Float(result)
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
     }
