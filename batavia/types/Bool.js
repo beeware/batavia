@@ -282,7 +282,12 @@ Bool.prototype.__floordiv__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Float, types.Int, types.Bool])) {
-        var thisValue = new types.Int(this.valueOf() ? 1 : 0)
+        var thisValue
+        if (this.valueOf()) {
+            thisValue = new types.Int(1)
+        } else {
+            thisValue = new types.Int(0)
+        }
         return thisValue.__floordiv__(other)
     } else if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
@@ -295,7 +300,12 @@ Bool.prototype.__truediv__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Float, types.Int, types.Bool, types.Complex])) {
-        var thisValue = new types.Int(this.valueOf() ? 1 : 0)
+        var thisValue
+        if (this.valueOf()) {
+            thisValue = new types.Int(1)
+        } else {
+            thisValue = new types.Int(0)
+        }
         return thisValue.__truediv__(other)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'")
@@ -342,13 +352,23 @@ Bool.prototype.__mod__ = function(other) {
     } else if (this.valueOf() && (types.isinstance(other, types.Bool) && other.valueOf())) {
         return new types.Int(0)
     } else if (!this.valueOf() && types.isinstance(other, [types.Bool, types.Int]) && other.valueOf()) {
-        return new types.Bool(false);
+        return new types.Bool(false)
     } else if (types.isinstance(other, types.Int)) {
-        var this_val = new types.Int(this.valueOf() ? 1 : 0)
+        var this_val
+        if (this.valueOf()) {
+            this_val = new types.Int(1)
+        } else {
+            this_val = new types.Int(0)
+        }
         return new types.Int(this_val.val.mod(other.val).add(other.val).mod(other.val))
     } else if (types.isinstance(other, types.Float)) {
-        var this_val = this.valueOf() ? 1 : 0
-        var result = ((this_val % other) + other) % other
+        var this_val2
+        if (this.valueOf()) {
+            this_val2 = new types.Int(1)
+        } else {
+            this_val2 = new types.Int(0)
+        }
+        var result = ((this_val2 % other) + other) % other
         if (other.valueOf() === 0.0) {
             throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
         } else {
