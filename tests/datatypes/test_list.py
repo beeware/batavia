@@ -209,8 +209,6 @@ class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
 
     not_implemented = [
-
-        '',
     ]
 
     test_sets = [
