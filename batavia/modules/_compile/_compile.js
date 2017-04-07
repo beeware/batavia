@@ -6,6 +6,11 @@ var types = require('../../types')
 var exceptions = require('../../core/exceptions')
 var _PyParser_Grammar = require('./ast/graminit')
 var ast_check = require('./ast/Python-ast').ast_check
+var Parser = require('./parser')
+
+var ErrorDetail = function(filename) {
+  this.filename = filename
+}
 
 var _compile = {
     '__doc__': '',
@@ -30,16 +35,44 @@ _compile.ast_check = function(obj) {
   return ast_check(obj)
 }
 
-_compile.compile_string_object = function(str, filename, compile_mode, cf, optimize) {
-    var co = null;
-    var mod = null;
-    mod = batavia.modules._compile.ast_from_string_object(str, filename, start, flags);
-    co = batavia.modules._compile.ast_compile_object(mod, filename, flags, optimize);
-    return co;
+_compile.compile_string_object = function(str, filename, start, optimize) {
+    var flags = null
+    var mod = _compile.ast_from_string_object(str, filename, start, flags)
+    var co = _compile.ast_compile_object(mod, filename, flags, optimize)
+    return co
 }
 
 _compile.ast_obj2mod = function(source, compile_mode) {
-    throw new exceptions.NotImplementedError.$pyclass('_compile.ast_obj2mod is not implemented yet')
+    // mod_ty res;
+    // PyObject *req_type[3];
+    // char *req_name[3];
+    // int isinstance;
+    //
+    // req_type[0] = (PyObject*)Module_type;
+    // req_type[1] = (PyObject*)Expression_type;
+    // req_type[2] = (PyObject*)Interactive_type;
+    //
+    // req_name[0] = "Module";
+    // req_name[1] = "Expression";
+    // req_name[2] = "Interactive";
+    //
+    // assert(0 <= mode && mode <= 2);
+    //
+    // init_types();
+    //
+    // isinstance = PyObject_IsInstance(ast, req_type[mode]);
+    // if (isinstance == -1)
+    //     return NULL;
+    // if (!isinstance) {
+    //     PyErr_Format(PyExc_TypeError, "expected %s node, got %.400s",
+    //                  req_name[mode], Py_TYPE(ast)->tp_name);
+    //     return NULL;
+    // }
+    // if (obj2ast_mod(ast, &res, arena) != 0) {
+    //     return NULL;
+    // } else {
+    //    return res;
+    // }
 }
 
 _compile.ast_validate = function(mod) {
@@ -51,156 +84,176 @@ _compile.ast_compile_object = function(mod, filename, cf, optimize) {
 }
 
 _compile.ast_from_string_object = function(str, filename, start, flags) {
-    var mod = null;
-    var localflags = null;
-    var err = null;
-    var iflags = 0;
+    var mod = null
+    var localflags = null
+    var err = null
+    var iflags = 0
 
-    var n = batavia.builtins._compile.parse_string_object(s, filename,
+    var n = _compile.parse_string_object(str, filename,
                                          _PyParser_Grammar, start, err,
-                                         iflags);
+                                         iflags)
     if (flags == null) {
-        localflags.cf_flags = 0;
-        flags = localflags;
+        // localflags.cf_flags = 0
+        // flags = localflags
     }
     if (n) {
-        flags.cf_flags |= iflags & PyCF_MASK;
-        mod = batavia.builtins._compile.ast_from_node_object(n, flags, filename);
+        // flags.cf_flags |= iflags & PyCF_MASK
+        mod = _compile.ast_from_node_object(n, flags, filename)
     } else {
-        err_input(err);
-        mod = null;
+        // err_input(err)
+        mod = null
     }
-    return mod;
+    return mod
 }
 
-_compile.parse_string_object = function(s, filename, grammar, start, iflags) {
-    var exec_input = start == file_input;
-    var err_ret = new ErrorDetail(filename);
+_compile.source_as_string = function(cmd, funcname, what) {
+    var str
 
-    var tok = new tokenizer.Tokenizer(s, exec_input);
-    tok.filename = err_ret.filename;
-    return batavia.builtins._compile.parsetok(tok, grammar, start, err_ret, flags);
+    if (types.isinstance(cmd, types.Str)) {
+        str = cmd
+    } else if (types.isinstance(cmd, types.Bytes)) {
+        str = cmd.decode('utf8')
+    } else if (types.isinstance(cmd, types.ByteArray)) {
+        throw new exceptions.NotImplementedError.$pyclass('_compile.source_as_string is not implemented yet for bytearray')
+    } else {
+        PyErr_Format(PyExc_TypeError,
+          "%s() arg 1 must be a %s object",
+          funcname, what);
+        return null
+    }
+
+    return str
 }
+
+_compile.parse_string_object = function(s, filename, grammar, start, flags) {
+    var exec_input = start.__eq__(_compile.Py_file_input)
+    var err_ret = new ErrorDetail(filename)
+
+    var tok = new tokenizer.Tokenizer(s, exec_input)
+    tok.filename = err_ret.filename
+    return _compile.parsetok(tok, grammar, start, err_ret, flags)
+}
+
 _compile.parsetok = function(tok, g, start, err_ret, flags) {
-    var ps = null;
-    var n = null;
-    var started = 0;
+    var ps = null
+    var n = null
+    var started = 0
 
-    ps = batavia.builtins._compile.new_parser(g, start);
+    ps = new Parser(g, start)
 
     for (;;) {
-        var a, b;
-        var type;
-        var len;
-        var str;
-        var col_offset;
+        var a, b
+        var type
+        var len
+        var str
+        var col_offset
 
-        var result = tok.get_token();
-        type = result[0];
-        a = result[1];
-        b = result[2];
-        if (type == ERRORTOKEN) {
-            err_ret.error = tok.done;
-            break;
+        var result = tok.get_token()
+        type = result[0]
+        a = result[1]
+        b = result[2]
+        if (type == _compile.ERRORTOKEN) {
+            err_ret.error = tok.done
+            break
         }
-        if (type == ENDMARKER && started) {
-            type = NEWLINE; /* Add an extra newline */
-            started = 0;
+        if (type == _compile.ENDMARKER && started) {
+            type = _compile.NEWLINE; /* Add an extra newline */
+            started = 0
             /* Add the right number of dedent tokens,
                except if a certain flag is given --
                codeop.py uses this. */
             if (tok.indent) {
-                tok.pendin = -tok.indent;
-                tok.indent = 0;
+                tok.pendin = -tok.indent
+                tok.indent = 0
             }
         }
         else
-            started = 1;
-        len = b - a; /* XXX this may compute null - null */
-        str = '';
+            started = 1
+        len = b - a /* XXX this may compute null - null */
+        str = ''
         if (len > 0) {
-          str = tok.buf.slice(a, b);
+          str = tok.buf.slice(a, b)
         }
-        str += '\0';
+        str += '\0'
 
         if (a >= tok.line_start) {
-            col_offset = a - tok.line_start;
+            col_offset = a - tok.line_start
         } else {
-            col_offset = -1;
+            col_offset = -1
         }
 
-        err_ret.error = ps.AddToken(type, str, tok.lineno, col_offset, err_ret.expected)
-        if (err_ret.error != E_OK) {
-            if (err_ret.error != E_DONE) {
-                err_ret.token = type;
+        err_ret.error = ps.add_token(type, str, tok.lineno, col_offset, err_ret.expected)
+        if (err_ret.error != _compile.E_OK) {
+            if (err_ret.error != _compile.E_DONE) {
+                err_ret.token = type
             }
-            break;
+            break
         }
     }
 
-    if (err_ret.error == E_DONE) {
-        n = ps.p_tree;
-        ps.p_tree = null;
+    if (err_ret.error == _compile.E_DONE) {
+        n = ps.p_tree
+        ps.p_tree = null
 
         /* Check that the source for a single input statement really
            is a single statement by looking at what is left in the
            buffer after parsing.  Trailing whitespace and comments
            are OK.  */
         if (start == single_input) {
-            cur = tok.cur;
-            c = tok.buf[tok.cur];
+            cur = tok.cur
+            c = tok.buf[tok.cur]
 
             for (;;) {
                 while (c == ' ' || c == '\t' || c == '\n' || c == '\x0c') {
-                    c = tok.buf[++tok.cur];
+                    c = tok.buf[++tok.cur]
                 }
 
                 if (!c) {
-                    break;
+                    break
                 }
 
                 if (c != '#') {
-                    err_ret.error = E_BADSINGLE;
-                    n = null;
-                    break;
+                    err_ret.error = _compile.E_BADSINGLE
+                    n = null
+                    break
                 }
 
                 /* Suck up comment. */
                 while (c && c != '\n') {
-                    c = tok.buf[++tok.cur];
+                    c = tok.buf[++tok.cur]
                 }
             }
         }
     } else {
-        n = null;
+        n = null
     }
 
     if (n == null) {
-        if (tok.done == E_EOF) {
-            err_ret.error = E_EOF;
+        if (tok.done == _compile.E_EOF) {
+            err_ret.error = _compile.E_EOF
         }
-        err_ret.lineno = tok.lineno;
-        var len;
-        err_ret.offset = tok.cur;
-        len = tok.inp;
-        err_ret.text = '';
+        err_ret.lineno = tok.lineno
+        var len
+        err_ret.offset = tok.cur
+        len = tok.inp
+        err_ret.text = ''
         if (len > 0) {
-            err_ret.text = tok.buf.slice(0, len).join('');
+            err_ret.text = tok.buf.slice(0, len).join('')
         }
-        err_ret += '\0';
+        err_ret += '\0'
     } else if (tok.encoding != null) {
         /* 'nodes->n_str' uses PyObject_*, while 'tok.encoding' was
          * allocated using PyMem_
          */
-        var r = PyNode_New(encoding_decl);
-        r.n_str = tok.encoding;
-        tok.encoding = null;
-        r.n_nchildren = 1;
-        r.n_child = n;
-        n = r;
+        var r = PyNode_New(encoding_decl)
+        r.n_str = tok.encoding
+        tok.encoding = null
+        r.n_nchildren = 1
+        r.n_child = n
+        n = r
     }
 
-    return n;
+    return n
 }
 
 _compile['Py_single_input'] = new types.Int(256)
