@@ -286,7 +286,7 @@ function powi(x, y) {
     }
     if (Number(y) >= MAX_INT) {
         if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
-            return powu(x,y)
+            return powu(x, y)
         }
         if (Number(y) <= MAX_FLOAT) {
             if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
