@@ -32,7 +32,7 @@ Stack.prototype.push = function(dfa, parent) {
     var top = null
     if (this.s_top == 0) {
         console.log("s_push: parser stack overflow\n")
-        return E_NOMEM
+        return tokenizer.E_NOMEM
     }
     top = this.s_base[--this.s_top]
     top.s_dfa = dfa
@@ -69,7 +69,6 @@ var Parser = function(g, start) {
 }
 
 Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_ret) {
-    console.log("add token", type, str, lineno, col_offset, expected_ret)
     var ps = this
     var ilabel = 0
     var err = 0
@@ -113,7 +112,7 @@ Parser.prototype.add_token = function(type, str, lineno, col_offset, expected_re
                 if ((err = ps.p_stack.shift(type, str,
                                 x, lineno, col_offset)) > 0) {
                     // D(printf(" MemError: shift.\n"))
-                    return err;
+                    return err
                 }
                 // D(printf(" Shift.\n"))
                 /* Pop while we are in an accept-only state */

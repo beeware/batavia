@@ -7,6 +7,11 @@
    never returns E_OK. */
 var types = require('../../types')
 var builtins = require('../../builtins')
+var exceptions = require('../../core/exceptions')
+var None = require('../../core').None
+var utils = require('../../types/utils')
+var errors = require('../../errors')
+
 
 // modeled closely after tokenizer.c.
 var tokenizer = {
@@ -398,7 +403,7 @@ Tokenizer.prototype.get_token = function() {
 
     // nothing left to process
     if (tok.cur >= tok.buf.length) {
-        return builtins.None
+        return None
     }
 
     var process_line = function() {
@@ -542,7 +547,7 @@ Tokenizer.prototype.again = function() {
         } else {
             marker = tokenizer.ERRORTOKEN
         }
-        return [marker, builtins.None, builtins.None, 5]
+        return [marker, None, None, 5]
     }
 
     // Identifier (most frequent token!)
@@ -556,7 +561,7 @@ Tokenizer.prototype.again = function() {
         if (tok.level > 0) {
             // process next line
             tok.continue_processing = true
-            return builtins.None
+            return None
         }
         tok.cont_line = 0
         if (tok.async_def) {
@@ -669,7 +674,7 @@ Tokenizer.prototype.again = function() {
     }
 
     var result = tok.letter_quote(c)
-    if (result !== builtins.None) {
+    if (result !== None) {
         return result
     }
 
@@ -854,7 +859,7 @@ Tokenizer.prototype.letter_quote = function(c) {
         p_end = tok.cur
         return [tokenizer.STRING, p_start, p_end]
     }
-    return builtins.None
+    return None
 }
 
 Tokenizer.prototype.fraction = function(c) {
@@ -956,5 +961,121 @@ Tokenizer.prototype.indenterror = function() {
     }
     return 0
 }
+
+var ErrorDetail = function() {
+    this.error = 0
+    this.filename = null
+    this.lineno = 0
+    this.offset = 0
+    this.text = null
+    this.token = 0
+    this.expected = 0
+}
+
+tokenizer.err_input = function(err) {
+    var v
+    var w
+    var errtype
+    var errtext
+    var msg_obj = null
+    var msg = null
+    var offset = err.offset
+
+    errtype = exceptions.SyntaxError
+    switch (err.error) {
+    case tokenizer.E_ERROR:
+        return
+    case tokenizer.E_SYNTAX:
+        errtype = exceptions.IndentationError
+        if (err.expected == tokenizer.INDENT) {
+            msg = "expected an indented block"
+        } else if (err.token == tokenizer.INDENT) {
+            msg = "unexpected indent"
+        } else if (err.token == tokenizer.DEDENT) {
+            msg = "unexpected unindent"
+        } else {
+            errtype = exceptions.SyntaxError
+            msg = "invalid syntax"
+        }
+        break
+    case tokenizer.E_TOKEN:
+        msg = "invalid token"
+        break
+    case tokenizer.E_EOFS:
+        msg = "EOF while scanning triple-quoted string literal"
+        break
+    case tokenizer.E_EOLS:
+        msg = "EOL while scanning string literal"
+        break
+    case tokenizer.E_INTR:
+        if (!PyErr_Occurred())
+            PyErr_SetNone(exceptions.KeyboardInterrupt)
+        return
+    case tokenizer.E_NOMEM:
+        return new exceptions.NoMemory()
+        return
+    case tokenizer.E_EOF:
+        msg = "unexpected EOF while parsing"
+        break
+    case tokenizer.E_TABSPACE:
+        errtype = exceptions.TabError
+        msg = "inconsistent use of tabs and spaces in indentation"
+        break
+    case tokenizer.E_OVERFLOW:
+        msg = "expression too long"
+        break
+    case tokenizer.E_DEDENT:
+        errtype = exceptions.IndentationError
+        msg = "unindent does not match any outer indentation level"
+        break
+    case tokenizer.E_TOODEEP:
+        errtype = exceptions.IndentationError
+        msg = "too many levels of indentation"
+        break
+    case tokenizer.E_DECODE: {
+        var res = PyErr_Fetch()
+        var value = res.value
+        msg = "unknown decode error"
+        if (value != null) {
+            msg_obj = value.__str__()
+        }
+        break
+    }
+    case tokenizer.E_LINECONT:
+        msg = "unexpected character after line continuation character"
+        break
+
+    case tokenizer.E_IDENTIFIER:
+        msg = "invalid character in identifier"
+        break
+    case tokenizer.E_BADSINGLE:
+        msg = "multiple statements found while compiling a single statement"
+        break
+    default:
+        fprintf(stderr, "error=%d\n", err.error)
+        msg = "unknown parsing error"
+        break
+    }
+    /* err.text may not be UTF-8 in case of decoding errors.
+       Explicitly convert to an object. */
+    if (!err.text) {
+        errtext = None
+    } else {
+        errtext = err.text
+    }
+    v = new types.Tuple([err.filename, new types.Int(err.lineno),
+                        new types.Int(offset), errtext])
+    if (v != null) {
+        if (msg_obj) {
+            w = new types.Tuple([msg_obj, v])
+        } else {
+            w = new types.Tuple([msg, v])
+        }
+    } else {
+        w = null
+    }
+    errors.PyErr_SetObject(errtype, w)
+}
+
 
 module.exports = tokenizer

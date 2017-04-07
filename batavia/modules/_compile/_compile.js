@@ -7,6 +7,8 @@ var exceptions = require('../../core/exceptions')
 var _PyParser_Grammar = require('./ast/graminit')
 var ast_check = require('./ast/Python-ast').ast_check
 var Parser = require('./parser')
+var Compiler = require('./compiler')
+var future = require('./future')
 
 var ErrorDetail = function(filename) {
   this.filename = filename
@@ -38,6 +40,9 @@ _compile.ast_check = function(obj) {
 _compile.compile_string_object = function(str, filename, start, optimize) {
     var flags = null
     var mod = _compile.ast_from_string_object(str, filename, start, flags)
+    if (mod == null) {
+        return null
+    }
     var co = _compile.ast_compile_object(mod, filename, flags, optimize)
     return co
 }
@@ -79,19 +84,58 @@ _compile.ast_validate = function(mod) {
     throw new exceptions.NotImplementedError.$pyclass('_compile.ast_validate is not implemented yet')
 }
 
-_compile.ast_compile_object = function(mod, filename, cf, optimize) {
-    throw new exceptions.NotImplementedError.$pyclass('_compile.ast_compile_object is not implemented yet')
+_compile.ast_compile_object = function(mod, filename, flags, optimize) {
+    var co = null
+    var local_flags = null
+    var merged
+
+
+    // TODO: support docstrings
+    // if (!__doc__) {
+    //     __doc__ = PyUnicode_InternFromString("__doc__");
+    //     if (!__doc__)
+    //         return null;
+    // }
+
+    var c = new Compiler()
+
+    c.c_filename = filename
+    c.c_future = future.PyFuture_FromASTObject(mod, filename)
+    if (c.c_future == null) {
+        return co
+    }
+    if (!flags) {
+        local_flags.cf_flags = 0
+        flags = local_flags
+    }
+    merged = c.c_future.ff_features | flags.cf_flags
+    c.c_future.ff_features = merged
+    flags.cf_flags = merged
+    c.c_flags = flags
+    c.c_optimize = (optimize == -1) ? Py_OptimizeFlag : optimize
+    c.c_nestlevel = 0
+
+    c.c_st = PySymtable_BuildObject(mod, filename, c.c_future)
+    if (c.c_st == NULL) {
+        if (!PyErr_Occurred())
+            PyErr_SetString(PyExc_SystemError, "no symtable")
+        return co;
+    }
+    co = compiler_mod(c, mod)
+
+    return co
 }
 
 _compile.ast_from_string_object = function(str, filename, start, flags) {
     var mod = null
     var localflags = null
-    var err = null
     var iflags = 0
 
-    var n = _compile.parse_string_object(str, filename,
-                                         _PyParser_Grammar, start, err,
-                                         iflags)
+    var res = _compile.parse_string_object(str, filename,
+                                           _PyParser_Grammar, start, iflags)
+    var n = res.n
+    var err = res.error
+
     if (flags == null) {
         // localflags.cf_flags = 0
         // flags = localflags
@@ -100,7 +144,7 @@ _compile.ast_from_string_object = function(str, filename, start, flags) {
         // flags.cf_flags |= iflags & PyCF_MASK
         mod = _compile.ast_from_node_object(n, flags, filename)
     } else {
-        // err_input(err)
+        tokenizer.err_input(err)
         mod = null
     }
     return mod
@@ -131,7 +175,11 @@ _compile.parse_string_object = function(s, filename, grammar, start, flags) {
 
     var tok = new tokenizer.Tokenizer(s, exec_input)
     tok.filename = err_ret.filename
-    return _compile.parsetok(tok, grammar, start, err_ret, flags)
+    var n = _compile.parsetok(tok, grammar, start, err_ret, flags)
+    return {
+      n: n,
+      error: err_ret
+    }
 }
 
 _compile.parsetok = function(tok, g, start, err_ret, flags) {
