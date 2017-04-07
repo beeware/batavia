@@ -581,11 +581,16 @@ Bool.prototype.__or__ = function(other) {
  **************************************************/
 
 Bool.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ifloordiv__ has not been implemented')
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        return utils.inplace_call('__floordiv__', '//=', this, other)
+    }
 }
 
 Bool.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__itruediv__ has not been implemented')
+    return utils.inplace_call('__truediv__', '/=', this, other)
 }
 
 Bool.prototype.__iadd__ = function(other) {
@@ -593,39 +598,44 @@ Bool.prototype.__iadd__ = function(other) {
 }
 
 Bool.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__isub__ has not been implemented')
+    return utils.inplace_call('__sub__', '-=', this, other)
 }
 
 Bool.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__imul__ has not been implemented')
+    return utils.inplace_call('__mul__', '*=', this, other)
 }
 
 Bool.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__imod__ has not been implemented')
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        return utils.inplace_call('__mod__', '%=', this, other)
+    }
 }
 
 Bool.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ipow__ has not been implemented')
+    return utils.inplace_call('__pow__', '**=', this, other)
 }
 
 Bool.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ilshift__ has not been implemented')
+    return utils.inplace_call('__lshift__', '<<=', this, other)
 }
 
 Bool.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__irshift__ has not been implemented')
+    return utils.inplace_call('__rshift__', '>>=', this, other)
 }
 
 Bool.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__iand__ has not been implemented')
+    return utils.inplace_call('__and__', '&=', this, other)
 }
 
 Bool.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ixor__ has not been implemented')
+    return utils.inplace_call('__xor__', '^=', this, other)
 }
 
 Bool.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bool.__ior__ has not been implemented')
+    return utils.inplace_call('__or__', '|=', this, other)
 }
 
 /**************************************************
