@@ -108,7 +108,13 @@ NoneType.prototype.__div__ = function(other) {
 }
 
 NoneType.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    var types = require('../../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    }
 }
 
 NoneType.prototype.__truediv__ = function(other) {
@@ -118,7 +124,7 @@ NoneType.prototype.__truediv__ = function(other) {
 NoneType.prototype.__mul__ = function(other) {
     var types = require('../../types')
 
-    if (types.isinstance(other, [types.List, types.Tuple, types.Str])) {
+    if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'NoneType'")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'NoneType' and '" + basic_types.type_name(other) + "'")
@@ -126,7 +132,13 @@ NoneType.prototype.__mul__ = function(other) {
 }
 
 NoneType.prototype.__mod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    var types = require('../../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    }
 }
 
 NoneType.prototype.__add__ = function(other) {
@@ -166,7 +178,13 @@ NoneType.prototype.__or__ = function(other) {
  **************************************************/
 
 NoneType.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    var types = require('../../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    }
 }
 
 NoneType.prototype.__itruediv__ = function(other) {
@@ -184,7 +202,7 @@ NoneType.prototype.__isub__ = function(other) {
 NoneType.prototype.__imul__ = function(other) {
     var types = require('../../types')
 
-    if (types.isinstance(other, [types.List, types.Tuple, types.Str])) {
+    if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'NoneType'")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'NoneType' and '" + basic_types.type_name(other) + "'")
@@ -192,7 +210,13 @@ NoneType.prototype.__imul__ = function(other) {
 }
 
 NoneType.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    var types = require('../../types')
+
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+    }
 }
 
 NoneType.prototype.__ipow__ = function(other) {

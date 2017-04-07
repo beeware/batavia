@@ -1,7 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
 
-import unittest
-
 
 class NoneTypeTests(TranspileTestCase):
     def test_setattr(self):
@@ -27,12 +25,6 @@ class BinaryNoneTypeOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'None'
 
     not_implemented = [
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
-
-        'test_multiply_bytes',
-        'test_multiply_bytearray',
     ]
 
 
@@ -40,10 +32,4 @@ class InplaceNoneTypeOperationTests(InplaceOperationTestCase, TranspileTestCase)
     data_type = 'None'
 
     not_implemented = [
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
-
-        'test_multiply_bytes',
-        'test_multiply_bytearray',
     ]
