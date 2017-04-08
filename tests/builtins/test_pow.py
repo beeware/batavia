@@ -117,7 +117,6 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_bool_NotImplemented',
         'test_bool_range',
         'test_bool_set',
-        'test_bool_slice',
         'test_bool_str',
         'test_bool_tuple',
 

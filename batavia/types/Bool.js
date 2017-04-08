@@ -258,7 +258,7 @@ Bool.prototype.__pow__ = function(other) {
             if (types.isinstance(other, types.Int) && other.__ge__(new types.Float(0.0))) {
                 return new types.Int(Math.pow(1, other.valueOf()))
             } else if (types.isinstance(other, types.Complex)) {
-                return new types.Complex("1")
+                return new types.Complex('1')
             } else {
                 return new types.Float(Math.pow(1.0, other.valueOf()))
             }
@@ -344,7 +344,7 @@ Bool.prototype.__mul__ = function(other) {
         if (this.valueOf()) {
             return other
         } else {
-            return new types.Complex("0j")
+            return new types.Complex('0j')
         }
     } else if (types.isinstance(other, types.Str)) {
         if (this.valueOf()) {
@@ -356,7 +356,7 @@ Bool.prototype.__mul__ = function(other) {
         if (this.valueOf()) {
             return other
         } else {
-            return new types.Bytes("")
+            return new types.Bytes('')
         }
     } else if (types.isinstance(other, types.Tuple)) {
         if (this.valueOf()) {
@@ -374,7 +374,7 @@ Bool.prototype.__mul__ = function(other) {
         if (this.valueOf()) {
             return new types.Bytearray(other.valueOf())
         } else {
-            return new types.Bytearray(new types.Bytes(""))
+            return new types.Bytearray(new types.Bytes(''))
         }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
