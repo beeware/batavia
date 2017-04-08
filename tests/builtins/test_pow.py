@@ -105,20 +105,7 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
     functions = ["pow"]
 
     not_implemented = [
-        'test_bool_bytearray',
-        'test_bool_bytes',
-        'test_bool_class',
-        'test_bool_complex',
-        'test_bool_dict',
-        'test_bool_frozenset',
         'test_bool_int',
-        'test_bool_list',
-        'test_bool_None',
-        'test_bool_NotImplemented',
-        'test_bool_range',
-        'test_bool_set',
-        'test_bool_str',
-        'test_bool_tuple',
 
         'test_bytearray_bool',
         'test_bytearray_bytearray',
