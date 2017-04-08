@@ -297,11 +297,6 @@ function powi(x, y) {
             }
         }
         if (Number(y) <= MAX_FLOAT) {
-            if (x.real === 0) {
-                throw new exceptions.ZeroDivisionError.$pyclass(
-                    '0.0 to a negative or complex power'
-                )
-            }
             throw new exceptions.OverflowError.$pyclass(
                 'complex exponentiation'
             )
@@ -310,19 +305,19 @@ function powi(x, y) {
                 'int too large to convert to float'
             )
         }
-    }
-    if (Number(y) <= MIN_FLOAT) {
+    } else if (Number(y) <= MIN_FLOAT) {
         throw new exceptions.OverflowError.$pyclass(
             'int too large to convert to float'
         )
-    }
-    if (y > 100 || y < -100) {
-        cn = new Complex(Number(y), 0)
-        return powc(x, cn)
-    } else if (y > 0) {
-        return powu(x, y)
     } else {
-        return quot(new Complex(1, 0), powu(x, -y))
+        if (y > 100 || y < -100) {
+            cn = new Complex(Number(y), 0)
+            return powc(x, cn)
+        } else if (y > 0) {
+            return powu(x, y)
+        } else {
+            return quot(new Complex(1, 0), powu(x, -y))
+        }
     }
 }
 function __pow__(x, y, inplace) {
