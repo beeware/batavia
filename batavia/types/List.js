@@ -362,27 +362,50 @@ List.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
-        if (index.start === null) {
+        if (index.start === None) {
             start = undefined
+        } else if (!(types.isinstance(index.start, types.Int))) {
+            if (index.start.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                start = index.start.__index__()
+            }
         } else {
-            start = index.start
+            start = index.start.int32()
         }
-        if (index.stop === null) {
-            stop = undefined
-        } else {
-            stop = index.stop
-        }
-        step = index.step
 
-        if (step === 0) {
-            throw new exceptions.ValueError.$pyclass('slice step cannot be zero')
+        if (index.stop === None) {
+            stop = undefined
+        } else if (!(types.isinstance(index.stop, types.Int))) {
+            if (index.stop.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                stop = index.stop.__index__()
+            }
+        } else {
+            stop = index.stop.int32()
+        }
+
+        if (index.step === None) {
+            step = 1
+        } else if (!(types.isinstance(index.step, types.Int))) {
+            if (index.step.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                step = index.step.__index__()
+            }
+        } else {
+            step = index.step.int32()
+            if (step === 0) {
+                throw new exceptions.ValueError.$pyclass('slice step cannot be zero')
+            }
         }
 
         // clone list
         var result = Array_.prototype.slice.call(this)
 
         // handle step
-        if (step === undefined || step === 1) {
+        if (step === 1) {
             return new List(result.slice(start, stop))
         } else if (step > 0) {
             result = result.slice(start, stop)

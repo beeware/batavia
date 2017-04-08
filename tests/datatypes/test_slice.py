@@ -16,6 +16,21 @@ class SliceTests(TranspileTestCase):
             print("x[5::2] = ", x[5::2])
             print("x[:5:2] = ", x[:5:2])
             print("x[2:8:2] = ", x[2:8:2])
+
+            print("x[::-1] = ", x[::-1])
+            print("x[-5:-1:-1] = ", x[-5:-1:-1])
+            print("x[-1:0:-1] = ", x[-1:0:-1])
+            """)
+
+        # Invalid slice indices
+        self.assertCodeExecution("""
+            x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+            print("x[2::0] = ", x[2::0])
+            print("x[::2.5] = ", x[::2.5])
+            print("x[::'a'] = ", x[::'a'])
+            print("x['a':2] = ", x['a':2])
+            print("x[1:'a':7] = ", x[1:'a':7])
+            print("x[1:None] = ", x[1:None])
             """)
 
     def test_slice_range(self):
@@ -30,6 +45,21 @@ class SliceTests(TranspileTestCase):
             print("x[5::2] = ", x[5::2])
             print("x[:5:2] = ", x[:5:2])
             print("x[2:8:2] = ", x[2:8:2])
+
+            print("x[::-1] = ", x[::-1])
+            print("x[-5:-1:-1] = ", x[-5:-1:-1])
+            print("x[-1:0:-1] = ", x[-1:0:-1])
+            """)
+
+        # Invalid slice indices
+        self.assertCodeExecution("""
+            x = range(0, 10)
+            print("x[2::0] = ", x[2::0])
+            print("x[::2.5] = ", x[::2.5])
+            print("x[::'a'] = ", x[::'a'])
+            print("x['a':2] = ", x['a':2])
+            print("x[1:'a':7] = ", x[1:'a':7])
+            print("x[1:None] = ", x[1:None])
             """)
 
     def test_slice_string(self):
@@ -44,6 +74,21 @@ class SliceTests(TranspileTestCase):
             print("x[5::2] = ", x[5::2])
             print("x[:5:2] = ", x[:5:2])
             print("x[2:8:2] = ", x[2:8:2])
+
+            print("x[::-1] = ", x[::-1])
+            print("x[-5:-1:-1] = ", x[-5:-1:-1])
+            print("x[-1:0:-1] = ", x[-1:0:-1])
+            """)
+
+        # Invalid slice indices
+        self.assertCodeExecution("""
+            x = "0123456789a"
+            print("x[2::0] = ", x[2::0])
+            print("x[::2.5] = ", x[::2.5])
+            print("x[::'a'] = ", x[::'a'])
+            print("x['a':2] = ", x['a':2])
+            print("x[1:'a':7] = ", x[1:'a':7])
+            print("x[1:None] = ", x[1:None])
             """)
 
     def test_slice_tuple(self):
@@ -58,6 +103,21 @@ class SliceTests(TranspileTestCase):
             print("x[5::2] = ", x[5::2])
             print("x[:5:2] = ", x[:5:2])
             print("x[2:8:2] = ", x[2:8:2])
+
+            print("x[::-1] = ", x[::-1])
+            print("x[-5:-1:-1] = ", x[-5:-1:-1])
+            print("x[-1:0:-1] = ", x[-1:0:-1])
+            """)
+
+        # Invalid slice indices
+        self.assertCodeExecution("""
+            x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+            print("x[2::0] = ", x[2::0])
+            print("x[::2.5] = ", x[::2.5])
+            print("x[::'a'] = ", x[::'a'])
+            print("x['a':2] = ", x['a':2])
+            print("x[1:'a':7] = ", x[1:'a':7])
+            print("x[1:None] = ", x[1:None])
             """)
 
 

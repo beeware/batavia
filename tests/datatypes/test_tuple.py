@@ -94,7 +94,6 @@ class TupleTests(TranspileTestCase):
             print(e)
         """)
 
-
     def test_index(self):
         self.assertCodeExecution("""
         x = (1, 2, 2, 3)
@@ -124,6 +123,54 @@ class TupleTests(TranspileTestCase):
             print(e)
         """)
 
+    def test_slice(self):
+        # Full slice
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[:])
+            """)
+
+        # Left bound slice
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[1:])
+            """)
+
+        # Right bound slice
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[:4])
+            """)
+
+        # Slice bound in both directions
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[1:4])
+            """)
+
+        # Slice with step 0 (error)
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[::0])
+            """)
+
+        # Slice with revese step
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[::-1])
+            """)
+
+        # Slice -1 stop with reverse step
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[-5:-1:-1])
+            """)
+
+        # Slice -1 start with revese step
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print(x[-1:0:-1])
+            """)
 
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'

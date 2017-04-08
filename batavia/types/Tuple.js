@@ -5,6 +5,7 @@ var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var TupleIterator = require('./TupleIterator')
+var None = require('../core').None
 
 /*************************************************************************
  * A Python Tuple type
@@ -326,33 +327,73 @@ Tuple.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
-        start = index.start
-
-        if (index.stop === null) {
-            stop = this.length
+        if (index.start === None) {
+            start = undefined
+        } else if (!types.isinstance(index.start, types.Int)) {
+            if (index.start.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                start = index.start.__index__()
+            }
         } else {
-            stop = index.stop
+            start = index.start.int32()
         }
 
-        step = index.step
-
-        if (step !== 1) {
-            let slicedArray = []
-            if (step >= 0) {
-                slicedArray = Array_.prototype.slice.call(this, start, stop)
+        if (index.stop === None) {
+            stop = undefined
+        } else if (!types.isinstance(index.stop, types.Int)) {
+            if (index.stop.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
             } else {
-                slicedArray = Array_.prototype.reverse.call(this).slice.call(this, stop, start)
+                stop = index.stop.__index__()
+            }
+        } else {
+            stop = index.stop.int32()
+        }
+
+        if (index.step === None) {
+            step = 1
+        } else if (!(types.isinstance(index.step, types.Int))) {
+            if (index.step.__index__ === undefined) {
+                throw new exceptions.TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+            } else {
+                step = index.step.__index__()
+            }
+        } else {
+            step = index.step.int32()
+            if (step === 0) {
+                throw new exceptions.ValueError.$pyclass('slice step cannot be zero')
+            }
+        }
+
+        // clone tuple
+        var slicedArray = Array_.prototype.slice.call(this)
+        if (step === 1) {
+            return new Tuple(slicedArray.slice(start, stop))
+        } else if (step > 0) {
+            slicedArray = slicedArray.slice(start, stop)
+        } else {
+            // adjust start/stop to swap inclusion/exlusion in slice
+            if (start !== undefined && start !== -1) {
+                start = start + 1
+            } else if (start === -1) {
+                start = slicedArray.length
+            }
+            if (stop !== undefined && stop !== -1) {
+                stop = stop + 1
+            } else if (stop === -1) {
+                stop = slicedArray.length
             }
 
-            if (!slicedArray.length || this.length < start) return new Tuple()
-
-            const steppedArray = []
-            for (let i = 0; i < slicedArray.length; i += Math.abs(step)) steppedArray.push(slicedArray[i])
-
-            return new Tuple(steppedArray)
+            slicedArray = slicedArray.slice(stop, start).reverse()
         }
 
-        return new Tuple(Array_.prototype.slice.call(this, start, stop))
+        var steppedArray = []
+        for (var i = 0; i < slicedArray.length; i = i + Math.abs(step)) {
+            steppedArray.push(slicedArray[i])
+        }
+
+        return new Tuple(steppedArray)
     } else {
         var msg = 'tuple indices must be integers or slices, not '
         if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
