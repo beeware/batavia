@@ -281,14 +281,15 @@ function powc(x, y) {
     return new Complex(r, im)
 }
 function powi(x, y) {
+    var cn
     if (x.real === 0 && x.imag === 0) {
         return new Complex(0, 0)
     }
     if (Number(y) >= MAX_INT) {
         if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
             if (y > 100 || y < -100) {
-                var cn = new Complex(Number(y), 0)
-                return powc(x, cn);
+                cn = new Complex(Number(y), 0)
+                return powc(x, cn)
             } else if (y > 0) {
                 return powu(x, y)
             } else {
@@ -316,7 +317,7 @@ function powi(x, y) {
         )
     }
     if (y > 100 || y < -100) {
-        var cn = new Complex(Number(y), 0)
+        cn = new Complex(Number(y), 0)
         return powc(x, cn)
     } else if (y > 0) {
         return powu(x, y)
