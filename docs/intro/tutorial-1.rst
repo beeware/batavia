@@ -142,7 +142,7 @@ browser window:
     dom.document.title = 'Hello world'
 
     print('Find an element on the page...')
-    div = dom.document.getElementById('stdout')
+    div = dom.document.getElementById('pyconsole')
 
     print('... and set of that element.')
     div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
