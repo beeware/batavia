@@ -37,29 +37,20 @@ Slice.prototype.__repr__ = function() {
 
 Slice.prototype.__str__ = function() {
     var types = require('../types')
-    var start, stop, step
+    var output_vals = [this.start, this.stop, this.step]
+    var output_str = []
 
-    if (this.stop === None) {
-        stop = 'None'
-    } else if (types.isinstance(this.stop, types.Str)) {
-        stop = this.stop.__repr__()
-    } else {
-        stop = this.stop.__str__()
+    for (var i = 0, len = output_vals.length; i < len; i++) {
+        if (output_vals[i] === None) {
+            output_str.push('None')
+        } else if (types.isinstance(output_vals[i], types.Str)) {
+            output_str.push(output_vals[i].__repr__())
+        } else {
+            output_str.push(output_vals[i].__str__())
+        }
     }
 
-    if (this.start === None) {
-        start = 'None'
-    } else {
-        start = this.start
-    }
-
-    if (this.step === None) {
-        step = 'None'
-    } else {
-        step = this.step
-    }
-
-    return 'slice(' + start + ', ' + stop + ', ' + step + ')'
+    return 'slice(' + output_str[0] + ', ' + output_str[1] + ', ' + output_str[2] + ')'
 }
 
 /**************************************************
