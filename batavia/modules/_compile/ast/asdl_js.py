@@ -7,6 +7,7 @@ import asdl
 
 TABSIZE = 4
 MAX_COL = 120
+ESLINT_ENABLE = False
 
 reserved_words = set(['arguments', 'module'])
 
@@ -360,7 +361,7 @@ class Obj2ModVisitor(PickleVisitor):
         self.emit("", 0)
         # there's really nothing more we can do if this fails ...
         error = "expected some sort of %s, but got %%R" % name
-        format = "PyErr_Format(PyExc_TypeError, \"%s\", obj)"
+        format = "PyErr_Format(PyExc_TypeError, '%s', obj)"
         self.emit(format % error, 1, reflow=False)
         self.emit("return 1", 1)
         self.emit("}", 0)
@@ -371,7 +372,7 @@ class Obj2ModVisitor(PickleVisitor):
         for t in sum.types:
             line = "isinstance = types.isinstance(obj, %s_type)"
             self.emit(line % (t.name,), 1)
-            self.emit("if (isinstance == -1) {", 1)
+            self.emit("if (isinstance === -1) {", 1)
             self.emit("return 1", 2)
             self.emit("}", 1)
             self.emit("if (isinstance) {", 1)
@@ -399,7 +400,7 @@ class Obj2ModVisitor(PickleVisitor):
         for t in sum.types:
             line = "isinstance = types.isinstance(obj, %s_type)"
             self.emit(line % (t.name,), 1)
-            self.emit("if (isinstance == -1) {", 1)
+            self.emit("if (isinstance === -1) {", 1)
             self.emit("return 1", 2)
             self.emit("}", 1)
             self.emit("if (isinstance) {", 1)
@@ -410,7 +411,7 @@ class Obj2ModVisitor(PickleVisitor):
                 self.visitField(f, t.name, sum=sum, depth=2)
             args = [f.name for f in t.fields] + [a.name for a in sum.attributes]
             self.emit("out = %s(%s)" % (t.name, self.buildArgs(args)), 2)
-            self.emit("if (out == null) return 1", 2)
+            self.emit("if (out == null) { return 1 }", 2)
             self.emit("return 0", 2)
             self.emit("}", 1)
         self.sumTrailer(name, True)
@@ -477,11 +478,11 @@ class Obj2ModVisitor(PickleVisitor):
             self.emit("var len", depth+1)
             self.emit("var i", depth+1)
         self.emit("tmp = _PyObject_GetAttrId(obj, PyId_%s)" % field.name, depth+1)
-        self.emit("if (tmp == null) return 1", depth+1)
+        self.emit("if (tmp == null) { return 1 }", depth+1)
         if field.seq:
             self.emit("if (!PyList_Check(tmp)) {", depth+1)
-            self.emit("throw new exceptions.TypeError(\"%s field \\\"%s\\\" must "
-                      "be a list, not a \" + tmp.ob_type.tp_name)" %
+            self.emit("throw new exceptions.TypeError('%s field \\\"%s\\\" must "
+                      "be a list, not a ' + tmp.ob_type.tp_name)" %
                       (name, field.name),
                       depth+2, reflow=False)
             self.emit("return 1", depth+2)
@@ -491,24 +492,24 @@ class Obj2ModVisitor(PickleVisitor):
                 self.emit("%s = _Py_asdl_seq_new(len)" % field.name, depth+1)
             else:
                 self.emit("%s = _Py_asdl_seq_new(len)" % field.name, depth+1)
-            self.emit("if (%s == null) return 1" % field.name, depth+1)
+            self.emit("if (%s == null) { return 1 }" % field.name, depth+1)
             self.emit("for (i = 0; i < len; i++) {", depth+1)
             self.emit("var value", depth+2)
             self.emit("res = obj2ast_%s(PyList_GET_ITEM(tmp, i), value)" %
                       field.type, depth+2, reflow=False)
-            self.emit("if (res != 0) return 1", depth+2)
+            self.emit("if (res !== 0) { return 1 }", depth+2)
             self.emit("asdl_seq_SET(%s, i, value)" % field.name, depth+2)
             self.emit("}", depth+1)
         else:
             self.emit("res = obj2ast_%s(tmp, %s)" %
                       (field.type, field.name), depth+1)
-            self.emit("if (res != 0) return 1", depth+1)
+            self.emit("if (res !== 0) { return 1 }", depth+1)
 
         self.emit("tmp.clear()", depth+1)
         self.emit("} else {", depth)
         if not field.opt:
             message = "required field \\\"%s\\\" missing from %s" % (field.name, name)
-            format = "throw new exceptions.TypeError(\"%s\")"
+            format = "throw new exceptions.TypeError('%s')"
             self.emit(format % message, depth+1, reflow=False)
             self.emit("return 1", depth+1)
         else:
@@ -538,14 +539,14 @@ class PyTypesDeclareVisitor(PickleVisitor):
                 self.emit_identifier(a.name)
             self.emit("var %s_attributes = [" % name, 0)
             for a in prod.attributes:
-                self.emit('"%s",' % a.name, 1)
+                self.emit("'%s'," % a.name, 1)
             self.emit("]", 0)
         if prod.fields:
             for f in prod.fields:
                 self.emit_identifier(sanitize_name(f.name))
-            self.emit("var %s_fields =[" % name,0)
+            self.emit("var %s_fields =[" % name, 0)
             for f in prod.fields:
-                self.emit('"%s",' % f.name, 1)
+                self.emit("'%s'," % f.name, 1)
             self.emit("]", 0)
 
     def visitSum(self, sum, name):
@@ -555,7 +556,7 @@ class PyTypesDeclareVisitor(PickleVisitor):
                 self.emit_identifier(a.name)
             self.emit("var %s_attributes = [" % name, 0)
             for a in sum.attributes:
-                self.emit('"%s",' % a.name, 1)
+                self.emit("'%s'," % a.name, 1)
             self.emit("]", 0)
         ptype = ""
         if is_simple(sum):
@@ -574,16 +575,16 @@ class PyTypesDeclareVisitor(PickleVisitor):
                 self.emit_identifier(t.name)
             self.emit("var %s_fields = [" % cons.name, 0)
             for t in cons.fields:
-                self.emit('"%s",' % t.name, 1)
+                self.emit("'%s'," % t.name, 1)
             self.emit("]",0)
 
 class PyTypesVisitor(PickleVisitor):
 
     def visitModule(self, mod):
         self.emit("""
-
 var types = require('../../../types')
 var exceptions = require('../../../core/exceptions')
+var type_name = require('../../../core').type_name
 
 var AST_object = function() {
     this.dict = new types.Dict()
@@ -609,18 +610,20 @@ AST_object.prototype.init = function(args, kwarg) {
     var value = null
     var fields = null
     fields = _PyObject_GetAttrId(Py_TYPE(self), PyId__fields)
-    if (!fields)
+    if (!fields) {
         PyErr_Clear()
+    }
     if (fields) {
         numfields = PySequence_Size(fields)
-        if (numfields == -1)
+        if (numfields === -1) {
             return res
+        }
     }
     res = 0 /* if no error occurs, this stays 0 to the end */
     if (PyTuple_GET_SIZE(args) > 0) {
-        if (numfields != PyTuple_GET_SIZE(args)) {
-            throw new exceptions.TypeError(Py_TYPE(self).tp_name + " constructor takes " + (numfields == 0 ? "" : "either 0 or ") +
-                         numfield + " positional argument " + (numfields == 1 ? "" : "s"))
+        if (numfields !== PyTuple_GET_SIZE(args)) {
+            throw new exceptions.TypeError(type_name(self) + ' constructor takes ' + (numfields === 0 ? '' : 'either 0 or ') +
+                         numfield + ' positional argument ' + (numfields === 1 ? '' : 's'))
             res = -1
             return res
         }
@@ -632,8 +635,9 @@ AST_object.prototype.init = function(args, kwarg) {
                 return res
             }
             res = PyObject_SetAttr(self, name, PyTuple_GET_ITEM(args, i))
-            if (res < 0)
+            if (res < 0) {
                 return res
+            }
         }
     }
     if (kw) {
@@ -654,16 +658,17 @@ AST_object.prototype.reduce = function(unused) {
     _Py_IDENTIFIER(__dict__)
     var dict = _PyObject_GetAttrId(self, PyId___dict__)
     if (dict == null) {
-        if (PyErr_ExceptionMatches(PyExc_AttributeError))
+        if (PyErr_ExceptionMatches(PyExc_AttributeError)) {
             PyErr_Clear()
-        else
+        } else {
             return null
+        }
     }
     if (dict) {
-        res = Py_BuildValue("O()O", Py_TYPE(self), dict)
+        res = Py_BuildValue('O()O', Py_TYPE(self), dict)
         return res
     }
-    return Py_BuildValue("O()", Py_TYPE(self))
+    return Py_BuildValue('O()', Py_TYPE(self))
 }
 
 var make_type = function(type, base, fields) {
@@ -705,7 +710,7 @@ var ast2obj_int = function(b) {
 
 var obj2ast_singleton = function(obj) {
     if (obj != null && !types.isinstance(obj, types.Bool)) {
-        throw new exceptions.ValueError("AST singleton must be True, False, or None")
+        throw new exceptions.ValueError('AST singleton must be True, False, or None')
     }
     return obj
 }
@@ -720,28 +725,28 @@ var obj2ast_constant = function(obj) {
 
 var obj2ast_identifier = function(obj) {
     if (!types.isinstance(obj, types.Str) && obj != null) {
-        throw new exceptions.TypeError("AST identifier must be of type str")
+        throw new exceptions.TypeError('AST identifier must be of type str')
     }
     return obj2ast_object(obj)
 }
 
 var obj2ast_string = function(obj) {
     if (!types.isinstance(obj, [types.Bytes, types.Str])) {
-        throw new exceptions.TypeError("AST string must be of type str")
+        throw new exceptions.TypeError('AST string must be of type str')
     }
     return obj2ast_object(obj)
 }
 
 var obj2ast_bytes = function(obj) {
     if (!types.isinstance(obj, types.Bytes)) {
-        throw new exceptions.TypeError("AST bytes must be of type bytes")
+        throw new exceptions.TypeError('AST bytes must be of type bytes')
     }
     return obj2ast_object(obj)
 }
 
 var obj2ast_int = function(obj) {
     if (!types.isinstance(obj, [types.Int])) {
-        throw new exceptions.ValueError("invalid integer value: ", obj)
+        throw new exceptions.ValueError('invalid integer value: ', obj)
     }
     return obj.int32()
 }
@@ -769,7 +774,7 @@ var asdl_seq = function() {
     this.elements = null
 }
 
-var SIZE_MAX = (1<<31)-1
+var SIZE_MAX = (1 << 31) - 1
 var PY_SIZE_MAX = SIZE_MAX
 
 var _Py_asdl_seq_new = function(size) {
@@ -801,13 +806,11 @@ var asdl_seq_LEN = function(S) {
 var asdl_seq_SET = function(S, I, V) {
     S.elements[I] = V
 }
-
-
 """, 0, reflow=False)
 
         self.emit("var init_types = function() {",0)
-        self.emit("if (this.initialized) return 1", 1)
-        self.emit("if (add_ast_fields() < 0) return 0", 1)
+        self.emit("if (this.initialized) { return 1 }", 1)
+        self.emit("if (add_ast_fields() < 0) { return 0 } ", 1)
         for dfn in mod.dfns:
             self.visit(dfn)
         self.emit("initialized = 1", 1)
@@ -820,9 +823,9 @@ var asdl_seq_SET = function(S, I, V) {
             fields = name+"_fields"
         else:
             fields = "null"
-        self.emit('%s_type.prototype.__class__ = make_type("%s", AST_object, %s)' %
+        self.emit("%s_type.prototype.__class__ = make_type('%s', AST_object, %s)" %
                         (name, name, fields), 1)
-        self.emit("if (!%s_type) return 0" % name, 1)
+        self.emit("if (!%s_type) { return 0 }" % name, 1)
         if prod.attributes:
             self.emit("add_attributes(%s_type, %s_attributes)" %
                             (name, name), 1)
@@ -830,9 +833,9 @@ var asdl_seq_SET = function(S, I, V) {
             self.emit("add_attributes(%s_type, null, 0)" % name, 1)
 
     def visitSum(self, sum, name):
-        self.emit('%s_type.prototype.__class__ = make_type("%s", AST_object, null)' %
+        self.emit("%s_type.prototype.__class__ = make_type('%s', AST_object, null)" %
                   (name, name), 1)
-        self.emit("if (!%s_type) return 0" % name, 1)
+        self.emit("if (!%s_type) { return 0 }" % name, 1)
         if sum.attributes:
             self.emit("add_attributes(%s_type, %s_attributes, %d)" %
                             (name, name, len(sum.attributes)), 1)
@@ -849,11 +852,11 @@ var asdl_seq_SET = function(S, I, V) {
             fields = "null"
         self.emit('%s_type.prototype.__class__ = make_type("%s", %s_type, %s)' %
                             (cons.name, cons.name, name, fields), 1)
-        self.emit("if (!%s_type) return 0" % cons.name, 1)
+        self.emit("if (!%s_type) { return 0 }" % cons.name, 1)
         if simple:
             self.emit("%s_singleton = new %s_type()" %
                              (cons.name, cons.name), 1)
-            self.emit("if (!%s_singleton) return 0" % cons.name, 1)
+            self.emit("if (!%s_singleton) { return 0 }" % cons.name, 1)
 
 
 class ASTModuleVisitor(PickleVisitor):
@@ -865,13 +868,14 @@ class ASTModuleVisitor(PickleVisitor):
         self.emit("var PyInit__ast = function() {", 0)
         self.emit("var m = null", 1)
         self.emit("var d = null", 1)
-        self.emit("if (!init_types()) return null", 1)
+        self.emit("if (!init_types()) { return null }", 1)
         self.emit('m = PyModule_Create(_astmodule)', 1)
-        self.emit("if (!m) return null", 1)
+        self.emit("if (!m) { return null }", 1)
         self.emit("d = PyModule_GetDict(m)", 1)
-        self.emit('if (PyDict_SetItemString(d, "AST", AST_object) < 0) return null', 1)
-        self.emit('if (PyModule_AddIntMacro(m, PyCF_ONLY_AST) < 0)', 1)
+        self.emit('if (PyDict_SetItemString(d, "AST", AST_object) < 0) { return null }', 1)
+        self.emit('if (PyModule_AddIntMacro(m, PyCF_ONLY_AST) < 0) {', 1)
         self.emit("return null", 2)
+        self.emit("}", 1)
         for dfn in mod.dfns:
             self.visit(dfn)
         self.emit("return m", 1)
@@ -889,7 +893,7 @@ class ASTModuleVisitor(PickleVisitor):
         self.addObj(cons.name)
 
     def addObj(self, name):
-        self.emit('if (PyDict_SetItemString(d, "%s", %s_type) < 0) return null' % (name, name), 1)
+        self.emit("if (PyDict_SetItemString(d, '%s', %s_type) < 0) { return null }" % (name, name), 1)
 
 
 _SPECIALIZED_SEQUENCES = ('stmt', 'expr')
@@ -948,9 +952,10 @@ class ObjVisitor(PickleVisitor):
         self.emit("}", 1)
         for a in sum.attributes:
             self.emit("value = ast2obj_%s(o.%s)" % (a.type, a.name), 1)
-            self.emit("if (!value) return null", 1)
-            self.emit('if (_PyObject_SetAttrId(result, PyId_%s, value) < 0)' % a.name, 1)
+            self.emit("if (!value) { return null } ", 1)
+            self.emit('if (_PyObject_SetAttrId(result, PyId_%s, value) < 0) {' % a.name, 1)
             self.emit('return null', 2)
+            self.emit('}', 1)
         self.func_end()
 
     def simpleSum(self, sum, name):
@@ -961,7 +966,7 @@ class ObjVisitor(PickleVisitor):
             self.emit("return %s_singleton" % t.name, 3)
         self.emit("default:", 2)
         self.emit('/* should never happen, but just in case ... */', 3)
-        code = "PyErr_Format(PyExc_SystemError, \"unknown %s found\")" % name
+        code = "PyErr_Format(PyExc_SystemError, 'unknown %s found')" % name
         self.emit(code, 3, reflow=False)
         self.emit("return null", 3)
         self.emit("}", 1)
@@ -970,20 +975,21 @@ class ObjVisitor(PickleVisitor):
     def visitProduct(self, prod, name):
         self.func_begin(name)
         self.emit("result = PyType_GenericNew(%s_type, null, null)" % name, 1)
-        self.emit("if (!result) return null", 1)
+        self.emit("if (!result) { return null }", 1)
         for field in prod.fields:
             self.visitField(field, name, 1, True)
         for a in prod.attributes:
             self.emit("value = ast2obj_%s(o.%s)" % (a.type, a.name), 1)
-            self.emit("if (!value) return null", 1)
-            self.emit('if (_PyObject_SetAttrId(result, PyId_%s, value) < 0)' % a.name, 1)
+            self.emit("if (!value) { return null }", 1)
+            self.emit('if (_PyObject_SetAttrId(result, PyId_%s, value) < 0) {' % a.name, 1)
             self.emit('return null', 2)
+            self.emit('}', 1)
         self.func_end()
 
     def visitConstructor(self, cons, enum, name):
         self.emit("case %s_kind:" % cons.name, 1)
         self.emit("result = PyType_GenericNew(%s_type, null, null)" % cons.name, 2)
-        self.emit("if (!result) return null", 2)
+        self.emit("if (!result) { return null }", 2)
         for f in cons.fields:
             self.visitField(f, cons.name, 2, False)
         self.emit("break", 2)
@@ -996,18 +1002,19 @@ class ObjVisitor(PickleVisitor):
         else:
             value = "o.v.%s.%s" % (name, field.name)
         self.set(field, value, depth)
-        emit("if (!value) return null", 0)
-        emit('if (_PyObject_SetAttrId(result, PyId_%s, value) == -1)' % field.name, 0)
+        emit("if (!value) { return null } ", 0)
+        emit('if (_PyObject_SetAttrId(result, PyId_%s, value) === -1) {' % field.name, 0)
         emit("return null", 1)
+        emit("}", 0)
 
     def emitSeq(self, field, value, depth, emit):
         emit("seq = %s" % value, 0)
         emit("n = asdl_seq_LEN(seq)", 0)
         emit("value = PyList_New(n)", 0)
-        emit("if (!value) return null", 0)
+        emit("if (!value) { return null }", 0)
         emit("for (i = 0; i < n; i++) {", 0)
         self.set("value", field, "asdl_seq_GET(seq, i)", depth + 1)
-        emit("if (!value1) return null", 1)
+        emit("if (!value1) { return null } ", 1)
         emit("PyList_SET_ITEM(value, i, value1)", 1)
         emit("value1 = null", 1)
         emit("}", 0)
@@ -1022,8 +1029,8 @@ class ObjVisitor(PickleVisitor):
                 self.emit("var i", depth+1)
                 self.emit("var n = asdl_seq_LEN(%s)" % value, depth+1)
                 self.emit("value = PyList_New(n)", depth+1)
-                self.emit("if (!value) return null", depth+1)
-                self.emit("for(i = 0; i < n; i++)", depth+1)
+                self.emit("if (!value) { return null }", depth+1)
+                self.emit("for (i = 0; i < n; i++)", depth+1)
                 # This cannot fail, so no need for error handling
                 self.emit("PyList_SET_ITEM(value, i, ast2obj_cmpop(asdl_seq_GET(%s, i)))" % value,
                           depth+2, reflow=False)
@@ -1049,23 +1056,25 @@ var PyAST_mod2obj = function(t) {
 var PyAST_obj2mod = function(ast, mode) {
     var res
     var req_type = [null, null, null]
-    var req_name = ["Module", "Expression", "Interactive"]
+    var req_name = ['Module', 'Expression', 'Interactive']
     var isinstance
 
     req_type[0] = Module_type
     req_type[1] = Expression_type
     req_type[2] = Interactive_type
 
-    if (!init_types())
+    if (!init_types()) {
         return null
-
-    isinstance = PyObject_IsInstance(ast, req_type[mode])
-    if (isinstance == -1)
-        return null
-    if (!isinstance) {
-        throw new exceptions.TypeError("expected " + req_name[mode] + " node, got " + Py_TYPE(ast).tp_name)
     }
-    if (obj2ast_mod(ast, res) != 0) {
+
+    isinstance = types.isinstance(ast, req_type[mode])
+    if (isinstance === -1) {
+        return null
+    }
+    if (!isinstance) {
+        throw new exceptions.TypeError('expected ' + req_name[mode] + ' node, got ' + type_name(ast))
+    }
+    if (obj2ast_mod(ast, res) !== 0) {
         return null
     } else {
         return res
@@ -1081,8 +1090,7 @@ module.exports = {
     asdl_seq_SET: asdl_seq_SET,
     asdl_seq_GET: asdl_seq_GET,
     asdl_seq_LEN: asdl_seq_LEN
-}
-"""
+}"""
 
 class ChainOfVisitors:
     def __init__(self, *visitors):
@@ -1095,6 +1103,10 @@ class ChainOfVisitors:
 
 common_msg = """/* File automatically generated by %s. */
 """
+
+if not ESLINT_ENABLE:
+    common_msg = '/* eslint-disable */\n' + common_msg
+
 
 def main(srcfile, dump_module=False):
     argv0 = sys.argv[0]

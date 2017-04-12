@@ -1,7 +1,3 @@
-var core = require('./core')
-var exceptions = require('./core/exceptions')
-var types = require('./types')
-
 // global rendez-vous for error
 var curexc_value = null
 var curexc_type = null
@@ -14,22 +10,24 @@ errors.PyErr_SetString = function(exception, value) {
 }
 
 errors.PyErr_Format = function(exception, format) {
-    var args = [].slice.call(arguments, 2)
+    // var args = [].slice.call(arguments, 2)
+    return errors.PyErr_SetObject(exception, format)
 }
 
 errors.PyErr_Restore = function(type, value, traceback) {
-    if (traceback != null && !PyTraceBack_Check(traceback)) {
-        /* XXX Should never happen -- fatal error instead? */
-        /* Well, it could be None. */
-        traceback = null
-    }
+    // if (traceback != null && !PyTraceBack_Check(traceback)) {
+    //     /* XXX Should never happen -- fatal error instead? */
+    //     /* Well, it could be None. */
+    //     traceback = null
+    // }
     curexc_type = type
     curexc_value = value
     curexc_traceback = traceback
+    console.log(curexc_type, curexc_value, curexc_traceback)
 }
 
 errors.PyErr_Clear = function() {
-    PyErr_Restore(null, null, null)
+    errors.PyErr_Restore(null, null, null)
 }
 
 errors.PyErr_Occurred = function() {

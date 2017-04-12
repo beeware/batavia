@@ -6,10 +6,10 @@ function compile(args, kwargs) {
     var source = args[0]
     var filename = args[1]
     var mode = args[2]
-    // var flags = args[3];
-    var optimize = false; // FIXME: support optimisation
-    var flags = 0; // FIXME: support flags
-    var cf = null // compiler flags
+    // var flags = args[3]
+    var optimize = false // FIXME: support optimisation
+    // var flags = 0 // FIXME: support flags
+    // var cf = null // compiler flags
     var start = [
         _compile.Py_file_input,
         _compile.Py_eval_input,
@@ -30,22 +30,21 @@ function compile(args, kwargs) {
     var is_ast = _compile.ast_check(source)
 
     if (is_ast) {
-        if (flags & PyCF_ONLY_AST) {
-            result = source
-        } else {
-            var mod = _compile.obj2mod(source, compile_mode);
-            if (mod == null) {
-                return null
-            }
-            if (!_compile.ast_validate(mod)) {
-                return null
-            }
-            result = _compile.ast_compile_object(mod, filename, optimize)
+        // if (flags & PyCF_ONLY_AST) {
+        //     result = source
+        // } else {
+        var mod = _compile.obj2mod(source, compile_mode)
+        if (mod == null) {
+            return null
         }
+        if (!_compile.ast_validate(mod)) {
+            return null
+        }
+        result = _compile.ast_compile_object(mod, filename, optimize)
         return result
     }
 
-    var str = _compile.source_as_string(source, "compile", "string, bytes or AST")
+    var str = _compile.source_as_string(source, 'compile', 'string, bytes or AST')
     if (str == null) {
         return null
     }

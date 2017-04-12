@@ -9,9 +9,10 @@ var ast_check = require('./ast/Python-ast').ast_check
 var Parser = require('./parser')
 var Compiler = require('./compiler')
 var future = require('./future')
+var errors = require('../../core/errors')
 
 var ErrorDetail = function(filename) {
-  this.filename = filename
+    this.filename = filename
 }
 
 var _compile = {
@@ -34,7 +35,7 @@ _compile.single_input = function() {
 }
 
 _compile.ast_check = function(obj) {
-  return ast_check(obj)
+    return ast_check(obj)
 }
 
 _compile.compile_string_object = function(str, filename, start, optimize) {
@@ -89,7 +90,6 @@ _compile.ast_compile_object = function(mod, filename, flags, optimize) {
     var local_flags = null
     var merged
 
-
     // TODO: support docstrings
     // if (!__doc__) {
     //     __doc__ = PyUnicode_InternFromString("__doc__");
@@ -112,23 +112,24 @@ _compile.ast_compile_object = function(mod, filename, flags, optimize) {
     c.c_future.ff_features = merged
     flags.cf_flags = merged
     c.c_flags = flags
-    c.c_optimize = (optimize == -1) ? Py_OptimizeFlag : optimize
+    // c.c_optimize = (optimize === -1) ? Py_OptimizeFlag : optimize
+    c.c_optimize = optimize
     c.c_nestlevel = 0
 
-    c.c_st = PySymtable_BuildObject(mod, filename, c.c_future)
-    if (c.c_st == NULL) {
-        if (!PyErr_Occurred())
-            PyErr_SetString(PyExc_SystemError, "no symtable")
-        return co;
-    }
-    co = compiler_mod(c, mod)
-
-    return co
+    throw new exceptions.NotImplementedError('PySymtable_BuildObject not implemented')
+    // c.c_st = PySymtable_BuildObject(mod, filename, c.c_future)
+    // if (c.c_st == null) {
+    //     if (!PyErr_Occurred())
+    //         PyErr_SetString(PyExc_SystemError, "no symtable")
+    //     return co;
+    // }
+    // co = compiler_mod(c, mod)
+    //
+    // return co
 }
 
 _compile.ast_from_string_object = function(str, filename, start, flags) {
     var mod = null
-    var localflags = null
     var iflags = 0
 
     var res = _compile.parse_string_object(str, filename,
@@ -160,9 +161,9 @@ _compile.source_as_string = function(cmd, funcname, what) {
     } else if (types.isinstance(cmd, types.ByteArray)) {
         throw new exceptions.NotImplementedError.$pyclass('_compile.source_as_string is not implemented yet for bytearray')
     } else {
-        PyErr_Format(PyExc_TypeError,
-          "%s() arg 1 must be a %s object",
-          funcname, what);
+        errors.PyErr_Format(exceptions.TypeError,
+          '%s() arg 1 must be a %s object',
+          funcname, what)
         return null
     }
 
@@ -177,8 +178,8 @@ _compile.parse_string_object = function(s, filename, grammar, start, flags) {
     tok.filename = err_ret.filename
     var n = _compile.parsetok(tok, grammar, start, err_ret, flags)
     return {
-      n: n,
-      error: err_ret
+        n: n,
+        error: err_ret
     }
 }
 
@@ -200,12 +201,12 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
         type = result[0]
         a = result[1]
         b = result[2]
-        if (type == _compile.ERRORTOKEN) {
+        if (type === _compile.ERRORTOKEN) {
             err_ret.error = tok.done
             break
         }
-        if (type == _compile.ENDMARKER && started) {
-            type = _compile.NEWLINE; /* Add an extra newline */
+        if (type === _compile.ENDMARKER && started) {
+            type = _compile.NEWLINE  /* Add an extra newline */
             started = 0
             /* Add the right number of dedent tokens,
                except if a certain flag is given --
@@ -214,13 +215,13 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
                 tok.pendin = -tok.indent
                 tok.indent = 0
             }
-        }
-        else
+        } else {
             started = 1
+        }
         len = b - a /* XXX this may compute null - null */
         str = ''
         if (len > 0) {
-          str = tok.buf.slice(a, b)
+            str = tok.buf.slice(a, b)
         }
         str += '\0'
 
@@ -231,15 +232,15 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
         }
 
         err_ret.error = ps.add_token(type, str, tok.lineno, col_offset, err_ret.expected)
-        if (err_ret.error != _compile.E_OK) {
-            if (err_ret.error != _compile.E_DONE) {
+        if (err_ret.error !== _compile.E_OK) {
+            if (err_ret.error !== _compile.E_DONE) {
                 err_ret.token = type
             }
             break
         }
     }
 
-    if (err_ret.error == _compile.E_DONE) {
+    if (err_ret.error === _compile.E_DONE) {
         n = ps.p_tree
         ps.p_tree = null
 
@@ -247,12 +248,11 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
            is a single statement by looking at what is left in the
            buffer after parsing.  Trailing whitespace and comments
            are OK.  */
-        if (start == single_input) {
-            cur = tok.cur
-            c = tok.buf[tok.cur]
+        if (start === _compile.single_input) {
+            var c = tok.buf[tok.cur]
 
             for (;;) {
-                while (c == ' ' || c == '\t' || c == '\n' || c == '\x0c') {
+                while (c === ' ' || c === '\t' || c === '\n' || c === '\x0c') {
                     c = tok.buf[++tok.cur]
                 }
 
@@ -260,14 +260,14 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
                     break
                 }
 
-                if (c != '#') {
+                if (c !== '#') {
                     err_ret.error = _compile.E_BADSINGLE
                     n = null
                     break
                 }
 
                 /* Suck up comment. */
-                while (c && c != '\n') {
+                while (c && c !== '\n') {
                     c = tok.buf[++tok.cur]
                 }
             }
@@ -277,11 +277,10 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
     }
 
     if (n == null) {
-        if (tok.done == _compile.E_EOF) {
+        if (tok.done === _compile.E_EOF) {
             err_ret.error = _compile.E_EOF
         }
         err_ret.lineno = tok.lineno
-        var len
         err_ret.offset = tok.cur
         len = tok.inp
         err_ret.text = ''
@@ -293,12 +292,13 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
         /* 'nodes->n_str' uses PyObject_*, while 'tok.encoding' was
          * allocated using PyMem_
          */
-        var r = PyNode_New(encoding_decl)
-        r.n_str = tok.encoding
-        tok.encoding = null
-        r.n_nchildren = 1
-        r.n_child = n
-        n = r
+        throw new exceptions.NotImplementedError('PyNode_New not implemented')
+        // var r = PyNode_New(encoding_decl)
+        // r.n_str = tok.encoding
+        // tok.encoding = null
+        // r.n_nchildren = 1
+        // r.n_child = n
+        // n = r
     }
 
     return n
