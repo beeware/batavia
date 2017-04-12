@@ -86,7 +86,6 @@ class ClassTests(TranspileTestCase):
             print(obj3.x)
         """)
 
-    @expectedFailure
     def test_getattribute(self):
         self.assertCodeExecution("""
             class MyClass1:
@@ -140,8 +139,8 @@ class ClassTests(TranspileTestCase):
             print(obj3.foo)
             try:
                 print(obj3.fail)
-            except AttributeError:
-                print("AttributeError")
+            except AttributeError as e:
+                print(e)
             print(obj3.foo)
         """)
 

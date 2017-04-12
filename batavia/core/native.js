@@ -87,6 +87,8 @@ native.getattr_py = function(obj, attr) {
         } catch (err) {
             if (err instanceof exceptions.AttributeError.$pyclass &&
                 getattr !== undefined && getattr.__get__ !== undefined) {
+                // clear last_exception because it is handled here
+                getattr.$vm.last_exception = null
                 val = getattr.__get__(obj).__call__(attr)
             } else {
                 throw err
