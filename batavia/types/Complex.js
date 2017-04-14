@@ -286,6 +286,9 @@ function powi(x, y) {
         return new Complex(0, 0)
     }
     if (Number(y) >= MAX_INT) {
+        if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
+            return powc(x, new Complex(Number(y), 0));
+        }
         if (Number(y) <= MAX_FLOAT) {
             throw new exceptions.OverflowError.$pyclass(
                 'complex exponentiation'
