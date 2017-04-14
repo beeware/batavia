@@ -287,7 +287,7 @@ function powi(x, y) {
     }
     if (Number(y) >= MAX_INT) {
         if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
-            return powc(x, new Complex(Number(y), 0));
+            return powc(x, new Complex(Number(y), 0))
         }
         if (Number(y) <= MAX_FLOAT) {
             throw new exceptions.OverflowError.$pyclass(
