@@ -1,6 +1,6 @@
 var constants = require('../core').constants
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var BytesIterator = require('./BytesIterator')
@@ -15,9 +15,7 @@ function Bytes(val) {
     this.val = val
 }
 
-Bytes.prototype = Object.create(PyObject.prototype)
-Bytes.prototype.__class__ = new Type('bytes')
-Bytes.prototype.__class__.$pyclass = Bytes
+create_pyclass(Bytes, 'bytes')
 
 /**************************************************
  * Javascript compatibility methods

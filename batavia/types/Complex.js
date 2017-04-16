@@ -1,7 +1,7 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python complex type
@@ -84,9 +84,7 @@ function Complex(re, im) {
     }
 }
 
-Complex.prototype = Object.create(PyObject.prototype)
-Complex.prototype.__class__ = new Type('complex')
-Complex.prototype.__class__.$pyclass = Complex
+create_pyclass(Complex, 'complex')
 
 /**************************************************
  * Javascript compatibility methods

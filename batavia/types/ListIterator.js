@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 
 /**************************************************
@@ -12,9 +12,7 @@ function ListIterator(data) {
     this.data = data
 };
 
-ListIterator.prototype = Object.create(PyObject.prototype)
-ListIterator.prototype.__class__ = new Type('list_iterator')
-ListIterator.prototype.__class__.$pyclass = ListIterator
+create_pyclass(ListIterator, 'list_iterator')
 
 ListIterator.prototype.__iter__ = function() {
     return this

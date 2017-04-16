@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
@@ -20,9 +20,7 @@ function FrozenSet(args, kwargs) {
     }
 }
 
-FrozenSet.prototype = Object.create(PyObject.prototype)
-FrozenSet.prototype.__class__ = new Type('frozenset')
-FrozenSet.prototype.__class__.$pyclass = FrozenSet
+create_pyclass(FrozenSet, 'frozenset')
 
 /**************************************************
  * Javascript compatibility methods

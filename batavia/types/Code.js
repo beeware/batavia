@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python code object
@@ -28,9 +28,7 @@ function Code(kwargs) {
     // co_weakreflist
 }
 
-Code.prototype = Object.create(PyObject.prototype)
-Code.prototype.__class__ = new Type('code')
-Code.prototype.__class__.$pyclass = Code
+create_pyclass(Code, 'code')
 
 /**************************************************
  * Module exports

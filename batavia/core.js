@@ -13,6 +13,7 @@ core['PYCFile'] = require('./core/types/PYCFile')
 core['Object'] = require('./core/types/Object')
 core['Type'] = require('./core/types/Type').Type
 core['type_name'] = require('./core/types/Type').type_name
+core['create_pyclass'] = require('./core/types/Type').create_pyclass
 
 core['exceptions'] = require('./core/exceptions')
 core['callables'] = require('./core/callables')

@@ -1,9 +1,9 @@
 var BigNumber = require('bignumber.js')
 
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
 var utils = require('./utils')
 
@@ -16,9 +16,7 @@ function Int(val) {
     this.val = new BigNumber(val)
 }
 
-Int.prototype = Object.create(PyObject.prototype)
-Int.prototype.__class__ = new Type('int')
-Int.prototype.__class__.$pyclass = Int
+create_pyclass(Int, 'int')
 
 var REASONABLE_SHIFT = new Int('8192')
 var MAX_SHIFT = new Int('9223372036854775807')

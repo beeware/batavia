@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 
 /**************************************************
@@ -12,9 +12,7 @@ function BytesIterator(data) {
     this.data = data
 };
 
-BytesIterator.prototype = Object.create(PyObject.prototype)
-BytesIterator.prototype.__class__ = new Type('bytes_iterator')
-BytesIterator.prototype.__class__.$pyclass = BytesIterator
+create_pyclass(BytesIterator, 'bytes_iterator')
 
 BytesIterator.prototype.__iter__ = function() {
     return this

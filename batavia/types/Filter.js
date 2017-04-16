@@ -1,8 +1,8 @@
 var PyObject = require('../core').Object
 var callables = require('../core').callables
 var exceptions = require('../core').exceptions
-var Type = require('../core').Type
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python filter builtin is a type
@@ -18,9 +18,7 @@ function Filter(args, kwargs) {
     this._sequence = args[1]
 }
 
-Filter.prototype = Object.create(PyObject.prototype)
-Filter.prototype.__class__ = new Type('filter')
-Filter.prototype.__class__.$pyclass = Filter
+create_pyclass(Filter, 'filter')
 
 /**************************************************
  * Javascript compatibility methods

@@ -160,6 +160,26 @@ PyObject.prototype.__class__ = PyObject.__class__
 PyObject.prototype.__class__.$pyclass = PyObject
 
 /*************************************************************************
+ * Method for adding types to Python class hierarchy
+ *************************************************************************/
+
+function create_pyclass(type, name, is_native) {
+    if (!is_native) {
+        extend_PyObject(type, name)
+    }
+    make_python_class(type, name)
+}
+
+function extend_PyObject(type, name) {
+    type.prototype = Object.create(PyObject.prototype)
+}
+
+function make_python_class(type, name) {
+    type.prototype.__class__ = new Type(name)
+    type.prototype.__class__.$pyclass = type
+}
+
+/*************************************************************************
  * Method for outputting the type of a variable
  *************************************************************************/
 
@@ -183,5 +203,6 @@ var type_name = function(arg) {
 
 module.exports = {
     'Type': Type,
-    'type_name': type_name
+    'type_name': type_name,
+    'create_pyclass': create_pyclass
 }

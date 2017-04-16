@@ -2,9 +2,9 @@ var Buffer = require('buffer').Buffer
 
 var PyObject = require('../core').Object
 var constants = require('../core').constants
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
 var StrIterator = require('./StrIterator')
 var StrUtils = require('./StrUtils')
@@ -15,8 +15,7 @@ var StrUtils = require('./StrUtils')
 
 var Str = String
 
-Str.prototype.__class__ = new Type('str')
-Str.prototype.__class__.$pyclass = Str
+create_pyclass(Str, 'str', true)
 
 /**************************************************
  * Type conversions

@@ -1,6 +1,6 @@
 /* eslint-disable no-extend-native */
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python function type.
@@ -73,9 +73,7 @@ function Function(name, code, globals, defaults, closure, vm) {
     this.argspec = inspect.getfullargspec(this)
 }
 
-Function.prototype = Object.create(PyObject.prototype)
-Function.prototype.__class__ = new Type('function')
-Function.prototype.__class__.$pyclass = Function
+create_pyclass(Function, 'function')
 
 Function.prototype.__get__ = function(instance, klass) {
     var types = require('../types')

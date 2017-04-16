@@ -1,4 +1,4 @@
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var utils = require('./utils')
@@ -8,8 +8,7 @@ var utils = require('./utils')
 
 var Bool = Boolean
 
-Bool.prototype.__class__ = new Type('bool')
-Bool.prototype.__class__.$pyclass = Bool
+create_pyclass(Bool, 'bool', true)
 
 /**************************************************
  * Type conversions

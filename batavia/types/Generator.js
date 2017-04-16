@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 
 /*************************************************************************
@@ -15,9 +15,7 @@ function Generator(frame, vm) {
     this.finished = false
 };
 
-Generator.prototype = Object.create(PyObject.prototype)
-Generator.prototype.__class__ = new Type('generator')
-Generator.prototype.__class__.$pyclass = Generator
+create_pyclass(Generator, 'generator')
 
 Generator.prototype.__iter__ = function() {
     return this

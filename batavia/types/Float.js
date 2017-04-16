@@ -1,7 +1,7 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
 
 /*************************************************************************
@@ -14,9 +14,7 @@ function Float(val) {
     this.val = val
 }
 
-Float.prototype = Object.create(PyObject.prototype)
-Float.prototype.__class__ = new Type('float')
-Float.prototype.__class__.$pyclass = Float
+create_pyclass(Float, 'float')
 
 function python_modulo(n, M) {
     return ((n % M) + M) % M
