@@ -13,7 +13,7 @@ function StrIterator(data) {
 }
 
 StrIterator.prototype = Object.create(PyObject.prototype)
-StrIterator.__class__ = new Type('str_iterator')
+StrIterator.prototype.__class__ = new Type('str_iterator')
 StrIterator.prototype.__class__.$pyclass = StrIterator
 
 StrIterator.prototype.__next__ = function() {
