@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
@@ -14,9 +14,7 @@ function Bytearray(val) {
     this.val = val
 }
 
-Bytearray.prototype = Object.create(PyObject.prototype)
-Bytearray.prototype.__class__ = new Type('bytearray')
-Bytearray.prototype.__class__.$pyclass = Bytearray
+create_pyclass(Bytearray, 'bytearray')
 
 /**************************************************
  * Javascript compatibility methods

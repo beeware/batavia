@@ -1,4 +1,4 @@
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var Function = require('./Function')
 
 /*************************************************************************
@@ -21,8 +21,7 @@ function Method(instance, func) {
 }
 
 Method.prototype = Object.create(Function.prototype)
-Method.prototype.__class__ = new Type('method')
-Method.prototype.__class__.$pyclass = Method
+create_pyclass(Method, 'method', true)
 
 /**************************************************
  * Module exports

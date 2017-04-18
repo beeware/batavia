@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python dictview type
@@ -9,9 +9,7 @@ function DictView(args, kwargs) {
     PyObject.call(this)
 }
 
-DictView.prototype = Object.create(PyObject.prototype)
-DictView.prototype.__class__ = new Type('dictview')
-DictView.prototype.__class__.$pyclass = DictView
+create_pyclass(DictView, 'dictview')
 
 /**************************************************
  * Module exports

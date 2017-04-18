@@ -1,9 +1,9 @@
 var BigNumber = require('bignumber.js')
 
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 var RangeIterator = require('./RangeIterator')
 var None = require('../core').None
 
@@ -36,9 +36,7 @@ function Range(start, stop, step) {
     }
 }
 
-Range.prototype = Object.create(PyObject.prototype)
-Range.prototype.__class__ = new Type('range')
-Range.prototype.__class__.$pyclass = Range
+create_pyclass(Range, 'range')
 
 /**************************************************
  * Javascript compatibility methods

@@ -1,9 +1,9 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var None = require('../core').None
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 // var None = require('../core').None;
 
 /*************************************************************************
@@ -19,9 +19,7 @@ function Property(fget, fset, fdel, doc) {
     this.doc = doc
 }
 
-Property.prototype = Object.create(PyObject.prototype)
-Property.prototype.__class__ = new Type('property')
-Property.prototype.__class__.$pyclass = Property
+create_pyclass(Property, 'property')
 
 /**************************************************
  * Javascript compatibility methods

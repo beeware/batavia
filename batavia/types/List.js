@@ -1,8 +1,8 @@
 var constants = require('../core').constants
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
 var ListIterator = require('./ListIterator')
 
@@ -37,8 +37,7 @@ Array_.prototype = []
 
 List.prototype = Object.create(Array_.prototype)
 List.prototype.length = 0
-List.prototype.__class__ = new Type('list')
-List.prototype.__class__.$pyclass = List
+create_pyclass(List, 'list', true)
 List.prototype.constructor = List
 
 /**************************************************

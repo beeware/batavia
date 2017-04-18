@@ -1,9 +1,9 @@
 /* eslint-disable no-extend-native */
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python map builtin is a type
@@ -19,9 +19,7 @@ function Map(args, kwargs) {
     this._sequence = args[1]
 }
 
-Map.prototype = Object.create(PyObject.prototype)
-Map.prototype.__class__ = new Type('map')
-Map.prototype.__class__.$pyclass = Map
+create_pyclass(Map, 'map')
 
 /**************************************************
  * Javascript compatibility methods

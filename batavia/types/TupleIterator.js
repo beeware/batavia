@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 
 /**************************************************
@@ -12,9 +12,7 @@ function TupleIterator(data) {
     this.data = data
 }
 
-TupleIterator.prototype = Object.create(PyObject.prototype)
-TupleIterator.prototype.__class__ = new Type('tuple_iterator')
-TupleIterator.prototype.__class__.$pyclass = TupleIterator
+create_pyclass(TupleIterator, 'tuple_iterator')
 
 TupleIterator.prototype.__next__ = function() {
     var retval = this.data[this.index]

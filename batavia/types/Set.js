@@ -1,9 +1,9 @@
 /* eslint-disable no-extend-native */
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * A Python Set type, with an underlying Dict.
@@ -20,9 +20,7 @@ function Set(args, kwargs) {
     }
 }
 
-Set.prototype = Object.create(PyObject.prototype)
-Set.prototype.__class__ = new Type('set')
-Set.prototype.__class__.$pyclass = Set
+create_pyclass(Set, 'set')
 
 /**************************************************
  * Javascript compatibility methods

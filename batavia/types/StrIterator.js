@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 
 /**************************************************
@@ -12,9 +12,7 @@ function StrIterator(data) {
     this.data = data
 }
 
-StrIterator.prototype = Object.create(PyObject.prototype)
-StrIterator.__class__ = new Type('str_iterator')
-StrIterator.prototype.__class__.$pyclass = StrIterator
+create_pyclass(StrIterator, 'str_iterator')
 
 StrIterator.prototype.__next__ = function() {
     var retval = this.data[this.index]

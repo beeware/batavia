@@ -1,9 +1,9 @@
 var constants = require('../core').constants
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var create_pyclass = require('../core').create_pyclass
 var TupleIterator = require('./TupleIterator')
 var None = require('../core').None
 
@@ -39,8 +39,7 @@ Array_.prototype = []
 
 Tuple.prototype = Object.create(Array_.prototype)
 Tuple.prototype.length = 0
-Tuple.prototype.__class__ = new Type('tuple')
-Tuple.prototype.__class__.$pyclass = Tuple
+create_pyclass(Tuple, 'tuple', true)
 Tuple.prototype.constructor = Tuple
 
 /**************************************************

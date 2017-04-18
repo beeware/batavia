@@ -1,5 +1,5 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
+var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 
 /**************************************************
@@ -13,9 +13,7 @@ function SetIterator(data) {
     this.keys = data.data.keys()
 }
 
-SetIterator.prototype = Object.create(PyObject.prototype)
-SetIterator.prototype.__class__ = new Type('set_iterator')
-SetIterator.prototype.__class__.$pyclass = SetIterator
+create_pyclass(SetIterator, 'set_iterator')
 
 SetIterator.prototype.__next__ = function() {
     var key = this.keys[this.index]

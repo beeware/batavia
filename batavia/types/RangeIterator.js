@@ -1,8 +1,8 @@
 var BigNumber = require('bignumber.js')
 
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var exceptions = require('../core').exceptions
+var create_pyclass = require('../core').create_pyclass
 
 /**************************************************
  * Range Iterator
@@ -15,9 +15,7 @@ function RangeIterator(data) {
     this.stop = data.stop
 }
 
-RangeIterator.prototype = Object.create(PyObject.prototype)
-RangeIterator.prototype.__class__ = new Type('range_iterator')
-RangeIterator.prototype.__class__.$pyclass = RangeIterator
+create_pyclass(RangeIterator, 'range_iterator')
 
 RangeIterator.prototype.__next__ = function() {
     var types = require('../types')

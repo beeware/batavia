@@ -1,6 +1,6 @@
 var PyObject = require('../core').Object
-var Type = require('../core').Type
 var None = require('../core').None
+var create_pyclass = require('../core').create_pyclass
 
 /*************************************************************************
  * An implementation of slice
@@ -15,9 +15,7 @@ function Slice(kwargs) {
     this.step = kwargs.step
 }
 
-Slice.prototype = Object.create(PyObject.prototype)
-Slice.prototype.__class__ = new Type('slice')
-Slice.prototype.__class__.$pyclass = Slice
+create_pyclass(Slice, 'slice')
 
 /**************************************************
  * Javascript compatibility methods
