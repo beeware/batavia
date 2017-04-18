@@ -23,15 +23,35 @@ class SliceTests(TranspileTestCase):
             """)
 
         # Invalid slice indices
+        # step 0
         self.assertCodeExecution("""
             x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             print("x[2::0] = ", x[2::0])
+        """)
+        # start, stop and step must be int
+        self.assertCodeExecution("""
+            x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             print("x[::2.5] = ", x[::2.5])
+        """)
+
+        self.assertCodeExecution("""
+            x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             print("x[::'a'] = ", x[::'a'])
+        """)
+
+        self.assertCodeExecution("""
+            x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             print("x['a':2] = ", x['a':2])
+        """)
+
+        self.assertCodeExecution("""
+            x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             print("x[1:'a':7] = ", x[1:'a':7])
+        """)
+        self.assertCodeExecution("""
+            x = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
             print("x[1:None] = ", x[1:None])
-            """)
+        """)
 
     def test_slice_range(self):
         self.assertCodeExecution("""
@@ -52,15 +72,35 @@ class SliceTests(TranspileTestCase):
             """)
 
         # Invalid slice indices
+        # step 0
         self.assertCodeExecution("""
             x = range(0, 10)
             print("x[2::0] = ", x[2::0])
+        """)
+        # start, stop and step must be int
+        self.assertCodeExecution("""
+            x = range(0, 10)
             print("x[::2.5] = ", x[::2.5])
+        """)
+
+        self.assertCodeExecution("""
+            x = range(0, 10)
             print("x[::'a'] = ", x[::'a'])
+        """)
+
+        self.assertCodeExecution("""
+            x = range(0, 10)
             print("x['a':2] = ", x['a':2])
+        """)
+
+        self.assertCodeExecution("""
+            x = range(0, 10)
             print("x[1:'a':7] = ", x[1:'a':7])
+        """)
+        self.assertCodeExecution("""
+            x = range(0, 10)
             print("x[1:None] = ", x[1:None])
-            """)
+        """)
 
     def test_slice_string(self):
         self.assertCodeExecution("""
@@ -81,15 +121,35 @@ class SliceTests(TranspileTestCase):
             """)
 
         # Invalid slice indices
+        # step 0
         self.assertCodeExecution("""
             x = "0123456789a"
             print("x[2::0] = ", x[2::0])
+        """)
+        # start, stop and step must be int
+        self.assertCodeExecution("""
+            x = "0123456789a"
             print("x[::2.5] = ", x[::2.5])
+        """)
+
+        self.assertCodeExecution("""
+            x = "0123456789a"
             print("x[::'a'] = ", x[::'a'])
+        """)
+
+        self.assertCodeExecution("""
+            x = "0123456789a"
             print("x['a':2] = ", x['a':2])
+        """)
+
+        self.assertCodeExecution("""
+            x = "0123456789a"
             print("x[1:'a':7] = ", x[1:'a':7])
+        """)
+        self.assertCodeExecution("""
+            x = "0123456789a"
             print("x[1:None] = ", x[1:None])
-            """)
+        """)
 
     def test_slice_tuple(self):
         self.assertCodeExecution("""
@@ -109,16 +169,35 @@ class SliceTests(TranspileTestCase):
             print("x[-1:0:-1] = ", x[-1:0:-1])
             """)
 
-        # Invalid slice indices
+        # step 0
         self.assertCodeExecution("""
             x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             print("x[2::0] = ", x[2::0])
+        """)
+        # start, stop and step must be int
+        self.assertCodeExecution("""
+            x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             print("x[::2.5] = ", x[::2.5])
+        """)
+
+        self.assertCodeExecution("""
+            x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             print("x[::'a'] = ", x[::'a'])
+        """)
+
+        self.assertCodeExecution("""
+            x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             print("x['a':2] = ", x['a':2])
+        """)
+
+        self.assertCodeExecution("""
+            x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             print("x[1:'a':7] = ", x[1:'a':7])
+        """)
+        self.assertCodeExecution("""
+            x = (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
             print("x[1:None] = ", x[1:None])
-            """)
+        """)
 
 
 class UnarySliceOperationTests(UnaryOperationTestCase, TranspileTestCase):
