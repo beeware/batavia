@@ -13,7 +13,7 @@
     "build": "node_modules/.bin/webpack --progress",
     "watch": "node_modules/.bin/webpack --progress --watch",
     "serve": "node_modules/.bin/webpack-dev-server --inline --hot --port 3000",
-    "lint" : "node_modules/.bin/eslint batavia"
+    "lint": "node_modules/.bin/eslint batavia"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,7 @@
     "@pybee/ouroboros": "~3.4.1-dev.5",
     "babel-core": "6.18.2",
     "babel-loader": "6.2.8",
-    "babel-preset-latest": "6.16.0",
+    "babel-preset-env": "^1.4.0",
     "eslint": "3.9.1",
     "eslint-config-standard": "6.2.1",
     "eslint-loader": "1.6.1",
