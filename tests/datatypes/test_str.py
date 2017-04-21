@@ -362,6 +362,32 @@ class StrTests(TranspileTestCase):
             print('done.')
         """)
 
+    def test_lower(self):
+        self.assertCodeExecution("""
+            # Single character
+            b = "B"
+            print(b.lower())
+            print(b.lower() == "b")
+
+            # String
+            bs = "BeeWare"
+            print(bs.lower())
+            print(bs.lower() == "beeware")
+        """)
+
+    def test_upper(self):
+        self.assertCodeExecution("""
+            # Single character
+            b = "b"
+            print(b.upper())
+            print(b.upper() == "B")
+
+            # String
+            bs = "BeeWare"
+            print(bs.upper())
+            print(bs.upper() == "BEEWARE")
+        """)
+
     def test_lstrip(self):
         self.assertCodeExecution("""
             # No argument passed, strip whitespace only
