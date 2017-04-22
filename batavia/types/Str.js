@@ -494,6 +494,7 @@ Str.prototype.__ior__ = function(other) {
 
 /**************************************************
  * Methods
+ * https://docs.python.org/3.4/library/stdtypes.html#string-methods
  **************************************************/
 
 Str.prototype.join = function(iter) {
@@ -507,10 +508,6 @@ Str.prototype.join = function(iter) {
     }
     return l.join(this)
 }
-
-/**************************************************
- * Methods
- **************************************************/
 
 Str.prototype.copy = function() {
     return this.valueOf()
@@ -658,6 +655,14 @@ Str.prototype.islower = function() {
     } else {
         return (this.valueOf() === this.valueOf().toLowerCase())
     }
+}
+
+Str.prototype.lower = function() {
+    return this.valueOf().toLowerCase()
+}
+
+Str.prototype.upper = function() {
+    return this.valueOf().toUpperCase()
 }
 
 Str.prototype.swapcase = function() {
