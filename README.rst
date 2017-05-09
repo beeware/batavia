@@ -45,7 +45,7 @@ your version of npm is outdated, you can update it using the command::
    $ npm install npm@latest -g
 
 Check the `Setting up your environment
-<http://pybee.org/contributing/first-time/setup/>`_ for configuration help.
+<http://pybee.org/contributing/how/first-time/setup/>`_ for configuration help.
 
 
 Downloading and Installing
