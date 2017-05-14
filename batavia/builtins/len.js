@@ -6,11 +6,11 @@ function len(args, kwargs) {
     if (!args || args.length !== 1 || args[0] === undefined) {
         throw new exceptions.TypeError.$pyclass('len() takes exactly one argument (' + args.length + ' given)')
     }
-    
+
     var value = args[0]
-    
+
     if (types.isinstance(value, [types.Float, types.Int])) {
-	throw new exceptions.TypeError.$pyclass("object of type '" + type_name(value) + "' has no len()")
+    throw new exceptions.TypeError.$pyclass("object of type '" + type_name(value) + "' has no len()")
     }
 
     // if (args[0].hasOwnProperty("__len__")) {
