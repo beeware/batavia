@@ -6,17 +6,11 @@ BigNumber.config({
     ROUNDING_MODE: BigNumber.ROUND_HALF_EVEN
 })
 
-// Configure logging.
-if (process.env.PYBEE_DEBUG && process.env.PYBEE_DEBUG !== '0') {
-    // We are in debug mode! Log all the things!
-    debug = console.log;
-} else {
-    // We are not in debug mode. Please be quiet!
-    debug = function() {};
-}
-
 
 var batavia = {}
+
+// Set up debugging.
+batavia['debug'] = require('./debug')
 
 // Set up the core interpreter.
 batavia['core'] = require('./core')
