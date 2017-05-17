@@ -55,7 +55,7 @@ Bytes.prototype.__str__ = function() {
     // var buffer_length = this.val.length
     var buffer_length = this.__len__()
     for (var i = 0; i < buffer_length; i++) {
-        var value = this.val[i].charCodeAt(0);
+        var value = this.val[i]
         if (value >= 32 && value <= 126) {
             stringified += String.fromCharCode(value)
         } else if (value >= 9 && value <= 13) {
@@ -210,10 +210,11 @@ Bytes.prototype.__mod__ = function(other) {
 }
 
 Bytes.prototype.__add__ = function(other) {
-    var types = require('../types');
-    
+    var types = require('../types')
+
     if (types.isinstance(other, [Bytes])) {
-        return new Bytes(this.valueOf() + other.valueOf());
+        // return new Bytes(this.valueOf() + other.valueOf());
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
     } else if (types.isinstance(other, [
         types.Bool,
         types.Dict,
@@ -225,9 +226,9 @@ Bytes.prototype.__add__ = function(other) {
         types.Tuple ])) {
         // does not concat with all these
         // Bool,
-        throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other));
+        throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
     } else {
-        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented');
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
     }
 }
 
