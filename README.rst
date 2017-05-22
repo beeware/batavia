@@ -59,7 +59,7 @@ Downloading and Installing
 
 2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
-  Linux/Unix/Mac:
+Linux/Unix/Mac:
 
   Check your python3 version first.  If it's pointing to version 3.6, replace
   ``$(which python3)`` in the virtualenv command below with the path to your
@@ -71,17 +71,17 @@ Downloading and Installing
     $ cd batavia
     $ pip install -e .
 
-  Windows::
+Windows::
 
      > virtualenv venv
      > venv\Scripts\activate
      > cd batavia
      > pip install -e .
 
-3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of
-   Node; we do our testing using v6.9.1. Once you've installed Node, you can
-   use it to install the Javascript dependencies and compile the Batavia
-   library::
+3. Install `Node.js <https://nodejs.org>`_. 
+
+You must have a recent version of Node; we do our testing using v6.9.1. 
+Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
 
    $ npm install
 
