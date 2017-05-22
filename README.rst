@@ -60,10 +60,8 @@ Downloading and Installing
 2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
 Linux/Unix/Mac:
-
-  Check your python3 version first.  If it's pointing to version 3.6, replace
-  ``$(which python3)`` in the virtualenv command below with the path to your
-  Python 3.4 or 3.5 installation::
+    Check your python3 version first.  If it's pointing to version 3.6, replace``$(which python3)`` 
+    in the virtualenv command below with the path to your Python 3.4 or 3.5 installation::
 
     $ python3 --version
     $ virtualenv --python=$(which python3) venv
