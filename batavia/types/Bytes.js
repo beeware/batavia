@@ -210,7 +210,26 @@ Bytes.prototype.__mod__ = function(other) {
 }
 
 Bytes.prototype.__add__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [Bytes])) {
+        // return new Bytes(this.valueOf() + other.valueOf());
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+    } else if (types.isinstance(other, [
+        types.Bool,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        // Bool,
+        throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
+    } else {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+    }
 }
 
 Bytes.prototype.__sub__ = function(other) {
