@@ -75,8 +75,8 @@ $ . venv/bin/activate
 $ cd batavia
 $ pip install -e .
 
-Windows
--------- ::
+Windows ::
+-------
 
 > virtualenv venv
 > venv\Scripts\activate
@@ -84,7 +84,11 @@ Windows
 > pip install -e .
 
   
-3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
+3. Install `Node.js 
+
+<https://nodejs.org>`_. 
+
+You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
 
 $ npm install
 
