@@ -179,10 +179,6 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
-    not_implemented = [
-        'test_subscr_bool',
-    ]
-
 
 class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'tuple'

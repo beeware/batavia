@@ -324,6 +324,16 @@ Tuple.prototype.__getitem__ = function(index) {
                 return this[idx]
             }
         }
+    } else if (types.isinstance(index, types.Bool)) {
+        if (index >= this.length) {
+            throw new exceptions.IndexError.$pyclass('tuple index out of range')
+        } else {
+            if (index) {
+                return this[1]
+            } else {
+                return this[0]
+            }
+        }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
         if (index.start === None) {
