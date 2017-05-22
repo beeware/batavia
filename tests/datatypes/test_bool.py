@@ -28,11 +28,7 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
-        'test_lshift_int',
-
-        'test_rshift_int',
-
-        'test_true_divide_complex',
+        'test_true_divide_complex'
     ]
 
 
@@ -40,10 +36,5 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
-
-        'test_lshift_int',
-
-        'test_rshift_int',
-
         'test_true_divide_complex',
     ]

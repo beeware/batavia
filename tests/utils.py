@@ -1170,7 +1170,7 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
             'test_lshift_%s' % datatype, 'x <<= y', examples, small_ints=True
         )
         vars()['test_rshift_%s' % datatype] = _inplace_test(
-            'test_rshift_%s' % datatype, 'x >>= y', examples
+            'test_rshift_%s' % datatype, 'x >>= y', examples, small_ints=True
         )
         vars()['test_and_%s' % datatype] = _inplace_test(
             'test_and_%s' % datatype, 'x &= y', examples
