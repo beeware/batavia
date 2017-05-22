@@ -53,9 +53,9 @@ Downloading and Installing
 
 1. Clone the code repositories::
 
-   $ mkdir pybee
-   $ cd pybee
-   $ git clone https://github.com/pybee/batavia
+  $ mkdir pybee
+  $ cd pybee
+  $ git clone https://github.com/pybee/batavia
 
 2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
@@ -64,18 +64,18 @@ Linux/Unix/Mac::
  Check your python3 version first.  If it's pointing to version 3.6, replace
   ``$(which python3)`` in the virtualenv command below with the path to your Python 3.4 or 3.5 installation::
 
-   $ python3 --version
-   $ virtualenv --python=$(which python3) venv
-   $ . venv/bin/activate
-   $ cd batavia
-   $ pip install -e .
+  $ python3 --version
+  $ virtualenv --python=$(which python3) venv
+  $ . venv/bin/activate
+  $ cd batavia
+  $ pip install -e .
 
 Windows::
 
-   > virtualenv venv
-   > venv\Scripts\activate
-   > cd batavia
-   > pip install -e .
+  > virtualenv venv
+  > venv\Scripts\activate
+  > cd batavia
+  > pip install -e .
 
 3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of
    Node; we do our testing using v6.9.1. Once you've installed Node, you can
