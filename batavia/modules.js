@@ -14,5 +14,6 @@ module.exports = {
     'marshal': require('./modules/marshal'),
     'math': require('./modules/math'),
     'sys': require('./modules/sys'),
-    'time': require('./modules/time')
+    'time': require('./modules/time'),
+    'random': require('./modules/random'),
 }
