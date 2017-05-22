@@ -70,7 +70,7 @@ $ . venv/bin/activate
 $ cd batavia
 $ pip install -e .
 
-Windows::
+Windows: ::
 
 > virtualenv venv
 > venv\Scripts\activate
