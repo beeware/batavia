@@ -53,17 +53,20 @@ Downloading and Installing
 
 1. Clone the code repositories: ::
 
+
 $ mkdir pybee
 $ cd pybee
 $ git clone https://github.com/pybee/batavia
 
   
 2. Setup a virtualenv: ::
+
 (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
 
-Linux/Unix/Mac:
- Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command 
+Linux/Unix/Mac
+--------------- 
+Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command 
 below with the path to your Python 3.4 or 3.5 installation. ::
 
 $ python3 --version
@@ -72,7 +75,8 @@ $ . venv/bin/activate
 $ cd batavia
 $ pip install -e .
 
-Windows: ::
+Windows
+-------- ::
 
 > virtualenv venv
 > venv\Scripts\activate
