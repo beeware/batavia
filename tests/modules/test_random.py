@@ -1,5 +1,7 @@
 import unittest
 
+import random
+
 class RandomTests(unittest.TestCase):
 
     def test_choice(self):
