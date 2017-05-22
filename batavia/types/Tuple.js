@@ -324,6 +324,8 @@ Tuple.prototype.__getitem__ = function(index) {
                 return this[idx]
             }
         }
+    } else if (types.isinstance(index, types.Bool)) {
+        return this[index ? 1 : 0];
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
         if (index.start === None) {
