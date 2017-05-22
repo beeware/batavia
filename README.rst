@@ -56,13 +56,12 @@ Downloading and Installing
   $ mkdir pybee
   $ cd pybee
   $ git clone https://github.com/pybee/batavia
-
+  
 2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
 Linux/Unix/Mac::
 
- Check your python3 version first.  If it's pointing to version 3.6, replace
-  ``$(which python3)`` in the virtualenv command below with the path to your Python 3.4 or 3.5 installation::
+ Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command below with the path to your Python 3.4 or 3.5 installation::
 
   $ python3 --version
   $ virtualenv --python=$(which python3) venv
@@ -76,11 +75,8 @@ Windows::
   > venv\Scripts\activate
   > cd batavia
   > pip install -e .
-
-3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of
-   Node; we do our testing using v6.9.1. Once you've installed Node, you can
-   use it to install the Javascript dependencies and compile the Batavia
-   library::
+  
+3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
 
    $ npm install
 
@@ -89,6 +85,7 @@ Windows::
    $ npm run build
 
 For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
+
 
 Running Batavia in the browser
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -104,6 +101,7 @@ then open a web browser at `http://localhost:8000 <http://localhost:8000>`_
 For more detailed instructions, see the `Python In The Browser
 <http://batavia.readthedocs.io/en/latest/intro/tutorial-1.html>`_ guide.
 
+
 Documentation
 -------------
 
@@ -114,12 +112,14 @@ Documentation
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
 
+
 Contributing
 ------------
 
 If you'd like to contribute to Batavia development, our `guide for first time contributors <http://pybee.org/contributing/how/first-time/>`_ will help you get started.
 
 If you experience problems with Batavia, `log them on GitHub <https://github.com/pybee/batavia/issues>`_.
+
 
 Community
 ---------
