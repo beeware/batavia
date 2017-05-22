@@ -42,7 +42,7 @@ You also need to have a recent install of `Node.js <https://nodejs.org>`_
 (from the “stable” 6.X series), and a current version of npm. If
 your version of npm is outdated, you can update it using the command::
 
-   $ npm install npm@latest -g
+$ npm install npm@latest -g
 
 Check the `Setting up your environment
 <http://pybee.org/contributing/how/first-time/setup/>`_ for configuration help.
@@ -53,9 +53,9 @@ Downloading and Installing
 
 1. Clone the code repositories::
 
-  $ mkdir pybee
-  $ cd pybee
-  $ git clone https://github.com/pybee/batavia
+$ mkdir pybee
+$ cd pybee
+$ git clone https://github.com/pybee/batavia
   
 2. Setup a virtualenv (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
@@ -63,26 +63,26 @@ Linux/Unix/Mac::
 
  Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command below with the path to your Python 3.4 or 3.5 installation::
 
-  $ python3 --version
-  $ virtualenv --python=$(which python3) venv
-  $ . venv/bin/activate
-  $ cd batavia
-  $ pip install -e .
+$ python3 --version
+$ virtualenv --python=$(which python3) venv
+$ . venv/bin/activate
+$ cd batavia
+$ pip install -e .
 
 Windows::
 
-  > virtualenv venv
-  > venv\Scripts\activate
-  > cd batavia
-  > pip install -e .
+> virtualenv venv
+> venv\Scripts\activate
+> cd batavia
+> pip install -e .
   
 3. Install `Node.js <https://nodejs.org>`_. You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
 
-   $ npm install
+$ npm install
 
 4. Compile the Batavia library and bundle it’s dependencies::
 
-   $ npm run build
+$ npm run build
 
 For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
 
@@ -92,9 +92,9 @@ Running Batavia in the browser
 
 After you have setup the local installation of Batavia, you can now run Python in the browser::
 
-   $ cd testserver
-   $ pip install -r requirements.txt
-   $ ./manage.py runserver
+$ cd testserver
+$ pip install -r requirements.txt
+$ ./manage.py runserver
 
 then open a web browser at `http://localhost:8000 <http://localhost:8000>`_
 
