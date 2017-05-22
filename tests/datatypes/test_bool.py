@@ -4,7 +4,6 @@ import unittest
 
 
 class BoolTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
             x = True
