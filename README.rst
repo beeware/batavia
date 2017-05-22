@@ -52,6 +52,7 @@ Downloading and Installing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 1. Clone the code repositories: ::
+
 $ mkdir pybee
 $ cd pybee
 $ git clone https://github.com/pybee/batavia
