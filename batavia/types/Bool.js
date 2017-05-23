@@ -500,6 +500,10 @@ Bool.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'bool' object is not subscriptable")
 }
 
+Bool.prototype.__setattr__ = function(other) {
+    throw new exceptions.AttributeError.$pyclass("'bool' object has no attribute '" + other + "'")
+}
+
 Bool.prototype.__lshift__ = function(other) {
     var types = require('../types')
     var this_bool
