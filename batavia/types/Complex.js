@@ -197,25 +197,55 @@ Complex.prototype.__abs__ = function() {
  **************************************************/
 
 Complex.prototype.__pow__ = function(exponent) {
-    var types = require('../types')
-
-    // types.Bool?? Yes, really; under the hood cpython checks to see if the
-    // exponent is a numeric type, and bool subclasses int.
-    // See cpython/Objects/abstract.c.
-    if (types.isinstance(exponent, types.Bool)) {
-        if (exponent.valueOf()) {
-            return this
-        } else {
-            return new Complex(1, 0)
-        }
-    // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
-    // { do some stuff }
-    } else {
-        throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
-        )
-    }
+	var types = require('../types')
+	
+	//
+	// carg is complex argument function (http://mathworld.wolfram.com/ComplexArgument.html)
+	//
+		
+	if (types.isinstance(exponent, types.Bool)) {
+		// True always returns the input (raising to first power)
+		if (exponent.__float__().val) {
+			return this
+		}
+		
+		// False returns 1 + 0j
+		else {
+			return new Complex(1.0, 0.0)
+		}
+	}
+	
+	// based on below (just with complex component of exponent 0)
+	else if ((types.isinstance(exponent, types.Int)) || (types.isinstance(exponent, types.Float))) {
+		// (a + bj)^c = cos(c arg(a + bj)) + isin(c arg(a + bj))
+		// partial = c arg(a + bj)
+		
+		// cache arg(this) for speed (used extensively)
+		carg = Math.atan(z.imag / z.real)
+	
+		partial = exponent.__float().val * carg
+		return new Complex(Math.cos(partial), Math.sin(partial))
+	}
+	
+	// complex exponentiation (http://mathworld.wolfram.com/ComplexExponentiation.html)
+	else if (types.isinstance(exponent, types.Complex)) {
+		// (a + bj)^(c + dj) =   cos(c arg(a + bj) + (d/2) * (a^2 + b^2))
+		//                   + i sin(c arg(a + bj) + (d/2) * (a^2 + b^2))
+		// partial = c arg(a + bj) + (d/2) * (a^2 + b^2)
+		
+		// cache arg(this) for speed (used extensively)
+		carg = Math.atan(z.imag / z.real)
+		
+		partial = exponent.real * carg + (exponent.imag / 2) * (this.real ** 2 + exponent.imag ** 2)		
+		return new Complex(Math.cos(partial), Math.sin(partial))
+	}
+	
+	// else, raise an exception (complex.__pow__ not defined for this type)
+	else {
+		throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'")	
+	}
 }
+
 
 function __div__(x, y, inplace) {
     var types = require('../types')
@@ -376,6 +406,7 @@ function __sub__(x, y, inplace) {
     }
 }
 
+
 Complex.prototype.__sub__ = function(other) {
     return __sub__(this, other)
 }
@@ -443,7 +474,7 @@ Complex.prototype.__imod__ = function(other) {
 }
 
 Complex.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Complex.__ipow__ has not been implemented')
+	return __pow__(this, other, true)
 }
 
 Complex.prototype.__ilshift__ = function(other) {
