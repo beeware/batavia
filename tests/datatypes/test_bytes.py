@@ -107,7 +107,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         'test_add_bytearray',
-        'test_add_bytes',
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',

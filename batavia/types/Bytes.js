@@ -1,3 +1,5 @@
+var Buffer = require('buffer').Buffer
+
 var constants = require('../core').constants
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
@@ -213,8 +215,10 @@ Bytes.prototype.__add__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [Bytes])) {
-        // return new Bytes(this.valueOf() + other.valueOf());
-        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+        // create a new buffer object of combined length and then write the concatenated string value of both byte objects
+        let byteBuffer = new Buffer(this.valueOf().length + other.valueOf().length)
+        byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
+        return new Bytes(byteBuffer)
     } else if (types.isinstance(other, [
         types.Bool,
         types.Dict,
@@ -225,7 +229,6 @@ Bytes.prototype.__add__ = function(other) {
         types.Str,
         types.Tuple ])) {
         // does not concat with all these
-        // Bool,
         throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
     } else {
         throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
