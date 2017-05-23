@@ -187,24 +187,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_floor_divide_complex',
 
-        'test_lshift_bool',
-        'test_lshift_bytearray',
-        'test_lshift_bytes',
-        'test_lshift_class',
-        'test_lshift_complex',
-        'test_lshift_dict',
-        'test_lshift_float',
-        'test_lshift_frozenset',
-        'test_lshift_int',
-        'test_lshift_list',
-        'test_lshift_None',
-        'test_lshift_NotImplemented',
-        'test_lshift_range',
-        'test_lshift_set',
-        'test_lshift_slice',
-        'test_lshift_str',
-        'test_lshift_tuple',
-
         'test_modulo_complex',
 
         'test_or_bool',

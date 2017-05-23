@@ -497,7 +497,8 @@ Tuple.prototype.__ipow__ = function(other) {
 }
 
 Tuple.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__ilshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'tuple' and '" + type_name(other) + "'")
+    //throw new exceptions.NotImplementedError.$pyclass('Tuple.__ilshift__ has not been implemented')
 }
 
 Tuple.prototype.__irshift__ = function(other) {
