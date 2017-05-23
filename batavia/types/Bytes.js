@@ -192,7 +192,7 @@ Bytes.prototype.__pow__ = function(other) {
 }
 
 Bytes.prototype.__div__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__div__ has not been implemented')
+    return this.__truediv__(other)
 }
 
 Bytes.prototype.__floordiv__ = function(other) {
@@ -221,7 +221,35 @@ Bytes.prototype.__truediv__ = function(other) {
 }
 
 Bytes.prototype.__mul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Bool, types.Int])){
+
+        // Check if value of 'other' Int/Bool value is truthy
+        // and 'this' byte object is non-empty
+        if (other.valueOf() > 0 && this.valueOf().length > 0) {
+            let thisByteLength = this.valueOf().length
+            let thisValue = this.valueOf().toString()
+            let otherValue = other.valueOf()
+
+            // Add at least one copy of byte object string into buffer
+            let byteBuffer = Buffer.alloc(thisByteLength * otherValue)
+            byteBuffer.write(thisValue)
+            
+            // repeat adding copies as necessary
+            if (otherValue > 1) {
+                for (let i = 1; i < otherValue;  i++) {
+                    byteBuffer.write(thisValue, i * thisByteLength)
+                }
+            }
+
+            return new Bytes(byteBuffer)
+        } else {
+            return new Bytes('')
+        }
+    } else {
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+    }    
 }
 
 Bytes.prototype.__mod__ = function(other) {
@@ -242,6 +270,7 @@ Bytes.prototype.__add__ = function(other) {
         types.Int,
         types.Float,
         types.List,
+        types.NoneType,
         types.Set,
         types.Str,
         types.Tuple ])) {

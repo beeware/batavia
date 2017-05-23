@@ -110,7 +110,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_class',
         'test_add_complex',
         'test_add_frozenset',
-        'test_add_None',
         'test_add_NotImplemented',
         'test_add_range',
         'test_add_slice',
@@ -196,9 +195,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_slice',
         'test_modulo_str',
         'test_modulo_tuple',
-
-        'test_multiply_bool',
-        'test_multiply_int',
 
         'test_ne_bytearray',
 
