@@ -223,8 +223,7 @@ Bytes.prototype.__truediv__ = function(other) {
 Bytes.prototype.__mul__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.Bool, types.Int])){
-
+    if (types.isinstance(other, [types.Bool, types.Int])) {
         // Check if value of 'other' Int/Bool value is truthy
         // and 'this' byte object is non-empty
         if (other.valueOf() > 0 && this.valueOf().length > 0) {
@@ -235,10 +234,10 @@ Bytes.prototype.__mul__ = function(other) {
             // Add at least one copy of byte object string into buffer
             let byteBuffer = Buffer.alloc(thisByteLength * otherValue)
             byteBuffer.write(thisValue)
-            
+
             // repeat adding copies as necessary
             if (otherValue > 1) {
-                for (let i = 1; i < otherValue;  i++) {
+                for (let i = 1; i < otherValue; i++) {
                     byteBuffer.write(thisValue, i * thisByteLength)
                 }
             }
@@ -249,7 +248,7 @@ Bytes.prototype.__mul__ = function(other) {
         }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
-    }    
+    }
 }
 
 Bytes.prototype.__mod__ = function(other) {
