@@ -1,10 +1,12 @@
-import unittest
+from ..utils import TranspileTestCase
 
-import random
 
-class RandomTests(unittest.TestCase):
-
+class RandomTests(TranspileTestCase):
     def test_choice(self):
-        numbers = [1, 2, 3, 4, 5, 6, 7, 8]
-        random_number = random.choice(numbers)
-        self.assertIn(random_number, numbers)
+        self.assertCodeExecution("""
+            import random
+
+            numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+            random_number = random.choice(numbers)
+            self.assertIn(random_number, numbers)
+            """)
