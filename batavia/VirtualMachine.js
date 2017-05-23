@@ -1725,7 +1725,7 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //             this.push_block('finally', dest)
 //         this.push(ctxmgr_obj)
 // }
-// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
+// VirtualMachine.prototype.byte_WITH_CLEANUP_START = function {
 //         // The code here does some weird stack manipulation: the exit function
 //         // is buried in the stack, and where depends on what's on top of it.
 //         // Pull out the exit function, and leave the rest in place.
@@ -1754,7 +1754,7 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //                 block = this.pop_block()
 //                 this.push_block(block.type, block.handler, block.level-1)
 //         else:       // pragma: no cover
-//             throw "Confused WITH_CLEANUP")
+//             throw "Confused WITH_CLEANUP_START")
 //         exit_ret = exit_func(u, v, w)
 //         err = (u is not null) and bool(exit_ret)
 //         if err:
