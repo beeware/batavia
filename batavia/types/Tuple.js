@@ -497,7 +497,7 @@ Tuple.prototype.__ipow__ = function(other) {
 }
 
 Tuple.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__ilshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__irshift__ = function(other) {
@@ -505,7 +505,7 @@ Tuple.prototype.__irshift__ = function(other) {
 }
 
 Tuple.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__iand__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__ixor__ = function(other) {
