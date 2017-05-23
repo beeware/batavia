@@ -489,6 +489,10 @@ Int.prototype.__getitem__ = function(index) {
     throw new exceptions.TypeError.$pyclass("'int' object is not subscriptable")
 }
 
+Int.prototype.__setattr__ = function(other) {
+    throw new exceptions.AttributeError.$pyclass("'int' object has no attribute '" + other + "'")
+}
+
 /**************************************************
  * Bitshift and logical ops
  **************************************************/
