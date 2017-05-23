@@ -289,6 +289,18 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             this.push(items[0] | items[1])
                         }
                     }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        if (items[0] === null) {
+                            this.push(types.NoneType.__matmul__(items[1]))
+                        } else if (items[0].__matmul__) {
+                            this.push(items[0].__matmul__(items[1]))
+                        } else {
+                            // TODO: This default action might be misleading.
+                            this.push(items[0] * items[1])
+                        }
+                    }
                 default:
                     throw new builtins.BataviaError.$pyclass('Unknown binary operator ' + operator_name)
             }
@@ -495,6 +507,24 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             }
                         } else {
                             items[0] |= items[1]
+                            result = items[0]
+                        }
+                        this.push(result)
+                    }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        var result
+                        if (items[0] === null) {
+                            result = types.NoneType.__imul__(items[1])
+                        } else if (items[0].__imul__) {
+                            result = items[0].__imul__(items[1])
+                            if (result === null) {
+                                result = items[0]
+                            }
+                        } else {
+                            // TODO: fallback multiply might be misleading
+                            items[0] *= items[1]
                             result = items[0]
                         }
                         this.push(result)
