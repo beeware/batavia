@@ -200,7 +200,24 @@ Bytes.prototype.__floordiv__ = function(other) {
 }
 
 Bytes.prototype.__truediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__truediv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [
+        types.Bool,
+        Bytes,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.NoneType,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bytes' and '" + type_name(other) + "'")
+    } else {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__truediv__ has not been implemented')
+    }
 }
 
 Bytes.prototype.__mul__ = function(other) {
@@ -216,7 +233,7 @@ Bytes.prototype.__add__ = function(other) {
 
     if (types.isinstance(other, [Bytes])) {
         // create a new buffer object of combined length and then write the concatenated string value of both byte objects
-        let byteBuffer = new Buffer(this.valueOf().length + other.valueOf().length)
+        let byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
         byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
         return new Bytes(byteBuffer)
     } else if (types.isinstance(other, [
@@ -236,7 +253,24 @@ Bytes.prototype.__add__ = function(other) {
 }
 
 Bytes.prototype.__sub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__sub__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [
+        types.Bool,
+        Bytes,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.NoneType,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bytes' and '" + type_name(other) + "'")
+    } else {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__sub__ has not been implemented')
+    }
 }
 
 Bytes.prototype.__getitem__ = function(other) {
