@@ -1,6 +1,8 @@
-from ..utils import ModuleFunctionTestCase, TranspileTestCase
+from ..utils import TranspileTestCase
 
-class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
+class WebbrowserTests(TranspileTestCase):
     def test_import(self):
-        self.assertCodeExecution("import webbrowser")
+        self.assertCodeExecution("""
+            import webbrowser
+            """)
 

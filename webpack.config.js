@@ -13,6 +13,10 @@ module.exports = {
         libraryTarget: 'umd'
     },
     target: 'web',
+    plugins: [
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoEmitOnErrorsPlugin()
+    ],
     module: {
         rules: [
             {
