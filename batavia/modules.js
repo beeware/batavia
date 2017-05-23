@@ -15,5 +15,6 @@ module.exports = {
     'math': require('./modules/math'),
     'sys': require('./modules/sys'),
     'time': require('./modules/time'),
+    'random': require('./modules/random')
     'webbrowser': require('./modules/webbrowser')
 }
