@@ -107,12 +107,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         'test_add_bytearray',
-        'test_add_class',
-        'test_add_complex',
-        'test_add_frozenset',
-        'test_add_NotImplemented',
-        'test_add_range',
-        'test_add_slice',
 
         'test_eq_bytearray',
 
@@ -197,22 +191,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_slice',
         'test_subscr_str',
         'test_subscr_tuple',
-
-        'test_subtract_bytearray',
-        'test_subtract_class',
-        'test_subtract_complex',
-        'test_subtract_frozenset',
-        'test_subtract_NotImplemented',
-        'test_subtract_range',
-        'test_subtract_slice',
-
-        'test_true_divide_bytearray',
-        'test_true_divide_class',
-        'test_true_divide_complex',
-        'test_true_divide_frozenset',
-        'test_true_divide_NotImplemented',
-        'test_true_divide_range',
-        'test_true_divide_slice',
     ]
 
 
