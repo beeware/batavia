@@ -114,24 +114,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_range',
         'test_add_slice',
 
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
-
         'test_eq_bytearray',
 
         'test_floor_divide_bool',
@@ -198,24 +180,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_ne_bytearray',
 
-        'test_or_bool',
-        'test_or_bytearray',
-        'test_or_bytes',
-        'test_or_class',
-        'test_or_complex',
-        'test_or_dict',
-        'test_or_float',
-        'test_or_frozenset',
-        'test_or_int',
-        'test_or_list',
-        'test_or_None',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
-        'test_or_str',
-        'test_or_tuple',
-
         'test_power_bool',
         'test_power_bytearray',
         'test_power_bytes',
@@ -277,7 +241,7 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_NotImplemented',
         'test_subtract_range',
         'test_subtract_slice',
-        
+
         'test_true_divide_bytearray',
         'test_true_divide_class',
         'test_true_divide_complex',
@@ -285,25 +249,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_NotImplemented',
         'test_true_divide_range',
         'test_true_divide_slice',
-        
-
-        'test_xor_bool',
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
-        'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_None',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
-        'test_xor_str',
-        'test_xor_tuple',
     ]
 
 

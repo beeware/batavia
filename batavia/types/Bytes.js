@@ -317,15 +317,15 @@ Bytes.prototype.__rshift__ = function(other) {
 }
 
 Bytes.prototype.__and__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__and__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__xor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__or__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bytes' and '" + type_name(other) + "'")
 }
 
 /**************************************************
