@@ -206,7 +206,7 @@ def_op('CALL_FUNCTION_VAR', 140)     // #args + (#kwargs << 8);
 dis.hasnargs[140] = 140
 def_op('CALL_FUNCTION_KW', 141)      // #args + (#kwargs << 8);
 dis.hasnargs[141] = 141
-def_op('CALL_FUNCTION_VAR_KW', 142)  // #args + (#kwargs << 8);
+def_op('CALL_FUNCTION_EX', 142)  // #args + (#kwargs << 8);
 dis.hasnargs[142] = 142
 
 jrel_op('SETUP_WITH', 143)
