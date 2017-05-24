@@ -2031,7 +2031,7 @@ VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
 VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
 }
 
-// Additions for Python 3.6 opcodes added here
+// Additions for Python 3.6+ opcodes added here
 
 VirtualMachine.prototype.byte_GET_AITER = function() {
     // See Python/ceval.c around line 1929
@@ -2043,6 +2043,14 @@ VirtualMachine.prototype.byte_GET_ANEXT = function() {
 
 VirtualMachine.prototype.byte_BEFORE_ASYNC_WITH = function() {
     // See Python/ceval.c around line 3006
+}
+
+VirtualMachine.prototype.byte_SETUP_ANNOTATIONS = function() {
+    // See Python/ceval.c around line 2596
+}
+
+VirtualMachine.prototype.byte_STORE_ANNOTATION = function() {
+    // See Python/ceval.c around line 1698
 }
 
 VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
@@ -2083,6 +2091,22 @@ VirtualMachine.prototype.byte_BUILD_TUPLE_UNPACK = function() {
 
 VirtualMachine.prototype.byte_BUILD_SET_UNPACK = function() {
     // See Python/ceval.c around line 2544
+}
+
+VirtualMachine.prototype.byte_FORMAT_VALUE = function() {
+    // See Python/ceval.c around line 3429
+}
+
+VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function() {
+    // See Python/ceval.c around line 2688
+}
+
+VirtualMachine.prototype.byte_BUILD_STRING = function() {
+    // See Python/ceval.c around line 2478
+}
+
+VirtualMachine.prototype.byte_BUILD_TUPLE_UNPACK_WITH_CALL = function() {
+    // See Python/ceval.c around line 2520
 }
 
 module.exports = VirtualMachine
