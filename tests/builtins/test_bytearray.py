@@ -15,7 +15,7 @@ class BuiltinBytearrayFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_dict',
         'test_float',
         'test_frozenset',
-        'test_int',
+        # 'test_int',
         'test_list',
         'test_None',
         'test_NotImplemented',
