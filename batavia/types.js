@@ -45,6 +45,9 @@ types['Generator'] = require('./types/Generator')
 types['Range'] = require('./types/Range')
 types['Slice'] = require('./types/Slice')
 
+types['File'] = require('./types/File')
+types['FileIterator'] = require('./types/FileIterator')
+
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
  *************************************************************************/
