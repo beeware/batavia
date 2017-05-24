@@ -47,6 +47,8 @@ types['Slice'] = require('./types/Slice')
 
 types['CallableIterator'] = require('./types/CallableIterator')
 
+types['Enumerate'] = require('./types/Enumerate')
+
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
  *************************************************************************/
