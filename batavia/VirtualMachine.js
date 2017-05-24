@@ -782,10 +782,10 @@ VirtualMachine.prototype.unpack_code = function(code) {
     var lo
     var hi
 
-    while (pos < code.co_code.val.length) {
+    // while (pos < code.co_code.val.length) {
+    for (pos = 0; pos < code.co_code.val.length; pos += 2) {
         var opcode_start_pos = pos
-
-        var opcode = code.co_code.val[pos++]
+        var opcode = code.co_code.val[pos]
 
         // next opcode has 4-byte argument effectively.
         if (opcode === dis.EXTENDED_ARG) {
@@ -827,9 +827,10 @@ VirtualMachine.prototype.unpack_code = function(code) {
         if (opcode < dis.HAVE_ARGUMENT) {
             args = []
         } else {
-            lo = code.co_code.val[pos++]
-            hi = code.co_code.val[pos++]
-            var intArg = lo | (hi << 8) | extra
+            // lo = code.co_code.val[pos++]
+            // hi = code.co_code.val[pos++]
+            // var intArg = lo | (hi << 8) | extra
+            var intArg = code.co_code.val[pos + 1]
             extra = 0 // use extended arg if present
 
             if (opcode in dis.hasconst) {
@@ -859,7 +860,7 @@ VirtualMachine.prototype.unpack_code = function(code) {
             'opcode': opcode,
             'op_method': this.dispatch_table[opcode],
             'args': args,
-            'next_pos': pos
+            'next_pos': pos + 2
         }
     }
 
