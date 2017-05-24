@@ -12,15 +12,15 @@ function chr(args, kwargs) {
     if (!args || args.length !== 1) {
         switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
-                throw new exceptions.TypeError.$pyclass('chr() takes exactly 1 argument (' + args.length + ' given)');
-	    
+                throw new exceptions.TypeError.$pyclass('chr() takes exactly 1 argument (' + args.length + ' given)')
+
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
             case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass('chr() takes exactly one argument (' + args.length + ' given)');
+                throw new exceptions.TypeError.$pyclass('chr() takes exactly one argument (' + args.length + ' given)')
 
             default:
-                throw new builtins.BataviaError.$pyclass('Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)');
+                throw new exceptions.BataviaError.$pyclass('Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)')
         }
     }
     return new types.Str(String.fromCharCode(args[0]))
