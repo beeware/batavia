@@ -14,23 +14,7 @@ function iter(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('iter() expected at least 1 arguments, got 0')
     }
     if (args.length === 2) {
-        var callable = args[0]
-        var retval = new types.List()
-        var next_item
-        while (true) {
-            try {
-                next_item = callable.__call__([])
-            } catch (e) {
-                if (e instanceof exceptions.StopIteration.$pyclass) {
-                    return retval
-                }
-                throw e
-            }
-            if (next_item.__eq__(args[1])) {
-                return retval
-            }
-            retval.append(next_item)
-        }
+        return new types.CallableIterator(args[0], args[1])
     }
     if (args.length > 2) {
         throw new exceptions.TypeError.$pyclass('iter() expected at most 2 arguments, got 3')
