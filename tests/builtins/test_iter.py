@@ -16,6 +16,24 @@ class IterTests(TranspileTestCase):
             print(list(result))
         """)
 
+    def test_iter_sentinel_repeated(self):
+        self.assertCodeExecution("""
+            seq = iter(range(10))
+            callable = lambda: next(seq)
+            iterator = iter(callable, 3)
+            print(next(iterator))
+            print(next(iterator))
+            print(next(iterator))
+            try:
+                print(next(iterator))
+            except StopIteration:
+                pass
+            try:
+                print(next(iterator))
+            except StopIteration:
+                pass
+        """)
+
     def test_iter_sentinel_gen(self):
         self.assertCodeExecution("""
             def gen():
