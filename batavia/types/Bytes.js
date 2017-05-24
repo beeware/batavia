@@ -188,7 +188,7 @@ Bytes.prototype.__invert__ = function() {
  **************************************************/
 
 Bytes.prototype.__pow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__pow__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__div__ = function(other) {
@@ -196,7 +196,13 @@ Bytes.prototype.__div__ = function(other) {
 }
 
 Bytes.prototype.__floordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__floordiv__ has not been implemented')
+    let types = require('../types')
+
+    if(types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__truediv__ = function(other) {
@@ -235,7 +241,21 @@ Bytes.prototype.__mul__ = function(other) {
 }
 
 Bytes.prototype.__mod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__mod__ has not been implemented')
+    let types = require('../types')
+
+    if (types.isinstance(other, [types.Tuple])) {
+        if (other.length > 0) {
+            throw new exceptions.TypeError.$pyclass("not all arguments converted during bytes formatting")
+        } else {
+            return this
+        }
+
+    } else if (types.isinstance(other, [types.Dict, types.List, types.Range])) {
+        return this
+        // throw new exceptions.NotImplementedError.$pyclass('Bytes.__mod__ has not been implemented')
+    } else {
+        throw new exceptions.TypeError.$pyclass("not all arguments converted during bytes formatting")
+    }
 }
 
 Bytes.prototype.__add__ = function(other) {
