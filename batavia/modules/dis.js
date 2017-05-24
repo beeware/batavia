@@ -84,6 +84,9 @@ def_unary_op('UNARY_NOT', 12)
 
 def_unary_op('UNARY_INVERT', 15)
 
+def_binary_op('BINARY_MATRIX_MULTIPLY', 16)
+def_inplace_op('INPLACE_MATRIX_MULTIPLY', 17)
+
 def_binary_op('BINARY_POWER', 19)
 def_binary_op('BINARY_MULTIPLY', 20)
 
@@ -95,6 +98,10 @@ def_binary_op('BINARY_FLOOR_DIVIDE', 26)
 def_binary_op('BINARY_TRUE_DIVIDE', 27)
 def_inplace_op('INPLACE_FLOOR_DIVIDE', 28)
 def_inplace_op('INPLACE_TRUE_DIVIDE', 29)
+
+def_op('GET_AITER', 50)
+def_op('GET_ANEXT', 51)
+def_op('BEFORE_ASYNC_WITH', 52)
 
 def_op('STORE_MAP', 54)
 def_inplace_op('INPLACE_ADD', 55)
@@ -111,10 +118,12 @@ def_binary_op('BINARY_XOR', 65)
 def_binary_op('BINARY_OR', 66)
 def_inplace_op('INPLACE_POWER', 67)
 def_op('GET_ITER', 68)
+def_op('GET_YIELD_FROM_ITER', 69)
 
 def_op('PRINT_EXPR', 70)
 def_op('LOAD_BUILD_CLASS', 71)
 def_op('YIELD_FROM', 72)
+def_op('GET_AWAITABLE', 73)
 
 def_inplace_op('INPLACE_LSHIFT', 75)
 def_inplace_op('INPLACE_RSHIFT', 76)
@@ -122,11 +131,12 @@ def_inplace_op('INPLACE_AND', 77)
 def_inplace_op('INPLACE_XOR', 78)
 def_inplace_op('INPLACE_OR', 79)
 def_op('BREAK_LOOP', 80)
-def_op('WITH_CLEANUP', 81)
+def_op('WITH_CLEANUP_START', 81)
+def_op('WITH_CLEANUP_FINISH', 82)
 
 def_op('RETURN_VALUE', 83)
 def_op('IMPORT_STAR', 84)
-
+def_op('SETUP_ANNOTATIONS', 85)
 def_op('YIELD_VALUE', 86)
 def_op('POP_BLOCK', 87)
 def_op('END_FINALLY', 88)
@@ -176,6 +186,7 @@ def_op('STORE_FAST', 125)       // Local variable number
 dis.haslocal[125] = 125
 def_op('DELETE_FAST', 126)      // Local variable number
 dis.haslocal[126] = 126
+name_op('STORE_ANNOTATION', 127) // Index in name list
 
 def_op('RAISE_VARARGS', 130)    // Number of raise arguments (1, 2, or 3);
 def_op('CALL_FUNCTION', 131)    // #args + (#kwargs << 8);
@@ -196,7 +207,7 @@ def_op('CALL_FUNCTION_VAR', 140)     // #args + (#kwargs << 8);
 dis.hasnargs[140] = 140
 def_op('CALL_FUNCTION_KW', 141)      // #args + (#kwargs << 8);
 dis.hasnargs[141] = 141
-def_op('CALL_FUNCTION_VAR_KW', 142)  // #args + (#kwargs << 8);
+def_op('CALL_FUNCTION_EX', 142)  // #args + (#kwargs << 8);
 dis.hasnargs[142] = 142
 
 jrel_op('SETUP_WITH', 143)
@@ -210,5 +221,18 @@ dis.hasfree[148] = 148
 
 def_op('EXTENDED_ARG', 144)
 dis.EXTENDED_ARG = 144
+
+def_op('BUILD_LIST_UNPACK', 149)
+def_op('BUILD_MAP_UNPACK', 150)
+def_op('BUILD_MAP_UNPACK_WITH_CALL', 151)
+def_op('BUILD_TUPLE_UNPACK', 152)
+def_op('BUILD_SET_UNPACK', 153)
+
+jrel_op('SETUP_ASYNC_WITH', 154)
+
+def_op('FORMAT_VALUE', 155)
+def_op('BUILD_CONST_KEY_MAP', 156)
+def_op('BUILD_STRING', 157)
+def_op('BUILD_TUPLE_UNPACK_WITH_CALL', 158)
 
 module.exports = dis

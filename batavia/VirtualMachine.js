@@ -289,6 +289,18 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             this.push(items[0] | items[1])
                         }
                     }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        if (items[0] === null) {
+                            this.push(types.NoneType.__matmul__(items[1]))
+                        } else if (items[0].__matmul__) {
+                            this.push(items[0].__matmul__(items[1]))
+                        } else {
+                            // TODO: This default action might be misleading.
+                            this.push(items[0] * items[1])
+                        }
+                    }
                 default:
                     throw new builtins.BataviaError.$pyclass('Unknown binary operator ' + operator_name)
             }
@@ -495,6 +507,24 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             }
                         } else {
                             items[0] |= items[1]
+                            result = items[0]
+                        }
+                        this.push(result)
+                    }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        var result
+                        if (items[0] === null) {
+                            result = types.NoneType.__imul__(items[1])
+                        } else if (items[0].__imul__) {
+                            result = items[0].__imul__(items[1])
+                            if (result === null) {
+                                result = items[0]
+                            }
+                        } else {
+                            // TODO: fallback multiply might be misleading
+                            items[0] *= items[1]
                             result = items[0]
                         }
                         this.push(result)
@@ -1725,7 +1755,7 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //             this.push_block('finally', dest)
 //         this.push(ctxmgr_obj)
 // }
-// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
+// VirtualMachine.prototype.byte_WITH_CLEANUP_START = function {
 //         // The code here does some weird stack manipulation: the exit function
 //         // is buried in the stack, and where depends on what's on top of it.
 //         // Pull out the exit function, and leave the rest in place.
@@ -1754,7 +1784,7 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //                 block = this.pop_block()
 //                 this.push_block(block.type, block.handler, block.level-1)
 //         else:       // pragma: no cover
-//             throw "Confused WITH_CLEANUP")
+//             throw "Confused WITH_CLEANUP_START")
 //         exit_ret = exit_func(u, v, w)
 //         err = (u is not null) and bool(exit_ret)
 //         if err:
@@ -1802,7 +1832,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
     return this.call_function(arg, null, kwargs)
 }
 
-VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION_EX = function(arg) {
     var items = this.popn(2)
     return this.call_function(arg, items[0], items[1])
 }
@@ -1999,6 +2029,84 @@ VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
 }
 
 VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
+}
+
+// Additions for Python 3.6+ opcodes added here
+
+VirtualMachine.prototype.byte_GET_AITER = function() {
+    // See Python/ceval.c around line 1929
+}
+
+VirtualMachine.prototype.byte_GET_ANEXT = function() {
+    // See Python/ceval.c around line 1976
+}
+
+VirtualMachine.prototype.byte_BEFORE_ASYNC_WITH = function() {
+    // See Python/ceval.c around line 3006
+}
+
+VirtualMachine.prototype.byte_SETUP_ANNOTATIONS = function() {
+    // See Python/ceval.c around line 2596
+}
+
+VirtualMachine.prototype.byte_STORE_ANNOTATION = function() {
+    // See Python/ceval.c around line 1698
+}
+
+VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
+    // See Python/ceval.c around line 2926
+}
+
+VirtualMachine.prototype.byte_GET_AWAITABLE = function() {
+    // See Python/ceval.c around line 2018
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_START = function() {
+    // See Python/ceval.c around line 3065
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
+    // See Python/ceval.c around line 3150
+}
+
+VirtualMachine.prototype.byte_SETUP_ASYNC_WITH = function() {
+    // See Python/ceval.c around line 3029
+}
+
+VirtualMachine.prototype.byte_BUILD_LIST_UNPACK = function() {
+    // See Python/ceval.c around line 2489
+}
+
+VirtualMachine.prototype.byte_BUILD_MAP_UNPACK = function() {
+    // See Python/ceval.c around line 2588
+}
+
+VirtualMachine.prototype.byte_BUILD_MAP_UNPACK_WITH_CALL = function() {
+    // See Python/ceval.c around line 2587
+}
+
+VirtualMachine.prototype.byte_BUILD_TUPLE_UNPACK = function() {
+    // See Python/ceval.c around line 2488
+}
+
+VirtualMachine.prototype.byte_BUILD_SET_UNPACK = function() {
+    // See Python/ceval.c around line 2544
+}
+
+VirtualMachine.prototype.byte_FORMAT_VALUE = function() {
+    // See Python/ceval.c around line 3429
+}
+
+VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function() {
+    // See Python/ceval.c around line 2688
+}
+
+VirtualMachine.prototype.byte_BUILD_STRING = function() {
+    // See Python/ceval.c around line 2478
+}
+
+VirtualMachine.prototype.byte_BUILD_TUPLE_UNPACK_WITH_CALL = function() {
+    // See Python/ceval.c around line 2520
 }
 
 module.exports = VirtualMachine
