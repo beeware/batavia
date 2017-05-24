@@ -309,11 +309,11 @@ Bytes.prototype.__getitem__ = function(other) {
 }
 
 Bytes.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__lshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__rshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__and__ = function(other) {
