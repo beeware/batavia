@@ -10,7 +10,7 @@ function bin(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("bin() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new exceptions.TypeError.$pyclass('bin() expected exactly 1 argument (' + args.length + ' given)')
+        throw new exceptions.TypeError.$pyclass('bin() takes exactly one argument (' + args.length + ' given)')
     }
 
     var obj = args[0]

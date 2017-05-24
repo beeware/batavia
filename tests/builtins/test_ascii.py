@@ -15,7 +15,6 @@ class BuiltinAsciiFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["ascii"]
 
     not_implemented = [
-        'test_noargs',
         'test_class',
         'test_NotImplemented',
     ]
