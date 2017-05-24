@@ -1832,7 +1832,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
     return this.call_function(arg, null, kwargs)
 }
 
-VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION_EX = function(arg) {
     var items = this.popn(2)
     return this.call_function(arg, items[0], items[1])
 }
