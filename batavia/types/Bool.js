@@ -520,10 +520,10 @@ Bool.prototype.__lshift__ = function(other) {
         }
     } else if (types.isinstance(other, types.Int)) {
         if (other.valueOf() < 0) {
-            throw new exceptions.ValueError.$pyclass("negative shift count")
+            throw new exceptions.ValueError.$pyclass('negative shift count')
         }
         if (Number.MAX_SAFE_INTEGER < other.valueOf()) {
-            throw new exceptions.OverflowError.$pyclass("Python int too large to convert to C ssize_t")
+            throw new exceptions.OverflowError.$pyclass('Python int too large to convert to C ssize_t')
         }
         if (this.valueOf()) {
             this_bool = 1
@@ -547,10 +547,10 @@ Bool.prototype.__rshift__ = function(other) {
         }
     } else if (types.isinstance(other, types.Int)) {
         if (other.valueOf() < 0) {
-            throw new exceptions.ValueError.$pyclass("negative shift count")
+            throw new exceptions.ValueError.$pyclass('negative shift count')
         }
         if (Number.MAX_SAFE_INTEGER < Math.abs(other.valueOf())) {
-            throw new exceptions.OverflowError.$pyclass("Python int too large to convert to C ssize_t")
+            throw new exceptions.OverflowError.$pyclass('Python int too large to convert to C ssize_t')
         }
         if (this.valueOf()) {
             this_bool = 1
