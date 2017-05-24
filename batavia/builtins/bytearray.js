@@ -8,6 +8,17 @@ function bytearray(args, kwargs) {
 //    bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
 //    bytearray() -> empty bytes array
 
+    // console.log('args')
+    // console.log(args)
+    // console.log('args.length')
+    // console.log(args.length)
+    // console.log('kwargs')
+    // console.log(kwargs)
+    // console.log('arguments')
+    // console.log(arguments)
+    // console.log('arguments.length')
+    // console.log(arguments.length)
+
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }
@@ -15,7 +26,10 @@ function bytearray(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.")
     }
 
-    if (args.length === 1 && types.isinstance(args[0], types.Bytes)) {
+    if (args.length === 0) {
+        // bytearray() -> empty bytes array
+        return new types.Bytearray(new types.Bytes([]))
+    } else if (args.length === 1 && types.isinstance(args[0], types.Bytes)) {
         // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
         return new types.Bytearray(args[0])
     } else if (args.length === 1 && types.isinstance(args[0], types.Bool)) {
