@@ -15,9 +15,14 @@ function bin(args, kwargs) {
 
     var obj = args[0]
 
-    if (!types.isinstance(obj, types.Int)) {
+    if (!types.isinstance(obj, types.Int) &&
+	!types.isinstance(obj, types.Bool)) {
         throw new exceptions.TypeError.$pyclass(
             "'" + type_name(obj) + "' object cannot be interpreted as an integer")
+    }
+
+    if (types.isinstance(obj, types.Bool)) {
+        return new types.Str('0b' + obj.__int__().toString(2))
     }
 
     return new types.Str('0b' + obj.toString(2))
