@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var types = require('../types')
 
 function iter(args, kwargs) {
     if (arguments.length !== 2) {
@@ -13,7 +14,23 @@ function iter(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('iter() expected at least 1 arguments, got 0')
     }
     if (args.length === 2) {
-        throw new exceptions.NotImplementedError.$pyclass("Builtin Batavia function 'iter' with callable/sentinel not implemented")
+        var callable = args[0]
+        var retval = new types.List()
+        var next_item
+        while (true) {
+            try {
+                next_item = callable.__call__([])
+            } catch (e) {
+                if (e instanceof exceptions.StopIteration.$pyclass) {
+                    return retval
+                }
+                throw e
+            }
+            if (next_item.__eq__(args[1])) {
+                return retval
+            }
+            retval.append(next_item)
+        }
     }
     if (args.length > 2) {
         throw new exceptions.TypeError.$pyclass('iter() expected at most 2 arguments, got 3')
