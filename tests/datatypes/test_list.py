@@ -348,6 +348,29 @@ class ListTests(TranspileTestCase):
             l.pop(I())
         """)
 
+    def test_clear_success(self):
+
+        self.assertCodeExecution("""
+            l = ["one", "two", 3]
+            l.clear()
+            print(l)
+        """)
+
+    def test_clear_args(self):
+
+        self.assertCodeExecution("""
+            l = ["one", "two", 3]
+            l.clear("invalid")
+            print(l)
+        """)
+
+    def test_clear_empty_list(self):
+
+        self.assertCodeExecution("""
+            l = []
+            l.clear()
+            print(l)
+        """)
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
