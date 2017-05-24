@@ -5,6 +5,11 @@ var constants = require('../constants')
  *************************************************************************/
 
 var PYCFile = function(data) {
+    if (!Uint8Array.prototype.slice) {
+        Object.defineProperty(Uint8Array.prototype, 'slice', { // eslint-disable-line no-extend-native
+            value: Array.prototype.slice
+        })
+    }
     Object.call(this)
     this.magic = data.slice(0, 4)
     this.modtime = data.slice(4, 8)
