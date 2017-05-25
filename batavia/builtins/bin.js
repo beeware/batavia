@@ -16,7 +16,7 @@ function bin(args, kwargs) {
     var obj = args[0]
 
     if (!types.isinstance(obj, types.Int) &&
-	!types.isinstance(obj, types.Bool)) {
+        !types.isinstance(obj, types.Bool)) {
         throw new exceptions.TypeError.$pyclass(
             "'" + type_name(obj) + "' object cannot be interpreted as an integer")
     }
