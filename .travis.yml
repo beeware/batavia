@@ -3,18 +3,22 @@ python:
   - "3.4.4"
   - "3.5.3"
   - "3.6.1"
+
 node_js:
   - "6.9.1"
+
 env:
   - CIRCLE_NODE_TOTAL=4 CIRCLE_NODE_INDEX=0
   - CIRCLE_NODE_TOTAL=4 CIRCLE_NODE_INDEX=1
   - CIRCLE_NODE_TOTAL=4 CIRCLE_NODE_INDEX=2
   - CIRCLE_NODE_TOTAL=4 CIRCLE_NODE_INDEX=3
+
 install:
   - "npm install -g npm"
   - "npm install"
   - "pip install pytest"
   - "pip install git+https://github.com/pybee/pytest-circleci"
+
 script:
   - "py.test tests"
   - "node_modules/.bin/eslint batavia"
