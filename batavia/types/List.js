@@ -620,6 +620,66 @@ List.prototype.extend = function(values) {
     }
 }
 
+List.prototype.insert = function(index, value) {
+    if (arguments.length !== 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'insert() takes exactly 2 arguments (' + arguments.length + ' given)'
+        )
+    }
+    validateIndexType(index)
+    this.splice(index, 0, value)
+}
+
+List.prototype.remove = function(value) {
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'remove() takes exactly one argument (' + arguments.length + ' given)'
+        )
+    }
+    var index = this.indexOf(value)
+    if (index === -1) {
+        throw new exceptions.ValueError.$pyclass('list.remove(x): x not in list')
+    }
+    this.splice(index, 1)
+}
+
+List.prototype.pop = function(index) {
+    if (arguments.length > 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'pop() takes at most 1 argument (' + arguments.length + ' given)'
+        )
+    }
+    if (index === undefined) {
+        return Array_.prototype.pop.call(this)
+    }
+    validateIndexType(index)
+    if (index >= this.length || index < -this.length) {
+        throw new exceptions.IndexError.$pyclass('pop index out of range')
+    }
+    return this.splice(index, 1)[0]
+}
+
+List.prototype.clear = function() {
+    if (arguments.length !== 0) {
+        throw new exceptions.TypeError.$pyclass(
+            'clear() takes no arguments (' + arguments.length + ' given)'
+        )
+    }
+    this.splice(0, this.length)
+}
+
+function validateIndexType(index) {
+    var types = require('../types')
+    if (!types.isinstance(index, types.Int)) {
+        if (types.isinstance(index, types.Float)) {
+            throw new exceptions.TypeError.$pyclass('integer argument expected, got float')
+        }
+        throw new exceptions.TypeError.$pyclass(
+            "'" + type_name(index) + "' object cannot be interpreted as an integer"
+        )
+    }
+}
+
 /**************************************************
  * Module exports
  **************************************************/

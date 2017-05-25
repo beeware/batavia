@@ -198,6 +198,179 @@ class ListTests(TranspileTestCase):
         # all items are equal
         self.assertOrdering([1, 2, 3], [1, 2, 3])
 
+    def test_insert_success(self):
+
+        # insert at front
+        self.assertCodeExecution("""
+            l = []
+            l.insert(0, "elem")
+            print(l)
+        """)
+
+        self.assertCodeExecution("""
+            l = [2, 3, 4]
+            l.insert(0, 1)
+            print(l)
+        """)
+
+        # insert with positive index
+        self.assertCodeExecution("""
+            l = [0, 1, 3, 4]
+            l.insert(2, 2)
+            print(l)
+        """)
+
+        self.assertCodeExecution("""
+            l = []
+            l.insert(10, "elem")
+            print(l)
+        """)
+
+        # index "out of bounds"
+        self.assertCodeExecution("""
+            l = ["first", "second"]
+            l.insert(5, "last")
+            print(l)
+        """)
+
+        # insert with negative index
+        self.assertCodeExecution("""
+            l = []
+            l.insert(-1, 0)
+            print(l)
+        """)
+
+        self.assertCodeExecution("""
+            l = [1, 2, 3, 4]
+            l.insert(-2, 0)
+            print(l)
+        """)
+
+    def test_insert_fail(self):
+
+        self.assertCodeExecution("""
+            l = []
+            l.insert()
+        """)
+
+        self.assertCodeExecution("""
+            l = []
+            l.insert("0", 1)
+            print(l)
+        """)
+
+        self.assertCodeExecution("""
+            l = []
+            l.insert(1.0, 1)
+        """)
+
+    @unittest.expectedFailure
+    def test_insert_subclass_index(self):
+
+        self.assertCodeExecution("""
+            class F(float): pass
+            l = [1, 2]
+            l.insert(F(), 0)
+        """)
+
+        self.assertCodeExecution("""
+            class I(int): pass
+            l = [1, 2]
+            l.insert(I(), 0)
+        """)
+
+    def test_remove_success(self):
+
+        self.assertCodeExecution("""
+            l = [1, 2, "2", 3, "2"]
+            l.remove("2")
+            print(l)
+        """)
+
+    def test_remove_fail(self):
+
+        self.assertCodeExecution("""
+            l = []
+            l.remove(1)
+        """)
+
+        self.assertCodeExecution("""
+            l = [1]
+            l.remove()
+        """)
+
+    def test_pop_success(self):
+
+        self.assertCodeExecution("""
+            l = [1, 2, 3]
+            print(l.pop(), l)
+        """)
+
+        self.assertCodeExecution("""
+            l = [5, 6, 7, 8]
+            print(l.pop(1), l)
+        """)
+
+        self.assertCodeExecution("""
+            l = [9, 10, 11, 12]
+            print(l.pop(-2), l)
+        """)
+
+    def test_pop_fail(self):
+
+        self.assertCodeExecution("""
+            l = [1, 2]
+            l.pop(2)
+        """)
+
+        self.assertCodeExecution("""
+            l = []
+            l.pop(1, 2)
+        """)
+
+        self.assertCodeExecution("""
+            l = [1]
+            l.pop("0")
+        """)
+
+    @unittest.expectedFailure
+    def test_pop_subclass_index(self):
+
+        self.assertCodeExecution("""
+            class F(float): pass
+            l = [1, 2]
+            l.pop(F())
+        """)
+
+        self.assertCodeExecution("""
+            class I(int): pass
+            l = [1, 2]
+            l.pop(I())
+        """)
+
+    def test_clear_success(self):
+
+        self.assertCodeExecution("""
+            l = ["one", "two", 3]
+            l.clear()
+            print(l)
+        """)
+
+    def test_clear_args(self):
+
+        self.assertCodeExecution("""
+            l = ["one", "two", 3]
+            l.clear("invalid")
+            print(l)
+        """)
+
+    def test_clear_empty_list(self):
+
+        self.assertCodeExecution("""
+            l = []
+            l.clear()
+            print(l)
+        """)
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
@@ -209,7 +382,7 @@ class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
 
-    
+
 class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
 

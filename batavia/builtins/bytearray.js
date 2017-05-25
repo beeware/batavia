@@ -18,6 +18,14 @@ function bytearray(args, kwargs) {
     if (args.length === 1 && types.isinstance(args[0], types.Bytes)) {
         // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
         return new types.Bytearray(args[0])
+    } else if (args.length === 1 && types.isinstance(args[0], types.Bool)) {
+        // bytearray(True) -> bytearray(b'\x00')
+        if (args[0]) {
+            return new types.Bytearray(new types.Bytes([0]))
+        // bytearray(False) -> bytearray(b'')
+        } else {
+            return new types.Bytearray(new types.Bytes([]))
+        }
     } else {
         throw new exceptions.NotImplementedError.$pyclass(
             'Not implemented'

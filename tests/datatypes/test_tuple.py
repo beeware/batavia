@@ -179,53 +179,13 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
-    not_implemented = [
-        'test_subscr_bool',
-    ]
-
 
 class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
     not_implemented = [
 
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
-
         'test_floor_divide_complex',
-
-        'test_lshift_bool',
-        'test_lshift_bytearray',
-        'test_lshift_bytes',
-        'test_lshift_class',
-        'test_lshift_complex',
-        'test_lshift_dict',
-        'test_lshift_float',
-        'test_lshift_frozenset',
-        'test_lshift_int',
-        'test_lshift_list',
-        'test_lshift_None',
-        'test_lshift_NotImplemented',
-        'test_lshift_range',
-        'test_lshift_set',
-        'test_lshift_slice',
-        'test_lshift_str',
-        'test_lshift_tuple',
 
         'test_modulo_complex',
 

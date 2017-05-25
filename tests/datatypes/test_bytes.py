@@ -31,7 +31,7 @@ class BytesTests(TranspileTestCase):
             """)
 
         self.assertCodeExecution("""
-            x = byes("Clive James", 'ascii')
+            x = bytes("Clive James", 'ascii')
             print(x)
             """)
 
@@ -105,23 +105,14 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
     not_implemented = [
-        'test_add_bool',
+
         'test_add_bytearray',
-        'test_add_bytes',
         'test_add_class',
         'test_add_complex',
-        'test_add_dict',
-        'test_add_float',
         'test_add_frozenset',
-        'test_add_int',
-        'test_add_list',
-        'test_add_None',
         'test_add_NotImplemented',
         'test_add_range',
-        'test_add_set',
         'test_add_slice',
-        'test_add_str',
-        'test_add_tuple',
 
         'test_and_bool',
         'test_and_bytearray',
@@ -205,9 +196,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-        'test_multiply_bool',
-        'test_multiply_int',
-
         'test_ne_bytearray',
 
         'test_or_bool',
@@ -282,41 +270,22 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_str',
         'test_subscr_tuple',
 
-        'test_subtract_bool',
         'test_subtract_bytearray',
-        'test_subtract_bytes',
         'test_subtract_class',
         'test_subtract_complex',
-        'test_subtract_dict',
-        'test_subtract_float',
         'test_subtract_frozenset',
-        'test_subtract_int',
-        'test_subtract_list',
-        'test_subtract_None',
         'test_subtract_NotImplemented',
         'test_subtract_range',
-        'test_subtract_set',
         'test_subtract_slice',
-        'test_subtract_str',
-        'test_subtract_tuple',
-
-        'test_true_divide_bool',
+        
         'test_true_divide_bytearray',
-        'test_true_divide_bytes',
         'test_true_divide_class',
         'test_true_divide_complex',
-        'test_true_divide_dict',
-        'test_true_divide_float',
         'test_true_divide_frozenset',
-        'test_true_divide_int',
-        'test_true_divide_list',
-        'test_true_divide_None',
         'test_true_divide_NotImplemented',
         'test_true_divide_range',
-        'test_true_divide_set',
         'test_true_divide_slice',
-        'test_true_divide_str',
-        'test_true_divide_tuple',
+        
 
         'test_xor_bool',
         'test_xor_bytearray',

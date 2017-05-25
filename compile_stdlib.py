@@ -27,9 +27,11 @@ def parse_args():
     enabled_modules = args.modules or [
         '_weakrefset',
         'abc',
+        'antigravity',
         'bisect',
         'colorsys',
         'copyreg',
+        'hashlib',
         'token',
         'operator',
         'stat',
