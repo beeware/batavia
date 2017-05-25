@@ -13,7 +13,6 @@ class BuiltinReversedFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["reversed"]
 
     not_implemented = [
-        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',
