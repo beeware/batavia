@@ -46,6 +46,9 @@ NoneType.prototype.__setattr__ = function(attr, value) {
 /**************************************************
  * Comparison operators
  **************************************************/
+ NoneType.prototype.__len__ = function(other) {
+     throw new exceptions.TypeError.$pyclass("object of type 'NoneType' has no len()")
+ }
 
 NoneType.prototype.__lt__ = function(other) {
     throw new exceptions.TypeError.$pyclass('unorderable types: NoneType() < ' + basic_types.type_name(other) + '()')
