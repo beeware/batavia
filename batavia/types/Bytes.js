@@ -243,16 +243,10 @@ Bytes.prototype.__mul__ = function(other) {
 Bytes.prototype.__mod__ = function(other) {
     let types = require('../types')
 
-    if (types.isinstance(other, [types.Tuple])) {
-        if (other.length > 0) {
-            throw new exceptions.TypeError.$pyclass('not all arguments converted during bytes formatting')
-        } else {
-            return this
-        }
-    } else if (types.isinstance(other, [types.Dict, types.List, types.Range])) {
-        return this
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass('not all arguments converted during bytes formatting')
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bytes' and '" + type_name(other) + "'")
     }
 }
 
