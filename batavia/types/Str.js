@@ -21,6 +21,10 @@ create_pyclass(Str, 'str', true)
  * Type conversions
  **************************************************/
 
+Str.prototype.__len__ = function() {
+    return this.length
+}
+
 Str.prototype.__bool__ = function() {
     return this.length > 0
 }
