@@ -55,6 +55,51 @@ native.getattr = function(obj, attr) {
     return val
 }
 
+native.getattr_py = function(obj, attr) {
+    var PyObject = require('./types/Object')
+    var val
+    var getattribute
+    var getattr
+
+    if (obj.__class__ !== undefined) {
+        if (obj.__class__.$pyclass !== undefined) {
+            getattribute = native.getattr_raw(obj.__class__.$pyclass.prototype,
+                '__getattribute__')
+            getattr = native.getattr_raw(obj.__class__.$pyclass.prototype,
+                '__getattr__')
+        } else {
+            getattribute = native.getattr_raw(obj.__class__,
+                '__getattribute__')
+            getattr = native.getattr_raw(obj.__class__,
+                '__getattr__')
+        }
+        // if class of object has __getattribute__ method,
+        // call that, otherwise, call
+        // object.__getattribute__
+        // if they fail with an AttributeError,
+        // call __getattr__ (if it exists)
+        try {
+            if (getattribute !== undefined && getattribute.__get__ !== undefined) {
+                val = getattribute.__get__(obj).__call__(attr)
+            } else {
+                val = PyObject.__class__.__getattribute__(obj, attr)
+            }
+        } catch (err) {
+            if (err instanceof exceptions.AttributeError.$pyclass &&
+                getattr !== undefined && getattr.__get__ !== undefined) {
+                // clear last_exception because it is handled here
+                getattr.$vm.last_exception = null
+                val = getattr.__get__(obj).__call__(attr)
+            } else {
+                throw err
+            }
+        }
+    } else {
+        val = obj.__getattribute__(attr)
+    }
+    return val
+}
+
 native.setattr = function(obj, attr, value) {
     obj[attr] = value
 }

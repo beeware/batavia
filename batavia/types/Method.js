@@ -17,7 +17,7 @@ function Method(instance, func) {
     )
     this.__self__ = instance
     this.__func__ = func
-    this.__class__ = instance.prototype
+    this.__class__ = instance.__class__
 }
 
 Method.prototype = Object.create(Function.prototype)
