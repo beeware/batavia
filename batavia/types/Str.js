@@ -497,6 +497,10 @@ Str.prototype.__ior__ = function(other) {
  * https://docs.python.org/3.4/library/stdtypes.html#string-methods
  **************************************************/
 
+Str.prototype.__len__ = function() {
+    return this.length
+}
+
 Str.prototype.join = function(iter) {
     var types = require('../types')
 
