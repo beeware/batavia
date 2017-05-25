@@ -2098,8 +2098,17 @@ VirtualMachine.prototype.byte_FORMAT_VALUE = function() {
     // See Python/ceval.c around line 3429
 }
 
-VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function() {
+VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
     // See Python/ceval.c around line 2688
+    var keys = this.pop()
+    var values = this.popn(size)
+    var dict = new types.Dict()
+
+    for (var i = 0; i < values.length; i += 1) {
+        dict.__setitem__(keys[i], values[i])
+    }
+    this.push(dict)
+    return
 }
 
 VirtualMachine.prototype.byte_BUILD_STRING = function() {
