@@ -659,6 +659,15 @@ List.prototype.pop = function(index) {
     return this.splice(index, 1)[0]
 }
 
+List.prototype.clear = function() {
+    if (arguments.length !== 0) {
+        throw new exceptions.TypeError.$pyclass(
+            'clear() takes no arguments (' + arguments.length + ' given)'
+        )
+    }
+    this.splice(0, this.length)
+}
+
 function validateIndexType(index) {
     var types = require('../types')
     if (!types.isinstance(index, types.Int)) {

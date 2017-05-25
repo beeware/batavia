@@ -5,9 +5,17 @@ Batavia is part of the `BeeWare suite`_. You can talk to the community through:
 
 * `@pybeeware on Twitter`_
 
-* The `BeeWare Users Mailing list`_, for questions about how to use the BeeWare suite.
+* See the `Getting Help`_ page for information on where to ask
+  questions regarding the use of the BeeWare suite, as well as links
+  to discussions the development of new features in the BeeWare suite,
+  and ideas for new tools for the suite.
 
-* The `BeeWare Developers Mailing list`_, for discussing the development of new features in the BeeWare suite, and ideas for new tools for the suite.
+* The original `BeeWare Users`_ and `BeeWare Developers`_ mailing
+  lists, have been shut down, in favor of the `getting help`_ page
+  mentioned above. However, the earlier messages and topics posted
+  prior to its shutdown remain. See the `announcement`_ for more
+  details on the shutdown.
+
 
 Code of Conduct
 ---------------
@@ -24,8 +32,10 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
 .. _BeeWare suite: http://pybee.org
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _BeeWare Users Mailing list: https://groups.google.com/forum/#!forum/beeware-users
-.. _BeeWare Developers Mailing list: https://groups.google.com/forum/#!forum/beeware-developers
+.. _Getting Help: https://pybee.org/community/getting-help/
+.. _announcement: https://groups.google.com/forum/#!topic/beeware-users/iUm-EDgypTg
+.. _BeeWare Users: https://groups.google.com/forum/#!forum/beeware-users
+.. _BeeWare Developers: https://groups.google.com/forum/#!forum/beeware-developers
 .. _log them on Github: https://github.com/pybee/batavia/issues
 .. _fork the code: https://github.com/pybee/batavia
 .. _submit a pull request: https://github.com/pybee/batavia/pulls

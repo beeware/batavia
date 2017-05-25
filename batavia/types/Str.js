@@ -62,8 +62,8 @@ Str.prototype.__str__ = function() {
  * Attribute manipulation
  **************************************************/
 
-Str.prototype.__getattr__ = function(attr) {
-    return PyObject.prototype.__getattr__.call(this, attr)
+Str.prototype.__getattribute__ = function(attr) {
+    return PyObject.prototype.__class__.__getattribute__(this, attr)
 }
 
 Str.prototype.__setattr__ = function(attr, value) {

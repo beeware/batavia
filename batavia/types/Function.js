@@ -75,7 +75,7 @@ function Function(name, code, globals, defaults, closure, vm) {
 
 create_pyclass(Function, 'function')
 
-Function.prototype.__get__ = function(instance, klass) {
+Function.prototype.__get__ = function(instance) {
     var types = require('../types')
 
     // Module functions don't need to be bound to the instance as methods.

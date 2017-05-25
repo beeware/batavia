@@ -33,20 +33,8 @@ PyObject.prototype.__str__ = function() {
     return '<' + this.__class__.__name__ + ' 0x...>'
 }
 
-PyObject.prototype.__getattr__ = function(name) {
-    var native = require('../native')
-
-    var attr = native.getattr(this, name)
-
-    // If the returned object is a descriptor, invoke it.
-    // Otherwise, the returned object *is* the value.
-    var value
-    if (attr.__get__ !== undefined) {
-        value = attr.__get__(this, this.__class__)
-    } else {
-        value = attr
-    }
-
+PyObject.prototype.__getattribute__ = function(name) {
+    var value = this.__class__.__getattribute__(this, name)
     return value
 }
 

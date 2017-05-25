@@ -1,7 +1,6 @@
 from ..utils import TranspileTestCase
 
-import unittest
-
+from unittest import expectedFailure
 
 class ClassTests(TranspileTestCase):
     def test_minimal(self):
@@ -46,14 +45,115 @@ class ClassTests(TranspileTestCase):
             print('Done.')
             """, run_in_function=False)
 
+    def test_getattr(self):
+        self.assertCodeExecution("""
+            class MyClass1:
+                def __init__(self):
+                    self.foo = 'bar'
+
+                def __getattr__(self, name):
+                    self.foo = 'foo_bar'
+                    return name
+
+            class MyClass2:
+                def __init__(self):
+                    self.x = 1
+
+            class MyClass3:
+                def __init__(self):
+                    self.x = 42
+
+            def g(instance, name):
+                instance.x += 41
+                return name
+
+            MyClass2.__getattr__ = g
+            obj1 = MyClass1()
+            obj2 = MyClass2()
+            obj3 = MyClass3()
+            obj3.__getattr__ = g
+
+            print(obj1.foo)
+            print(obj1.fail)
+            print(obj1.foo)
+
+            print(obj2.x)
+            print(obj2.fail)
+            print(obj2.x)
+
+            print(obj3.x)
+            print(obj3.fail)
+            print(obj3.x)
+        """)
+
+    def test_getattribute(self):
+        self.assertCodeExecution("""
+            class MyClass1:
+                def __init__(self):
+                    self.x = 42
+                    self.y = 41
+
+                def __getattr__(self, attr):
+                    print("That attribute doesn't exist")
+                    return attr
+
+                def __getattribute__(self, attr):
+                    if attr in 'xy':
+                        print("x or y")
+                        val = object.__getattribute__(self, attr)
+                    else:
+                        print("something else")
+                        val = object.__getattribute__(self, 'fail')
+                    return val
+
+            class MyClass2:
+                def __init__(self):
+                    self.foo = 'bar'
+
+            class MyClass3:
+                def __init__(self):
+                    self.foo = 7000
+
+            def g(instance, name):
+                if name == 'foo':
+                    return object.__getattribute__(instance, 'foo')
+                else:
+                    return name
+
+            MyClass2.__getattribute__ = g
+
+            obj1 = MyClass1()
+            obj2 = MyClass2()
+            obj3 = MyClass3()
+            obj3.__getattribute__ = g
+
+            print(obj1.x)
+            print(obj1.y)
+            print(obj1.z)
+            print(obj1.x)
+
+            print(obj2.foo)
+            print(obj2.fail)
+            print(obj2.foo)
+
+            print(obj3.foo)
+            try:
+                print(obj3.fail)
+            except AttributeError as e:
+                print(e)
+            print(obj3.foo)
+        """)
+
     def test_attributeerror(self):
         self.assertCodeExecution("""
             class MyClass:
+                foo = 'bar'
                 def __init__(self):
                     self.a = 42
 
             obj = MyClass()
 
+            print(MyClass.foo)
             print(obj.a)
             print(obj.fail)
         """)

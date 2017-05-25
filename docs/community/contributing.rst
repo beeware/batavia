@@ -93,7 +93,8 @@ Running the test suite
 
 You're now ready to run the test suite! This can be done the
 immediately-available-but-tiresome way, or the takes-little-effort-but-then-fun
-way, which is preferred.
+way, which is preferred (*assuming* your Python is configured for Tk; MacOS Python
+often is *not*).
 
 For the fun way, you need to install BeeWare's test-running tool,
 Cricket_. Follow the installation instructions to install it into your

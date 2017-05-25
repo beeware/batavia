@@ -67,27 +67,32 @@ Type.prototype.__call__ = function(args, kwargs) {
     return instance
 }
 
-Type.prototype.__getattr__ = function(name) {
+Type.prototype.__getattribute__ = function(obj, name) {
     var exceptions = require('../exceptions')
     var native = require('../native')
 
-    var attr = native.getattr_raw(this, name)
+    var attr = native.getattr_raw(obj, name)
+
+    if (attr === undefined && obj.$pyclass !== undefined) {
+        // if it's a 'type' object and doesn't have attr,
+        // look to the prototype of the instance, but exclude functions
+        attr = native.getattr_raw(obj.$pyclass.prototype, name, true)
+    }
     if (attr === undefined) {
-        // if the Type doesn't have the attribute, look to the prototype
-        // of the instance. However, exclude functions; this step is
-        // only required for class attributes.
-        attr = native.getattr_raw(this.$pyclass.prototype, name, true)
-        if (attr === undefined) {
+        if (obj.$pyclass === undefined) {
             throw new exceptions.AttributeError.$pyclass(
-                "type object '" + this.__name__ + "' has no attribute '" + name + "'"
+                "'" + type_name(obj) + "' object has no attribute '" + name + "'"
+            )
+        } else {
+            throw new exceptions.AttributeError.$pyclass(
+                "type object '" + obj.__name__ + "' has no attribute '" + name + "'"
             )
         }
     }
-    // If the returned object is a descriptor, invoke it.
-    // Otherwise, the returned object *is* the value.
+
     var value
-    if (attr.__get__ !== undefined) {
-        value = attr.__get__(this, this.__class__)
+    if (attr.__get__) {
+        value = attr.__get__(obj, obj.__class__)
     } else {
         value = attr
     }
