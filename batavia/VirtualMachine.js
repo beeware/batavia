@@ -782,13 +782,13 @@ VirtualMachine.prototype.unpack_code = function(code) {
     var lo
     var hi
 
-    // while (pos < code.co_code.val.length) {
-    for (pos = 0; pos < code.co_code.val.length; pos += 2) {
+    while (pos < code.co_code.val.length) {
         var opcode_start_pos = pos
         var opcode = code.co_code.val[pos]
 
         // next opcode has 4-byte argument effectively.
         if (opcode === dis.EXTENDED_ARG) {
+            // TODO: this section not yet updated for 3.6 16-bit wordcode
             lo = code.co_code.val[pos++]
             hi = code.co_code.val[pos++]
             extra = (lo << 16) | (hi << 24)
@@ -826,11 +826,51 @@ VirtualMachine.prototype.unpack_code = function(code) {
 
         if (opcode < dis.HAVE_ARGUMENT) {
             args = []
+            switch (constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    pos += 1
+                    next_pos = pos
+                    break
+
+                case constants.BATAVIA_MAGIC_361:
+                    pos += 2
+                    next_pos = pos
+                    break
+
+                default:
+                    throw new builtins.BataviaError.$pyclass(
+                        'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5, 3.6)'
+                    )
+            }
         } else {
-            // lo = code.co_code.val[pos++]
-            // hi = code.co_code.val[pos++]
-            // var intArg = lo | (hi << 8) | extra
-            var intArg = code.co_code.val[pos + 1]
+            var intArg
+            var next_pos
+            switch (constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    pos += 1
+                    lo = code.co_code.val[pos++]
+                    hi = code.co_code.val[pos++]
+                    intArg = lo | (hi << 8) | extra
+                    next_pos = pos
+                    break
+
+                case constants.BATAVIA_MAGIC_361:
+                    intArg = code.co_code.val[pos + 1]
+                    pos += 2
+                    next_pos = pos
+                    break
+
+                default:
+                    throw new builtins.BataviaError.$pyclass(
+                        'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5, 3.6)'
+                    )
+            }
             extra = 0 // use extended arg if present
 
             if (opcode in dis.hasconst) {
@@ -845,6 +885,7 @@ VirtualMachine.prototype.unpack_code = function(code) {
             } else if (opcode in dis.hasname) {
                 args = [code.co_names[intArg]]
             } else if (opcode in dis.hasjrel) {
+                // TODO: verify that the "pos" handling is correct for 3.6 16-bit wordcode
                 args = [pos + intArg]
             } else if (opcode in dis.hasjabs) {
                 args = [intArg]
@@ -860,7 +901,7 @@ VirtualMachine.prototype.unpack_code = function(code) {
             'opcode': opcode,
             'op_method': this.dispatch_table[opcode],
             'args': args,
-            'next_pos': pos + 2
+            'next_pos': next_pos
         }
     }
 
