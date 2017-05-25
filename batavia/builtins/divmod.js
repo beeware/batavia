@@ -9,7 +9,10 @@ function divmod(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("divmod() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 2) {
-        throw new exceptions.TypeError.$pyclass('divmod() expected exactly 2 argument (' + args.length + ' given)')
+        throw new exceptions.TypeError.$pyclass('divmod expected 2 arguments, got ' + args.length)
+    }
+    if (types.isinstance(args[0], types.Complex) || types.isinstance(args[1], types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor or mod of complex number.")
     }
 
     var div = Math.floor(args[0] / args[1])
