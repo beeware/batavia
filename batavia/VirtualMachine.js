@@ -516,9 +516,9 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__imul__(items[1])
-                        } else if (items[0].__imul__) {
-                            result = items[0].__imul__(items[1])
+                            result = types.NoneType.__imatmul__(items[1])
+                        } else if (items[0].__imatmul__) {
+                            result = items[0].__imatmul__(items[1])
                             if (result === null) {
                                 result = items[0]
                             }
