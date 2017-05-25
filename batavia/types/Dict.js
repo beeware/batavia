@@ -106,6 +106,10 @@ Dict.prototype.toString = function() {
  * Type conversions
  **************************************************/
 
+Dict.prototype.__len__ = function() {
+    return this.size
+}
+
 Dict.prototype.__bool__ = function() {
     return this.size > 0
 }
