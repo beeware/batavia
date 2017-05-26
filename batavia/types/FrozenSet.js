@@ -34,6 +34,10 @@ FrozenSet.prototype.toString = function() {
  * Type conversions
  **************************************************/
 
+FrozenSet.prototype.__len__ = function() {
+    return this.data.size
+}
+
 FrozenSet.prototype.__bool__ = function() {
     return this.data.__bool__()
 }

@@ -34,6 +34,10 @@ Set.prototype.toString = function() {
  * Type conversions
  **************************************************/
 
+Set.prototype.__len__ = function() {
+    return this.data.size
+}
+
 Set.prototype.__bool__ = function() {
     return this.data.__bool__()
 }
