@@ -774,7 +774,99 @@ VirtualMachine.prototype.create_traceback = function() {
  * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
  * unpacked into operations with their respective args
  */
-VirtualMachine.prototype.unpack_code = function(code) {
+function unpack_code_35(code, dispatch_table) {
+    var pos = 0
+    var unpacked_code = []
+    var args
+    var extra = 0
+    var lo
+    var hi
+
+    while (pos < code.co_code.val.length) {
+        var opcode_start_pos = pos
+
+        var opcode = code.co_code.val[pos++]
+
+        // next opcode has 4-byte argument effectively.
+        if (opcode === dis.EXTENDED_ARG) {
+            lo = code.co_code.val[pos++]
+            hi = code.co_code.val[pos++]
+            extra = (lo << 16) | (hi << 24)
+            // emulate four NOPs
+            unpacked_code[opcode_start_pos] = {
+                'opoffset': opcode_start_pos,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            unpacked_code[opcode_start_pos + 1] = {
+                'opoffset': opcode_start_pos + 1,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            unpacked_code[opcode_start_pos + 2] = {
+                'opoffset': opcode_start_pos + 2,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            unpacked_code[opcode_start_pos + 3] = {
+                'opoffset': opcode_start_pos + 3,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            continue
+        }
+
+        if (opcode < dis.HAVE_ARGUMENT) {
+            args = []
+        } else {
+            lo = code.co_code.val[pos++]
+            hi = code.co_code.val[pos++]
+            var intArg = lo | (hi << 8) | extra
+            extra = 0 // use extended arg if present
+
+            if (opcode in dis.hasconst) {
+                args = [code.co_consts[intArg]]
+            } else if (opcode in dis.hasfree) {
+                if (intArg < code.co_cellvars.length) {
+                    args = [code.co_cellvars[intArg]]
+                } else {
+                    var var_idx = intArg - code.co_cellvars.length
+                    args = [code.co_freevars[var_idx]]
+                }
+            } else if (opcode in dis.hasname) {
+                args = [code.co_names[intArg]]
+            } else if (opcode in dis.hasjrel) {
+                args = [pos + intArg]
+            } else if (opcode in dis.hasjabs) {
+                args = [intArg]
+            } else if (opcode in dis.haslocal) {
+                args = [code.co_varnames[intArg]]
+            } else {
+                args = [intArg]
+            }
+        }
+
+        unpacked_code[opcode_start_pos] = {
+            'opoffset': opcode_start_pos,
+            'opcode': opcode,
+            'op_method': dispatch_table[opcode],
+            'args': args,
+            'next_pos': pos
+        }
+    }
+
+    code.co_unpacked_code = unpacked_code
+}
+
+function unpack_code_36(code, dispatch_table) {
     var pos = 0
     var unpacked_code = []
     var args
@@ -826,51 +918,14 @@ VirtualMachine.prototype.unpack_code = function(code) {
 
         if (opcode < dis.HAVE_ARGUMENT) {
             args = []
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    pos += 1
-                    next_pos = pos
-                    break
-
-                case constants.BATAVIA_MAGIC_361:
-                    pos += 2
-                    next_pos = pos
-                    break
-
-                default:
-                    throw new builtins.BataviaError.$pyclass(
-                        'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5, 3.6)'
-                    )
-            }
+            pos += 2
+            next_pos = pos
         } else {
             var intArg
             var next_pos
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    pos += 1
-                    lo = code.co_code.val[pos++]
-                    hi = code.co_code.val[pos++]
-                    intArg = lo | (hi << 8) | extra
-                    next_pos = pos
-                    break
-
-                case constants.BATAVIA_MAGIC_361:
-                    intArg = code.co_code.val[pos + 1]
-                    pos += 2
-                    next_pos = pos
-                    break
-
-                default:
-                    throw new builtins.BataviaError.$pyclass(
-                        'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5, 3.6)'
-                    )
-            }
+            intArg = code.co_code.val[pos + 1]
+            pos += 2
+            next_pos = pos
             extra = 0 // use extended arg if present
 
             if (opcode in dis.hasconst) {
@@ -899,13 +954,39 @@ VirtualMachine.prototype.unpack_code = function(code) {
         unpacked_code[opcode_start_pos] = {
             'opoffset': opcode_start_pos,
             'opcode': opcode,
-            'op_method': this.dispatch_table[opcode],
+            'op_method': dispatch_table[opcode],
             'args': args,
             'next_pos': next_pos
         }
     }
 
     code.co_unpacked_code = unpacked_code
+}
+
+/*
+ * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
+ * unpacked into operations with their respective args
+ */
+VirtualMachine.prototype.unpack_code = function(code) {
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            /* Modifies the code parameter */
+            unpack_code_35(code, this.dispatch_table)
+            break
+
+        case constants.BATAVIA_MAGIC_361:
+            /* Modifies the code parameter */
+            unpack_code_36(code, this.dispatch_table)
+            break
+
+        default:
+            throw new builtins.BataviaError.$pyclass(
+                'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5, 3.6)'
+            )
+    }
 }
 
 VirtualMachine.prototype.run_code = function(kwargs) {
