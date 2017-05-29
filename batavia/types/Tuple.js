@@ -242,7 +242,7 @@ Tuple.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
@@ -441,7 +441,7 @@ Tuple.prototype.__ifloordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
