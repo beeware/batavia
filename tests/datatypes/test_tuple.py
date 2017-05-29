@@ -185,10 +185,6 @@ class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
     not_implemented = [
 
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
-
         'test_or_bool',
         'test_or_bytearray',
         'test_or_bytes',
