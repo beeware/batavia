@@ -4,7 +4,6 @@ import unittest
 
 
 class SetComprehensionTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_syntax(self):
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
