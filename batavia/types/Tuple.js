@@ -242,7 +242,7 @@ Tuple.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
@@ -511,7 +511,7 @@ Tuple.prototype.__ilshift__ = function(other) {
 }
 
 Tuple.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__irshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__iand__ = function(other) {
@@ -519,7 +519,7 @@ Tuple.prototype.__iand__ = function(other) {
 }
 
 Tuple.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__ixor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__ior__ = function(other) {
