@@ -4,7 +4,9 @@ var callables = require('../core').callables
 
 function reversed(args, kwargs) {
     var iterable = args[0]
-    if (iterable.__reversed__) {
+    if (args.length === 0) {
+        throw new exceptions.TypeError.$pyclass('reversed expected 1 arguments, got 0')
+    } else if (iterable.__reversed__) {
         return callables.call_method(iterable, '__reversed__', [])
     } else if (iterable.__len__ && iterable.__getitem__) {
         var new_iterable = iterable.slice(0)
