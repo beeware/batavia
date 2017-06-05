@@ -62,8 +62,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
     not_implemented = [
-        'test_modulo_complex',
-
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_complex',

@@ -438,6 +438,8 @@ Int.prototype.__mod__ = function(other) {
         } else {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
     }
