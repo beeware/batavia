@@ -197,7 +197,8 @@ Float.prototype.__neg__ = function() {
 }
 
 Float.prototype.__not__ = function() {
-    return new Float(!this.valueOf())
+    var types = require('../types')
+    return new types.Bool(!this.valueOf())
 }
 
 Float.prototype.__invert__ = function() {
