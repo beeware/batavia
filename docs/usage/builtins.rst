@@ -27,7 +27,7 @@ General Structure
       }
 
       // actual code goes here
-      Javascript.Function.Stuff();
+      JavaScript.Function.Stuff();
   }
   batavia.builtins.<fn>.__doc__ = 'docstring from Python 3.4 goes here, for documentation'
 

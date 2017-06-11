@@ -59,7 +59,7 @@ how to set this up are `on our Environment setup guide
 
    $ npm install -g npm
 
-   Once you've got npm, you can use it to install Batavia's Javascript
+   Once you've got npm, you can use it to install Batavia's JavaScript
    dependencies::
 
    $ npm install

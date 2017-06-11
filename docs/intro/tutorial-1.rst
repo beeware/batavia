@@ -62,7 +62,7 @@ expect from this Python program::
 
     Hello World!
 
-Congratulations! You've just run your first Python program under Javascript
+Congratulations! You've just run your first Python program under JavaScript
 using Batavia! Now you can get a little more adventurous and try a loop. Replace
 your existing code in the text box with the following:
 
@@ -113,7 +113,7 @@ should see a block in the document ``<head>`` that looks something like:
 
 That string is the base64 encoded version of the bytecode for the Python
 program you submitted. The browser then takes this base64 string, decodes it
-back into a bytestring, and runs it through Batavia -- a Javascript module
+back into a bytestring, and runs it through Batavia -- a JavaScript module
 that does the same thing in a browser that CPython does on the desktop:
 interprets Python bytecode as a running program.
 
@@ -155,9 +155,9 @@ browser window:
     div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
 
 What you should notice is that except for the ``dom`` prefix, this is the same
-API that you would use in Javascript to open a new browser window, set the
+API that you would use in JavaScript to open a new browser window, set the
 page title, and add some text to the end of an element. The entire browser DOM
-is exposed in this way, so anything you can do in Javascript, you can do in
+is exposed in this way, so anything you can do in JavaScript, you can do in
 Batavia.
 
 You can even use this code in the sample code window: copy and paste this code into the "run code" text box, click "Run your code!", and you get a popup window.
