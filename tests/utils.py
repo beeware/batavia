@@ -5,7 +5,6 @@ import base64
 import contextlib
 from io import StringIO
 import importlib
-import inspect
 import os
 import py_compile
 import re
@@ -209,7 +208,7 @@ def transforms(**transform_args):
 
 
 class JSCleaner:
-    def __init__(self, err_msg = True, memory_ref = True, js_bool = True, decimal = True, float_exp = True, complex_num = True,
+    def __init__(self, err_msg = True, memory_ref = True, js_bool = False, decimal = True, float_exp = True, complex_num = True,
         high_precision_float = True, test_ref = True, custom = True):
 
         self.transforms = {
@@ -688,10 +687,10 @@ class TranspileTestCase(TestCase):
 
 
 class NotImplementedToExpectedFailure:
-    
+
     def _is_flakey(self):
         return self._testMethodName in getattr(self, "is_flakey", [])
-    
+
     def _is_not_implemented(self):
         '''
         A test is expected to fail if:
@@ -1354,7 +1353,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
         actuals = [x for x in examples if abs(int(x)) < 8192]
 
     def func(self):
-        self.assertOneArgModuleFuction(
+        self.assertOneArgModuleFunction(
             name=name,
             module=module,
             func=f,
@@ -1366,7 +1365,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
 
 def _module_two_arg_func_test(name, module, f,  examples, examples2):
     def func(self):
-        self.assertTwoArgModuleFuction(
+        self.assertTwoArgModuleFunction(
             name=name,
             module=module,
             func=f,
@@ -1384,7 +1383,9 @@ numerics = {'bool', 'float', 'int'}
 class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
     numerics_only = False
 
-    def assertOneArgModuleFuction(self, name, module, func, x_values, substitutions):
+    def assertOneArgModuleFunction(
+        self, name, module, func, x_values, substitutions, **kwargs
+    ):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1411,9 +1412,12 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             "Error running %s module %s" % (module, name),
             substitutions=substitutions,
             run_in_function=False,
+            **kwargs
         )
 
-    def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values, substitutions):
+    def assertTwoArgModuleFunction(
+        self, name, module, func, x_values, y_values, substitutions, **kwargs
+    ):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1443,6 +1447,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             "Error running %s module %s" % (module, name),
             substitutions=substitutions,
             run_in_function=False,
+            **kwargs
         )
 
     @classmethod

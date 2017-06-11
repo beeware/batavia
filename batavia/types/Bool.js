@@ -83,7 +83,7 @@ Bool.prototype.__ge__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool >= other.valueOf())
+        return new Bool(this_bool >= other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__ge__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -115,7 +115,7 @@ Bool.prototype.__gt__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool > other.valueOf())
+        return new Bool(this_bool > other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__gt__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -147,7 +147,7 @@ Bool.prototype.__le__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool <= other.valueOf())
+        return new Bool(this_bool <= other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__le__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -179,7 +179,7 @@ Bool.prototype.__lt__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool < other.valueOf())
+        return new Bool(this_bool < other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__lt__(other)
     } else if (types.isinstance(other, Bool)) {

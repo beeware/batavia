@@ -91,8 +91,12 @@ class JavaScriptNormalizationTests(unittest.TestCase):
         )
 
     def test_bool(self):
-        self.assertNormalized('true', 'True')
-        self.assertNormalized('false', 'False')
+        self.assertNormalized(
+            'true', 'True', js_cleaner=JSCleaner(js_bool=True)
+        )
+        self.assertNormalized(
+            'true', 'True', js_cleaner=JSCleaner(js_bool=True)
+        )
 
     def test_float(self):
         self.assertNormalized('7.95089e-06', '7.95089e-6')
@@ -245,7 +249,7 @@ class JavaScriptBootstrapTests(TranspileTestCase):
         )
 
 class JSCleanerTests(TranspileTestCase):
-    cleaner = JSCleaner()
+    cleaner = JSCleaner(js_bool=True)
 
     def test_cleanse_err_msg(self):
         js_in = adjust("""

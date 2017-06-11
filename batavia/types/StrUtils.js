@@ -316,6 +316,7 @@ function _substitute(format, args) {
                     case ('bytes'):
                     case ('bytearray'):
                     case ('slice'):
+                    case ('bool'):
                         return bataviaType.__repr__()
 
                     case ('type'):
