@@ -1,8 +1,8 @@
-from ..utils import TranspileTestCase
+from ..utils import TranspileTestCase, ModuleFunctionTestCase
 
 
-# TODO(abonie): deal with boilerplate
-class JSONEncoderTests(TranspileTestCase):
+class JSONEncoderTests(ModuleFunctionTestCase, TranspileTestCase):
+
     def test_encode_type(self):
 
         self.assertCodeExecution("""
@@ -18,40 +18,22 @@ class JSONEncoderTests(TranspileTestCase):
             print(type(enc.encode(True)))
         """)
 
-    def test_encode_with_defaults(self):
+    not_implemented = [
+        'test_json_JSONEncoder().encode_str',    # TODO ensure ascii
+        'test_json_JSONEncoder().encode_dict',   # fails due to dict ordering
+        'test_json_JSONEncoder().encode_class',  # fails due to class __str__
+    ]
 
-        # None
-        self.assertCodeExecution("""
-            import json
-            print(json.JSONEncoder().encode(None))
-        """)
 
-        # Int
-        self.assertCodeExecution("""
-            import json
-            print(json.JSONEncoder().encode(1000000))
-        """)
+JSONEncoderTests.add_one_arg_tests('json', ['JSONEncoder().encode'])
 
-        # Tuple of floats
-        self.assertCodeExecution("""
-            import json
-            print(json.JSONEncoder().encode((1.0, 2.0, 3.0)))
-        """)
 
-        # Dict
-        self.assertCodeExecution("""
-            import json
-            print(json.JSONEncoder().encode({'a': 1}))
-        """)
+class DumpsTests(ModuleFunctionTestCase, TranspileTestCase):
 
-        # Bool
-        self.assertCodeExecution("""
-            import json
-            print(json.JSONEncoder().encode(True))
-        """)
+    not_implemented = [
+        'test_json_dumps_str',             # TODO ensure ascii
+        'test_json_dumps_dict',            # fails due to dict ordering
+        'test_json_dumps_class',           # fails due to class __str__
+    ]
 
-        # List of bools and strs
-        self.assertCodeExecution("""
-            import json
-            print(json.JSONEncoder().encode([True, False, "Maybe"]))
-        """)
+DumpsTests.add_one_arg_tests('json', ['dumps'])
