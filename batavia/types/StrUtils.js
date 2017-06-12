@@ -719,8 +719,90 @@ function _substitute(format, args) {
     return result
 } // end _substitute
 
+function _new_subsitute(str, args, kwargs) {
+    /*
+      perform new style formatting (str.format)
+      args(array): positional arguments
+      kwargs(object): keyword arguments.
+      both are allowed
+    */
+    
+    var types = require('../types')
+
+    function Mode() {
+      // the mode of formatting we are in. Can be:
+        // automatic {}
+        // manual {0} {1}...
+        // keyword {spam} {eggs}...
+    }
+    Mode.prototype.checkMode = function(text) {
+      // set the mode of formatting, or, if a different mode has been set
+      // throw an error
+
+      // text(str): the text inside a specifier.
+        let newMode
+        if (text === '') {
+            // manual
+            newMode = 'manual field specification'
+        } else {
+            // automatic (either sequential or keyword)
+            newMode = 'automatic field numbering'
+        }
+
+        if (this.mode === undefined) {
+            // mode may be set
+            this.mode = newMode
+        } else if (this.mode !== newMode) {
+            // mode has already been set. check if it conflicts with set mode
+            throw new exceptions.TypeError.$pyclass(`cannot switch from ${this.mode} to ${newMode}`)
+        }
+    }
+
+    const modeObj = new Mode()
+    function Specifier(text, specIndex) {
+        this.text = text
+        this.specIndex = specIndex
+    }
+    Specifier.prototype.convert = function() {
+      // text(str): full text of the specifier inside the { }
+      // returns the value to be inserted
+
+        modeObj.checkMode(this.text)
+        if (this.text === '') {
+            const key = new types.Int(this.specIndex)
+            return args.__getitem__(key)
+        } else if (!isNaN(Number(this.text))) {
+            // using sequential arguments
+            const key = new types.Int(this.text)
+            return args.__getitem__(key)
+        } else {
+            // using keyword argument
+            const key = new types.Str(this.text)
+            return kwargs.__getitem__(key)
+        }
+    }
+
+    const specRe = /{(.*?)}/g
+    let match = specRe.exec(str)
+    let result = ''
+    let lastStop = 0
+    let specIndex = -1 // counter for number of specifiers encountered so far
+    while (match) {
+        // grab everything leading up to specifier
+        specIndex++
+        result += str.slice(lastStop, match.index)
+        var spec = new Specifier(match[1], specIndex)
+        result += spec.convert()
+        lastStop = match.index + match[1].length + 2
+        match = specRe.exec(str)
+    }
+    result += str.slice(lastStop, str.length)
+    return result
+}
+
 /**************************************************
  * Module exports
  **************************************************/
 
 exports._substitute = _substitute
+exports._new_subsitute = _new_subsitute

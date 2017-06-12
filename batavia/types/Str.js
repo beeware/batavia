@@ -707,6 +707,31 @@ Str.prototype.capitalize = function() {
     }
 }
 
+Str.prototype.format = function(args, kwargs) {
+    const types = require('../types')
+    // load args into a tuple and kwargs into a Dict
+    // need to handle if no args or kwargs are given.
+
+    let positionalArguments, keywordArguments
+    if (args.length > 0) {
+        positionalArguments = new types.Tuple(args)
+    } else {
+        positionalArguments = new types.Tuple([])
+    }
+    
+    if (Object.keys(kwargs).length > 0) {
+        const pairs = Object.keys(kwargs).map(function(key, idx) {
+            return new types.Tuple([key, kwargs[key]]) // tuple (key, value)
+        })
+
+        keywordArguments = new types.Dict(new types.Tuple(pairs))
+    } else {
+        keywordArguments = new types.Dict()
+    }
+    return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
+}
+
+Str.prototype.format.$pyargs = true
 /**************************************************
  * Module exports
  **************************************************/

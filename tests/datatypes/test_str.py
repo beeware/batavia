@@ -1096,7 +1096,7 @@ class NewStyleFormatTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
-    def test_kwargs_key_erro(self):
+    def test_kwargs_key_error(self):
         test_str = adjust("""
         print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(other='eggs')")
         '{food}! Lovely {food}! Lovely {food}!'.format(other='eggs')
