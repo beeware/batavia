@@ -236,7 +236,6 @@ List.prototype.__ge__ = function(other) {
 }
 
 List.prototype.__contains__ = function(other) {
-    debugger;
     return this.valueOf().index(other) !== -1
 }
 
