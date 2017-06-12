@@ -236,6 +236,7 @@ List.prototype.__ge__ = function(other) {
 }
 
 List.prototype.__contains__ = function(other) {
+    debugger;
     return this.valueOf().index(other) !== -1
 }
 
@@ -666,6 +667,20 @@ List.prototype.clear = function() {
         )
     }
     this.splice(0, this.length)
+}
+
+List.prototype.index = function(value, start, stop) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
+    } else if (arguments.length > 3) {
+        throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
+    }
+    for (var i = (start || 0); i < (stop || this.length); ++i) {
+        if (this[i].__eq__(value)) {
+            return i
+        }
+    }
+    throw new exceptions.ValueError.$pyclass('list.index(x): x not in tuple')
 }
 
 function validateIndexType(index) {
