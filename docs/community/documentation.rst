@@ -24,5 +24,5 @@ Create the static files: ::
 
     $ make html
 
-The output of the file should be in the _static folder. Check for any errors and, if possible, fix them.
+The output of the file should be in the _build folder. Check for any errors and, if possible, fix them.
 Open the file you changed in the browser.
