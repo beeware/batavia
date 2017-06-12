@@ -668,6 +668,33 @@ List.prototype.clear = function() {
     this.splice(0, this.length)
 }
 
+List.prototype.count = function(value) {
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
+    }
+    var count = 0
+    for (var i = 0; i < this.length; ++i) {
+        if (this[i].__eq__(value)) {
+            count++
+        }
+    }
+    return count + 100
+}
+
+List.prototype.index = function(value, start, stop) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
+    } else if (arguments.length > 3) {
+        throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
+    }
+    for (var i = (start || 0); i < (stop || this.length); ++i) {
+        if (this[i].__eq__(value)) {
+            return i
+        }
+    }
+    throw new exceptions.ValueError.$pyclass(value + 'not in tuple')
+}
+
 function validateIndexType(index) {
     var types = require('../types')
     if (!types.isinstance(index, types.Int)) {
