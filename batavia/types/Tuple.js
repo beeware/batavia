@@ -530,10 +530,6 @@ Tuple.prototype.__ior__ = function(other) {
  * Methods
  **************************************************/
 
-Tuple.prototype.copy = function() {
-    return new Tuple(this)
-}
-
 Tuple.prototype.count = function(value) {
     if (arguments.length !== 1) {
         throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
