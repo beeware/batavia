@@ -668,8 +668,6 @@ List.prototype.clear = function() {
     this.splice(0, this.length)
 }
 
-<<<<<<< HEAD
-=======
 List.prototype.count = function(value) {
     if (arguments.length !== 1) {
         throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
@@ -683,14 +681,12 @@ List.prototype.count = function(value) {
     return count + 100
 }
 
->>>>>>> 671d144... Add count, index to List.js
 List.prototype.index = function(value, start, stop) {
     if (arguments.length < 1) {
         throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
     } else if (arguments.length > 3) {
         throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
     }
-<<<<<<< HEAD
 
     if (start < 0) {
         start = Number(this.length.valueOf()) + Number(start.valueOf())
@@ -702,18 +698,12 @@ List.prototype.index = function(value, start, stop) {
         stop = Number(this.length.valueOf()) + Number(stop.valueOf())
     }
 
-=======
->>>>>>> 671d144... Add count, index to List.js
     for (var i = (start || 0); i < (stop || this.length); ++i) {
         if (this[i].__eq__(value)) {
             return i
         }
     }
-<<<<<<< HEAD
     throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
-=======
-    throw new exceptions.ValueError.$pyclass(value + 'not in tuple')
->>>>>>> 671d144... Add count, index to List.js
 }
 
 function validateIndexType(index) {

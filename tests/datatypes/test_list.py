@@ -398,21 +398,21 @@ class ListTests(TranspileTestCase):
 
     def test_count(self):
         self.assertCodeExecution("""
-        x = (1, 2, 2, 3)
+        x = [1, 2, 2, 3]
         print(x.count(2))
         print(x.count(3))
         print(x.count(4))
         """)
 
-        # count on empty tuple
+        # count on empty list
         self.assertCodeExecution("""
-        x = ()
+        x = []
         print(x.count(1))
         """)
 
         # TypeError on too many or too few args
         self.assertCodeExecution("""
-        x = (1, 2)
+        x = [1, 2]
         try:
             x.count(3, 4)
         except TypeError as e:
