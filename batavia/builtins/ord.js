@@ -14,7 +14,7 @@ function ord(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("ord() takes exactly one argument (" + args.length + " given)")
     }
     var value = args[0]
-    if (types.isinstance(value, [types.Str, types.Bytes, types.ByteArray])) {
+    if (types.isinstance(value, [types.Str, types.Bytes, types.Bytearray])) {
         var charLength = call_method(value, "__len__")
         if (call_method(charLength, "__eq__", [new types.Int(1)])) {
             if (types.isinstance(value, types.Str))
