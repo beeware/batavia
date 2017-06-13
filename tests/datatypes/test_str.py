@@ -1053,6 +1053,41 @@ class FormatTests(TranspileTestCase):
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
 class NewStyleFormatTests(TranspileTestCase):
+    """
+    many tests borrowed from the Brython test suite
+    """
+
+    def test_all_combinations(self):
+        conversion_flags = ('!a', '!s', '!r')
+        fills = ('*', '**', '{', '}', '') # only one character, no curly braces
+        aligns = ('<', '^', '>', '=', '')
+        signs = ('+', '-', ' ', '')
+        alternate = ('#', '')
+        groupings = (',', '_', '')
+        zero_padding = ('0', '')
+        precisions = ('.1', '.5', '')
+        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', 
+                '%', '')
+        args = ("'s'", "'spam'", "'5'", 5, -5, 5.0, -5.0, 0.5, -0.5)
+    
+        combinations = product(conversion_flags, fills, aligns, signs, alternate, 
+                        groupings, zero_padding, precisions, types, args)
+                        
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{{cflag}:{fill}{align}{sign}{altr}{gping}{padding}{perc}{typ}}}'.format({arg})")
+                    print('one arg: {{{cflag}:{fill}{align}{sign}{altr}{gping}{padding}{perc}{typ}}}'.format({arg}))
+                    """.format(
+                        cflag=cflag, fill=fill, align=align, sign=sign, altr=altr, gping=gping,
+                        padding=padding, perc=perc, typ=typ, arg=arg
+                    )
+                ) for cflag, fill, align, sign, altr, gping, padding, perc, typ, arg in combinations 
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
 
     def test_single(self):
         test_str = adjust("""
@@ -1063,6 +1098,7 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str)  
 
     def test_single_called_twice(self):
+        # should raise an index error
         test_str = adjust("""
         print(">>> 'Beeware is {} {} great!'.format('really')")
         'Beeware is {} {} great!'.format('really')
@@ -1104,6 +1140,22 @@ class NewStyleFormatTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
         
+    def test_kwargs_by_splat(self):
+        test_str = adjust("""
+        coord = {'latitude': '37.24N', 'longitude': '-115.81W'}
+        print(">>> 'Coordinates: {latitude}, {longitude}'.format(**coord)")
+        print('Coordinates: {latitude}, {longitude}'.format(**coord))
+        """)
+        self.assertCodeExecution(test_str)
+            
+    def test_access_argument_items(self):
+        test_str = adjust("""
+        coord = (3, 5)
+        print(">>> 'X: {0[0]};  Y: {0[1]}'.format(coord)")
+        print('X: {0[0]};  Y: {0[1]}'.format(coord))
+        """)
+        self.assertCodeExecution(test_str)
+                        
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
