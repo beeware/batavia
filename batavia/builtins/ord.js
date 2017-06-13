@@ -18,7 +18,7 @@ function ord(args, kwargs) {
         var charLength = call_method(value, "__len__")
         if (call_method(charLength, "__eq__", [new types.Int(1)])) {
             if (types.isinstance(value, types.Str))
-                return new types.Str(value.charCodeAt(0))
+                return new types.Int(value.charCodeAt(0))
             else
                 return call_method(value, "__getitem__", [new types.Int(0)])
         } else {
