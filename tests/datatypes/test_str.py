@@ -1057,42 +1057,10 @@ class NewStyleFormatTests(TranspileTestCase):
     many tests borrowed from the Brython test suite
     """
 
-    def test_all_combinations(self):
-        conversion_flags = ('!a', '!s', '!r')
-        fills = ('*', '**', '{', '}', '') # only one character, no curly braces
-        aligns = ('<', '^', '>', '=', '')
-        signs = ('+', '-', ' ', '')
-        alternate = ('#', '')
-        groupings = (',', '_', '')
-        zero_padding = ('0', '')
-        precisions = ('.1', '.5', '')
-        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', 
-                '%', '')
-        args = ("'s'", "'spam'", "'5'", 5, -5, 5.0, -5.0, 0.5, -0.5)
-    
-        combinations = product(conversion_flags, fills, aligns, signs, alternate, 
-                        groupings, zero_padding, precisions, types, args)
-                        
-        test_str = ''.join(
-            [
-                adjust(
-                    """
-                    print(">>> 'one arg: {{{cflag}:{fill}{align}{sign}{altr}{gping}{padding}{perc}{typ}}}'.format({arg})")
-                    print('one arg: {{{cflag}:{fill}{align}{sign}{altr}{gping}{padding}{perc}{typ}}}'.format({arg}))
-                    """.format(
-                        cflag=cflag, fill=fill, align=align, sign=sign, altr=altr, gping=gping,
-                        padding=padding, perc=perc, typ=typ, arg=arg
-                    )
-                ) for cflag, fill, align, sign, altr, gping, padding, perc, typ, arg in combinations 
-            ]
-        )
-        
-        self.assertCodeExecution(test_str)
-
     def test_single(self):
         test_str = adjust("""
-        print(">>> 'Beeware is {}'.format('great!')")
-        'Beeware is {}'.format('great!')
+        print(">>> 'one arg: {}'.format('great!')")
+        'one arg: {}'.format('great!')
         """)
 
         self.assertCodeExecution(test_str)  
@@ -1100,8 +1068,8 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_single_called_twice(self):
         # should raise an index error
         test_str = adjust("""
-        print(">>> 'Beeware is {} {} great!'.format('really')")
-        'Beeware is {} {} great!'.format('really')
+        print(">>> 'one arg: {} {} great!'.format('really')")
+        'one arg: {} {} great!'.format('really')
         """)
 
         self.assertCodeExecution(test_str)
@@ -1155,7 +1123,149 @@ class NewStyleFormatTests(TranspileTestCase):
         print('X: {0[0]};  Y: {0[1]}'.format(coord))
         """)
         self.assertCodeExecution(test_str)
-                        
+        
+    def test_conversion_flags(self):
+        conversion_flags = ('!a', '!s', '!r')
+        
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg:: {{{flag}}}'.format('great')")
+                    print('one arg:: {{{flag}}}'.format('great'))
+                    """.format(flag=flag)
+                ) for flag in conversion_flags
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_fills(self):
+        fills = ('*', '**', '{', '}') # only one character, no curly braces
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg:: {{:{fill}<10}}'.format('great')")
+                    print('one arg:: {{:{fill}<10}}'.format('great'))
+                    """.format(fill=fill)
+                ) for fill in fills
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_fill_no_alignment(self):
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {:*10}'.format('great')")
+        print('one arg: {:*10}'.format('great'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+
+    def test_signs(self):
+        signs = ('+', '-', ' ')
+        numbers = (5, -5)
+        
+        combinations = product(signs, numbers)
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg:: {{:{sign}}}'.format({num})")
+                    print('one arg:: {{:{sign}}}'.format({num}))
+                    """.format(sign=sign, num=num)
+                ) for sign, num in combinations
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_signs_with_str(self):
+        """
+        signs with strings shouldn't be allowed
+        """
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {:+}'.format('great')")
+        print('one arg: {:+}'.format('great'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_groupings(self):
+        groupings = (',', '_')
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg:: {{:{g}}}'.format(5000)")
+                    print('one arg:: {{:{g}}}'.format(5000))
+                    """.format(g=g)
+                ) for g in groupings
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_groupings_with_str(self):
+        test_str = adjust("""
+        print(">>> 'one arg: {:,}'.format('great')")
+        print('one arg: {:,}'.format('great'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_zero_padding(self):
+
+        test_str = adjust("""
+        print(">>> 'one arg: {:05}'.format(5)")
+        print('one arg: {:05}'.format(5))
+        print(">>> 'one arg: {:05}'.format('spam')")
+        print('one arg: {:05}'.format('spam'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_types(self):
+        """
+        test all conversion types and their alternate forms
+        """
+        alternate = ('#', '')
+        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', 
+                '%')
+        args = ("'spam'", "'5'", 5, -5, 5.0, -5.0, 0.5, -0.5)
+        combinations = product(alternate, types, args)
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{alter}{typ}}}'.format({arg})")
+                    print('one arg: {{:{alter}{typ}}}'.format({arg}))
+                    """.format(alter=alter, typ=typ, arg=arg)
+                ) for alter, typ, arg in combinations
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_precisions(self):
+        precisions = ('.1', '.5')
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{p}}}'.format(5.123456789)")
+                    print('one arg: {{:{p}}}'.format(5.123456789))
+                    """.format(p=p)
+                ) for p in precisions
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+        
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
