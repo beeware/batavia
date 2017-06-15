@@ -773,21 +773,11 @@ function _new_subsitute(str, args, kwargs) {
             // accept the character and return true
             // raise an error
             // reject the chracter and return false
-
-        this.stepMap = {
-            1: 'editFill',
-            2: 'editAlign',
-            3: 'editSign',
-            4: 'editAlternate',
-            5: 'editZeroPad',
-            6: 'editWidth',
-            7: 'editGrouping',
-            8: 'catchPrecision',
-            9: 'editPrecision',
-            10: 'editType'
-        }
+            
         this.initialParse() // parse characters into groups
-        this.formatParse()
+        this.parseAlign()
+        this.formatParse()  // parse format characters
+        process.exit()
     }
 
     /* FORMAT PARSING METHODS
@@ -822,18 +812,19 @@ function _new_subsitute(str, args, kwargs) {
                     this.fieldName += char
                     break
                 case 2:
-                    // error if trying to add a third character
-                    if (this.conversionFlag.length === 2) {
+                    // error if trying to add a second character
+                    if (this.conversionFlag.length === 1) {
                         throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
-                    } else {
-                        this.conversionFlag += char
+                    } else if (char !== '!' ){
+                      // don't want the delimiter
+                      this.conversionFlag += char                      
                     }
                     break
                 case 3:
                     // error if group two === '!'
                     if (this.conversionFlag === '!') {
                         throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
-                    } else {
+                    } else if (char !== ':') {
                         this.formatOptionsRaw += char
                     }
                     break
@@ -842,134 +833,148 @@ function _new_subsitute(str, args, kwargs) {
         }, this) // end initial parse
     }
 
-    Specifier.prototype.formatParse = function() {
-      // handle the parsing of format options
-      // iterate over each character and determine which bucket it belongs in
-          // fill
-          // align
-          // sign
-          // alternate
-          // zero pad
-          // width
-          // grouping
-          // precision
-          // type
-        this.currStep = 1
-        this.formatOptionsRaw.split('').forEach(function(char, i, arr) {
-            if (this.currStep > 10) {
-                // we finished the last step and have characters left.
-                throw new exceptions.ValueError.$pyclass('Invalid format specifier')
-            } else {
-                this.stepMap[this.currStep](char, i, arr)
-            }
-        }, this)
-    }
-
-    Specifier.prototype.editFill = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (/[<^>=]/.test(arr[i + 1])) {
-            this.fill = char
-        }
-        this.currStep++
-    }
-
-    Specifier.prototype.editAlign = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (/[<^>=]/.test(char)) {
-            this.align = char
-        }
-        this.currStep++
-    }
-
-    Specifier.prototype.editSign = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (/[+\- ]/.test(char)) {
-            this.sign = char
-        }
-        this.currStep++
-    }
-
-    Specifier.prototype.editAlternate = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (char === '#') {
-            this.alternate = char
-        }
-        this.currStep++
-    }
-
-    Specifier.prototype.editZeroPad = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (char === '0') {
-            this.zeroPad = char
-        }
-        this.currStep++
-    }
-
-    Specifier.prototype.editWidth = function(char, i, arr) {
-        // NOTE: this function will take as many valid characters as possible
+    Specifier.prototype.parseAlign = function() {
       
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (!isNaN(Number(char))) {
-            if (this.width) {
-                this.width += char
-            } else {
-                this.width = char
+        /* parsing the formatting options will work quite similarly to old style
+          formatting but with one exception.
+          the fill character only has meaning if it is followed by an align
+          character immedatly after. We will simlpy parse that bit on its own
+          then parse the rest like with old style formatting
+        */
+      
+        // look for an alignment character
+        const alignRe = /[<^>=]/
+        switch (this.formatOptionsRaw.match(alignRe).index) {
+            case 0:
+                // found align character at index 0
+                this.align = this.formatOptionsRaw[0]
+                
+                // remove that character from the set
+                this.formatOptionsRaw = this.formatOptionsRaw.slice(1)
+                break
+            case 1:
+                // found align character at index 1. index 0 is the fill character
+                this.fill = this.formatOptionsRaw[0]
+                this.align = this.formatOptionsRaw[1]
+                
+                // remove those character from the set
+                this.formatOptionsRaw = this.formatOptionsRaw.slice(2)
+                break
+            default:
+                // no align character
+                break
+        } // end switch
+    }
+
+    // Specifier.prototype.formatParse = function() {
+    //     const re = /(#?)(0?)(\d*)(\.?\d+)(.*)/
+    //     
+    // }
+ 
+    Specifier.prototype.formatParse = function() {
+      
+      console.log(`parsing ${this.formatOptionsRaw}`)
+        
+        const getNextStep = function(nextChar, currStep) {
+            // nextChar(str): the next character to be processed
+            // currStep(int): the current step we are on.
+            // return: nextStep(int): what step we should process nextChar on            
+            
+            var steps = {
+                // regex to search for the FIRST character in each step
+                1: /[+\- ]/, // sign
+                2: /#/, // alternate form
+                3: /0/, // zero padding
+                4: /\d/, // width
+                5: /[,_]/, // grouping
+                6: /[.\d]/  // precision
             }
-        } else {
-            this.currStep++
-        }
-    }
 
-    Specifier.prototype.editGrouping = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (/[,_]/.test(char)) {
-            this.grouping = char
-        }
-        this.currStep++
-    }
-    
-    Specifier.prototype.catchPrecision = function(char, i, arr) {
-        // char(str): the character being processed
-        // i(int): the index of the character being processed
-        // the entire array of characters being processed
-        if (char === '.') {
-            // go to the next step: processing precision
-            this.currStep++
-        } else {
-            this.currStep += 2 // skip the next step
-        }
-    }
+            for (var s = currStep; s <= 6; s++) {
+                // try to make a match
+                var re = steps[s]
+                if (nextChar.search(re) !== -1) {
+                    return s
+                }
+            }
+            return 7 // the 7th and final step is the default when nothing else works
+            
+        } // end getNextStep
+        
+        
+        const step = function(char, step) {
+            // process the character under the correct step
+            // return what step should be performed next
+          
+            switch (currStep) {
+                case 1:
+                    // sign
+                    this.sign = char
+                    return 2
+                case 2:
+                    // alternate form
+                    this.alternate = char
+                    return 3
+                case 3:
+                    // zero padding
+                    this.zeroPad = char
+                    return 4
+                case 4:
+                    // width
+                    if (this.width) {
+                        this.width += char
+                    } else {
+                        this.width = char
+                    }
+                    // don't increment step, there could be another width character.
+                    return 4
+                    
+                case 5:
+                    // grouping
+                    this.grouping = char
+                    return 6
+                case 6:
+                    // precision
+                    if (this.precision) {
+                        this.precision += char
+                    } else {
+                        this.precision = char
+                    }
+                    // don't increment step, there could be another precision character.
+                    return 6
 
-    Specifier.prototype.editPrecision = function(char, i, arr) {
-      if (!isNaN(Number(char))) {
-          if (this.precision) {
-              this.precision += char
-          } else {
-              this.precision = char
-          }
-      } else {
-          this.currStep++
-      }
-    }
-
-    Specifier.prototype.editType = function(char, i, arr) {
-        this.type = char
-        this.currStep++
-    }
+                case 7:
+                    // format type. could potentially be multiple characters.
+                    // this doesn't make sense but don't throw an error here.
+                    if (this.type) {
+                        this.type += char
+                    } else {
+                        this.type = char
+                    }
+                    return 7
+                    // don't increment step, there could be another type character.
+            } // switch
+        }.bind(this) // step
+        
+        let currStep = 1 // the current parse step we are on
+        this.formatOptionsRaw.split('').forEach(function(char, i, arr) {
+            currStep = getNextStep(char, currStep)
+            currStep = step(char, currStep)
+        }, this)
+        
+        // console.log("done with formatParse")
+        // console.log(`
+        //   fill: ${this.fill}
+        //   align: ${this.align}
+        //   sign: ${this.sign}
+        //   alternate: ${this.alternate}
+        //   zeroPad: ${this.zeroPad}
+        //   width: ${this.width}
+        //   grouping: ${this.grouping}
+        //   precision: ${this.precision}
+        //   type: ${this.type}
+        // `)
+    }  // formatParse
 
     Specifier.prototype.convert = function() {
       // text(str): full text of the specifier inside the { }
@@ -1000,9 +1005,6 @@ function _new_subsitute(str, args, kwargs) {
         specIndex++
         result += str.slice(lastStop, match.index)
         var spec = new Specifier(match[1], specIndex)
-
-        console.log("the parsed spec:")
-        console.log(spec.formatOptionsRaw)
 
         result += spec.convert()
         lastStop = match.index + match[1].length + 2
