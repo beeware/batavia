@@ -1125,7 +1125,7 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str)
         
     def test_conversion_flags(self):
-        conversion_flags = ('!a', '!s', '!r')
+        conversion_flags = ('!a', '!s', '!r', '!', '!ss', '!g')
         
         test_str = ''.join(
             [
@@ -1154,7 +1154,10 @@ class NewStyleFormatTests(TranspileTestCase):
         )
         
         self.assertCodeExecution(test_str)
-        
+    
+    def test_alignments(self):
+        pass
+    
     def test_fill_no_alignment(self):
         
         test_str = adjust("""

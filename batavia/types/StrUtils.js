@@ -761,23 +761,231 @@ function _new_subsitute(str, args, kwargs) {
     const modeObj = new Mode()
     function Specifier(text, specIndex) {
         this.text = text
-        this.specIndex = specIndex
+        this.specIndex = specIndex // the specifier's position in the original string
+
+        this.fieldName = ''
+        this.conversionFlag = ''
+        this.formatOptionsRaw = '' // everything after the :, but unparsed
+        // these characters denote the begining of a new group
+
+        // init format options
+        // each option is edited via a setter which will do one of three things:
+            // accept the character and return true
+            // raise an error
+            // reject the chracter and return false
+
+        this.stepMap = {
+            1: 'editFill',
+            2: 'editAlign',
+            3: 'editSign',
+            4: 'editAlternate',
+            5: 'editZeroPad',
+            6: 'editWidth',
+            7: 'editGrouping',
+            8: 'catchPrecision',
+            9: 'editPrecision',
+            10: 'editType'
+        }
+        this.initialParse() // parse characters into groups
+        this.formatParse()
     }
+
+    /* FORMAT PARSING METHODS
+      each takes a character (str) its index in the str(int) and the array
+        itself
+      if the method should process the character, it does
+        (including any possible errors)
+      if it shouldn't process the character it doesn't
+      In either case, the method returns an integer representing the next step
+        to perform
+    */
+
+    Specifier.prototype.initialParse = function() {
+        // read characters left to right.
+          // if we encounter a !, it marks the start of the conversion flag.
+          // if we a : it marks the start of other formatting options
+
+        // group1: the field name
+        // group2: the conversion flag
+        // group3: all other options
+        let currentParseGroup = 1
+        let stepMapping = {'!': 2, ':': 3}
+        this.text.split('').forEach(function(char, i) {
+            // going through the string, assign each character to the right bucket
+            // fieldName, conversionFlag or formatOptions
+            let newGroup = stepMapping[char] // does char denote a new group?
+            if (newGroup) {
+                currentParseGroup = newGroup
+            }
+            switch (currentParseGroup) {
+                case 1:
+                    this.fieldName += char
+                    break
+                case 2:
+                    // error if trying to add a third character
+                    if (this.conversionFlag.length === 2) {
+                        throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
+                    } else {
+                        this.conversionFlag += char
+                    }
+                    break
+                case 3:
+                    // error if group two === '!'
+                    if (this.conversionFlag === '!') {
+                        throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
+                    } else {
+                        this.formatOptionsRaw += char
+                    }
+                    break
+
+            } // end switch
+        }, this) // end initial parse
+    }
+
+    Specifier.prototype.formatParse = function() {
+      // handle the parsing of format options
+      // iterate over each character and determine which bucket it belongs in
+          // fill
+          // align
+          // sign
+          // alternate
+          // zero pad
+          // width
+          // grouping
+          // precision
+          // type
+        this.currStep = 1
+        this.formatOptionsRaw.split('').forEach(function(char, i, arr) {
+            if (this.currStep > 10) {
+                // we finished the last step and have characters left.
+                throw new exceptions.ValueError.$pyclass('Invalid format specifier')
+            } else {
+                this.stepMap[this.currStep](char, i, arr)
+            }
+        }, this)
+    }
+
+    Specifier.prototype.editFill = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (/[<^>=]/.test(arr[i + 1])) {
+            this.fill = char
+        }
+        this.currStep++
+    }
+
+    Specifier.prototype.editAlign = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (/[<^>=]/.test(char)) {
+            this.align = char
+        }
+        this.currStep++
+    }
+
+    Specifier.prototype.editSign = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (/[+\- ]/.test(char)) {
+            this.sign = char
+        }
+        this.currStep++
+    }
+
+    Specifier.prototype.editAlternate = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (char === '#') {
+            this.alternate = char
+        }
+        this.currStep++
+    }
+
+    Specifier.prototype.editZeroPad = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (char === '0') {
+            this.zeroPad = char
+        }
+        this.currStep++
+    }
+
+    Specifier.prototype.editWidth = function(char, i, arr) {
+        // NOTE: this function will take as many valid characters as possible
+      
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (!isNaN(Number(char))) {
+            if (this.width) {
+                this.width += char
+            } else {
+                this.width = char
+            }
+        } else {
+            this.currStep++
+        }
+    }
+
+    Specifier.prototype.editGrouping = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (/[,_]/.test(char)) {
+            this.grouping = char
+        }
+        this.currStep++
+    }
+    
+    Specifier.prototype.catchPrecision = function(char, i, arr) {
+        // char(str): the character being processed
+        // i(int): the index of the character being processed
+        // the entire array of characters being processed
+        if (char === '.') {
+            // go to the next step: processing precision
+            this.currStep++
+        } else {
+            this.currStep += 2 // skip the next step
+        }
+    }
+
+    Specifier.prototype.editPrecision = function(char, i, arr) {
+      if (!isNaN(Number(char))) {
+          if (this.precision) {
+              this.precision += char
+          } else {
+              this.precision = char
+          }
+      } else {
+          this.currStep++
+      }
+    }
+
+    Specifier.prototype.editType = function(char, i, arr) {
+        this.type = char
+        this.currStep++
+    }
+
     Specifier.prototype.convert = function() {
       // text(str): full text of the specifier inside the { }
       // returns the value to be inserted
 
-        modeObj.checkMode(this.text)
-        if (this.text === '') {
+        modeObj.checkMode(this.fieldName)
+        if (this.fieldName === '') {
             const key = new types.Int(this.specIndex)
             return args.__getitem__(key)
-        } else if (!isNaN(Number(this.text))) {
+        } else if (!isNaN(Number(this.fieldName))) {
             // using sequential arguments
-            const key = new types.Int(this.text)
+            const key = new types.Int(this.fieldName)
             return args.__getitem__(key)
         } else {
             // using keyword argument
-            const key = new types.Str(this.text)
+            const key = new types.Str(this.fieldName)
             return kwargs.__getitem__(key)
         }
     }
@@ -792,6 +1000,10 @@ function _new_subsitute(str, args, kwargs) {
         specIndex++
         result += str.slice(lastStop, match.index)
         var spec = new Specifier(match[1], specIndex)
+
+        console.log("the parsed spec:")
+        console.log(spec.formatOptionsRaw)
+
         result += spec.convert()
         lastStop = match.index + match[1].length + 2
         match = specRe.exec(str)
