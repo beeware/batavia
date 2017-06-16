@@ -759,10 +759,14 @@ function _new_subsitute(str, args, kwargs) {
     }
 
     const modeObj = new Mode()
-    function Specifier(text, specIndex) {
+    function Specifier(text, specIndex, modeObj, args, kwargs) {
+        
         this.text = text
         this.specIndex = specIndex // the specifier's position in the original string
-
+        this.modeObj = modeObj // object to remember which substitution mode we are in.
+        this.args = args
+        this.kwargs = kwargs
+        
         this.fieldName = ''
         this.conversionFlag = ''
         this.formatOptionsRaw = '' // everything after the :, but unparsed
@@ -773,11 +777,12 @@ function _new_subsitute(str, args, kwargs) {
             // accept the character and return true
             // raise an error
             // reject the chracter and return false
-            
+        
+        
         this.initialParse() // parse characters into groups
-        this.parseAlign()
+        this.parseAlign() // parse the alignment
+        this.arg = this.setArg() // determine the argument to be used
         this.formatParse()  // parse format characters
-        process.exit()
     }
 
     /* FORMAT PARSING METHODS
@@ -872,21 +877,19 @@ function _new_subsitute(str, args, kwargs) {
     // }
  
     Specifier.prototype.formatParse = function() {
-      
-      console.log(`parsing ${this.formatOptionsRaw}`)
+        // Parses each character in formatOptionsRaw.
         
         const getNextStep = function(nextChar, currStep) {
             // nextChar(str): the next character to be processed
             // currStep(int): the current step we are on.
-            // return: nextStep(int): what step we should process nextChar on            
+            // return: nextStep(int): what step we should process nextChar
             
             var steps = {
-                // regex to search for the FIRST character in each step
                 1: /[+\- ]/, // sign
                 2: /#/, // alternate form
                 3: /0/, // zero padding
                 4: /\d/, // width
-                5: /[,_]/, // grouping
+                5: /,/, // grouping
                 6: /[.\d]/  // precision
             }
 
@@ -900,11 +903,10 @@ function _new_subsitute(str, args, kwargs) {
             return 7 // the 7th and final step is the default when nothing else works
             
         } // end getNextStep
-        
-        
+
         const step = function(char, step) {
             // process the character under the correct step
-            // return what step should be performed next
+            // return the smallest step that should be performed next
           
             switch (currStep) {
                 case 1:
@@ -944,10 +946,10 @@ function _new_subsitute(str, args, kwargs) {
                     return 6
 
                 case 7:
-                    // format type. could potentially be multiple characters.
-                    // this doesn't make sense but don't throw an error here.
+                    // format type.
                     if (this.type) {
-                        this.type += char
+                        // format specifiers can't be more than one char
+                        throw new exceptions.ValueError.$pyclass('Invalid format specifier')
                     } else {
                         this.type = char
                     }
@@ -958,41 +960,124 @@ function _new_subsitute(str, args, kwargs) {
         
         let currStep = 1 // the current parse step we are on
         this.formatOptionsRaw.split('').forEach(function(char, i, arr) {
+          /* parsing is done in 7 steps though some may be skipped depending on
+            the data. The function getNextStep will look at the next character
+            in the sequence and determine which next step applies. The function
+            step will apply that step to the character and return an integer
+            representing the smallest possible step to apply on the next step.
+          
+          */
             currStep = getNextStep(char, currStep)
             currStep = step(char, currStep)
         }, this)
-        
-        // console.log("done with formatParse")
-        // console.log(`
-        //   fill: ${this.fill}
-        //   align: ${this.align}
-        //   sign: ${this.sign}
-        //   alternate: ${this.alternate}
-        //   zeroPad: ${this.zeroPad}
-        //   width: ${this.width}
-        //   grouping: ${this.grouping}
-        //   precision: ${this.precision}
-        //   type: ${this.type}
-        // `)
+
     }  // formatParse
 
-    Specifier.prototype.convert = function() {
-      // text(str): full text of the specifier inside the { }
-      // returns the value to be inserted
+    Specifier.prototype.setArg = function() {
+        // sets the arg to be used in this specifier
 
-        modeObj.checkMode(this.fieldName)
+        this.modeObj.checkMode(this.fieldName)
+        
         if (this.fieldName === '') {
             const key = new types.Int(this.specIndex)
-            return args.__getitem__(key)
+            this.arg = this.args.__getitem__(key)
         } else if (!isNaN(Number(this.fieldName))) {
             // using sequential arguments
             const key = new types.Int(this.fieldName)
-            return args.__getitem__(key)
+            this.arg = this.args.__getitem__(key)
         } else {
             // using keyword argument
             const key = new types.Str(this.fieldName)
-            return kwargs.__getitem__(key)
+            this.arg = this.kwargs.__getitem__(key)
         }
+    }
+    
+    Specifier.prototype.convertStr = function() {
+        // handles conversion for strings
+        
+        // there's only one type of formatting for strings here.
+        const type = this.type || 's'
+        if (!type.match(/[s ]/)) {
+            throw new exceptions.ValueError.$pyclass(`Unknown format code '${this.type}' for object of type 'str'`)
+        }
+        
+        // things that aren't allowed with strings:
+            // grouping
+            // sign
+            // alternate form
+        if (this.grouping === ',') {
+            throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'")
+        }
+        
+        if (this.sign) {
+            throw new exceptions.ValueError.$pyclass('Sign not allowed in string format specifier')
+        }
+
+        if (this.alternate) {
+            throw new exceptions.ValueError.$pyclass('Alternate form (#) not allowed in string format specifier')
+        }
+        
+        // the field must be atleast as big as this.width
+        // if this.precision is set and smaller than this.arg, trim this.arg to fit
+        
+        let content // the content as it should be represented in the subsitution
+        if (this.precision && this.precision < this.arg.length) {
+            content = this.arg.slice(0, this.precision)
+        } else {
+            content = this.arg
+        }
+        
+        if (this.zeroPad || this.align === '=') {
+            throw new exceptions.ValueError("'=' alignment not allowed in string format specifier")
+        }
+
+        // size of the containing field. will need to be filled in if larger than content
+        const fieldWidth = this.width || content
+        const spaceRemaining = this.fieldWidth - content.length
+
+        // determine how extra space should be divided.
+        if (spaceRemaining > 0) {
+            const fillChar = this.fill || ' '
+            switch (this.align) {
+                case '^':
+                  // center align, we can't divide space evenly, extra cell goes
+                  // on right
+                    let rightSide, leftSide
+                    if (spaceRemaining % 2 === 0) {
+                        // even spaceLeft
+                        rightSide = spaceRemaining / 2
+                        leftSide = spaceRemaining / 2
+                    } else {
+                        // odd space left, extra space goes to right
+                        rightSide = Math.floor(spaceRemaining / 2)
+                        leftSide = Math.floor(spaceRemaining / 2) + 1
+                    }
+
+                    return `${fillChar * rightSide}${content}${fillChar * leftSide}`
+                case '>':
+                    return `${fillChar * spaceRemaining}${content}`
+                default:
+                    return `${content}${fillChar * spaceRemaining}`
+            }
+        }
+    }
+    
+    Specifier.prototype.converInt = function() {
+      // handles conversion for ints
+    }
+    
+    Specifier.prototype.converFloat = function() {
+      // handles conversion for floats
+    }
+    
+    Specifier.prototype.convert = function() {
+        // convert the spec to its proper value!
+        console.log(this.convertStr());
+        // TODO
+            // get the value
+            // convert it to the requested type
+            // hand off to helper function
+            
     }
 
     const specRe = /{(.*?)}/g
@@ -1004,7 +1089,7 @@ function _new_subsitute(str, args, kwargs) {
         // grab everything leading up to specifier
         specIndex++
         result += str.slice(lastStop, match.index)
-        var spec = new Specifier(match[1], specIndex)
+        var spec = new Specifier(match[1], specIndex, modeObj, args, kwargs)
 
         result += spec.convert()
         lastStop = match.index + match[1].length + 2
