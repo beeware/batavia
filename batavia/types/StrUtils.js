@@ -777,8 +777,7 @@ function _new_subsitute(str, args, kwargs) {
             // accept the character and return true
             // raise an error
             // reject the chracter and return false
-        
-        
+
         this.initialParse() // parse characters into groups
         this.parseAlign() // parse the alignment
         this.arg = this.setArg() // determine the argument to be used
@@ -980,21 +979,20 @@ function _new_subsitute(str, args, kwargs) {
         
         if (this.fieldName === '') {
             const key = new types.Int(this.specIndex)
-            this.arg = this.args.__getitem__(key)
+            return this.args.__getitem__(key)
         } else if (!isNaN(Number(this.fieldName))) {
             // using sequential arguments
             const key = new types.Int(this.fieldName)
-            this.arg = this.args.__getitem__(key)
+            return this.args.__getitem__(key)
         } else {
             // using keyword argument
             const key = new types.Str(this.fieldName)
-            this.arg = this.kwargs.__getitem__(key)
+            return this.kwargs.__getitem__(key)
         }
     }
     
     Specifier.prototype.convertStr = function() {
         // handles conversion for strings
-        
         // there's only one type of formatting for strings here.
         const type = this.type || 's'
         if (!type.match(/[s ]/)) {
@@ -1019,22 +1017,21 @@ function _new_subsitute(str, args, kwargs) {
         
         // the field must be atleast as big as this.width
         // if this.precision is set and smaller than this.arg, trim this.arg to fit
-        
+
         let content // the content as it should be represented in the subsitution
         if (this.precision && this.precision < this.arg.length) {
             content = this.arg.slice(0, this.precision)
         } else {
             content = this.arg
         }
-        
+
         if (this.zeroPad || this.align === '=') {
             throw new exceptions.ValueError("'=' alignment not allowed in string format specifier")
         }
 
         // size of the containing field. will need to be filled in if larger than content
         const fieldWidth = this.width || content
-        const spaceRemaining = this.fieldWidth - content.length
-
+        const spaceRemaining = fieldWidth - content.length
         // determine how extra space should be divided.
         if (spaceRemaining > 0) {
             const fillChar = this.fill || ' '
@@ -1044,7 +1041,7 @@ function _new_subsitute(str, args, kwargs) {
                   // on right
                     let rightSide, leftSide
                     if (spaceRemaining % 2 === 0) {
-                        // even spaceLeft
+                        // even spaceRemaining
                         rightSide = spaceRemaining / 2
                         leftSide = spaceRemaining / 2
                     } else {
@@ -1053,12 +1050,14 @@ function _new_subsitute(str, args, kwargs) {
                         leftSide = Math.floor(spaceRemaining / 2) + 1
                     }
 
-                    return `${fillChar * rightSide}${content}${fillChar * leftSide}`
+                    return `${fillChar.repeat(rightSide)}${content}${fillChar.repeat(leftSide)}`
                 case '>':
-                    return `${fillChar * spaceRemaining}${content}`
+                    return `${fillChar.repeat(spaceRemaining)}${content}`
                 default:
-                    return `${content}${fillChar * spaceRemaining}`
+                    return `${content}${fillChar.repeat(spaceRemaining)}`
             }
+        } else {
+            return content
         }
     }
     
@@ -1072,7 +1071,7 @@ function _new_subsitute(str, args, kwargs) {
     
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value!
-        console.log(this.convertStr());
+        console.log(`final result: ${this.convertStr()}`);
         // TODO
             // get the value
             // convert it to the requested type
