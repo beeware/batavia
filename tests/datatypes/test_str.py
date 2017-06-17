@@ -1268,6 +1268,12 @@ class NewStyleFormatTests(TranspileTestCase):
         
         self.assertCodeExecution(test_str)
         
+    def test_odd_types(self):
+        """
+        test with types other than str, int and float
+        """
+        pass
+        
         
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
