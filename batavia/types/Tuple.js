@@ -534,11 +534,15 @@ Tuple.prototype.copy = function() {
     return new Tuple(this)
 }
 
-Tuple.prototype.count = function(value) {
-    if (arguments.length !== 1) {
-        throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
+Tuple.prototype.count = function(args, kwargs) {
+    if (args.length !== 1) {
+        throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + args.length + ' given)')
+    }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new exceptions.TypeError.$pyclass('count() takes no keyword arguments')
     }
     var count = 0
+    var value = args[0]
     for (var i = 0; i < this.length; ++i) {
         if (this[i].__eq__(value)) {
             count++
@@ -547,12 +551,20 @@ Tuple.prototype.count = function(value) {
     return count
 }
 
-Tuple.prototype.index = function(value, start, stop) {
-    if (arguments.length < 1) {
-        throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
-    } else if (arguments.length > 3) {
-        throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
+Tuple.prototype.count.$pyargs = true
+
+Tuple.prototype.index = function(args, kwargs) {
+    if (args.length < 1) {
+        throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + args.length + ' given)')
+    } else if (args.length > 3) {
+        throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + args.length + ' given)')
     }
+    if (kwargs && Object.keys(kwargs).length > 0) {
+        throw new exceptions.TypeError.$pyclass('index() takes no keyword arguments')
+    }
+    var value = args[0]
+    if (args[1]) { var start = args[1] }
+    if (args[2]) { var stop = args[2] }
     for (var i = (start || 0); i < (stop || this.length); ++i) {
         if (this[i].__eq__(value)) {
             return i
@@ -560,6 +572,8 @@ Tuple.prototype.index = function(value, start, stop) {
     }
     throw new exceptions.ValueError.$pyclass('tuple.index(x): x not in tuple')
 }
+
+Tuple.prototype.index.$pyargs = true
 
 /**************************************************
  * Module exports
