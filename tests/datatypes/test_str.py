@@ -1116,13 +1116,23 @@ class NewStyleFormatTests(TranspileTestCase):
         """)
         self.assertCodeExecution(test_str)
             
-    def test_access_argument_items(self):
+    def test_name_with__getitem__(self):
+        """
+        name calls __getitem__ on argument
+        """
+        
         test_str = adjust("""
         coord = (3, 5)
         print(">>> 'X: {0[0]};  Y: {0[1]}'.format(coord)")
         print('X: {0[0]};  Y: {0[1]}'.format(coord))
         """)
         self.assertCodeExecution(test_str)
+        
+    def test_name_with_getattr(self):
+        """
+        name calls attribute on passed argument
+        """
+        pass
         
     def test_conversion_flags(self):
         conversion_flags = ('!a', '!s', '!r', '!', '!ss', '!g')
@@ -1273,7 +1283,6 @@ class NewStyleFormatTests(TranspileTestCase):
         test with types other than str, int and float
         """
         pass
-        
         
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'

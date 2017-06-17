@@ -452,27 +452,8 @@ function _substitute(format, args) {
 
                 case ('e'):
                 case ('E'):
-
-                    var argValueBig = new BigNumber(conversionArgValue)
-                    var argExp = Number(argValueBig).toExponential()
-
-                    var expSplit = argExp.split('e')
-                    var baseRaw = new BigNumber((expSplit[0]))
-
-                    // might need to add extra zeros to base
-                    if (precision !== null) {
-                        base = baseRaw.toFixed(precision)
-                    } else {
-                        base = baseRaw.toFixed(6)
-                    }
-                    exp = expSplit[1]
-
-                    if (this.conversionType === 'e') {
-                        conversionArg = zeroPadExp(base + 'e' + exp)
-                    } else {
-                        conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
-                    }
-
+                    const conversionArg = toExp(conversionArgValue, precision,
+                                                this.conversionType)
                     break
 
                 case ('g'):
@@ -991,7 +972,7 @@ function _new_subsitute(str, args, kwargs) {
         }
     }
     
-    Specifier.prototype.convertStr = function() {
+    Specifier.prototype._convertStr = function() {
         // handles conversion for strings
         // there's only one type of formatting for strings here.
         const type = this.type || 's'
@@ -1061,17 +1042,84 @@ function _new_subsitute(str, args, kwargs) {
         }
     }
     
-    Specifier.prototype.converInt = function() {
-      // handles conversion for ints
+    Specifier.prototype._converInt = function() {
+        // handles conversion for ints
+        
+        /*
+          stuff that can go wrong:
+            used a , with a bad conversion type: 
+              throws Cannot specify ',' with '<type>'.
+            used Precision with int conversion type
+              throws Precision not allowed in integer format specifier
+            used conversion type s
+              throws Unknown format code 's' for object of type 'int'
+        */
+        
+        const type = this.type || 'd'
+        if (this.grouping && !type.match(/[deEfFgG%]/)) {
+            // used a , with a bad conversion type: 
+            throw new exceptions.ValueError(`Cannot specify ',' with '${type}'.`)
+        }
+        
+        if (this.precision && type.match(/[bcdoxXn]/)) {
+            throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+        }
+        
+        if (type === 's') {
+            throw new exceptions.ValueError("Unknown format code 's' for object of type 'int'")
+        }
+        
+        let content
+        switch (type) {
+            case 'b':
+                content = this.arg.toString(2)
+                break
+            case 'c':
+                String.fromCharCode(parseInt(this.arg, 16))
+                break
+            case 'd':
+                content = this.arg
+                break
+            case 'o':
+                content = this.arg.toString(8)
+                break
+            case 'x':
+                content = this.arg.toString(16)
+                break
+            case 'X':
+                content = this.arg.toString(16).toUpperCase()
+                break
+            case 'e':
+                
+            case 'E':
+                
+                break
+            case 'f':
+            case 'F':
+                break;
+            case 'g':
+            case 'G':
+                break
+                
+            case 'n':
+                break
+                
+            case '%':
+                break
+            default:
+            
+        }
+        
+
     }
     
-    Specifier.prototype.converFloat = function() {
+    Specifier.prototype._converFloat = function() {
       // handles conversion for floats
     }
     
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value!
-        console.log(`final result: ${this.convertStr()}`);
+        console.log(`final result: ${this._convertStr()}`);
         // TODO
             // get the value
             // convert it to the requested type
@@ -1096,6 +1144,58 @@ function _new_subsitute(str, args, kwargs) {
     }
     result += str.slice(lastStop, str.length)
     return result
+}
+
+/*
+Helper functions
+*/
+
+const zeroPadExp = function(rawExponential) {
+    // rawExponential (str) example: "5e+5"
+    // returns the correct zero padded exponential. 
+      // must have lowercase 'e': example 5e+05
+    var re = /([-+]?[0-9]*\.?[0-9]*)(e[+-])(\d+)/
+    var m = rawExponential.match(re)
+    if (m[3] < 10) {
+        return m[1] + m[2] + '0' + m[3]
+    } else {
+        return m[1] + m[2] + m[3]
+    }
+} // end zeroPadExp
+
+const toExp = function(n, precision, conversionType) {
+    /*
+        convert a number to its exponential value`
+        n(int): the number to convert
+        precision(int): the precision to use
+        conversionType(str): the type of conversion to use (either 'e' or 'E')
+
+        return the converted exponential (str)
+    */
+
+    const nBig = new BigNumber(n)
+    const nExp = Number(nBig).toExponential()
+
+    const expSplit = nExp.split('e')
+    const baseRaw = new BigNumber((expSplit[0]))
+
+    // might need to add extra zeros to base
+    let base
+    if (precision !== null) {
+        base = baseRaw.toFixed(precision)
+    } else {
+        base = baseRaw.toFixed(6)
+    }
+    const exp = expSplit[1] // the exponent bit
+
+    let conversionArg
+    if (conversionType === 'e') {
+        conversionArg = zeroPadExp(base + 'e' + exp)
+    } else {
+        conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
+    }
+
+    return conversionArg
 }
 
 /**************************************************
