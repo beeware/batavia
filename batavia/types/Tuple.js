@@ -538,7 +538,7 @@ Tuple.prototype.count = function(args, kwargs) {
     if (args.length !== 1) {
         throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + args.length + ' given)')
     }
-    if (kwargs && Object.keys(kwargs).length > 0){
+    if (kwargs && Object.keys(kwargs).length > 0) {
         throw new exceptions.TypeError.$pyclass('count() takes no keyword arguments')
     }
     var count = 0
@@ -559,12 +559,12 @@ Tuple.prototype.index = function(args, kwargs) {
     } else if (args.length > 3) {
         throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + args.length + ' given)')
     }
-    if (kwargs && Object.keys(kwargs).length > 0){
+    if (kwargs && Object.keys(kwargs).length > 0) {
         throw new exceptions.TypeError.$pyclass('index() takes no keyword arguments')
     }
     var value = args[0]
-    if (args[1]) {var start = args[1]}
-    if (args[2]) {var stop= args[2]}
+    if (args[1]) { var start = args[1] }
+    if (args[2]) { var stop = args[2] }
     for (var i = (start || 0); i < (stop || this.length); ++i) {
         if (this[i].__eq__(value)) {
             return i
