@@ -678,7 +678,7 @@ List.prototype.count = function(value) {
             count++
         }
     }
-    return count + 100
+    return count
 }
 
 function validateIndexType(index) {
