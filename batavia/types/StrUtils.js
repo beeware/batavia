@@ -1042,7 +1042,7 @@ function _new_subsitute(str, args, kwargs) {
         }
     }
     
-    Specifier.prototype._converInt = function() {
+    Specifier.prototype._convertInt = function() {
         // handles conversion for ints
         
         /*
@@ -1069,8 +1069,10 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError("Unknown format code 's' for object of type 'int'")
         }
         
-        let content
+        const precision = this.precision || 6
+        let content, num, exp
         switch (type) {
+            // TODO: need to handle precision here
             case 'b':
                 content = this.arg.toString(2)
                 break
@@ -1090,27 +1092,53 @@ function _new_subsitute(str, args, kwargs) {
                 content = this.arg.toString(16).toUpperCase()
                 break
             case 'e':
-                
             case 'E':
-                
+                content = toExp(this.arg, precision, type)
                 break
             case 'f':
             case 'F':
-                break;
+                content = new BigNumber(this.arg).toFixed(precision)
+                
+                break
             case 'g':
             case 'G':
+                // if exp is the exponent and p is the precision
+                // if -4 <= exp < p -> use f and precison = p-1-exp
+                // else use e and p-1
+                num = new BigNumber(this.arg).toExponential()
+                exp = Number(num.split('e')[1])
+                if (exp >= -4 && exp < precision) {
+                    content = new BigNumber(this.arg).toFixed(precision - 1 - exp)  
+                } else {
+                    content = toExp(this.arg, precision - 1, type)
+                }
+                
                 break
                 
             case 'n':
+                if (this.precision) {
+                    throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+                }
+                num = new BigNumber(this.arg).toExponential()
+                const exp = Number(num.split('e')[1])
+                if (exp >= -4 && exp < precision) {
+                    content = new BigNumber(this.arg).toFixed(precision - 1 - exp)  
+                } else {
+                    content = toExp(this.arg, precision - 1, type)
+                }
                 break
                 
             case '%':
+                const n = new BigNumber(this.arg * 100).toFixed(precision)
+                content = `${n}%`
                 break
             default:
+                throw new exceptions.ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
             
         }
         
-
+        // TODO: convert to uppercase if type is upper case
+        
     }
     
     Specifier.prototype._converFloat = function() {
@@ -1119,7 +1147,11 @@ function _new_subsitute(str, args, kwargs) {
     
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value!
-        console.log(`final result: ${this._convertStr()}`);
+        if (types.isinstance(this.arg, types.Str)) {
+            console.log(this._convertStr());
+        } else {
+            console.log(this._convertInt());
+        }
         // TODO
             // get the value
             // convert it to the requested type
@@ -1174,7 +1206,7 @@ const toExp = function(n, precision, conversionType) {
     */
 
     const nBig = new BigNumber(n)
-    const nExp = Number(nBig).toExponential()
+    const nExp = nBig.toExponential()
 
     const expSplit = nExp.split('e')
     const baseRaw = new BigNumber((expSplit[0]))
