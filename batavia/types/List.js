@@ -678,7 +678,7 @@ List.prototype.count = function(value) {
             count++
         }
     }
-    return count + 100
+    return count
 }
 
 List.prototype.index = function(value, start, stop) {
