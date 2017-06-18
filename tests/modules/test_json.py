@@ -1,6 +1,5 @@
-from ..utils import TranspileTestCase, ModuleFunctionTestCase
-
-import unittest
+from itertools import product
+from ..utils import TranspileTestCase, ModuleFunctionTestCase, adjust
 
 
 class JSONEncoderTests(ModuleFunctionTestCase, TranspileTestCase):
@@ -19,70 +18,36 @@ class JSONEncoderTests(ModuleFunctionTestCase, TranspileTestCase):
             print(type(enc.encode(True)))
         """)
 
-    def test_illegal_dict_key(self):
+    def test_circular(self):
         self.assertCodeExecution("""
             import json
 
-            d = { object(): 1, 'k': 'v' }
+            enc = json.JSONEncoder()
+            d = {1: {2: {}}, 4: 5}
+            d[1][2][3] = d
             try:
-                json.JSONEncoder().encode(d)
-            except TypeError as e:
+                enc.encode(d)
+            except ValueError as e:
+                print(e)
+
+            l = []
+            l.append(l)
+            try:
+                enc.encode(l)
+            except ValueError as e:
+                print(e)
+
+            def f(x):
+                return x
+
+            enc = json.JSONEncoder(default=f)
+            try:
+                enc.encode(object())
+            except ValueError as e:
                 print(e)
         """)
 
-    def test_skipkeys(self):
-        self.assertCodeExecution("""
-            import json
-
-            d = { object(): 1, 'k': 'v' }
-            print(json.JSONEncoder(skipkeys=True).encode(d))
-        """)
-
-    def test_out_of_range_float(self):
-        self.assertCodeExecution("""
-            import json
-
-            print(json.JSONEncoder().encode(
-                [float('nan'), float('inf'), float('-inf')]
-            ))
-        """)
-
-    def test_separators(self):
-        self.assertCodeExecution("""
-            import json
-
-            print(json.JSONEncoder(separators=('#', '$')).encode([1, {2: 3}]))
-        """)
-
-    def test_indent_num(self):
-        self.assertCodeExecution("""
-            import json
-
-            enc = json.JSONEncoder(indent=2)
-            print(enc.encode([1, 2, [3, [4, 5]], 6]))
-            print(enc.encode({1: [2, 3, {4: {5: 6}}]}))
-        """)
-
-    def test_indent_str(self):
-        self.assertCodeExecution("""
-            import json
-
-            enc = json.JSONEncoder(indent='$')
-            print(enc.encode([1, 2, [3, [4, 5]], 6]))
-            print(enc.encode({1: [2, 3, {4: {5: 6}}]}))
-        """)
-
-    @unittest.expectedFailure
-    def test_sort_keys(self):
-        self.assertCodeExecution("""
-            import json
-
-            enc = json.JSONEncoder(sort_keys=True)
-            print(enc.encode({9: 8, 2: 1, 7: {6: 5, 4: 3}}))
-        """)
-
     not_implemented = [
-        'test_json_JSONEncoder().encode_str',    # TODO ensure ascii
         'test_json_JSONEncoder().encode_dict',   # fails due to dict ordering
         'test_json_JSONEncoder().encode_class',  # fails due to class __str__
     ]
@@ -94,9 +59,126 @@ JSONEncoderTests.add_one_arg_tests('json', ['JSONEncoder().encode'])
 class DumpsTests(ModuleFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
-        'test_json_dumps_str',    # TODO ensure ascii
         'test_json_dumps_dict',   # fails due to dict ordering
         'test_json_dumps_class',  # fails due to class __str__
     ]
 
 DumpsTests.add_one_arg_tests('json', ['dumps'])
+
+
+class DumpTests(TranspileTestCase):
+    pass
+
+
+TEMPLATES = [
+    (
+        JSONEncoderTests,
+        """
+        import json
+        enc = json.JSONEncoder({kwargs})
+        data = {data}
+        try:
+            print(enc.encode(data))
+        except Exception as e:
+            print(type(e), ':', e)
+        """,
+        'JSONEncoder_encode',
+    ),
+    (
+        DumpsTests,
+        """
+        import json
+        data = {data}
+        try:
+            print(json.dumps(data, {kwargs}))
+        except Exception as e:
+            print(type(e), ':', e)
+        """,
+        'dumps',
+    ),
+    (
+        DumpTests,
+        """
+        import json
+        class writeable:
+            def __init__(self):
+                self.x = []
+            def write(self, x):
+                self.x.append(x)
+        data = {data}
+        fp = writeable()
+        try:
+            json.dump(data, fp, {kwargs})
+            print(''.join(fp.x))
+        except Exception as e:
+            print(type(e))
+        """,
+        'dump',
+    ),
+
+]
+
+TEST_CASES = [
+    (
+        'illegal_dict_key',
+        ["{object(): 1, 'k': 'v'}"],
+        ['', 'skipkeys=True'],
+    ),
+    (
+        'ensure_ascii',
+        ["'Mÿ hôvèrçràft îß fûłl öf éêlś'"],
+        ['ensure_ascii=False'],
+    ),
+    (
+        'out_of_range_float',
+        ["[float('nan'), float('inf'), float('-inf')]"],
+        [''],
+    ),
+    (
+        'allow_nan',
+        ["[1, 2, float('nan')]", "[1, 2, float('inf')]"],
+        ['allow_nan=False'],
+    ),
+    (
+        'separators',
+        ["[1, {2: 3}]"],
+        ["separators=('#', '$')"],
+    ),
+    (
+        'indent',
+        ["[1, 2, [3, [4, 5]], 6]", "{1: [2, 3, {4: {5: 6}}]}"],
+        ['indent=2', "indent='$'"],
+    ),
+    (
+        'indent_separators',
+        ["[1, 2, {'a': 3}]", "{1: [2, 3, {4: {5: 6}}]}"],
+        ["indent=3, separators=(' , ', '->')"],
+    ),
+    (
+        'sort_keys',
+        ['{9: 8, 2: 1, 7: {6: 5, 4: 3}}'],
+        ['sort_keys=True'],
+    ),
+    (
+        'default',
+        ['{1: object()}'],
+        ['default=lambda x: {}'],
+    ),
+]
+
+
+def create_test_func(code):
+    def func(self):
+        self.assertCodeExecution(code, run_in_function=False)
+    return func
+
+
+def add_test_cases(templates, test_cases):
+    for cls, template, name_template in templates:
+        for name, data_list, kwargs_list in test_cases:
+            for i, (data, kwargs) in enumerate(product(data_list, kwargs_list)):
+                test_name = 'test_{}_{}_{}'.format(name_template, name, i)
+                code = adjust(template.format(kwargs=kwargs, data=data))
+                setattr(cls, test_name, create_test_func(code))
+
+add_test_cases(TEMPLATES, TEST_CASES)
