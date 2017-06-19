@@ -919,9 +919,13 @@ function _new_subsitute(str, args, kwargs) {
                     this.alternate = char
                     return 3
                 case 3:
-                    // zero padding
-                    this.zeroPad = char
-                    return 4
+                    // zero padding. only valid if fill is not already set
+                    if (this.fill === undefined) {
+                        this.fill = char
+                        return 4
+                    } else {
+                        throw new exceptions.ValueError('Invalid format specifier')
+                    }
                 case 4:
                     // width
                     if (this.width) {
@@ -995,7 +999,7 @@ function _new_subsitute(str, args, kwargs) {
     
     Specifier.prototype._convertStr = function() {
         // handles conversion for strings
-        // there's only one type of formatting for strings here.
+        // end result is stored as this.content
         const type = this.type || 's'
         if (!type.match(/[s ]/)) {
             throw new exceptions.ValueError.$pyclass(`Unknown format code '${this.type}' for object of type 'str'`)
@@ -1022,53 +1026,39 @@ function _new_subsitute(str, args, kwargs) {
 
         let content // the content as it should be represented in the subsitution
         if (this.precision && this.precision < this.arg.length) {
-            content = this.arg.slice(0, this.precision)
+            this.content = this.arg.slice(0, this.precision)
         } else {
-            content = this.arg
-        }
-
-        if (this.zeroPad || this.align === '=') {
-            throw new exceptions.ValueError("'=' alignment not allowed in string format specifier")
-        }
-
-        // size of the containing field. will need to be filled in if larger than content
-        const fieldWidth = this.width || content
-        const spaceRemaining = fieldWidth - content.length
-        // determine how extra space should be divided.
-        if (spaceRemaining > 0) {
-            const fillChar = this.fill || ' '
-            switch (this.align) {
-                case '^':
-                  // center align, we can't divide space evenly, extra cell goes
-                  // on right
-                    let rightSide, leftSide
-                    if (spaceRemaining % 2 === 0) {
-                        // even spaceRemaining
-                        rightSide = spaceRemaining / 2
-                        leftSide = spaceRemaining / 2
-                    } else {
-                        // odd space left, extra space goes to right
-                        rightSide = Math.floor(spaceRemaining / 2)
-                        leftSide = Math.floor(spaceRemaining / 2) + 1
-                    }
-
-                    return `${fillChar.repeat(rightSide)}${content}${fillChar.repeat(leftSide)}`
-                case '>':
-                    return `${fillChar.repeat(spaceRemaining)}${content}`
-                default:
-                    return `${content}${fillChar.repeat(spaceRemaining)}`
-            }
-        } else {
-            return content
+            this.content = this.arg
         }
     }
     
-    Specifier.prototype._convertInt = function() {
+    Specifier.prototype._convertNumber = function() {
+      
+        // cvers conversion for all number types.
+        // end result is stored as this.content
 
         // error handling
         this.argAbs = Math.abs(this.arg)
         
+        // determine type to use
+        const type
+        if (this.type) {
+            type = this.type
+        } else {
+            if (type_name(this.arg) === 'int') {
+                type = 'd'
+            } else {
+                type = 'g*'
+            }
+        }
+        
         const type = this.type || 'd'
+        
+        // error for converting floats with improper presentation types
+        // TODO: need to check for decimal once it is implemented
+        if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
+            throw new types.ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+        }
         
         if (this.type === 'c' && this.sign) {
             throw new exceptions.ValueError("Sign not allowed with integer format specifier 'c'")
@@ -1162,7 +1152,37 @@ function _new_subsitute(str, args, kwargs) {
                 }
                 
                 break
+            case 'g*':
+                /*
+                  Similar to 'g', except that fixed-point notation, when used, 
+                  has at least one digit past the decimal point. 
+                  The default precision is as high as needed to represent the 
+                  particular value. The overall effect is to match the output 
+                  of str() as altered by the other format modifiers.
+                */
                 
+                // if exp is the exponent and p is the precision
+                // if -4 <= exp < p -> use f and precison = p-1-exp
+                // else use e and p-1
+                
+                if (type === 'n' && this.precision) {
+                    throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+                }
+                
+                num = new BigNumber(this.argAbs).toExponential()
+                exp = Number(num.split('e')[1])
+                if (exp >= -4 && exp < precision) {
+                    // use f
+                    base = this.argAbs // new BigNumber(this.argAbs).toFixed(precision - 1 - exp)  
+                } else {
+                    // use e
+                    const expObj = this._toExp(this.argAbs, precision - 1, type)
+                    base = expObj.base
+                    expSign = expObj.expSign
+                    exp = expObj.exp
+                }
+                
+                break
             case '%':
                 base = new BigNumber(this.argAbs * 100).toFixed(precision)
                 percent = '%'
@@ -1197,23 +1217,16 @@ function _new_subsitute(str, args, kwargs) {
             base = this._handleGrouping(base, grouping)
         }
         
-        return `${signToUse}${alternate}${base}${percent}${expSign}${exp}`
+        this.content = `${signToUse}${alternate}${base}${percent}${expSign}${exp}`
     };
-    
-    Specifier.prototype._converFloat = function() {
-      // handles conversion for floats
-    }
     
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value!
         
-        switch (type_name(this.arg)) {
-            case 'str':
-                console.log(this._convertStr())
-                break
-            case 'int':
-                console.log(this._convertInt())
-                break
+        if (type_name(this.arg) === 'str') {
+            return this._convertStr()
+        } else {
+            return this._convertNumber()
         }
         // TODO
             // get the value
@@ -1225,13 +1238,55 @@ function _new_subsitute(str, args, kwargs) {
         /* takes this.content and places it inside the field with proper
           alignment and padding
         */
+
+        // size of the containing field. will need to be filled in if larger than content
+        const fieldWidth = this.width || this.content
+        const spaceRemaining = fieldWidth - this.content.length
+        // determine how extra space should be divided.
+        
+        const align = this.align || '<'
+        if (spaceRemaining > 0) {
+            const fillChar = this.fill || ' '
+            switch (align) {
+                case '^':
+                  // center align, we can't divide space evenly, extra cell goes
+                  // on right
+                    let rightSide, leftSide
+                    if (spaceRemaining % 2 === 0) {
+                        // even spaceRemaining
+                        rightSide = spaceRemaining / 2
+                        leftSide = spaceRemaining / 2
+                    } else {
+                        // odd space left, extra space goes to right
+                        rightSide = Math.floor(spaceRemaining / 2)
+                        leftSide = Math.floor(spaceRemaining / 2) + 1
+                    }
+
+                    this.field = `${fillChar.repeat(rightSide)}${this.content}${fillChar.repeat(leftSide)}`
+                    break
+                case '>':
+                    this.field = `${fillChar.repeat(spaceRemaining)}${this.content}`
+                    break
+                case '<':
+                    this.field = `${this.content}${fillChar.repeat(spaceRemaining)}`
+                    break
+                case '=':
+                    // insert extra padding BETWEEN the sign and number
+                    const contentSplit = this.content.split(/[+- ]/)
+                    const sign = contentSplit[0]
+                    const contentBase = contentSplit[1]
+                    this.field = `${sign}${fillChar.repeat(spaceRemaining)}${contentBase}` 
+            }
+        } else {
+            this.field = this.content
+        } // end if
         
     };
     
     Specifier.prototype._handleGrouping = function(n, groupingChar) {
         /*
           n(int) the absolute value of the number to handle grouping for.
-            shouldn't have any non number symbols like +- or %
+            shouldn't have any non number symbols like +, - or %
           groupingChar(str): the character to group digits by
 
           return: the same number with proper gropuing (as str)
