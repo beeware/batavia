@@ -452,8 +452,26 @@ function _substitute(format, args) {
 
                 case ('e'):
                 case ('E'):
-                    const conversionArg = toExp(conversionArgValue, precision,
-                                                this.conversionType)
+                    var argValueBig = new BigNumber(conversionArgValue)
+                    var argExp = Number(argValueBig).toExponential()
+
+                    var expSplit = argExp.split('e')
+                    var baseRaw = new BigNumber((expSplit[0]))
+
+                    // might need to add extra zeros to base
+                    if (precision !== null) {
+                        base = baseRaw.toFixed(precision)
+                    } else {
+                        base = baseRaw.toFixed(6)
+                    }
+                    exp = expSplit[1]
+
+                    if (this.conversionType === 'e') {
+                        conversionArg = zeroPadExp(base + 'e' + exp)
+                    } else {
+                        conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
+                    }
+
                     break
 
                 case ('g'):
@@ -819,7 +837,6 @@ function _new_subsitute(str, args, kwargs) {
     }
 
     Specifier.prototype.parseAlign = function() {
-      
         /* parsing the formatting options will work quite similarly to old style
           formatting but with one exception.
           the fill character only has meaning if it is followed by an align
@@ -1043,19 +1060,16 @@ function _new_subsitute(str, args, kwargs) {
     }
     
     Specifier.prototype._convertInt = function() {
-        // handles conversion for ints
-        
-        /*
-          stuff that can go wrong:
-            used a , with a bad conversion type: 
-              throws Cannot specify ',' with '<type>'.
-            used Precision with int conversion type
-              throws Precision not allowed in integer format specifier
-            used conversion type s
-              throws Unknown format code 's' for object of type 'int'
-        */
+
+        // error handling
+        this.argAbs = Math.abs(this.arg)
         
         const type = this.type || 'd'
+        
+        if (this.type === 'c' && this.sign) {
+            throw new exceptions.ValueError("Sign not allowed with integer format specifier 'c'")
+        }
+        
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
             // used a , with a bad conversion type: 
             throw new exceptions.ValueError(`Cannot specify ',' with '${type}'.`)
@@ -1070,76 +1084,110 @@ function _new_subsitute(str, args, kwargs) {
         }
         
         const precision = this.precision || 6
-        let content, num, exp
+        
+        /* components for final representation
+            base: the number prior to the exponent. excludes sign or precentage
+            expSign: comes right before the exponent either e or E
+            exp: the exponent. contains a sign and is zero padded to have atleast
+              two digits
+        */
+        let signToUse, alternate, base, percent, expSign, exp
+        
         switch (type) {
             // TODO: need to handle precision here
             case 'b':
-                content = this.arg.toString(2)
+                base = this.arg.toString(2)
                 break
             case 'c':
-                String.fromCharCode(parseInt(this.arg, 16))
+                base = String.fromCharCode(parseInt(this.arg, 16))
                 break
             case 'd':
-                content = this.arg
+                base = this.arg
                 break
             case 'o':
-                content = this.arg.toString(8)
+                base = this.arg.toString(8)
                 break
             case 'x':
-                content = this.arg.toString(16)
+                base = this.arg.toString(16)
                 break
             case 'X':
-                content = this.arg.toString(16).toUpperCase()
+                base = this.arg.toString(16).toUpperCase()
                 break
             case 'e':
             case 'E':
-                content = toExp(this.arg, precision, type)
+                expObj = this._toExp(this.arg, precision, type)
+                base = expObj.base
+                expSign = expObj.expObj
+                exp = expObj.exp
                 break
             case 'f':
             case 'F':
-                content = new BigNumber(this.arg).toFixed(precision)
+                base = new BigNumber(this.arg).toFixed(precision)
                 
                 break
             case 'g':
             case 'G':
+            case 'n':
                 // if exp is the exponent and p is the precision
                 // if -4 <= exp < p -> use f and precison = p-1-exp
                 // else use e and p-1
+                
+                if (type === 'n' && this.precision) {
+                    throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+                }
+                
                 num = new BigNumber(this.arg).toExponential()
                 exp = Number(num.split('e')[1])
                 if (exp >= -4 && exp < precision) {
-                    content = new BigNumber(this.arg).toFixed(precision - 1 - exp)  
+                    // use f
+                    base = new BigNumber(this.arg).toFixed(precision - 1 - exp)  
                 } else {
-                    content = toExp(this.arg, precision - 1, type)
+                    // use e
+                    const expObj = this._toExp(this.arg, precision - 1, type)
+                    base = expObj.base
+                    expSign = expObj.expObj
+                    exp = expObj.exp
                 }
                 
-                break
-                
-            case 'n':
-                if (this.precision) {
-                    throw new exceptions.ValueError('Precision not allowed in integer format specifier')
-                }
-                num = new BigNumber(this.arg).toExponential()
-                const exp = Number(num.split('e')[1])
-                if (exp >= -4 && exp < precision) {
-                    content = new BigNumber(this.arg).toFixed(precision - 1 - exp)  
-                } else {
-                    content = toExp(this.arg, precision - 1, type)
-                }
                 break
                 
             case '%':
                 const n = new BigNumber(this.arg * 100).toFixed(precision)
-                content = `${n}%`
+                base = n
+                percent = '%'
                 break
             default:
                 throw new exceptions.ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
             
+        } // switch
+        
+        // determine sign
+        let sign = this.sign || '-'
+        if (this.arg >= 0) {
+            // if positive and sign is + or ' ' use that.
+            // if sign is '-' use nothing
+            if (/[+ ]/.test(sign)) {
+                signToUse = sign
+            }
+        } else {
+            // negative sign for negative numbers reguardless
+            signToUse = '-'
         }
         
-        // TODO: convert to uppercase if type is upper case
+        // determine alternate
+        if (/boxX/.test(this.type.match)) {
+            alternate = `0${type}`
+        }
+
+        // determine grouping
+        const grouping = this.grouping || ''
+        if (this.grouping) {
+            // modify base to handle grouping if needed
+            base = this._handleGrouping(this.argAbs, grouping)
+        }
         
-    }
+        return `${signToUse}${alternate}${base}${expSign}${exp}`
+    };
     
     Specifier.prototype._converFloat = function() {
       // handles conversion for floats
@@ -1147,6 +1195,16 @@ function _new_subsitute(str, args, kwargs) {
     
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value!
+        
+        switch (type_name(this.arg)) {
+            case 'str':
+                console.log(this._convertStr())
+                break
+            case 'int':
+                console.log(this._convertInt())
+                break
+        }
+        
         if (types.isinstance(this.arg, types.Str)) {
             console.log(this._convertStr());
         } else {
@@ -1156,9 +1214,87 @@ function _new_subsitute(str, args, kwargs) {
             // get the value
             // convert it to the requested type
             // hand off to helper function
-            
     }
+    
+    Specifier.prototype._handleLayout = function() {
+        /* takes this.content and places it inside the field with proper
+          alignment and padding
+        */
+        
+    };
+    
+    Specifier.prototype._handleGrouping = function(n, groupingChar) {
+        /*
+          n(int) the absolute value of the number to handle grouping for.
+            shouldn't have any non number symbols like +- or %
+          groupingChar(str): the character to group digits by
 
+          return: the same number with proper gropuing (as str)
+        */
+
+        const nSplit = n.valueOf().toString().split('.')
+        const beforeDec = nSplit[0] || 0
+        const afterDec = nSplit[1] || 0
+        let contentArr = beforeDec.split('')
+        const numDigits = beforeDec.length
+        for (var i = contentArr.length; i > 0; i = i - 3) {
+            if (i < numDigits) {
+                contentArr.splice(i, 0, groupingChar)
+            }
+        }
+        return `${contentArr.join('')}.${afterDec}`
+    }
+    
+    Specifier.prototype._toExp = function(n, precision, conversionType) {
+        /*
+            convert a number to its exponential value`
+            n(int): the number to convert
+            precision(int): the precision to use
+            conversionType(str): the type of conversion to use (either 'e' or 'E')
+
+            return an object of shape {base, expSign, exp}
+        */
+
+        const nBig = new BigNumber(n)
+        const nExp = nBig.toExponential()
+
+        const expSplit = nExp.split('e')
+        const baseRaw = new BigNumber((expSplit[0]))
+
+        // might need to add extra zeros to base
+        let base
+        if (precision !== null) {
+            base = baseRaw.toFixed(precision)
+        } else {
+            base = baseRaw.toFixed(6)
+        }
+        
+        let exp
+        if (expSplit[1] < 10) {
+            // format <sign><number>
+            const re = /([+-])([\d])/
+            const match = expSplit[1].match(re)
+            exp = match[1] + '0' + match[2]
+        } else {
+            exp = expSplit[1]
+        }
+        // exp = expSplit[1] // the exponent bit
+        
+        
+        let expBase
+        if (conversionType === conversionType.toLowerCase()) {
+            expBase = 'e'
+        } else {
+            expBase = 'E'
+        }
+
+        return {
+            base: base,
+            expBase: expBase,
+            exp: exp
+        }
+    }
+    
     const specRe = /{(.*?)}/g
     let match = specRe.exec(str)
     let result = ''
@@ -1194,41 +1330,6 @@ const zeroPadExp = function(rawExponential) {
         return m[1] + m[2] + m[3]
     }
 } // end zeroPadExp
-
-const toExp = function(n, precision, conversionType) {
-    /*
-        convert a number to its exponential value`
-        n(int): the number to convert
-        precision(int): the precision to use
-        conversionType(str): the type of conversion to use (either 'e' or 'E')
-
-        return the converted exponential (str)
-    */
-
-    const nBig = new BigNumber(n)
-    const nExp = nBig.toExponential()
-
-    const expSplit = nExp.split('e')
-    const baseRaw = new BigNumber((expSplit[0]))
-
-    // might need to add extra zeros to base
-    let base
-    if (precision !== null) {
-        base = baseRaw.toFixed(precision)
-    } else {
-        base = baseRaw.toFixed(6)
-    }
-    const exp = expSplit[1] // the exponent bit
-
-    let conversionArg
-    if (conversionType === 'e') {
-        conversionArg = zeroPadExp(base + 'e' + exp)
-    } else {
-        conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
-    }
-
-    return conversionArg
-}
 
 /**************************************************
  * Module exports
