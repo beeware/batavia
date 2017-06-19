@@ -1,5 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms
+    adjust, transforms, SAMPLE_DATA
 
 from itertools import product
 import unittest
@@ -1057,6 +1057,8 @@ class NewStyleFormatTests(TranspileTestCase):
     many tests borrowed from the Brython test suite
     """
 
+    # tests for grabbing arguments
+    
     def test_single(self):
         test_str = adjust("""
         print(">>> 'one arg: {}'.format('great!')")
@@ -1133,7 +1135,8 @@ class NewStyleFormatTests(TranspileTestCase):
         name calls attribute on passed argument
         """
         pass
-        
+    
+    # conversion flags
     def test_conversion_flags(self):
         conversion_flags = ('!a', '!s', '!r', '!', '!ss', '!g')
         
@@ -1156,8 +1159,8 @@ class NewStyleFormatTests(TranspileTestCase):
             [
                 adjust(
                     """
-                    print(">>> 'one arg:: {{:{fill}<10}}'.format('great')")
-                    print('one arg:: {{:{fill}<10}}'.format('great'))
+                    print(">>> 'one arg: {{:{fill}<10}}'.format('great')")
+                    print('one arg: {{:{fill}<10}}'.format('great'))
                     """.format(fill=fill)
                 ) for fill in fills
             ]
@@ -1166,7 +1169,21 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str)
     
     def test_alignments(self):
-        pass
+        alignments = ['<', '^', '>', '=']
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{align}10}}'.format('spam')")
+                    print('one arg: {{:{align}10}}'.format('spam'))
+                    print(">>> 'one arg: {{:*{align}10}}'.format('spam')")
+                    print('one arg: {{:*{align}10}}'.format('spam'))
+                    """.format(align=align)
+                ) for align in alignments
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
     
     def test_fill_no_alignment(self):
         
@@ -1223,6 +1240,10 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str)
         
     def test_groupings_with_str(self):
+        """
+        grouping with str shouldn't be allowed
+        """
+        
         test_str = adjust("""
         print(">>> 'one arg: {:,}'.format('great')")
         print('one arg: {:,}'.format('great'))
@@ -1278,10 +1299,24 @@ class NewStyleFormatTests(TranspileTestCase):
         
         self.assertCodeExecution(test_str)
         
-    def test_odd_types(self):
+    def test_all_types(self):
         """
         test with types other than str, int and float
         """
+        items = [t[0] for t in SAMPLE_DATA.values()]
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{}}'.format({arg})")
+                    print('one arg: {{}}'.format({arg}))
+                    """.format(arg=arg)
+                ) for arg in items
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
         pass
         
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
