@@ -835,7 +835,7 @@ function _new_subsitute(str, args, kwargs) {
             } // end switch
         }, this) // end initial parse
     }
-
+    
     Specifier.prototype.parseAlign = function() {
         /* parsing the formatting options will work quite similarly to old style
           formatting but with one exception.
@@ -846,26 +846,30 @@ function _new_subsitute(str, args, kwargs) {
       
         // look for an alignment character
         const alignRe = /[<^>=]/
-        switch (this.formatOptionsRaw.match(alignRe).index) {
-            case 0:
-                // found align character at index 0
-                this.align = this.formatOptionsRaw[0]
-                
-                // remove that character from the set
-                this.formatOptionsRaw = this.formatOptionsRaw.slice(1)
-                break
-            case 1:
-                // found align character at index 1. index 0 is the fill character
-                this.fill = this.formatOptionsRaw[0]
-                this.align = this.formatOptionsRaw[1]
-                
-                // remove those character from the set
-                this.formatOptionsRaw = this.formatOptionsRaw.slice(2)
-                break
-            default:
-                // no align character
-                break
-        } // end switch
+        const alignMatch = this.formatOptionsRaw.match(alignRe)
+        if (alignMatch) {
+          
+            switch (this.formatOptionsRaw.match(alignRe).index) {
+                case 0:
+                    // found align character at index 0
+                    this.align = this.formatOptionsRaw[0]
+                    
+                    // remove that character from the set
+                    this.formatOptionsRaw = this.formatOptionsRaw.slice(1)
+                    break
+                case 1:
+                    // found align character at index 1. index 0 is the fill character
+                    this.fill = this.formatOptionsRaw[0]
+                    this.align = this.formatOptionsRaw[1]
+                    
+                    // remove those character from the set
+                    this.formatOptionsRaw = this.formatOptionsRaw.slice(2)
+                    break
+                default:
+                    // no align character
+                    break
+            } // end switch
+        } // end if
     }
 
     // Specifier.prototype.formatParse = function() {
@@ -1083,7 +1087,11 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError("Unknown format code 's' for object of type 'int'")
         }
         
-        const precision = this.precision || 6
+        if (this.precision) {
+            precision = parseInt(this.precision.replace('.', ''))
+        } else {
+            precision = 6
+        }
         
         /* components for final representation
             base: the number prior to the exponent. excludes sign or precentage
@@ -1091,39 +1099,43 @@ function _new_subsitute(str, args, kwargs) {
             exp: the exponent. contains a sign and is zero padded to have atleast
               two digits
         */
-        let signToUse, alternate, base, percent, expSign, exp
+        let signToUse = ''
+        let alternate = ''
+        let base = ''
+        let percent = ''
+        let expSign = ''
+        let exp = ''
         
         switch (type) {
             // TODO: need to handle precision here
             case 'b':
-                base = this.arg.toString(2)
+                base = this.argAbs.toString(2)
                 break
             case 'c':
                 base = String.fromCharCode(parseInt(this.arg, 16))
                 break
             case 'd':
-                base = this.arg
+                base = this.argAbs
                 break
             case 'o':
-                base = this.arg.toString(8)
+                base = this.argAbs.toString(8)
                 break
             case 'x':
-                base = this.arg.toString(16)
+                base = this.argAbs.toString(16)
                 break
             case 'X':
-                base = this.arg.toString(16).toUpperCase()
+                base = this.argAbs.toString(16).toUpperCase()
                 break
             case 'e':
             case 'E':
-                expObj = this._toExp(this.arg, precision, type)
+                expObj = this._toExp(this.argAbs, precision, type)
                 base = expObj.base
-                expSign = expObj.expObj
+                expSign = expObj.expSign
                 exp = expObj.exp
                 break
             case 'f':
             case 'F':
-                base = new BigNumber(this.arg).toFixed(precision)
-                
+                base = new BigNumber(this.argAbs).toFixed(precision)
                 break
             case 'g':
             case 'G':
@@ -1136,24 +1148,23 @@ function _new_subsitute(str, args, kwargs) {
                     throw new exceptions.ValueError('Precision not allowed in integer format specifier')
                 }
                 
-                num = new BigNumber(this.arg).toExponential()
+                num = new BigNumber(this.argAbs).toExponential()
                 exp = Number(num.split('e')[1])
                 if (exp >= -4 && exp < precision) {
                     // use f
-                    base = new BigNumber(this.arg).toFixed(precision - 1 - exp)  
+                    base = new BigNumber(this.argAbs).toFixed(precision - 1 - exp)  
                 } else {
                     // use e
-                    const expObj = this._toExp(this.arg, precision - 1, type)
+                    const expObj = this._toExp(this.argAbs, precision - 1, type)
                     base = expObj.base
-                    expSign = expObj.expObj
+                    expSign = expObj.expSign
                     exp = expObj.exp
                 }
                 
                 break
                 
             case '%':
-                const n = new BigNumber(this.arg * 100).toFixed(precision)
-                base = n
+                base = new BigNumber(this.argAbs * 100).toFixed(precision)
                 percent = '%'
                 break
             default:
@@ -1173,9 +1184,9 @@ function _new_subsitute(str, args, kwargs) {
             // negative sign for negative numbers reguardless
             signToUse = '-'
         }
-        
+      
         // determine alternate
-        if (/boxX/.test(this.type.match)) {
+        if (this.alternate && /[boxX]/.test(this.type)) {
             alternate = `0${type}`
         }
 
@@ -1183,10 +1194,10 @@ function _new_subsitute(str, args, kwargs) {
         const grouping = this.grouping || ''
         if (this.grouping) {
             // modify base to handle grouping if needed
-            base = this._handleGrouping(this.argAbs, grouping)
+            base = this._handleGrouping(base, grouping)
         }
         
-        return `${signToUse}${alternate}${base}${expSign}${exp}`
+        return `${signToUse}${alternate}${base}${percent}${expSign}${exp}`
     };
     
     Specifier.prototype._converFloat = function() {
@@ -1203,12 +1214,6 @@ function _new_subsitute(str, args, kwargs) {
             case 'int':
                 console.log(this._convertInt())
                 break
-        }
-        
-        if (types.isinstance(this.arg, types.Str)) {
-            console.log(this._convertStr());
-        } else {
-            console.log(this._convertInt());
         }
         // TODO
             // get the value
@@ -1231,7 +1236,7 @@ function _new_subsitute(str, args, kwargs) {
 
           return: the same number with proper gropuing (as str)
         */
-
+        
         const nSplit = n.valueOf().toString().split('.')
         const beforeDec = nSplit[0] || 0
         const afterDec = nSplit[1] || 0
@@ -1281,16 +1286,16 @@ function _new_subsitute(str, args, kwargs) {
         // exp = expSplit[1] // the exponent bit
         
         
-        let expBase
+        let expSign
         if (conversionType === conversionType.toLowerCase()) {
-            expBase = 'e'
+            expSign = 'e'
         } else {
-            expBase = 'E'
+            expSign = 'E'
         }
 
         return {
             base: base,
-            expBase: expBase,
+            expSign: expSign,
             exp: exp
         }
     }
