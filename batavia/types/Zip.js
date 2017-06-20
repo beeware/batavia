@@ -44,6 +44,10 @@ Zip.prototype.__iter__ = function() {
 }
 
 Zip.prototype.__next__ = function() {
+    if (this._iterators.length === 0) {
+        throw new exceptions.StopIteration.$pyclass()
+    }
+
     var Tuple = require('./Tuple')
 
     var values = []

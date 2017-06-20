@@ -2,7 +2,7 @@ var exceptions = require('../core').exceptions
 var types = require('../types')
 
 function zip(args, kwargs) {
-    if (args.length !== 2) {
+    if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
