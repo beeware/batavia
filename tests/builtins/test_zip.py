@@ -1,7 +1,5 @@
 from .. utils import TranspileTestCase, BuiltinTwoargFunctionTestCase
 
-from unittest import expectedFailure
-
 
 class ZipTests(TranspileTestCase):
 
@@ -54,6 +52,7 @@ class ZipTests(TranspileTestCase):
             ['[1, 2, 3]', '[5, 4]'],
             ['[]', '[1, 2, 3]'],
             ['[1, 2, 3]', '[]'],
+            ['[]', '()'],
             ['(4, 5)', '[1, 2, 3]'],
             ['(1, 2, 3, 4)', '(5, 6)', '(3, 4, 5)'],
             ['"string"', '("this", "is", "a", "tuple")'],
@@ -61,7 +60,24 @@ class ZipTests(TranspileTestCase):
         ]
 
         code = '\n'.join(template % ', '.join(inputs) for inputs in test_cases)
+        self.assertCodeExecution(code)
 
+    def test_invalid_inputs(self):
+        template = """
+            try:
+                x = zip(%s)
+            except TypeError as e:
+                print(e)
+        """
+        test_cases = [
+            ['3'],
+            ['1.5'],
+            ['[1, 2, 3]', 'False'],
+            ['"string"', 'None'],
+            ['"valid"', '("o", "k")', '500'],
+        ]
+
+        code = '\n'.join(template % ', '.join(inputs) for inputs in test_cases)
         self.assertCodeExecution(code)
 
 
