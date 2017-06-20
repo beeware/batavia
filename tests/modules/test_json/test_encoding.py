@@ -1,6 +1,6 @@
 from itertools import product
-from ..utils import TranspileTestCase, ModuleFunctionTestCase, MethodTestCase, \
-    adjust
+from ...utils import TranspileTestCase, ModuleFunctionTestCase, \
+    MethodTestCase, adjust
 
 
 class JSONEncoderTests(MethodTestCase, TranspileTestCase):
