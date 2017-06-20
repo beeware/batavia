@@ -36,6 +36,7 @@ types['Ellipsis'] = require('./types/Ellipsis')
 
 types['Filter'] = require('./types/Filter')
 types['Map'] = require('./types/Map')
+types['Zip'] = require('./types/Zip')
 
 types['Function'] = require('./types/Function')
 types['Method'] = require('./types/Method')
