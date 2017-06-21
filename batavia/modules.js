@@ -17,5 +17,6 @@ module.exports = {
     'sys': require('./modules/sys'),
     'time': require('./modules/time'),
     'random': require('./modules/random'),
-    'webbrowser': require('./modules/webbrowser')
+    'webbrowser': require('./modules/webbrowser'),
+    'json': require('./modules/json')
 }
