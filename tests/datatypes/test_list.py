@@ -126,32 +126,28 @@ class ListTests(TranspileTestCase):
 
     def test_index(self):
         self.assertCodeExecution("""
-        x = [1, 2, 2, 3]
-        print(x.index(1))
-        print(x.index(2))
-        print(x.index(3))
-        print(x.index(2, 2))
-        try:
-            x.index(4)
-        except ValueError as e:
-            print(e)
-        try:
-            x.index(2, 0, 1)
-        except ValueError as e:
-            print(e)
-        try:
-            x.index(2, 2, 1)
-        except ValueError as e:
-            print(e)
-        try:
-            x.index()
-        except TypeError as e:
-            print(e)
-        try:
-            x.index(3, 4, 5, 6)
-        except TypeError as e:
-            print(e)
-        """)
+            x = [1, 2, 2, 3]
+            print(x.index(1))
+            print(x.index(2))
+            print(x.index(3))
+            print(x.index(2, 1))
+            try:
+                x.index(3)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, 2, 3)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, 0, -1)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, -4, 4)
+            except ValueError as e:
+                print(e)
+            """)
 
     def test_slice(self):
         # Full slice
@@ -400,6 +396,7 @@ class ListTests(TranspileTestCase):
             l.clear()
             print(l)
         """)
+
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
