@@ -674,12 +674,23 @@ List.prototype.index = function(value, start, stop) {
     } else if (arguments.length > 3) {
         throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
     }
+
+    if (start < 0) {
+        start = Number(this.length.valueOf()) + Number(start.valueOf())
+        if (start < 0) {
+            start = 0
+        }
+    }
+    if (stop < 0) {
+        stop = Number(this.length.valueOf()) + Number(stop.valueOf())
+    }
+
     for (var i = (start || 0); i < (stop || this.length); ++i) {
         if (this[i].__eq__(value)) {
             return i
         }
     }
-    throw new exceptions.ValueError.$pyclass('list.index(x): x not in tuple')
+    throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
 }
 
 function validateIndexType(index) {
