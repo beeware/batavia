@@ -24,7 +24,7 @@ Batavia
 **Batavia is an early alpha project. If it breaks, you get to keep all the shiny pieces.**
 
 Batavia is an implementation of the Python virtual machine, written in
-Javascript. With Batavia, you can run Python bytecode in your browser.
+JavaScript. With Batavia, you can run Python bytecode in your browser.
 
 It honors Python 3.4.4+ syntax and conventions, and allows you to
 reference objects and classes defined natively in JavaScript.
@@ -87,7 +87,7 @@ Type in the following commands in your terminal ::
   
 3. Install `Node.js <https://nodejs.org>`_. 
 
-You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
+You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the JavaScript dependencies and compile the Batavia library::
 
 $ npm install
 

@@ -303,9 +303,14 @@ Bytes.prototype.__sub__ = function(other) {
 
 Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
-    var builtins = require('../builtins')
 
-    return new types.Int(this.val[builtins.int(other).valueOf()])
+    if (types.isinstance(other, types.Slice)) {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__getitem__ with slice has not been implemented')
+    }
+    if (!types.isinstance(other, types.Int)) {
+        throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
+    }
+    return new types.Int(this.val[other.int32()])
 }
 
 Bytes.prototype.__lshift__ = function(other) {

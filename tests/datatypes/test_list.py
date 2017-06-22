@@ -123,6 +123,31 @@ class ListTests(TranspileTestCase):
             print(x[-10])
             """)
 
+    def test_index(self):
+        self.assertCodeExecution("""
+            x = [1, 2, 2, 3]
+            print(x.index(1))
+            print(x.index(2))
+            print(x.index(3))
+            print(x.index(2, 1))
+            try:
+                x.index(3)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, 2, 3)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, 0, -1)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, -4, 4)
+            except ValueError as e:
+                print(e)
+            """)
+
     def test_slice(self):
         # Full slice
         self.assertCodeExecution("""

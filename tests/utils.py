@@ -1458,7 +1458,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                     continue
                 name = 'test_%s_%s_%s' % (module, func, datatype)
                 small_ints = module == 'math' and func == 'factorial'
-                setattr(klass, name, _module_one_arg_func_test(name, 'math', func, examples, small_ints=small_ints))
+                setattr(klass, name, _module_one_arg_func_test(name, module, func, examples, small_ints=small_ints))
 
     @classmethod
     def add_two_arg_tests(klass, module, functions, numerics_only=False):
@@ -1470,4 +1470,4 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                     if numerics_only and datatype2 not in numerics:
                         continue
                     name = 'test_%s_%s_%s_%s' % (module, func, datatype, datatype2)
-                    setattr(klass, name, _module_two_arg_func_test(name, 'math', func, examples, examples2))
+                    setattr(klass, name, _module_two_arg_func_test(name, module, func, examples, examples2))

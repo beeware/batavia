@@ -41,21 +41,13 @@ Then create a virtual environment and install Batavia into it:
     $ cd batavia
     $ pip install -e .
 
-*For those using anaconda*:
-
-.. code-block:: bash
-
-    $ cd batavia
-    $ conda create -n batavia-dev
-    $ source activate batavia-dev
-    $ pip install -e .
 
 Install Node.JS
 ^^^^^^^^^^^^^^^
 
 Lastly, you'll need to install `Node.js`_. You need to have a recent version
 of Node; we test using v6.9.1. Once you've installed node, you can use it to
-install Batavia's Javascript dependencies, and compile the Batavia library:
+install Batavia's JavaScript dependencies, and compile the Batavia library:
 
 .. code-block:: bash
 
