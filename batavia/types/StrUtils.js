@@ -2,6 +2,8 @@ var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var BigNumber = require('bignumber.js').BigNumber
 
+const builtins = require('../builtins') 
+
 function _substitute(format, args) {
     var types = require('../types')
 
@@ -819,8 +821,8 @@ function _new_subsitute(str, args, kwargs) {
                     if (this.conversionFlag.length === 1) {
                         throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
                     } else if (char !== '!' ){
-                      // don't want the delimiter
-                      this.conversionFlag += char                      
+                        // don't want the delimiter
+                        this.conversionFlag += char
                     }
                     break
                 case 3:
@@ -1001,12 +1003,23 @@ function _new_subsitute(str, args, kwargs) {
           All real numbers should be kept as their python types.
           Everything else should be converted to a string
        */
+       
+
+       
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
         } else if (types.isinstance(rawValue, [types.NoneType])) {
             return 'None'
+        } else if (types.isinstance(rawValue, [types.NotImplementedType])) {
+            return 'NotImplemented'
         } else {
-            return rawValue.toString()
+            const conversionMapping = {
+                s: builtins.str,
+                r: builtins.repr,
+                a: builtins.ascii
+            }
+            const conversionToUse = conversionMapping[this.conversionType]
+            return conversionToUse([rawValue], {})
         }
         
     }
@@ -1036,7 +1049,7 @@ function _new_subsitute(str, args, kwargs) {
         }
         
         if (this.align === '=') {
-          throw new exceptions.ValueError.$pyclass("'=' alignment not allowed in string format specifier")
+            throw new exceptions.ValueError.$pyclass("'=' alignment not allowed in string format specifier")
         }
         // the field must be atleast as big as this.width
         // if this.precision is set and smaller than this.arg, trim this.arg to fit

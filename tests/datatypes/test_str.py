@@ -1144,7 +1144,7 @@ class NewStyleFormatTests(TranspileTestCase):
             [
                 adjust(
                     """
-                    print(">>> 'one arg:: {{{flag}}}'.format('great')")
+                    print(">>> 'one arg:: {{{flag}:}}'.format('great')")
                     print('one arg:: {{{flag}}}'.format('great'))
                     """.format(flag=flag)
                 ) for flag in conversion_flags
@@ -1317,7 +1317,12 @@ class NewStyleFormatTests(TranspileTestCase):
         
         self.assertCodeExecution(test_str)
         
-        pass
+    def test_no_args(self):
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {}'.format()")
+        print('one arg: {}'.format())
+        """)
         
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
