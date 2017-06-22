@@ -1262,7 +1262,7 @@ class NewStyleFormatTests(TranspileTestCase):
         
         self.assertCodeExecution(test_str)
     
-    def test_types(self):
+    def test_conversion_types(self):
         """
         test all conversion types and their alternate forms
         """
@@ -1308,8 +1308,8 @@ class NewStyleFormatTests(TranspileTestCase):
             [
                 adjust(
                     """
-                    print(">>> 'one arg: {{}}'.format({arg})")
-                    print('one arg: {{}}'.format({arg}))
+                    print('>>> "one arg: {{}}".format({arg})')
+                    print("one arg: {{}}".format({arg}))
                     """.format(arg=arg)
                 ) for arg in items
             ]

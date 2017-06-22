@@ -983,18 +983,32 @@ function _new_subsitute(str, args, kwargs) {
 
         this.modeObj.checkMode(this.fieldName)
         
+        let rawValue
         if (this.fieldName === '') {
             const key = new types.Int(this.specIndex)
-            return this.args.__getitem__(key)
+            rawValue = this.args.__getitem__(key)
         } else if (!isNaN(Number(this.fieldName))) {
             // using sequential arguments
             const key = new types.Int(this.fieldName)
-            return this.args.__getitem__(key)
+            rawValue = this.args.__getitem__(key)
         } else {
             // using keyword argument
             const key = new types.Str(this.fieldName)
-            return this.kwargs.__getitem__(key)
+            rawValue = this.kwargs.__getitem__(key)
         }
+        
+        /*
+          All real numbers should be kept as their python types.
+          Everything else should be converted to a string
+       */
+        if (types.isinstance(rawValue, [types.Int, types.Float])) {
+            return rawValue
+        } else if (types.isinstance(rawValue, [types.NoneType])) {
+            return 'None'
+        } else {
+            return rawValue.toString()
+        }
+        
     }
     
     Specifier.prototype._convertStr = function() {
@@ -1021,6 +1035,9 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError.$pyclass('Alternate form (#) not allowed in string format specifier')
         }
         
+        if (this.align === '=') {
+          throw new exceptions.ValueError.$pyclass("'=' alignment not allowed in string format specifier")
+        }
         // the field must be atleast as big as this.width
         // if this.precision is set and smaller than this.arg, trim this.arg to fit
 
@@ -1041,7 +1058,7 @@ function _new_subsitute(str, args, kwargs) {
         this.argAbs = Math.abs(this.arg)
         
         // determine type to use
-        const type
+        let type
         if (this.type) {
             type = this.type
         } else {
@@ -1051,9 +1068,7 @@ function _new_subsitute(str, args, kwargs) {
                 type = 'g*'
             }
         }
-        
-        const type = this.type || 'd'
-        
+                
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
         if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
@@ -1077,6 +1092,7 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError("Unknown format code 's' for object of type 'int'")
         }
         
+        let precision
         if (this.precision) {
             precision = parseInt(this.precision.replace('.', ''))
         } else {
@@ -1096,6 +1112,7 @@ function _new_subsitute(str, args, kwargs) {
         let expSign = ''
         let exp = ''
         
+        let num
         switch (type) {
             // TODO: need to handle precision here
             case 'b':
@@ -1220,20 +1237,6 @@ function _new_subsitute(str, args, kwargs) {
         this.content = `${signToUse}${alternate}${base}${percent}${expSign}${exp}`
     };
     
-    Specifier.prototype.convert = function() {
-        // convert the spec to its proper value!
-        
-        if (type_name(this.arg) === 'str') {
-            return this._convertStr()
-        } else {
-            return this._convertNumber()
-        }
-        // TODO
-            // get the value
-            // convert it to the requested type
-            // hand off to helper function
-    }
-    
     Specifier.prototype._handleLayout = function() {
         /* takes this.content and places it inside the field with proper
           alignment and padding
@@ -1272,7 +1275,7 @@ function _new_subsitute(str, args, kwargs) {
                     break
                 case '=':
                     // insert extra padding BETWEEN the sign and number
-                    const contentSplit = this.content.split(/[+- ]/)
+                    const contentSplit = this.content.split(/[-+ ]/)
                     const sign = contentSplit[0]
                     const contentBase = contentSplit[1]
                     this.field = `${sign}${fillChar.repeat(spaceRemaining)}${contentBase}` 
@@ -1340,7 +1343,6 @@ function _new_subsitute(str, args, kwargs) {
         }
         // exp = expSplit[1] // the exponent bit
         
-        
         let expSign
         if (conversionType === conversionType.toLowerCase()) {
             expSign = 'e'
@@ -1353,6 +1355,19 @@ function _new_subsitute(str, args, kwargs) {
             expSign: expSign,
             exp: exp
         }
+    }
+    
+    Specifier.prototype.convert = function() {
+        // convert the spec to its proper value!
+        
+        if (type_name(this.arg) === 'str') {
+            this._convertStr()
+        } else {
+            this._convertNumber()
+        }
+        
+        this._handleLayout()
+        return this.field
     }
     
     const specRe = /{(.*?)}/g
