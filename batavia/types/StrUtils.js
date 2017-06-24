@@ -865,51 +865,6 @@ function _new_subsitute(str, args, kwargs) {
         //     format options -> ${this.formatOptionsRaw}
         // `);
     }; // end initialParse
-
-    // Specifier.prototype.initialParse = function() {
-    // 
-    //     // read characters left to right.
-    //       // if we encounter a !, it marks the start of the conversion flag.
-    //       // if we a : it marks the start of other formatting options
-    // 
-    //     // group1: the field name
-    //     // group2: the conversion flag
-    //     // group3: all other options
-    //     
-    //     let currentParseGroup = 1
-    //     let stepMapping = {'!': 2, ':': 3}
-    //     this.text.split('').forEach(function(char, i, arr) {
-    //         // going through the string, assign each character to the right bucket
-    //         // fieldName, conversionFlag or formatOptions
-    //         let newGroup = stepMapping[char] // does char denote a new group?
-    //         if (newGroup) {
-    //             currentParseGroup = newGroup
-    //         }
-    //         switch (currentParseGroup) {
-    //             case 1:
-    //                 this.fieldName += char
-    //                 break
-    //             case 2:
-    //                 // error if trying to add a second character
-    //                 if (this.conversionFlag.length === 2) {
-    //                     throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
-    //                 } else {
-    //                     // don't want the delimiter
-    //                     this.conversionFlag += char
-    //                 }
-    //                 break
-    //             case 3:
-    //                 // error if group 2 === '!'
-    //                 if (this.conversionFlag === '!') {
-    //                     throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
-    //                 } else if (char !== ':') {
-    //                     this.formatOptionsRaw += char
-    //                 }
-    //                 break
-    // 
-    //         } // end switch
-    //     }, this) // end initial parse
-    // }
     
     Specifier.prototype.parseAlign = function() {
         /* parsing the formatting options will work quite similarly to old style
@@ -1208,7 +1163,7 @@ function _new_subsitute(str, args, kwargs) {
                 base = String.fromCharCode(parseInt(this.arg, 16))
                 break
             case 'd':
-                base = this.argAbs
+                base = parseInt(this.argAbs)
                 break
             case 'o':
                 base = this.argAbs.toString(8)
@@ -1320,6 +1275,11 @@ function _new_subsitute(str, args, kwargs) {
             base = this._handleGrouping(base, grouping)
         }
         
+        // console.log(`
+        //   ready to render content
+        //   
+        //   base: ${base}
+        // `);
         this.content = `${signToUse}${alternate}${base}${percent}${expSign}${exp}`
     };
     
@@ -1383,7 +1343,7 @@ function _new_subsitute(str, args, kwargs) {
         
         const nSplit = n.valueOf().toString().split('.')
         const beforeDec = nSplit[0] || 0
-        const afterDec = nSplit[1] || 0
+        const afterDec = nSplit[1] || ''
         let contentArr = beforeDec.split('')
         const numDigits = beforeDec.length
         for (var i = contentArr.length; i > 0; i = i - 3) {
@@ -1391,7 +1351,13 @@ function _new_subsitute(str, args, kwargs) {
                 contentArr.splice(i, 0, groupingChar)
             }
         }
-        return `${contentArr.join('')}.${afterDec}`
+        let decimalToUse
+        if (afterDec) {
+            decimalToUse = '.'
+        } else {
+            decimalToUse = ''
+        }
+        return `${contentArr.join('')}${decimalToUse}${afterDec}`
     }
     
     Specifier.prototype._toExp = function(n, precision, conversionType) {
