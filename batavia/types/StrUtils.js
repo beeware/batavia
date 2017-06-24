@@ -1065,7 +1065,7 @@ function _new_subsitute(str, args, kwargs) {
             // sign
             // alternate form
         if (this.grouping === ',') {
-            throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'")
+            throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'.")
         }
         
         if (this.sign) {
