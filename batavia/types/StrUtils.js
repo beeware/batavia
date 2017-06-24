@@ -796,47 +796,120 @@ function _new_subsitute(str, args, kwargs) {
     */
 
     Specifier.prototype.initialParse = function() {
-        // read characters left to right.
-          // if we encounter a !, it marks the start of the conversion flag.
-          // if we a : it marks the start of other formatting options
-
-        // group1: the field name
-        // group2: the conversion flag
-        // group3: all other options
+        /*
+            determines character belonging to conversionFlag and formatting options
+        */
+        
         let currentParseGroup = 1
-        let stepMapping = {'!': 2, ':': 3}
-        this.text.split('').forEach(function(char, i) {
-            // going through the string, assign each character to the right bucket
-            // fieldName, conversionFlag or formatOptions
-            let newGroup = stepMapping[char] // does char denote a new group?
-            if (newGroup) {
-                currentParseGroup = newGroup
-            }
+        this.text.split('').forEach(function(char, i, arr) {
             switch (currentParseGroup) {
                 case 1:
-                    this.fieldName += char
+                    switch (char) {
+                        case '!':
+                            this.conversionFlag += char
+                            currentParseGroup = 2
+                            break
+                        case ':':
+                            currentParseGroup = 3
+                            break
+                        default:
+                            this.fieldName += char
+                            break
+                        
+                    } // end switch
                     break
                 case 2:
-                    // error if trying to add a second character
-                    if (this.conversionFlag.length === 1) {
-                        throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
-                    } else if (char !== '!' ){
-                        // don't want the delimiter
-                        this.conversionFlag += char
-                    }
+                    // parse as conversionFlag
+                    
+                    switch (char) {
+                        case ':':
+                            // ensure that we don't have a lone '!'
+                            if (this.conversionFlag === '!') {
+                                throw new exceptions.ValueError.$pyclass('Unknown conversion specifier :')
+                            }
+                            currentParseGroup = 3
+                            break
+                        default:
+                            if (this.conversionFlag.length === 2) {
+                                // conversion flags are one character
+                                throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
+                            }
+                            if (/[\!sar]/.test(char)) {
+                                // valid the conversion flag
+                                this.conversionFlag += char
+                            } else {
+                                throw new exceptions.ValueError.$pyclass(`Unknown conversion specifier ${char}`)
+                            }
+                            break
+                        
+                    } // end inner switch
                     break
+                    
                 case 3:
-                    // error if group two === '!'
-                    if (this.conversionFlag === '!') {
-                        throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
-                    } else if (char !== ':') {
+                    // we're ready for format options. unless we have a lone '!' for
+                    // conversionFlag
+                    if (char !== ':') {
+                        // we don't want the colon though
                         this.formatOptionsRaw += char
                     }
                     break
+                default:
+                    break
+                
+            } // outer switch
+        }, this) // for loop
+        
+        // console.log(`
+        //     field name -> ${this.fieldName}
+        //     conversion flag -> ${this.conversionFlag}
+        //     format options -> ${this.formatOptionsRaw}
+        // `);
+    }; // end initialParse
 
-            } // end switch
-        }, this) // end initial parse
-    }
+    // Specifier.prototype.initialParse = function() {
+    // 
+    //     // read characters left to right.
+    //       // if we encounter a !, it marks the start of the conversion flag.
+    //       // if we a : it marks the start of other formatting options
+    // 
+    //     // group1: the field name
+    //     // group2: the conversion flag
+    //     // group3: all other options
+    //     
+    //     let currentParseGroup = 1
+    //     let stepMapping = {'!': 2, ':': 3}
+    //     this.text.split('').forEach(function(char, i, arr) {
+    //         // going through the string, assign each character to the right bucket
+    //         // fieldName, conversionFlag or formatOptions
+    //         let newGroup = stepMapping[char] // does char denote a new group?
+    //         if (newGroup) {
+    //             currentParseGroup = newGroup
+    //         }
+    //         switch (currentParseGroup) {
+    //             case 1:
+    //                 this.fieldName += char
+    //                 break
+    //             case 2:
+    //                 // error if trying to add a second character
+    //                 if (this.conversionFlag.length === 2) {
+    //                     throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
+    //                 } else {
+    //                     // don't want the delimiter
+    //                     this.conversionFlag += char
+    //                 }
+    //                 break
+    //             case 3:
+    //                 // error if group 2 === '!'
+    //                 if (this.conversionFlag === '!') {
+    //                     throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
+    //                 } else if (char !== ':') {
+    //                     this.formatOptionsRaw += char
+    //                 }
+    //                 break
+    // 
+    //         } // end switch
+    //     }, this) // end initial parse
+    // }
     
     Specifier.prototype.parseAlign = function() {
         /* parsing the formatting options will work quite similarly to old style
@@ -926,7 +999,7 @@ function _new_subsitute(str, args, kwargs) {
                         this.fill = char
                         return 4
                     } else {
-                        throw new exceptions.ValueError('Invalid format specifier')
+                        throw new exceptions.ValueError.$pyclass('Invalid format specifier')
                     }
                 case 4:
                     // width
@@ -982,7 +1055,7 @@ function _new_subsitute(str, args, kwargs) {
 
     Specifier.prototype.setArg = function() {
         // sets the arg to be used in this specifier
-
+        
         this.modeObj.checkMode(this.fieldName)
         
         let rawValue
@@ -1002,10 +1075,7 @@ function _new_subsitute(str, args, kwargs) {
         /*
           All real numbers should be kept as their python types.
           Everything else should be converted to a string
-       */
-       
-
-       
+       */       
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
         } else if (types.isinstance(rawValue, [types.NoneType])) {
@@ -1013,13 +1083,15 @@ function _new_subsitute(str, args, kwargs) {
         } else if (types.isinstance(rawValue, [types.NotImplementedType])) {
             return 'NotImplemented'
         } else {
-            const conversionMapping = {
-                s: builtins.str,
-                r: builtins.repr,
-                a: builtins.ascii
-            }
-            const conversionToUse = conversionMapping[this.conversionType]
-            return conversionToUse([rawValue], {})
+            switch (this.conversionFlag) {
+                case '!r':
+                    return builtins.repr([rawValue], {})
+                case '!a':
+                    return builtins.ascii([rawValue], {})
+                default:
+                    return builtins.str([rawValue], {})
+
+            } // end switch
         }
         
     }
@@ -1027,6 +1099,7 @@ function _new_subsitute(str, args, kwargs) {
     Specifier.prototype._convertStr = function() {
         // handles conversion for strings
         // end result is stored as this.content
+        
         const type = this.type || 's'
         if (!type.match(/[s ]/)) {
             throw new exceptions.ValueError.$pyclass(`Unknown format code '${this.type}' for object of type 'str'`)
@@ -1085,24 +1158,24 @@ function _new_subsitute(str, args, kwargs) {
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
         if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
-            throw new types.ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+            throw new types.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
         }
         
         if (this.type === 'c' && this.sign) {
-            throw new exceptions.ValueError("Sign not allowed with integer format specifier 'c'")
+            throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
         }
         
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
             // used a , with a bad conversion type: 
-            throw new exceptions.ValueError(`Cannot specify ',' with '${type}'.`)
+            throw new exceptions.ValueError.$pyclass(`Cannot specify ',' with '${type}'.`)
         }
         
         if (this.precision && type.match(/[bcdoxXn]/)) {
-            throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+            throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
         }
         
         if (type === 's') {
-            throw new exceptions.ValueError("Unknown format code 's' for object of type 'int'")
+            throw new exceptions.ValueError.$pyclass("Unknown format code 's' for object of type 'int'")
         }
         
         let precision
@@ -1165,7 +1238,7 @@ function _new_subsitute(str, args, kwargs) {
                 // else use e and p-1
                 
                 if (type === 'n' && this.precision) {
-                    throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+                    throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
                 }
                 
                 num = new BigNumber(this.argAbs).toExponential()
@@ -1196,7 +1269,7 @@ function _new_subsitute(str, args, kwargs) {
                 // else use e and p-1
                 
                 if (type === 'n' && this.precision) {
-                    throw new exceptions.ValueError('Precision not allowed in integer format specifier')
+                    throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
                 }
                 
                 num = new BigNumber(this.argAbs).toExponential()
@@ -1218,7 +1291,7 @@ function _new_subsitute(str, args, kwargs) {
                 percent = '%'
                 break
             default:
-                throw new exceptions.ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+                throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
             
         } // switch
         
