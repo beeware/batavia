@@ -1011,6 +1011,8 @@ function _new_subsitute(str, args, kwargs) {
     Specifier.prototype.setArg = function() {
         // sets the arg to be used in this specifier
         
+        console.log("inside setArg");
+        
         this.modeObj.checkMode(this.fieldName)
         
         let rawValue
@@ -1028,9 +1030,10 @@ function _new_subsitute(str, args, kwargs) {
         }
         
         /*
-          All real numbers should be kept as their python types.
+          All real numbers shou ld be kept as their python types.
           Everything else should be converted to a string
-       */       
+       */
+       
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
         } else if (types.isinstance(rawValue, [types.NoneType])) {

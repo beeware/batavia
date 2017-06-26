@@ -1062,7 +1062,7 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_single(self):
         test_str = adjust("""
         print(">>> 'one arg: {}'.format('great!')")
-        'one arg: {}'.format('great!')
+        print('one arg: {}'.format('great!'))
         """)
 
         self.assertCodeExecution(test_str)  
@@ -1071,7 +1071,7 @@ class NewStyleFormatTests(TranspileTestCase):
         # should raise an index error
         test_str = adjust("""
         print(">>> 'one arg: {} {} great!'.format('really')")
-        'one arg: {} {} great!'.format('really')
+        print('one arg: {} {} great!'.format('really'))
         """)
 
         self.assertCodeExecution(test_str)
@@ -1079,9 +1079,9 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_by_index(self):
         test_str = adjust("""
         print(">>> 'Some numbers: {0} {1} {2}'.format('one', 'two', 'three')")
-        'Some numbers: {0} {1} {2}'.format('one', 'two', 'three')
+        print('Some numbers: {0} {1} {2}'.format('one', 'two', 'three'))
         print(">>> 'Some numbers: {0} {0} {0}'.format('one', 'two', 'three')")
-        'Some numbers: {0} {0} {0}'.format('one', 'two', 'three')
+        print('Some numbers: {0} {0} {0}'.format('one', 'two', 'three'))
         """)
 
         self.assertCodeExecution(test_str)
@@ -1089,7 +1089,7 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_index_out_of_range(self):
         test_str = adjust("""
         print(">>> 'Some numbers: {0} {1} {5}'.format('one', 'two', 'three')")
-        'Some numbers: {0} {1} {5}'.format('one', 'two', 'three')
+        print('Some numbers: {0} {1} {5}'.format('one', 'two', 'three'))
         """)
 
         self.assertCodeExecution(test_str)
@@ -1097,7 +1097,7 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_kwargs(self):
         test_str = adjust("""
         print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs')")
-        '{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs')
+        print('{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs'))
         """)
 
         self.assertCodeExecution(test_str)
@@ -1105,7 +1105,7 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_kwargs_key_error(self):
         test_str = adjust("""
         print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(other='eggs')")
-        '{food}! Lovely {food}! Lovely {food}!'.format(other='eggs')
+        print('{food}! Lovely {food}! Lovely {food}!'.format(other='eggs'))
         """)
 
         self.assertCodeExecution(test_str)
