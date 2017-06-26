@@ -154,7 +154,8 @@ types.js2py = function(arg) {
             } else if (
                 arg.__class__ !== undefined &&
                 arg.__class__ !== null &&
-                arg.__class__.__name__) {
+                arg.__class__.__name__
+            ) {
                 // already a Python object
                 return arg
             } else {
