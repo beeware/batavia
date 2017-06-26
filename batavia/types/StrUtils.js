@@ -1011,8 +1011,6 @@ function _new_subsitute(str, args, kwargs) {
     Specifier.prototype.setArg = function() {
         // sets the arg to be used in this specifier
         
-        console.log("inside setArg");
-        
         this.modeObj.checkMode(this.fieldName)
         
         let rawValue
@@ -1154,11 +1152,10 @@ function _new_subsitute(str, args, kwargs) {
         let base = ''
         let percent = ''
         let expSign = ''
-        let exp = ''
+        let expToUse = ''
         
         let num
         switch (type) {
-            // TODO: need to handle precision here
             case 'b':
                 base = this.argAbs.toString(2)
                 break
@@ -1182,7 +1179,7 @@ function _new_subsitute(str, args, kwargs) {
                 expObj = this._toExp(this.argAbs, precision, type)
                 base = expObj.base
                 expSign = expObj.expSign
-                exp = expObj.exp
+                expToUse = expObj.exp
                 break
             case 'f':
             case 'F':
@@ -1200,16 +1197,16 @@ function _new_subsitute(str, args, kwargs) {
                 }
                 
                 num = new BigNumber(this.argAbs).toExponential()
-                exp = Number(num.split('e')[1])
+                exp = Number(num.split('e')[1]) // split the exponential into base and power
                 if (exp >= -4 && exp < precision) {
                     // use f
-                    base = new BigNumber(this.argAbs).toFixed(precision - 1 - exp)  
+                    base = new BigNumber(this.argAbs).toFixed(precision - 1 - exp)
                 } else {
                     // use e
                     const expObj = this._toExp(this.argAbs, precision - 1, type)
                     base = expObj.base
                     expSign = expObj.expSign
-                    exp = expObj.exp
+                    expToUse = expObj.exp
                 }
                 
                 break
@@ -1232,16 +1229,20 @@ function _new_subsitute(str, args, kwargs) {
                 
                 num = new BigNumber(this.argAbs).toExponential()
                 exp = Number(num.split('e')[1])
-                if (exp >= -4 && exp < precision) {
+                if (-4 <= exp < precision) {
                     // use f
-                    base = this.argAbs // new BigNumber(this.argAbs).toFixed(precision - 1 - exp)  
+                    console.log("using f");
+                    base = this.argAbs
                 } else {
                     // use e
+                    console.log("using e");
                     const expObj = this._toExp(this.argAbs, precision - 1, type)
                     base = expObj.base
                     expSign = expObj.expSign
-                    exp = expObj.exp
+                    expToUse = expObj.exp
                 }
+                
+                base = new BigNumber(base).toPrecision(precision)
                 
                 break
             case '%':
@@ -1283,7 +1284,12 @@ function _new_subsitute(str, args, kwargs) {
         //   
         //   base: ${base}
         // `);
-        this.content = `${signToUse}${alternate}${base}${percent}${expSign}${exp}`
+        console.log(`
+            base: ${base}
+            exp: ${expToUse}
+        `);
+        this.content = `${signToUse}${alternate}${base}${percent}${expSign}${expToUse}`
+        console.log(`this.content: ${this.content}`);
     };
     
     Specifier.prototype._handleLayout = function() {
@@ -1404,7 +1410,7 @@ function _new_subsitute(str, args, kwargs) {
         } else {
             expSign = 'E'
         }
-
+        
         return {
             base: base,
             expSign: expSign,

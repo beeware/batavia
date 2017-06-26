@@ -1110,6 +1110,7 @@ class NewStyleFormatTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
         
+    @unittest.expectedFailure
     def test_kwargs_by_splat(self):
         test_str = adjust("""
         coord = {'latitude': '37.24N', 'longitude': '-115.81W'}
