@@ -3,6 +3,7 @@ var type_name = require('../core').type_name
 
 function hash(args, kwargs) {
     var types = require('../types')
+
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }
