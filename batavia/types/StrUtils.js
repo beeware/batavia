@@ -859,11 +859,6 @@ function _new_subsitute(str, args, kwargs) {
             } // outer switch
         }, this) // for loop
         
-        // console.log(`
-        //     field name -> ${this.fieldName}
-        //     conversion flag -> ${this.conversionFlag}
-        //     format options -> ${this.formatOptionsRaw}
-        // `);
     }; // end initialParse
     
     Specifier.prototype.parseAlign = function() {
@@ -1010,25 +1005,129 @@ function _new_subsitute(str, args, kwargs) {
 
     Specifier.prototype.setArg = function() {
         // sets the arg to be used in this specifier
+    
         
-        this.modeObj.checkMode(this.fieldName)
-        
-        let rawValue
-        if (this.fieldName === '') {
-            const key = new types.Int(this.specIndex)
-            rawValue = this.args.__getitem__(key)
-        } else if (!isNaN(Number(this.fieldName))) {
-            // using sequential arguments
-            const key = new types.Int(this.fieldName)
-            rawValue = this.args.__getitem__(key)
-        } else {
-            // using keyword argument
-            const key = new types.Str(this.fieldName)
-            rawValue = this.kwargs.__getitem__(key)
+        const parseStack = function(contents) {
+            /*
+                takes contents(str) from the stack and determines its meaning. could be:
+                    fieldName
+                    getitem instruction
+                    getattr instruction
+            
+                returns object of shape:
+                    {type: getitem | getattr, name: <name of item to get>}
+            */
+            
+            // matcher for getitem
+            // note: for keyword args, the kwarg does not use quotes
+            const getItemMatch = contents.match(/\[(.+?)\]/)
+            if (getItemMatch) {
+                return {type: 'getitem', name: getItemMatch[1]}
+            }
+            
+            // matcher for getattr
+            const getAttrMatch = contents.match(/\.(.*)/)
+            if (getAttrMatch) {
+                return {type: 'getattr', name: getAttrMatch[1]}
+            }
+            
+            // otherwise its a name, just return
+            return {type: 'name', name: contents}
+            
         }
         
+        const parseFieldName = function(fieldName) {
+            /*
+                returns object of shape:
+                {
+                    name (str): the name of the field either by number or keyword
+                    getters array of objects of shape:
+                        [{type: getitem | getattr, name: <name of item to get>}]
+                }
+            */
+            let result = {name: '', getters: []}
+            
+            let stack = [] // stack to parse characters in order
+            fieldName.split('').forEach(function(item, idx, arr){
+                switch (item) {
+                    case '[':
+                    case '.':
+                        // start of a new instruction
+                        
+                        // we just finished an instruction. parse and push
+                        const instruction = parseStack(stack.join(''))
+                        if (instruction.type === 'name') {
+                            // this is the name of the field
+                            result.name = instruction.name
+                        } else {
+                            // this a getitem or getattr instruction
+                            result.getters.push(instruction)
+                        }
+                        
+                        // clear stack and push item
+                        stack = []
+                        stack.push(item)
+                        break
+                        
+                    default:
+                        // push to the stack
+                        stack.push(item)
+                        break
+                        
+                }
+            })
+            
+            // parse what's left over
+            const instruction = parseStack(stack.join(''))
+            result.getters.push(instruction)
+            return result
+        } // end parseFieldName
+        
+        
+        const fieldParsed = parseFieldName(this.fieldName)
+        this.modeObj.checkMode(fieldParsed.name)
+        
+        let pulledArg
+        if (fieldParsed.name === '') {
+            const key = new types.Int(this.specIndex)
+            pulledArg = this.args.__getitem__(key)
+        } else if (!isNaN(Number(fieldParsed.name))) {
+            // using sequential arguments
+            const key = new types.Int(fieldParsed.name)
+            pulledArg = this.args.__getitem__(key)
+        } else {
+            // using keyword argument
+            const key = new types.Str(fieldParsed.name)
+            pulledArg = this.kwargs.__getitem__(key)
+        }
+        
+        // next, perform any getitem or getattr instructions on pulledArg
+        let rawValue = pulledArg
+        fieldParsed.getters.forEach(function(getter, idx){
+            switch (getter.type) {
+                case 'getitem':
+                    
+                    // if getter.name can be an int, it should be. otherwise keep as string
+                    let key
+                    if (!isNaN(getter.name)) {
+                        key = new types.Int(getter.name)
+                    } else {
+                        key = new types.Str(getter.name)
+                    }
+                    
+                    rawValue = rawValue.__getitem__(key)
+
+                    break
+                case 'getattr':
+                    rawValue = rawValue.__getattr__(getter.name)
+                    break
+                default:
+                    break
+            }
+        })
+        
         /*
-          All real numbers shou ld be kept as their python types.
+          All real numbers should be kept as their python types.
           Everything else should be converted to a string
        */
        
@@ -1077,7 +1176,7 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError.$pyclass('Alternate form (#) not allowed in string format specifier')
         }
         
-        if (this.align === '=') {
+        if ( (this.align === '=') || (this.fill === '0')){
             throw new exceptions.ValueError.$pyclass("'=' alignment not allowed in string format specifier")
         }
         // the field must be atleast as big as this.width
@@ -1095,7 +1194,6 @@ function _new_subsitute(str, args, kwargs) {
       
         // cvers conversion for all number types.
         // end result is stored as this.content
-
         // error handling
         this.argAbs = Math.abs(this.arg)
         
@@ -1154,7 +1252,7 @@ function _new_subsitute(str, args, kwargs) {
         let expSign = ''
         let expToUse = ''
         
-        let num
+        let num, exp
         switch (type) {
             case 'b':
                 base = this.argAbs.toString(2)
@@ -1231,11 +1329,9 @@ function _new_subsitute(str, args, kwargs) {
                 exp = Number(num.split('e')[1])
                 if (-4 <= exp < precision) {
                     // use f
-                    console.log("using f");
                     base = this.argAbs
                 } else {
                     // use e
-                    console.log("using e");
                     const expObj = this._toExp(this.argAbs, precision - 1, type)
                     base = expObj.base
                     expSign = expObj.expSign
@@ -1279,17 +1375,7 @@ function _new_subsitute(str, args, kwargs) {
             base = this._handleGrouping(base, grouping)
         }
         
-        // console.log(`
-        //   ready to render content
-        //   
-        //   base: ${base}
-        // `);
-        console.log(`
-            base: ${base}
-            exp: ${expToUse}
-        `);
         this.content = `${signToUse}${alternate}${base}${percent}${expSign}${expToUse}`
-        console.log(`this.content: ${this.content}`);
     };
     
     Specifier.prototype._handleLayout = function() {
@@ -1298,11 +1384,19 @@ function _new_subsitute(str, args, kwargs) {
         */
 
         // size of the containing field. will need to be filled in if larger than content
-        const fieldWidth = this.width || this.content
+        
+        const fieldWidth = this.width || this.content.length
         const spaceRemaining = fieldWidth - this.content.length
         // determine how extra space should be divided.
+        let align
+        if (this.align) {
+            align = this.align
+        } else if (this.fill === '0') {
+            align = '='
+        } else {
+            align = '<'
+        }
         
-        const align = this.align || '<'
         if (spaceRemaining > 0) {
             const fillChar = this.fill || ' '
             switch (align) {
@@ -1326,14 +1420,30 @@ function _new_subsitute(str, args, kwargs) {
                     this.field = `${fillChar.repeat(spaceRemaining)}${this.content}`
                     break
                 case '<':
+
                     this.field = `${this.content}${fillChar.repeat(spaceRemaining)}`
                     break
                 case '=':
-                    // insert extra padding BETWEEN the sign and number
-                    const contentSplit = this.content.split(/[-+ ]/)
-                    const sign = contentSplit[0]
-                    const contentBase = contentSplit[1]
-                    this.field = `${sign}${fillChar.repeat(spaceRemaining)}${contentBase}` 
+                    /* 
+                    Forces the padding to be placed after the sign (if any) but
+                    before the digits. This is used for printing fields in the
+                    form ‘+000000120’. This alignment option is only valid for
+                    numeric types. It becomes the default when ‘0’ immediately
+                    precedes the field width.
+                    
+                    Insert extra padding BETWEEN the sign and number;
+                    */
+                    
+                    // if the first character is the sign, extract it
+                    
+                    let sign
+                    if (/[-+ ]/.test(this.content)) {
+                        sign = this.content[0]
+                    } else {
+                        sign = ''
+                    }
+                    
+                    this.field = `${sign}${fillChar.repeat(spaceRemaining)}${this.content}`
             }
         } else {
             this.field = this.content
@@ -1419,7 +1529,7 @@ function _new_subsitute(str, args, kwargs) {
     }
     
     Specifier.prototype.convert = function() {
-        // convert the spec to its proper value!
+        // convert the spec to its proper value.
         
         if (type_name(this.arg) === 'str') {
             this._convertStr()
@@ -1441,7 +1551,6 @@ function _new_subsitute(str, args, kwargs) {
         specIndex++
         result += str.slice(lastStop, match.index)
         var spec = new Specifier(match[1], specIndex, modeObj, args, kwargs)
-
         result += spec.convert()
         lastStop = match.index + match[1].length + 2
         match = specRe.exec(str)
