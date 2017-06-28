@@ -1079,7 +1079,15 @@ function _new_subsitute(str, args, kwargs) {
             
             // parse what's left over
             const instruction = parseStack(stack.join(''))
-            result.getters.push(instruction)
+            
+            if (instruction.type === 'name') {
+                // this is the name of the field
+                result.name = instruction.name
+            } else {
+                // this a getitem or getattr instruction
+                result.getters.push(instruction)
+            }
+            
             return result
         } // end parseFieldName
         
@@ -1088,6 +1096,7 @@ function _new_subsitute(str, args, kwargs) {
         this.modeObj.checkMode(fieldParsed.name)
         
         let pulledArg
+        
         if (fieldParsed.name === '') {
             const key = new types.Int(this.specIndex)
             pulledArg = this.args.__getitem__(key)

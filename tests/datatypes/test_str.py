@@ -1301,25 +1301,6 @@ class NewStyleFormatTests(TranspileTestCase):
         )
         
         self.assertCodeExecution(test_str)
-    
-    @unittest.expectedFailure
-    def test_all_types(self):
-        """
-        test with types other than str, int and float
-        """
-        items = [t[0] for t in SAMPLE_DATA.values()]
-        test_str = ''.join(
-            [
-                adjust(
-                    """
-                    print('>>> "one arg: {{}}".format({arg})')
-                    print("one arg: {{}}".format({arg}))
-                    """.format(arg=arg)
-                ) for arg in items
-            ]
-        )
-        
-        self.assertCodeExecution(test_str)
         
     def test_no_args(self):
         
@@ -1327,6 +1308,50 @@ class NewStyleFormatTests(TranspileTestCase):
         print(">>> 'one arg: {}'.format()")
         print('one arg: {}'.format())
         """)
+    
+# test generator to test with each type
+def test_generator(arg, expected_pass):
+    """
+    returns a test for the given type
+    arg: the argument to run the test with
+    expected_pass(bool): if the test is expected to pass
+    """
+    def test(self):
+        test_str = adjust("""
+            print('''>>> 'one arg: {{}}'.format({arg})''')
+            print('''one arg: {{}}'''.format({arg}))
+            """.format(arg=arg))
+        
+        self.assertCodeExecution(test_str)
+    
+    @unittest.expectedFailure
+    def expected_failing_test(self):
+        test_str = adjust("""
+            print('''>>> 'one arg: {{}}'.format({arg})''')
+            print('''one arg: {{}}'''.format({arg}))
+            """.format(arg=arg))
+        
+        self.assertCodeExecution(test_str)
+    
+    if expected_pass:
+        return test
+    else:
+        return expected_failing_test
+        
+types_not_working = [
+    'slice',
+    'bytearray',
+    'frozenset',
+    'range',
+    'set'
+]
+
+for _type, values in SAMPLE_DATA.items():
+    test_name = 'test_with_{}'.format(_type)
+    expected_pass = not _type in types_not_working
+    test = test_generator(values[0], expected_pass)
+    setattr(NewStyleFormatTests, test_name, test)
+        
         
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
