@@ -1020,8 +1020,11 @@ function _new_subsitute(str, args, kwargs) {
             
             // matcher for getitem
             // note: for keyword args, the kwarg does not use quotes
-            const getItemMatch = contents.match(/\[(.+?)\]/)
+            const getItemMatch = contents.match(/\[(.*?)\]/)
             if (getItemMatch) {
+                if (getItemMatch[1] === '') {
+                    throw new exceptions.ValueError.$pyclass('Empty attribute in format string')
+                }
                 return {type: 'getitem', name: getItemMatch[1]}
             }
             
@@ -1029,6 +1032,12 @@ function _new_subsitute(str, args, kwargs) {
             const getAttrMatch = contents.match(/\.(.*)/)
             if (getAttrMatch) {
                 return {type: 'getattr', name: getAttrMatch[1]}
+            }
+            
+            // check for unmatched '['
+            const openBracketRe = /\[/
+            if (openBracketRe.test(contents)) {
+                throw new exceptions.ValueError.$pyclass("expected '}' before end of string")
             }
             
             // otherwise its a name, just return
