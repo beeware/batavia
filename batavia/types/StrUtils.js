@@ -1029,7 +1029,7 @@ function _new_subsitute(str, args, kwargs) {
             }
             
             // matcher for getattr
-            const getAttrMatch = contents.match(/\.(.*)/)
+            const getAttrMatch = contents.match(/\.(.+)/)
             if (getAttrMatch) {
                 return {type: 'getattr', name: getAttrMatch[1]}
             }
@@ -1040,6 +1040,10 @@ function _new_subsitute(str, args, kwargs) {
                 throw new exceptions.ValueError.$pyclass("expected '}' before end of string")
             }
             
+            // check for a '.' with nothing after
+            if (contents === '.') {
+                throw new exceptions.ValueError.$pyclass('Empty attribute in format string')
+            }
             // otherwise its a name, just return
             return {type: 'name', name: contents}
             

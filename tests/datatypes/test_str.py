@@ -1145,7 +1145,7 @@ class NewStyleFormatTests(TranspileTestCase):
         """)
         self.assertCodeExecution(test_str)
     
-    def test_name_with_getattr(self):
+    def test_name_with__getattr__(self):
         """
         name calls attribute on passed argument
         """
@@ -1155,8 +1155,18 @@ class NewStyleFormatTests(TranspileTestCase):
         class Actor():
             name = 'John Cleese'
             
-        print(">>> '{a.name}'.format(a=Actor())'")
+        print(">>> '{a.name}'.format(a=Actor())")
         print('{a.name}'.format(a=Actor())')
+        """)
+        
+    def test__getattr__bad_formatting(self):
+        """
+        tests using a dot operator with nothing after it
+        """
+        test_str = adjust("""
+            
+        print(">>> '{food.}'.format(food='spam')")
+        print('{food.}'.format(food='spam'))
         """)
     # conversion flags
     def test_conversion_flags(self):
