@@ -6,7 +6,6 @@ BigNumber.config({
     ROUNDING_MODE: BigNumber.ROUND_HALF_EVEN
 })
 
-
 var batavia = {}
 
 // Set up debugging.

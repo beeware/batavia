@@ -1,9 +1,10 @@
 var None = require('../core').None
 var exceptions = require('../core').exceptions
 var types = require('../types')
+var debug = require('../debug')
 
 function __import__(args, kwargs) {
-    debug("IMPORT", args[0], args[1], args[4]);
+    debug('IMPORT', args[0], args[1], args[4])
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }
@@ -98,7 +99,7 @@ function __import__(args, kwargs) {
                         leaf_module = root_module
                         modules.sys.modules[name] = root_module
                     } else {
-                        debug('LOAD ' + name);
+                        debug('LOAD ' + name)
                         code = modules.marshal.load_pyc(this, payload.bytecode)
 
                         root_module = new types.Module(name, payload.filename, name)
