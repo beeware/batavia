@@ -1,6 +1,7 @@
 /**********************************************************************
  * Debugging helper
  **********************************************************************/
+let debug;
 
 if (process.env.BATAVIA_DEBUG && process.env.BATAVIA_DEBUG !== '0') {
     // We are in debug mode! Log all the things!
@@ -10,4 +11,4 @@ if (process.env.BATAVIA_DEBUG && process.env.BATAVIA_DEBUG !== '0') {
     debug = function() {};
 }
 
-module.exports = debug
+module.exports = debug;
