@@ -55,7 +55,7 @@ Property.prototype.__str__ = function() {
  **************************************************/
 
 Property.prototype.__get__ = function(instance, klass) {
-    // console.log("Property __get__ on " + instance);
+    // debug("Property __get__ on " + instance);
     if (this.fget !== None) {
         try {
             return callables.call_function(this.fget, [instance], null)
@@ -68,7 +68,7 @@ Property.prototype.__get__ = function(instance, klass) {
 }
 
 Property.prototype.__set__ = function(instance, value) {
-    // console.log("Property __set__ on " + instance);
+    // debug("Property __set__ on " + instance);
     if (this.fset !== None) {
         try {
             callables.call_function(this.fset, [instance, value], null)
@@ -81,7 +81,7 @@ Property.prototype.__set__ = function(instance, value) {
 }
 
 Property.prototype.__delete__ = function(instance) {
-    // console.log("Property __delete__ on " + instance);
+    // debug("Property __delete__ on " + instance);
     if (this.fdel !== None) {
         try {
             callables.call_function(this.fdel, [instance], null)

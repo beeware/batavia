@@ -11,10 +11,10 @@ function part_from_str(s) {
     var types = require('../types')
 
     if (s && s.valueOf() === '-0') {
-        // console.log("there");
+        // debug("there");
         return new types.Float(-0)
     } else if (s) {
-        // console.log("part_from_str: " + s);
+        // debug("part_from_str: " + s);
         return new types.Float(s)
     } else {
         return new types.Float(0)
@@ -46,9 +46,9 @@ function Complex(re, im) {
 
     PyObject.call(this)
 
-    // console.log(100000, re, im);
+    // debug(100000, re, im);
     if (types.isinstance(re, types.Str)) {
-        // console.log(1000, re, im);
+        // debug(1000, re, im);
         var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i
         var match = regex.exec(re)
         if (match === null || re === '') {
@@ -72,11 +72,11 @@ function Complex(re, im) {
         this.imag = im
     } else if (types.isinstance(re, [types.Float, types.Int, types.Bool]) &&
         types.isinstance(im, [types.Float, types.Int, types.Bool])) {
-        // console.log(2000, re, im);
+        // debug(2000, re, im);
         this.real = re.__float__().valueOf()
         this.imag = im.__float__().valueOf()
     } else if (types.isinstance(re, types.Complex) && !im) {
-        // console.log(3000, re, im);
+        // debug(3000, re, im);
         this.real = re.real
         this.imag = re.imag
     } else {

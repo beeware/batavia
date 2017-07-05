@@ -665,7 +665,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
         this.unpack_code(code)
     }
 
-    // console.log("make_frame: code=" + code + ", callargs=" + callargs);
+    debug("make_frame: code=" + code + ", callargs=" + callargs);
 
     if (f_globals !== null) {
         if (f_locals === null) {
