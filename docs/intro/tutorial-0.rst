@@ -29,9 +29,8 @@ how to set this up are `on our Environment setup guide
  * For Windows::
 
    > virtualenv --python=c:\python34\python.exe venv
-   > cd venv\Scripts
-   > activate
-   > cd ..\..\batavia
+   > venv\Scripts\activate
+   > cd batavia
    > pip install -e .
 
 4. In addition, you need to install `Node.js <https://nodejs.org>`_. You need
