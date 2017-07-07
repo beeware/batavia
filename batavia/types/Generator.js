@@ -30,7 +30,8 @@ Generator.prototype.send = function(value) {
         value = null
     }
     if (!this.started) {
-        if (value !== null) {
+        var types = require('../types')
+        if (!(value === null || types.isinstance(value, types.NoneType))) {
             // It's illegal to send a non-None value on first call.
             throw new exceptions.TypeError.$pyclass(
                 "can't send non-None value to a just-started generator"

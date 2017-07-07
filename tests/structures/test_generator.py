@@ -43,3 +43,15 @@ class GeneratorTests(TranspileTestCase):
 
             g().send(1)
         """)
+
+    def test_simple_send(self):
+        self.assertCodeExecution("""
+            def g():
+                while True:
+                    x = (yield)
+                    print('>>', x)
+
+            w = g()
+            w.send(None)
+            w.send(1)
+        """)
