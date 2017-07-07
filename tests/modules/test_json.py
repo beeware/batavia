@@ -48,12 +48,12 @@ class JSONEncoderTests(ModuleFunctionTestCase, TranspileTestCase):
         """)
 
     not_implemented = [
-        'test_json_JSONEncoder().encode_dict',   # fails due to dict ordering
-        'test_json_JSONEncoder().encode_class',  # fails due to class __str__
+        'test_json_JSONEncoder__encode_dict',   # fails due to dict ordering
+        'test_json_JSONEncoder__encode_class',  # fails due to class __str__
     ]
 
 
-JSONEncoderTests.add_one_arg_tests('json', ['JSONEncoder().encode'])
+JSONEncoderTests.add_one_arg_tests('json', ['JSONEncoder__encode'])
 
 
 class DumpsTests(ModuleFunctionTestCase, TranspileTestCase):
