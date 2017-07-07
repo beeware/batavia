@@ -55,3 +55,21 @@ class GeneratorTests(TranspileTestCase):
             w.send(None)
             w.send(1)
         """)
+
+    def test_send_arg_count(self):
+        self.assertCodeExecution("""
+            def g():
+                while True:
+                    x = (yield)
+                    print('>>', x)
+
+            w = g()
+            try:
+                w.send()
+            except Exception as e:
+                print(type(e), e)
+            try:
+                w.send(1, 2)
+            except Exception as e:
+                print(type(e), e)
+        """)

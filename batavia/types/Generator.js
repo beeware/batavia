@@ -26,9 +26,12 @@ Generator.prototype.__next__ = function() {
 }
 
 Generator.prototype.send = function(value) {
-    if (typeof value === 'undefined') {
-        value = null
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'send() takes exactly one argument (' + arguments.length + ' given)'
+        )
     }
+
     if (!this.started) {
         var types = require('../types')
         if (!(value === null || types.isinstance(value, types.NoneType))) {
