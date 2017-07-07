@@ -1,7 +1,5 @@
 from ..utils import TranspileTestCase
 
-import unittest
-
 
 class GeneratorTests(TranspileTestCase):
     def test_simple_generator(self):
@@ -35,3 +33,13 @@ class GeneratorTests(TranspileTestCase):
 
             print(list(fizz_buzz(1, 20)))
             """)
+
+    def test_not_primed(self):
+        self.assertCodeExecution("""
+            def g():
+                while True:
+                    x = (yield)
+                    print('>>', x)
+
+            g().send(1)
+        """)

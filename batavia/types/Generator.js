@@ -32,8 +32,9 @@ Generator.prototype.send = function(value) {
     if (!this.started) {
         if (value !== null) {
             // It's illegal to send a non-None value on first call.
-            // TODO: raise a proper TypeError
-            throw new exceptions.TypeError.$pyclass('lolnope')
+            throw new exceptions.TypeError.$pyclass(
+                "can't send non-None value to a just-started generator"
+            )
         }
         this.started = true
     }
