@@ -1,8 +1,9 @@
 from itertools import product
-from ..utils import TranspileTestCase, ModuleFunctionTestCase, adjust
+from ..utils import TranspileTestCase, ModuleFunctionTestCase, MethodTestCase, \
+    adjust
 
 
-class JSONEncoderTests(ModuleFunctionTestCase, TranspileTestCase):
+class JSONEncoderTests(MethodTestCase, TranspileTestCase):
 
     def test_encode_type(self):
         self.assertCodeExecution("""
@@ -48,12 +49,12 @@ class JSONEncoderTests(ModuleFunctionTestCase, TranspileTestCase):
         """)
 
     not_implemented = [
-        'test_json_JSONEncoder().encode_dict',   # fails due to dict ordering
-        'test_json_JSONEncoder().encode_class',  # fails due to class __str__
+        'test_json_JSONEncoder_encode_dict',   # fails due to dict ordering
+        'test_json_JSONEncoder_encode_class',  # fails due to class __str__
     ]
 
 
-JSONEncoderTests.add_one_arg_tests('json', ['JSONEncoder().encode'])
+JSONEncoderTests.add_one_arg_method_tests('json', 'JSONEncoder', ['encode'])
 
 
 class DumpsTests(ModuleFunctionTestCase, TranspileTestCase):
