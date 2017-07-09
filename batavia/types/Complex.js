@@ -292,7 +292,7 @@ function __mul__(x, y, inplace) {
         }
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
-    } else if (types.isinstance(y, [types.List, types.Str, types.Tuple])) {
+    } else if (types.isinstance(y, [types.List, types.Str, types.Tuple, types.Bytearray, types.Bytes])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'")
     } else {
         var prefix

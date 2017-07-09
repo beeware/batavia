@@ -34,16 +34,7 @@ NotImplementedType.prototype.__repr__ = function() {
 }
 
 NotImplementedType.prototype.__str__ = function() {
-    var result = '{'
-    var values = []
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            values.push(exceptions.repr(key))
-        }
-    }
-    result += values.join(', ')
-    result += '}'
-    return result
+    return 'NotImplemented'
 }
 
 /**************************************************

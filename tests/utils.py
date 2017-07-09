@@ -5,7 +5,6 @@ import base64
 import contextlib
 from io import StringIO
 import importlib
-import inspect
 import os
 import py_compile
 import re
@@ -209,7 +208,7 @@ def transforms(**transform_args):
 
 
 class JSCleaner:
-    def __init__(self, err_msg = True, memory_ref = True, js_bool = True, decimal = True, float_exp = True, complex_num = True,
+    def __init__(self, err_msg = True, memory_ref = True, js_bool = False, decimal = True, float_exp = True, complex_num = True,
         high_precision_float = True, test_ref = True, custom = True):
 
         self.transforms = {
@@ -688,16 +687,49 @@ class TranspileTestCase(TestCase):
 
 
 class NotImplementedToExpectedFailure:
+
+    def _is_flakey(self):
+        return self._testMethodName in getattr(self, "is_flakey", [])
+
+    def _is_not_implemented(self):
+        '''
+        A test is expected to fail if:
+          (a) Its name can be found in the test case's 'not_implemented' list
+          (b) Its name can be found in the test case's 'is_flakey' list
+          (c) Its name can be found in the test case's
+              'not_implemented_versions' dictionary _and_ the current
+              python version is in the dict entry's list
+        :return: True if test is expected to fail
+        '''
+        method_name = self._testMethodName
+        if method_name in getattr(self, 'not_implemented', []):
+            return True
+
+        if self._is_flakey():
+            # -- Flakey tests sometimes fail, sometimes pass
+            return True
+
+        not_implemented_versions = getattr(self, 'not_implemented_versions', {})
+        if method_name in not_implemented_versions:
+            py_version = float("%s.%s" % (sys.version_info.major, sys.version_info.minor))
+            if py_version in not_implemented_versions[method_name]:
+                return True
+
+        return False
+
+
     def run(self, result=None):
         # Override the run method to inject the "expectingFailure" marker
         # when the test case runs.
-        if self._testMethodName in getattr(self, 'not_implemented', []):
+        if self._is_not_implemented():
             # Mark 'expecting failure' on class. It will only be applicable
             # for this specific run.
             method = getattr(self, self._testMethodName)
 
             def wrapper(*args, **kwargs):
-                method(*args, **kwargs)
+                if self._is_flakey():
+                    raise Exception("Flakey test that sometimes fails and sometimes passes")
+                return test_method(*args, **kwargs)
 
             wrapper.__unittest_expecting_failure__ = True
             setattr(self, self._testMethodName, wrapper)
@@ -1170,7 +1202,7 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
             'test_lshift_%s' % datatype, 'x <<= y', examples, small_ints=True
         )
         vars()['test_rshift_%s' % datatype] = _inplace_test(
-            'test_rshift_%s' % datatype, 'x >>= y', examples
+            'test_rshift_%s' % datatype, 'x >>= y', examples, small_ints=True
         )
         vars()['test_and_%s' % datatype] = _inplace_test(
             'test_and_%s' % datatype, 'x &= y', examples
@@ -1321,7 +1353,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
         actuals = [x for x in examples if abs(int(x)) < 8192]
 
     def func(self):
-        self.assertOneArgModuleFuction(
+        self.assertOneArgModuleFunction(
             name=name,
             module=module,
             func=f,
@@ -1333,7 +1365,7 @@ def _module_one_arg_func_test(name, module, f, examples, small_ints=False):
 
 def _module_two_arg_func_test(name, module, f,  examples, examples2):
     def func(self):
-        self.assertTwoArgModuleFuction(
+        self.assertTwoArgModuleFunction(
             name=name,
             module=module,
             func=f,
@@ -1351,7 +1383,9 @@ numerics = {'bool', 'float', 'int'}
 class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
     numerics_only = False
 
-    def assertOneArgModuleFuction(self, name, module, func, x_values, substitutions):
+    def assertOneArgModuleFunction(
+        self, name, module, func, x_values, substitutions, **kwargs
+    ):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1378,9 +1412,12 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             "Error running %s module %s" % (module, name),
             substitutions=substitutions,
             run_in_function=False,
+            **kwargs
         )
 
-    def assertTwoArgModuleFuction(self, name, module, func, x_values, y_values, substitutions):
+    def assertTwoArgModuleFunction(
+        self, name, module, func, x_values, y_values, substitutions, **kwargs
+    ):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1410,6 +1447,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
             "Error running %s module %s" % (module, name),
             substitutions=substitutions,
             run_in_function=False,
+            **kwargs
         )
 
     @classmethod
@@ -1420,7 +1458,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                     continue
                 name = 'test_%s_%s_%s' % (module, func, datatype)
                 small_ints = module == 'math' and func == 'factorial'
-                setattr(klass, name, _module_one_arg_func_test(name, 'math', func, examples, small_ints=small_ints))
+                setattr(klass, name, _module_one_arg_func_test(name, module, func, examples, small_ints=small_ints))
 
     @classmethod
     def add_two_arg_tests(klass, module, functions, numerics_only=False):
@@ -1432,4 +1470,4 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                     if numerics_only and datatype2 not in numerics:
                         continue
                     name = 'test_%s_%s_%s_%s' % (module, func, datatype, datatype2)
-                    setattr(klass, name, _module_two_arg_func_test(name, 'math', func, examples, examples2))
+                    setattr(klass, name, _module_two_arg_func_test(name, module, func, examples, examples2))

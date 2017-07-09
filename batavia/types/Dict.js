@@ -94,6 +94,12 @@ Dict.prototype._increase_size = function() {
     this.mask = new_mask
 }
 
+function deleteAt(dict, index) {
+    dict.data_keys[index] = DELETED
+    dict.data_values[index] = null
+    dict.size--
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
@@ -105,6 +111,10 @@ Dict.prototype.toString = function() {
 /**************************************************
  * Type conversions
  **************************************************/
+
+Dict.prototype.__len__ = function() {
+    return this.size
+}
 
 Dict.prototype.__bool__ = function() {
     return this.size > 0
@@ -502,9 +512,7 @@ Dict.prototype.__delitem__ = function(key) {
             throw new exceptions.KeyError.$pyclass(key)
         }
     }
-    this.data_keys[i] = DELETED
-    this.data_values[i] = null
-    this.size--
+    deleteAt(this, i)
 }
 
 /**************************************************
@@ -610,6 +618,104 @@ Dict.prototype.clear = function() {
     this.mask = 0
     this.data_keys = []
     this.data_values = []
+}
+
+Dict.prototype.pop = function(key, def) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'pop expected at least 1 arguments, got 0'
+        )
+    } else if (arguments.length > 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'pop expected at most 2 arguments, got ' + arguments.length
+        )
+    }
+
+    var i = this._find_index(key)
+    if (i === null) {
+        if (def === undefined) {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
+        return def
+    }
+
+    var val = this.data_values[i]
+    deleteAt(this, i)
+    return val
+}
+
+Dict.prototype.popitem = function() {
+    if (arguments.length > 0) {
+        throw new exceptions.TypeError.$pyclass(
+            'popitem() takes no arguments (' + arguments.length + ' given)'
+        )
+    }
+    if (this.size < 1) {
+        throw new exceptions.KeyError.$pyclass(
+            'popitem(): dictionary is empty'
+        )
+    }
+
+    for (var i = 0; i < this.data_keys.length; i++) {
+        // ignore deleted or empty
+        var key = this.data_keys[i]
+        if (!isEmpty(key) && !isDeleted(key)) {
+            var types = require('../types')
+            var val = this.data_values[i]
+            deleteAt(this, i)
+            return new types.Tuple([key, val])
+        }
+    }
+
+    // just in case
+    throw new exceptions.KeyError.$pyclass(
+        'popitem(): dictionary is empty'
+    )
+}
+
+Dict.prototype.setdefault = function(key, def) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'setdefault expected at least 1 arguments, got 0'
+        )
+    } else if (arguments.length > 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'setdefault expected at most 2 arguments, got ' + arguments.length
+        )
+    }
+
+    if (def === undefined) {
+        def = None
+    }
+    var i = this._find_index(key)
+    if (i === null) {
+        this.__setitem__(key, def)
+        return def
+    } else {
+        return this.data_values[i]
+    }
+}
+
+Dict.prototype.fromkeys = function(iterable, value) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'fromkeys expected at least 1 arguments, got 0'
+        )
+    } else if (arguments.length > 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'fromkeys expected at most 2 arguments, got ' + arguments.length
+        )
+    }
+    if (value === undefined) {
+        value = None
+    }
+
+    var builtins = require('../builtins')
+    var d = new Dict()
+    callables.iter_for_each(builtins.iter([iterable], null), function(key) {
+        d.__setitem__(key, value)
+    })
+    return d
 }
 
 /**************************************************

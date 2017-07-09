@@ -9,7 +9,7 @@ function callable(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("callable() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new exceptions.TypeError.$pyclass('callable() expected exactly 1 argument (' + args.length + ' given)')
+        throw new exceptions.TypeError.$pyclass('callable() takes exactly one argument (' + args.length + ' given)')
     }
     if ((args[0] instanceof Function) || (args[0] instanceof types.Function)) {
         return new types.Bool(true)

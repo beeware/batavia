@@ -172,6 +172,7 @@ class TupleTests(TranspileTestCase):
             print(x[-1:0:-1])
             """)
 
+
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
@@ -179,107 +180,6 @@ class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
-    not_implemented = [
-        'test_subscr_bool',
-    ]
-
 
 class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
-
-    not_implemented = [
-
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
-
-        'test_floor_divide_complex',
-
-        'test_lshift_bool',
-        'test_lshift_bytearray',
-        'test_lshift_bytes',
-        'test_lshift_class',
-        'test_lshift_complex',
-        'test_lshift_dict',
-        'test_lshift_float',
-        'test_lshift_frozenset',
-        'test_lshift_int',
-        'test_lshift_list',
-        'test_lshift_None',
-        'test_lshift_NotImplemented',
-        'test_lshift_range',
-        'test_lshift_set',
-        'test_lshift_slice',
-        'test_lshift_str',
-        'test_lshift_tuple',
-
-        'test_modulo_complex',
-
-        'test_or_bool',
-        'test_or_bytearray',
-        'test_or_bytes',
-        'test_or_class',
-        'test_or_complex',
-        'test_or_dict',
-        'test_or_float',
-        'test_or_frozenset',
-        'test_or_int',
-        'test_or_list',
-        'test_or_None',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
-        'test_or_str',
-        'test_or_tuple',
-
-        'test_rshift_bool',
-        'test_rshift_bytearray',
-        'test_rshift_bytes',
-        'test_rshift_class',
-        'test_rshift_complex',
-        'test_rshift_dict',
-        'test_rshift_float',
-        'test_rshift_frozenset',
-        'test_rshift_int',
-        'test_rshift_list',
-        'test_rshift_None',
-        'test_rshift_NotImplemented',
-        'test_rshift_range',
-        'test_rshift_set',
-        'test_rshift_slice',
-        'test_rshift_str',
-        'test_rshift_tuple',
-
-        'test_xor_bool',
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
-        'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_None',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
-        'test_xor_str',
-        'test_xor_tuple',
-    ]

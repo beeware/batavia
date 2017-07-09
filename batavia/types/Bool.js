@@ -83,7 +83,7 @@ Bool.prototype.__ge__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool >= other.valueOf())
+        return new Bool(this_bool >= other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__ge__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -115,7 +115,7 @@ Bool.prototype.__gt__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool > other.valueOf())
+        return new Bool(this_bool > other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__gt__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -147,7 +147,7 @@ Bool.prototype.__le__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool <= other.valueOf())
+        return new Bool(this_bool <= other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__le__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -179,7 +179,7 @@ Bool.prototype.__lt__ = function(other) {
         } else {
             this_bool = 0.0
         }
-        return new types.Float(this_bool < other.valueOf())
+        return new Bool(this_bool < other.valueOf())
     } else if (types.isinstance(other, types.Int)) {
         return this.__int__().__lt__(other)
     } else if (types.isinstance(other, Bool)) {
@@ -500,6 +500,10 @@ Bool.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'bool' object is not subscriptable")
 }
 
+Bool.prototype.__setattr__ = function(other) {
+    throw new exceptions.AttributeError.$pyclass("'bool' object has no attribute '" + other + "'")
+}
+
 Bool.prototype.__lshift__ = function(other) {
     var types = require('../types')
     var this_bool
@@ -515,6 +519,12 @@ Bool.prototype.__lshift__ = function(other) {
             return new types.Int(0)
         }
     } else if (types.isinstance(other, types.Int)) {
+        if (other.valueOf() < 0) {
+            throw new exceptions.ValueError.$pyclass('negative shift count')
+        }
+        if (Number.MAX_SAFE_INTEGER < other.valueOf()) {
+            throw new exceptions.OverflowError.$pyclass('Python int too large to convert to C ssize_t')
+        }
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -536,6 +546,12 @@ Bool.prototype.__rshift__ = function(other) {
             return new types.Int(0)
         }
     } else if (types.isinstance(other, types.Int)) {
+        if (other.valueOf() < 0) {
+            throw new exceptions.ValueError.$pyclass('negative shift count')
+        }
+        if (Number.MAX_SAFE_INTEGER < Math.abs(other.valueOf())) {
+            throw new exceptions.OverflowError.$pyclass('Python int too large to convert to C ssize_t')
+        }
         if (this.valueOf()) {
             this_bool = 1
         } else {

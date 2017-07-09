@@ -38,25 +38,31 @@ Starting the test server
 4. Now open your browser and go to `http://localhost:8000 <http://localhost:8000>`_
 
 
-You should now see a page titled "Batavia testbed" with some buttons on the left and a text box on the right.
+You should now see a page titled "Batavia testbed" divided into three sections:
+
+- a top section with text box for entering your Python code and a
+  "Run your code!" button
+- a middle section with buttons for running sample Python scripts
+- a *Console output* section at the bottom of the page that displays
+  the results from running either your own code or any of the samples.
 
 It's alive!
 -----------
 
-On the right hand side of the screen is a text box. This is where you can enter your
+At the top of the page is a text box. This is where you can enter your
 Python code. Type the following into this text box:
 
 .. code-block:: python
 
     print("Hello World!")
 
-Then click on the "Run code" button. The page will reload, and below the area
+Then click on the "Run your code!" button. The page will reload, and below the area
 on the page named "Console output", you'll see the output you'd
 expect from this Python program::
 
     Hello World!
 
-Congratulations! You've just run your first Python program under Javascript
+Congratulations! You've just run your first Python program under JavaScript
 using Batavia! Now you can get a little more adventurous and try a loop. Replace
 your existing code in the text box with the following:
 
@@ -65,7 +71,7 @@ your existing code in the text box with the following:
     for i in range(0, 10):
         print("Hello World %d!" % i)
 
-Click "Run code" again, and you should see the following on the screen in the
+Click "Run your code!" again, and you should see the following on the screen in the
 console output section::
 
     Hello World 0!
@@ -83,9 +89,9 @@ console output section::
 What just happened?
 -------------------
 
-What happened when you pressed the "Run code" button?
+What happened when you pressed the "Run your code!" button?
 
-When you clicked "Run code", your browser submitted the content of the text
+When you clicked "Run your code!", your browser submitted the content of the text
 box as a HTTP ``POST`` request to the test server. The test server took that
 content, and compiled it as if it were Python code. It didn't *run* the code --
 it just compiled it to bytecode. It created the ``.pyc`` file that
@@ -107,15 +113,16 @@ should see a block in the document ``<head>`` that looks something like:
 
 That string is the base64 encoded version of the bytecode for the Python
 program you submitted. The browser then takes this base64 string, decodes it
-back into a bytestring, and runs it through Batavia -- a Javascript module
+back into a bytestring, and runs it through Batavia -- a JavaScript module
 that does the same thing in a browser that CPython does on the desktop:
 interprets Python bytecode as a running program.
 
 Push the button...
 ------------------
 
-You may also have noticed a set of buttons on the left hand side of the
-screen. These are some pre-canned example code, ready for testing. Try
+You may also have noticed a set of buttons between the text box at the top
+of the page and the Console output section.
+These are some pre-canned example code, ready for testing. Try
 clicking the "Run sample.py" button. Your browser should pop
 up a new window and load the `BeeWare website`_. If you close that window and
 go back to the Batavia testbed, you should see a lot of output in the console
@@ -124,7 +131,7 @@ section of the screen.
 .. _BeeWare website: http://pybee.org
 
 Inside the button
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 If you want to, you can `inspect the source code`_. One part of
 ``sample.py`` that is of particular interest is the part that opens the new
@@ -148,12 +155,12 @@ browser window:
     div.innerHTML = div.innerHTML + '\n\nHello, World!\n\n'
 
 What you should notice is that except for the ``dom`` prefix, this is the same
-API that you would use in Javascript to open a new browser window, set the
+API that you would use in JavaScript to open a new browser window, set the
 page title, and add some text to the end of an element. The entire browser DOM
-is exposed in this way, so anything you can do in Javascript, you can do in
+is exposed in this way, so anything you can do in JavaScript, you can do in
 Batavia.
 
-You can even use this code in the sample code window: copy and paste this code into the "run code" text box, click "Run code", and you get a popup window.
+You can even use this code in the sample code window: copy and paste this code into the "run code" text box, click "Run your code!", and you get a popup window.
 
 .. _inspect the source code: https://github.com/pybee/batavia/blob/master/testserver/sample.py
 

@@ -438,6 +438,8 @@ Int.prototype.__mod__ = function(other) {
         } else {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
     }
@@ -487,6 +489,10 @@ Int.prototype.__sub__ = function(other) {
 
 Int.prototype.__getitem__ = function(index) {
     throw new exceptions.TypeError.$pyclass("'int' object is not subscriptable")
+}
+
+Int.prototype.__setattr__ = function(other) {
+    throw new exceptions.AttributeError.$pyclass("'int' object has no attribute '" + other + "'")
 }
 
 /**************************************************

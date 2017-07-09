@@ -4,7 +4,6 @@ import unittest
 
 
 class IntTests(TranspileTestCase):
-    @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
             x = 37
@@ -63,8 +62,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
     not_implemented = [
-        'test_modulo_complex',
-
         'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_complex',
@@ -93,9 +90,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_power_complex',
         'test_power_float',
-
-        'test_rshift_int', # this works, but some of the cases are too large
-                           # until we replace bignumber.js
 
         'test_subtract_complex',
 

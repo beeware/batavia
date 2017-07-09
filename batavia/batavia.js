@@ -9,7 +9,7 @@ BigNumber.config({
 var batavia = {}
 
 // Set up debugging.
-batavia['debug'] = require('./debug')
+batavia['debug'] = require('./debug')(document.currentScript.getAttribute('debug'))
 
 // Set up the core interpreter.
 batavia['core'] = require('./core')

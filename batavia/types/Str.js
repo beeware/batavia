@@ -62,8 +62,8 @@ Str.prototype.__str__ = function() {
  * Attribute manipulation
  **************************************************/
 
-Str.prototype.__getattr__ = function(attr) {
-    return PyObject.prototype.__getattr__.call(this, attr)
+Str.prototype.__getattribute__ = function(attr) {
+    return PyObject.prototype.__class__.__getattribute__(this, attr)
 }
 
 Str.prototype.__setattr__ = function(attr, value) {
@@ -496,6 +496,11 @@ Str.prototype.__ior__ = function(other) {
  * Methods
  * https://docs.python.org/3.4/library/stdtypes.html#string-methods
  **************************************************/
+
+Str.prototype.__len__ = function() {
+    var types = require('../types')
+    return new types.Int(this.length)
+}
 
 Str.prototype.join = function(iter) {
     var types = require('../types')

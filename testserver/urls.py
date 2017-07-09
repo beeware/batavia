@@ -6,6 +6,8 @@ import tempfile
 from django.conf.urls import url
 from django.shortcuts import render
 
+from testserver import settings
+
 
 def bytecode(sourcefile):
     fd, tempname = tempfile.mkstemp()
@@ -31,6 +33,7 @@ def bytecode(sourcefile):
 
 def home(request):
     ctx = {
+        'debug': settings.DEBUG,
         'modules': {
             'sample': bytecode('sample.py'),
             'other': bytecode('other.py'),

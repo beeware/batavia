@@ -41,25 +41,18 @@ Then create a virtual environment and install Batavia into it:
     $ cd batavia
     $ pip install -e .
 
-*For those using anaconda*:
-
-.. code-block:: bash
-
-    $ cd batavia
-    $ conda create -n batavia-dev
-    $ source activate batavia-dev
-    $ pip install -e .
 
 Install Node.JS
 ^^^^^^^^^^^^^^^
 
 Lastly, you'll need to install `Node.js`_. You need to have a recent version
 of Node; we test using v6.9.1. Once you've installed node, you can use it to
-install Batavia's Javascript dependencies, and compile the Batavia library:
+install Batavia's JavaScript dependencies, and compile the Batavia library:
 
 .. code-block:: bash
 
     $ npm install
+    $ npm run build
 
 .. _Node.js: https://nodejs.org
 
@@ -93,7 +86,8 @@ Running the test suite
 
 You're now ready to run the test suite! This can be done the
 immediately-available-but-tiresome way, or the takes-little-effort-but-then-fun
-way, which is preferred.
+way, which is preferred (*assuming* your Python is configured for Tk; MacOS Python
+often is *not*).
 
 For the fun way, you need to install BeeWare's test-running tool,
 Cricket_. Follow the installation instructions to install it into your

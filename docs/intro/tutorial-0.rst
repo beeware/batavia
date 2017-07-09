@@ -33,13 +33,6 @@ how to set this up are `on our Environment setup guide
    > activate
    > pip install -e .
 
- * For Anaconda users::
-
-   $ cd batavia
-   $ conda create -n batavia
-   $ source activate batavia
-   $ pip install -e .
-
 4. In addition, you need to install `Node.js <https://nodejs.org>`_. You need
    to have a recent version of Node; we test using v6.9.1. It's possible you
    might already have Node installed, so to check what version you have, run::
@@ -59,7 +52,7 @@ how to set this up are `on our Environment setup guide
 
    $ npm install -g npm
 
-   Once you've got npm, you can use it to install Batavia's Javascript
+   Once you've got npm, you can use it to install Batavia's JavaScript
    dependencies::
 
    $ npm install

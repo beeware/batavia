@@ -1,3 +1,5 @@
+var Buffer = require('buffer').Buffer
+
 var constants = require('../core').constants
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
@@ -190,7 +192,7 @@ Bytes.prototype.__pow__ = function(other) {
 }
 
 Bytes.prototype.__div__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__div__ has not been implemented')
+    return this.__truediv__(other)
 }
 
 Bytes.prototype.__floordiv__ = function(other) {
@@ -198,11 +200,55 @@ Bytes.prototype.__floordiv__ = function(other) {
 }
 
 Bytes.prototype.__truediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__truediv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [
+        types.Bool,
+        Bytes,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.NoneType,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bytes' and '" + type_name(other) + "'")
+    } else {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__truediv__ has not been implemented')
+    }
 }
 
 Bytes.prototype.__mul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Bool, types.Int])) {
+        // Check if value of 'other' Int/Bool value is truthy
+        // and 'this' byte object is non-empty
+        if (other.valueOf() > 0 && this.valueOf().length > 0) {
+            let thisByteLength = this.valueOf().length
+            let thisValue = this.valueOf().toString()
+            let otherValue = other.valueOf()
+
+            // Add at least one copy of byte object string into buffer
+            let byteBuffer = Buffer.alloc(thisByteLength * otherValue)
+            byteBuffer.write(thisValue)
+
+            // repeat adding copies as necessary
+            if (otherValue > 1) {
+                for (let i = 1; i < otherValue; i++) {
+                    byteBuffer.write(thisValue, i * thisByteLength)
+                }
+            }
+
+            return new Bytes(byteBuffer)
+        } else {
+            return new Bytes('')
+        }
+    } else {
+        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__mod__ = function(other) {
@@ -210,18 +256,61 @@ Bytes.prototype.__mod__ = function(other) {
 }
 
 Bytes.prototype.__add__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [Bytes])) {
+        // create a new buffer object of combined length and then write the concatenated string value of both byte objects
+        let byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
+        byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
+        return new Bytes(byteBuffer)
+    } else if (types.isinstance(other, [
+        types.Bool,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.NoneType,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
+    } else {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+    }
 }
 
 Bytes.prototype.__sub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__sub__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [
+        types.Bool,
+        Bytes,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.NoneType,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bytes' and '" + type_name(other) + "'")
+    } else {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__sub__ has not been implemented')
+    }
 }
 
 Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
-    var builtins = require('../builtins')
 
-    return new types.Int(this.val[builtins.int(other).valueOf()])
+    if (types.isinstance(other, types.Slice)) {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__getitem__ with slice has not been implemented')
+    }
+    if (!types.isinstance(other, types.Int)) {
+        throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
+    }
+    return new types.Int(this.val[other.int32()])
 }
 
 Bytes.prototype.__lshift__ = function(other) {

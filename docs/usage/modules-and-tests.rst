@@ -1,12 +1,17 @@
 Adding a module and testing it
 ==============================
 
-To create a module
-------------------
+Modules in Batavia can be implemented either natively, in JavaScript or in supported subset of Python.
 
-Add the module path, in alphabetic order, to: 
-a) Makefile (on BASE_FILES and BASE_FILES_WIN);
-b) testserver/testbed.html.
+To create a native module
+-------------------------
+
+Add the module path to module.exports in batavia/modules.js.
+
+To create a module in Python
+----------------------------
+
+Add module to compile_stdlib.py
 
 To create a test
 ----------------

@@ -1,14 +1,12 @@
 /**********************************************************************
  * Debugging helper
  **********************************************************************/
-let debug
+module.exports = function(debug) {
+    if (debug) {
+        module.debug = console.log
+    } else {
+        module.debug = function() {}
+    }
 
-if (process.env.BATAVIA_DEBUG && process.env.BATAVIA_DEBUG !== '0') {
-    // We are in debug mode! Log all the things!
-    debug = console.log
-} else {
-    // We are not in debug mode. Please be quiet!
-    debug = function() {}
+    return module
 }
-
-module.exports = debug

@@ -36,6 +36,7 @@ types['Ellipsis'] = require('./types/Ellipsis')
 
 types['Filter'] = require('./types/Filter')
 types['Map'] = require('./types/Map')
+types['Zip'] = require('./types/Zip')
 
 types['Function'] = require('./types/Function')
 types['Method'] = require('./types/Method')
@@ -44,6 +45,10 @@ types['Generator'] = require('./types/Generator')
 
 types['Range'] = require('./types/Range')
 types['Slice'] = require('./types/Slice')
+
+types['CallableIterator'] = require('./types/CallableIterator')
+
+types['Enumerate'] = require('./types/Enumerate')
 
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
