@@ -2,8 +2,10 @@ var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var types = require('../types')
+var debug = require('../debug')
 
 function all(args, kwargs) {
+    debug('here')
     if (args[0] === null) {
         throw new exceptions.TypeError.$pyclass("'NoneType' object is not iterable")
     }

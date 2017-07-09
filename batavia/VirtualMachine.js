@@ -11,6 +11,7 @@ var native = require('./core').native
 var dis = require('./modules/dis')
 var marshal = require('./modules/marshal')
 var sys = require('./modules/sys')
+var debug = require('./debug')
 
 var VirtualMachine = function(args) {
     if (args.loader === undefined) {
@@ -665,7 +666,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
         this.unpack_code(code)
     }
 
-    debug("make_frame: code=" + code + ", callargs=" + callargs);
+    debug('make_frame: code=' + code + ', callargs=' + callargs)
 
     if (f_globals !== null) {
         if (f_locals === null) {

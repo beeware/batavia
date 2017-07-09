@@ -11,7 +11,6 @@ function part_from_str(s) {
     var types = require('../types')
 
     if (s && s.valueOf() === '-0') {
-        // debug("there");
         return new types.Float(-0)
     } else if (s) {
         // debug("part_from_str: " + s);
