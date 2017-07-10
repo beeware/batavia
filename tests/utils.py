@@ -577,6 +577,9 @@ class TranspileTestCase(TestCase):
             ''.format(type(main_code))
         )
 
+        # print("MAIN CODE:")
+        # print(main_code)
+
         if not python_exists:
             if isinstance(main_code, str):
                 py_filename = os.path.join(self.temp_dir, 'test.py')
@@ -670,6 +673,10 @@ class TranspileTestCase(TestCase):
                     ',\n'.join(payload)
                 )
             )
+
+        # print("JS CODE:")
+        # with open(os.path.join(self.temp_dir, 'test.js')) as js_file:
+        #     print(js_file.read())
 
         proc = subprocess.Popen(
             ['node', 'test.js'] + args,

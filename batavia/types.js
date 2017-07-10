@@ -151,7 +151,10 @@ types.js2py = function(arg) {
         case 'object':
             if (arg === null || arg === types.NoneType) {
                 return null
-            } else if (arg.__class__ !== null && arg.__class__.__name__) {
+            } else if (
+                arg.__class__ !== undefined &&
+                arg.__class__ !== null &&
+                arg.__class__.__name__) {
                 // already a Python object
                 return arg
             } else {
@@ -159,7 +162,7 @@ types.js2py = function(arg) {
                 var dict = new types.Dict()
                 for (var k in arg) {
                     if (arg.hasOwnProperty(k)) {
-                        dict[types.js2py(k)] = types.js2py(arg[k])
+                        dict.__setitem__(types.js2py(k), types.js2py(arg[k]))
                     }
                 }
                 return dict
