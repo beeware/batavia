@@ -205,13 +205,15 @@ IndexError.prototype.__class__.$pyclass = IndexError
 exceptions.IndexError = IndexError.prototype.__class__
 
 var KeyError = function(key) {
-    var msg
+    var msg = ''
     if (key === null) {
         msg = 'None'
-    } else if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
-        msg = key.__repr__()
-    } else {
-        msg = key.toString()
+    } else if (key !== undefined) {
+        if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
+            msg = key.__repr__()
+        } else {
+            msg = key.toString()
+        }
     }
     Exception.call(this, 'KeyError', msg)
 }

@@ -1,3 +1,4 @@
+from unittest import expectedFailure
 from ..utils import TranspileTestCase
 
 
@@ -70,6 +71,77 @@ class GeneratorTests(TranspileTestCase):
                 print(type(e), e)
             try:
                 w.send(1, 2)
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_throw_type(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+
+            g = G()
+            try:
+                g.throw(Exception)
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_throw_type_value(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+
+            g = G()
+            try:
+                g.throw(Exception, 'message')
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_throw_instance(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+
+            g = G()
+            try:
+                g.throw(Exception('message'))
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_next_after_throw(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+                yield 2
+
+            g = G()
+            try:
+                g.throw(Exception)
+            except:
+                pass
+            try:
+                print(next(g))
+            except StopIteration as e:
+                print(type(e), e)
+        """)
+
+    def test_catch_inside(self):
+        self.assertCodeExecution("""
+            def G():
+                try:
+                    yield 1
+                    yield 2
+                except KeyError:
+                    yield 3
+
+            g = G()
+            print(next(g))
+            print(g.throw(KeyError))
+            try:
+                next(g)
             except Exception as e:
                 print(type(e), e)
         """)

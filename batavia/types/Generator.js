@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
+var callables = require('../core').callables
 
 /*************************************************************************
  * A Python generator type.
@@ -51,15 +52,23 @@ Generator.prototype.send = function(value) {
 }
 
 Generator.prototype['throw'] = function(ExcType, value, traceback) {
-    if (value === null) {
-        value = new ExcType()
+    if (ExcType instanceof exceptions.BaseException.$pyclass) {
+        value = ExcType
+        ExcType = ExcType.__class__
+    } else {
+        value = callables.call_function(ExcType, [value], null)
     }
     this.vm.last_exception = {
         'exc_type': ExcType,
         'value': value,
         'traceback': traceback
     }
-    var yieldval = this.vm.run_frame(this.gi_frame)
+    try {
+        var yieldval = this.vm.run_frame(this.gi_frame)
+    } catch (e) {
+        this.finished = true
+        throw e
+    }
     if (this.finished) {
         throw new exceptions.StopIteration.$pyclass()
     }
