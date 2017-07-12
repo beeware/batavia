@@ -145,3 +145,18 @@ class GeneratorTests(TranspileTestCase):
             except Exception as e:
                 print(type(e), e)
         """)
+
+    def test_finished(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+                yield 2
+
+            g = G()
+            for x in g:
+                print(x)
+            try:
+                print(next(g))
+            except Exception as e:
+                print(type(e), e)
+        """)

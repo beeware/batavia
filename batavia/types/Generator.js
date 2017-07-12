@@ -43,6 +43,9 @@ Generator.prototype.send = function(value) {
         }
         this.started = true
     }
+    if (this.finished) {
+        throw new exceptions.StopIteration.$pyclass()
+    }
     this.gi_frame.stack.push(value)
     var yieldval = this.vm.run_frame(this.gi_frame)
     if (this.finished) {
