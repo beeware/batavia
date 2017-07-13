@@ -15,8 +15,8 @@ Batavia
     :target: https://pypi.python.org/pypi/batavia
 .. |license| image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/pybee/batavia/blob/master/LICENSE
-.. |build-status| image:: https://circleci.com/gh/pybee/batavia.svg?style=shield&circle-token=:circle-token
-    :target: https://circleci.com/gh/pybee/batavia
+.. |build-status| image:: https://beekeeper.herokuapp.com/projects/pybee/waggle/shield
+    :target: https://beekeeper.herokuapp.com/projects/pybee/waggle
 .. |gitter| image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
 
@@ -51,21 +51,21 @@ Check the `Setting up your environment
 Downloading and Installing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Clone the code repositories 
+1. Clone the code repositories
 ::
 
  $ mkdir pybee
  $ cd pybee
  $ git clone https://github.com/pybee/batavia
-  
+
 2. Setup a virtualenv:
 
 (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
 
 Linux/Unix/Mac
--------------- 
-Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command 
+--------------
+Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command
 below with the path to your Python 3.4 or 3.5 installation. ::
 
 $ python3 --version
@@ -84,8 +84,8 @@ Type in the following commands in your terminal ::
 > cd batavia
 > pip install -e .
 
-  
-3. Install `Node.js <https://nodejs.org>`_. 
+
+3. Install `Node.js <https://nodejs.org>`_.
 
 You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the JavaScript dependencies and compile the Batavia library::
 
