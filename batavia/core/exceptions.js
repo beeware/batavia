@@ -68,7 +68,7 @@ GeneratorExit.prototype = Object.create(BaseException.prototype)
 GeneratorExit.prototype.__class__ = new Type('GeneratorExit', [BaseException.prototype.__class__])
 GeneratorExit.prototype.__class__.$pyclass = GeneratorExit
 
-GeneratorExit = GeneratorExit.prototype.__class__
+exceptions.GeneratorExit = GeneratorExit.prototype.__class__
 
 var Exception = function(name, msg) {
     if (arguments.length === 1) {

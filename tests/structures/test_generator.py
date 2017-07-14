@@ -1,4 +1,3 @@
-from unittest import expectedFailure
 from ..utils import TranspileTestCase
 
 
@@ -158,5 +157,39 @@ class GeneratorTests(TranspileTestCase):
             try:
                 print(next(g))
             except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_stop_after_raise(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+                raise Exception('2')
+                yield 3
+
+            g = G()
+            print(next(g))
+            try:
+                next(g)
+            except Exception as e:
+                print(type(e), e)
+            try:
+                print(next(g))
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_close(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+                yield 2
+
+            g = G()
+            print(next(g))
+            g.close()
+            try:
+                print(next(g))
+            except BaseException as e:
                 print(type(e), e)
         """)

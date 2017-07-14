@@ -34,12 +34,14 @@ Generator.prototype.send = function(value) {
     }
 
     if (!this.started) {
-        var types = require('../types')
-        if (!(value === null || types.isinstance(value, types.NoneType))) {
-            // It's illegal to send a non-None value on first call.
-            throw new exceptions.TypeError.$pyclass(
-                "can't send non-None value to a just-started generator"
-            )
+        if (value !== null) {
+            var types = require('../types')
+            if (!types.isinstance(value, types.NoneType)) {
+                // It's illegal to send a non-None value on first call.
+                throw new exceptions.TypeError.$pyclass(
+                    "can't send non-None value to a just-started generator"
+                )
+            }
         }
         this.started = true
     }
@@ -47,7 +49,12 @@ Generator.prototype.send = function(value) {
         throw new exceptions.StopIteration.$pyclass()
     }
     this.gi_frame.stack.push(value)
-    var yieldval = this.vm.run_frame(this.gi_frame)
+    try {
+        var yieldval = this.vm.run_frame(this.gi_frame)
+    } catch (e) {
+        this.finished = true
+        throw e
+    }
     if (this.finished) {
         throw new exceptions.StopIteration.$pyclass()
     }
@@ -79,7 +86,16 @@ Generator.prototype['throw'] = function(ExcType, value, traceback) {
 }
 
 Generator.prototype['close'] = function() {
-    return this['throw'](new exceptions.StopIteration.$pyclass())
+    try {
+        return this['throw'](new exceptions.GeneratorExit.$pyclass())
+    } catch (e) {
+        if (e instanceof exceptions.GeneratorExit.$pyclass ||
+                e instanceof exceptions.StopIteration.$pyclass) {
+            this.vm.last_exception = null
+            return null
+        }
+        throw e
+    }
 }
 
 /**************************************************
