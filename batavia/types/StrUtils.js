@@ -2,8 +2,6 @@ var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var BigNumber = require('bignumber.js').BigNumber
 
-const builtins = require('../builtins') 
-
 function _substitute(format, args) {
     var types = require('../types')
 
@@ -729,7 +727,7 @@ function _new_subsitute(str, args, kwargs) {
     */
     
     var types = require('../types')
-
+    var builtins = require('../builtins')
     function Mode() {
       // the mode of formatting we are in. Can be:
         // automatic {}
