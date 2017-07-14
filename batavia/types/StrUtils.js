@@ -725,7 +725,7 @@ function _new_subsitute(str, args, kwargs) {
       kwargs(object): keyword arguments.
       both are allowed
     */
-    
+
     var types = require('../types')
     var builtins = require('../builtins')
     function Mode() {
@@ -759,13 +759,12 @@ function _new_subsitute(str, args, kwargs) {
 
     const modeObj = new Mode()
     function Specifier(text, specIndex, modeObj, args, kwargs) {
-        
         this.text = text
         this.specIndex = specIndex // the specifier's position in the original string
         this.modeObj = modeObj // object to remember which substitution mode we are in.
         this.args = args
         this.kwargs = kwargs
-        
+
         this.fieldName = ''
         this.conversionFlag = ''
         this.formatOptionsRaw = '' // everything after the :, but unparsed
@@ -797,7 +796,7 @@ function _new_subsitute(str, args, kwargs) {
         /*
             determines character belonging to conversionFlag and formatting options
         */
-        
+
         let currentParseGroup = 1
         this.text.split('').forEach(function(char, i, arr) {
             switch (currentParseGroup) {
@@ -813,12 +812,12 @@ function _new_subsitute(str, args, kwargs) {
                         default:
                             this.fieldName += char
                             break
-                        
+
                     } // end switch
                     break
                 case 2:
                     // parse as conversionFlag
-                    
+
                     switch (char) {
                         case ':':
                             // ensure that we don't have a lone '!'
@@ -832,17 +831,17 @@ function _new_subsitute(str, args, kwargs) {
                                 // conversion flags are one character
                                 throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
                             }
-                            if (/[\!sar]/.test(char)) {
+                            if (/[!sar]/.test(char)) {
                                 // valid the conversion flag
                                 this.conversionFlag += char
                             } else {
                                 throw new exceptions.ValueError.$pyclass(`Unknown conversion specifier ${char}`)
                             }
                             break
-                        
+
                     } // end inner switch
                     break
-                    
+
                 case 3:
                     // we're ready for format options. unless we have a lone '!' for
                     // conversionFlag
@@ -853,12 +852,11 @@ function _new_subsitute(str, args, kwargs) {
                     break
                 default:
                     break
-                
+
             } // outer switch
         }, this) // for loop
-        
-    }; // end initialParse
-    
+    } // end initialParse
+
     Specifier.prototype.parseAlign = function() {
         /* parsing the formatting options will work quite similarly to old style
           formatting but with one exception.
@@ -866,17 +864,16 @@ function _new_subsitute(str, args, kwargs) {
           character immedatly after. We will simlpy parse that bit on its own
           then parse the rest like with old style formatting
         */
-      
+
         // look for an alignment character
         const alignRe = /[<^>=]/
         const alignMatch = this.formatOptionsRaw.match(alignRe)
         if (alignMatch) {
-          
             switch (this.formatOptionsRaw.match(alignRe).index) {
                 case 0:
                     // found align character at index 0
                     this.align = this.formatOptionsRaw[0]
-                    
+
                     // remove that character from the set
                     this.formatOptionsRaw = this.formatOptionsRaw.slice(1)
                     break
@@ -884,7 +881,7 @@ function _new_subsitute(str, args, kwargs) {
                     // found align character at index 1. index 0 is the fill character
                     this.fill = this.formatOptionsRaw[0]
                     this.align = this.formatOptionsRaw[1]
-                    
+
                     // remove those character from the set
                     this.formatOptionsRaw = this.formatOptionsRaw.slice(2)
                     break
@@ -897,17 +894,17 @@ function _new_subsitute(str, args, kwargs) {
 
     // Specifier.prototype.formatParse = function() {
     //     const re = /(#?)(0?)(\d*)(\.?\d+)(.*)/
-    //     
+    //
     // }
- 
+
     Specifier.prototype.formatParse = function() {
         // Parses each character in formatOptionsRaw.
-        
+
         const getNextStep = function(nextChar, currStep) {
             // nextChar(str): the next character to be processed
             // currStep(int): the current step we are on.
             // return: nextStep(int): what step we should process nextChar
-            
+
             var steps = {
                 1: /[+\- ]/, // sign
                 2: /#/, // alternate form
@@ -925,13 +922,12 @@ function _new_subsitute(str, args, kwargs) {
                 }
             }
             return 7 // the 7th and final step is the default when nothing else works
-            
         } // end getNextStep
 
         const step = function(char, step) {
             // process the character under the correct step
             // return the smallest step that should be performed next
-          
+
             switch (currStep) {
                 case 1:
                     // sign
@@ -958,7 +954,7 @@ function _new_subsitute(str, args, kwargs) {
                     }
                     // don't increment step, there could be another width character.
                     return 4
-                    
+
                 case 5:
                     // grouping
                     this.grouping = char
@@ -985,7 +981,7 @@ function _new_subsitute(str, args, kwargs) {
                     // don't increment step, there could be another type character.
             } // switch
         }.bind(this) // step
-        
+
         let currStep = 1 // the current parse step we are on
         this.formatOptionsRaw.split('').forEach(function(char, i, arr) {
           /* parsing is done in 7 steps though some may be skipped depending on
@@ -993,31 +989,35 @@ function _new_subsitute(str, args, kwargs) {
             in the sequence and determine which next step applies. The function
             step will apply that step to the character and return an integer
             representing the smallest possible step to apply on the next step.
-          
+
           */
             currStep = getNextStep(char, currStep)
             currStep = step(char, currStep)
         }, this)
-
     }  // formatParse
 
     Specifier.prototype.setArg = function() {
         // sets the arg to be used in this specifier
-    
-        
+
         const parseStack = function(contents) {
             /*
                 takes contents(str) from the stack and determines its meaning. could be:
                     fieldName
                     getitem instruction
                     getattr instruction
-            
+
                 returns object of shape:
                     {type: getitem | getattr, name: <name of item to get>}
             */
-            
+
             // matcher for getitem
             // note: for keyword args, the kwarg does not use quotes
+
+            /*
+                Not escape the brackets below changes the meaning of the regex
+                and I don't know how to make this rule place nice
+            */
+            // eslint-disable-next-line no-useless-escape
             const getItemMatch = contents.match(/\[(.*?)\]/)
             if (getItemMatch) {
                 if (getItemMatch[1] === '') {
@@ -1025,28 +1025,27 @@ function _new_subsitute(str, args, kwargs) {
                 }
                 return {type: 'getitem', name: getItemMatch[1]}
             }
-            
+
             // matcher for getattr
             const getAttrMatch = contents.match(/\.(.+)/)
             if (getAttrMatch) {
                 return {type: 'getattr', name: getAttrMatch[1]}
             }
-            
+
             // check for unmatched '['
             const openBracketRe = /\[/
             if (openBracketRe.test(contents)) {
                 throw new exceptions.ValueError.$pyclass("expected '}' before end of string")
             }
-            
+
             // check for a '.' with nothing after
             if (contents === '.') {
                 throw new exceptions.ValueError.$pyclass('Empty attribute in format string')
             }
             // otherwise its a name, just return
             return {type: 'name', name: contents}
-            
         }
-        
+
         const parseFieldName = function(fieldName) {
             /*
                 returns object of shape:
@@ -1057,14 +1056,14 @@ function _new_subsitute(str, args, kwargs) {
                 }
             */
             let result = {name: '', getters: []}
-            
+
             let stack = [] // stack to parse characters in order
-            fieldName.split('').forEach(function(item, idx, arr){
+            fieldName.split('').forEach(function(item, idx, arr) {
                 switch (item) {
                     case '[':
                     case '.':
                         // start of a new instruction
-                        
+
                         // we just finished an instruction. parse and push
                         const instruction = parseStack(stack.join(''))
                         if (instruction.type === 'name') {
@@ -1074,23 +1073,23 @@ function _new_subsitute(str, args, kwargs) {
                             // this a getitem or getattr instruction
                             result.getters.push(instruction)
                         }
-                        
+
                         // clear stack and push item
                         stack = []
                         stack.push(item)
                         break
-                        
+
                     default:
                         // push to the stack
                         stack.push(item)
                         break
-                        
+
                 }
             })
-            
+
             // parse what's left over
             const instruction = parseStack(stack.join(''))
-            
+
             if (instruction.type === 'name') {
                 // this is the name of the field
                 result.name = instruction.name
@@ -1098,16 +1097,15 @@ function _new_subsitute(str, args, kwargs) {
                 // this a getitem or getattr instruction
                 result.getters.push(instruction)
             }
-            
+
             return result
         } // end parseFieldName
-        
-        
+
         const fieldParsed = parseFieldName(this.fieldName)
         this.modeObj.checkMode(fieldParsed.name)
-        
+
         let pulledArg
-        
+
         if (fieldParsed.name === '') {
             const key = new types.Int(this.specIndex)
             pulledArg = this.args.__getitem__(key)
@@ -1120,13 +1118,13 @@ function _new_subsitute(str, args, kwargs) {
             const key = new types.Str(fieldParsed.name)
             pulledArg = this.kwargs.__getitem__(key)
         }
-        
+
         // next, perform any getitem or getattr instructions on pulledArg
         let rawValue = pulledArg
-        fieldParsed.getters.forEach(function(getter, idx){
+        fieldParsed.getters.forEach(function(getter, idx) {
             switch (getter.type) {
                 case 'getitem':
-                    
+
                     // if getter.name can be an int, it should be. otherwise keep as string
                     let key
                     if (!isNaN(getter.name)) {
@@ -1134,7 +1132,7 @@ function _new_subsitute(str, args, kwargs) {
                     } else {
                         key = new types.Str(getter.name)
                     }
-                    
+
                     rawValue = rawValue.__getitem__(key)
 
                     break
@@ -1145,12 +1143,12 @@ function _new_subsitute(str, args, kwargs) {
                     break
             }
         })
-        
+
         /*
           All real numbers should be kept as their python types.
           Everything else should be converted to a string
        */
-       
+
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
         } else if (types.isinstance(rawValue, [types.NoneType])) {
@@ -1168,18 +1166,17 @@ function _new_subsitute(str, args, kwargs) {
 
             } // end switch
         }
-        
     }
-    
+
     Specifier.prototype._convertStr = function() {
         // handles conversion for strings
         // end result is stored as this.content
-        
+
         const type = this.type || 's'
         if (!type.match(/[s ]/)) {
             throw new exceptions.ValueError.$pyclass(`Unknown format code '${this.type}' for object of type 'str'`)
         }
-        
+
         // things that aren't allowed with strings:
             // grouping
             // sign
@@ -1187,7 +1184,7 @@ function _new_subsitute(str, args, kwargs) {
         if (this.grouping === ',') {
             throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'.")
         }
-        
+
         if (this.sign) {
             throw new exceptions.ValueError.$pyclass('Sign not allowed in string format specifier')
         }
@@ -1195,28 +1192,26 @@ function _new_subsitute(str, args, kwargs) {
         if (this.alternate) {
             throw new exceptions.ValueError.$pyclass('Alternate form (#) not allowed in string format specifier')
         }
-        
-        if ( (this.align === '=') || (this.fill === '0')){
+
+        if ((this.align === '=') || (this.fill === '0')) {
             throw new exceptions.ValueError.$pyclass("'=' alignment not allowed in string format specifier")
         }
         // the field must be atleast as big as this.width
         // if this.precision is set and smaller than this.arg, trim this.arg to fit
 
-        let content // the content as it should be represented in the subsitution
         if (this.precision && this.precision < this.arg.length) {
             this.content = this.arg.slice(0, this.precision)
         } else {
             this.content = this.arg
         }
     }
-    
+
     Specifier.prototype._convertNumber = function() {
-      
         // cvers conversion for all number types.
         // end result is stored as this.content
         // error handling
         this.argAbs = Math.abs(this.arg)
-        
+
         // determine type to use
         let type
         if (this.type) {
@@ -1228,37 +1223,37 @@ function _new_subsitute(str, args, kwargs) {
                 type = 'g*'
             }
         }
-                
+
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
         if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
             throw new types.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
         }
-        
+
         if (this.type === 'c' && this.sign) {
             throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
         }
-        
+
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
-            // used a , with a bad conversion type: 
+            // used a , with a bad conversion type:
             throw new exceptions.ValueError.$pyclass(`Cannot specify ',' with '${type}'.`)
         }
-        
+
         if (this.precision && type.match(/[bcdoxXn]/)) {
             throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
         }
-        
+
         if (type === 's') {
             throw new exceptions.ValueError.$pyclass("Unknown format code 's' for object of type 'int'")
         }
-        
+
         let precision
         if (this.precision) {
             precision = parseInt(this.precision.replace('.', ''))
         } else {
             precision = 6
         }
-        
+
         /* components for final representation
             base: the number prior to the exponent. excludes sign or precentage
             expSign: comes right before the exponent either e or E
@@ -1271,7 +1266,7 @@ function _new_subsitute(str, args, kwargs) {
         let percent = ''
         let expSign = ''
         let expToUse = ''
-        
+
         let num, exp
         switch (type) {
             case 'b':
@@ -1294,7 +1289,7 @@ function _new_subsitute(str, args, kwargs) {
                 break
             case 'e':
             case 'E':
-                expObj = this._toExp(this.argAbs, precision, type)
+                const expObj = this._toExp(this.argAbs, precision, type)
                 base = expObj.base
                 expSign = expObj.expSign
                 expToUse = expObj.exp
@@ -1309,11 +1304,11 @@ function _new_subsitute(str, args, kwargs) {
                 // if exp is the exponent and p is the precision
                 // if -4 <= exp < p -> use f and precison = p-1-exp
                 // else use e and p-1
-                
+
                 if (type === 'n' && this.precision) {
                     throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
                 }
-                
+
                 num = new BigNumber(this.argAbs).toExponential()
                 exp = Number(num.split('e')[1]) // split the exponential into base and power
                 if (exp >= -4 && exp < precision) {
@@ -1326,28 +1321,28 @@ function _new_subsitute(str, args, kwargs) {
                     expSign = expObj.expSign
                     expToUse = expObj.exp
                 }
-                
+
                 break
             case 'g*':
                 /*
-                  Similar to 'g', except that fixed-point notation, when used, 
-                  has at least one digit past the decimal point. 
-                  The default precision is as high as needed to represent the 
-                  particular value. The overall effect is to match the output 
+                  Similar to 'g', except that fixed-point notation, when used,
+                  has at least one digit past the decimal point.
+                  The default precision is as high as needed to represent the
+                  particular value. The overall effect is to match the output
                   of str() as altered by the other format modifiers.
                 */
-                
+
                 // if exp is the exponent and p is the precision
                 // if -4 <= exp < p -> use f and precison = p-1-exp
                 // else use e and p-1
-                
+
                 if (type === 'n' && this.precision) {
                     throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
                 }
-                
+
                 num = new BigNumber(this.argAbs).toExponential()
                 exp = Number(num.split('e')[1])
-                if (-4 <= exp < precision) {
+                if (exp >= -4 < precision) {
                     // use f
                     base = this.argAbs
                 } else {
@@ -1357,9 +1352,9 @@ function _new_subsitute(str, args, kwargs) {
                     expSign = expObj.expSign
                     expToUse = expObj.exp
                 }
-                
+
                 base = new BigNumber(base).toPrecision(precision)
-                
+
                 break
             case '%':
                 base = new BigNumber(this.argAbs * 100).toFixed(precision)
@@ -1367,9 +1362,9 @@ function _new_subsitute(str, args, kwargs) {
                 break
             default:
                 throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
-            
+
         } // switch
-        
+
         // determine sign
         let sign = this.sign || '-'
         if (this.arg >= 0) {
@@ -1382,7 +1377,7 @@ function _new_subsitute(str, args, kwargs) {
             // negative sign for negative numbers reguardless
             signToUse = '-'
         }
-      
+
         // determine alternate
         if (this.alternate && /[boxX]/.test(this.type)) {
             alternate = `0${type}`
@@ -1394,17 +1389,17 @@ function _new_subsitute(str, args, kwargs) {
             // modify base to handle grouping if needed
             base = this._handleGrouping(base, grouping)
         }
-        
+
         this.content = `${signToUse}${alternate}${base}${percent}${expSign}${expToUse}`
-    };
-    
+    }
+
     Specifier.prototype._handleLayout = function() {
         /* takes this.content and places it inside the field with proper
           alignment and padding
         */
 
         // size of the containing field. will need to be filled in if larger than content
-        
+
         const fieldWidth = this.width || this.content.length
         const spaceRemaining = fieldWidth - this.content.length
         // determine how extra space should be divided.
@@ -1416,7 +1411,7 @@ function _new_subsitute(str, args, kwargs) {
         } else {
             align = '<'
         }
-        
+
         if (spaceRemaining > 0) {
             const fillChar = this.fill || ' '
             switch (align) {
@@ -1444,33 +1439,32 @@ function _new_subsitute(str, args, kwargs) {
                     this.field = `${this.content}${fillChar.repeat(spaceRemaining)}`
                     break
                 case '=':
-                    /* 
+                    /*
                     Forces the padding to be placed after the sign (if any) but
                     before the digits. This is used for printing fields in the
                     form ‘+000000120’. This alignment option is only valid for
                     numeric types. It becomes the default when ‘0’ immediately
                     precedes the field width.
-                    
+
                     Insert extra padding BETWEEN the sign and number;
                     */
-                    
+
                     // if the first character is the sign, extract it
-                    
+
                     let sign
                     if (/[-+ ]/.test(this.content)) {
                         sign = this.content[0]
                     } else {
                         sign = ''
                     }
-                    
+
                     this.field = `${sign}${fillChar.repeat(spaceRemaining)}${this.content}`
             }
         } else {
             this.field = this.content
         } // end if
-        
-    };
-    
+    }
+
     Specifier.prototype._handleGrouping = function(n, groupingChar) {
         /*
           n(int) the absolute value of the number to handle grouping for.
@@ -1479,7 +1473,7 @@ function _new_subsitute(str, args, kwargs) {
 
           return: the same number with proper gropuing (as str)
         */
-        
+
         const nSplit = n.valueOf().toString().split('.')
         const beforeDec = nSplit[0] || 0
         const afterDec = nSplit[1] || ''
@@ -1498,7 +1492,7 @@ function _new_subsitute(str, args, kwargs) {
         }
         return `${contentArr.join('')}${decimalToUse}${afterDec}`
     }
-    
+
     Specifier.prototype._toExp = function(n, precision, conversionType) {
         /*
             convert a number to its exponential value`
@@ -1522,7 +1516,7 @@ function _new_subsitute(str, args, kwargs) {
         } else {
             base = baseRaw.toFixed(6)
         }
-        
+
         let exp
         if (expSplit[1] < 10) {
             // format <sign><number>
@@ -1533,34 +1527,34 @@ function _new_subsitute(str, args, kwargs) {
             exp = expSplit[1]
         }
         // exp = expSplit[1] // the exponent bit
-        
+
         let expSign
         if (conversionType === conversionType.toLowerCase()) {
             expSign = 'e'
         } else {
             expSign = 'E'
         }
-        
+
         return {
             base: base,
             expSign: expSign,
             exp: exp
         }
     }
-    
+
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value.
-        
+
         if (type_name(this.arg) === 'str') {
             this._convertStr()
         } else {
             this._convertNumber()
         }
-        
+
         this._handleLayout()
         return this.field
     }
-    
+
     const specRe = /{(.*?)}/g
     let match = specRe.exec(str)
     let result = ''
@@ -1582,19 +1576,6 @@ function _new_subsitute(str, args, kwargs) {
 /*
 Helper functions
 */
-
-const zeroPadExp = function(rawExponential) {
-    // rawExponential (str) example: "5e+5"
-    // returns the correct zero padded exponential. 
-      // must have lowercase 'e': example 5e+05
-    var re = /([-+]?[0-9]*\.?[0-9]*)(e[+-])(\d+)/
-    var m = rawExponential.match(re)
-    if (m[3] < 10) {
-        return m[1] + m[2] + '0' + m[3]
-    } else {
-        return m[1] + m[2] + m[3]
-    }
-} // end zeroPadExp
 
 /**************************************************
  * Module exports

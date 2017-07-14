@@ -708,9 +708,7 @@ Str.prototype.capitalize = function() {
 }
 
 Str.prototype.format = function(args, kwargs) {
-    
     const types = require('../types')
-    
     const positionalArguments = new types.Tuple(types.js2py(args))
     const keywordArguments = types.js2py(kwargs)
     return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
