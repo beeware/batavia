@@ -1340,28 +1340,23 @@ class NewStyleFormatTests(TranspileTestCase):
         print('one arg: {}'.format())
         """)
     
-# test generator to test with each type
-def test_generator(arg):
-    """
-    returns a test for the given type
-    arg: the argument to run the test with
-    expected_pass(bool): if the test is expected to pass
-    """
-    def test(self):
-        test_str = adjust("""
-            print('''>>> 'one arg: {{}}'.format({arg})''')
-            print('''one arg: {{}}'''.format({arg}))
-            """.format(arg=arg))
+    def test_random_types(self):
+        
+        args = (values[0] for _type, values in SAMPLE_DATA.items())
+        
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print('''>>> 'one arg: {{}}'.format({arg})''')
+                    print('''one arg: {{}}'''.format({arg}))
+                    """.format(arg=arg)
+                ) for arg in args
+            ]
+        )
+            
         
         self.assertCodeExecution(test_str)
-    
-    return test
-
-for _type, values in SAMPLE_DATA.items():
-    test_name = 'test_with_{}'.format(_type)
-    test = test_generator(values[0])
-    setattr(NewStyleFormatTests, test_name, test)
-        
         
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
