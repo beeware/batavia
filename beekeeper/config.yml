@@ -11,6 +11,7 @@ pull_request:
     - smoke-test:
         task: batavia-py34
         name: Smoke build (Python 3.4)
+        cluster: hicpu
     - full-test:
         subtasks:
             - py3.5:
@@ -19,6 +20,7 @@ pull_request:
             - py3.6:
                 name: Python 3.6 tests
                 task: batavia-py36
+        cluster: hicpu
 push:
     - smoke-test:
         task: py34
