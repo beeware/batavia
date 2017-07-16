@@ -1,0 +1,10 @@
+{
+  "name": "batavia-py36",
+  "version": "1.0.0",
+  "description": "Batavia test harness",
+  "repository": "https://github.com/pybee/batavia-py36",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "npm": "*"
+  }
+}

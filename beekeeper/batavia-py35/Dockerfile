@@ -12,7 +12,7 @@ RUN curl -sL https://deb.nodesource.com/setup_6.x -o nodesource_setup.sh
 RUN chmod 755 nodesource_setup.sh
 RUN ./nodesource_setup.sh
 RUN apt-get install -yy nodejs
-RUN npm install -g npm
+RUN npm install
 
 # Run the test with a waggle report
 CMD ["./run.sh"]
