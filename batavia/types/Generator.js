@@ -2,6 +2,7 @@ var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
+var dis = require('../modules/dis')
 
 /*************************************************************************
  * A Python generator type.
@@ -62,6 +63,21 @@ Generator.prototype.send = function(value) {
 }
 
 Generator.prototype['throw'] = function(ExcType, value, traceback) {
+    var yf_gen = yf_subgenerator(this)
+    if (yf_gen !== null) {
+        if (ExcType instanceof exceptions.GeneratorExit.$pyclass ||
+                value instanceof exceptions.GeneratorExit.$pyclass) {
+            callables.call_method(yf_gen, 'close', [])
+        } else {
+            try {
+                return callables.call_method(yf_gen, 'throw', [ExcType, value, traceback])
+            } catch (e) {
+                if (!(e instanceof exceptions.AttributeError.$pyclass)) {
+                    throw e
+                }
+            }
+        }
+    }
     if (ExcType instanceof exceptions.BaseException.$pyclass) {
         value = ExcType
         ExcType = ExcType.__class__
@@ -96,6 +112,18 @@ Generator.prototype['close'] = function() {
         }
         throw e
     }
+}
+
+const YIELD_FROM = dis.opmap['YIELD_FROM']
+
+// returns subgenerator gen is yielding from or null if there is none
+function yf_subgenerator(gen) {
+    var f = gen.gi_frame
+    var opcode = f.f_code.co_code.valueOf()[f.f_lasti]
+    if (opcode === YIELD_FROM) {
+        return f.stack[1]
+    }
+    return null
 }
 
 /**************************************************

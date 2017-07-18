@@ -193,3 +193,200 @@ class GeneratorTests(TranspileTestCase):
             except BaseException as e:
                 print(type(e), e)
         """)
+
+    def test_nested(self):
+        self.assertCodeExecution("""
+            def G():
+                while True:
+                    try:
+                        v = (yield)
+                    except KeyError:
+                        print('ERROR')
+                    else:
+                        print('>>', v)
+
+            def F(g):
+                g.send(None)
+                while True:
+                    try:
+                        try:
+                            v = (yield)
+                        except Exception as e:
+                            g.throw(e)
+                        else:
+                            g.send(v)
+                    except StopIteration:
+                        pass
+
+            g = G()
+            g2 = F(g)
+            g2.send(None)
+            g2.send(1)
+            g2.send(2)
+            g2.throw(KeyError)
+            g2.send(3)
+        """)
+
+
+class YieldFromTests(TranspileTestCase):
+    def test_simple_generator(self):
+        self.assertCodeExecution("""
+            def G(x):
+                yield from x
+
+            def F():
+                yield 1
+                yield 2
+
+            g = G(F())
+            print(list(g))
+        """)
+
+    def test_yield_before_and_after(self):
+        self.assertCodeExecution("""
+            def G(x):
+                yield "START"
+                yield from x
+                yield "STOP"
+
+            def F():
+                yield 1
+                yield 2
+
+            g = G(F())
+            print(list(g))
+        """)
+
+    def test_iterator(self):
+        self.assertCodeExecution("""
+            def G(x):
+                yield "START"
+                yield from x
+                yield "STOP"
+
+            g = G(range(5))
+            print(list(g))
+        """)
+
+    def test_throw(self):
+        self.assertCodeExecution("""
+            def G():
+                yield 1
+                yield 2
+                yield 3
+
+            def F(g):
+                yield from g
+
+            f = F(G())
+            print(next(f))
+            try:
+                f.throw(KeyError)
+            except Exception as e:
+                print(type(e), e)
+            try:
+                print(next(f))
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_catch_exception(self):
+        self.assertCodeExecution("""
+            def G():
+                while True:
+                    try:
+                        v = (yield)
+                    except KeyError:
+                        print('ERROR')
+                    else:
+                        print('>>', v)
+
+            def F(g):
+                yield from g
+
+            g = F(G())
+            g.send(None)
+            g.send(1)
+            g.send(2)
+            g.throw(KeyError)
+            g.send(3)
+        """)
+
+    def test_throw_iterator(self):
+        self.assertCodeExecution("""
+            def G(g):
+                yield from g
+
+            g = G(range(5))
+            next(g)
+            try:
+                g.throw(KeyError)
+            except Exception as e:
+                print(type(e), e)
+        """)
+
+    def test_pyclass_subgenerator(self):
+        self.assertCodeExecution("""
+            class Gen:
+                def __init__(self):
+                    self.stopped = False
+                    self.i = -1
+                def __next__(self):
+                    if not self.stopped:
+                        self.i += 1
+                        return self.i
+                    raise StopIteration
+                def __iter__(self):
+                    return self
+                def close(self):
+                    self.stopped = True
+
+            def G(g):
+                yield 'START'
+                yield from g
+                yield 'STOP'
+
+            g = Gen()
+            gg = G(g)
+            print(next(gg))
+            print(next(gg))
+            print(gg.close())
+            try:
+                print(next(gg))
+            except StopIteration as e:
+                print(type(e), e)
+        """)
+
+    def test_pyclass_custom_throw(self):
+        self.assertCodeExecution("""
+            class Gen:
+                def __init__(self):
+                    self.stopped = False
+                    self.i = -1
+                def __next__(self):
+                    if not self.stopped:
+                        self.i += 1
+                        return self.i
+                    raise StopIteration
+                def __iter__(self):
+                    return self
+                def close(self):
+                    self.stopped = True
+                def throw(self, a, b, c):
+                    print('THROW')
+
+            def G(g):
+                yield 'START'
+                yield from g
+                yield 'STOP'
+
+            g = Gen()
+            gg = G(g)
+            print(next(gg))
+            print(next(gg))
+            print(gg.close())
+            try:
+                print(next(gg))
+            except StopIteration as e:
+                print(type(e), e)
+        """)
