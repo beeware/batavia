@@ -4,10 +4,10 @@ pull_request:
         subtasks:
             - eslint:
                 name: JavaScript lint checks
-                task: beefore
+                task: beefore-javascript
             - pycodestyle:
                 name: Python lint checks
-                task: beefore
+                task: beefore-javascript
     - smoke-test:
         task: batavia-py34
         name: Smoke build (Python 3.4)
