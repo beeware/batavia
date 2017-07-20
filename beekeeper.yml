@@ -12,15 +12,15 @@ pull_request:
         task: batavia-py34
         name: Smoke build (Python 3.4)
         profile: hi-cpu
-    - full-test:
-        subtasks:
-            - py3.5:
-                name: Python 3.5 tests
-                task: batavia-py35
-            - py3.6:
-                name: Python 3.6 tests
-                task: batavia-py36
-        profile: hi-cpu
+    # - full-test:
+    #     subtasks:
+    #         - py3.5:
+    #             name: Python 3.5 tests
+    #             task: batavia-py35
+    #         - py3.6:
+    #             name: Python 3.6 tests
+    #             task: batavia-py36
+    #     profile: hi-cpu
 push:
     - smoke-test:
         task: py34
