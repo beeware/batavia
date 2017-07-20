@@ -7,7 +7,7 @@ pull_request:
                 task: beefore-javascript
             - pycodestyle:
                 name: Python lint checks
-                task: beefore-javascript
+                task: beefore
     - smoke-test:
         task: batavia-py34
         name: Smoke build (Python 3.4)
