@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
+var callables = require('../core').callables
 
 /*************************************************************************
  * A Python generator type.
@@ -26,19 +27,34 @@ Generator.prototype.__next__ = function() {
 }
 
 Generator.prototype.send = function(value) {
-    if (typeof value === 'undefined') {
-        value = null
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'send() takes exactly one argument (' + arguments.length + ' given)'
+        )
     }
+
     if (!this.started) {
         if (value !== null) {
-            // It's illegal to send a non-None value on first call.
-            // TODO: raise a proper TypeError
-            throw new exceptions.TypeError.$pyclass('lolnope')
+            var types = require('../types')
+            if (!types.isinstance(value, types.NoneType)) {
+                // It's illegal to send a non-None value on first call.
+                throw new exceptions.TypeError.$pyclass(
+                    "can't send non-None value to a just-started generator"
+                )
+            }
         }
         this.started = true
     }
+    if (this.finished) {
+        throw new exceptions.StopIteration.$pyclass()
+    }
     this.gi_frame.stack.push(value)
-    var yieldval = this.vm.run_frame(this.gi_frame)
+    try {
+        var yieldval = this.vm.run_frame(this.gi_frame)
+    } catch (e) {
+        this.finished = true
+        throw e
+    }
     if (this.finished) {
         throw new exceptions.StopIteration.$pyclass()
     }
@@ -46,15 +62,23 @@ Generator.prototype.send = function(value) {
 }
 
 Generator.prototype['throw'] = function(ExcType, value, traceback) {
-    if (value === null) {
-        value = new ExcType()
+    if (ExcType instanceof exceptions.BaseException.$pyclass) {
+        value = ExcType
+        ExcType = ExcType.__class__
+    } else {
+        value = callables.call_function(ExcType, [value], null)
     }
     this.vm.last_exception = {
         'exc_type': ExcType,
         'value': value,
         'traceback': traceback
     }
-    var yieldval = this.vm.run_frame(this.gi_frame)
+    try {
+        var yieldval = this.vm.run_frame(this.gi_frame)
+    } catch (e) {
+        this.finished = true
+        throw e
+    }
     if (this.finished) {
         throw new exceptions.StopIteration.$pyclass()
     }
@@ -62,7 +86,16 @@ Generator.prototype['throw'] = function(ExcType, value, traceback) {
 }
 
 Generator.prototype['close'] = function() {
-    return this['throw'](new exceptions.StopIteration.$pyclass())
+    try {
+        return this['throw'](new exceptions.GeneratorExit.$pyclass())
+    } catch (e) {
+        if (e instanceof exceptions.GeneratorExit.$pyclass ||
+                e instanceof exceptions.StopIteration.$pyclass) {
+            this.vm.last_exception = null
+            return null
+        }
+        throw e
+    }
 }
 
 /**************************************************
