@@ -1,5 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms
+    adjust, transforms, SAMPLE_DATA
 
 from itertools import product
 import unittest
@@ -1052,6 +1052,312 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+class NewStyleFormatTests(TranspileTestCase):
+    """
+    many tests borrowed from the Brython test suite
+    """
+
+    # tests for grabbing arguments
+    
+    def test_single(self):
+        test_str = adjust("""
+        print(">>> 'one arg: {}'.format('great!')")
+        print('one arg: {}'.format('great!'))
+        """)
+
+        self.assertCodeExecution(test_str)  
+
+    def test_single_called_twice(self):
+        # should raise an index error
+        test_str = adjust("""
+        print(">>> 'one arg: {} {} great!'.format('really')")
+        print('one arg: {} {} great!'.format('really'))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_by_index(self):
+        test_str = adjust("""
+        print(">>> 'Some numbers: {0} {1} {2}'.format('one', 'two', 'three')")
+        print('Some numbers: {0} {1} {2}'.format('one', 'two', 'three'))
+        print(">>> 'Some numbers: {0} {0} {0}'.format('one', 'two', 'three')")
+        print('Some numbers: {0} {0} {0}'.format('one', 'two', 'three'))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_index_out_of_range(self):
+        test_str = adjust("""
+        print(">>> 'Some numbers: {0} {1} {5}'.format('one', 'two', 'three')")
+        print('Some numbers: {0} {1} {5}'.format('one', 'two', 'three'))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_kwargs(self):
+        test_str = adjust("""
+        print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs')")
+        print('{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs'))
+        """)
+
+        self.assertCodeExecution(test_str)
+
+    def test_kwargs_key_error(self):
+        test_str = adjust("""
+        print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(other='eggs')")
+        print('{food}! Lovely {food}! Lovely {food}!'.format(other='eggs'))
+        """)
+
+        self.assertCodeExecution(test_str)
+        
+    @unittest.expectedFailure
+    def test_kwargs_by_splat(self):
+        test_str = adjust("""
+        coord = {'latitude': '37.24N', 'longitude': '-115.81W'}
+        print(">>> 'Coordinates: {latitude}, {longitude}'.format(**coord)")
+        print('Coordinates: {latitude}, {longitude}'.format(**coord))
+        """)
+        self.assertCodeExecution(test_str)
+            
+    def test_name_with__getitem__(self):
+        """
+        name calls __getitem__ on argument
+        """
+        
+        test_str = adjust("""
+        coord = (3, 5)
+        print(">>> 'X: {0[0]};  Y: {0[1]}'.format(coord)")
+        print('X: {0[0]};  Y: {0[1]}'.format(coord))
+        """)
+        self.assertCodeExecution(test_str)
+        
+    def test___getitem__bad_formatting(self):
+        """
+        tests for sad paths with getitem
+        """
+        
+        test_str = adjust("""
+        coord = (3, 5)
+        print(">>> 'X: {0[]}}'.format(coord)")
+        print('X: {0[]}'.format(coord))
+        print(">>> 'X: {0[}}'.format(coord)")
+        print('X: {0[}'.format(coord))
+        """)
+        self.assertCodeExecution(test_str)
+    
+    def test_name_with__getattr__(self):
+        """
+        name calls attribute on passed argument
+        """
+        
+    
+        test_str = adjust("""
+        class Actor():
+            name = 'John Cleese'
+            
+        print(">>> '{a.name}'.format(a=Actor())")
+        print('{a.name}'.format(a=Actor())')
+        """)
+        
+    def test__getattr__bad_formatting(self):
+        """
+        tests using a dot operator with nothing after it
+        """
+        test_str = adjust("""
+            
+        print(">>> '{food.}'.format(food='spam')")
+        print('{food.}'.format(food='spam'))
+        """)
+    # conversion flags
+    def test_conversion_flags(self):
+        conversion_flags = ('!a', '!s', '!r', '!', '!ss', '!g')
+        
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{{flag}:}}'.format('great')")
+                    print('one arg: {{{flag}:}}'.format('great'))
+                    """.format(flag=flag)
+                ) for flag in conversion_flags
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_fills(self):
+        fills = ('*', '**', '{', '}') # only one character, no curly braces
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{fill}<10}}'.format('great')")
+                    print('one arg: {{:{fill}<10}}'.format('great'))
+                    """.format(fill=fill)
+                ) for fill in fills
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_alignments(self):
+        alignments = ['<', '^', '>', '=']
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{align}10}}'.format('spam')")
+                    print('one arg: {{:{align}10}}'.format('spam'))
+                    print(">>> 'one arg: {{:*{align}10}}'.format('spam')")
+                    print('one arg: {{:*{align}10}}'.format('spam'))
+                    """.format(align=align)
+                ) for align in alignments
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_fill_no_alignment(self):
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {:*10}'.format('great')")
+        print('one arg: {:*10}'.format('great'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+
+    def test_signs(self):
+        signs = ('+', '-', ' ')
+        numbers = (5, -5)
+        
+        combinations = product(signs, numbers)
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg:: {{:{sign}}}'.format({num})")
+                    print('one arg:: {{:{sign}}}'.format({num}))
+                    """.format(sign=sign, num=num)
+                ) for sign, num in combinations
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_signs_with_str(self):
+        """
+        signs with strings shouldn't be allowed
+        """
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {:+}'.format('great')")
+        print('one arg: {:+}'.format('great'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+    
+    @transforms(decimal = False,)
+    def test_groupings(self, js_cleaner, py_cleaner):
+        groupings = (',', '_')
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg:: {{:{g}}}'.format(5000)")
+                    print('one arg:: {{:{g}}}'.format(5000))
+                    """.format(g=g)
+                ) for g in groupings
+            ]
+        )
+        
+        self.assertCodeExecution(test_str, js_cleaner=js_cleaner, 
+                                    py_cleaner=py_cleaner)
+        
+    def test_groupings_with_str(self):
+        """
+        grouping with str shouldn't be allowed
+        """
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {:,}'.format('great')")
+        print('one arg: {:,}'.format('great'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_zero_padding(self):
+
+        test_str = adjust("""
+        print(">>> 'one arg: {:05}'.format(5)")
+        print('one arg: {:05}'.format(5))
+        print(">>> 'one arg: {:05}'.format('spam')")
+        print('one arg: {:05}'.format('spam'))
+        """)
+        
+        self.assertCodeExecution(test_str)
+    
+    def test_conversion_types(self):
+        """
+        test all conversion types and their alternate forms
+        """
+        alternate = ('#', '')
+        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', 
+                '%')
+        args = ("'spam'", "'5'", 5, -5, 5.0, -5.0, 0.5, -0.5)
+        combinations = product(alternate, types, args)
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{alter}{typ}}}'.format({arg})")
+                    print('one arg: {{:{alter}{typ}}}'.format({arg}))
+                    """.format(alter=alter, typ=typ, arg=arg)
+                ) for alter, typ, arg in combinations
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_precisions(self):
+        precisions = ('.1', '.5')
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print(">>> 'one arg: {{:{p}}}'.format(5.123456789)")
+                    print('one arg: {{:{p}}}'.format(5.123456789))
+                    """.format(p=p)
+                ) for p in precisions
+            ]
+        )
+        
+        self.assertCodeExecution(test_str)
+        
+    def test_no_args(self):
+        
+        test_str = adjust("""
+        print(">>> 'one arg: {}'.format()")
+        print('one arg: {}'.format())
+        """)
+    
+    def test_random_types(self):
+        
+        args = (values[0] for _type, values in SAMPLE_DATA.items())
+        
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    print('''>>> 'one arg: {{}}'.format({arg})''')
+                    print('''one arg: {{}}'''.format({arg}))
+                    """.format(arg=arg)
+                ) for arg in args
+            ]
+        )
+            
+        
+        self.assertCodeExecution(test_str)
+        
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 

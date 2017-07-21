@@ -452,7 +452,6 @@ function _substitute(format, args) {
 
                 case ('e'):
                 case ('E'):
-
                     var argValueBig = new BigNumber(conversionArgValue)
                     var argExp = Number(argValueBig).toExponential()
 
@@ -719,8 +718,868 @@ function _substitute(format, args) {
     return result
 } // end _substitute
 
+function _new_subsitute(str, args, kwargs) {
+    /*
+      perform new style formatting (str.format)
+      args(array): positional arguments
+      kwargs(object): keyword arguments.
+      both are allowed
+    */
+
+    var types = require('../types')
+    var builtins = require('../builtins')
+    function Mode() {
+      // the mode of formatting we are in. Can be:
+        // automatic {}
+        // manual {0} {1}...
+        // keyword {spam} {eggs}...
+    }
+    Mode.prototype.checkMode = function(text) {
+      // set the mode of formatting, or, if a different mode has been set
+      // throw an error
+
+      // text(str): the text inside a specifier.
+        let newMode
+        if (text === '') {
+            // manual
+            newMode = 'manual field specification'
+        } else {
+            // automatic (either sequential or keyword)
+            newMode = 'automatic field numbering'
+        }
+
+        if (this.mode === undefined) {
+            // mode may be set
+            this.mode = newMode
+        } else if (this.mode !== newMode) {
+            // mode has already been set. check if it conflicts with set mode
+            throw new exceptions.TypeError.$pyclass(`cannot switch from ${this.mode} to ${newMode}`)
+        }
+    }
+
+    const modeObj = new Mode()
+    function Specifier(text, specIndex, modeObj, args, kwargs) {
+        this.text = text
+        this.specIndex = specIndex // the specifier's position in the original string
+        this.modeObj = modeObj // object to remember which substitution mode we are in.
+        this.args = args
+        this.kwargs = kwargs
+
+        this.fieldName = ''
+        this.conversionFlag = ''
+        this.formatOptionsRaw = '' // everything after the :, but unparsed
+        // these characters denote the begining of a new group
+
+        // init format options
+        // each option is edited via a setter which will do one of three things:
+            // accept the character and return true
+            // raise an error
+            // reject the chracter and return false
+
+        this.initialParse() // parse characters into groups
+        this.parseAlign() // parse the alignment
+        this.arg = this.setArg() // determine the argument to be used
+        this.formatParse()  // parse format characters
+    }
+
+    /* FORMAT PARSING METHODS
+      each takes a character (str) its index in the str(int) and the array
+        itself
+      if the method should process the character, it does
+        (including any possible errors)
+      if it shouldn't process the character it doesn't
+      In either case, the method returns an integer representing the next step
+        to perform
+    */
+
+    Specifier.prototype.initialParse = function() {
+        /*
+            determines character belonging to conversionFlag and formatting options
+        */
+
+        let currentParseGroup = 1
+        this.text.split('').forEach(function(char, i, arr) {
+            switch (currentParseGroup) {
+                case 1:
+                    switch (char) {
+                        case '!':
+                            this.conversionFlag += char
+                            currentParseGroup = 2
+                            break
+                        case ':':
+                            currentParseGroup = 3
+                            break
+                        default:
+                            this.fieldName += char
+                            break
+
+                    } // end switch
+                    break
+                case 2:
+                    // parse as conversionFlag
+
+                    switch (char) {
+                        case ':':
+                            // ensure that we don't have a lone '!'
+                            if (this.conversionFlag === '!') {
+                                throw new exceptions.ValueError.$pyclass('Unknown conversion specifier :')
+                            }
+                            currentParseGroup = 3
+                            break
+                        default:
+                            if (this.conversionFlag.length === 2) {
+                                // conversion flags are one character
+                                throw new exceptions.ValueError.$pyclass("expected ':' after conversion specifier")
+                            }
+                            if (/[!sar]/.test(char)) {
+                                // valid the conversion flag
+                                this.conversionFlag += char
+                            } else {
+                                throw new exceptions.ValueError.$pyclass(`Unknown conversion specifier ${char}`)
+                            }
+                            break
+
+                    } // end inner switch
+                    break
+
+                case 3:
+                    // we're ready for format options. unless we have a lone '!' for
+                    // conversionFlag
+                    if (char !== ':') {
+                        // we don't want the colon though
+                        this.formatOptionsRaw += char
+                    }
+                    break
+                default:
+                    break
+
+            } // outer switch
+        }, this) // for loop
+    } // end initialParse
+
+    Specifier.prototype.parseAlign = function() {
+        /* parsing the formatting options will work quite similarly to old style
+          formatting but with one exception.
+          the fill character only has meaning if it is followed by an align
+          character immedatly after. We will simlpy parse that bit on its own
+          then parse the rest like with old style formatting
+        */
+
+        // look for an alignment character
+        const alignRe = /[<^>=]/
+        const alignMatch = this.formatOptionsRaw.match(alignRe)
+        if (alignMatch) {
+            switch (this.formatOptionsRaw.match(alignRe).index) {
+                case 0:
+                    // found align character at index 0
+                    this.align = this.formatOptionsRaw[0]
+
+                    // remove that character from the set
+                    this.formatOptionsRaw = this.formatOptionsRaw.slice(1)
+                    break
+                case 1:
+                    // found align character at index 1. index 0 is the fill character
+                    this.fill = this.formatOptionsRaw[0]
+                    this.align = this.formatOptionsRaw[1]
+
+                    // remove those character from the set
+                    this.formatOptionsRaw = this.formatOptionsRaw.slice(2)
+                    break
+                default:
+                    // no align character
+                    break
+            } // end switch
+        } // end if
+    }
+
+    // Specifier.prototype.formatParse = function() {
+    //     const re = /(#?)(0?)(\d*)(\.?\d+)(.*)/
+    //
+    // }
+
+    Specifier.prototype.formatParse = function() {
+        // Parses each character in formatOptionsRaw.
+
+        const getNextStep = function(nextChar, currStep) {
+            // nextChar(str): the next character to be processed
+            // currStep(int): the current step we are on.
+            // return: nextStep(int): what step we should process nextChar
+
+            var steps = {
+                1: /[+\- ]/, // sign
+                2: /#/, // alternate form
+                3: /0/, // zero padding
+                4: /\d/, // width
+                5: /,/, // grouping
+                6: /[.\d]/  // precision
+            }
+
+            for (var s = currStep; s <= 6; s++) {
+                // try to make a match
+                var re = steps[s]
+                if (nextChar.search(re) !== -1) {
+                    return s
+                }
+            }
+            return 7 // the 7th and final step is the default when nothing else works
+        } // end getNextStep
+
+        const step = function(char, step) {
+            // process the character under the correct step
+            // return the smallest step that should be performed next
+
+            switch (currStep) {
+                case 1:
+                    // sign
+                    this.sign = char
+                    return 2
+                case 2:
+                    // alternate form
+                    this.alternate = char
+                    return 3
+                case 3:
+                    // zero padding. only valid if fill is not already set
+                    if (this.fill === undefined) {
+                        this.fill = char
+                        return 4
+                    } else {
+                        throw new exceptions.ValueError.$pyclass('Invalid format specifier')
+                    }
+                case 4:
+                    // width
+                    if (this.width) {
+                        this.width += char
+                    } else {
+                        this.width = char
+                    }
+                    // don't increment step, there could be another width character.
+                    return 4
+
+                case 5:
+                    // grouping
+                    this.grouping = char
+                    return 6
+                case 6:
+                    // precision
+                    if (this.precision) {
+                        this.precision += char
+                    } else {
+                        this.precision = char
+                    }
+                    // don't increment step, there could be another precision character.
+                    return 6
+
+                case 7:
+                    // format type.
+                    if (this.type) {
+                        // format specifiers can't be more than one char
+                        throw new exceptions.ValueError.$pyclass('Invalid format specifier')
+                    } else {
+                        this.type = char
+                    }
+                    return 7
+                    // don't increment step, there could be another type character.
+            } // switch
+        }.bind(this) // step
+
+        let currStep = 1 // the current parse step we are on
+        this.formatOptionsRaw.split('').forEach(function(char, i, arr) {
+          /* parsing is done in 7 steps though some may be skipped depending on
+            the data. The function getNextStep will look at the next character
+            in the sequence and determine which next step applies. The function
+            step will apply that step to the character and return an integer
+            representing the smallest possible step to apply on the next step.
+
+          */
+            currStep = getNextStep(char, currStep)
+            currStep = step(char, currStep)
+        }, this)
+    }  // formatParse
+
+    Specifier.prototype.setArg = function() {
+        // sets the arg to be used in this specifier
+
+        const parseStack = function(contents) {
+            /*
+                takes contents(str) from the stack and determines its meaning. could be:
+                    fieldName
+                    getitem instruction
+                    getattr instruction
+
+                returns object of shape:
+                    {type: getitem | getattr, name: <name of item to get>}
+            */
+
+            // matcher for getitem
+            // note: for keyword args, the kwarg does not use quotes
+
+            /*
+                Not escape the brackets below changes the meaning of the regex
+                and I don't know how to make this rule place nice
+            */
+            // eslint-disable-next-line no-useless-escape
+            const getItemMatch = contents.match(/\[(.*?)\]/)
+            if (getItemMatch) {
+                if (getItemMatch[1] === '') {
+                    throw new exceptions.ValueError.$pyclass('Empty attribute in format string')
+                }
+                return {type: 'getitem', name: getItemMatch[1]}
+            }
+
+            // matcher for getattr
+            const getAttrMatch = contents.match(/\.(.+)/)
+            if (getAttrMatch) {
+                return {type: 'getattr', name: getAttrMatch[1]}
+            }
+
+            // check for unmatched '['
+            const openBracketRe = /\[/
+            if (openBracketRe.test(contents)) {
+                throw new exceptions.ValueError.$pyclass("expected '}' before end of string")
+            }
+
+            // check for a '.' with nothing after
+            if (contents === '.') {
+                throw new exceptions.ValueError.$pyclass('Empty attribute in format string')
+            }
+            // otherwise its a name, just return
+            return {type: 'name', name: contents}
+        }
+
+        const parseFieldName = function(fieldName) {
+            /*
+                returns object of shape:
+                {
+                    name (str): the name of the field either by number or keyword
+                    getters array of objects of shape:
+                        [{type: getitem | getattr, name: <name of item to get>}]
+                }
+            */
+            let result = {name: '', getters: []}
+
+            let stack = [] // stack to parse characters in order
+            fieldName.split('').forEach(function(item, idx, arr) {
+                switch (item) {
+                    case '[':
+                    case '.':
+                        // start of a new instruction
+
+                        // we just finished an instruction. parse and push
+                        const instruction = parseStack(stack.join(''))
+                        if (instruction.type === 'name') {
+                            // this is the name of the field
+                            result.name = instruction.name
+                        } else {
+                            // this a getitem or getattr instruction
+                            result.getters.push(instruction)
+                        }
+
+                        // clear stack and push item
+                        stack = []
+                        stack.push(item)
+                        break
+
+                    default:
+                        // push to the stack
+                        stack.push(item)
+                        break
+
+                }
+            })
+
+            // parse what's left over
+            const instruction = parseStack(stack.join(''))
+
+            if (instruction.type === 'name') {
+                // this is the name of the field
+                result.name = instruction.name
+            } else {
+                // this a getitem or getattr instruction
+                result.getters.push(instruction)
+            }
+
+            return result
+        } // end parseFieldName
+
+        const fieldParsed = parseFieldName(this.fieldName)
+        this.modeObj.checkMode(fieldParsed.name)
+
+        let pulledArg
+
+        if (fieldParsed.name === '') {
+            const key = new types.Int(this.specIndex)
+            pulledArg = this.args.__getitem__(key)
+        } else if (!isNaN(Number(fieldParsed.name))) {
+            // using sequential arguments
+            const key = new types.Int(fieldParsed.name)
+            pulledArg = this.args.__getitem__(key)
+        } else {
+            // using keyword argument
+            const key = new types.Str(fieldParsed.name)
+            pulledArg = this.kwargs.__getitem__(key)
+        }
+
+        // next, perform any getitem or getattr instructions on pulledArg
+        let rawValue = pulledArg
+        fieldParsed.getters.forEach(function(getter, idx) {
+            switch (getter.type) {
+                case 'getitem':
+
+                    // if getter.name can be an int, it should be. otherwise keep as string
+                    let key
+                    if (!isNaN(getter.name)) {
+                        key = new types.Int(getter.name)
+                    } else {
+                        key = new types.Str(getter.name)
+                    }
+
+                    rawValue = rawValue.__getitem__(key)
+
+                    break
+                case 'getattr':
+                    rawValue = rawValue.__getattr__(getter.name)
+                    break
+                default:
+                    break
+            }
+        })
+
+        /*
+          All real numbers should be kept as their python types.
+          Everything else should be converted to a string
+       */
+
+        if (types.isinstance(rawValue, [types.Int, types.Float])) {
+            return rawValue
+        } else if (types.isinstance(rawValue, [types.NoneType])) {
+            return 'None'
+        } else if (types.isinstance(rawValue, [types.NotImplementedType])) {
+            return 'NotImplemented'
+        } else {
+            switch (this.conversionFlag) {
+                case '!r':
+                    return builtins.repr([rawValue], {})
+                case '!a':
+                    return builtins.ascii([rawValue], {})
+                default:
+                    return builtins.str([rawValue], {})
+
+            } // end switch
+        }
+    }
+
+    Specifier.prototype._convertStr = function() {
+        // handles conversion for strings
+        // end result is stored as this.content
+
+        const type = this.type || 's'
+        if (!type.match(/[s ]/)) {
+            throw new exceptions.ValueError.$pyclass(`Unknown format code '${this.type}' for object of type 'str'`)
+        }
+
+        // things that aren't allowed with strings:
+            // grouping
+            // sign
+            // alternate form
+        if (this.grouping === ',') {
+            throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'.")
+        }
+
+        if (this.sign) {
+            throw new exceptions.ValueError.$pyclass('Sign not allowed in string format specifier')
+        }
+
+        if (this.alternate) {
+            throw new exceptions.ValueError.$pyclass('Alternate form (#) not allowed in string format specifier')
+        }
+
+        if ((this.align === '=') || (this.fill === '0')) {
+            throw new exceptions.ValueError.$pyclass("'=' alignment not allowed in string format specifier")
+        }
+        // the field must be atleast as big as this.width
+        // if this.precision is set and smaller than this.arg, trim this.arg to fit
+
+        if (this.precision && this.precision < this.arg.length) {
+            this.content = this.arg.slice(0, this.precision)
+        } else {
+            this.content = this.arg
+        }
+    }
+
+    Specifier.prototype._convertNumber = function() {
+        // cvers conversion for all number types.
+        // end result is stored as this.content
+        // error handling
+        this.argAbs = Math.abs(this.arg)
+
+        // determine type to use
+        let type
+        if (this.type) {
+            type = this.type
+        } else {
+            if (type_name(this.arg) === 'int') {
+                type = 'd'
+            } else {
+                type = 'g*'
+            }
+        }
+
+        // error for converting floats with improper presentation types
+        // TODO: need to check for decimal once it is implemented
+        if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
+            throw new types.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+        }
+
+        if (this.type === 'c' && this.sign) {
+            throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
+        }
+
+        if (this.grouping && !type.match(/[deEfFgG%]/)) {
+            // used a , with a bad conversion type:
+            throw new exceptions.ValueError.$pyclass(`Cannot specify ',' with '${type}'.`)
+        }
+
+        if (this.precision && type.match(/[bcdoxXn]/)) {
+            throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
+        }
+
+        if (type === 's') {
+            throw new exceptions.ValueError.$pyclass("Unknown format code 's' for object of type 'int'")
+        }
+
+        let precision
+        if (this.precision) {
+            precision = parseInt(this.precision.replace('.', ''))
+        } else {
+            precision = 6
+        }
+
+        /* components for final representation
+            base: the number prior to the exponent. excludes sign or precentage
+            expSign: comes right before the exponent either e or E
+            exp: the exponent. contains a sign and is zero padded to have atleast
+              two digits
+        */
+        let signToUse = ''
+        let alternate = ''
+        let base = ''
+        let percent = ''
+        let expSign = ''
+        let expToUse = ''
+
+        let num, exp
+        switch (type) {
+            case 'b':
+                base = this.argAbs.toString(2)
+                break
+            case 'c':
+                base = String.fromCharCode(parseInt(this.arg, 16))
+                break
+            case 'd':
+                base = parseInt(this.argAbs)
+                break
+            case 'o':
+                base = this.argAbs.toString(8)
+                break
+            case 'x':
+                base = this.argAbs.toString(16)
+                break
+            case 'X':
+                base = this.argAbs.toString(16).toUpperCase()
+                break
+            case 'e':
+            case 'E':
+                const expObj = this._toExp(this.argAbs, precision, type)
+                base = expObj.base
+                expSign = expObj.expSign
+                expToUse = expObj.exp
+                break
+            case 'f':
+            case 'F':
+                base = new BigNumber(this.argAbs).toFixed(precision)
+                break
+            case 'g':
+            case 'G':
+            case 'n':
+                // if exp is the exponent and p is the precision
+                // if -4 <= exp < p -> use f and precison = p-1-exp
+                // else use e and p-1
+
+                if (type === 'n' && this.precision) {
+                    throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
+                }
+
+                num = new BigNumber(this.argAbs).toExponential()
+                exp = Number(num.split('e')[1]) // split the exponential into base and power
+                if (exp >= -4 && exp < precision) {
+                    // use f
+                    base = new BigNumber(this.argAbs).toFixed(precision - 1 - exp)
+                } else {
+                    // use e
+                    const expObj = this._toExp(this.argAbs, precision - 1, type)
+                    base = expObj.base
+                    expSign = expObj.expSign
+                    expToUse = expObj.exp
+                }
+
+                break
+            case 'g*':
+                /*
+                  Similar to 'g', except that fixed-point notation, when used,
+                  has at least one digit past the decimal point.
+                  The default precision is as high as needed to represent the
+                  particular value. The overall effect is to match the output
+                  of str() as altered by the other format modifiers.
+                */
+
+                // if exp is the exponent and p is the precision
+                // if -4 <= exp < p -> use f and precison = p-1-exp
+                // else use e and p-1
+
+                if (type === 'n' && this.precision) {
+                    throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
+                }
+
+                num = new BigNumber(this.argAbs).toExponential()
+                exp = Number(num.split('e')[1])
+                if (exp >= -4 < precision) {
+                    // use f
+                    base = this.argAbs
+                } else {
+                    // use e
+                    const expObj = this._toExp(this.argAbs, precision - 1, type)
+                    base = expObj.base
+                    expSign = expObj.expSign
+                    expToUse = expObj.exp
+                }
+
+                base = new BigNumber(base).toPrecision(precision)
+
+                break
+            case '%':
+                base = new BigNumber(this.argAbs * 100).toFixed(precision)
+                percent = '%'
+                break
+            default:
+                throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+
+        } // switch
+
+        // determine sign
+        let sign = this.sign || '-'
+        if (this.arg >= 0) {
+            // if positive and sign is + or ' ' use that.
+            // if sign is '-' use nothing
+            if (/[+ ]/.test(sign)) {
+                signToUse = sign
+            }
+        } else {
+            // negative sign for negative numbers reguardless
+            signToUse = '-'
+        }
+
+        // determine alternate
+        if (this.alternate && /[boxX]/.test(this.type)) {
+            alternate = `0${type}`
+        }
+
+        // determine grouping
+        const grouping = this.grouping || ''
+        if (this.grouping) {
+            // modify base to handle grouping if needed
+            base = this._handleGrouping(base, grouping)
+        }
+
+        this.content = `${signToUse}${alternate}${base}${percent}${expSign}${expToUse}`
+    }
+
+    Specifier.prototype._handleLayout = function() {
+        /* takes this.content and places it inside the field with proper
+          alignment and padding
+        */
+
+        // size of the containing field. will need to be filled in if larger than content
+
+        const fieldWidth = this.width || this.content.length
+        const spaceRemaining = fieldWidth - this.content.length
+        // determine how extra space should be divided.
+        let align
+        if (this.align) {
+            align = this.align
+        } else if (this.fill === '0') {
+            align = '='
+        } else {
+            align = '<'
+        }
+
+        if (spaceRemaining > 0) {
+            const fillChar = this.fill || ' '
+            switch (align) {
+                case '^':
+                  // center align, we can't divide space evenly, extra cell goes
+                  // on right
+                    let rightSide, leftSide
+                    if (spaceRemaining % 2 === 0) {
+                        // even spaceRemaining
+                        rightSide = spaceRemaining / 2
+                        leftSide = spaceRemaining / 2
+                    } else {
+                        // odd space left, extra space goes to right
+                        rightSide = Math.floor(spaceRemaining / 2)
+                        leftSide = Math.floor(spaceRemaining / 2) + 1
+                    }
+
+                    this.field = `${fillChar.repeat(rightSide)}${this.content}${fillChar.repeat(leftSide)}`
+                    break
+                case '>':
+                    this.field = `${fillChar.repeat(spaceRemaining)}${this.content}`
+                    break
+                case '<':
+
+                    this.field = `${this.content}${fillChar.repeat(spaceRemaining)}`
+                    break
+                case '=':
+                    /*
+                    Forces the padding to be placed after the sign (if any) but
+                    before the digits. This is used for printing fields in the
+                    form ‘+000000120’. This alignment option is only valid for
+                    numeric types. It becomes the default when ‘0’ immediately
+                    precedes the field width.
+
+                    Insert extra padding BETWEEN the sign and number;
+                    */
+
+                    // if the first character is the sign, extract it
+
+                    let sign
+                    if (/[-+ ]/.test(this.content)) {
+                        sign = this.content[0]
+                    } else {
+                        sign = ''
+                    }
+
+                    this.field = `${sign}${fillChar.repeat(spaceRemaining)}${this.content}`
+            }
+        } else {
+            this.field = this.content
+        } // end if
+    }
+
+    Specifier.prototype._handleGrouping = function(n, groupingChar) {
+        /*
+          n(int) the absolute value of the number to handle grouping for.
+            shouldn't have any non number symbols like +, - or %
+          groupingChar(str): the character to group digits by
+
+          return: the same number with proper gropuing (as str)
+        */
+
+        const nSplit = n.valueOf().toString().split('.')
+        const beforeDec = nSplit[0] || 0
+        const afterDec = nSplit[1] || ''
+        let contentArr = beforeDec.split('')
+        const numDigits = beforeDec.length
+        for (var i = contentArr.length; i > 0; i = i - 3) {
+            if (i < numDigits) {
+                contentArr.splice(i, 0, groupingChar)
+            }
+        }
+        let decimalToUse
+        if (afterDec) {
+            decimalToUse = '.'
+        } else {
+            decimalToUse = ''
+        }
+        return `${contentArr.join('')}${decimalToUse}${afterDec}`
+    }
+
+    Specifier.prototype._toExp = function(n, precision, conversionType) {
+        /*
+            convert a number to its exponential value`
+            n(int): the number to convert
+            precision(int): the precision to use
+            conversionType(str): the type of conversion to use (either 'e' or 'E')
+
+            return an object of shape {base, expSign, exp}
+        */
+
+        const nBig = new BigNumber(n)
+        const nExp = nBig.toExponential()
+
+        const expSplit = nExp.split('e')
+        const baseRaw = new BigNumber((expSplit[0]))
+
+        // might need to add extra zeros to base
+        let base
+        if (precision !== null) {
+            base = baseRaw.toFixed(precision)
+        } else {
+            base = baseRaw.toFixed(6)
+        }
+
+        let exp
+        if (expSplit[1] < 10) {
+            // format <sign><number>
+            const re = /([+-])([\d])/
+            const match = expSplit[1].match(re)
+            exp = match[1] + '0' + match[2]
+        } else {
+            exp = expSplit[1]
+        }
+        // exp = expSplit[1] // the exponent bit
+
+        let expSign
+        if (conversionType === conversionType.toLowerCase()) {
+            expSign = 'e'
+        } else {
+            expSign = 'E'
+        }
+
+        return {
+            base: base,
+            expSign: expSign,
+            exp: exp
+        }
+    }
+
+    Specifier.prototype.convert = function() {
+        // convert the spec to its proper value.
+
+        if (type_name(this.arg) === 'str') {
+            this._convertStr()
+        } else {
+            this._convertNumber()
+        }
+
+        this._handleLayout()
+        return this.field
+    }
+
+    const specRe = /{(.*?)}/g
+    let match = specRe.exec(str)
+    let result = ''
+    let lastStop = 0
+    let specIndex = -1 // counter for number of specifiers encountered so far
+    while (match) {
+        // grab everything leading up to specifier
+        specIndex++
+        result += str.slice(lastStop, match.index)
+        var spec = new Specifier(match[1], specIndex, modeObj, args, kwargs)
+        result += spec.convert()
+        lastStop = match.index + match[1].length + 2
+        match = specRe.exec(str)
+    }
+    result += str.slice(lastStop, str.length)
+    return result
+}
+
+/*
+Helper functions
+*/
+
 /**************************************************
  * Module exports
  **************************************************/
 
 exports._substitute = _substitute
+exports._new_subsitute = _new_subsitute
