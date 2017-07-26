@@ -290,6 +290,18 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             this.push(items[0] | items[1])
                         }
                     }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        if (items[0] === null) {
+                            this.push(types.NoneType.__matmul__(items[1]))
+                        } else if (items[0].__matmul__) {
+                            this.push(items[0].__matmul__(items[1]))
+                        } else {
+                            // TODO: This default action might be misleading.
+                            this.push(items[0] * items[1])
+                        }
+                    }
                 default:
                     throw new builtins.BataviaError.$pyclass('Unknown binary operator ' + operator_name)
             }
@@ -496,6 +508,24 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             }
                         } else {
                             items[0] |= items[1]
+                            result = items[0]
+                        }
+                        this.push(result)
+                    }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        var result
+                        if (items[0] === null) {
+                            result = types.NoneType.__imatmul__(items[1])
+                        } else if (items[0].__imatmul__) {
+                            result = items[0].__imatmul__(items[1])
+                            if (result === null) {
+                                result = items[0]
+                            }
+                        } else {
+                            // TODO: fallback multiply might be misleading
+                            items[0] *= items[1]
                             result = items[0]
                         }
                         this.push(result)
@@ -745,7 +775,7 @@ VirtualMachine.prototype.create_traceback = function() {
  * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
  * unpacked into operations with their respective args
  */
-VirtualMachine.prototype.unpack_code = function(code) {
+function unpack_code_35(code, dispatch_table) {
     var pos = 0
     var unpacked_code = []
     var args
@@ -828,13 +858,136 @@ VirtualMachine.prototype.unpack_code = function(code) {
         unpacked_code[opcode_start_pos] = {
             'opoffset': opcode_start_pos,
             'opcode': opcode,
-            'op_method': this.dispatch_table[opcode],
+            'op_method': dispatch_table[opcode],
             'args': args,
             'next_pos': pos
         }
     }
 
     code.co_unpacked_code = unpacked_code
+}
+
+function unpack_code_36(code, dispatch_table) {
+    var pos = 0
+    var unpacked_code = []
+    var args
+    var extra = 0
+    var lo
+    var hi
+
+    while (pos < code.co_code.val.length) {
+        var opcode_start_pos = pos
+        var opcode = code.co_code.val[pos]
+
+        // next opcode has 4-byte argument effectively.
+        if (opcode === dis.EXTENDED_ARG) {
+            // TODO: this section not yet updated for 3.6 16-bit wordcode
+            lo = code.co_code.val[pos++]
+            hi = code.co_code.val[pos++]
+            extra = (lo << 16) | (hi << 24)
+            // emulate four NOPs
+            unpacked_code[opcode_start_pos] = {
+                'opoffset': opcode_start_pos,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            unpacked_code[opcode_start_pos + 1] = {
+                'opoffset': opcode_start_pos + 1,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            unpacked_code[opcode_start_pos + 2] = {
+                'opoffset': opcode_start_pos + 2,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            unpacked_code[opcode_start_pos + 3] = {
+                'opoffset': opcode_start_pos + 3,
+                'opcode': dis.NOP,
+                'op_method': this.dispatch_table[dis.NOP],
+                'args': [],
+                'next_pos': pos
+            }
+            continue
+        }
+
+        if (opcode < dis.HAVE_ARGUMENT) {
+            args = []
+            pos += 2
+            next_pos = pos
+        } else {
+            var intArg
+            var next_pos
+            intArg = code.co_code.val[pos + 1]
+            pos += 2
+            next_pos = pos
+            extra = 0 // use extended arg if present
+
+            if (opcode in dis.hasconst) {
+                args = [code.co_consts[intArg]]
+            } else if (opcode in dis.hasfree) {
+                if (intArg < code.co_cellvars.length) {
+                    args = [code.co_cellvars[intArg]]
+                } else {
+                    var var_idx = intArg - code.co_cellvars.length
+                    args = [code.co_freevars[var_idx]]
+                }
+            } else if (opcode in dis.hasname) {
+                args = [code.co_names[intArg]]
+            } else if (opcode in dis.hasjrel) {
+                // TODO: verify that the "pos" handling is correct for 3.6 16-bit wordcode
+                args = [pos + intArg]
+            } else if (opcode in dis.hasjabs) {
+                args = [intArg]
+            } else if (opcode in dis.haslocal) {
+                args = [code.co_varnames[intArg]]
+            } else {
+                args = [intArg]
+            }
+        }
+
+        unpacked_code[opcode_start_pos] = {
+            'opoffset': opcode_start_pos,
+            'opcode': opcode,
+            'op_method': dispatch_table[opcode],
+            'args': args,
+            'next_pos': next_pos
+        }
+    }
+
+    code.co_unpacked_code = unpacked_code
+}
+
+/*
+ * Annotate a Code object with a co_unpacked_code property, consisting of the bytecode
+ * unpacked into operations with their respective args
+ */
+VirtualMachine.prototype.unpack_code = function(code) {
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            /* Modifies the code parameter */
+            unpack_code_35(code, this.dispatch_table)
+            break
+
+        case constants.BATAVIA_MAGIC_361:
+            /* Modifies the code parameter */
+            unpack_code_36(code, this.dispatch_table)
+            break
+
+        default:
+            throw new builtins.BataviaError.$pyclass(
+                'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5, 3.6)'
+            )
+    }
 }
 
 VirtualMachine.prototype.run_code = function(kwargs) {
@@ -1726,7 +1879,7 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //             this.push_block('finally', dest)
 //         this.push(ctxmgr_obj)
 // }
-// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
+// VirtualMachine.prototype.byte_WITH_CLEANUP_START = function {
 //         // The code here does some weird stack manipulation: the exit function
 //         // is buried in the stack, and where depends on what's on top of it.
 //         // Pull out the exit function, and leave the rest in place.
@@ -1755,7 +1908,7 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
 //                 block = this.pop_block()
 //                 this.push_block(block.type, block.handler, block.level-1)
 //         else:       // pragma: no cover
-//             throw "Confused WITH_CLEANUP")
+//             throw "Confused WITH_CLEANUP_START")
 //         exit_ret = exit_func(u, v, w)
 //         err = (u is not null) and bool(exit_ret)
 //         if err:
@@ -1803,7 +1956,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
     return this.call_function(arg, null, kwargs)
 }
 
-VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
+VirtualMachine.prototype.byte_CALL_FUNCTION_EX = function(arg) {
     var items = this.popn(2)
     return this.call_function(arg, items[0], items[1])
 }
@@ -1999,6 +2152,93 @@ VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
 }
 
 VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
+}
+
+// Additions for Python 3.6+ opcodes added here
+
+VirtualMachine.prototype.byte_GET_AITER = function() {
+    // See Python/ceval.c around line 1929
+}
+
+VirtualMachine.prototype.byte_GET_ANEXT = function() {
+    // See Python/ceval.c around line 1976
+}
+
+VirtualMachine.prototype.byte_BEFORE_ASYNC_WITH = function() {
+    // See Python/ceval.c around line 3006
+}
+
+VirtualMachine.prototype.byte_SETUP_ANNOTATIONS = function() {
+    // See Python/ceval.c around line 2596
+}
+
+VirtualMachine.prototype.byte_STORE_ANNOTATION = function() {
+    // See Python/ceval.c around line 1698
+}
+
+VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
+    // See Python/ceval.c around line 2926
+}
+
+VirtualMachine.prototype.byte_GET_AWAITABLE = function() {
+    // See Python/ceval.c around line 2018
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_START = function() {
+    // See Python/ceval.c around line 3065
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
+    // See Python/ceval.c around line 3150
+}
+
+VirtualMachine.prototype.byte_SETUP_ASYNC_WITH = function() {
+    // See Python/ceval.c around line 3029
+}
+
+VirtualMachine.prototype.byte_BUILD_LIST_UNPACK = function() {
+    // See Python/ceval.c around line 2489
+}
+
+VirtualMachine.prototype.byte_BUILD_MAP_UNPACK = function() {
+    // See Python/ceval.c around line 2588
+}
+
+VirtualMachine.prototype.byte_BUILD_MAP_UNPACK_WITH_CALL = function() {
+    // See Python/ceval.c around line 2587
+}
+
+VirtualMachine.prototype.byte_BUILD_TUPLE_UNPACK = function() {
+    // See Python/ceval.c around line 2488
+}
+
+VirtualMachine.prototype.byte_BUILD_SET_UNPACK = function() {
+    // See Python/ceval.c around line 2544
+}
+
+VirtualMachine.prototype.byte_FORMAT_VALUE = function() {
+    // See Python/ceval.c around line 3429
+}
+
+VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
+    // See Python/ceval.c around line 2688
+    var keys = this.pop()
+    var values = this.popn(size)
+    var dict = new types.Dict()
+
+    for (var i = 0; i < values.length; i += 1) {
+        dict.__setitem__(keys[i], values[i])
+    }
+    this.push(dict)
+    return
+}
+
+VirtualMachine.prototype.byte_BUILD_STRING = function() {
+    // See Python/ceval.c around line 2478
+}
+
+VirtualMachine.prototype.byte_BUILD_TUPLE_UNPACK_WITH_CALL = function() {
+    // See Python/ceval.c around line 2520
 }
 
 module.exports = VirtualMachine
