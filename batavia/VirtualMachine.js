@@ -8,6 +8,7 @@ var Frame = require('./core').Frame
 var constants = require('./core').constants
 var exceptions = require('./core').exceptions
 var native = require('./core').native
+var callables = require('./core').callables
 var dis = require('./modules/dis')
 var marshal = require('./modules/marshal')
 var sys = require('./modules/sys')
@@ -1847,30 +1848,29 @@ VirtualMachine.prototype.byte_YIELD_VALUE = function() {
     return 'yield'
 }
 
-// VirtualMachine.prototype.byte_YIELD_FROM = function {
-//         u = this.pop()
-//         x = this.top()
+VirtualMachine.prototype.byte_YIELD_FROM = function() {
+    var v = this.pop()
+    var receiver = this.top()
 
-//         try:
-//             if not isinstance(x, Generator) or u is null:
-//                 // Call next on iterators.
-//                 retval = next(x)
-//             else:
-//                 retval = x.send(u)
-//             this.return_value = retval
-//         except StopIteration as e:
-//             this.pop()
-//             this.push(e.value)
-//         else:
-//             // YIELD_FROM decrements f_lasti, so that it will be called
-//             // repeatedly until a StopIteration is raised.
-//             this.jump(this.frame.f_lasti - 1)
-//             // Returning "yield" prevents the block stack cleanup code
-//             // from executing, suspending the frame in its current state.
-//             return "yield"
-
-//     #// Importing
-// }
+    try {
+        if (types.isinstance(v, types.NoneType) ||
+                !types.isinstance(receiver, types.Generator)) {
+            this.return_value = callables.call_method(receiver, '__next__', [])
+        } else {
+            this.return_value = receiver.send(v)
+        }
+    } catch (e) {
+        if (e instanceof exceptions.StopIteration.$pyclass) {
+            this.pop()
+            this.push(e.value)
+            return
+        } else {
+            throw e
+        }
+    }
+    this.jump(this.frame.f_lasti - 1)
+    return 'yield'
+}
 
 VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2)
