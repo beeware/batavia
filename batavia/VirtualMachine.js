@@ -1542,7 +1542,7 @@ VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (val) {
@@ -1553,7 +1553,7 @@ VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
 VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (!val) {
@@ -1564,7 +1564,7 @@ VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
 VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (val) {
@@ -1577,7 +1577,7 @@ VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
 VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (!val) {
