@@ -505,6 +505,9 @@ VirtualMachine.prototype.build_dispatch_table = function() {
             }
         } else {
             // dispatch
+            if (opcode === 69) {
+                opname = 'GET_YIELD_FROM_ITER'
+            }
             var bytecode_fn = vm['byte_' + opname]
             if (bytecode_fn) {
                 return bytecode_fn
@@ -1846,6 +1849,14 @@ VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 VirtualMachine.prototype.byte_YIELD_VALUE = function() {
     this.return_value = this.pop()
     return 'yield'
+}
+
+VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
+    // This should first check if TOS is a coroutine and if so
+    // only allow another coroutine to 'yield from' it
+    // otherwise replace TOS with iter(TOS)
+    // For now, coroutines are not supported in Batavia, so this will do
+    return this.byte_GET_ITER()
 }
 
 VirtualMachine.prototype.byte_YIELD_FROM = function() {
