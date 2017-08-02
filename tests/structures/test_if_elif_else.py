@@ -247,3 +247,19 @@ class IfElifElseTests(TranspileTestCase):
                 else:
                     y = 37
             """, run_in_function=False)
+
+    def test_truth_value_testing(self):
+        self.assertCodeExecution("""
+            def foo():
+                return None
+
+            if foo():
+                print('true')
+            else:
+                print('false')
+
+            if not foo():
+                print('true')
+            else:
+                print('false')
+        """)
