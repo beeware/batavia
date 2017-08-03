@@ -505,9 +505,6 @@ VirtualMachine.prototype.build_dispatch_table = function() {
             }
         } else {
             // dispatch
-            if (opcode === 69) {
-                opname = 'GET_YIELD_FROM_ITER'
-            }
             var bytecode_fn = vm['byte_' + opname]
             if (bytecode_fn) {
                 return bytecode_fn
