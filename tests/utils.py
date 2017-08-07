@@ -402,17 +402,25 @@ class TranspileTestCase(TestCase):
         # print('CODE2')
         # print(code2)
 
+        processed_code1 = []
+        processed_code2 = []
+
         lines1 = code1.splitlines()
         lines2 = code2.splitlines()
         # print(lines1)
         for line1, line2 in zip(lines1, lines2):
             if not line1 or line1.startswith('>>>'):
-                continue
-            val1 = eval(line1)
-            val2 = eval(line2)
+                val1 = line1
+                val2 = line2
+            else:
+                val1 = eval(line1)
+                val2 = eval(line2)
             # print('val1', val1)
             # print('val2', val2)
-            self.assertEqual(val1, val2, context)
+            processed_code1.append(val1)
+            processed_code2.append(val2)
+
+        self.assertEqual(processed_code1, processed_code2, context)
 
     def assertCodeExecution(
             self, code,
