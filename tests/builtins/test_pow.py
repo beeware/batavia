@@ -1,5 +1,3 @@
-from unittest import expectedFailure
-
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase, BuiltinTwoargFunctionTestCase
 
 
