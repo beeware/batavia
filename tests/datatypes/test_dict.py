@@ -265,8 +265,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
 
     not_implemented = [
-        'test_multiply_class',
-
         'test_subscr_class',
         'test_subscr_NotImplemented'
     ]
