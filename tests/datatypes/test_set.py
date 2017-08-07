@@ -55,7 +55,6 @@ class SetTests(TranspileTestCase):
             print('c' in x)
             """)
 
-    @unittest.expectedFailure
     def test_iter(self):
         self.assertCodeExecution("""
             print(list(iter(set([]))))
