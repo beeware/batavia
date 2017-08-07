@@ -58,7 +58,7 @@ how to set this up are `on our Environment setup guide
    $ npm install
 
 
-5. Lastly, compile the Batavia library and bundle it’s dependencies::
+5. Lastly, compile the Batavia library and bundle its dependencies::
 
    $ npm run build
 
