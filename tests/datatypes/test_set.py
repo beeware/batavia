@@ -67,8 +67,7 @@ class SetTests(TranspileTestCase):
 class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
-    not_implemented = [
-        'test_unary_positive',
+    not_implemented = [        
         'test_unary_negative',
         'test_unary_invert',
     ]
