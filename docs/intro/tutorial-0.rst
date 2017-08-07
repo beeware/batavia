@@ -21,14 +21,14 @@ how to set this up are `on our Environment setup guide
 
  * For Linux, MacOS::
 
-   $ virtualenv --python=$(which python3) venv
+   $ python3.4 -m venv venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
 
  * For Windows::
 
-   > virtualenv --python=c:\python34\python.exe venv
+   > py -3.4 -m venv venv
    > venv\Scripts\activate
    > cd batavia
    > pip install -e .
