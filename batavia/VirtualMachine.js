@@ -619,6 +619,15 @@ VirtualMachine.prototype.push = function(val) {
 }
 
 /*
+ * Push value onto the stack, i elements behind TOS
+ * push_at(val, 0) is equivalent to push(val)
+ * push_at(val, 1) will result in val being second on the stack
+ */
+VirtualMachine.prototype.push_at = function(val, i) {
+    this.frame.stack.splice(this.frame.stack.length - i, 0, val)
+}
+
+/*
  * Pop a number of values from the value stack.
  *
  * A list of `n` values is returned, the deepest value first.
@@ -646,7 +655,7 @@ VirtualMachine.prototype.jump = function(jump) {
 }
 
 VirtualMachine.prototype.push_block = function(type, handler, level) {
-    if (level === null) {
+    if (level === null || level === undefined) {
         level = this.frame.stack.length
     }
     this.frame.block_stack.push(new Block(type, handler, level))
@@ -1638,6 +1647,10 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
     var exc_type = this.pop()
     if (exc_type === builtins.None) {
         why = null
+    } else if (exc_type === 'silenced') {
+        var block = this.pop_block() // should be except-handler
+        this.unwind_block(block)
+        return null
     } else {
         value = this.pop()
         if (value instanceof builtins.BaseException.$pyclass) {
@@ -1716,58 +1729,43 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
     this.unwind_block(block)
 }
 
-// VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
-//         ctxmgr = this.pop()
-//         this.push(ctxmgr.__exit__)
-//         ctxmgr_obj = ctxmgr.__enter__()
-//         if PY2:
-//             this.push_block('with', dest)
-//         elif PY3:
-//             this.push_block('finally', dest)
-//         this.push(ctxmgr_obj)
-// }
-// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
-//         // The code here does some weird stack manipulation: the exit function
-//         // is buried in the stack, and where depends on what's on top of it.
-//         // Pull out the exit function, and leave the rest in place.
-//         v = w = null
-//         u = this.top()
-//         if u is null:
-//             exit_func = this.pop(1)
-//         elif isinstance(u, str):
-//             if u in ('return', 'continue'):
-//                 exit_func = this.pop(2)
-//             else:
-//                 exit_func = this.pop(1)
-//             u = null
-//         elif issubclass(u, BaseException):
-//             if PY2:
-//                 w, v, u = this.popn(3)
-//                 exit_func = this.pop()
-//                 this.push(w, v, u)
-//             elif PY3:
-//                 w, v, u = this.popn(3)
-//                 tp, exc, tb = this.popn(3)
-//                 exit_func = this.pop()
-//                 this.push(tp, exc, tb)
-//                 this.push(null)
-//                 this.push(w, v, u)
-//                 block = this.pop_block()
-//                 this.push_block(block.type, block.handler, block.level-1)
-//         else:       // pragma: no cover
-//             throw "Confused WITH_CLEANUP")
-//         exit_ret = exit_func(u, v, w)
-//         err = (u is not null) and bool(exit_ret)
-//         if err:
-//             // An error occurred, and was suppressed
-//             if PY2:
-//                 this.popn(3)
-//                 this.push(null)
-//             elif PY3:
-//                 this.push('silenced')
+VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
+    var mgr = this.top()
+    var res = callables.call_method(mgr, '__enter__', [])
+    this.push_block('finally', dest)
+    this.push(res)
+}
 
-//     #// Functions
-// }
+VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
+    var exc = this.top()
+    var mgr
+    var val = builtins.None
+    var tb = builtins.None
+    if (exc instanceof types.NoneType) {
+        mgr = this.pop(1)
+    } else if (exc instanceof String) {
+        if (exc === 'return' || exc === 'continue') {
+            mgr = this.pop(2)
+        } else {
+            mgr = this.pop(1)
+        }
+        exc = builtins.None
+    } else if (exc.$pyclass.prototype instanceof exceptions.BaseException.$pyclass) {
+        val = this.peek(2)
+        tb = this.peek(3)
+        mgr = this.pop(6)
+        this.push_at(builtins.None, 3)
+        var block = this.pop_block()
+        this.push_block(block.type, block.handler, block.level - 1)
+    } else {
+        throw new builtins.BataviaError.$pyclass('Confused WITH_CLEANUP')
+    }
+    var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
+    if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+            ret.__bool__().valueOf()) {
+        this.push('silenced')
+    }
+}
 
 VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
     var name = this.pop()
