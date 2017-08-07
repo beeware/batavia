@@ -39,7 +39,7 @@ how to set this up are `on our Environment setup guide
 
    $ node --version
 
-   If you have an older version of Node.js, or a version from the 7.X series,
+   If you have an older version of Node.js, or a version from the 7.X or 8.X series,
    you will need to download and install a version from the "stable" 6.X series.
 
    Once you've installed node, you need to make sure you have a current version
