@@ -18,10 +18,12 @@ function pow(args, kwargs) {
         if (!types.isinstance(x, types.Int) ||
             !types.isinstance(y, types.Int) ||
             !types.isinstance(y, types.Int)) {
-            throw new exceptions.TypeError.$pyclass('pow() requires all arguments be integers when 3 arguments are present')
+            // throw new exceptions.TypeError.$pyclass('pow() requires all arguments be integers when 3 arguments are present')
+            throw new exceptions.TypeError.$pyclass('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new exceptions.TypeError.$pyclass('Builtin Batavia does not support negative exponents')
+            // When 3 arguments and y is negative
+            throw new exceptions.ValueError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
         }
         if (y === 0) {
             return 1
