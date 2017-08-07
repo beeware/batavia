@@ -18,7 +18,7 @@ instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
-have Python 3.4, and have virtualenv available for use.
+have Python 3.4.
 
 Batavia codebase
 ^^^^^^^^^^^^^^^^
@@ -36,8 +36,8 @@ Then create a virtual environment and install Batavia into it:
 
 .. code-block:: bash
 
-    $ virtualenv -p $(which python3.4) env
-    $ . env/bin/activate
+    $ python3.4 -m venv venv
+    $ . venv/bin/activate
     $ cd batavia
     $ pip install -e .
 
