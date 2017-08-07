@@ -397,10 +397,14 @@ class TranspileTestCase(TestCase):
         cls.temp_dir = _output_dir
 
     def assertOutputEqualAsPython(self, code1, code2, context=None):
-        self.assertEqual(len(code1), len(code2), context)
+        # print('CODE1')
+        # print(code1)
+        # print('CODE2')
+        # print(code2)
 
         lines1 = code1.splitlines()
         lines2 = code2.splitlines()
+        # print(lines1)
         for line1, line2 in zip(lines1, lines2):
             if not line1 or line1.startswith('>>>'):
                 continue

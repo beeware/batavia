@@ -130,9 +130,9 @@ Set.prototype.__contains__ = function(other) {
  * Unary operators
  **************************************************/
 Set.prototype.__pos__ = function() {
-    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'set'")	
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'set'")
 }
- 
+
 Set.prototype.__not__ = function() {
     return this.__bool__().__not__()
 }
@@ -437,7 +437,7 @@ Set.prototype.update = function(args) {
     var builtins = require('../builtins')
 
     var new_args = types.js2py(args)
-    if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Str, types.Tuple])) {
+    if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Dict, types.Str, types.Tuple])) {
         var iterobj = builtins.iter([new_args], null)
         var self = this
         callables.iter_for_each(iterobj, function(val) {

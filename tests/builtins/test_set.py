@@ -8,12 +8,11 @@ class SetTests(TranspileTestCase):
 class BuiltinSetFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     functions = ["set"]
 
-    assert_output_as_python = ['test_str']
+    assert_output_as_python = ['test_str', 'test_dict']
     not_implemented = [
         'test_bool',
         'test_bytearray',
         'test_bytes',
-        'test_dict',
         'test_range',
         'test_tuple',
     ]
