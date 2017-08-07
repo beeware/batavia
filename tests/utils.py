@@ -396,11 +396,25 @@ class TranspileTestCase(TestCase):
         setUpSuite()
         cls.temp_dir = _output_dir
 
+    def assertOutputEqualAsPython(self, code1, code2, context=None):
+        self.assertEqual(len(code1), len(code2), context)
+
+        lines1 = code1.splitlines()
+        lines2 = code2.splitlines()
+        for line1, line2 in zip(lines1, lines2):
+            if not line1 or line1.startswith('>>>'):
+                continue
+            val1 = eval(line1)
+            val2 = eval(line2)
+            # print('val1', val1)
+            # print('val2', val2)
+            self.assertEqual(val1, val2, context)
+
     def assertCodeExecution(
             self, code,
             message=None,
             extra_code=None,
-            run_in_global=True, run_in_function=True,
+            run_in_global=True, run_in_function=True, assert_output_as_python=False,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
@@ -442,7 +456,10 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Global context'
 
-            self.assertEqual(js_out, py_out, context)
+            if assert_output_as_python:
+                self.assertOutputEqualAsPython(js_out, py_out, context)
+            else:
+                self.assertEqual(js_out, py_out, context)
 
         # ==================================================
         # Pass 2 - run the code in a function's context
@@ -482,7 +499,11 @@ class TranspileTestCase(TestCase):
                 context = 'Function context: %s' % message
             else:
                 context = 'Function context'
-            self.assertEqual(js_out, py_out, context)
+
+            if assert_output_as_python:
+                self.assertOutputEqualAsPython(js_out, py_out, context)
+            else:
+                self.assertEqual(js_out, py_out, context)
 
     def assertJavaScriptExecution(
             self, code, out,
@@ -1230,12 +1251,15 @@ def _builtin_test(test_name, operation, examples, small_ints=False):
         actuals = examples
         if self.small_ints and test_name.endswith('_int'):
             actuals = [x for x in examples if abs(int(x)) < 8192]
+        assert_output_as_python = test_name in getattr(self, 'assert_output_as_python', [])
+
         self.assertBuiltinFunction(
             x_values=actuals,
             f_values=self.functions,
             operation=operation,
             format=self.format,
-            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS),
+            assert_output_as_python=assert_output_as_python
         )
     return func
 
@@ -1245,7 +1269,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
-    def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions):
+    def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions, assert_output_as_python):
         data = []
         for f in f_values:
             for x in x_values:
@@ -1276,6 +1300,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
             "Error running %s" % operation,
             substitutions=substitutions,
             run_in_function=False,
+            assert_output_as_python=assert_output_as_python,
         )
 
     for datatype, examples in SAMPLE_DATA.items():
