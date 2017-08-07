@@ -47,9 +47,12 @@ function dict(args, kwargs) {
 
     // passing a list as argument
     if (args.length === 1) {
+        var args0 = new types.List(args[0])
+
         var dict = new types.Dict()
-        for (i = 0; i < args[0].length; i++) {
-            var sub_array = args[0][i]
+        for (i = 0; i < args0.length; i++) {
+            var sub_array = args0[i]
+
             if (sub_array.length === 2) {
                 dict.__setitem__(sub_array[0], sub_array[1])
             }
