@@ -22,3 +22,9 @@ class BuiltinDictFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_slice',
         'test_str',
     ]
+
+    def test_well_formatted_set(self):
+        self.assertCodeExecution("""
+            good_set = {(1, 2), (2, 3)}
+            print(dict(good_set))
+            """)
