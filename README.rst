@@ -69,7 +69,7 @@ Check your python3 version first.  If it's pointing to version 3.6, replace ``$(
 below with the path to your Python 3.4 or 3.5 installation. ::
 
 $ python3 --version
-$ virtualenv --python=$(which python3) venv
+$ python3 -m venv venv
 $ . venv/bin/activate
 $ cd batavia
 $ pip install -e .
@@ -79,10 +79,10 @@ Windows
 
 Type in the following commands in your terminal ::
 
-> virtualenv venv
-> venv\Scripts\activate
-> cd batavia
-> pip install -e .
+    > py -3 -m venv venv
+    > venv\Scripts\activate
+    > cd batavia
+    > pip install -e .
 
 
 3. Install `Node.js <https://nodejs.org>`_.
