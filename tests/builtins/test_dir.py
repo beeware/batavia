@@ -6,7 +6,7 @@ class DirTests(TranspileTestCase):
 
 
 class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["dir"]
+    function = "dir"
 
     not_implemented = [
         'test_noargs',

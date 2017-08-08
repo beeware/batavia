@@ -6,6 +6,5 @@ class TupleTests(TranspileTestCase):
         self.assertCodeExecution("print(type((0, 1.2, 3)[1]))")
 
 
-
 class BuiltinTupleFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["tuple"]
+    function = "tuple"

@@ -11,7 +11,7 @@ class HexTests(TranspileTestCase):
 
 
 class BuiltinHexFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["hex"]
+    function = "hex"
 
     not_implemented = [
         'test_bool',

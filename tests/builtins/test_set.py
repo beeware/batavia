@@ -6,7 +6,7 @@ class SetTests(TranspileTestCase):
 
 
 class BuiltinSetFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["set"]
+    function = "set"
 
     not_implemented = [
         'test_bool',

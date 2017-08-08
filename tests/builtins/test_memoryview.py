@@ -6,7 +6,7 @@ class MemoryviewTests(TranspileTestCase):
 
 
 class BuiltinMemoryviewFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["memoryview"]
+    function = "memoryview"
 
     not_implemented = [
         'test_noargs',

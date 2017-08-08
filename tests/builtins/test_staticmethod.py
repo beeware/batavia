@@ -6,7 +6,7 @@ class StaticmethodTests(TranspileTestCase):
 
 
 class BuiltinStaticmethodFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["staticmethod"]
+    function = "staticmethod"
 
     not_implemented = [
         'test_noargs',

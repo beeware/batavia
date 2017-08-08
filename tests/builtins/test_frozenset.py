@@ -6,7 +6,7 @@ class FrozensetTests(TranspileTestCase):
 
 
 class BuiltinFrozensetFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["frozenset"]
+    function = "frozenset"
 
     not_implemented = [
         'test_bool',

@@ -6,7 +6,7 @@ class SuperTests(TranspileTestCase):
 
 
 class BuiltinSuperFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["super"]
+    function = "super"
 
     not_implemented = [
         'test_noargs',

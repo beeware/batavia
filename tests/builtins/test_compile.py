@@ -6,7 +6,7 @@ class CompileTests(TranspileTestCase):
 
 
 class BuiltinCompileFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["compile"]
+    function = "compile"
 
     not_implemented = [
         'test_noargs',

@@ -909,97 +909,97 @@ SAMPLE_DATA = {
 
 SAMPLE_SUBSTITUTIONS = {
     # Normalize set ordering
-    "{1, 2.3456, 'another'}": [
-        "{1, 'another', 2.3456}",
-        "{2.3456, 1, 'another'}",
-        "{2.3456, 'another', 1}",
-        "{'another', 1, 2.3456}",
-        "{'another', 2.3456, 1}",
-    ],
-    "{2.3456, 'another'}": [
-        "{'another', 2.3456}",
-    ],
-    "{'1': 1, 1: 2}": [
-        "{1: 2, '1': 1}",
-    ],
-    "{'1', 1}": [
-        "{1, '1'}",
-    ],
-    "{'a', 'b', 'c'}": [
-        "{'a', 'c', 'b'}",
-        "{'b', 'a', 'c'}",
-        "{'b', 'c', 'a'}",
-        "{'c', 'a', 'b'}",
-        "{'c', 'b', 'a'}",
-    ],
-    "{3, 4, 5}": [
-        "{3, 5, 4}",
-        "{4, 3, 5}",
-        "{4, 5, 3}",
-        "{5, 3, 4}",
-        "{5, 4, 3}",
-    ],
-    "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}": [
-        # otherwise we have to generate 3628800 permutations
-        re.compile(r'\{(?:[1-9]|10)(?:, (?:[1-9]|10)){9}\}'),
-    ],
-    # Normalize dictionary ordering
-    "{'a': 1, 'c': 2.3456, 'd': 'another'}": [
-        "{'a': 1, 'd': 'another', 'c': 2.3456}",
-        "{'c': 2.3456, 'd': 'another', 'a': 1}",
-        "{'c': 2.3456, 'a': 1, 'd': 'another'}",
-        "{'d': 'another', 'a': 1, 'c': 2.3456}",
-        "{'d': 'another', 'c': 2.3456, 'a': 1}",
-    ],
-    "{'a': {'a': 1}, 'b': {'b': 2}}": [
-        "{'b': {'b': 2}, 'a': {'a': 1}}",
-    ],
-    #created after dict() call on nested set and list
-    "{1: 2, 3: 4}":[
-        "{3: 4, 1: 2}",
-    ],
-    #created after list() call on dict
-    "['a', 'b']" : [
-        "['b', 'a']",
-    ],
-    #created after tuple() call on dict
-    "('a', 'b')" : [
-        "('b', 'a')",
-    ],
-    # Normalize set to list ordering
-    "[1, 2.3456, 'another']": [
-        "[1, 'another', 2.3456]",
-        "[2.3456, 1, 'another']",
-        "['another', 1, 2.3456]",
-        "['another', 2.3456, 1]",
-        "[2.3456, 'another', 1]",
-    ],
-    # Normalize set to tuple ordering
-    "(1, 2.3456, 'another')": [
-        "(1, 'another', 2.3456)",
-        "(2.3456, 1, 'another')",
-        "('another', 1, 2.3456)",
-        "('another', 2.3456, 1)",
-        "(2.3456, 'another', 1)",
-    ],
-    # Normalize dictionary keys to list ordering
-    "['c', 'd', 'a']": [
-        "['a', 'c', 'd']",
-        "['a', 'd', 'c']",
-        "['c', 'a', 'd']",
-        "['c', 'd', 'a']",
-        "['d', 'a', 'c']",
-        "['d', 'c', 'a']",
-    ],
-    # Normalize dictionary keys to tuple ordering
-    "('c', 'd', 'a')": [
-        "('a', 'c', 'd')",
-        "('a', 'd', 'c')",
-        "('c', 'a', 'd')",
-        "('c', 'd', 'a')",
-        "('d', 'a', 'c')",
-        "('d', 'c', 'a')",
-    ],
+    # "{1, 2.3456, 'another'}": [
+    #     "{1, 'another', 2.3456}",
+    #     "{2.3456, 1, 'another'}",
+    #     "{2.3456, 'another', 1}",
+    #     "{'another', 1, 2.3456}",
+    #     "{'another', 2.3456, 1}",
+    # ],
+    # "{2.3456, 'another'}": [
+    #     "{'another', 2.3456}",
+    # ],
+    # "{'1': 1, 1: 2}": [
+    #     "{1: 2, '1': 1}",
+    # ],
+    # "{'1', 1}": [
+    #     "{1, '1'}",
+    # ],
+    # "{'a', 'b', 'c'}": [
+    #     "{'a', 'c', 'b'}",
+    #     "{'b', 'a', 'c'}",
+    #     "{'b', 'c', 'a'}",
+    #     "{'c', 'a', 'b'}",
+    #     "{'c', 'b', 'a'}",
+    # ],
+    # "{3, 4, 5}": [
+    #     "{3, 5, 4}",
+    #     "{4, 3, 5}",
+    #     "{4, 5, 3}",
+    #     "{5, 3, 4}",
+    #     "{5, 4, 3}",
+    # ],
+    # "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}": [
+    #     # otherwise we have to generate 3628800 permutations
+    #     re.compile(r'\{(?:[1-9]|10)(?:, (?:[1-9]|10)){9}\}'),
+    # ],
+    # # Normalize dictionary ordering
+    # "{'a': 1, 'c': 2.3456, 'd': 'another'}": [
+    #     "{'a': 1, 'd': 'another', 'c': 2.3456}",
+    #     "{'c': 2.3456, 'd': 'another', 'a': 1}",
+    #     "{'c': 2.3456, 'a': 1, 'd': 'another'}",
+    #     "{'d': 'another', 'a': 1, 'c': 2.3456}",
+    #     "{'d': 'another', 'c': 2.3456, 'a': 1}",
+    # ],
+    # "{'a': {'a': 1}, 'b': {'b': 2}}": [
+    #     "{'b': {'b': 2}, 'a': {'a': 1}}",
+    # ],
+    # #created after dict() call on nested set and list
+    # "{1: 2, 3: 4}":[
+    #     "{3: 4, 1: 2}",
+    # ],
+    # #created after list() call on dict
+    # "['a', 'b']" : [
+    #     "['b', 'a']",
+    # ],
+    # #created after tuple() call on dict
+    # "('a', 'b')" : [
+    #     "('b', 'a')",
+    # ],
+    # # Normalize set to list ordering
+    # "[1, 2.3456, 'another']": [
+    #     "[1, 'another', 2.3456]",
+    #     "[2.3456, 1, 'another']",
+    #     "['another', 1, 2.3456]",
+    #     "['another', 2.3456, 1]",
+    #     "[2.3456, 'another', 1]",
+    # ],
+    # # Normalize set to tuple ordering
+    # "(1, 2.3456, 'another')": [
+    #     "(1, 'another', 2.3456)",
+    #     "(2.3456, 1, 'another')",
+    #     "('another', 1, 2.3456)",
+    #     "('another', 2.3456, 1)",
+    #     "(2.3456, 'another', 1)",
+    # ],
+    # # Normalize dictionary keys to list ordering
+    # "['c', 'd', 'a']": [
+    #     "['a', 'c', 'd']",
+    #     "['a', 'd', 'c']",
+    #     "['c', 'a', 'd']",
+    #     "['c', 'd', 'a']",
+    #     "['d', 'a', 'c']",
+    #     "['d', 'c', 'a']",
+    # ],
+    # # Normalize dictionary keys to tuple ordering
+    # "('c', 'd', 'a')": [
+    #     "('a', 'c', 'd')",
+    #     "('a', 'd', 'c')",
+    #     "('c', 'a', 'd')",
+    #     "('c', 'd', 'a')",
+    #     "('d', 'a', 'c')",
+    #     "('d', 'c', 'a')",
+    # ],
 }
 
 
@@ -1257,18 +1257,18 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         )
 
 
-def _builtin_test(test_name, operation, examples, small_ints=False):
+def _builtin_test(test_name, datatype, operation, small_ints=False):
     def func(self):
         # bytes() gives implementation-dependent errors for sizes > 2**64,
         # we'll skip testing with those values rather than cargo-culting
         # the exact same exceptions
-        actuals = examples
+        examples = SAMPLE_DATA.get(datatype, ['"_noargs (should not be use)"'])
         if self.small_ints and test_name.endswith('_int'):
-            actuals = [x for x in examples if abs(int(x)) < 8192]
+            examples = [x for x in examples if abs(int(x)) < 8192]
 
         self.assertBuiltinFunction(
-            x_values=actuals,
-            f_values=self.functions,
+            self.function,
+            x_values=examples,
             operation=operation,
             format=self.format,
             substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
@@ -1281,12 +1281,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
-    def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions):
-        data = []
-        for f in f_values:
-            for x in x_values:
-                data.append((f, x))
-
+    def assertBuiltinFunction(self, function, x_values, operation, format, substitutions):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1301,28 +1296,28 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                         print(type(e), ':', e)
                     print()
                     """ % {
-                        'f': f,
+                        'f': function,
                         'x': x,
                         'operation': operation,
                         'format': format,
                     }
                 )
-                for f, x in data
+                for x in x_values
             ),
             "Error running %s" % operation,
             substitutions=substitutions,
-            run_in_function=False
+            run_in_function=False,
         )
 
-    for datatype, examples in SAMPLE_DATA.items():
-        vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
-    vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
+    for datatype in SAMPLE_DATA.keys():
+        vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, datatype, 'f(x)')
+    vars()['test_noargs'] = _builtin_test('test_noargs', None, 'f()')
 
 
 def _builtin_twoarg_test(test_name, operation, examples1, examples2):
     def func(self):
         self.assertBuiltinTwoargFunction(
-            f_values=self.functions,
+            self.function,
             x_values=examples1,
             y_values=examples2,
             operation=operation,
@@ -1335,17 +1330,16 @@ def _builtin_twoarg_test(test_name, operation, examples1, examples2):
 class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
 
-    def assertBuiltinTwoargFunction(self, f_values, x_values, y_values, operation, format, substitutions):
+    def assertBuiltinTwoargFunction(self, function, x_values, y_values, operation, format, substitutions):
         data = []
-        for f in f_values:
-            for x in x_values:
-                for y in y_values:
-                    data.append((f, x, y))
+        for x in x_values:
+            for y in y_values:
+                data.append((x, y))
 
         # filter out very large integers for some operations so as not
         # to crash CPython
-        data = [(f, x, y) for f, x, y in data if not
-                (f == 'pow' and
+        data = [(x, y) for x, y in data if not
+                (function == 'pow' and
                  x.lstrip('-').isdigit() and
                  y.lstrip('-').isdigit() and
                  (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
@@ -1366,14 +1360,14 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
                         print(type(e), ':', e)
                     print()
                     """ % {
-                        'f': f,
+                        'f': function,
                         'x': x,
                         'y': y,
                         'operation': operation,
                         'format': format,
                     }
                 )
-                for f, x, y in data
+                for x, y in data
             ),
             "Error running %s" % operation,
             substitutions=substitutions,
