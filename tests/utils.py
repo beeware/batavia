@@ -400,7 +400,7 @@ def _try_eval(value):
     return value
 
 
-def _normilize_outputs(code1, code2):
+def _normalize_outputs(code1, code2):
     processed_code1 = []
     processed_code2 = []
 
@@ -471,7 +471,9 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Global context'
 
-            js_out, py_out = _normilize_outputs(js_out, py_out)
+            print(js_out)
+            print(py_out)
+            js_out, py_out = _normalize_outputs(js_out, py_out)
 
             self.assertEqual(js_out, py_out, context)
 
@@ -514,7 +516,7 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Function context'
 
-            js_out, py_out = _normilize_outputs(js_out, py_out)
+            js_out, py_out = _normalize_outputs(js_out, py_out)
 
             self.assertEqual(js_out, py_out, context)
 
