@@ -1279,8 +1279,9 @@ def _builtin_test(test_name, datatype, operation, small_ints=False):
         if self.small_ints and test_name.endswith('_int'):
             examples = [x for x in examples if abs(int(x)) < 8192]
 
+        selected_operation = operation
         if self.operation:
-            operation = self.operation
+            selected_operation = self.operation
 
         transform_output = None
         ignore_order_cases = IGNORE_ORDER_DICTIONARY.get(self.function, [])
@@ -1290,7 +1291,7 @@ def _builtin_test(test_name, datatype, operation, small_ints=False):
         self.assertBuiltinFunction(
             self.function,
             x_values=examples,
-            operation=operation,
+            operation=selected_operation,
             format=self.format,
             substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS),
             transform_output=transform_output,
