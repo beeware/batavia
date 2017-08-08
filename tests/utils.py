@@ -389,6 +389,17 @@ class PYCleaner:
 
         return out
 
+
+def _try_eval(value):
+    if value.startswith('||| '):
+        value = value[4:]
+        try:
+            value = eval(value)
+        except:
+            pass
+    return value
+
+
 class TranspileTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -396,37 +407,30 @@ class TranspileTestCase(TestCase):
         setUpSuite()
         cls.temp_dir = _output_dir
 
-    def assertOutputEqualAsPython(self, code1, code2, context=None):
-        # print('CODE1')
-        # print(code1)
-        # print('CODE2')
-        # print(code2)
-
+    def assertEqualPythonOutput(self, code1, code2, context=None):
         processed_code1 = []
         processed_code2 = []
 
         lines1 = code1.splitlines()
         lines2 = code2.splitlines()
-        # print(lines1)
-        for line1, line2 in zip(lines1, lines2):
-            if not line1 or line1.startswith('>>>'):
-                val1 = line1
-                val2 = line2
-            else:
-                val1 = eval(line1)
-                val2 = eval(line2)
-            # print('val1', val1)
-            # print('val2', val2)
-            processed_code1.append(val1)
-            processed_code2.append(val2)
 
-        self.assertEqual(processed_code1, processed_code2, context)
+        for line1, line2 in zip(lines1, lines2):
+            val1 = _try_eval(line1)
+            val2 = _try_eval(line2)
+            if val1 == val2:
+                val2 = val1
+            processed_code1.append(str(val1))
+            processed_code2.append(str(val2))
+
+        self.assertEqual(
+            "\n".join(processed_code1),
+            "\n".join(processed_code2), context)
 
     def assertCodeExecution(
             self, code,
             message=None,
             extra_code=None,
-            run_in_global=True, run_in_function=True, assert_output_as_python=False,
+            run_in_global=True, run_in_function=True,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
@@ -468,10 +472,7 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Global context'
 
-            if assert_output_as_python:
-                self.assertOutputEqualAsPython(js_out, py_out, context)
-            else:
-                self.assertEqual(js_out, py_out, context)
+            self.assertEqualPythonOutput(js_out, py_out, context)
 
         # ==================================================
         # Pass 2 - run the code in a function's context
@@ -512,10 +513,7 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Function context'
 
-            if assert_output_as_python:
-                self.assertOutputEqualAsPython(js_out, py_out, context)
-            else:
-                self.assertEqual(js_out, py_out, context)
+            self.assertEqualPythonOutput(js_out, py_out, context)
 
     def assertJavaScriptExecution(
             self, code, out,
@@ -1263,15 +1261,13 @@ def _builtin_test(test_name, operation, examples, small_ints=False):
         actuals = examples
         if self.small_ints and test_name.endswith('_int'):
             actuals = [x for x in examples if abs(int(x)) < 8192]
-        assert_output_as_python = test_name in getattr(self, 'assert_output_as_python', [])
 
         self.assertBuiltinFunction(
             x_values=actuals,
             f_values=self.functions,
             operation=operation,
             format=self.format,
-            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS),
-            assert_output_as_python=assert_output_as_python
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
         )
     return func
 
@@ -1281,7 +1277,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
-    def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions, assert_output_as_python):
+    def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions):
         data = []
         for f in f_values:
             for x in x_values:
@@ -1296,7 +1292,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                         print('>>> %(format)s%(operation)s')
                         f = %(f)s
                         x = %(x)s
-                        print(%(format)s%(operation)s)
+                        print('|||', %(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
                     print()
@@ -1311,8 +1307,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
             ),
             "Error running %s" % operation,
             substitutions=substitutions,
-            run_in_function=False,
-            assert_output_as_python=assert_output_as_python,
+            run_in_function=False
         )
 
     for datatype, examples in SAMPLE_DATA.items():
