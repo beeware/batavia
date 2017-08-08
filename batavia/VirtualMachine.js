@@ -757,7 +757,7 @@ VirtualMachine.prototype.create_traceback = function() {
 VirtualMachine.prototype.unpack_code = function(code) {
     var pos = 0
     var unpacked_code = []
-    var args
+    var args = []
     var extra = 0
     var lo
     var hi
@@ -768,6 +768,7 @@ VirtualMachine.prototype.unpack_code = function(code) {
         var opcode = code.co_code.val[pos++]
 
         // next opcode has 4-byte argument effectively.
+        // TODO 3.6
         if (opcode === dis.EXTENDED_ARG) {
             lo = code.co_code.val[pos++]
             hi = code.co_code.val[pos++]
@@ -804,14 +805,17 @@ VirtualMachine.prototype.unpack_code = function(code) {
             continue
         }
 
-        if (opcode < dis.HAVE_ARGUMENT) {
-            args = []
-        } else {
+        var intArg
+        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+            intArg = code.co_code.val[pos++]
+        } else if (opcode >= dis.HAVE_ARGUMENT) {
             lo = code.co_code.val[pos++]
             hi = code.co_code.val[pos++]
-            var intArg = lo | (hi << 8) | extra
+            intArg = lo | (hi << 8) | extra
             extra = 0 // use extended arg if present
+        }
 
+        if (opcode >= dis.HAVE_ARGUMENT) { // XXX 3.6?
             if (opcode in dis.hasconst) {
                 args = [code.co_consts[intArg]]
             } else if (opcode in dis.hasfree) {
@@ -1788,11 +1792,34 @@ VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
     }
 }
 
-VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
+VirtualMachine.prototype.byte_MAKE_FUNCTION = function(arg) {
     var name = this.pop()
     var code = this.pop()
-    var defaults = this.popn(argc)
-    var fn = new types.Function(name, code, this.frame.f_globals, defaults, null, this)
+    var closure = null
+    var annotations = null // eslint-disable-line no-unused-vars
+    var kwdefaults = null // eslint-disable-line no-unused-vars
+    var defaults = null
+
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        if (arg & 8) {
+            closure = this.pop()
+        }
+        if (arg & 4) {
+            // XXX unused
+            annotations = this.pop()
+        }
+        if (arg & 2) {
+            // XXX unused
+            kwdefaults = this.pop()
+        }
+        if (arg & 1) {
+            defaults = this.pop()
+        }
+    } else {
+        defaults = this.popn(arg)
+    }
+
+    var fn = new types.Function(name, code, this.frame.f_globals, defaults, closure, this)
     this.push(fn)
 }
 
@@ -1818,6 +1845,14 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        var kw = this.pop()
+        var namedargs = new types.JSDict()
+        for (let i = kw.length - 1; i >= 0; i--) {
+            namedargs[kw[i]] = this.pop()
+        }
+        return this.call_function(arg - kw.length, null, namedargs)
+    }
     var kwargs = this.pop()
     return this.call_function(arg, null, kwargs)
 }
@@ -1828,14 +1863,17 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 }
 
 VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
-    // @arg is based on
-    // https://docs.python.org/3/library/dis.html#opcode-CALL_FUNCTION
-    var lenKw = Math.floor(arg / 256)
-    var lenPos = arg % 256
+    var lenPos
     var namedargs = new types.JSDict()
-    for (var i = 0; i < lenKw; i++) {
-        var items = this.popn(2)
-        namedargs[items[0]] = items[1]
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        lenPos = arg
+    } else {
+        var lenKw = Math.floor(arg / 256)
+        lenPos = arg % 256
+        for (var i = 0; i < lenKw; i++) {
+            var items = this.popn(2)
+            namedargs[items[0]] = items[1]
+        }
     }
     if (kwargs) {
         for (let kv of kwargs.items()) {
@@ -1848,7 +1886,6 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
             posargs.push(elem)
         }
     }
-
     var func = this.pop()
     if (func.__call__ !== undefined) {
         func = func.__call__.bind(func)
