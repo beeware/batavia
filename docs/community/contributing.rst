@@ -34,13 +34,19 @@ check out your fork to your own computer into a development directory:
 
 Then create a virtual environment and install Batavia into it:
 
-.. code-block:: bash
+ * For Linux, MacOS::
 
-    $ python3.4 -m venv venv
-    $ . venv/bin/activate
-    $ cd batavia
-    $ pip install -e .
+   $ python3.4 -m venv venv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
 
+ * For Windows::
+
+   > py -3.4 -m venv venv
+   > venv\Scripts\activate
+   > cd batavia
+   > pip install -e .
 
 Install Node.JS
 ^^^^^^^^^^^^^^^
