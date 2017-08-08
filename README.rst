@@ -84,6 +84,16 @@ Type in the following commands in your terminal ::
     > cd batavia
     > pip install -e .
 
+Windows (with only conda installed)
+-----------------------------------
+
+Type in the following commands in your terminal ::
+
+   > pip install virtualenvwrapper-win
+   > mkvirtualenv venv
+   > workon venv
+   > cd batavia
+   > pip install -e .
 
 3. Install `Node.js <https://nodejs.org>`_.
 
