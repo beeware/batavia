@@ -17,8 +17,13 @@ function pow(args, kwargs) {
 
         if (!types.isinstance(x, types.Int) ||
             !types.isinstance(y, types.Int) ||
-            !types.isinstance(y, types.Int)) {
-            throw new exceptions.TypeError.$pyclass('pow() 3rd argument not allowed unless all arguments are integers')
+            !types.isinstance(z, types.Int)) {
+            var error = 'pow() 3rd argument not allowed unless all arguments are integers'
+            if (y < 0 && z < 0) {
+                throw new exceptions.ValueError.$pyclass(error)
+            } else {
+                throw new exceptions.TypeError.$pyclass(error)
+            }
         }
         if (y < 0) {
             // When 3 arguments and y is negative
