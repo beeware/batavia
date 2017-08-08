@@ -1279,6 +1279,9 @@ def _builtin_test(test_name, datatype, operation, small_ints=False):
         if self.small_ints and test_name.endswith('_int'):
             examples = [x for x in examples if abs(int(x)) < 8192]
 
+        if self.operation:
+            operation = self.operation
+
         transform_output = None
         ignore_order_cases = IGNORE_ORDER_DICTIONARY.get(self.function, [])
         if datatype in ignore_order_cases:
