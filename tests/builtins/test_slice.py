@@ -34,5 +34,4 @@ class BuiltinSliceFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_class',
-        'test_NotImplemented',
     ]
