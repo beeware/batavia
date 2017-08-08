@@ -14,6 +14,7 @@ import subprocess
 import sys
 import tempfile
 import traceback
+import itertools
 from unittest import TestCase
 
 # get path to `tests` directory
@@ -389,6 +390,38 @@ class PYCleaner:
 
         return out
 
+
+def _try_eval(value):
+    if value and value.startswith('||| '):
+        value = value[4:]
+        try:
+            value = eval(value)
+        except:
+            pass
+    return value
+
+
+def _normalize_outputs(code1, code2):
+    processed_code1 = []
+    processed_code2 = []
+
+    lines1 = code1.split(os.linesep)
+    lines2 = code2.split(os.linesep)
+
+    for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
+        val1 = _try_eval(line1)
+        val2 = _try_eval(line2)
+        if val1 == val2:
+            val2 = val1
+
+        if val1 is not None:
+            processed_code1.append(str(val1))
+        if val2 is not None:
+            processed_code2.append(str(val2))
+
+    return '\n'.join(processed_code1), '\n'.join(processed_code2)
+
+
 class TranspileTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
@@ -433,6 +466,7 @@ class TranspileTestCase(TestCase):
                 shutil.rmtree(self.temp_dir)
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
+            js_out, py_out = _normalize_outputs(js_out, py_out)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -473,7 +507,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-
+            js_out, py_out = _normalize_outputs(js_out, py_out)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -482,6 +516,7 @@ class TranspileTestCase(TestCase):
                 context = 'Function context: %s' % message
             else:
                 context = 'Function context'
+
             self.assertEqual(js_out, py_out, context)
 
     def assertJavaScriptExecution(
@@ -1230,6 +1265,7 @@ def _builtin_test(test_name, operation, examples, small_ints=False):
         actuals = examples
         if self.small_ints and test_name.endswith('_int'):
             actuals = [x for x in examples if abs(int(x)) < 8192]
+
         self.assertBuiltinFunction(
             x_values=actuals,
             f_values=self.functions,
@@ -1260,7 +1296,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                         print('>>> %(format)s%(operation)s')
                         f = %(f)s
                         x = %(x)s
-                        print(%(format)s%(operation)s)
+                        print('|||', %(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
                     print()
@@ -1275,7 +1311,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
             ),
             "Error running %s" % operation,
             substitutions=substitutions,
-            run_in_function=False,
+            run_in_function=False
         )
 
     for datatype, examples in SAMPLE_DATA.items():
