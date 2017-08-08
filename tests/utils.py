@@ -1378,7 +1378,7 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
                         f = %(f)s
                         x = %(x)s
                         y = %(y)s
-                        print(%(format)s%(operation)s)
+                        print('|||', %(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
                     print()
