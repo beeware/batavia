@@ -1042,7 +1042,7 @@ class UnaryOperationTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         print('|||', %(format)s%(operation)sx)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'x': x,
@@ -1102,7 +1102,7 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
                         y = %(y)s
                         print('|||', %(format)s%(operation)s)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'x': x,
@@ -1217,7 +1217,7 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
                         %(operation)s
                         print('|||', %(format)sx)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'x': x,
@@ -1325,7 +1325,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         print('|||', %(format)s%(operation)s)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'f': function,
@@ -1390,7 +1390,7 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
                         y = %(y)s
                         print('|||', %(format)s%(operation)s)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'f': function,
@@ -1469,7 +1469,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         print(f(x))
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'f': func,
@@ -1503,7 +1503,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                         y = %(y)s
                         print(f(x, y))
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'f': func,
