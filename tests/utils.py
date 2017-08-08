@@ -385,14 +385,14 @@ class PYCleaner:
 
 def _normalize(value):
     """
-    ||| -- lines starting with this pattern will be `eval` and compared as
+    ||| -- lines starting with this pattern will be `eval`uated and compared as
         native python objects. Mostly used for output data from scripts.
     /// -- error messages might print out information from the object that
         generated it. This might lead to failure due to the ordering randomness
         of some object types. Lines starting with this pattern will be treated specially
-        as to overcome those.
+        as to overcome this problem.
 
-    Notice that a line might start with '||| ///'. This is helpul for string replacement cases.
+    Notice that a line might start with '||| ///'. This is helpful for string replacement cases.
     """
     native = value
     if value:
