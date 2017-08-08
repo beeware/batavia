@@ -507,7 +507,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-
+            js_out, py_out = _normalize_outputs(js_out, py_out)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -516,8 +516,6 @@ class TranspileTestCase(TestCase):
                 context = 'Function context: %s' % message
             else:
                 context = 'Function context'
-
-            js_out, py_out = _normalize_outputs(js_out, py_out)
 
             self.assertEqual(js_out, py_out, context)
 
