@@ -400,31 +400,30 @@ def _try_eval(value):
     return value
 
 
+def _normilize_outputs(code1, code2):
+    processed_code1 = []
+    processed_code2 = []
+
+    lines1 = code1.splitlines()
+    lines2 = code2.splitlines()
+
+    for line1, line2 in zip(lines1, lines2):
+        val1 = _try_eval(line1)
+        val2 = _try_eval(line2)
+        if val1 == val2:
+            val2 = val1
+        processed_code1.append(str(val1))
+        processed_code2.append(str(val2))
+
+    return "\n".join(processed_code1), "\n".join(processed_code2)
+
+
 class TranspileTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         global _output_dir
         setUpSuite()
         cls.temp_dir = _output_dir
-
-    def assertEqualPythonOutput(self, code1, code2, context=None):
-        processed_code1 = []
-        processed_code2 = []
-
-        lines1 = code1.splitlines()
-        lines2 = code2.splitlines()
-
-        for line1, line2 in zip(lines1, lines2):
-            val1 = _try_eval(line1)
-            val2 = _try_eval(line2)
-            if val1 == val2:
-                val2 = val1
-            processed_code1.append(str(val1))
-            processed_code2.append(str(val2))
-
-        self.assertEqual(
-            "\n".join(processed_code1),
-            "\n".join(processed_code2), context)
 
     def assertCodeExecution(
             self, code,
@@ -472,7 +471,9 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Global context'
 
-            self.assertEqualPythonOutput(js_out, py_out, context)
+            js_out, py_out = _normilize_outputs(js_out, py_out)
+
+            self.assertEqual(js_out, py_out, context)
 
         # ==================================================
         # Pass 2 - run the code in a function's context
@@ -513,7 +514,9 @@ class TranspileTestCase(TestCase):
             else:
                 context = 'Function context'
 
-            self.assertEqualPythonOutput(js_out, py_out, context)
+            js_out, py_out = _normilize_outputs(js_out, py_out)
+
+            self.assertEqual(js_out, py_out, context)
 
     def assertJavaScriptExecution(
             self, code, out,
