@@ -33,6 +33,14 @@ how to set this up are `on our Environment setup guide
    > cd batavia
    > pip install -e .
 
+* For Windows (with only conda installed)::
+
+   > pip install virtualenvwrapper-win
+   > mkvirtualenv venv
+   > workon venv
+   > cd batavia
+   > pip install -e .
+
 4. In addition, you need to install `Node.js <https://nodejs.org>`_. You need
    to have a recent version of Node; we test using v6.9.1. It's possible you
    might already have Node installed, so to check what version you have, run::
