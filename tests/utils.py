@@ -275,10 +275,10 @@ class JSCleaner:
             except:
                 pass
 
-        if self.transforms['complex_num']:
-            # Replace large integers in a complex number with floating point.
-            for match in JS_LARGE_COMPLEX.findall(out):
-                out = out.replace(match, str(float(match)))
+        # if self.transforms['complex_num']:
+        #     # Replace large integers in a complex number with floating point.
+        #     for match in JS_LARGE_COMPLEX.findall(out):
+        #         out = out.replace(match, str(float(match)))
 
         if self.transforms['high_precision_float']:
             # Replace high precision floats with abbreviated forms
@@ -357,9 +357,9 @@ class PYCleaner:
             except sre_constants.error:
                 pass
 
-        if self.transforms['complex_num']:
-            # Replace "-0j" with "+0j"
-            out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
+        # if self.transforms['complex_num']:
+        #     # Replace "-0j" with "+0j"
+        #     out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
 
         if self.transforms['high_precision_float']:
             # Replace high precision floats with abbreviated forms
@@ -409,6 +409,8 @@ def _normalize(value):
             value = value[4:]
             try:
                 native = eval(value)
+                # if type(native) == complex:
+                #     native = value
             except:
                 pass
 
@@ -430,18 +432,30 @@ def _normalize_outputs(code1, code2, transform_output=None):
     processed_code1 = []
     processed_code2 = []
 
+    # print(code1)
+    # print(code2)
+
     lines1 = code1.split(os.linesep)
     lines2 = code2.split(os.linesep)
 
+    # print(lines1)
+    # print(lines2)
+
     for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
+
         line1, val1 = _normalize(line1)
         line2, val2 = _normalize(line2)
+        # print(line1)
+        # print(line2)
         if transform_output(val1) == transform_output(val2):
+            # print('Yes')
             line2 = line1
 
-        if val1 is not None:
+        # print(line1)
+        # print(line2)
+        if line1 is not None:
             processed_code1.append(line1)
-        if val2 is not None:
+        if line2 is not None:
             processed_code2.append(line2)
 
     return '\n'.join(processed_code1), '\n'.join(processed_code2)
