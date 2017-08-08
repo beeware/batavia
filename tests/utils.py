@@ -393,20 +393,21 @@ class PYCleaner:
 
 
 def _normalize(value):
+    native = value
     if value:
         if value.startswith('||| '):
             # Code output
             value = value[4:]
             try:
-                value = eval(value)
+                native = eval(value)
             except:
                 pass
         elif value.startswith('/// '):
             # Error message
             value = value[4:]
-            value = collections.Counter(value)
+            native = collections.Counter(value)
 
-    return value
+    return value, native
 
 
 def _normalize_outputs(code1, code2, transform_output=None):
@@ -424,15 +425,15 @@ def _normalize_outputs(code1, code2, transform_output=None):
     lines2 = code2.split(os.linesep)
 
     for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
-        val1 = _normalize(line1)
-        val2 = _normalize(line2)
+        line1, val1 = _normalize(line1)
+        line2, val2 = _normalize(line2)
         if transform_output(val1) == transform_output(val2):
-            val2 = val1
+            line2 = line1
 
         if val1 is not None:
-            processed_code1.append(str(val1))
+            processed_code1.append(line1)
         if val2 is not None:
-            processed_code2.append(str(val2))
+            processed_code2.append(line2)
 
     return '\n'.join(processed_code1), '\n'.join(processed_code2)
 
