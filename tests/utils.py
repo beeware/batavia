@@ -400,18 +400,19 @@ def _normalize(value):
         generated it. This might lead to failure due to the ordering randomness
         of some object types. Lines starting with this pattern will be treated specially
         as to overcome those.
+
+    Notice that a line might start with '||| ///'. This is helpul for string replacement cases.
     """
     native = value
     if value:
         if value.startswith('||| '):
-            # Code output
             value = value[4:]
             try:
                 native = eval(value)
             except:
                 pass
-        elif value.startswith('/// '):
-            # Error message
+
+        if value.startswith('/// '):
             value = value[4:]
             native = collections.Counter(value)
 
@@ -908,7 +909,7 @@ SAMPLE_DATA = {
             '"3"',
             '"This is another string"',
             '"Mÿ hôvèrçràft îß fûłl öf éêlś"',
-            '"One arg: %s"',
+            '"/// One arg: %s"',
             '"Three args: %s | %s | %s"',
         ],
     'tuple': [
