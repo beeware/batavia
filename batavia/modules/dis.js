@@ -124,6 +124,9 @@ def_inplace_op('INPLACE_OR', 79)
 def_op('BREAK_LOOP', 80)
 def_op('WITH_CLEANUP', 81)
 
+// Introduced in Python 3.5
+def_op('WITH_CLEANUP_FINISH', 82)
+
 def_op('RETURN_VALUE', 83)
 def_op('IMPORT_STAR', 84)
 
