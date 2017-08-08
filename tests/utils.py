@@ -401,7 +401,14 @@ def _try_eval(value):
     return value
 
 
-def _normalize_outputs(code1, code2):
+def _normalize_outputs(code1, code2, transform_output=None):
+    """
+    transform_output -- a function that receives one argument
+        and returns a value to be used for comparing output values
+    """
+    if not transform_output:
+        transform_output = lambda x: x
+
     processed_code1 = []
     processed_code2 = []
 
@@ -411,7 +418,7 @@ def _normalize_outputs(code1, code2):
     for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
         val1 = _try_eval(line1)
         val2 = _try_eval(line2)
-        if val1 == val2:
+        if transform_output(val1) == transform_output(val2):
             val2 = val1
 
         if val1 is not None:
@@ -433,7 +440,7 @@ class TranspileTestCase(TestCase):
             self, code,
             message=None,
             extra_code=None,
-            run_in_global=True, run_in_function=True,
+            run_in_global=True, run_in_function=True, transform_output=None,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
@@ -466,7 +473,7 @@ class TranspileTestCase(TestCase):
                 shutil.rmtree(self.temp_dir)
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out, py_out = _normalize_outputs(js_out, py_out)
+            js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -507,7 +514,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out, py_out = _normalize_outputs(js_out, py_out)
+            js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -1257,6 +1264,12 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         )
 
 
+IGNORE_ORDER_DICTIONARY = {
+    'tuple': ['set', 'frozenset', 'dict'],
+    'list': ['set', 'frozenset', 'dict'],
+}
+
+
 def _builtin_test(test_name, datatype, operation, small_ints=False):
     def func(self):
         # bytes() gives implementation-dependent errors for sizes > 2**64,
@@ -1266,12 +1279,18 @@ def _builtin_test(test_name, datatype, operation, small_ints=False):
         if self.small_ints and test_name.endswith('_int'):
             examples = [x for x in examples if abs(int(x)) < 8192]
 
+        transform_output = None
+        ignore_order_cases = IGNORE_ORDER_DICTIONARY.get(self.function, [])
+        if datatype in ignore_order_cases:
+            transform_output = lambda x: set(x)
+
         self.assertBuiltinFunction(
             self.function,
             x_values=examples,
             operation=operation,
             format=self.format,
-            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS),
+            transform_output=transform_output,
         )
     return func
 
@@ -1281,7 +1300,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
-    def assertBuiltinFunction(self, function, x_values, operation, format, substitutions):
+    def assertBuiltinFunction(self, function, x_values, operation, format, substitutions, transform_output):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1307,6 +1326,7 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
             "Error running %s" % operation,
             substitutions=substitutions,
             run_in_function=False,
+            transform_output=transform_output,
         )
 
     for datatype in SAMPLE_DATA.keys():
