@@ -795,7 +795,7 @@ class NotImplementedToExpectedFailure:
             def wrapper(*args, **kwargs):
                 if self._is_flakey():
                     raise Exception("Flakey test that sometimes fails and sometimes passes")
-                return test_method(*args, **kwargs)
+                return method(*args, **kwargs)
 
             wrapper.__unittest_expecting_failure__ = True
             setattr(self, self._testMethodName, wrapper)
