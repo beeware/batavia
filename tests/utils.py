@@ -1300,6 +1300,7 @@ def _builtin_test(test_name, datatype, operation, small_ints=False):
 
 class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
+    operation = None
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
