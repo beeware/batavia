@@ -15,6 +15,7 @@ import sys
 import tempfile
 import traceback
 import itertools
+import collections
 from unittest import TestCase
 
 # get path to `tests` directory
@@ -391,13 +392,20 @@ class PYCleaner:
         return out
 
 
-def _try_eval(value):
-    if value and value.startswith('||| '):
-        value = value[4:]
-        try:
-            value = eval(value)
-        except:
-            pass
+def _normalize(value):
+    if value:
+        if value.startswith('||| '):
+            # Code output
+            value = value[4:]
+            try:
+                value = eval(value)
+            except:
+                pass
+        elif value.startswith('/// '):
+            # Error message
+            value = value[4:]
+            value = collections.Counter(value)
+
     return value
 
 
@@ -416,8 +424,8 @@ def _normalize_outputs(code1, code2, transform_output=None):
     lines2 = code2.split(os.linesep)
 
     for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
-        val1 = _try_eval(line1)
-        val2 = _try_eval(line2)
+        val1 = _normalize(line1)
+        val2 = _normalize(line2)
         if transform_output(val1) == transform_output(val2):
             val2 = val1
 
@@ -1575,7 +1583,7 @@ class MethodTestCase(NotImplementedToExpectedFailure):
                         x = {a}
                         print(f(x))
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                 """.format(m=module, c=cls_name, f=method_name, a=arg))
                 for arg in arg_values
