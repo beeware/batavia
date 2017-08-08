@@ -1032,7 +1032,7 @@ class UnaryOperationTestCase(NotImplementedToExpectedFailure):
                         print('>>> x = %(x)s')
                         print('>>> %(format)s%(operation)sx')
                         x = %(x)s
-                        print(%(format)s%(operation)sx)
+                        print('|||', %(format)s%(operation)sx)
                     except Exception as e:
                         print(type(e), ':', e)
                     print()
@@ -1092,7 +1092,7 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
                         print('>>> %(format)s%(operation)s')
                         x = %(x)s
                         y = %(y)s
-                        print(%(format)s%(operation)s)
+                        print('|||', %(format)s%(operation)s)
                     except Exception as e:
                         print(type(e), ':', e)
                     print()
@@ -1207,7 +1207,7 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         y = %(y)s
                         %(operation)s
-                        print(%(format)sx)
+                        print('|||', %(format)sx)
                     except Exception as e:
                         print(type(e), ':', e)
                     print()
