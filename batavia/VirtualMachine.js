@@ -1761,6 +1761,27 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         throw new builtins.BataviaError.$pyclass('Confused WITH_CLEANUP')
     }
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+                ret.__bool__().valueOf()) {
+            this.push('silenced')
+        }
+    } else {
+        // Assuming Python 3.5
+        this.push(exc)
+        this.push(ret)
+    }
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        throw new builtins.BataviaError.$pyclass(
+            'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
+        )
+    }
+    // Assuming Python 3.5
+    var ret = this.pop()
+    var exc = this.pop()
     if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
             ret.__bool__().valueOf()) {
         this.push('silenced')
