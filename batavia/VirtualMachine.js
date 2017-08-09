@@ -1846,6 +1846,14 @@ VirtualMachine.prototype.byte_YIELD_VALUE = function() {
     return 'yield'
 }
 
+VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
+    // This should first check if TOS is a coroutine and if so
+    // only allow another coroutine to 'yield from' it
+    // otherwise replace TOS with iter(TOS)
+    // For now, coroutines are not supported in Batavia, so this will do
+    return this.byte_GET_ITER()
+}
+
 VirtualMachine.prototype.byte_YIELD_FROM = function() {
     var v = this.pop()
     var receiver = this.top()
