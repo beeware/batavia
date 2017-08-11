@@ -15,8 +15,8 @@ Batavia
     :target: https://pypi.python.org/pypi/batavia
 .. |license| image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/pybee/batavia/blob/master/LICENSE
-.. |build-status| image:: https://beekeeper.herokuapp.com/projects/pybee/waggle/shield
-    :target: https://beekeeper.herokuapp.com/projects/pybee/waggle
+.. |build-status| image:: https://beekeeper.herokuapp.com/projects/pybee/batavia/shield
+    :target: https://beekeeper.herokuapp.com/projects/pybee/batavia
 .. |gitter| image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
 
