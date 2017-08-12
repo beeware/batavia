@@ -210,3 +210,14 @@ class FunctionTests(TranspileTestCase):
             myfunc(*[4, 2, 1])
             print('Done.')
         """)
+
+    def test_unpack_kwargs(self):
+        self.assertCodeExecution("""
+            def myfunc(x, y, z):
+                print('x =', x)
+                print('y =', y)
+                print('z =', z)
+
+            myfunc(**{'z': 4, 'x': 1, 'y': 2})
+            print('Done.')
+        """)
