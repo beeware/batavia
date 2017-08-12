@@ -470,27 +470,27 @@ class StrTests(TranspileTestCase):
             # No argument passed,string contains trailing whitespace as well as whitespace in between text
             x = 'Bee Ware '
             print(x.lstrip())
-            
+
             # No argument passed, strip mixed types of whicespaces
             x = 'Bee\\n \\t\\r '
             print(x.rstrip())
-            
+
             # No arguments passed, no traling spaces to be stripped
             x = 'Bee'
             print(x.rstrip())
-            
+
             # One character string passed as argument to be stripped
             x = 'Bee !'
             print(x.rstrip('!'))
-            
+
             # Multiple character string passed as argument to be stripped
             x = 'Bee !=-*'
             print(x.rstrip('*-=!'))
-            
+
             # Multiple character string passed as argument with trailing whitespace (nothing should get stripped)
             x = 'Bee!=-* '
             print(x.rstrip('*-=!'))
-            
+
             # Int passed as argument (error)
             x = 'Bee111'
             try:
@@ -498,16 +498,16 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.rstrip() with non-str argument')
-            
+
             # Tuple passed as argument (error)
-            
+
             x = 'Bee !=-*'
             try:
                 print(x.rstrip(('!','=')))
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.rstrip() with non-str argument')
-            
+
             # List passed as argument (error)
             x = 'Bee!=-*'
             try:
@@ -515,7 +515,7 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.rstrip() with non-str argument')
-            
+
             # Dict passed as argument (error)
             x = 'Bee '
             try:
@@ -523,7 +523,7 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.rstrip() with non-str argument')
-            
+
             # Multiple arguments passed (error)
             x = 'Bee !=-*'
             try:
@@ -544,47 +544,47 @@ class StrTests(TranspileTestCase):
             # No argument passed,string contains leading/trailing whitespaces as well as whitespace in between text
             x = ' Bee Ware '
             print(x.lstrip())
-            
+
             # No argument passed, strip mixed types of whicespaces
             x = '\\n \\t\\r Bee\\n \\t\\r '
             print(x.strip())
-            
+
             # No arguments passed, no spaces to be stripped
             x = 'Bee'
             print(x.strip())
-            
+
             # One character string passed as argument to be stripped
             x = '!!! Bee !!'
             print(x.strip('!'))
-            
+
             # Multiple character string passed as argument to be stripped
             x = '!=-* Bee !=-*'
             print(x.strip('*-=!'))
-            
+
             # No argument passed, strip whitespace only, with only leading whitespace
             x = ' Bee'
             print(x.strip())
-            
+
             # No argument passed, strip leading mixed types of whicespaces
             x = '\\n \\t\\r Bee'
             print(x.strip())
-            
+
             # One character string passed as argument to be stripped, occurring on the left
             x = '!!! Bee'
             print(x.strip('!'))
-            
+
             # Multiple character string passed as argument to be stripped, occurring on the left
             x = '!=-* Bee'
             print(x.strip('*-=!'))
-            
+
             # Multiple character string passed as argument with only leading whitespace (nothing should get stripped on the left)
             x = ' !=-*Bee!=-*'
             print(x.strip('*-=!'))
-            
+
             # No argument passed, strip whitespace only, with only trailing whitespace
             x = 'Bee '
             print(x.strip())
-            
+
             # No argument passed, strip trailing mixed types of whicespaces
             x = 'Bee \\n \\t\\r'
             print(x.strip())
@@ -592,15 +592,15 @@ class StrTests(TranspileTestCase):
             # One character string passed as argument to be stripped, occurring on the right
             x = 'Bee !!!'
             print(x.strip('!'))
-            
+
             # Multiple character string passed as argument to be stripped, occurring on the right
             x = 'Bee !=-*'
             print(x.strip('*-=!'))
-            
+
             # Multiple character string passed as argument with only trailing whitespace (nothing should get stripped on the right)
             x = '!=-*Bee!=-* '
             print(x.strip('*-=!'))
-            
+
             # Int passed as argument (error)
             x = '111Bee111'
             try:
@@ -608,7 +608,7 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.strip() with non-str argument')
-            
+
             # Tuple passed as argument (error)
             x = '!=-* Bee !=-*'
             try:
@@ -616,7 +616,7 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.strip() with non-str argument')
-            
+
             # List passed as argument (error)
             x = '!=-*Bee!=-*'
             try:
@@ -624,7 +624,7 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.strip() with non-str argument')
-            
+
             # Dict passed as argument (error)
             x = ' Bee '
             try:
@@ -632,7 +632,7 @@ class StrTests(TranspileTestCase):
             except TypeError:
                 print('TypeError thrown appropriately for '
                       'str.strip() with non-str argument')
-            
+
             # Multiple arguments passed (error)
             x = '!=-*Bee !=-*'
             try:
@@ -643,14 +643,14 @@ class StrTests(TranspileTestCase):
 
             print('done.')
             """)
-        
+
     def test_capitalize_no_args(self):
         self.assertCodeExecution("""
         simple_strings = ['aaa', 'AAA', 'AaAaA', 'Aa. Aa. aA.', '1a', '1A']
         unicode_strings = [u'aaa', u'AAA', u'AaAaA', u'Aa. Aa. aA.', u'1a', u'1A']
         raw_strings = [r'aaa', r'AAA', r'AaAaA', r'Aa. AA. aA.', r'1a', r'1A']
         exotic_strings = ['ыы', 'ää', 'ßß', 'ああ', 'ññ']
-        strings = unicode_strings + simple_strings + raw_strings + exotic_strings  
+        strings = unicode_strings + simple_strings + raw_strings + exotic_strings
         for i in strings:
             print(i.capitalize())
         """)
@@ -1058,14 +1058,14 @@ class NewStyleFormatTests(TranspileTestCase):
     """
 
     # tests for grabbing arguments
-    
+
     def test_single(self):
         test_str = adjust("""
         print(">>> 'one arg: {}'.format('great!')")
         print('one arg: {}'.format('great!'))
         """)
 
-        self.assertCodeExecution(test_str)  
+        self.assertCodeExecution(test_str)
 
     def test_single_called_twice(self):
         # should raise an index error
@@ -1109,8 +1109,7 @@ class NewStyleFormatTests(TranspileTestCase):
         """)
 
         self.assertCodeExecution(test_str)
-        
-    @unittest.expectedFailure
+
     def test_kwargs_by_splat(self):
         test_str = adjust("""
         coord = {'latitude': '37.24N', 'longitude': '-115.81W'}
@@ -1118,24 +1117,24 @@ class NewStyleFormatTests(TranspileTestCase):
         print('Coordinates: {latitude}, {longitude}'.format(**coord))
         """)
         self.assertCodeExecution(test_str)
-            
+
     def test_name_with__getitem__(self):
         """
         name calls __getitem__ on argument
         """
-        
+
         test_str = adjust("""
         coord = (3, 5)
         print(">>> 'X: {0[0]};  Y: {0[1]}'.format(coord)")
         print('X: {0[0]};  Y: {0[1]}'.format(coord))
         """)
         self.assertCodeExecution(test_str)
-        
+
     def test___getitem__bad_formatting(self):
         """
         tests for sad paths with getitem
         """
-        
+
         test_str = adjust("""
         coord = (3, 5)
         print(">>> 'X: {0[]}}'.format(coord)")
@@ -1144,34 +1143,34 @@ class NewStyleFormatTests(TranspileTestCase):
         print('X: {0[}'.format(coord))
         """)
         self.assertCodeExecution(test_str)
-    
+
     def test_name_with__getattr__(self):
         """
         name calls attribute on passed argument
         """
-        
-    
+
+
         test_str = adjust("""
         class Actor():
             name = 'John Cleese'
-            
+
         print(">>> '{a.name}'.format(a=Actor())")
         print('{a.name}'.format(a=Actor())')
         """)
-        
+
     def test__getattr__bad_formatting(self):
         """
         tests using a dot operator with nothing after it
         """
         test_str = adjust("""
-            
+
         print(">>> '{food.}'.format(food='spam')")
         print('{food.}'.format(food='spam'))
         """)
     # conversion flags
     def test_conversion_flags(self):
         conversion_flags = ('!a', '!s', '!r', '!', '!ss', '!g')
-        
+
         test_str = ''.join(
             [
                 adjust(
@@ -1182,9 +1181,9 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for flag in conversion_flags
             ]
         )
-        
+
         self.assertCodeExecution(test_str)
-    
+
     def test_fills(self):
         fills = ('*', '**', '{', '}') # only one character, no curly braces
         test_str = ''.join(
@@ -1197,9 +1196,9 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for fill in fills
             ]
         )
-        
+
         self.assertCodeExecution(test_str)
-    
+
     def test_alignments(self):
         alignments = ['<', '^', '>', '=']
         test_str = ''.join(
@@ -1214,22 +1213,22 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for align in alignments
             ]
         )
-        
+
         self.assertCodeExecution(test_str)
-    
+
     def test_fill_no_alignment(self):
-        
+
         test_str = adjust("""
         print(">>> 'one arg: {:*10}'.format('great')")
         print('one arg: {:*10}'.format('great'))
         """)
-        
+
         self.assertCodeExecution(test_str)
 
     def test_signs(self):
         signs = ('+', '-', ' ')
         numbers = (5, -5)
-        
+
         combinations = product(signs, numbers)
         test_str = ''.join(
             [
@@ -1241,21 +1240,21 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for sign, num in combinations
             ]
         )
-        
+
         self.assertCodeExecution(test_str)
-        
+
     def test_signs_with_str(self):
         """
         signs with strings shouldn't be allowed
         """
-        
+
         test_str = adjust("""
         print(">>> 'one arg: {:+}'.format('great')")
         print('one arg: {:+}'.format('great'))
         """)
-        
+
         self.assertCodeExecution(test_str)
-    
+
     @transforms(decimal = False,)
     def test_groupings(self, js_cleaner, py_cleaner):
         groupings = (',', '_')
@@ -1269,22 +1268,22 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for g in groupings
             ]
         )
-        
-        self.assertCodeExecution(test_str, js_cleaner=js_cleaner, 
+
+        self.assertCodeExecution(test_str, js_cleaner=js_cleaner,
                                     py_cleaner=py_cleaner)
-        
+
     def test_groupings_with_str(self):
         """
         grouping with str shouldn't be allowed
         """
-        
+
         test_str = adjust("""
         print(">>> 'one arg: {:,}'.format('great')")
         print('one arg: {:,}'.format('great'))
         """)
-        
+
         self.assertCodeExecution(test_str)
-        
+
     def test_zero_padding(self):
 
         test_str = adjust("""
@@ -1293,15 +1292,15 @@ class NewStyleFormatTests(TranspileTestCase):
         print(">>> 'one arg: {:05}'.format('spam')")
         print('one arg: {:05}'.format('spam'))
         """)
-        
+
         self.assertCodeExecution(test_str)
-    
+
     def test_conversion_types(self):
         """
         test all conversion types and their alternate forms
         """
         alternate = ('#', '')
-        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', 
+        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X',
                 '%')
         args = ("'spam'", "'5'", 5, -5, 5.0, -5.0, 0.5, -0.5)
         combinations = product(alternate, types, args)
@@ -1315,9 +1314,9 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for alter, typ, arg in combinations
             ]
         )
-        
+
         self.assertCodeExecution(test_str)
-        
+
     def test_precisions(self):
         precisions = ('.1', '.5')
         test_str = ''.join(
@@ -1330,20 +1329,20 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for p in precisions
             ]
         )
-        
+
         self.assertCodeExecution(test_str)
-        
+
     def test_no_args(self):
-        
+
         test_str = adjust("""
         print(">>> 'one arg: {}'.format()")
         print('one arg: {}'.format())
         """)
-    
+
     def test_random_types(self):
-        
+
         args = (values[0] for _type, values in SAMPLE_DATA.items())
-        
+
         test_str = ''.join(
             [
                 adjust(
@@ -1354,10 +1353,10 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for arg in args
             ]
         )
-            
-        
+
+
         self.assertCodeExecution(test_str)
-        
+
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 

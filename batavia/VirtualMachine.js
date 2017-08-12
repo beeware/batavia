@@ -1838,11 +1838,15 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         namedargs[items[0]] = items[1]
     }
     if (kwargs) {
-        namedargs.update(kwargs)
+        for (let kv of kwargs.items()) {
+            namedargs[kv[0]] = kv[1]
+        }
     }
     var posargs = this.popn(lenPos)
     if (args) {
-        posargs = posargs.concat(args)
+        for (let elem of args) {
+            posargs.push(elem)
+        }
     }
 
     var func = this.pop()
