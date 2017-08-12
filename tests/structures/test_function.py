@@ -199,3 +199,14 @@ class FunctionTests(TranspileTestCase):
             Result is 37
             Done.
             """)
+
+    def test_unpack_args(self):
+        self.assertCodeExecution("""
+            def myfunc(x, y, z):
+                print('x =', x)
+                print('y =', y)
+                print('z =', z)
+
+            myfunc(*[4, 2, 1])
+            print('Done.')
+        """)

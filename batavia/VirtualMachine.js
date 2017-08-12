@@ -1842,7 +1842,9 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
     }
     var posargs = this.popn(lenPos)
     if (args) {
-        posargs = posargs.concat(args)
+        for (let elem of args) {
+            posargs.push(elem)
+        }
     }
 
     var func = this.pop()
