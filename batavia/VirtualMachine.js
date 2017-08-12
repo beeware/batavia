@@ -1858,8 +1858,18 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
-    var items = this.popn(2)
-    return this.call_function(arg, items[0], items[1])
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        // opcode: CALL_FUNCTION_EX
+        var kwargs
+        if (arg & 1) {
+            kwargs = this.pop()
+        }
+        var args = this.pop()
+        return this.call_function(0, args, kwargs)
+    } else {
+        var items = this.popn(2)
+        return this.call_function(arg, items[0], items[1])
+    }
 }
 
 VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
