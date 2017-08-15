@@ -768,54 +768,67 @@ VirtualMachine.prototype.unpack_code = function(code) {
         var opcode = code.co_code.val[pos++]
 
         // next opcode has 4-byte argument effectively.
-        // TODO 3.6
         if (opcode === dis.EXTENDED_ARG) {
-            lo = code.co_code.val[pos++]
-            hi = code.co_code.val[pos++]
-            extra = (lo << 16) | (hi << 24)
-            // emulate four NOPs
-            unpacked_code[opcode_start_pos] = {
-                'opoffset': opcode_start_pos,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
-            }
-            unpacked_code[opcode_start_pos + 1] = {
-                'opoffset': opcode_start_pos + 1,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
-            }
-            unpacked_code[opcode_start_pos + 2] = {
-                'opoffset': opcode_start_pos + 2,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
-            }
-            unpacked_code[opcode_start_pos + 3] = {
-                'opoffset': opcode_start_pos + 3,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
+            if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+                extra = code.co_code.val[pos++] << 8
+                unpacked_code[opcode_start_pos] = {
+                    'opoffset': opcode_start_pos,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
+                }
+            } else {
+                lo = code.co_code.val[pos++]
+                hi = code.co_code.val[pos++]
+                extra = (lo << 16) | (hi << 24)
+                // emulate four NOPs
+                unpacked_code[opcode_start_pos] = {
+                    'opoffset': opcode_start_pos,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
+                }
+                unpacked_code[opcode_start_pos + 1] = {
+                    'opoffset': opcode_start_pos + 1,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
+                }
+                unpacked_code[opcode_start_pos + 2] = {
+                    'opoffset': opcode_start_pos + 2,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
+                }
+                unpacked_code[opcode_start_pos + 3] = {
+                    'opoffset': opcode_start_pos + 3,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
+                }
             }
             continue
         }
 
         var intArg
         if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
-            intArg = code.co_code.val[pos++]
-        } else if (opcode >= dis.HAVE_ARGUMENT) {
-            lo = code.co_code.val[pos++]
-            hi = code.co_code.val[pos++]
-            intArg = lo | (hi << 8) | extra
-            extra = 0 // use extended arg if present
+            intArg = code.co_code.val[pos++] | extra
+            extra = 0
         }
 
         if (opcode >= dis.HAVE_ARGUMENT) { // XXX 3.6?
+            if (constants.BATAVIA_MAGIC !== constants.BATAVIA_MAGIC_36) {
+                lo = code.co_code.val[pos++]
+                hi = code.co_code.val[pos++]
+                intArg = lo | (hi << 8) | extra
+                extra = 0 // use extended arg if present
+            }
+
             if (opcode in dis.hasconst) {
                 args = [code.co_consts[intArg]]
             } else if (opcode in dis.hasfree) {
@@ -1408,6 +1421,7 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
     switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_35:
         case constants.BATAVIA_MAGIC_353:
+        case constants.BATAVIA_MAGIC_36:
             var items = this.popn(size * 2)
             var dict = new types.Dict()
 
@@ -1430,6 +1444,18 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
                 'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)'
             )
     }
+}
+
+VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
+    var keys = this.pop()
+    var values = this.popn(size)
+    var dict = new types.Dict()
+
+    for (var i = 0; i < values.length; i += 1) {
+        dict.__setitem__(keys[i], values[i])
+    }
+    this.push(dict)
+    return
 }
 
 VirtualMachine.prototype.byte_STORE_MAP = function() {
