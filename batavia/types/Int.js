@@ -390,6 +390,31 @@ Int.prototype.__mul__ = function(other) {
             result += other.valueOf()
         }
         return result
+    } else if (types.isinstance(other, types.Bytes)) {
+        if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+            throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+        }
+        if (this.val.isNegative()) {
+            return new types.Bytes('')
+        }
+        var byteSize = this.val.mul(other.val.length)
+        if (byteSize.gt(MAX_INT.val)) {
+            throw new exceptions.OverflowError.$pyclass('repeated bytes are too long')
+        }
+
+        if (other.val.length === 0) {
+            return new types.Bytes('')
+        }
+
+        if ((this.valueOf() > 4294967295) || (this.valueOf() < -4294967296)) {
+            throw new exceptions.MemoryError.$pyclass('')
+        }
+
+        result = new types.Bytes('')
+        for (i = 0; i < this.valueOf(); i++) {
+            result = result.__add__(other)
+        }
+        return result
     } else if (types.isinstance(other, types.Tuple)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
             throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
