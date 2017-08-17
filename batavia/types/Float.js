@@ -293,6 +293,7 @@ Float.prototype.__truediv__ = function(other) {
 
 Float.prototype.__mul__ = function(other) {
     var types = require('../types')
+    
     if (other === null) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and 'NoneType'")
     } else if (types.isinstance(other, types.Bool)) {
