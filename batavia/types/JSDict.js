@@ -208,11 +208,11 @@ JSDict.prototype.__setitem__ = function(key, value) {
 }
 
 JSDict.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__lshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__rshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'");
 }
 
 JSDict.prototype.__and__ = function(other) {
@@ -220,11 +220,11 @@ JSDict.prototype.__and__ = function(other) {
 }
 
 JSDict.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__xor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__or__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -232,51 +232,51 @@ JSDict.prototype.__or__ = function(other) {
  **************************************************/
 
 JSDict.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ifloordiv__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__itruediv__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__iadd__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__isub__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__imul__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__imod__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ipow__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ilshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__irshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__iand__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ixor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ior__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__getitem__ = function(other) {
