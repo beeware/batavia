@@ -1,9 +1,9 @@
-var path = require('path');
-var webpack = require('webpack');
+var path = require('path')
+var webpack = require('webpack')
 
 module.exports = {
     entry: {
-        'batavia': './batavia/batavia.js',
+        'batavia': './batavia/batavia.js'
     },
     devtool: 'source-map',
     output: {
