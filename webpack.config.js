@@ -9,7 +9,6 @@ module.exports = {
         aggregateTimeout: 300,
         poll: 1000
     },
-    devtool: 'source-map',
     output: {
         path: path.join(__dirname, './dist'),
         filename: '[name].js',
