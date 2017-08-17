@@ -4,7 +4,6 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 class ChrTests(TranspileTestCase):
     pass
 
-
 class BuiltinChrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "chr"
 
@@ -18,7 +17,6 @@ class BuiltinChrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_frozenset',
         'test_int',
         'test_list',
-        'test_None',
         'test_NotImplemented',
         'test_range',
         'test_set',

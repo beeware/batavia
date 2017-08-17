@@ -23,6 +23,9 @@ function chr(args, kwargs) {
                 throw new exceptions.BataviaError.$pyclass('Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)')
         }
     }
+    if (args[0].__name__ === 'NoneType') {
+        throw new exceptions.TypeError.$pyclass('an integer is required (got type NoneType)')
+    }
     return new types.Str(String.fromCharCode(args[0]))
     // After tests pass, let's try saving one object creation
     // return new types.Str.fromCharCode(args[0]);
