@@ -1761,6 +1761,27 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         throw new builtins.BataviaError.$pyclass('Confused WITH_CLEANUP')
     }
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+                ret.__bool__().valueOf()) {
+            this.push('silenced')
+        }
+    } else {
+        // Assuming Python 3.5
+        this.push(exc)
+        this.push(ret)
+    }
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        throw new builtins.BataviaError.$pyclass(
+            'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
+        )
+    }
+    // Assuming Python 3.5
+    var ret = this.pop()
+    var exc = this.pop()
     if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
             ret.__bool__().valueOf()) {
         this.push('silenced')
@@ -1817,11 +1838,15 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         namedargs[items[0]] = items[1]
     }
     if (kwargs) {
-        namedargs.update(kwargs)
+        for (let kv of kwargs.items()) {
+            namedargs[kv[0]] = kv[1]
+        }
     }
     var posargs = this.popn(lenPos)
     if (args) {
-        posargs = posargs.concat(args)
+        for (let elem of args) {
+            posargs.push(elem)
+        }
     }
 
     var func = this.pop()
@@ -1844,6 +1869,14 @@ VirtualMachine.prototype.byte_RETURN_VALUE = function() {
 VirtualMachine.prototype.byte_YIELD_VALUE = function() {
     this.return_value = this.pop()
     return 'yield'
+}
+
+VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
+    // This should first check if TOS is a coroutine and if so
+    // only allow another coroutine to 'yield from' it
+    // otherwise replace TOS with iter(TOS)
+    // For now, coroutines are not supported in Batavia, so this will do
+    return this.byte_GET_ITER()
 }
 
 VirtualMachine.prototype.byte_YIELD_FROM = function() {

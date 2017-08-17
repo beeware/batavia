@@ -134,24 +134,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_eq_bytearray',
 
-        'test_floor_divide_bool',
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_class',
-        'test_floor_divide_complex',
-        'test_floor_divide_dict',
-        'test_floor_divide_float',
-        'test_floor_divide_frozenset',
-        'test_floor_divide_int',
-        'test_floor_divide_list',
-        'test_floor_divide_None',
-        'test_floor_divide_NotImplemented',
-        'test_floor_divide_range',
-        'test_floor_divide_set',
-        'test_floor_divide_slice',
-        'test_floor_divide_str',
-        'test_floor_divide_tuple',
-
         'test_ge_bytearray',
 
         'test_gt_bytearray',
@@ -277,7 +259,7 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_NotImplemented',
         'test_subtract_range',
         'test_subtract_slice',
-        
+
         'test_true_divide_bytearray',
         'test_true_divide_class',
         'test_true_divide_complex',
@@ -285,7 +267,7 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_true_divide_NotImplemented',
         'test_true_divide_range',
         'test_true_divide_slice',
-        
+
 
         'test_xor_bool',
         'test_xor_bytearray',
@@ -346,24 +328,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_and_slice',
         'test_and_str',
         'test_and_tuple',
-
-        'test_floor_divide_bool',
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_class',
-        'test_floor_divide_complex',
-        'test_floor_divide_dict',
-        'test_floor_divide_float',
-        'test_floor_divide_frozenset',
-        'test_floor_divide_int',
-        'test_floor_divide_list',
-        'test_floor_divide_None',
-        'test_floor_divide_NotImplemented',
-        'test_floor_divide_range',
-        'test_floor_divide_set',
-        'test_floor_divide_slice',
-        'test_floor_divide_str',
-        'test_floor_divide_tuple',
 
         'test_lshift_bool',
         'test_lshift_bytearray',

@@ -15,8 +15,8 @@ Batavia
     :target: https://pypi.python.org/pypi/batavia
 .. |license| image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/pybee/batavia/blob/master/LICENSE
-.. |build-status| image:: https://beekeeper.herokuapp.com/projects/pybee/waggle/shield
-    :target: https://beekeeper.herokuapp.com/projects/pybee/waggle
+.. |build-status| image:: https://beekeeper.herokuapp.com/projects/pybee/batavia/shield
+    :target: https://beekeeper.herokuapp.com/projects/pybee/batavia
 .. |gitter| image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
 
@@ -84,6 +84,16 @@ Type in the following commands in your terminal ::
     > cd batavia
     > pip install -e .
 
+Windows (with only conda installed)
+-----------------------------------
+
+Type in the following commands in your terminal ::
+
+   > pip install virtualenvwrapper-win
+   > mkvirtualenv venv
+   > workon venv
+   > cd batavia
+   > pip install -e .
 
 3. Install `Node.js <https://nodejs.org>`_.
 

@@ -196,7 +196,13 @@ Bytes.prototype.__div__ = function(other) {
 }
 
 Bytes.prototype.__floordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__floordiv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__truediv__ = function(other) {
@@ -338,7 +344,13 @@ Bytes.prototype.__or__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ifloordiv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__itruediv__ = function(other) {

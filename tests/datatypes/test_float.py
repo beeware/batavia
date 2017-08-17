@@ -77,7 +77,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         'test_modulo_complex',
 
-        'test_multiply_bytes',
         'test_multiply_bytearray',
         'test_multiply_complex',
 
