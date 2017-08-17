@@ -423,6 +423,39 @@ class ListTests(TranspileTestCase):
             print(e)
         """)
 
+    def test_reverse(self):
+        self.assertCodeExecution("""
+        x = []
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [1]
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [0, 0]
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [1, 2]
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [1, 2, 3]
+        try:
+            x.reverse(0)
+        except TypeError as e:
+            print(e)
+        """)
+
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'
