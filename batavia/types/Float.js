@@ -343,9 +343,9 @@ Float.prototype.__add__ = function(other) {
 
     if (types.isinstance(other, [types.Int, Float])) {
         var value = new Float(this.valueOf() + parseFloat(other.valueOf()))
-        if (value.toString() == 'inf' || value.toString() == '-inf') {
+        if (value.toString() === 'inf' || value.toString() === '-inf') {
             throw new exceptions.OverflowError.$pyclass(
-                "int too large to convert to float"
+                'int too large to convert to float'
             )
         }
         return value
