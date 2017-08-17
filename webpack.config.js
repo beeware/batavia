@@ -6,8 +6,8 @@ module.exports = {
         'batavia': './batavia/batavia.js'
     },
     watchOptions: {
-      aggregateTimeout: 300,
-      poll: 1000
+        aggregateTimeout: 300,
+        poll: 1000
     },
     devtool: 'source-map',
     output: {
