@@ -60,7 +60,6 @@ JSONEncoderTests.add_one_arg_method_tests('json', 'JSONEncoder', ['encode'])
 class DumpsTests(ModuleFunctionTestCase, TranspileTestCase):
 
     not_implemented = [
-        'test_json_dumps_dict',   # fails due to dict ordering
         'test_json_dumps_class',  # fails due to class __str__
     ]
 
