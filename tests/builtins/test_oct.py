@@ -6,7 +6,7 @@ class OctTests(TranspileTestCase):
 
 
 class BuiltinOctFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["oct"]
+    function = "oct"
 
     not_implemented = [
         'test_bytearray',

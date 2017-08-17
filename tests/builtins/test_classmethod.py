@@ -6,7 +6,7 @@ class ClassmethodTests(TranspileTestCase):
 
 
 class BuiltinClassmethodFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["classmethod"]
+    function = "classmethod"
 
     not_implemented = [
         'test_noargs',

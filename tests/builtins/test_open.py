@@ -6,7 +6,7 @@ class OpenTests(TranspileTestCase):
 
 
 class BuiltinOpenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["open"]
+    function = "open"
 
     not_implemented = [
         'test_noargs',

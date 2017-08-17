@@ -498,7 +498,8 @@ Str.prototype.__ior__ = function(other) {
  **************************************************/
 
 Str.prototype.__len__ = function() {
-    return this.length
+    var types = require('../types')
+    return new types.Int(this.length)
 }
 
 Str.prototype.join = function(iter) {
@@ -706,6 +707,14 @@ Str.prototype.capitalize = function() {
     }
 }
 
+Str.prototype.format = function(args, kwargs) {
+    const types = require('../types')
+    const positionalArguments = new types.Tuple(types.js2py(args))
+    const keywordArguments = types.js2py(kwargs)
+    return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
+}
+
+Str.prototype.format.$pyargs = true
 /**************************************************
  * Module exports
  **************************************************/

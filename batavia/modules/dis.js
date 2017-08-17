@@ -112,6 +112,9 @@ def_binary_op('BINARY_OR', 66)
 def_inplace_op('INPLACE_POWER', 67)
 def_op('GET_ITER', 68)
 
+// introduced in Python 3.5+
+def_op('GET_YIELD_FROM_ITER', 69)
+
 def_op('PRINT_EXPR', 70)
 def_op('LOAD_BUILD_CLASS', 71)
 def_op('YIELD_FROM', 72)
@@ -123,6 +126,9 @@ def_inplace_op('INPLACE_XOR', 78)
 def_inplace_op('INPLACE_OR', 79)
 def_op('BREAK_LOOP', 80)
 def_op('WITH_CLEANUP', 81)
+
+// Introduced in Python 3.5
+def_op('WITH_CLEANUP_FINISH', 82)
 
 def_op('RETURN_VALUE', 83)
 def_op('IMPORT_STAR', 84)

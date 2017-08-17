@@ -91,19 +91,12 @@ class JavaScriptNormalizationTests(unittest.TestCase):
         )
 
     def test_bool(self):
-        self.assertNormalized('true', 'True')
-        self.assertNormalized('false', 'False')
-
-    def test_float(self):
-        self.assertNormalized('7.95089e-06', '7.95089e-6')
-        self.assertNormalized('7.950899e-06', '7.95089...e-6')
-        self.assertNormalized('7.950899459780156e-06', '7.95089...e-6')
-
-        self.assertNormalized('0.000002653582035', '2.65358...e-6')
-        self.assertNormalized('321956420358983230.0', '3.21956...e+17')
-
-        self.assertNormalized('(18446744073709552000-4j)', '(1.84467...e+19-4j)')
-        self.assertNormalized('(18446744073709552000+4j)', '(1.84467...e+19+4j)')
+        self.assertNormalized(
+            'true', 'True', js_cleaner=JSCleaner(js_bool=True)
+        )
+        self.assertNormalized(
+            'true', 'True', js_cleaner=JSCleaner(js_bool=True)
+        )
 
     def test_memory_reference(self):
         self.assertNormalized(
@@ -245,7 +238,7 @@ class JavaScriptBootstrapTests(TranspileTestCase):
         )
 
 class JSCleanerTests(TranspileTestCase):
-    cleaner = JSCleaner()
+    cleaner = JSCleaner(js_bool=True)
 
     def test_cleanse_err_msg(self):
         js_in = adjust("""
@@ -309,19 +302,6 @@ class JSCleanerTests(TranspileTestCase):
         55e-5
         55e-05
         """)
-        self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
-
-    def test_complex_num(self):
-        js_in = adjust("""
-        (1234567890123456-
-        (1234567890123456+
-        """)
-
-        expected_out = adjust("""
-        (1234567890123456.0.0-
-        (1234567890123456.0.0+
-        """)
-
         self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
 
     def test_high_precision_float(self):

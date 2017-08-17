@@ -19,7 +19,7 @@ class RangeTests(TranspileTestCase):
         """)
 
 class BuiltinRangeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["range"]
+    function = "range"
 
     not_implemented = [
         'test_noargs',

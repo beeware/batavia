@@ -34,3 +34,6 @@ npm-debug.log
 
 # Py.test
 .cache
+
+# local environment configuration
+.env

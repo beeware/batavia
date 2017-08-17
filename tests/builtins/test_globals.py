@@ -14,7 +14,7 @@ class GlobalsTests(TranspileTestCase):
 
 
 class BuiltinGlobalsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["globals"]
+    function = "globals"
 
     not_implemented = [
         'test_noargs',

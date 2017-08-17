@@ -668,6 +668,51 @@ List.prototype.clear = function() {
     this.splice(0, this.length)
 }
 
+List.prototype.count = function(value) {
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
+    }
+    var count = 0
+    for (var i = 0; i < this.length; ++i) {
+        if (this[i].__eq__(value)) {
+            count++
+        }
+    }
+    return count
+}
+
+List.prototype.index = function(value, start, stop) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
+    } else if (arguments.length > 3) {
+        throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
+    }
+
+    if (start < 0) {
+        start = Number(this.length.valueOf()) + Number(start.valueOf())
+        if (start < 0) {
+            start = 0
+        }
+    }
+    if (stop < 0) {
+        stop = Number(this.length.valueOf()) + Number(stop.valueOf())
+    }
+
+    for (var i = (start || 0); i < (stop || this.length); ++i) {
+        if (this[i].__eq__(value)) {
+            return i
+        }
+    }
+    throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
+}
+
+List.prototype.reverse = function() {
+    if (arguments.length > 0) {
+        throw new exceptions.TypeError.$pyclass('reverse() takes no arguments (' + arguments.length + ' given)')
+    }
+    Array.prototype.reverse.apply(this)
+}
+
 function validateIndexType(index) {
     var types = require('../types')
     if (!types.isinstance(index, types.Int)) {

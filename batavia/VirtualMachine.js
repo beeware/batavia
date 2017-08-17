@@ -8,6 +8,7 @@ var Frame = require('./core').Frame
 var constants = require('./core').constants
 var exceptions = require('./core').exceptions
 var native = require('./core').native
+var callables = require('./core').callables
 var dis = require('./modules/dis')
 var marshal = require('./modules/marshal')
 var sys = require('./modules/sys')
@@ -618,6 +619,15 @@ VirtualMachine.prototype.push = function(val) {
 }
 
 /*
+ * Push value onto the stack, i elements behind TOS
+ * push_at(val, 0) is equivalent to push(val)
+ * push_at(val, 1) will result in val being second on the stack
+ */
+VirtualMachine.prototype.push_at = function(val, i) {
+    this.frame.stack.splice(this.frame.stack.length - i, 0, val)
+}
+
+/*
  * Pop a number of values from the value stack.
  *
  * A list of `n` values is returned, the deepest value first.
@@ -645,7 +655,7 @@ VirtualMachine.prototype.jump = function(jump) {
 }
 
 VirtualMachine.prototype.push_block = function(type, handler, level) {
-    if (level === null) {
+    if (level === null || level === undefined) {
         level = this.frame.stack.length
     }
     this.frame.block_stack.push(new Block(type, handler, level))
@@ -1541,7 +1551,7 @@ VirtualMachine.prototype.byte_JUMP_ABSOLUTE = function(jump) {
 VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
     var val = this.pop()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (val) {
@@ -1552,7 +1562,7 @@ VirtualMachine.prototype.byte_POP_JUMP_IF_TRUE = function(jump) {
 VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
     var val = this.pop()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (!val) {
@@ -1563,7 +1573,7 @@ VirtualMachine.prototype.byte_POP_JUMP_IF_FALSE = function(jump) {
 VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
     var val = this.top()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (val) {
@@ -1576,7 +1586,7 @@ VirtualMachine.prototype.byte_JUMP_IF_TRUE_OR_POP = function(jump) {
 VirtualMachine.prototype.byte_JUMP_IF_FALSE_OR_POP = function(jump) {
     var val = this.top()
     if (val.__bool__ !== undefined) {
-        val = val.__bool__()
+        val = val.__bool__().valueOf()
     }
 
     if (!val) {
@@ -1637,6 +1647,10 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
     var exc_type = this.pop()
     if (exc_type === builtins.None) {
         why = null
+    } else if (exc_type === 'silenced') {
+        var block = this.pop_block() // should be except-handler
+        this.unwind_block(block)
+        return null
     } else {
         value = this.pop()
         if (value instanceof builtins.BaseException.$pyclass) {
@@ -1715,58 +1729,64 @@ VirtualMachine.prototype.byte_POP_EXCEPT = function() {
     this.unwind_block(block)
 }
 
-// VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
-//         ctxmgr = this.pop()
-//         this.push(ctxmgr.__exit__)
-//         ctxmgr_obj = ctxmgr.__enter__()
-//         if PY2:
-//             this.push_block('with', dest)
-//         elif PY3:
-//             this.push_block('finally', dest)
-//         this.push(ctxmgr_obj)
-// }
-// VirtualMachine.prototype.byte_WITH_CLEANUP = function {
-//         // The code here does some weird stack manipulation: the exit function
-//         // is buried in the stack, and where depends on what's on top of it.
-//         // Pull out the exit function, and leave the rest in place.
-//         v = w = null
-//         u = this.top()
-//         if u is null:
-//             exit_func = this.pop(1)
-//         elif isinstance(u, str):
-//             if u in ('return', 'continue'):
-//                 exit_func = this.pop(2)
-//             else:
-//                 exit_func = this.pop(1)
-//             u = null
-//         elif issubclass(u, BaseException):
-//             if PY2:
-//                 w, v, u = this.popn(3)
-//                 exit_func = this.pop()
-//                 this.push(w, v, u)
-//             elif PY3:
-//                 w, v, u = this.popn(3)
-//                 tp, exc, tb = this.popn(3)
-//                 exit_func = this.pop()
-//                 this.push(tp, exc, tb)
-//                 this.push(null)
-//                 this.push(w, v, u)
-//                 block = this.pop_block()
-//                 this.push_block(block.type, block.handler, block.level-1)
-//         else:       // pragma: no cover
-//             throw "Confused WITH_CLEANUP")
-//         exit_ret = exit_func(u, v, w)
-//         err = (u is not null) and bool(exit_ret)
-//         if err:
-//             // An error occurred, and was suppressed
-//             if PY2:
-//                 this.popn(3)
-//                 this.push(null)
-//             elif PY3:
-//                 this.push('silenced')
+VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
+    var mgr = this.top()
+    var res = callables.call_method(mgr, '__enter__', [])
+    this.push_block('finally', dest)
+    this.push(res)
+}
 
-//     #// Functions
-// }
+VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
+    var exc = this.top()
+    var mgr
+    var val = builtins.None
+    var tb = builtins.None
+    if (exc instanceof types.NoneType) {
+        mgr = this.pop(1)
+    } else if (exc instanceof String) {
+        if (exc === 'return' || exc === 'continue') {
+            mgr = this.pop(2)
+        } else {
+            mgr = this.pop(1)
+        }
+        exc = builtins.None
+    } else if (exc.$pyclass.prototype instanceof exceptions.BaseException.$pyclass) {
+        val = this.peek(2)
+        tb = this.peek(3)
+        mgr = this.pop(6)
+        this.push_at(builtins.None, 3)
+        var block = this.pop_block()
+        this.push_block(block.type, block.handler, block.level - 1)
+    } else {
+        throw new builtins.BataviaError.$pyclass('Confused WITH_CLEANUP')
+    }
+    var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+                ret.__bool__().valueOf()) {
+            this.push('silenced')
+        }
+    } else {
+        // Assuming Python 3.5
+        this.push(exc)
+        this.push(ret)
+    }
+}
+
+VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        throw new builtins.BataviaError.$pyclass(
+            'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
+        )
+    }
+    // Assuming Python 3.5
+    var ret = this.pop()
+    var exc = this.pop()
+    if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+            ret.__bool__().valueOf()) {
+        this.push('silenced')
+    }
+}
 
 VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
     var name = this.pop()
@@ -1818,11 +1838,15 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
         namedargs[items[0]] = items[1]
     }
     if (kwargs) {
-        namedargs.update(kwargs)
+        for (let kv of kwargs.items()) {
+            namedargs[kv[0]] = kv[1]
+        }
     }
     var posargs = this.popn(lenPos)
     if (args) {
-        posargs = posargs.concat(args)
+        for (let elem of args) {
+            posargs.push(elem)
+        }
     }
 
     var func = this.pop()
@@ -1847,30 +1871,37 @@ VirtualMachine.prototype.byte_YIELD_VALUE = function() {
     return 'yield'
 }
 
-// VirtualMachine.prototype.byte_YIELD_FROM = function {
-//         u = this.pop()
-//         x = this.top()
+VirtualMachine.prototype.byte_GET_YIELD_FROM_ITER = function() {
+    // This should first check if TOS is a coroutine and if so
+    // only allow another coroutine to 'yield from' it
+    // otherwise replace TOS with iter(TOS)
+    // For now, coroutines are not supported in Batavia, so this will do
+    return this.byte_GET_ITER()
+}
 
-//         try:
-//             if not isinstance(x, Generator) or u is null:
-//                 // Call next on iterators.
-//                 retval = next(x)
-//             else:
-//                 retval = x.send(u)
-//             this.return_value = retval
-//         except StopIteration as e:
-//             this.pop()
-//             this.push(e.value)
-//         else:
-//             // YIELD_FROM decrements f_lasti, so that it will be called
-//             // repeatedly until a StopIteration is raised.
-//             this.jump(this.frame.f_lasti - 1)
-//             // Returning "yield" prevents the block stack cleanup code
-//             // from executing, suspending the frame in its current state.
-//             return "yield"
+VirtualMachine.prototype.byte_YIELD_FROM = function() {
+    var v = this.pop()
+    var receiver = this.top()
 
-//     #// Importing
-// }
+    try {
+        if (types.isinstance(v, types.NoneType) ||
+                !types.isinstance(receiver, types.Generator)) {
+            this.return_value = callables.call_method(receiver, '__next__', [])
+        } else {
+            this.return_value = receiver.send(v)
+        }
+    } catch (e) {
+        if (e instanceof exceptions.StopIteration.$pyclass) {
+            this.pop()
+            this.push(e.value)
+            return
+        } else {
+            throw e
+        }
+    }
+    this.jump(this.frame.f_lasti - 1)
+    return 'yield'
+}
 
 VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2)

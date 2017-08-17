@@ -15,8 +15,8 @@ Batavia
     :target: https://pypi.python.org/pypi/batavia
 .. |license| image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/pybee/batavia/blob/master/LICENSE
-.. |build-status| image:: https://circleci.com/gh/pybee/batavia.svg?style=shield&circle-token=:circle-token
-    :target: https://circleci.com/gh/pybee/batavia
+.. |build-status| image:: https://beekeeper.herokuapp.com/projects/pybee/batavia/shield
+    :target: https://beekeeper.herokuapp.com/projects/pybee/batavia
 .. |gitter| image:: https://badges.gitter.im/pybee/general.svg
     :target: https://gitter.im/pybee/general
 
@@ -24,7 +24,7 @@ Batavia
 **Batavia is an early alpha project. If it breaks, you get to keep all the shiny pieces.**
 
 Batavia is an implementation of the Python virtual machine, written in
-Javascript. With Batavia, you can run Python bytecode in your browser.
+JavaScript. With Batavia, you can run Python bytecode in your browser.
 
 It honors Python 3.4.4+ syntax and conventions, and allows you to
 reference objects and classes defined natively in JavaScript.
@@ -51,25 +51,25 @@ Check the `Setting up your environment
 Downloading and Installing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Clone the code repositories 
+1. Clone the code repositories
 ::
 
  $ mkdir pybee
  $ cd pybee
  $ git clone https://github.com/pybee/batavia
-  
+
 2. Setup a virtualenv:
 
 (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
 
 
 Linux/Unix/Mac
--------------- 
-Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command 
+--------------
+Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command
 below with the path to your Python 3.4 or 3.5 installation. ::
 
 $ python3 --version
-$ virtualenv --python=$(which python3) venv
+$ python3 -m venv venv
 $ . venv/bin/activate
 $ cd batavia
 $ pip install -e .
@@ -79,15 +79,25 @@ Windows
 
 Type in the following commands in your terminal ::
 
-> virtualenv venv
-> venv\Scripts\activate
-> cd batavia
-> pip install -e .
+    > py -3 -m venv venv
+    > venv\Scripts\activate
+    > cd batavia
+    > pip install -e .
 
-  
-3. Install `Node.js <https://nodejs.org>`_. 
+Windows (with only conda installed)
+-----------------------------------
 
-You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the Javascript dependencies and compile the Batavia library::
+Type in the following commands in your terminal ::
+
+   > pip install virtualenvwrapper-win
+   > mkvirtualenv venv
+   > workon venv
+   > cd batavia
+   > pip install -e .
+
+3. Install `Node.js <https://nodejs.org>`_.
+
+You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the JavaScript dependencies and compile the Batavia library::
 
 $ npm install
 

@@ -299,7 +299,8 @@ Dict.prototype.__mul__ = function(other) {
         types.Bool, types.Dict, types.Float,
         types.JSDict, types.Int, types.NoneType,
         types.Slice, types.Set, types.FrozenSet,
-        types.NotImplementedType, types.Complex, types.Range])) {
+        types.NotImplementedType, types.Complex, types.Range,
+        types.Type])) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'dict'")

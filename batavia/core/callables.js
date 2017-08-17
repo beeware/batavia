@@ -9,7 +9,7 @@ var callables = {}
 
 callables.call_function = function(func, args, kwargs) {
     if (func.__call__) {
-        func = func.__call__
+        func = func.__call__.bind(func)
     }
 
     var retval = func(args, kwargs)

@@ -42,7 +42,7 @@ class GetattrTests(TranspileTestCase):
 
 
 class BuiltinGetattrFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["getattr"]
+    function = "getattr"
 
     not_implemented = [
         'test_list_str',

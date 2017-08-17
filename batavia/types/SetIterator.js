@@ -15,6 +15,10 @@ function SetIterator(data) {
 
 create_pyclass(SetIterator, 'set_iterator')
 
+SetIterator.prototype.__iter__ = function() {
+    return this
+}
+
 SetIterator.prototype.__next__ = function() {
     var key = this.keys[this.index]
     if (key === undefined) {

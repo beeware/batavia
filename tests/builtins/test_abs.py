@@ -1,4 +1,3 @@
-
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
@@ -15,4 +14,4 @@ class AbsTests(TranspileTestCase):
 
 
 class BuiltinAbsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["abs"]
+    function = "abs"

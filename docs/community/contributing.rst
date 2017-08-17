@@ -18,7 +18,7 @@ instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
-have Python 3.4, and have virtualenv available for use.
+have Python 3.4.
 
 Batavia codebase
 ^^^^^^^^^^^^^^^^
@@ -34,32 +34,31 @@ check out your fork to your own computer into a development directory:
 
 Then create a virtual environment and install Batavia into it:
 
-.. code-block:: bash
+ * For Linux, MacOS::
 
-    $ virtualenv -p $(which python3.4) env
-    $ . env/bin/activate
-    $ cd batavia
-    $ pip install -e .
+   $ python3.4 -m venv venv
+   $ . venv/bin/activate
+   $ cd batavia
+   $ pip install -e .
 
-*For those using anaconda*:
+ * For Windows::
 
-.. code-block:: bash
-
-    $ cd batavia
-    $ conda create -n batavia-dev
-    $ source activate batavia-dev
-    $ pip install -e .
+   > py -3.4 -m venv venv
+   > venv\Scripts\activate
+   > cd batavia
+   > pip install -e .
 
 Install Node.JS
 ^^^^^^^^^^^^^^^
 
 Lastly, you'll need to install `Node.js`_. You need to have a recent version
 of Node; we test using v6.9.1. Once you've installed node, you can use it to
-install Batavia's Javascript dependencies, and compile the Batavia library:
+install Batavia's JavaScript dependencies, and compile the Batavia library:
 
 .. code-block:: bash
 
     $ npm install
+    $ npm run build
 
 .. _Node.js: https://nodejs.org
 

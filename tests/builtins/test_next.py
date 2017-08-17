@@ -32,4 +32,4 @@ class NextTests(TranspileTestCase):
 
 
 class BuiltinNextFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["next"]
+    function = "next"

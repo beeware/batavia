@@ -20,4 +20,4 @@ class AnyTests(TranspileTestCase):
 
 
 class BuiltinAnyFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["any"]
+    function = "any"

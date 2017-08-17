@@ -196,7 +196,13 @@ Bytes.prototype.__div__ = function(other) {
 }
 
 Bytes.prototype.__floordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__floordiv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__truediv__ = function(other) {
@@ -303,9 +309,14 @@ Bytes.prototype.__sub__ = function(other) {
 
 Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
-    var builtins = require('../builtins')
 
-    return new types.Int(this.val[builtins.int(other).valueOf()])
+    if (types.isinstance(other, types.Slice)) {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__getitem__ with slice has not been implemented')
+    }
+    if (!types.isinstance(other, types.Int)) {
+        throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
+    }
+    return new types.Int(this.val[other.int32()])
 }
 
 Bytes.prototype.__lshift__ = function(other) {
@@ -333,7 +344,13 @@ Bytes.prototype.__or__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ifloordiv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__itruediv__ = function(other) {

@@ -90,7 +90,8 @@ Float.prototype.__lt__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
             throw new exceptions.TypeError.$pyclass('unorderable types: float() < ' + type_name(other) + '()')
         } else {
@@ -169,7 +170,8 @@ Float.prototype.__ge__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
             throw new exceptions.TypeError.$pyclass('unorderable types: float() >= ' + type_name(other) + '()')
         } else {
@@ -197,7 +199,8 @@ Float.prototype.__neg__ = function() {
 }
 
 Float.prototype.__not__ = function() {
-    return new Float(!this.valueOf())
+    var types = require('../types')
+    return new types.Bool(!this.valueOf())
 }
 
 Float.prototype.__invert__ = function() {
@@ -301,7 +304,7 @@ Float.prototype.__mul__ = function(other) {
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf())
-    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
+    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple, types.Bytes, types.Bytearray])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'")

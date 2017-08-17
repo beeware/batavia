@@ -6,11 +6,11 @@ class DivmodTests(TranspileTestCase):
 
 
 class BuiltinDivmodFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["divmod"]
+    function = "divmod"
 
 
 class BuiltinTwoargDivmodFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["divmod"]
+    function = "divmod"
 
     not_implemented = [
         'test_bool_bool',
