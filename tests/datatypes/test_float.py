@@ -40,7 +40,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         # these work, but print incorrectly
-        'test_add_int',
+        
         'test_floor_divide_int',
         'test_modulo_int',
         'test_subtract_int',

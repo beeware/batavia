@@ -342,7 +342,13 @@ Float.prototype.__add__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Int, Float])) {
-        return new Float(this.valueOf() + parseFloat(other.valueOf()))
+        var value = new Float(this.valueOf() + parseFloat(other.valueOf()))
+        if (value.toString() == 'inf' || value.toString() == '-inf') {
+            throw new exceptions.OverflowError.$pyclass(
+                "int too large to convert to float"
+            )
+        }
+        return value
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() + 1.0)
