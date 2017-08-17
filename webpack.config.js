@@ -3,12 +3,12 @@ var webpack = require('webpack');
 
 module.exports = {
     entry: {
-        "batavia": "./batavia/batavia.js",
+        'batavia': './batavia/batavia.js',
     },
     devtool: 'source-map',
     output: {
         path: path.join(__dirname, './dist'),
-        filename: "[name].js",
+        filename: '[name].js',
         library: 'batavia',
         libraryTarget: 'umd'
     },
@@ -27,7 +27,7 @@ module.exports = {
                         loader: 'babel-loader'
                     }
                 ],
-                exclude: "/node_modules/"
+                exclude: '/node_modules/'
             }
         ]
     }
