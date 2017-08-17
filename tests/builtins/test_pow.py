@@ -98,11 +98,13 @@ class PowTests(TranspileTestCase):
             print(pow(955, 154, 834))
         """)
 
+
 class BuiltinPowFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["pow"]
+    function = "pow"
+
 
 class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["pow"]
+    function = "pow"
 
     not_implemented = [
         'test_bool_int',

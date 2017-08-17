@@ -6,7 +6,7 @@ class ChrTests(TranspileTestCase):
 
 
 class BuiltinChrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["chr"]
+    function = "chr"
 
     not_implemented = [
         'test_bytearray',

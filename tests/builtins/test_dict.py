@@ -6,7 +6,7 @@ class DictTests(TranspileTestCase):
 
 
 class BuiltinDictFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["dict"]
+    function = "dict"
 
     not_implemented = [
         'test_bytearray',

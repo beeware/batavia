@@ -6,4 +6,4 @@ class ListTests(TranspileTestCase):
 
 
 class BuiltinListFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["list"]
+    function = "list"

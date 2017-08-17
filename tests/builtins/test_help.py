@@ -6,7 +6,7 @@ class HelpTests(TranspileTestCase):
 
 
 class BuiltinHelpFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["help"]
+    function = "help"
 
     not_implemented = [
         'test_noargs',

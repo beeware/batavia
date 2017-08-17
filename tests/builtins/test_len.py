@@ -7,14 +7,14 @@ class LenTests(TranspileTestCase):
             class Foo(object):
                 def __len__(self):
                     return 42
-                    
+
             f = Foo()
             print(len(f))
         """)
 
 
 class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["len"]
+    function = "len"
 
     not_implemented = [
         'test_bytearray',

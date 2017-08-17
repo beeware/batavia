@@ -6,7 +6,7 @@ class IdTests(TranspileTestCase):
 
 
 class BuiltinIdFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["id"]
+    function = "id"
 
     not_implemented = [
         'test_noargs',

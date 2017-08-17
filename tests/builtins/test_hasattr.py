@@ -33,7 +33,7 @@ class HasattrTests(TranspileTestCase):
 
 
 class BuiltinHasattrFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["hasattr"]
+    function = "hasattr"
 
     not_implemented = [
         'test_list_str',

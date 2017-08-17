@@ -82,6 +82,6 @@ class ZipTests(TranspileTestCase):
 
 
 class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["zip"]
+    function = "zip"
 
     not_implemented = []

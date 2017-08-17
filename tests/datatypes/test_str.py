@@ -1333,7 +1333,6 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str)
 
     def test_no_args(self):
-
         test_str = adjust("""
         print(">>> 'one arg: {}'.format()")
         print('one arg: {}'.format())
@@ -1354,12 +1353,11 @@ class NewStyleFormatTests(TranspileTestCase):
             ]
         )
 
-
         self.assertCodeExecution(test_str)
+
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
-
 
 
 class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -1368,6 +1366,7 @@ class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_modulo_class',
     ]
+
 
 class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'str'

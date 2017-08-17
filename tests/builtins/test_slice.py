@@ -30,7 +30,7 @@ class SliceTests(TranspileTestCase):
 
 
 class BuiltinSliceFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["slice"]
+    function = "slice"
 
     not_implemented = [
         'test_class',

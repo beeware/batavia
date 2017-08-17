@@ -77,7 +77,8 @@ class PrintTests(TranspileTestCase):
 
 
 class BuiltinPrintFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["print"]
+    function = "print"
+    operation = 'f("|||", x)'
 
     not_implemented = [
         'test_class',
