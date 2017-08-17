@@ -17,6 +17,7 @@ module.exports = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoEmitOnErrorsPlugin()
     ],
+    resolve: { symlinks: false },
     module: {
         rules: [
             {
