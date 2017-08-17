@@ -5,6 +5,10 @@ module.exports = {
     entry: {
         'batavia': './batavia/batavia.js'
     },
+    watchOptions: {
+      aggregateTimeout: 300,
+      poll: 1000
+    },
     devtool: 'source-map',
     output: {
         path: path.join(__dirname, './dist'),
