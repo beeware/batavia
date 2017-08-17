@@ -11,7 +11,7 @@ This tutorial assumes you've read and followed the instructions in
 :doc:`the previous tutorial <tutorial-0>`. If you've done this, you should have:
 
 * A ``pybee`` directory with a Batavia checkout,
-* An activated Python 3.4 virtual environment, and
+* An activated Python 3.5 virtual environment, and
 * Batavia installed in that virtual environment
 
 Starting the test server
