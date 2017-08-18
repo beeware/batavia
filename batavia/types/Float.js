@@ -90,7 +90,8 @@ Float.prototype.__lt__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
             throw new exceptions.TypeError.$pyclass('unorderable types: float() < ' + type_name(other) + '()')
         } else {
@@ -169,7 +170,8 @@ Float.prototype.__ge__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
             throw new exceptions.TypeError.$pyclass('unorderable types: float() >= ' + type_name(other) + '()')
         } else {
