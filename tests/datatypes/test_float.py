@@ -43,7 +43,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         
         'test_floor_divide_int',
         'test_modulo_int',
-        'test_subtract_int',
+        
         'test_true_divide_int',
 
 
@@ -93,7 +93,7 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         
         'test_floor_divide_int',
         'test_modulo_int',
-        'test_subtract_int',
+        
         'test_true_divide_int',
 
         'test_add_complex',
