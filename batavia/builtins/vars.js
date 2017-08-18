@@ -1,9 +1,9 @@
 var exceptions = require('../core').exceptions
-var locals = require('./locals')
 var hasattr = require('./hasattr')
 var call_method = require('../core').callables.call_method
 
 function vars(args, kwargs) {
+    var locals = require('../builtins').locals.bind(this)
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used')
     }
