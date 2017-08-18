@@ -384,8 +384,7 @@ Float.prototype.__sub__ = function(other) {
         }
     } else if (types.isinstance(other, types.Complex)) {
         var real = new Float(this.valueOf() - other.real)
-        var imag = -other.imag
-        return new types.Complex(real.valueOf(), imag.valueOf())
+        return new types.Complex(real.valueOf(), -other.imag.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
     }
