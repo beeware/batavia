@@ -57,6 +57,7 @@ install Batavia's JavaScript dependencies, and compile the Batavia library:
 
 .. code-block:: bash
 
+    $ npm install -g npm
     $ npm install
     $ npm run build
 
