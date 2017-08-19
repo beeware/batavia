@@ -40,19 +40,17 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         # these work, but print incorrectly
-        'test_add_int',
+        
         'test_floor_divide_int',
         'test_modulo_int',
-        'test_subtract_int',
+        
         'test_true_divide_int',
 
 
-        'test_add_complex',
+        
 
         'test_floor_divide_complex',
 
-        'test_ge_bytearray',
-        'test_ge_bytes',
         'test_ge_class',
         'test_ge_complex',
         'test_ge_frozenset',
@@ -69,22 +67,18 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_le_complex',
         'test_le_frozenset',
 
-        'test_lt_bytearray',
-        'test_lt_bytes',
         'test_lt_class',
         'test_lt_complex',
         'test_lt_frozenset',
 
         'test_modulo_complex',
 
-        'test_multiply_bytes',
-        'test_multiply_bytearray',
         'test_multiply_complex',
 
         'test_power_complex',
         'test_power_float',
 
-        'test_subtract_complex',
+        
 
         'test_true_divide_complex',
     ]
@@ -96,13 +90,13 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         # these work, but print incorrectly
-        'test_add_int',
+        
         'test_floor_divide_int',
         'test_modulo_int',
-        'test_subtract_int',
+        
         'test_true_divide_int',
 
-        'test_add_complex',
+        
 
         'test_floor_divide_complex',
 
@@ -115,7 +109,7 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_complex',
         'test_power_float',
 
-        'test_subtract_complex',
+        
 
         'test_true_divide_complex',
     ]

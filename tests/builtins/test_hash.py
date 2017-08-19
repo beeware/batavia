@@ -8,7 +8,7 @@ class HashTests(TranspileTestCase):
 
 
 class BuiltinHashFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["hash"]
+    function = "hash"
 
     substitutions = {
         '0': [re.compile(r'^-?\d+$')],

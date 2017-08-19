@@ -90,7 +90,8 @@ Float.prototype.__lt__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
             throw new exceptions.TypeError.$pyclass('unorderable types: float() < ' + type_name(other) + '()')
         } else {
@@ -169,7 +170,8 @@ Float.prototype.__ge__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
             throw new exceptions.TypeError.$pyclass('unorderable types: float() >= ' + type_name(other) + '()')
         } else {
@@ -302,7 +304,7 @@ Float.prototype.__mul__ = function(other) {
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf())
-    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
+    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple, types.Bytes, types.Bytearray])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'")
@@ -342,13 +344,22 @@ Float.prototype.__add__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Int, Float])) {
-        return new Float(this.valueOf() + parseFloat(other.valueOf()))
+        var value = new Float(this.valueOf() + parseFloat(other.valueOf()))
+        if (value.toString() === 'inf' || value.toString() === '-inf') {
+            throw new exceptions.OverflowError.$pyclass(
+                'int too large to convert to float'
+            )
+        }
+        return value
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() + 1.0)
         } else {
             return new Float(this.valueOf())
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var real = new Float(this.valueOf() + other.real)
+        return new types.Complex(real.valueOf(), other.imag.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'")
     }
@@ -358,13 +369,22 @@ Float.prototype.__sub__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Int, Float])) {
-        return new Float(this.valueOf() - other.valueOf())
+        var value = new Float(this.valueOf() - other.valueOf())
+        if (value.toString() === 'inf' || value.toString() === '-inf') {
+            throw new exceptions.OverflowError.$pyclass(
+                'int too large to convert to float'
+            )
+        }
+        return value
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() - 1.0)
         } else {
             return new Float(this.valueOf())
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var real = new Float(this.valueOf() - other.real)
+        return new types.Complex(real.valueOf(), -other.imag.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
     }

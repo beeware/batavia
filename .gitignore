@@ -20,6 +20,7 @@ env
 .python-version
 make.exe
 phantomjs.exe
+package-lock.json
 
 # Markdown version of README
 README.md

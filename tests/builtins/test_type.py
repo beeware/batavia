@@ -6,4 +6,4 @@ class TypeTests(TranspileTestCase):
 
 
 class BuiltinTypeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["type"]
+    function = "type"

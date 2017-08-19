@@ -6,7 +6,7 @@ class IssubclassTests(TranspileTestCase):
 
 
 class BuiltinIssubclassFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["issubclass"]
+    function = "issubclass"
 
     not_implemented = [
         'test_noargs',

@@ -3,12 +3,13 @@ import re
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 from .. utils import SAMPLE_SUBSTITUTIONS
 
+
 class MaxTests(TranspileTestCase):
     pass
 
 
 class BuiltinMaxFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["max"]
+    function = "max"
     substitutions = SAMPLE_SUBSTITUTIONS.copy()
     substitutions.update({
         # Set/Frozenset ordering can be different in cPython and Batavia

@@ -345,7 +345,7 @@ Bytes.prototype.__or__ = function(other) {
 
 Bytes.prototype.__ifloordiv__ = function(other) {
     var types = require('../types')
-    
+
     if (types.isinstance(other, [types.Complex])) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {

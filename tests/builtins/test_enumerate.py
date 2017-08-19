@@ -20,7 +20,7 @@ class EnumerateTests(TranspileTestCase):
 
 
 class BuiltinEnumerateFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["enumerate"]
+    function = "enumerate"
 
     not_implemented = [
         'test_noargs',

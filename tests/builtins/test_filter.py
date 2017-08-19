@@ -1,7 +1,5 @@
 from .. utils import TranspileTestCase, BuiltinTwoargFunctionTestCase
 
-from unittest import expectedFailure
-
 
 class FilterTests(TranspileTestCase):
     base_code = """
@@ -36,6 +34,6 @@ class FilterTests(TranspileTestCase):
 
 
 class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["filter"]
+    function = "filter"
 
     not_implemented = []

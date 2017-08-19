@@ -15,6 +15,7 @@ import sys
 import tempfile
 import traceback
 import itertools
+import collections
 from unittest import TestCase
 
 # get path to `tests` directory
@@ -274,11 +275,6 @@ class JSCleaner:
             except:
                 pass
 
-        if self.transforms['complex_num']:
-            # Replace large integers in a complex number with floating point.
-            for match in JS_LARGE_COMPLEX.findall(out):
-                out = out.replace(match, str(float(match)))
-
         if self.transforms['high_precision_float']:
             # Replace high precision floats with abbreviated forms
             out = FLOAT_PRECISION.sub('\\1...', out)
@@ -356,10 +352,6 @@ class PYCleaner:
             except sre_constants.error:
                 pass
 
-        if self.transforms['complex_num']:
-            # Replace "-0j" with "+0j"
-            out = PYTHON_NEGATIVE_ZERO_J.sub('+0j)', out)
-
         if self.transforms['high_precision_float']:
             # Replace high precision floats with abbreviated forms
             out = FLOAT_PRECISION.sub('\\1...', out)
@@ -391,17 +383,41 @@ class PYCleaner:
         return out
 
 
-def _try_eval(value):
-    if value and value.startswith('||| '):
-        value = value[4:]
-        try:
-            value = eval(value)
-        except:
-            pass
-    return value
+def _normalize(value):
+    """
+    ||| -- lines starting with this pattern will be `eval`uated and compared as
+        native python objects. Mostly used for output data from scripts.
+    /// -- error messages might print out information from the object that
+        generated it. This might lead to failure due to the ordering randomness
+        of some object types. Lines starting with this pattern will be treated specially
+        as to overcome this problem.
+
+    Notice that a line might start with '||| ///'. This is helpful for string replacement cases.
+    """
+    native = value
+    if value:
+        if value.startswith('||| '):
+            value = value[4:]
+            try:
+                native = eval(value)
+            except:
+                pass
+
+        if value.startswith('/// '):
+            value = value[4:]
+            native = collections.Counter(value)
+
+    return value, native
 
 
-def _normalize_outputs(code1, code2):
+def _normalize_outputs(code1, code2, transform_output=None):
+    """
+    transform_output -- a function that receives one argument
+        and returns a value to be used for comparing output values
+    """
+    if not transform_output:
+        transform_output = lambda x: x
+
     processed_code1 = []
     processed_code2 = []
 
@@ -409,15 +425,16 @@ def _normalize_outputs(code1, code2):
     lines2 = code2.split(os.linesep)
 
     for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
-        val1 = _try_eval(line1)
-        val2 = _try_eval(line2)
-        if val1 == val2:
-            val2 = val1
 
-        if val1 is not None:
-            processed_code1.append(str(val1))
-        if val2 is not None:
-            processed_code2.append(str(val2))
+        line1, val1 = _normalize(line1)
+        line2, val2 = _normalize(line2)
+        if transform_output(val1) == transform_output(val2):
+            line2 = line1
+
+        if line1 is not None:
+            processed_code1.append(line1)
+        if line2 is not None:
+            processed_code2.append(line2)
 
     return '\n'.join(processed_code1), '\n'.join(processed_code2)
 
@@ -433,7 +450,7 @@ class TranspileTestCase(TestCase):
             self, code,
             message=None,
             extra_code=None,
-            run_in_global=True, run_in_function=True,
+            run_in_global=True, run_in_function=True, transform_output=None,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
         self.maxDiff = None
@@ -466,7 +483,7 @@ class TranspileTestCase(TestCase):
                 shutil.rmtree(self.temp_dir)
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out, py_out = _normalize_outputs(js_out, py_out)
+            js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -507,7 +524,7 @@ class TranspileTestCase(TestCase):
 
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
-            js_out, py_out = _normalize_outputs(js_out, py_out)
+            js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
             js_out = js_cleaner.cleanse(js_out, substitutions)
             py_out = py_cleaner.cleanse(py_out, substitutions)
 
@@ -884,7 +901,7 @@ SAMPLE_DATA = {
             '"3"',
             '"This is another string"',
             '"Mÿ hôvèrçràft îß fûłl öf éêlś"',
-            '"One arg: %s"',
+            '"/// One arg: %s"',
             '"Three args: %s | %s | %s"',
         ],
     'tuple': [
@@ -908,98 +925,7 @@ SAMPLE_DATA = {
 
 
 SAMPLE_SUBSTITUTIONS = {
-    # Normalize set ordering
-    "{1, 2.3456, 'another'}": [
-        "{1, 'another', 2.3456}",
-        "{2.3456, 1, 'another'}",
-        "{2.3456, 'another', 1}",
-        "{'another', 1, 2.3456}",
-        "{'another', 2.3456, 1}",
-    ],
-    "{2.3456, 'another'}": [
-        "{'another', 2.3456}",
-    ],
-    "{'1': 1, 1: 2}": [
-        "{1: 2, '1': 1}",
-    ],
-    "{'1', 1}": [
-        "{1, '1'}",
-    ],
-    "{'a', 'b', 'c'}": [
-        "{'a', 'c', 'b'}",
-        "{'b', 'a', 'c'}",
-        "{'b', 'c', 'a'}",
-        "{'c', 'a', 'b'}",
-        "{'c', 'b', 'a'}",
-    ],
-    "{3, 4, 5}": [
-        "{3, 5, 4}",
-        "{4, 3, 5}",
-        "{4, 5, 3}",
-        "{5, 3, 4}",
-        "{5, 4, 3}",
-    ],
-    "{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}": [
-        # otherwise we have to generate 3628800 permutations
-        re.compile(r'\{(?:[1-9]|10)(?:, (?:[1-9]|10)){9}\}'),
-    ],
-    # Normalize dictionary ordering
-    "{'a': 1, 'c': 2.3456, 'd': 'another'}": [
-        "{'a': 1, 'd': 'another', 'c': 2.3456}",
-        "{'c': 2.3456, 'd': 'another', 'a': 1}",
-        "{'c': 2.3456, 'a': 1, 'd': 'another'}",
-        "{'d': 'another', 'a': 1, 'c': 2.3456}",
-        "{'d': 'another', 'c': 2.3456, 'a': 1}",
-    ],
-    "{'a': {'a': 1}, 'b': {'b': 2}}": [
-        "{'b': {'b': 2}, 'a': {'a': 1}}",
-    ],
-    #created after dict() call on nested set and list
-    "{1: 2, 3: 4}":[
-        "{3: 4, 1: 2}",
-    ],
-    #created after list() call on dict
-    "['a', 'b']" : [
-        "['b', 'a']",
-    ],
-    #created after tuple() call on dict
-    "('a', 'b')" : [
-        "('b', 'a')",
-    ],
-    # Normalize set to list ordering
-    "[1, 2.3456, 'another']": [
-        "[1, 'another', 2.3456]",
-        "[2.3456, 1, 'another']",
-        "['another', 1, 2.3456]",
-        "['another', 2.3456, 1]",
-        "[2.3456, 'another', 1]",
-    ],
-    # Normalize set to tuple ordering
-    "(1, 2.3456, 'another')": [
-        "(1, 'another', 2.3456)",
-        "(2.3456, 1, 'another')",
-        "('another', 1, 2.3456)",
-        "('another', 2.3456, 1)",
-        "(2.3456, 'another', 1)",
-    ],
-    # Normalize dictionary keys to list ordering
-    "['c', 'd', 'a']": [
-        "['a', 'c', 'd']",
-        "['a', 'd', 'c']",
-        "['c', 'a', 'd']",
-        "['c', 'd', 'a']",
-        "['d', 'a', 'c']",
-        "['d', 'c', 'a']",
-    ],
-    # Normalize dictionary keys to tuple ordering
-    "('c', 'd', 'a')": [
-        "('a', 'c', 'd')",
-        "('a', 'd', 'c')",
-        "('c', 'a', 'd')",
-        "('c', 'd', 'a')",
-        "('d', 'a', 'c')",
-        "('d', 'c', 'a')",
-    ],
+
 }
 
 
@@ -1025,9 +951,9 @@ class UnaryOperationTestCase(NotImplementedToExpectedFailure):
                         print('>>> x = %(x)s')
                         print('>>> %(format)s%(operation)sx')
                         x = %(x)s
-                        print(%(format)s%(operation)sx)
+                        print('|||', %(format)s%(operation)sx)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'x': x,
@@ -1085,9 +1011,9 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
                         print('>>> %(format)s%(operation)s')
                         x = %(x)s
                         y = %(y)s
-                        print(%(format)s%(operation)s)
+                        print('|||', %(format)s%(operation)s)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'x': x,
@@ -1200,9 +1126,9 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         y = %(y)s
                         %(operation)s
-                        print(%(format)sx)
+                        print('|||', %(format)sx)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'x': x,
@@ -1257,36 +1183,48 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         )
 
 
-def _builtin_test(test_name, operation, examples, small_ints=False):
+IGNORE_ORDER_DICTIONARY = {
+    'tuple': ['set', 'frozenset', 'dict'],
+    'list': ['set', 'frozenset', 'dict'],
+}
+
+
+def _builtin_test(test_name, datatype, operation, small_ints=False):
     def func(self):
         # bytes() gives implementation-dependent errors for sizes > 2**64,
         # we'll skip testing with those values rather than cargo-culting
         # the exact same exceptions
-        actuals = examples
+        examples = SAMPLE_DATA.get(datatype, ['"_noargs (should not be use)"'])
         if self.small_ints and test_name.endswith('_int'):
-            actuals = [x for x in examples if abs(int(x)) < 8192]
+            examples = [x for x in examples if abs(int(x)) < 8192]
+
+        selected_operation = operation
+        if self.operation:
+            selected_operation = self.operation
+
+        transform_output = None
+        ignore_order_cases = IGNORE_ORDER_DICTIONARY.get(self.function, [])
+        if datatype in ignore_order_cases:
+            transform_output = lambda x: set(x)
 
         self.assertBuiltinFunction(
-            x_values=actuals,
-            f_values=self.functions,
-            operation=operation,
+            self.function,
+            x_values=examples,
+            operation=selected_operation,
             format=self.format,
-            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS),
+            transform_output=transform_output,
         )
     return func
 
 
 class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
+    operation = None
     substitutions = SAMPLE_SUBSTITUTIONS
     small_ints = False
 
-    def assertBuiltinFunction(self, f_values, x_values, operation, format, substitutions):
-        data = []
-        for f in f_values:
-            for x in x_values:
-                data.append((f, x))
-
+    def assertBuiltinFunction(self, function, x_values, operation, format, substitutions, transform_output):
         self.assertCodeExecution(
             '##################################################\n'.join(
                 adjust("""
@@ -1298,31 +1236,32 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         print('|||', %(format)s%(operation)s)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
-                        'f': f,
+                        'f': function,
                         'x': x,
                         'operation': operation,
                         'format': format,
                     }
                 )
-                for f, x in data
+                for x in x_values
             ),
             "Error running %s" % operation,
             substitutions=substitutions,
-            run_in_function=False
+            run_in_function=False,
+            transform_output=transform_output,
         )
 
-    for datatype, examples in SAMPLE_DATA.items():
-        vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, 'f(x)', examples)
-    vars()['test_noargs'] = _builtin_test('test_noargs', 'f()', examples=['"_noargs (not used)"'])
+    for datatype in SAMPLE_DATA.keys():
+        vars()['test_%s' % datatype] = _builtin_test('test_%s' % datatype, datatype, 'f(x)')
+    vars()['test_noargs'] = _builtin_test('test_noargs', None, 'f()')
 
 
 def _builtin_twoarg_test(test_name, operation, examples1, examples2):
     def func(self):
         self.assertBuiltinTwoargFunction(
-            f_values=self.functions,
+            self.function,
             x_values=examples1,
             y_values=examples2,
             operation=operation,
@@ -1335,17 +1274,16 @@ def _builtin_twoarg_test(test_name, operation, examples1, examples2):
 class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
     format = ''
 
-    def assertBuiltinTwoargFunction(self, f_values, x_values, y_values, operation, format, substitutions):
+    def assertBuiltinTwoargFunction(self, function, x_values, y_values, operation, format, substitutions):
         data = []
-        for f in f_values:
-            for x in x_values:
-                for y in y_values:
-                    data.append((f, x, y))
+        for x in x_values:
+            for y in y_values:
+                data.append((x, y))
 
         # filter out very large integers for some operations so as not
         # to crash CPython
-        data = [(f, x, y) for f, x, y in data if not
-                (f == 'pow' and
+        data = [(x, y) for x, y in data if not
+                (function == 'pow' and
                  x.lstrip('-').isdigit() and
                  y.lstrip('-').isdigit() and
                  (abs(int(x)) > 8192 or abs(int(y)) > 8192))]
@@ -1361,19 +1299,19 @@ class BuiltinTwoargFunctionTestCase(NotImplementedToExpectedFailure):
                         f = %(f)s
                         x = %(x)s
                         y = %(y)s
-                        print(%(format)s%(operation)s)
+                        print('|||', %(format)s%(operation)s)
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
-                        'f': f,
+                        'f': function,
                         'x': x,
                         'y': y,
                         'operation': operation,
                         'format': format,
                     }
                 )
-                for f, x, y in data
+                for x, y in data
             ),
             "Error running %s" % operation,
             substitutions=substitutions,
@@ -1442,7 +1380,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                         x = %(x)s
                         print(f(x))
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'f': func,
@@ -1476,7 +1414,7 @@ class ModuleFunctionTestCase(NotImplementedToExpectedFailure):
                         y = %(y)s
                         print(f(x, y))
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                     """ % {
                         'f': func,
@@ -1556,7 +1494,7 @@ class MethodTestCase(NotImplementedToExpectedFailure):
                         x = {a}
                         print(f(x))
                     except Exception as e:
-                        print(type(e), ':', e)
+                        print('///', type(e), ':', e)
                     print()
                 """.format(m=module, c=cls_name, f=method_name, a=arg))
                 for arg in arg_values

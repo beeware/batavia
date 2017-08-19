@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 import unittest
@@ -79,5 +78,6 @@ class BoolTests(TranspileTestCase):
             print(bool(BoolHate("👿")))
         """)
 
+
 class BuiltinBoolFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["bool"]
+    function = "bool"

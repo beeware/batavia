@@ -6,7 +6,7 @@ class VarsTests(TranspileTestCase):
 
 
 class BuiltinVarsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["vars"]
+    function = "vars"
 
     not_implemented = [
         'test_noargs',

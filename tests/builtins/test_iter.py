@@ -40,7 +40,7 @@ class IterTests(TranspileTestCase):
                 abc = 'abcdefghij'
                 for letter in abc:
                     yield letter
-                    
+
             g = gen()
             callable = lambda: next(g)
             result = iter(callable, 'd')
@@ -49,7 +49,7 @@ class IterTests(TranspileTestCase):
 
 
 class BuiltinIterFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["iter"]
+    function = "iter"
 
     not_implemented = [
         'test_noargs',

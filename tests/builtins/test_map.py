@@ -1,7 +1,5 @@
 from .. utils import TranspileTestCase, BuiltinTwoargFunctionTestCase
 
-from unittest import expectedFailure
-
 
 class MapTests(TranspileTestCase):
     base_code = """
@@ -34,7 +32,7 @@ class MapTests(TranspileTestCase):
 
 
 class BuiltinMapFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["map"]
+    function = "map"
 
     not_implemented = [
         'test_bool_bool',

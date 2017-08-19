@@ -706,6 +706,13 @@ List.prototype.index = function(value, start, stop) {
     throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
 }
 
+List.prototype.reverse = function() {
+    if (arguments.length > 0) {
+        throw new exceptions.TypeError.$pyclass('reverse() takes no arguments (' + arguments.length + ' given)')
+    }
+    Array.prototype.reverse.apply(this)
+}
+
 function validateIndexType(index) {
     var types = require('../types')
     if (!types.isinstance(index, types.Int)) {

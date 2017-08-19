@@ -6,4 +6,4 @@ class PropertyTests(TranspileTestCase):
 
 
 class BuiltinPropertyFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["property"]
+    function = "property"

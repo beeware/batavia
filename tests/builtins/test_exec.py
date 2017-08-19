@@ -6,7 +6,7 @@ class ExecTests(TranspileTestCase):
 
 
 class BuiltinExecFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["exec"]
+    function = "exec"
 
     not_implemented = [
         'test_noargs',

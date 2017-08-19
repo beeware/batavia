@@ -6,7 +6,7 @@ class SortedTests(TranspileTestCase):
 
 
 class BuiltinSortedFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["sorted"]
+    function = "sorted"
 
     not_implemented = [
         'test_bool',

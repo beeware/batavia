@@ -16,7 +16,7 @@ class BinTests(TranspileTestCase):
 
 
 class BuiltinBinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["bin"]
+    function = "bin"
 
     not_implemented = [
         'test_int',

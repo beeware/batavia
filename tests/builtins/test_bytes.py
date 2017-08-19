@@ -9,7 +9,7 @@ class BytesTests(TranspileTestCase):
 
 
 class BuiltinBytesFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["bytes"]
+    function = "bytes"
     small_ints = True
     substitutions = SAMPLE_SUBSTITUTIONS.copy()
     substitutions.update({

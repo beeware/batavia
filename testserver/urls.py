@@ -5,6 +5,7 @@ import tempfile
 
 from django.conf.urls import url
 from django.shortcuts import render
+from test import pystone
 
 
 def bytecode(sourcefile):
@@ -27,13 +28,13 @@ def bytecode(sourcefile):
         'compiled': payload,
         'filename': sourcefile
     }
-
-
+    
 def home(request):
     ctx = {
         'modules': {
             'sample': bytecode('sample.py'),
             'other': bytecode('other.py'),
+            'pystone': bytecode(pystone.__file__),
             'submodule': {
                 'init': bytecode('submodule/__init__.py'),
                 'modulea': bytecode('submodule/modulea.py'),
@@ -49,7 +50,7 @@ def home(request):
                 }
             }
         }
-    }
+    } 
     if request.method.lower() == 'post' and request.POST['code']:
         tempfd, tempname = tempfile.mkstemp()
         with os.fdopen(tempfd, 'w+b') as f:

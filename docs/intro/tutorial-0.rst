@@ -4,7 +4,7 @@ Tutorial: Preparing your Environment for Batavia Development
 Getting a working local copy of Batavia requires a few steps: getting a copy of
 the Batavia code, and the ouroboros dependency within a virtual environment.
 
-You'll need to have Python 3.4 available for Batavia to work. Instructions on
+You'll need to have Python 3.5 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
 <http://pybee.org/contributing/how/first-time/setup/>`_.
 
@@ -21,14 +21,14 @@ how to set this up are `on our Environment setup guide
 
  * For Linux, MacOS::
 
-   $ python3.4 -m venv venv
+   $ python3.5 -m venv venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
 
  * For Windows::
 
-   > py -3.4 -m venv venv
+   > py -3.5 -m venv venv
    > venv\Scripts\activate
    > cd batavia
    > pip install -e .
