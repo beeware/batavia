@@ -40,14 +40,13 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         # these work, but print incorrectly
-        
+
         'test_floor_divide_int',
-        'test_modulo_int',
-        
+
         'test_true_divide_int',
 
 
-        
+
 
         'test_floor_divide_complex',
 
@@ -78,7 +77,7 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_power_complex',
         'test_power_float',
 
-        
+
 
         'test_true_divide_complex',
     ]
@@ -90,13 +89,12 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         # these work, but print incorrectly
-        
+
         'test_floor_divide_int',
-        'test_modulo_int',
-        
+
         'test_true_divide_int',
 
-        
+
 
         'test_floor_divide_complex',
 
@@ -109,7 +107,7 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_power_complex',
         'test_power_float',
 
-        
+
 
         'test_true_divide_complex',
     ]
