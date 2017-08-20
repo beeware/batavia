@@ -388,7 +388,17 @@ Str.prototype.__add__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
-        throw new exceptions.TypeError.$pyclass("Can't convert '" + type_name(other) + "' object to str implicitly")
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    "Can't convert '" + type_name(other) + "' object to str implicitly"
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+        }
     }
 }
 
@@ -550,7 +560,17 @@ Str.prototype.__iadd__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
-        throw new exceptions.TypeError.$pyclass("Can't convert '" + type_name(other) + "' object to str implicitly")
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    "Can't convert '" + type_name(other) + "' object to str implicitly"
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+        }
     }
 }
 
