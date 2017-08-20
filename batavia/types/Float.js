@@ -324,15 +324,15 @@ Float.prototype.__mod__ = function(other) {
             var thisNum = this.valueOf()
             var otherNum = parseFloat(other.val)
             var result = new Float(python_modulo(thisNum, otherNum))
-            if (otherNum > MAX_FLOAT || otherNum < MIN_FLOAT || result.toString() === 'nan' || result.toString() === 'inf' || result.toString() === '-inf'){
+            if (otherNum > MAX_FLOAT || otherNum < MIN_FLOAT || result.toString() === 'nan' || result.toString() === 'inf' || result.toString() === '-inf') {
                 throw new exceptions.OverflowError.$pyclass(
                     'int too large to convert to float'
                 )
             }
-            if (otherNum > thisNum && thisNum > 0 || thisNum > otherNum && thisNum < 0 || thisNum === 0) {
+            if ((otherNum > thisNum && thisNum > 0) || (thisNum > otherNum && thisNum < 0) || thisNum === 0) {
                 return new Float(thisNum)
             }
-            if (result.valueOf() === 0 && (thisNum%otherNum)+otherNum === otherNum){
+            if (result.valueOf() === 0 && (thisNum % otherNum) + otherNum === otherNum) {
                 return new Float(otherNum)
             }
             return result
