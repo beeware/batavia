@@ -332,7 +332,20 @@ Bytes.prototype.__add__ = function(other) {
         types.Str,
         types.Tuple ])) {
         // does not concat with all these
-        throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
+        switch(constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    "can't concat bytes to " + type_name(other)
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "can't concat " + type_name(other) + " to bytes"
+                )
+        }
+
     } else {
         throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
     }
