@@ -335,9 +335,6 @@ Float.prototype.__mod__ = function(other) {
             if (result.valueOf() === 0 && (thisNum%otherNum)+otherNum === otherNum){
                 return new Float(otherNum)
             }
-            if (result.valueOf() === -0.0) {
-                return new Float(0.0)
-            }
             return result
         }
     } else if (types.isinstance(other, Float)) {
