@@ -107,8 +107,8 @@ Float.prototype.__lt__ = function(other) {
                     )
                 case constants.BATAVIA_MAGIC_36:
                     throw new exceptions.TypeError.$pyclass(
-                        "'<' not supported between instances of 'float' and '"
-                        + type_name(other) + "'"
+                        "'<' not supported between instances of 'float' and '" +
+                        type_name(other) + "'"
                     )
             }
         } else {
@@ -150,8 +150,8 @@ Float.prototype.__le__ = function(other) {
                     )
                 case constants.BATAVIA_MAGIC_36:
                     throw new exceptions.TypeError.$pyclass(
-                        "'<=' not supported between instances of 'float' and '"
-                        + type_name(other) + "'"
+                        "'<=' not supported between instances of 'float' and '" +
+                        type_name(other) + "'"
                     )
             }
         } else {
@@ -218,8 +218,8 @@ Float.prototype.__gt__ = function(other) {
                     )
                 case constants.BATAVIA_MAGIC_36:
                     throw new exceptions.TypeError.$pyclass(
-                        "'>' not supported between instances of 'float' and '"
-                        + type_name(other) + "'"
+                        "'>' not supported between instances of 'float' and '" +
+                        type_name(other) + "'"
                     )
             }
         } else {
@@ -262,8 +262,8 @@ Float.prototype.__ge__ = function(other) {
                     )
                 case constants.BATAVIA_MAGIC_36:
                     throw new exceptions.TypeError.$pyclass(
-                        "'>=' not supported between instances of 'float' and '"
-                        + type_name(other) + "'"
+                        "'>=' not supported between instances of 'float' and '" +
+                        type_name(other) + "'"
                     )
             }
         } else {

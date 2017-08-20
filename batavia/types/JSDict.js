@@ -66,7 +66,7 @@ JSDict.prototype.__lt__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -83,7 +83,7 @@ JSDict.prototype.__lt__ = function(other) {
             return this.valueOf() < other.valueOf()
         }
     }
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -107,7 +107,7 @@ JSDict.prototype.__le__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -124,7 +124,7 @@ JSDict.prototype.__le__ = function(other) {
             return this.valueOf() <= other.valueOf()
         }
     }
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -157,7 +157,7 @@ JSDict.prototype.__gt__ = function(other) {
             types.NoneType, types.Set, types.Str,
             types.Tuple
         ])) {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -174,7 +174,7 @@ JSDict.prototype.__gt__ = function(other) {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -199,7 +199,7 @@ JSDict.prototype.__ge__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -216,7 +216,7 @@ JSDict.prototype.__ge__ = function(other) {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:

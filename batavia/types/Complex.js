@@ -1,7 +1,6 @@
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
 var constants = require('../core').constants
-var constants = require('../core').constants
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 
@@ -151,7 +150,7 @@ Complex.prototype.__str__ = function() {
  **************************************************/
 
 Complex.prototype.__lt__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -167,7 +166,7 @@ Complex.prototype.__lt__ = function(other) {
 }
 
 Complex.prototype.__le__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -209,7 +208,7 @@ Complex.prototype.__ne__ = function(other) {
 }
 
 Complex.prototype.__gt__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -225,7 +224,7 @@ Complex.prototype.__gt__ = function(other) {
 }
 
 Complex.prototype.__ge__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:

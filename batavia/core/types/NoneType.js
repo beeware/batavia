@@ -49,7 +49,7 @@ NoneType.prototype.__setattr__ = function(attr, value) {
  **************************************************/
 
 NoneType.prototype.__lt__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -66,7 +66,7 @@ NoneType.prototype.__lt__ = function(other) {
 }
 
 NoneType.prototype.__le__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -91,7 +91,7 @@ NoneType.prototype.__ne__ = function(other) {
 }
 
 NoneType.prototype.__gt__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -108,7 +108,7 @@ NoneType.prototype.__gt__ = function(other) {
 }
 
 NoneType.prototype.__ge__ = function(other) {
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:

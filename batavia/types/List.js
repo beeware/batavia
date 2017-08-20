@@ -84,7 +84,7 @@ List.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -119,7 +119,7 @@ List.prototype.__lt__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length < other.length
         } else {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -135,7 +135,7 @@ List.prototype.__lt__ = function(other) {
             }
         }
     } else {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -155,7 +155,7 @@ List.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -190,7 +190,7 @@ List.prototype.__le__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length <= other.length
         } else {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -206,7 +206,7 @@ List.prototype.__le__ = function(other) {
             }
         }
     } else {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -249,7 +249,7 @@ List.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -284,7 +284,7 @@ List.prototype.__gt__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length > other.length
         } else {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -300,7 +300,7 @@ List.prototype.__gt__ = function(other) {
             }
         }
     } else {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -320,7 +320,7 @@ List.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -355,7 +355,7 @@ List.prototype.__ge__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length >= other.length
         } else {
-            switch(constants.BATAVIA_MAGIC) {
+            switch (constants.BATAVIA_MAGIC) {
                 case constants.BATAVIA_MAGIC_34:
                 case constants.BATAVIA_MAGIC_35a0:
                 case constants.BATAVIA_MAGIC_35:
@@ -371,7 +371,7 @@ List.prototype.__ge__ = function(other) {
             }
         }
     } else {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:

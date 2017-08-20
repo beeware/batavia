@@ -99,8 +99,8 @@ Bytes.prototype.__lt__ = function(other) {
                 )
             case constants.BATAVIA_MAGIC_36:
                 throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'bytes' and '"
-                    + type_name(other) + "'"
+                    "'<' not supported between instances of 'bytes' and '" +
+                    type_name(other) + "'"
                 )
         }
     }
@@ -122,8 +122,8 @@ Bytes.prototype.__le__ = function(other) {
                 )
             case constants.BATAVIA_MAGIC_36:
                 throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'bytes' and '"
-                    + type_name(other) + "'"
+                    "'<=' not supported between instances of 'bytes' and '" +
+                    type_name(other) + "'"
                 )
         }
     }
@@ -163,8 +163,8 @@ Bytes.prototype.__gt__ = function(other) {
                 )
             case constants.BATAVIA_MAGIC_36:
                 throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'bytes' and '"
-                    + type_name(other) + "'"
+                    "'>' not supported between instances of 'bytes' and '" +
+                    type_name(other) + "'"
                 )
         }
     }
@@ -186,8 +186,8 @@ Bytes.prototype.__ge__ = function(other) {
                 )
             case constants.BATAVIA_MAGIC_36:
                 throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'bytes' and '"
-                    + type_name(other) + "'"
+                    "'>=' not supported between instances of 'bytes' and '" +
+                    type_name(other) + "'"
                 )
         }
     }
@@ -332,7 +332,7 @@ Bytes.prototype.__add__ = function(other) {
         types.Str,
         types.Tuple ])) {
         // does not concat with all these
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -342,10 +342,9 @@ Bytes.prototype.__add__ = function(other) {
                 )
             case constants.BATAVIA_MAGIC_36:
                 throw new exceptions.TypeError.$pyclass(
-                    "can't concat " + type_name(other) + " to bytes"
+                    "can't concat " + type_name(other) + ' to bytes'
                 )
         }
-
     } else {
         throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
     }

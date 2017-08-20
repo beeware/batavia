@@ -72,7 +72,7 @@ FrozenSet.prototype.__lt__ = function(other) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
 
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -93,7 +93,7 @@ FrozenSet.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -137,7 +137,7 @@ FrozenSet.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:
@@ -158,7 +158,7 @@ FrozenSet.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    switch(constants.BATAVIA_MAGIC) {
+    switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_34:
         case constants.BATAVIA_MAGIC_35a0:
         case constants.BATAVIA_MAGIC_35:

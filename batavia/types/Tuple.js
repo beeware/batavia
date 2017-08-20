@@ -87,7 +87,7 @@ Tuple.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -123,7 +123,7 @@ Tuple.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -177,7 +177,7 @@ Tuple.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
@@ -214,7 +214,7 @@ Tuple.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        switch(constants.BATAVIA_MAGIC) {
+        switch (constants.BATAVIA_MAGIC) {
             case constants.BATAVIA_MAGIC_34:
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
