@@ -317,7 +317,6 @@ Float.prototype.__mul__ = function(other) {
 Float.prototype.__mod__ = function(other) {
     var types = require('../types')
 
-    /* TODO: Fix case for -0.0, which is coming out 0.0 */
     if (types.isinstance(other, types.Int)) {
         if (other.val.isZero()) {
             throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
@@ -325,22 +324,19 @@ Float.prototype.__mod__ = function(other) {
             var thisNum = this.valueOf()
             var otherNum = parseFloat(other.val)
             var result = new Float(python_modulo(thisNum, otherNum))
-            if (otherNum > MAX_FLOAT || otherNum < MIN_FLOAT){
+            if (otherNum > MAX_FLOAT || otherNum < MIN_FLOAT || result.toString() === 'nan' || result.toString() === 'inf' || result.toString() === '-inf'){
                 throw new exceptions.OverflowError.$pyclass(
                     'int too large to convert to float'
                 )
             }
-            if (result.toString() == 'nan' || result.toString() == 'inf' || result.toString() == '-inf') {
-                throw new exceptions.OverflowError.$pyclass(
-                    'int too large to convert to float'
-                )
+            if (otherNum > thisNum && thisNum > 0 || thisNum > otherNum && thisNum < 0 || thisNum === 0) {
+                return new Float(thisNum)
             }
-            if (otherNum > thisNum && thisNum > 0.0 || thisNum > otherNum && thisNum < 0.0 || thisNum == 0.0) return thisNum
-            if (result == 0.0 && (thisNum%otherNum)+otherNum == otherNum){
+            if (result.valueOf() === 0 && (thisNum%otherNum)+otherNum === otherNum){
                 return new Float(otherNum)
             }
-            if (result == -0.0) {
-                return 0.0
+            if (result.valueOf() === -0.0) {
+                return new Float(0.0)
             }
             return result
         }
