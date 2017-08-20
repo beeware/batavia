@@ -837,30 +837,9 @@ VirtualMachine.prototype.unpack_code = function(code) {
                 lo = code.co_code.val[pos++]
                 hi = code.co_code.val[pos++]
                 extra = (lo << 16) | (hi << 24)
-                // emulate four NOPs
+                // emulate NOP
                 unpacked_code[opcode_start_pos] = {
                     'opoffset': opcode_start_pos,
-                    'opcode': dis.NOP,
-                    'op_method': this.dispatch_table[dis.NOP],
-                    'args': [],
-                    'next_pos': pos
-                }
-                unpacked_code[opcode_start_pos + 1] = {
-                    'opoffset': opcode_start_pos + 1,
-                    'opcode': dis.NOP,
-                    'op_method': this.dispatch_table[dis.NOP],
-                    'args': [],
-                    'next_pos': pos
-                }
-                unpacked_code[opcode_start_pos + 2] = {
-                    'opoffset': opcode_start_pos + 2,
-                    'opcode': dis.NOP,
-                    'op_method': this.dispatch_table[dis.NOP],
-                    'args': [],
-                    'next_pos': pos
-                }
-                unpacked_code[opcode_start_pos + 3] = {
-                    'opoffset': opcode_start_pos + 3,
                     'opcode': dis.NOP,
                     'op_method': this.dispatch_table[dis.NOP],
                     'args': [],
