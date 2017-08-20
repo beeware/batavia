@@ -89,7 +89,20 @@ Bytes.prototype.__lt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val < other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() < ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bytes() < ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'bytes' and '"
+                    + type_name(other) + "'"
+                )
+        }
     }
 }
 
@@ -99,7 +112,20 @@ Bytes.prototype.__le__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val <= other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() <= ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bytes() <= ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'bytes' and '"
+                    + type_name(other) + "'"
+                )
+        }
     }
 }
 
@@ -127,7 +153,20 @@ Bytes.prototype.__gt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val > other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() > ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bytes() > ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'bytes' and '"
+                    + type_name(other) + "'"
+                )
+        }
     }
 }
 
@@ -137,7 +176,20 @@ Bytes.prototype.__ge__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val >= other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() >= ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bytes() >= ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'bytes' and '"
+                    + type_name(other) + "'"
+                )
+        }
     }
 }
 

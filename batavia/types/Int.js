@@ -2,6 +2,7 @@ var BigNumber = require('bignumber.js')
 
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
+var constants = require('../core').constants
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
@@ -105,10 +106,35 @@ Int.prototype.__lt__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.lt(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() < ' + type_name(other) + '()')
+            switch (constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: int() < ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'<' not supported between instances of 'int' and '" +
+                        type_name(other) + "'"
+                    )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() < NoneType()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() < NoneType()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'int' and 'NoneType'"
+                )
+        }
     }
 }
 
@@ -127,10 +153,35 @@ Int.prototype.__le__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.lte(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() <= ' + type_name(other) + '()')
+            switch (constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: int() <= ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'<=' not supported between instances of 'int' and '" +
+                        type_name(other) + "'"
+                    )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() <= NoneType()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() <= NoneType()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'int' and 'NoneType'"
+                )
+        }
     }
 }
 
@@ -169,10 +220,35 @@ Int.prototype.__gt__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.gt(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() > ' + type_name(other) + '()')
+            switch (constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: int() > ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'>' not supported between instances of 'int' and '" +
+                        type_name(other) + "'"
+                    )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() > NoneType()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() > NoneType()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'int' and 'NoneType'"
+                )
+        }
     }
 }
 
@@ -191,10 +267,35 @@ Int.prototype.__ge__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.gte(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() >= ' + type_name(other) + '()')
+            switch (constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: int() >= ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'>=' not supported between instances of 'int' and '" +
+                        type_name(other) + "'"
+                    )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() >= NoneType()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() >= NoneType()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'int' and 'NoneType'"
+                )
+        }
     }
 }
 

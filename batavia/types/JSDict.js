@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var constants = require('../core').constants
 var type_name = require('../core').type_name
 var None = require('../core').None
 
@@ -65,12 +66,36 @@ JSDict.prototype.__lt__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() < ' + type_name(other) + '()')
+            switch(constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: dict() < ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'<' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+            }
         } else {
             return this.valueOf() < other.valueOf()
         }
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: dict() < NoneType()')
+    switch(constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: dict() < NoneType()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'dict' and 'NoneType'"
+            )
+    }
 }
 
 JSDict.prototype.__le__ = function(other) {
@@ -82,12 +107,36 @@ JSDict.prototype.__le__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() <= ' + type_name(other) + '()')
+            switch(constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: dict() <= ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'<=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+            }
         } else {
             return this.valueOf() <= other.valueOf()
         }
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: dict() <= NoneType()')
+    switch(constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: dict() <= NoneType()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'dict' and 'NoneType'"
+            )
+    }
 }
 
 JSDict.prototype.__eq__ = function(other) {
@@ -108,12 +157,36 @@ JSDict.prototype.__gt__ = function(other) {
             types.NoneType, types.Set, types.Str,
             types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() > ' + type_name(other) + '()')
+            switch(constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: dict() > ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'>' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+            }
         } else {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: dict() > NoneType()')
+        switch(constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() > NoneType()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'dict' and 'NoneType'"
+                )
+        }
     }
 }
 
@@ -126,12 +199,36 @@ JSDict.prototype.__ge__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() >= ' + type_name(other) + '()')
+            switch(constants.BATAVIA_MAGIC) {
+                case constants.BATAVIA_MAGIC_34:
+                case constants.BATAVIA_MAGIC_35a0:
+                case constants.BATAVIA_MAGIC_35:
+                case constants.BATAVIA_MAGIC_353:
+                    throw new exceptions.TypeError.$pyclass(
+                        'unorderable types: dict() >= ' + type_name(other) + '()'
+                    )
+                case constants.BATAVIA_MAGIC_36:
+                    throw new exceptions.TypeError.$pyclass(
+                        "'>=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+            }
         } else {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: dict() >= NoneType()')
+        switch(constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() >= NoneType()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'dict' and 'NoneType'"
+                )
+        }
     }
 }
 

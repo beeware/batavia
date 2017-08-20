@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
 var constants = require('../core').constants
+var constants = require('../core').constants
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 
@@ -150,11 +151,35 @@ Complex.prototype.__str__ = function() {
  **************************************************/
 
 Complex.prototype.__lt__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() < ' + type_name(other) + '()')
+    switch(constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() < ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 Complex.prototype.__le__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() <= ' + type_name(other) + '()')
+    switch(constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() <= ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 Complex.prototype.__eq__ = function(other) {
@@ -184,11 +209,35 @@ Complex.prototype.__ne__ = function(other) {
 }
 
 Complex.prototype.__gt__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() > ' + type_name(other) + '()')
+    switch(constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() > ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 Complex.prototype.__ge__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() >= ' + type_name(other) + '()')
+    switch(constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() >= ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 /**************************************************
