@@ -133,8 +133,16 @@ Set.prototype.__pos__ = function() {
     throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'set'")
 }
 
+Set.prototype.__neg__ = function() {
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'set'")
+}
+
 Set.prototype.__not__ = function() {
     return this.__bool__().__not__()
+}
+
+Set.prototype.__invert__ = function() {
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'set'")
 }
 
 /**************************************************
