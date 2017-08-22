@@ -20,6 +20,9 @@ function python_modulo(n, M) {
     return ((n % M) + M) % M
 }
 
+var MAX_FLOAT = new Float('179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
+var MIN_FLOAT = new Float('-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
@@ -314,12 +317,25 @@ Float.prototype.__mul__ = function(other) {
 Float.prototype.__mod__ = function(other) {
     var types = require('../types')
 
-    /* TODO: Fix case for -0.0, which is coming out 0.0 */
     if (types.isinstance(other, types.Int)) {
         if (other.val.isZero()) {
             throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
         } else {
-            return new Float(python_modulo(this.valueOf(), parseFloat(other.val)))
+            var thisNum = this.valueOf()
+            var otherNum = parseFloat(other.val)
+            var result = new Float(python_modulo(thisNum, otherNum))
+            if (otherNum > MAX_FLOAT || otherNum < MIN_FLOAT || result.toString() === 'nan' || result.toString() === 'inf' || result.toString() === '-inf') {
+                throw new exceptions.OverflowError.$pyclass(
+                    'int too large to convert to float'
+                )
+            }
+            if ((otherNum > thisNum && thisNum > 0) || (thisNum > otherNum && thisNum < 0) || thisNum === 0) {
+                return new Float(thisNum)
+            }
+            if (result.valueOf() === 0 && (thisNum % otherNum) + otherNum === otherNum) {
+                return new Float(otherNum)
+            }
+            return result
         }
     } else if (types.isinstance(other, Float)) {
         if (other.valueOf() === 0) {
