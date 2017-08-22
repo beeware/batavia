@@ -755,95 +755,140 @@ VirtualMachine.prototype.create_traceback = function() {
  * unpacked into operations with their respective args
  */
 VirtualMachine.prototype.unpack_code = function(code) {
-    var pos = 0
-    var unpacked_code = []
-    var args
-    var extra = 0
-    var lo
-    var hi
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        // Python 3.6+, 2-byte opcodes
 
-    while (pos < code.co_code.val.length) {
-        var opcode_start_pos = pos
+        let pos = 0
+        let unpacked_code = []
+        let args = []
+        let extra = 0
 
-        var opcode = code.co_code.val[pos++]
+        while (pos < code.co_code.val.length) {
+            let opcode_start_pos = pos
 
-        // next opcode has 4-byte argument effectively.
-        if (opcode === dis.EXTENDED_ARG) {
-            lo = code.co_code.val[pos++]
-            hi = code.co_code.val[pos++]
-            extra = (lo << 16) | (hi << 24)
-            // emulate four NOPs
+            let opcode = code.co_code.val[pos++]
+
+            // next opcode has 4-byte argument effectively.
+            if (opcode === dis.EXTENDED_ARG) {
+                extra = code.co_code.val[pos++] << 8
+                unpacked_code[opcode_start_pos] = {
+                    'opoffset': opcode_start_pos,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
+                }
+                continue
+            }
+
+            let intArg = code.co_code.val[pos++] | extra
+            extra = 0
+
+            if (opcode >= dis.HAVE_ARGUMENT) {
+                if (opcode in dis.hasconst) {
+                    args = [code.co_consts[intArg]]
+                } else if (opcode in dis.hasfree) {
+                    if (intArg < code.co_cellvars.length) {
+                        args = [code.co_cellvars[intArg]]
+                    } else {
+                        let var_idx = intArg - code.co_cellvars.length
+                        args = [code.co_freevars[var_idx]]
+                    }
+                } else if (opcode in dis.hasname) {
+                    args = [code.co_names[intArg]]
+                } else if (opcode in dis.hasjrel) {
+                    args = [pos + intArg]
+                } else if (opcode in dis.hasjabs) {
+                    args = [intArg]
+                } else if (opcode in dis.haslocal) {
+                    args = [code.co_varnames[intArg]]
+                } else {
+                    args = [intArg]
+                }
+            }
+
             unpacked_code[opcode_start_pos] = {
                 'opoffset': opcode_start_pos,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
+                'opcode': opcode,
+                'op_method': this.dispatch_table[opcode],
+                'args': args,
                 'next_pos': pos
             }
-            unpacked_code[opcode_start_pos + 1] = {
-                'opoffset': opcode_start_pos + 1,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
-            }
-            unpacked_code[opcode_start_pos + 2] = {
-                'opoffset': opcode_start_pos + 2,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
-            }
-            unpacked_code[opcode_start_pos + 3] = {
-                'opoffset': opcode_start_pos + 3,
-                'opcode': dis.NOP,
-                'op_method': this.dispatch_table[dis.NOP],
-                'args': [],
-                'next_pos': pos
-            }
-            continue
         }
 
-        if (opcode < dis.HAVE_ARGUMENT) {
-            args = []
-        } else {
-            lo = code.co_code.val[pos++]
-            hi = code.co_code.val[pos++]
-            var intArg = lo | (hi << 8) | extra
-            extra = 0 // use extended arg if present
+        code.co_unpacked_code = unpacked_code
+    } else {
+        // Until 3.6 Python had variable width opcodes
 
-            if (opcode in dis.hasconst) {
-                args = [code.co_consts[intArg]]
-            } else if (opcode in dis.hasfree) {
-                if (intArg < code.co_cellvars.length) {
-                    args = [code.co_cellvars[intArg]]
-                } else {
-                    var var_idx = intArg - code.co_cellvars.length
-                    args = [code.co_freevars[var_idx]]
+        let pos = 0
+        let unpacked_code = []
+        let args
+        let extra = 0
+        let lo
+        let hi
+
+        while (pos < code.co_code.val.length) {
+            let opcode_start_pos = pos
+
+            let opcode = code.co_code.val[pos++]
+
+            // next opcode has 4-byte argument effectively.
+            if (opcode === dis.EXTENDED_ARG) {
+                lo = code.co_code.val[pos++]
+                hi = code.co_code.val[pos++]
+                extra = (lo << 16) | (hi << 24)
+                // emulate NOP
+                unpacked_code[opcode_start_pos] = {
+                    'opoffset': opcode_start_pos,
+                    'opcode': dis.NOP,
+                    'op_method': this.dispatch_table[dis.NOP],
+                    'args': [],
+                    'next_pos': pos
                 }
-            } else if (opcode in dis.hasname) {
-                args = [code.co_names[intArg]]
-            } else if (opcode in dis.hasjrel) {
-                args = [pos + intArg]
-            } else if (opcode in dis.hasjabs) {
-                args = [intArg]
-            } else if (opcode in dis.haslocal) {
-                args = [code.co_varnames[intArg]]
+                continue
+            }
+
+            if (opcode < dis.HAVE_ARGUMENT) {
+                args = []
             } else {
-                args = [intArg]
+                lo = code.co_code.val[pos++]
+                hi = code.co_code.val[pos++]
+                let intArg = lo | (hi << 8) | extra
+                extra = 0 // use extended arg if present
+
+                if (opcode in dis.hasconst) {
+                    args = [code.co_consts[intArg]]
+                } else if (opcode in dis.hasfree) {
+                    if (intArg < code.co_cellvars.length) {
+                        args = [code.co_cellvars[intArg]]
+                    } else {
+                        let var_idx = intArg - code.co_cellvars.length
+                        args = [code.co_freevars[var_idx]]
+                    }
+                } else if (opcode in dis.hasname) {
+                    args = [code.co_names[intArg]]
+                } else if (opcode in dis.hasjrel) {
+                    args = [pos + intArg]
+                } else if (opcode in dis.hasjabs) {
+                    args = [intArg]
+                } else if (opcode in dis.haslocal) {
+                    args = [code.co_varnames[intArg]]
+                } else {
+                    args = [intArg]
+                }
+            }
+
+            unpacked_code[opcode_start_pos] = {
+                'opoffset': opcode_start_pos,
+                'opcode': opcode,
+                'op_method': this.dispatch_table[opcode],
+                'args': args,
+                'next_pos': pos
             }
         }
 
-        unpacked_code[opcode_start_pos] = {
-            'opoffset': opcode_start_pos,
-            'opcode': opcode,
-            'op_method': this.dispatch_table[opcode],
-            'args': args,
-            'next_pos': pos
-        }
+        code.co_unpacked_code = unpacked_code
     }
-
-    code.co_unpacked_code = unpacked_code
 }
 
 VirtualMachine.prototype.run_code = function(kwargs) {
@@ -1009,7 +1054,7 @@ VirtualMachine.prototype.run_frame = function(frame) {
 
     while (!why) {
         operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti]
-        var opname = dis.opname[operation.opcode]  // eslint-disable-line no-unused-vars
+        var opname = dis.opname[operation.opcode] // eslint-disable-line no-unused-vars
 
         // advance f_lasti to next operation. If the operation is a jump, then this
         // pointer will be overwritten during the operation's execution.
@@ -1227,7 +1272,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     // the comparison method in a different way, because we can't
     // bind the operator methods to the null instance.
 
-    if (opnum === 6) {  // x in None
+    if (opnum === 6) { // x in None
         if (items[1] === null) {
             result = types.NoneType.__contains__(items[0])
         } if (items[1].__contains__) {
@@ -1236,7 +1281,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
             result = (items[0] in items[1])
         }
     } else if (opnum === 7) {
-        if (items[1] === null) {  // x not in None
+        if (items[1] === null) { // x not in None
             result = types.NoneType.__contains__(items[0]).__not__()
         } else if (items[1].__contains__) {
             result = items[1].__contains__(items[0]).__not__()
@@ -1245,31 +1290,31 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
         }
     } else if (items[0] === null) {
         switch (opnum) {
-            case 0:  // <
+            case 0: // <
                 result = types.NoneType.__lt__(items[1])
                 break
-            case 1:  // <=
+            case 1: // <=
                 result = types.NoneType.__le__(items[1])
                 break
-            case 2:  // ==
+            case 2: // ==
                 result = types.NoneType.__eq__(items[1])
                 break
-            case 3:  // !=
+            case 3: // !=
                 result = types.NoneType.__ne__(items[1])
                 break
-            case 4:  // >
+            case 4: // >
                 result = types.NoneType.__gt__(items[1])
                 break
-            case 5:  // >=
+            case 5: // >=
                 result = types.NoneType.__ge__(items[1])
                 break
-            case 8:  // is
+            case 8: // is
                 result = items[1] === null
                 break
-            case 9:  // is not
+            case 9: // is not
                 result = items[1] !== null
                 break
-            case 10:  // exception
+            case 10: // exception
                 result = items[1] === null
                 break
             default:
@@ -1277,55 +1322,55 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
         }
     } else {
         switch (opnum) {
-            case 0:  // <
+            case 0: // <
                 if (items[0].__lt__) {
                     result = items[0].__lt__(items[1])
                 } else {
                     result = items[0] < items[1]
                 }
                 break
-            case 1:  // <=
+            case 1: // <=
                 if (items[0].__le__) {
                     result = items[0].__le__(items[1])
                 } else {
                     result = items[0] <= items[1]
                 }
                 break
-            case 2:  // ==
+            case 2: // ==
                 if (items[0].__eq__) {
                     result = items[0].__eq__(items[1])
                 } else {
                     result = items[0] === items[1]
                 }
                 break
-            case 3:  // !=
+            case 3: // !=
                 if (items[0].__ne__) {
                     result = items[0].__ne__(items[1])
                 } else {
                     result = items[0] !== items[1]
                 }
                 break
-            case 4:  // >
+            case 4: // >
                 if (items[0].__gt__) {
                     result = items[0].__gt__(items[1])
                 } else {
                     result = items[0] > items[1]
                 }
                 break
-            case 5:  // >=
+            case 5: // >=
                 if (items[0].__ge__) {
                     result = items[0].__ge__(items[1])
                 } else {
                     result = items[0] >= items[1]
                 }
                 break
-            case 8:  // is
+            case 8: // is
                 result = items[0] === items[1]
                 break
-            case 9:  // is not
+            case 9: // is not
                 result = items[0] !== items[1]
                 break
-            case 10:  // exception match
+            case 10: // exception match
                 result = types.issubclass(items[0], items[1])
                 break
             default:
@@ -1404,6 +1449,7 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
     switch (constants.BATAVIA_MAGIC) {
         case constants.BATAVIA_MAGIC_35:
         case constants.BATAVIA_MAGIC_353:
+        case constants.BATAVIA_MAGIC_36:
             var items = this.popn(size * 2)
             var dict = new types.Dict()
 
@@ -1426,6 +1472,17 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
                 'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)'
             )
     }
+}
+
+VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
+    var keys = this.pop()
+    var values = this.popn(size)
+    var dict = new types.Dict()
+
+    for (var i = 0; i < values.length; i += 1) {
+        dict.__setitem__(keys[i], values[i])
+    }
+    this.push(dict)
 }
 
 VirtualMachine.prototype.byte_STORE_MAP = function() {
@@ -1512,7 +1569,7 @@ VirtualMachine.prototype.byte_PRINT_ITEM = function() {
 }
 
 VirtualMachine.prototype.byte_PRINT_ITEM_TO = function() {
-    this.pop()  // FIXME - the to value is ignored.
+    this.pop() // FIXME - the to value is ignored.
     var item = this.pop()
     this.print_item(item)
 }
@@ -1522,20 +1579,20 @@ VirtualMachine.prototype.byte_PRINT_NEWLINE = function() {
 }
 
 VirtualMachine.prototype.byte_PRINT_NEWLINE_TO = function() {
-    var to = this.pop()  // FIXME - this is ignored.
+    var to = this.pop() // FIXME - this is ignored.
     this.print_newline(to)
 }
 
 VirtualMachine.prototype.print_item = function(item, to) {
     // if (to === undefined) {
-    //     to = sys.stdout;  // FIXME - the to value is ignored.
+    //     to = sys.stdout; // FIXME - the to value is ignored.
     // }
     sys.stdout.write(item)
 }
 
 VirtualMachine.prototype.print_newline = function(to) {
     // if (to === undefined) {
-    //     to = sys.stdout;  // FIXME - the to value is ignored.
+    //     to = sys.stdout; // FIXME - the to value is ignored.
     // }
     sys.stdout.write('')
 }
@@ -1685,9 +1742,9 @@ VirtualMachine.prototype.byte_RAISE_VARARGS = function(argc) {
 
 VirtualMachine.prototype.do_raise = function(exc, cause) {
     var exc_type, val
-    if (exc === undefined) {  // reraise
+    if (exc === undefined) { // reraise
         if (this.last_exception.exc_type === undefined) {
-            return 'exception'      // error
+            return 'exception' // error
         } else {
             return 'reraise'
         }
@@ -1700,7 +1757,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         exc_type = exc
         val = new exc_type.$pyclass()
     } else {
-        return 'exception'  // error
+        return 'exception' // error
     }
 
     // If you reach this point, you're guaranteed that
@@ -1708,7 +1765,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
     // Now do a similar thing for the cause, if present.
     if (cause) {
         // if not isinstance(cause, BaseException):
-        //     return 'exception'  // error
+        //     return 'exception' // error
 
         val.__cause__ = cause
     }
@@ -1788,11 +1845,34 @@ VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
     }
 }
 
-VirtualMachine.prototype.byte_MAKE_FUNCTION = function(argc) {
+VirtualMachine.prototype.byte_MAKE_FUNCTION = function(arg) {
     var name = this.pop()
     var code = this.pop()
-    var defaults = this.popn(argc)
-    var fn = new types.Function(name, code, this.frame.f_globals, defaults, null, this)
+    var closure = null
+    var annotations = null // eslint-disable-line no-unused-vars
+    var kwdefaults = null // eslint-disable-line no-unused-vars
+    var defaults = null
+
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        if (arg & 8) {
+            closure = this.pop()
+        }
+        if (arg & 4) {
+            // XXX unused
+            annotations = this.pop()
+        }
+        if (arg & 2) {
+            // XXX unused
+            kwdefaults = this.pop()
+        }
+        if (arg & 1) {
+            defaults = this.pop()
+        }
+    } else {
+        defaults = this.popn(arg)
+    }
+
+    var fn = new types.Function(name, code, this.frame.f_globals, defaults, closure, this)
     this.push(fn)
 }
 
@@ -1818,44 +1898,82 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        var kw = this.pop()
+        var namedargs = new types.JSDict()
+        for (let i = kw.length - 1; i >= 0; i--) {
+            namedargs[kw[i]] = this.pop()
+        }
+        return this.call_function(arg - kw.length, null, namedargs)
+    }
     var kwargs = this.pop()
     return this.call_function(arg, null, kwargs)
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
-    var items = this.popn(2)
-    return this.call_function(arg, items[0], items[1])
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        // opcode: CALL_FUNCTION_EX
+        var kwargs
+        if (arg & 1) {
+            kwargs = this.pop()
+        }
+        var args = this.pop()
+        return this.call_function(0, args, kwargs)
+    } else {
+        var items = this.popn(2)
+        return this.call_function(arg, items[0], items[1])
+    }
 }
 
 VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
-    // @arg is based on
-    // https://docs.python.org/3/library/dis.html#opcode-CALL_FUNCTION
-    var lenKw = Math.floor(arg / 256)
-    var lenPos = arg % 256
-    var namedargs = new types.JSDict()
-    for (var i = 0; i < lenKw; i++) {
-        var items = this.popn(2)
-        namedargs[items[0]] = items[1]
-    }
-    if (kwargs) {
-        for (let kv of kwargs.items()) {
-            namedargs[kv[0]] = kv[1]
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        let namedargs = new types.JSDict()
+        let lenPos = arg
+        if (kwargs) {
+            for (let kv of kwargs.items()) {
+                namedargs[kv[0]] = kv[1]
+            }
         }
-    }
-    var posargs = this.popn(lenPos)
-    if (args) {
-        for (let elem of args) {
-            posargs.push(elem)
+        let posargs = this.popn(lenPos)
+        if (args) {
+            for (let elem of args) {
+                posargs.push(elem)
+            }
         }
-    }
+        let func = this.pop()
+        if (func.__call__ !== undefined) {
+            func = func.__call__.bind(func)
+        }
 
-    var func = this.pop()
-    if (func.__call__ !== undefined) {
-        func = func.__call__.bind(func)
-    }
+        let retval = func(posargs, namedargs)
+        this.push(retval)
+    } else {
+        let namedargs = new types.JSDict()
+        let lenKw = Math.floor(arg / 256)
+        let lenPos = arg % 256
+        for (var i = 0; i < lenKw; i++) {
+            var items = this.popn(2)
+            namedargs[items[0]] = items[1]
+        }
+        if (kwargs) {
+            for (let kv of kwargs.items()) {
+                namedargs[kv[0]] = kv[1]
+            }
+        }
+        let posargs = this.popn(lenPos)
+        if (args) {
+            for (let elem of args) {
+                posargs.push(elem)
+            }
+        }
+        let func = this.pop()
+        if (func.__call__ !== undefined) {
+            func = func.__call__.bind(func)
+        }
 
-    var retval = func(posargs, namedargs)
-    this.push(retval)
+        let retval = func(posargs, namedargs)
+        this.push(retval)
+    }
 }
 
 VirtualMachine.prototype.byte_RETURN_VALUE = function() {

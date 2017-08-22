@@ -112,7 +112,7 @@ def_binary_op('BINARY_OR', 66)
 def_inplace_op('INPLACE_POWER', 67)
 def_op('GET_ITER', 68)
 
-// introduced in Python 3.5+
+// Introduced in Python 3.5
 def_op('GET_YIELD_FROM_ITER', 69)
 
 def_op('PRINT_EXPR', 70)
@@ -216,5 +216,8 @@ dis.hasfree[148] = 148
 
 def_op('EXTENDED_ARG', 144)
 dis.EXTENDED_ARG = 144
+
+// Introduced in Python 3.6
+def_op('BUILD_CONST_KEY_MAP', 156)
 
 module.exports = dis
