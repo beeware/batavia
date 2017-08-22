@@ -3,6 +3,7 @@ var core = require('../../core')
 var PyObject = core.Object
 var exceptions = core.exceptions
 var callables = core.callables
+var constants = core.constants
 var validateParams = require('./utils').validateParams
 
 function JSONDecoder() {
@@ -63,7 +64,11 @@ JSONDecoder.prototype.decode = function(s) {
     try {
         ret = JSON.parse(s, reviver)
     } catch (e) {
-        throw new exceptions.ValueError.$pyclass(e.message)
+        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+            throw new exceptions.ValueError.$pyclass(e.message)
+        } else {
+            throw new exceptions.JSONDecodeError.$pyclass(e.message)
+        }
     }
     return ret
 }
@@ -94,7 +99,6 @@ var loads = function(args, kwargs) {
     delete params['encoding']
     params['strict'] = true
 
-    // TODO(abonie): possible bug here? see test_cls in tests
     var dec = callables.call_function(cls, [], params)
     return callables.call_method(dec, 'decode', [s])
 }
@@ -132,5 +136,6 @@ load.$pyargs = true
 module.exports = {
     'loads': loads,
     'load': load,
+    'JSONDecodeError': exceptions.JSONDecodeError,
     'JSONDecoder': _JSONDecoder
 }
