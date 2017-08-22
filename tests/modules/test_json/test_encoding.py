@@ -48,9 +48,10 @@ class JSONEncoderTests(MethodTestCase, TranspileTestCase):
                 print(e)
         """)
 
-    not_implemented = [
-        'test_json_JSONEncoder_encode_class',  # fails due to class __str__
-    ]
+    not_implemented_versions = {
+        # fails due to class __str__
+        'test_json_JSONEncoder_encode_class': ['3.4', '3.5'],
+    }
 
     is_flakey = [
         'test_json_JSONEncoder_encode_dict',   # fails due to dict ordering
@@ -62,9 +63,10 @@ JSONEncoderTests.add_one_arg_method_tests('json', 'JSONEncoder', ['encode'])
 
 class DumpsTests(ModuleFunctionTestCase, TranspileTestCase):
 
-    not_implemented = [
-        'test_json_dumps_class',  # fails due to class __str__
-    ]
+    not_implemented_versions = {
+        # fails due to class __str__
+        'test_json_dumps_class': ['3.4', '3.5'],
+    }
 
     is_flakey = [
         'test_json_dumps_dict',   # fails due to dict ordering
