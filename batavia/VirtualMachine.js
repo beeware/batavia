@@ -2017,7 +2017,11 @@ VirtualMachine.prototype.byte_YIELD_FROM = function() {
             throw e
         }
     }
-    this.jump(this.frame.f_lasti - 1)
+    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+        this.jump(this.frame.f_lasti - 2)
+    } else {
+        this.jump(this.frame.f_lasti - 1)
+    }
     return 'yield'
 }
 
