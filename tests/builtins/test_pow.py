@@ -1,5 +1,3 @@
-from unittest import expectedFailure
-
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase, BuiltinTwoargFunctionTestCase
 
 
@@ -12,7 +10,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_int_neg_y_pos_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -21,7 +18,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_int_neg_y_neg_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -30,7 +26,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_float_x_with_z(self):
         self.assertCodeExecution("""
             x = 3.3
@@ -39,7 +34,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
             """)
 
-    @expectedFailure
     def test_float_y_with_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -48,7 +42,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
             """)
 
-    @expectedFailure
     def test_float(self):
         self.assertCodeExecution("""
             x = 3.3
@@ -57,7 +50,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_float_neg_y_with_z(self):
         self.assertCodeExecution("""
             x = 3.3
