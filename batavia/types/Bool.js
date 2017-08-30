@@ -1,5 +1,6 @@
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
+var constants = require('../core').constants
 var type_name = require('../core').type_name
 var utils = require('./utils')
 /*************************************************************************
@@ -99,7 +100,20 @@ Bool.prototype.__ge__ = function(other) {
         }
         return new Bool(this_bool >= other_bool)
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() >= ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bool() >= ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'bool' and '" +
+                    type_name(other) + "'"
+                )
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >=: 'bool' and '" + type_name(other) + "'")
     }
@@ -131,7 +145,20 @@ Bool.prototype.__gt__ = function(other) {
         }
         return new Bool(this_bool > other_bool)
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() > ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bool() > ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'bool' and '" +
+                    type_name(other) + "'"
+                )
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >: 'bool' and '" + type_name(other) + "'")
     }
@@ -163,7 +190,20 @@ Bool.prototype.__le__ = function(other) {
         }
         return new Bool(this_bool <= other_bool)
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() <= ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bool() <= ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'bool' and '" +
+                    type_name(other) + "'"
+                )
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <=: 'bool' and '" + type_name(other) + "'")
     }
@@ -195,7 +235,20 @@ Bool.prototype.__lt__ = function(other) {
         }
         return new Bool(this_bool < other_bool)
     } else if (types.isbataviainstance(other)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bool() < ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: bool() < ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'bool' and '" +
+                    type_name(other) + "'"
+                )
+        }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <: 'bool' and '" + type_name(other) + "'")
     }

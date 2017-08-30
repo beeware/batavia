@@ -1,5 +1,6 @@
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
+var constants = require('../core').constants
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 
@@ -60,13 +61,37 @@ function Complex(re, im) {
             this.imag = -this.imag
         }
     } else if (!types.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
-        throw new exceptions.TypeError.$pyclass(
-            "complex() argument must be a string, a bytes-like object or a number, not '" + type_name(re) + "'"
-        )
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+                throw new exceptions.TypeError.$pyclass(
+                    "complex() argument must be a string, a bytes-like object or a number, not '" +
+                    type_name(re) + "'"
+                )
+            case constants.BATAVIA_MAGIC_353:
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "complex() first argument must be a string, a bytes-like object or a number, not '" +
+                    type_name(re) + "'"
+                )
+        }
     } else if (!types.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
-        throw new exceptions.TypeError.$pyclass(
-            "complex() argument must be a string, a bytes-like object or a number, not '" + type_name(im) + "'"
-        )
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+                throw new exceptions.TypeError.$pyclass(
+                    "complex() argument must be a string, a bytes-like object or a number, not '" +
+                    type_name(im) + "'"
+                )
+            case constants.BATAVIA_MAGIC_353:
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "complex() first argument must be a string, a bytes-like object or a number, not '" +
+                    type_name(im) + "'"
+                )
+        }
     } else if (typeof re === 'number' && typeof im === 'number') {
         this.real = re
         this.imag = im
@@ -125,11 +150,35 @@ Complex.prototype.__str__ = function() {
  **************************************************/
 
 Complex.prototype.__lt__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() < ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() < ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 Complex.prototype.__le__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() <= ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() <= ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 Complex.prototype.__eq__ = function(other) {
@@ -159,11 +208,35 @@ Complex.prototype.__ne__ = function(other) {
 }
 
 Complex.prototype.__gt__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() > ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() > ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 Complex.prototype.__ge__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: complex() >= ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: complex() >= ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 /**************************************************

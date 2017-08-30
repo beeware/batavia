@@ -441,4 +441,13 @@ ZeroDivisionError.prototype.__class__.$pyclass = ZeroDivisionError
 
 exceptions.ZeroDivisionError = ZeroDivisionError.prototype.__class__
 
+var JSONDecodeError = function(msg) {
+    Exception.call(this, 'JSONDecodeError', msg)
+}
+JSONDecodeError.prototype = Object.create(Exception.prototype)
+JSONDecodeError.prototype.__class__ = new Type('JSONDecodeError', [Exception.prototype.__class__])
+JSONDecodeError.prototype.__class__.$pyclass = JSONDecodeError
+
+exceptions.JSONDecodeError = JSONDecodeError.prototype.__class__
+
 module.exports = exceptions

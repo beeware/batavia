@@ -4,6 +4,11 @@ from .JSON_data import pass_data, fail_data
 
 # TODO(abonie): refactor to facilitate code reuse
 class LoadsTests(ModuleFunctionTestCase, TranspileTestCase):
+
+    not_implemented_versions = {
+        'test_fail': ['3.5', '3.6']
+    }
+
     def test_pass(self):
         for data in pass_data:
             self.assertCodeExecution(
@@ -110,6 +115,11 @@ class LoadsTests(ModuleFunctionTestCase, TranspileTestCase):
 
 
 class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
+
+    not_implemented_versions = {
+        'test_fail': ['3.5', '3.6']
+    }
+
     fp_def = """class fp:
     def __init__(self, doc):
         self.doc = doc
@@ -259,6 +269,11 @@ class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
 
 
 class JSONDecoderTests(ModuleFunctionTestCase, TranspileTestCase):
+
+    not_implemented_versions = {
+        'test_fail': ['3.5', '3.6']
+    }
+
     def test_pass(self):
         for data in pass_data:
             self.assertCodeExecution(

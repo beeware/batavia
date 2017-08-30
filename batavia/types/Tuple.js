@@ -87,7 +87,19 @@ Tuple.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() < ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: tuple() < ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                )
+        }
     }
     if (this.length === 0 && other.length > 0) {
         return new types.Bool(true)
@@ -111,7 +123,19 @@ Tuple.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() <= ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: tuple() <= ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                )
+        }
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
@@ -153,7 +177,19 @@ Tuple.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() > ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: tuple() > ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                )
+        }
     }
     if (this.length === 0 && other.length > 0) {
         return new types.Bool(false)
@@ -178,7 +214,19 @@ Tuple.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() >= ' + type_name(other) + '()')
+        switch (constants.BATAVIA_MAGIC) {
+            case constants.BATAVIA_MAGIC_34:
+            case constants.BATAVIA_MAGIC_35a0:
+            case constants.BATAVIA_MAGIC_35:
+            case constants.BATAVIA_MAGIC_353:
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: tuple() >= ' + type_name(other) + '()'
+                )
+            case constants.BATAVIA_MAGIC_36:
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                )
+        }
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {

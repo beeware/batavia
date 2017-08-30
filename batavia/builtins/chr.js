@@ -17,6 +17,7 @@ function chr(args, kwargs) {
             case constants.BATAVIA_MAGIC_35a0:
             case constants.BATAVIA_MAGIC_35:
             case constants.BATAVIA_MAGIC_353:
+            case constants.BATAVIA_MAGIC_36:
                 throw new exceptions.TypeError.$pyclass('chr() takes exactly one argument (' + args.length + ' given)')
 
             default:

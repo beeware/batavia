@@ -104,6 +104,23 @@ class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
+    not_implemented_versions = {
+        'test_subscr_bytearray': ['3.4'],
+        'test_subscr_bytes': ['3.4'],
+        'test_subscr_class': ['3.4'],
+        'test_subscr_complex': ['3.4'],
+        'test_subscr_dict': ['3.4'],
+        'test_subscr_float': ['3.4'],
+        'test_subscr_frozenset': ['3.4'],
+        'test_subscr_list': ['3.4'],
+        'test_subscr_None': ['3.4'],
+        'test_subscr_NotImplemented': ['3.4'],
+        'test_subscr_range': ['3.4'],
+        'test_subscr_set': ['3.4'],
+        'test_subscr_str': ['3.4'],
+        'test_subscr_tuple': ['3.4'],
+    }
+
     not_implemented = [
 
         'test_add_bytearray',
@@ -235,22 +252,8 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_rshift_tuple',
 
         'test_subscr_bool',
-        'test_subscr_bytearray',
-        'test_subscr_bytes',
-        'test_subscr_class',
-        'test_subscr_complex',
-        'test_subscr_dict',
-        'test_subscr_float',
-        'test_subscr_frozenset',
         'test_subscr_int',
-        'test_subscr_list',
-        'test_subscr_None',
-        'test_subscr_NotImplemented',
-        'test_subscr_range',
-        'test_subscr_set',
         'test_subscr_slice',
-        'test_subscr_str',
-        'test_subscr_tuple',
 
         'test_subtract_bytearray',
         'test_subtract_class',

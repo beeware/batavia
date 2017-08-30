@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
+var constants = require('../core').constants
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var SetIterator = require('./SetIterator')
@@ -70,7 +71,20 @@ FrozenSet.prototype.__lt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() < ' + type_name(other) + '()')
+
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: frozenset() < ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 FrozenSet.prototype.__le__ = function(other) {
@@ -79,7 +93,19 @@ FrozenSet.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() <= ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: frozenset() <= ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 FrozenSet.prototype.__eq__ = function(other) {
@@ -111,7 +137,19 @@ FrozenSet.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() > ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: frozenset() > ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 FrozenSet.prototype.__ge__ = function(other) {
@@ -120,7 +158,19 @@ FrozenSet.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() >= ' + type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: frozenset() >= ' + type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            )
+    }
 }
 
 FrozenSet.prototype.__contains__ = function(other) {

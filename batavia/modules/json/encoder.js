@@ -2,6 +2,8 @@ var PyObject = require('../../core').Object
 var create_pyclass = require('../../core').create_pyclass
 var callables = require('../../core').callables
 var exceptions = require('../../core').exceptions
+var constants = require('../../core').constants
+var type_name = require('../../core').type_name
 var types = require('../../types')
 var builtins = require('../../builtins')
 var validateParams = require('./utils').validateParams
@@ -176,9 +178,19 @@ var make_encode = function(
             } else if (default_) {
                 ret = encode(callables.call_function(default_, [obj]), indent_level)
             } else {
-                throw new exceptions.TypeError.$pyclass(
-                    obj.toString() + ' is not JSON serializable'
-                )
+                switch (constants.BATAVIA_MAGIC) {
+                    case constants.BATAVIA_MAGIC_34:
+                    case constants.BATAVIA_MAGIC_35a0:
+                    case constants.BATAVIA_MAGIC_35:
+                    case constants.BATAVIA_MAGIC_353:
+                        throw new exceptions.TypeError.$pyclass(
+                            obj.toString() + ' is not JSON serializable'
+                        )
+                    case constants.BATAVIA_MAGIC_36:
+                        throw new exceptions.TypeError.$pyclass(
+                            "Object of type '" + type_name(obj) + "' is not JSON serializable"
+                        )
+                }
             }
 
             if (seen !== undefined) {

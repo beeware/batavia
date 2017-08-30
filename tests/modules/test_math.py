@@ -1,9 +1,15 @@
 import sys
-from unittest import skipUnless
+from unittest import skipUnless, expectedFailure
 
 from ..utils import ModuleFunctionTestCase, TranspileTestCase
 
+
 class MathTests(ModuleFunctionTestCase, TranspileTestCase):
+
+    not_implemented_versions = {
+        'test_docstrings': ['3.5', '3.6'],
+    }
+
     substitutions = {
         # A
         '7.32747...e-15': [
@@ -171,6 +177,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.trunc.__doc__)
         """)
 
+    @expectedFailure
     @skipUnless(sys.version_info >= (3, 5), reason="Need CPython 3.5")
     def test_docstrings_35(self):
         self.assertCodeExecution("""
@@ -178,7 +185,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.gcd.__doc__)
         print(math.isclose.__doc__)
         """)
-
 
     def test_big_log(self):
         self.assertCodeExecution("""

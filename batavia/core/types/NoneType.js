@@ -4,6 +4,7 @@
 var PyObject = require('./Object')
 var basic_types = require('./Type')
 var exceptions = require('../exceptions')
+var constants = require('../constants')
 
 function NoneType() {
     PyObject.call(this)
@@ -48,11 +49,37 @@ NoneType.prototype.__setattr__ = function(attr, value) {
  **************************************************/
 
 NoneType.prototype.__lt__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: NoneType() < ' + basic_types.type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: NoneType() < ' + basic_types.type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'NoneType' and '" +
+                basic_types.type_name(other) + "'"
+            )
+    }
 }
 
 NoneType.prototype.__le__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: NoneType() <= ' + basic_types.type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: NoneType() <= ' + basic_types.type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'NoneType' and '" +
+                basic_types.type_name(other) + "'"
+            )
+    }
 }
 
 NoneType.prototype.__eq__ = function(other) {
@@ -64,11 +91,37 @@ NoneType.prototype.__ne__ = function(other) {
 }
 
 NoneType.prototype.__gt__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: NoneType() > ' + basic_types.type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: NoneType() > ' + basic_types.type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'NoneType' and '" +
+                basic_types.type_name(other) + "'"
+            )
+    }
 }
 
 NoneType.prototype.__ge__ = function(other) {
-    throw new exceptions.TypeError.$pyclass('unorderable types: NoneType() >= ' + basic_types.type_name(other) + '()')
+    switch (constants.BATAVIA_MAGIC) {
+        case constants.BATAVIA_MAGIC_34:
+        case constants.BATAVIA_MAGIC_35a0:
+        case constants.BATAVIA_MAGIC_35:
+        case constants.BATAVIA_MAGIC_353:
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: NoneType() >= ' + basic_types.type_name(other) + '()'
+            )
+        case constants.BATAVIA_MAGIC_36:
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'NoneType' and '" +
+                basic_types.type_name(other) + "'"
+            )
+    }
 }
 
 NoneType.prototype.__contains__ = function(other) {

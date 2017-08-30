@@ -770,7 +770,7 @@ class NotImplementedToExpectedFailure:
 
         not_implemented_versions = getattr(self, 'not_implemented_versions', {})
         if method_name in not_implemented_versions:
-            py_version = float("%s.%s" % (sys.version_info.major, sys.version_info.minor))
+            py_version = "%s.%s" % (sys.version_info.major, sys.version_info.minor)
             if py_version in not_implemented_versions[method_name]:
                 return True
 
