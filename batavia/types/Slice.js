@@ -1,6 +1,8 @@
 var PyObject = require('../core').Object
 var None = require('../core').None
 var create_pyclass = require('../core').create_pyclass
+var exceptions = require('../core').exceptions
+var type_name = require('../core').type_name
 
 /*************************************************************************
  * An implementation of slice
@@ -49,6 +51,18 @@ Slice.prototype.__str__ = function() {
     }
 
     return 'slice(' + output_str[0] + ', ' + output_str[1] + ', ' + output_str[2] + ')'
+}
+
+/**************************************************
+ * Operands
+ **************************************************/
+
+Slice.prototype.__add__ = function(other) {
+    var types = require('../types')
+    
+    throw new exceptions.TypeError.$pyclass(
+        'unsupported operand type(s) for +: \'slice\' and \'' + type_name(other) + '\''
+    )
 }
 
 /**************************************************
