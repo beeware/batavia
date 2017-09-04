@@ -156,7 +156,8 @@ time.mktime = function(sequence) {
         ],
         tz_name
     )
-    var d = m.toDate()
+    var d 
+    d = m.toDate()
 
     if (isNaN(d)) {
         // d is too large per ECMA specs
@@ -164,7 +165,8 @@ time.mktime = function(sequence) {
         throw new exceptions.OverflowError.$pyclass('signed integer is greater than maximum')
     }
 
-    var seconds = d.getTime() / 1000
+    var seconds 
+    seconds = d.getTime() / 1000
 
     // If the struct_time requests DST (sequence[8] === 1), but
     // the local timezone *wouldn't* be in DST, or the struct_time
@@ -191,21 +193,28 @@ time.gmtime = function(seconds) {
     }
 
     var date
-    if (arguments.length === 1) {
+    if (arguments.length === 1)
+    {
         // catching bad types
-        if (types.isinstance(seconds, [types.Complex])) {
+        if (types.isinstance(seconds, [types.Complex]))
+        {
             throw new exceptions.TypeError.$pyclass("can't convert " + type_name(seconds) + ' to int')
-        } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
+        } 
+        else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) 
+        {
             throw new exceptions.TypeError.$pyclass('an integer is required (got type ' + type_name(seconds) + ')')
         }
 
         date = new Date(seconds * 1000)
-        if (isNaN(date)) {
+        if (isNaN(date)) 
+        {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
             throw new exceptions.OSError.$pyclass('Value too large to be stored in data type')
         }
-    } else if (seconds === undefined) {
+    } 
+    else if (seconds === undefined) 
+    {
         date = new Date()
     }
 
@@ -239,21 +248,28 @@ time.localtime = function(seconds) {
         throw new exceptions.TypeError.$pyclass('localtime() takes at most 1 argument (' + arguments.length + ' given)')
     }
     var date
-    if (arguments.length === 1) {
+    if (arguments.length === 1)
+    {
         // catching bad types
-        if (types.isinstance(seconds, [types.Complex])) {
+        if (types.isinstance(seconds, [types.Complex])) 
+        {
             throw new exceptions.TypeError.$pyclass("can't convert " + type_name(seconds) + ' to int')
-        } else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) {
+        }
+        else if (!(types.isinstance(seconds, [types.Int, types.Float, types.Bool]))) 
+        {
             throw new exceptions.TypeError.$pyclass('an integer is required (got type ' + type_name(seconds) + ')')
         }
 
         date = new Date(seconds * 1000)
-        if (isNaN(date)) {
+        if (isNaN(date))
+        {
             // date is too large per ECMA specs
             // source: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.1
             throw new exceptions.OSError.$pyclass('Value too large to be stored in data type')
         }
-    } else if (seconds === undefined) {
+    } 
+    else if (seconds === undefined) 
+    {
         date = new Date()
     }
 
