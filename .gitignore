@@ -38,3 +38,4 @@ npm-debug.log
 
 # local environment configuration
 .env
+/.cache-loader/
