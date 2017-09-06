@@ -4,6 +4,7 @@
 var core = {}
 
 core['constants'] = require('./core/constants')
+core['version'] = require('./core/version')
 
 core['Block'] = require('./core/types/Block')
 core['Cell'] = require('./core/types/Cell')
