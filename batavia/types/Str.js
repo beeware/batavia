@@ -2,6 +2,7 @@ var Buffer = require('buffer').Buffer
 
 var PyObject = require('../core').Object
 var constants = require('../core').constants
+var version = require('../core').version
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
@@ -90,36 +91,28 @@ Str.prototype.__lt__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.FrozenSet
         ])) {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: str() < ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'<' not supported between instances of 'str' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
             }
         } else {
             return this.valueOf() < other
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() < NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'str' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() < NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'str' and 'NoneType'"
+            )
         }
     }
 }
@@ -135,36 +128,28 @@ Str.prototype.__le__ = function(other) {
             types.Type, types.Complex, types.NotImplementedType,
             types.Range, types.Slice, types.FrozenSet
         ])) {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: str() <= ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'<=' not supported between instances of 'str' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
             }
         } else {
             return this.valueOf() <= other
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() <= NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'str' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() <= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'str' and 'NoneType'"
+            )
         }
     }
 }
@@ -216,36 +201,28 @@ Str.prototype.__gt__ = function(other) {
             types.NotImplementedType, types.Range,
             types.Slice, types.FrozenSet
         ])) {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: str() > ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'>' not supported between instances of 'str' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
             }
         } else {
             return this.valueOf() > other
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() > NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'str' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'str' and 'NoneType'"
+            )
         }
     }
 }
@@ -262,36 +239,28 @@ Str.prototype.__ge__ = function(other) {
             types.Range, types.Slice, types.FrozenSet
 
         ])) {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: str() >= ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'>=' not supported between instances of 'str' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
             }
         } else {
             return this.valueOf() >= other
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() >= NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'str' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'str' and 'NoneType'"
+            )
         }
     }
 }
@@ -388,16 +357,12 @@ Str.prototype.__add__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    "Can't convert '" + type_name(other) + "' object to str implicitly"
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                "Can't convert '" + type_name(other) + "' object to str implicitly"
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
         }
     }
 }
@@ -560,16 +525,12 @@ Str.prototype.__iadd__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    "Can't convert '" + type_name(other) + "' object to str implicitly"
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                "Can't convert '" + type_name(other) + "' object to str implicitly"
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
         }
     }
 }

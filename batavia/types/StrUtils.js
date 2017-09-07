@@ -1,5 +1,5 @@
 var exceptions = require('../core').exceptions
-var constants = require('../core').constants
+var version = require('../core').version
 var type_name = require('../core').type_name
 var BigNumber = require('bignumber.js').BigNumber
 
@@ -1179,18 +1179,14 @@ function _new_subsitute(str, args, kwargs) {
         }
 
         // things that aren't allowed with strings:
-            // grouping
-            // sign
-            // alternate form
+        // grouping
+        // sign
+        // alternate form
         if (this.grouping === ',') {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'.")
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.ValueError.$pyclass("Cannot specify ',' or '_' with 's'.")
+            if (version.earlier('3.6')) {
+                throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'.")
+            } else {
+                throw new exceptions.ValueError.$pyclass("Cannot specify ',' or '_' with 's'.")
             }
         }
 

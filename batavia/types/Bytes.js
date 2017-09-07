@@ -1,6 +1,7 @@
 var Buffer = require('buffer').Buffer
 
 var constants = require('../core').constants
+var version = require('../core').version
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
@@ -89,19 +90,15 @@ Bytes.prototype.__lt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val < other.val
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: bytes() < ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'bytes' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() < ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 }
@@ -112,19 +109,15 @@ Bytes.prototype.__le__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val <= other.val
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: bytes() <= ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'bytes' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() <= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 }
@@ -153,19 +146,15 @@ Bytes.prototype.__gt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val > other.val
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: bytes() > ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'bytes' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() > ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 }
@@ -176,19 +165,15 @@ Bytes.prototype.__ge__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val >= other.val
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: bytes() >= ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'bytes' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() >= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 }
@@ -332,18 +317,14 @@ Bytes.prototype.__add__ = function(other) {
         types.Str,
         types.Tuple ])) {
         // does not concat with all these
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    "can't concat bytes to " + type_name(other)
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "can't concat " + type_name(other) + ' to bytes'
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                "can't concat bytes to " + type_name(other)
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "can't concat " + type_name(other) + ' to bytes'
+            )
         }
     } else {
         throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
