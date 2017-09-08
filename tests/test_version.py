@@ -1,4 +1,4 @@
-from .utils import TranspileTestCase
+from .utils import TranspileTestCase, adjust
 
 
 class TestVersionID(TranspileTestCase):
@@ -10,25 +10,25 @@ class TestVersionID(TranspileTestCase):
             print(testfunc())
             """,
             js={
-                'harness': """
+                'harness': adjust("""
                 var harness = {{
                     testfunc: function() {{
-                        var x = new batavia.core.version.VersionID({this})
-                        var y = new batavia.core.version.VersionID({that})
-                        return new batavia.types.Bool(x.{method}(y))
+                        var x = batavia.core.version.version_id('{this}')
+                        var y = batavia.core.version.version_id('{that}')
+                        return new batavia.types.Bool(x {op} y)
                     }}
                 }};
-                """.format(**params),
+                """.format(**params)),
             },
             out=result,
         )
 
     def earlier_test(self, params, result):
-        params['method'] = 'earlier'
+        params['op'] = '<'
         self.version_test(params, result)
 
     def later_test(self, params, result):
-        params['method'] = 'later'
+        params['op'] = '>'
         self.version_test(params, result)
 
     def test_earlier(self):
