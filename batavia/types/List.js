@@ -1,4 +1,4 @@
-var constants = require('../core').constants
+var version = require('../core').version
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
@@ -84,19 +84,15 @@ List.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() < ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'list' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() < ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 
@@ -119,34 +115,26 @@ List.prototype.__lt__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length < other.length
         } else {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: list() < ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'<' not supported between instances of 'list' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
             }
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() < NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'list' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() < NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'list' and 'NoneType'"
+            )
         }
     }
 }
@@ -155,19 +143,15 @@ List.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() <= ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'list' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() <= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 
@@ -190,34 +174,26 @@ List.prototype.__le__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length <= other.length
         } else {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: list() <= ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'<=' not supported between instances of 'list' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
             }
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() <= NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'list' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() <= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'list' and 'NoneType'"
+            )
         }
     }
 }
@@ -249,19 +225,15 @@ List.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() > ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'list' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() > ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 
@@ -284,34 +256,26 @@ List.prototype.__gt__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length > other.length
         } else {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: list() > ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'>' not supported between instances of 'list' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
             }
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() > NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'list' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'list' and 'NoneType'"
+            )
         }
     }
 }
@@ -320,19 +284,15 @@ List.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() >= ' + type_name(other) + '()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'list' and '" +
-                    type_name(other) + "'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() >= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
         }
     }
 
@@ -355,34 +315,26 @@ List.prototype.__ge__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length >= other.length
         } else {
-            switch (constants.BATAVIA_MAGIC) {
-                case constants.BATAVIA_MAGIC_34:
-                case constants.BATAVIA_MAGIC_35a0:
-                case constants.BATAVIA_MAGIC_35:
-                case constants.BATAVIA_MAGIC_353:
-                    throw new exceptions.TypeError.$pyclass(
-                        'unorderable types: list() >= ' + type_name(other) + '()'
-                    )
-                case constants.BATAVIA_MAGIC_36:
-                    throw new exceptions.TypeError.$pyclass(
-                        "'>=' not supported between instances of 'list' and '" +
-                        type_name(other) + "'"
-                    )
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
             }
         }
     } else {
-        switch (constants.BATAVIA_MAGIC) {
-            case constants.BATAVIA_MAGIC_34:
-            case constants.BATAVIA_MAGIC_35a0:
-            case constants.BATAVIA_MAGIC_35:
-            case constants.BATAVIA_MAGIC_353:
-                throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: list() >= NoneType()'
-                )
-            case constants.BATAVIA_MAGIC_36:
-                throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'list' and 'NoneType'"
-                )
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'list' and 'NoneType'"
+            )
         }
     }
 }
@@ -603,7 +555,7 @@ List.prototype.__getitem__ = function(index) {
         }
     } else {
         var msg = 'list indices must be integers or slices, not '
-        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (!version.later('3.4')) {
             msg = 'list indices must be integers, not '
         }
         throw new exceptions.TypeError.$pyclass(msg + type_name(index))

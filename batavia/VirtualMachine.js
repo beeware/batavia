@@ -6,6 +6,7 @@ var Block = require('./core').Block
 var builtins = require('./builtins')
 var Frame = require('./core').Frame
 var constants = require('./core').constants
+var version = require('./core').version
 var exceptions = require('./core').exceptions
 var native = require('./core').native
 var callables = require('./core').callables
@@ -755,7 +756,7 @@ VirtualMachine.prototype.create_traceback = function() {
  * unpacked into operations with their respective args
  */
 VirtualMachine.prototype.unpack_code = function(code) {
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+    if (!version.earlier('3.6')) {
         // Python 3.6+, 2-byte opcodes
 
         let pos = 0
@@ -1818,7 +1819,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         throw new builtins.BataviaError.$pyclass('Confused WITH_CLEANUP')
     }
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+    if (version.earlier('3.5')) {
         if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
                 ret.__bool__().valueOf()) {
             this.push('silenced')
@@ -1831,7 +1832,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
 }
 
 VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+    if (version.earlier('3.5')) {
         throw new builtins.BataviaError.$pyclass(
             'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
         )
@@ -1853,7 +1854,7 @@ VirtualMachine.prototype.byte_MAKE_FUNCTION = function(arg) {
     var kwdefaults = null // eslint-disable-line no-unused-vars
     var defaults = null
 
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+    if (!version.earlier('3.6')) {
         if (arg & 8) {
             closure = this.pop()
         }
@@ -1898,7 +1899,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_VAR = function(arg) {
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+    if (!version.earlier('3.6')) {
         var kw = this.pop()
         var namedargs = new types.JSDict()
         for (let i = kw.length - 1; i >= 0; i--) {
@@ -1911,7 +1912,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_KW = function(arg) {
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+    if (!version.earlier('3.6')) {
         // opcode: CALL_FUNCTION_EX
         var kwargs
         if (arg & 1) {
@@ -1926,7 +1927,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 }
 
 VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+    if (!version.earlier('3.6')) {
         let namedargs = new types.JSDict()
         let lenPos = arg
         if (kwargs) {
@@ -2017,7 +2018,7 @@ VirtualMachine.prototype.byte_YIELD_FROM = function() {
             throw e
         }
     }
-    if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_36) {
+    if (!version.earlier('3.6')) {
         this.jump(this.frame.f_lasti - 2)
     } else {
         this.jump(this.frame.f_lasti - 1)

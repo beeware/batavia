@@ -3,7 +3,7 @@ var core = require('../../core')
 var PyObject = core.Object
 var exceptions = core.exceptions
 var callables = core.callables
-var constants = core.constants
+var version = core.version
 var validateParams = require('./utils').validateParams
 
 function JSONDecoder() {
@@ -64,7 +64,7 @@ JSONDecoder.prototype.decode = function(s) {
     try {
         ret = JSON.parse(s, reviver)
     } catch (e) {
-        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (version.earlier('3.5')) {
             throw new exceptions.ValueError.$pyclass(e.message)
         } else {
             throw new exceptions.JSONDecodeError.$pyclass(e.message)
