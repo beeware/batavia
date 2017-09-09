@@ -1,4 +1,5 @@
 var constants = require('./constants')
+var exceptions = require('./exceptions')
 
 var version = {}
 
@@ -14,7 +15,7 @@ var pattern = /^(\d+(\.\d+)*)((a|b|rc)(\d+))?$/
 version.version_id = function(str) {
     var match = pattern.exec(str)
     if (match === null) {
-        // TODO throw
+        throw new exceptions.BataviaError('Unexpected version identifier')
     }
     var version = match[1].split('.').map(Number)
     var pre
