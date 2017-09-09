@@ -13,30 +13,30 @@ class TestVersionID(TranspileTestCase):
                 'harness': adjust("""
                 var harness = {{
                     testfunc: function() {{
-                        var x = batavia.core.version.version_id('{this}')
-                        var y = batavia.core.version.version_id('{that}')
-                        return new batavia.types.Bool(x {op} y)
+                        var x = batavia.core.version.version_id('{0}')
+                        var y = batavia.core.version.version_id('{1}')
+                        return new batavia.types.Bool(x {2} y)
                     }}
                 }};
-                """.format(**params)),
+                """.format(*params)),
             },
             out=result,
         )
 
     def earlier_test(self, params, result):
-        params['op'] = '<'
+        params.append('<')
         self.version_test(params, result)
 
     def later_test(self, params, result):
-        params['op'] = '>'
+        params.append('>')
         self.version_test(params, result)
 
     def test_earlier(self):
-        self.earlier_test(params={'this': '3.6', 'that': '3.5'}, result='False\n')
-        self.earlier_test(params={'this': '3.6', 'that': '3.6'}, result='False\n')
-        self.earlier_test(params={'this': '3.5', 'that': '3.6'}, result='True\n')
+        self.earlier_test(params=['3.6', '3.5'], result='False\n')
+        self.earlier_test(params=['3.6', '3.6'], result='False\n')
+        self.earlier_test(params=['3.5', '3.6'], result='True\n')
 
     def test_later(self):
-        self.later_test(params={'this': '3.6', 'that': '3.5'}, result='True\n')
-        self.later_test(params={'this': '3.6', 'that': '3.6'}, result='False\n')
-        self.later_test(params={'this': '3.5', 'that': '3.6'}, result='False\n')
+        self.later_test(params=['3.6', '3.5'], result='True\n')
+        self.later_test(params=['3.6', '3.6'], result='False\n')
+        self.later_test(params=['3.5', '3.6'], result='False\n')
