@@ -5,7 +5,6 @@ var types = require('./types')
 var Block = require('./core').Block
 var builtins = require('./builtins')
 var Frame = require('./core').Frame
-var constants = require('./core').constants
 var version = require('./core').version
 var exceptions = require('./core').exceptions
 var native = require('./core').native
@@ -1447,31 +1446,17 @@ VirtualMachine.prototype.byte_BUILD_SET = function(count) {
 }
 
 VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
-    switch (constants.BATAVIA_MAGIC) {
-        case constants.BATAVIA_MAGIC_35:
-        case constants.BATAVIA_MAGIC_353:
-        case constants.BATAVIA_MAGIC_36:
-            var items = this.popn(size * 2)
-            var dict = new types.Dict()
+    if (version.later('3.5a0')) {
+        var items = this.popn(size * 2)
+        var dict = new types.Dict()
 
-            for (var i = 0; i < items.length; i += 2) {
-                dict.__setitem__(items[i], items[i + 1])
-            }
+        for (var i = 0; i < items.length; i += 2) {
+            dict.__setitem__(items[i], items[i + 1])
+        }
 
-            this.push(dict)
-
-            return
-
-        case constants.BATAVIA_MAGIC_35a0:
-        case constants.BATAVIA_MAGIC_34:
-            this.push(new types.Dict())
-
-            return
-
-        default:
-            throw new builtins.BataviaError.$pyclass(
-                'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)'
-            )
+        this.push(dict)
+    } else {
+        this.push(new types.Dict())
     }
 }
 
@@ -1487,29 +1472,18 @@ VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
 }
 
 VirtualMachine.prototype.byte_STORE_MAP = function() {
-    switch (constants.BATAVIA_MAGIC) {
-        case constants.BATAVIA_MAGIC_35:
-        case constants.BATAVIA_MAGIC_353:
-            throw new builtins.BataviaError.$pyclass(
-                'STORE_MAP is unsupported with BATAVIA_MAGIC'
-            )
-
-        case constants.BATAVIA_MAGIC_35a0:
-        case constants.BATAVIA_MAGIC_34:
-            var items = this.popn(3)
-            if (items[0].__setitem__) {
-                items[0].__setitem__(items[2], items[1])
-            } else {
-                items[0][items[2]] = items[1]
-            }
-            this.push(items[0])
-
-            return
-
-        default:
-            throw new builtins.BataviaError.$pyclass(
-                'Unsupported BATAVIA_MAGIC. Possibly using unsupported Python version (supported: 3.4, 3.5)'
-            )
+    if (version.later('3.5a0')) {
+        throw new builtins.BataviaError.$pyclass(
+            'STORE_MAP is unsupported with BATAVIA_MAGIC'
+        )
+    } else {
+        var items = this.popn(3)
+        if (items[0].__setitem__) {
+            items[0].__setitem__(items[2], items[1])
+        } else {
+            items[0][items[2]] = items[1]
+        }
+        this.push(items[0])
     }
 }
 
@@ -1819,7 +1793,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         throw new builtins.BataviaError.$pyclass('Confused WITH_CLEANUP')
     }
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
-    if (version.earlier('3.5')) {
+    if (version.earlier('3.5a0')) {
         if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
                 ret.__bool__().valueOf()) {
             this.push('silenced')
@@ -1832,7 +1806,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
 }
 
 VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
-    if (version.earlier('3.5')) {
+    if (version.earlier('3.5a0')) {
         throw new builtins.BataviaError.$pyclass(
             'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
         )
