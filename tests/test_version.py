@@ -40,3 +40,11 @@ class TestVersionID(TranspileTestCase):
         self.later_test(params=['3.6', '3.5'], result='True\n')
         self.later_test(params=['3.6', '3.6'], result='False\n')
         self.later_test(params=['3.5', '3.6'], result='False\n')
+
+    def test_prerelease(self):
+        self.later_test(params=['3.5', '3.5a0'], result='True\n')
+        self.later_test(params=['3.5a0', '3.5'], result='False\n')
+        self.earlier_test(params=['3.5', '3.5a0'], result='False\n')
+        self.earlier_test(params=['3.5a0', '3.5'], result='True\n')
+        self.later_test(params=['3.5a0', '3.5b0'], result='False\n')
+        self.later_test(params=['3.5a1', '3.5a0'], result='True\n')
