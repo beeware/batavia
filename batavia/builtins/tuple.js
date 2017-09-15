@@ -1,4 +1,4 @@
-var types = require('../types')
+var types = include('../types')
 
 function tuple(args, kwargs) {
     if (args.length === 0) {
