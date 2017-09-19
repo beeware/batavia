@@ -59,10 +59,26 @@ Slice.prototype.__str__ = function() {
  **************************************************/
 
 // In CPython, the comparison between two slices is done by converting them into tuples, but conversion by itself is not allowed.
+var as_list = function(obj) {
+    return [obj.start, obj.stop, obj.step]
+}
+
 var as_tuple = function(obj) {
     var types = require('../types')
-    var components = [obj.start, obj.stop, obj.step]
-    return new types.Tuple(components)
+    return new types.Tuple(as_list(obj))
+}
+
+var strip_and_compare = function(a, b, comparison_function) {
+    var types = require('../types')
+    var a_list = as_list(a)
+    var b_list = as_list(b)
+    for (var i = 0; i < a_list.length && i < b_list.length; ++i) {
+        if (types.isinstance(a_list[i], types.NoneType) && types.isinstance(b_list[i], types.NoneType)) {
+            a_list.splice(i, 1)
+            b_list.splice(i, 1)
+        }
+    }
+    return new types.Tuple(a_list)[comparison_function](new types.Tuple(b_list))
 }
 
 var unsupported_operand = function(sign, other) {
@@ -128,7 +144,7 @@ Slice.prototype.__le__ = function(other) {
 Slice.prototype.__gt__ = function(other) {
     var types = require('../types')
     if (types.isinstance(other, types.Slice)) {
-        return as_tuple(this).__gt__(as_tuple(other))
+        return strip_and_compare(this, other, '__gt__')
     } else {
         unorderable_types('>', other)
     }
@@ -137,7 +153,7 @@ Slice.prototype.__gt__ = function(other) {
 Slice.prototype.__lt__ = function(other) {
     var types = require('../types')
     if (types.isinstance(other, types.Slice)) {
-        return as_tuple(this).__lt__(as_tuple(other))
+        return strip_and_compare(this, other, '__lt__')
     } else {
         unorderable_types('<', other)
     }
