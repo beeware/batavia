@@ -215,10 +215,6 @@ class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'slice'
 
     not_implemented = [
-        'test_gt_slice',
-
-        'test_lt_slice',
-
         'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',
