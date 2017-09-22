@@ -474,6 +474,17 @@ Int.prototype.__mul__ = function(other) {
             result = result.__add__(other)
         }
         return result
+    } else if (types.isinstance(other, types.Bytes)) {
+        if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+            throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+        }
+        if ((other.__len__() <= 0) || (this.valueOf() <= 0)) {
+            return new types.Bytes('')
+        }
+        if (this.valueOf() > 4294967295) {
+            throw new exceptions.OverflowError.$pyclass('repeated bytes are too long')
+        }
+        return other.__mul__(this)
     } else if (types.isinstance(other, types.Complex)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
             throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
