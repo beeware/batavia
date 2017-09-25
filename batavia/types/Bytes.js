@@ -205,19 +205,19 @@ Bytes.prototype.__contains__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__pos__ = function() {
-    return new Bytes(+this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'bytes'")
 }
 
 Bytes.prototype.__neg__ = function() {
-    return new Bytes(-this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'bytes'")
 }
 
 Bytes.prototype.__not__ = function() {
-    return new Bytes(!this.valueOf())
+    return this.val.length === 0
 }
 
 Bytes.prototype.__invert__ = function() {
-    return new Bytes(~this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'bytes'")
 }
 
 /**************************************************
