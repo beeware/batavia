@@ -402,6 +402,9 @@ Int.prototype.__truediv__ = function(other) {
         } else {
             return this.__truediv__(new Int(0))
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var castToComplex = new types.Complex(this.valueOf())
+        return castToComplex.__truediv__(other.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
     }
