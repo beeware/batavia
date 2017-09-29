@@ -15,7 +15,6 @@ import py_compile
 import sys
 import tempfile
 
-
 IGNORE_MODULES = set([
     '__builtins__',
     '__init__',
