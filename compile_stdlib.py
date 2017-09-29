@@ -119,11 +119,9 @@ def compile_stdlib(ouroboros, enabled_modules):
         fout.write(',\n    '.join(module_list))
         fout.write("\n}\n")
 
-
 def main():
     ouroboros, enabled_modules = parse_args()
     compile_stdlib(ouroboros, enabled_modules)
-
 
 if __name__ == '__main__':
     main()
