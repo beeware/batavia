@@ -1,52 +1,33 @@
 #!/usr/bin/env python3
+# coding=utf-8
 
-"""
-Run the specified Python file using Batavia.
-"""
+"""Run the specified Python file using Batavia. This will compile the Python file to bytecode
+and use Node.js to execute the bytecode using the Batavia."""
 
 import argparse
-import py_compile
 import subprocess
-
-import base64
-import importlib
+import textwrap
 
 
 def run_in_batavia(python_file):
     """Run a Python file using Batavia."""
-    py_compile.compile(python_file)
-    with open(importlib.util.cache_from_source(python_file), 'rb') as compiled:
-        code = base64.encodebytes(compiled.read())
 
     name = python_file.split('.')[0]
-    lines = code.decode('utf-8').split('\n')
-    output = '"%s"' % '" +\n            "'.join(line for line in lines if line)
-
-    payload = (
-        '    "%s": {\n' % name +
-        '        "__python__": true,\n' +
-        '        "bytecode": %s,\n' % output +
-        '        "filename": "%s"\n' % python_file +
-        '    }'
-    )
 
     js_filename = '{}.js'.format(python_file)
 
     with open(js_filename, 'w') as js_file:
-        js_file.write("""
-                    var batavia = require('./batavia/batavia.js');
-                    const bataviaLoader = require('./batavia/loader.js');
+        js_file.write(textwrap.dedent("""
+            var batavia = require('./batavia/batavia.js');
+            const bataviaLoader = require('./batavia/loader.js');
 
-                    var modules = {
-                    %s
-                    };
-
-                    var vm = new batavia.VirtualMachine({
-                        loader: bataviaLoader,
-                        frame: null
-                    });
-                    vm.run('%s', []);
-                    """ % (payload, name))
+            var vm = new batavia.VirtualMachine({
+                loader: bataviaLoader,
+                frame: null
+            });
+            
+            vm.run('%s', []);
+            """ % name).lstrip())
     subprocess.Popen(['node', js_filename])
 
 
