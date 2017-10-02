@@ -1,3 +1,4 @@
+// method mod
 var native = function(mod) {
     mod.waggle = function(count) {
         for (var i = 0; i < count; i++) {
