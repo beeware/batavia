@@ -355,7 +355,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ifloordiv__(items[1])
                         } else if (items[0].__ifloordiv__) {
-                            result = items[0].__ifloordiv__(items[1])
+                            if (items[0].__ifloordiv__.__call__) {
+                                result = items[0].__ifloordiv__.__call__(items)
+                            } else {
+                                result = items[0].__ifloordiv__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -372,7 +376,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__itruediv__(items[1])
                         } else if (items[0].__itruediv__) {
-                            result = items[0].__itruediv__(items[1])
+                            if (items[0].__itruediv__.__call__) {
+                                result = items[0].__itruediv__.__call__(items)
+                            } else {
+                                result = items[0].__itruediv__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -389,7 +397,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__iadd__(items[1])
                         } else if (items[0].__iadd__) {
-                            result = items[0].__iadd__(items[1])
+                            if (items[0].__iadd__.__call__) {
+                                result = items[0].__iadd__.__call__(items)
+                            } else {
+                                result = items[0].__iadd__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -406,7 +418,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__isub__(items[1])
                         } else if (items[0].__isub__) {
-                            result = items[0].__isub__(items[1])
+                            if (items[0].__isub__.__call__) {
+                                result = items[0].__isub__.__call__(items)
+                            } else {
+                                result = items[0].__isub__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -423,7 +439,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__imul__(items[1])
                         } else if (items[0].__imul__) {
-                            result = items[0].__imul__(items[1])
+                            if (items[0].__imul__.__call__) {
+                                result = items[0].__imul__.__call__(items)
+                            } else {
+                                result = items[0].__imul__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -440,7 +460,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__imod__(items[1])
                         } else if (items[0].__imod__) {
-                            result = items[0].__imod__(items[1])
+                            if (items[0].__imod__.__call__) {
+                                result = items[0].__imod__.__call__(items)
+                            } else {
+                                result = items[0].__imod__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -457,7 +481,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ipow__(items[1])
                         } else if (items[0].__ipow__) {
-                            result = items[0].__ipow__(items[1])
+                            if (items[0].__ipow__.__call__) {
+                                result = items[0].__ipow__.__call__(items)
+                            } else {
+                                result = items[0].__ipow__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -474,7 +502,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ilshift__(items[1])
                         } else if (items[0].__ilshift__) {
-                            result = items[0].__ilshift__(items[1])
+                            if (items[0].__ilshift__.__call__) {
+                                result = items[0].__ilshift__.__call__(items)
+                            } else {
+                                result = items[0].__ilshift__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -491,7 +523,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__irshift__(items[1])
                         } else if (items[0].__irshift__) {
-                            result = items[0].__irshift__(items[1])
+                            if (items[0].__irshift__.__call__) {
+                                result = items[0].__irshift__.__call__(items)
+                            } else {
+                                result = items[0].__irshift__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -508,7 +544,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__iand__(items[1])
                         } else if (items[0].__iand__) {
-                            result = items[0].__iand__(items[1])
+                            if (items[0].__iand__.__call__) {
+                                result = items[0].__iand__.__call__(items)
+                            } else {
+                                result = items[0].__iand__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -525,7 +565,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ixor__(items[1])
                         } else if (items[0].__ixor__) {
-                            result = items[0].__ixor__(items[1])
+                            if (items[0].__ixor__.__call__) {
+                                result = items[0].__ixor__.__call__(items)
+                            } else {
+                                result = items[0].__ixor__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -542,7 +586,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ior__(items[1])
                         } else if (items[0].__ior__) {
-                            result = items[0].__ior__(items[1])
+                            if (items[0].__ior__.__call__) {
+                                result = items[0].__ior__.__call__(items)
+                            } else {
+                                result = items[0].__ior__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
