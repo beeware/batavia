@@ -634,7 +634,7 @@ VirtualMachine.prototype.run = function(tag, args) {
         }
 
         // Run the code
-        return this.run_code({ 'code': code })
+        return this.run_code({'code': code})
     } catch (e) {
         if (e instanceof builtins.BataviaError.$pyclass) {
             sys.stderr.write([e.msg + '\n'])
@@ -731,7 +731,7 @@ VirtualMachine.prototype.push_at = function(val, i) {
  * Pop a number of values from the value stack.
  *
  * A list of `n` values is returned, the deepest value first.
- */
+*/
 VirtualMachine.prototype.popn = function(n) {
     if (n) {
         return this.frame.stack.splice(this.frame.stack.length - n, n)
@@ -937,7 +937,7 @@ VirtualMachine.prototype.unpack_code = function(code) {
                 lo = code.co_code.val[pos++]
                 hi = code.co_code.val[pos++]
                 extra = (lo << 16) | (hi << 24)
-                    // emulate NOP
+                // emulate NOP
                 unpacked_code[opcode_start_pos] = {
                     'opoffset': opcode_start_pos,
                     'opcode': dis.NOP,
@@ -1057,7 +1057,7 @@ VirtualMachine.prototype.unwind_block = function(block) {
 
     if (block.type === 'except-handler') {
         this.popn(3)
-            // we don't need to set the last_exception, as it was handled
+        // we don't need to set the last_exception, as it was handled
     }
 }
 
@@ -1099,15 +1099,15 @@ VirtualMachine.prototype.manage_block_stack = function(why) {
     }
 
     if (why === 'exception' &&
-        (block.type === 'setup-except' || block.type === 'finally')) {
+            (block.type === 'setup-except' || block.type === 'finally')) {
         this.push_block('except-handler')
         var exc = this.last_exception
-            // clear the last_exception so that we know it is handled
+        // clear the last_exception so that we know it is handled
         this.last_exception = null
         this.push(exc.traceback)
         this.push(exc.value)
         this.push(exc.exc_type)
-            // PyErr_Normalize_Exception goes here
+        // PyErr_Normalize_Exception goes here
         this.push(exc.traceback)
         this.push(exc.value)
         this.push(exc.exc_type)
@@ -1268,7 +1268,7 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
         val = frame.f_globals[name]
     } else if (name in frame.f_builtins) {
         val = frame.f_builtins[name]
-            // Functions loaded from builtins need to be bound to this VM.
+        // Functions loaded from builtins need to be bound to this VM.
         if (val instanceof Function) {
             var doc = val.__doc__
             val = val.bind(this)
@@ -1316,7 +1316,7 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
         val = this.frame.f_globals[name]
     } else if (name in this.frame.f_builtins) {
         val = this.frame.f_builtins[name]
-            // Functions loaded from builtins need to be bound to this VM.
+        // Functions loaded from builtins need to be bound to this VM.
         if (val instanceof Function) {
             var doc = val.__doc__
             val = val.bind(this)
@@ -1375,8 +1375,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     if (opnum === 6) { // x in None
         if (items[1] === null) {
             result = types.NoneType.__contains__(items[0])
-        }
-        if (items[1].__contains__) {
+        } if (items[1].__contains__) {
             result = items[1].__contains__(items[0])
         } else {
             result = (items[0] in items[1])
@@ -1829,7 +1828,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         exc_type = exc.__class__
         val = exc
     } else if (exc.$pyclass.prototype instanceof builtins.BaseException.$pyclass ||
-        exc.$pyclass === builtins.BaseException.$pyclass) {
+               exc.$pyclass === builtins.BaseException.$pyclass) {
         exc_type = exc
         val = new exc_type.$pyclass()
     } else {
@@ -1896,7 +1895,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
     if (version.earlier('3.5a0')) {
         if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
-            ret.__bool__().valueOf()) {
+                ret.__bool__().valueOf()) {
             this.push('silenced')
         }
     } else {
@@ -1916,7 +1915,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
     var ret = this.pop()
     var exc = this.pop()
     if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
-        ret.__bool__().valueOf()) {
+            ret.__bool__().valueOf()) {
         this.push('silenced')
     }
 }
@@ -2079,7 +2078,7 @@ VirtualMachine.prototype.byte_YIELD_FROM = function() {
 
     try {
         if (types.isinstance(v, types.NoneType) ||
-            !types.isinstance(receiver, types.Generator)) {
+                !types.isinstance(receiver, types.Generator)) {
             this.return_value = callables.call_method(receiver, '__next__', [])
         } else {
             this.return_value = receiver.send(v)
@@ -2105,7 +2104,8 @@ VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
     var items = this.popn(2)
     this.push(
         builtins.__import__.apply(
-            this, [
+            this,
+            [
                 [name, this.frame.f_globals, this.frame.f_locals, items[1], items[0]],
                 null
             ]
@@ -2135,8 +2135,8 @@ VirtualMachine.prototype.byte_IMPORT_STAR = function() {
 
 VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
     var mod = this.top()
-        // Although modules may not be native, the native getattr works
-        // because it's a simple object subscript.
+    // Although modules may not be native, the native getattr works
+    // because it's a simple object subscript.
     var val = native.getattr(mod, name)
     this.push(val)
 }
@@ -2151,15 +2151,12 @@ var make_class = function(vm) {
         var func = args[0]
         var name = args[1]
         var bases = kwargs.bases || args.slice(2, args.length)
-            // var metaclass = kwargs.metaclass || args[3];
-            // var kwds = kwargs.kwds || args[4] || [];
+        // var metaclass = kwargs.metaclass || args[3];
+        // var kwds = kwargs.kwds || args[4] || [];
 
         // Create a locals context, and run the class function in it.
         var locals = new types.Dict()
-        func.__call__.apply(this, [
-            [],
-            [], locals
-        ])
+        func.__call__.apply(this, [[], [], locals])
 
         // Now construct the class, based on the constructed local context.
         // The *Javascript* constructor isn't the same as the *Python*
@@ -2229,6 +2226,7 @@ VirtualMachine.prototype.byte_SET_LINENO = function(lineno) {
     this.frame.f_lineno = lineno
 }
 
-VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {}
+VirtualMachine.prototype.byte_EXTENDED_ARG = function(extra) {
+}
 
 module.exports = VirtualMachine
