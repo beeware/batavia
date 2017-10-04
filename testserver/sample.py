@@ -11,7 +11,6 @@ class Point:
     def distance(self):
         return self.x ** 2 + self.y ** 2 + self.z ** 2
 
-
 def do_stuff(count, size=3):
     print("Size is ", 3)
     for i in range(0, count):
@@ -79,7 +78,6 @@ def main(argv):
     print('Try some builtins...')
     try_builtins()
     return 0
-
 
 if __name__ == '__main__':
     import sys

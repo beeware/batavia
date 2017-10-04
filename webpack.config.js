@@ -12,6 +12,7 @@ if (cachingDisabled) {
     console.log('Caching is enabled.')
 }
 
+// exports file
 module.exports = {
     entry: {
         'batavia': './batavia/batavia.js'
