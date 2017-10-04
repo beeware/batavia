@@ -15,6 +15,7 @@ import py_compile
 import sys
 import tempfile
 
+# set ignore modules
 IGNORE_MODULES = set([
     '__builtins__',
     '__init__',
