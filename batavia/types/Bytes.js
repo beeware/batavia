@@ -205,19 +205,19 @@ Bytes.prototype.__contains__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__pos__ = function() {
-    return new Bytes(+this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'bytes'")
 }
 
 Bytes.prototype.__neg__ = function() {
-    return new Bytes(-this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'bytes'")
 }
 
 Bytes.prototype.__not__ = function() {
-    return new Bytes(!this.valueOf())
+    return this.val.length === 0
 }
 
 Bytes.prototype.__invert__ = function() {
-    return new Bytes(~this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'bytes'")
 }
 
 /**************************************************
@@ -373,7 +373,7 @@ Bytes.prototype.__rshift__ = function(other) {
 }
 
 Bytes.prototype.__and__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__and__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__xor__ = function(other) {
@@ -431,7 +431,7 @@ Bytes.prototype.__irshift__ = function(other) {
 }
 
 Bytes.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__iand__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__ixor__ = function(other) {

@@ -93,12 +93,7 @@ class BytesTests(TranspileTestCase):
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
-    not_implemented = [
-        'test_unary_invert',
-        'test_unary_negative',
-        'test_unary_not',
-        'test_unary_positive',
-    ]
+    not_implemented = []
 
 
 class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -130,24 +125,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_NotImplemented',
         'test_add_range',
         'test_add_slice',
-
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
 
         'test_eq_bytearray',
 
@@ -313,24 +290,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_slice',
         'test_add_str',
         'test_add_tuple',
-
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
 
         'test_lshift_bool',
         'test_lshift_bytearray',
