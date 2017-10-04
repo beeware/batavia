@@ -153,7 +153,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__pow__(items[1]))
                         } else if (items[0].__pow__) {
-                            this.push(items[0].__pow__(items[1]))
+                            if (items[0].__pow__.__call__) {
+                                this.push(items[0].__pow__.__call__(items))
+                            } else {
+                                this.push(items[0].__pow__(items[1]))
+                            }
                         } else {
                             this.push(Math.pow(items[0], items[1]))
                         }
@@ -164,7 +168,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__mul__(items[1]))
                         } else if (items[0].__mul__) {
-                            this.push(items[0].__mul__(items[1]))
+                            if (items[0].__mul__.__call__) {
+                                this.push(items[0].__mul__.__call__(items))
+                            } else {
+                                this.push(items[0].__mul__(items[1]))
+                            }
                         } else {
                             this.push(items[0] * items[1])
                         }
@@ -175,7 +183,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__mod__(items[1]))
                         } else if (items[0].__mod__) {
-                            this.push(items[0].__mod__(items[1]))
+                            if (items[0].__mod__.__call__) {
+                                this.push(items[0].__mod__.__call__(items))
+                            } else {
+                                this.push(items[0].__mod__(items[1]))
+                            }
                         } else {
                             this.push(items[0] % items[1])
                         }
@@ -186,7 +198,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__add__(items[1]))
                         } else if (items[0].__add__) {
-                            this.push(items[0].__add__(items[1]))
+                            if (items[0].__add__.__call__) {
+                                this.push(items[0].__add__.__call__(items))
+                            } else {
+                                this.push(items[0].__add__(items[1]))
+                            }
                         } else {
                             this.push(items[0] + items[1])
                         }
@@ -197,7 +213,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__sub__(items[1]))
                         } else if (items[0].__sub__) {
-                            this.push(items[0].__sub__(items[1]))
+                            if (items[0].__sub__.__call__) {
+                                this.push(items[0].__sub__.__call__(items))
+                            } else {
+                                this.push(items[0].__sub__(items[1]))
+                            }
                         } else {
                             this.push(items[0] - items[1])
                         }
@@ -208,7 +228,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__getitem__(items[1]))
                         } else if (items[0].__getitem__) {
-                            this.push(items[0].__getitem__(items[1]))
+                            if (items[0].__getitem__.__call__) {
+                                this.push(items[0].__getitem__.__call__(items))
+                            } else {
+                                this.push(items[0].__getitem__(items[1]))
+                            }
                         } else {
                             this.push(items[0][items[1]])
                         }
@@ -219,7 +243,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__floordiv__(items[1]))
                         } else if (items[0].__floordiv__) {
-                            this.push(items[0].__floordiv__(items[1]))
+                            if (items[0].__floordiv__.__call__) {
+                                this.push(items[0].__floordiv__.__call__(items))
+                            } else {
+                                this.push(items[0].__floordiv__(items[1]))
+                            }
                         } else {
                             this.push(items[0] / items[1])
                         }
@@ -230,7 +258,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__truediv__(items[1]))
                         } else if (items[0].__truediv__) {
-                            this.push(items[0].__truediv__(items[1]))
+                            if (items[0].__truediv__.__call__) {
+                                this.push(items[0].__truediv__.__call__(items))
+                            } else {
+                                this.push(items[0].__truediv__(items[1]))
+                            }
                         } else {
                             this.push(items[0] / items[1])
                         }
@@ -241,7 +273,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__lshift__(items[1]))
                         } else if (items[0].__lshift__) {
-                            this.push(items[0].__lshift__(items[1]))
+                            if (items[0].__lshift__.__call__) {
+                                this.push(items[0].__lshift__.__call__(items))
+                            } else {
+                                this.push(items[0].__lshift__(items[1]))
+                            }
                         } else {
                             this.push(items[0] << items[1])
                         }
@@ -252,7 +288,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__rshift__(items[1]))
                         } else if (items[0].__rshift__) {
-                            this.push(items[0].__rshift__(items[1]))
+                            if (items[0].__rshift__.__call__) {
+                                this.push(items[0].__rshift__.__call__(items))
+                            } else {
+                                this.push(items[0].__rshift__(items[1]))
+                            }
                         } else {
                             this.push(items[0] >> items[1])
                         }
@@ -263,7 +303,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__and__(items[1]))
                         } else if (items[0].__and__) {
-                            this.push(items[0].__and__(items[1]))
+                            if (items[0].__and__.__call__) {
+                                this.push(items[0].__and__.__call__(items))
+                            } else {
+                                this.push(items[0].__and__(items[1]))
+                            }
                         } else {
                             this.push(items[0] & items[1])
                         }
@@ -274,7 +318,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__xor__(items[1]))
                         } else if (items[0].__xor__) {
-                            this.push(items[0].__xor__(items[1]))
+                            if (items[0].__xor__.__call__) {
+                                this.push(items[0].__xor__.__call__(items))
+                            } else {
+                                this.push(items[0].__xor__(items[1]))
+                            }
                         } else {
                             this.push(items[0] ^ items[1])
                         }
@@ -285,7 +333,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             this.push(types.NoneType.__or__(items[1]))
                         } else if (items[0].__or__) {
-                            this.push(items[0].__or__(items[1]))
+                            if (items[0].__or__.__call__) {
+                                this.push(items[0].__or__.__call__(items))
+                            } else {
+                                this.push(items[0].__or__(items[1]))
+                            }
                         } else {
                             this.push(items[0] | items[1])
                         }
@@ -303,7 +355,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ifloordiv__(items[1])
                         } else if (items[0].__ifloordiv__) {
-                            result = items[0].__ifloordiv__(items[1])
+                            if (items[0].__ifloordiv__.__call__) {
+                                result = items[0].__ifloordiv__.__call__(items)
+                            } else {
+                                result = items[0].__ifloordiv__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -320,7 +376,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__itruediv__(items[1])
                         } else if (items[0].__itruediv__) {
-                            result = items[0].__itruediv__(items[1])
+                            if (items[0].__itruediv__.__call__) {
+                                result = items[0].__itruediv__.__call__(items)
+                            } else {
+                                result = items[0].__itruediv__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -337,7 +397,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__iadd__(items[1])
                         } else if (items[0].__iadd__) {
-                            result = items[0].__iadd__(items[1])
+                            if (items[0].__iadd__.__call__) {
+                                result = items[0].__iadd__.__call__(items)
+                            } else {
+                                result = items[0].__iadd__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -354,7 +418,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__isub__(items[1])
                         } else if (items[0].__isub__) {
-                            result = items[0].__isub__(items[1])
+                            if (items[0].__isub__.__call__) {
+                                result = items[0].__isub__.__call__(items)
+                            } else {
+                                result = items[0].__isub__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -371,7 +439,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__imul__(items[1])
                         } else if (items[0].__imul__) {
-                            result = items[0].__imul__(items[1])
+                            if (items[0].__imul__.__call__) {
+                                result = items[0].__imul__.__call__(items)
+                            } else {
+                                result = items[0].__imul__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -388,7 +460,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__imod__(items[1])
                         } else if (items[0].__imod__) {
-                            result = items[0].__imod__(items[1])
+                            if (items[0].__imod__.__call__) {
+                                result = items[0].__imod__.__call__(items)
+                            } else {
+                                result = items[0].__imod__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -405,7 +481,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ipow__(items[1])
                         } else if (items[0].__ipow__) {
-                            result = items[0].__ipow__(items[1])
+                            if (items[0].__ipow__.__call__) {
+                                result = items[0].__ipow__.__call__(items)
+                            } else {
+                                result = items[0].__ipow__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -422,7 +502,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ilshift__(items[1])
                         } else if (items[0].__ilshift__) {
-                            result = items[0].__ilshift__(items[1])
+                            if (items[0].__ilshift__.__call__) {
+                                result = items[0].__ilshift__.__call__(items)
+                            } else {
+                                result = items[0].__ilshift__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -439,7 +523,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__irshift__(items[1])
                         } else if (items[0].__irshift__) {
-                            result = items[0].__irshift__(items[1])
+                            if (items[0].__irshift__.__call__) {
+                                result = items[0].__irshift__.__call__(items)
+                            } else {
+                                result = items[0].__irshift__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -456,7 +544,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__iand__(items[1])
                         } else if (items[0].__iand__) {
-                            result = items[0].__iand__(items[1])
+                            if (items[0].__iand__.__call__) {
+                                result = items[0].__iand__.__call__(items)
+                            } else {
+                                result = items[0].__iand__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -473,7 +565,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ixor__(items[1])
                         } else if (items[0].__ixor__) {
-                            result = items[0].__ixor__(items[1])
+                            if (items[0].__ixor__.__call__) {
+                                result = items[0].__ixor__.__call__(items)
+                            } else {
+                                result = items[0].__ixor__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
@@ -490,7 +586,11 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         if (items[0] === null) {
                             result = types.NoneType.__ior__(items[1])
                         } else if (items[0].__ior__) {
-                            result = items[0].__ior__(items[1])
+                            if (items[0].__ior__.__call__) {
+                                result = items[0].__ior__.__call__(items)
+                            } else {
+                                result = items[0].__ior__(items[1])
+                            }
                             if (result === null) {
                                 result = items[0]
                             }
