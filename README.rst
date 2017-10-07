@@ -132,7 +132,6 @@ Documentation
 
 `Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
 
-* `Project Internals <http://batavia.readthedocs.io/en/latest/internals/index.html>`_
 * `Getting Started <http://batavia.readthedocs.io/en/latest/intro/index.html>`_
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
