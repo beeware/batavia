@@ -99,6 +99,8 @@ function makeBataviaLoader(basePath) {
             {cwd: basePath}
         )
 
+        checkForErrors(compileProcess)
+
         const module = JSON.parse(compileProcess.stdout)
 
         // Module compiler will output null if the specified module was not
@@ -113,6 +115,26 @@ function makeBataviaLoader(basePath) {
     }
 
     return bataviaLoader
+}
+
+/**
+ * Checks the Python compile process result for errors. In case of error it
+ * alerts the user quits the program.
+ *
+ * @param processResult
+ */
+function checkForErrors(processResult) {
+    if (processResult.error) {
+        console.log(
+            'There was an error running the Python compile process.\n' +
+            'Ensure that Python 3 is installed and available as "python3".')
+        process.exit(1)
+    }
+    if (processResult.status !== 0) {
+        console.log('There was an error during import.')
+        console.log(processResult.stderr.toString())
+        process.exit(1)
+    }
 }
 
 if (require.main === module) {
