@@ -13,4 +13,5 @@ reference objects and classes defined natively in JavaScript.
 
    tutorial-0
    tutorial-1
+   tutorial-2
    faq
