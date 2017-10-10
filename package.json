@@ -14,7 +14,8 @@
     "build:noCache": "DISABLE_WEBPACK_CACHE=true node_modules/.bin/webpack --progress",
     "watch": "node_modules/.bin/webpack --progress --watch",
     "serve": "node_modules/.bin/webpack-dev-server --inline --hot --port 3000",
-    "lint": "node_modules/.bin/eslint batavia"
+    "lint": "node_modules/.bin/eslint batavia",
+    "python": "./run_in_batavia.js"
   },
   "repository": {
     "type": "git",
