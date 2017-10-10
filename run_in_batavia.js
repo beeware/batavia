@@ -34,7 +34,7 @@ function main() {
         }
 
         const filePath = path.resolve(argument)
-        const modulePath = path.basename(filePath)
+        const modulePath = path.basename(filePath, '.py')
         const basePath = path.dirname(filePath)
 
         fs.access(
@@ -43,7 +43,7 @@ function main() {
             function(err) {
                 if (err) {
                     console.log(
-                        'Specified file does not exist, ' +
+                        'File "' + argument + '" does not exist ' +
                         'or cannot be accessed by current user.')
                 } else {
                     try {
