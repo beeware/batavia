@@ -1,7 +1,7 @@
 # coding=utf-8
 """Compile Python module and returns its file name and base64-encoded bytecode
 as JSON.
-For use by 'run_with_batavia' script."""
+For use by 'run_in_batavia' script."""
 
 import argparse
 import json
@@ -17,16 +17,13 @@ sys.path.insert(0, os.getcwd())
 
 
 def get_module_path(module):
-    if module.endswith('.py'):
-        return module
-    else:
-        module_spec = importlib.util.find_spec(module)
+    module_spec = importlib.util.find_spec(module)
 
-        # TODO: handle importing namespace packages
-        if module_spec is None or module_spec.origin == 'namespace':
-            return
+    # TODO: handle importing namespace packages
+    if module_spec is None or module_spec.origin == 'namespace':
+        return
 
-        return module_spec.origin
+    return module_spec.origin
 
 
 def python_module_to_b64_pyc(module):
