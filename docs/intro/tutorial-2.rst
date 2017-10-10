@@ -9,9 +9,17 @@ You can now run Python code from a code from the command line as follows:
 
 .. code-block:: bash
 
-    node run_in_batavia.js /path/to/python_file.py
+    npm run python /path/to/python_file.py
 
-You can alternatively directly execute the file as ``./run_in_batavia.js``. If
-you are not in the directory containing the Batavia sources you will need to
-provide Node.js the full path to the ``run_in_batavia.js`` file in the source
-directory.
+This runs the ``run_in_batavia.js`` script which in turn runs the Python code.
+This command will only work if you call it within the Batavia project directory
+and provide it the absolute path to the Python file to run.
+
+You can alternatively directly run the ``run_in_batavia.js`` in Node. If
+you are not in the Batavia project directory you can still use this script as
+follows:
+
+.. code-bloc:: bash
+
+    node /path/to/batavia/run_in_batavia.js /path/to/python_file.py
+
