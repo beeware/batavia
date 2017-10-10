@@ -33,7 +33,19 @@ function main() {
             return
         }
 
-        const filePath = path.resolve(argument)
+        let resolveBase
+        // The INIT_CWD environment variable is set in npm v5.4 and above. It
+        // contains the directory in which the npm was run. If we have that
+        // information we can resolve paths relative to it.
+        // If the file path not relative and INIT_CWD is defined, we'll resolve
+        // the provided path relative to it.
+        if (process.env.INIT_CWD && !path.isAbsolute(argument[0])) {
+            resolveBase = process.env.INIT_CWD
+        } else {
+            resolveBase = ''
+        }
+
+        const filePath = path.resolve(resolveBase, argument)
         const modulePath = path.basename(filePath, '.py')
         const basePath = path.dirname(filePath)
 
@@ -58,7 +70,6 @@ function main() {
     } else {
         displayHelpText()
     }
-
 }
 
 /**
