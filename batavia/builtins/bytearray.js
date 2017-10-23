@@ -1,3 +1,5 @@
+var Buffer = require('buffer').Buffer
+
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
@@ -25,6 +27,31 @@ function bytearray(args, kwargs) {
         // bytearray(False) -> bytearray(b'')
         } else {
             return new types.Bytearray(new types.Bytes([]))
+        }
+    } else if (args.length === 1 && types.isinstance(args[0], types.Int)) {
+    // bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
+        var bignumsign = args[0].val.s
+        var bignumarray = args[0].val.c
+        var bignumexp = args[0].val.e
+        var too_large = false
+        if (bignumsign === -1) {
+            throw new exceptions.ValueError.$pyclass(
+                'negative count'
+            )
+        } else if (bignumarray.length > 1 || bignumexp !== 0) {
+            too_large = true
+        } else {
+            var byteslength = bignumarray[0]
+            try {
+                var bytesbuffer = Buffer.alloc(byteslength)
+            } catch (e) {
+                if (e.name === 'RangeError') { too_large = true }
+            }
+        }
+        if (too_large) {
+            throw new exceptions.OverflowError.$pyclass('byte string is too large')
+        } else {
+            return new types.Bytearray(new types.Bytes(bytesbuffer))
         }
     } else {
         throw new exceptions.NotImplementedError.$pyclass(
