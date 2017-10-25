@@ -317,7 +317,7 @@ Bytes.prototype.__add__ = function(other) {
                 "can't concat " + type_name(other) + ' to bytes'
             )
         }
-    } else {        
+    } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
     }
 }
