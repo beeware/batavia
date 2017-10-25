@@ -1,5 +1,6 @@
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
@@ -19,6 +20,9 @@ create_pyclass(Float, 'float')
 function python_modulo(n, M) {
     return ((n % M) + M) % M
 }
+
+var MAX_FLOAT = new Float('179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
+var MIN_FLOAT = new Float('-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
 
 /**************************************************
  * Javascript compatibility methods
@@ -90,14 +94,32 @@ Float.prototype.__lt__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: float() < ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: float() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'float' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() < other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: float() < NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: float() < NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'float' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -110,12 +132,29 @@ Float.prototype.__le__ = function(other) {
             types.NoneType, types.Str, types.NotImplementedType,
             types.Range, types.Set, types.Slice
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: float() <= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: float() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'float' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() <= other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: float() <= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: float() <= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'float' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -153,12 +192,29 @@ Float.prototype.__gt__ = function(other) {
             types.NoneType, types.Str, types.NotImplementedType,
             types.Range, types.Set, types.Slice
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: float() > ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: float() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'float' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: float() > NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: float() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'float' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -169,14 +225,32 @@ Float.prototype.__ge__ = function(other) {
         if (types.isinstance(other, [
             types.Dict, types.List, types.Tuple,
             types.NoneType, types.Str, types.NotImplementedType,
-            types.Range, types.Set, types.Slice
+            types.Range, types.Set, types.Slice,
+            types.Bytes, types.Bytearray
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: float() >= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: float() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'float' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: float() >= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: float() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'float' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -197,7 +271,8 @@ Float.prototype.__neg__ = function() {
 }
 
 Float.prototype.__not__ = function() {
-    return new Float(!this.valueOf())
+    var types = require('../types')
+    return new types.Bool(!this.valueOf())
 }
 
 Float.prototype.__invert__ = function() {
@@ -301,7 +376,7 @@ Float.prototype.__mul__ = function(other) {
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf())
-    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple])) {
+    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple, types.Bytes, types.Bytearray])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'")
@@ -311,12 +386,25 @@ Float.prototype.__mul__ = function(other) {
 Float.prototype.__mod__ = function(other) {
     var types = require('../types')
 
-    /* TODO: Fix case for -0.0, which is coming out 0.0 */
     if (types.isinstance(other, types.Int)) {
         if (other.val.isZero()) {
             throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
         } else {
-            return new Float(python_modulo(this.valueOf(), parseFloat(other.val)))
+            var thisNum = this.valueOf()
+            var otherNum = parseFloat(other.val)
+            var result = new Float(python_modulo(thisNum, otherNum))
+            if (otherNum > MAX_FLOAT || otherNum < MIN_FLOAT || result.toString() === 'nan' || result.toString() === 'inf' || result.toString() === '-inf') {
+                throw new exceptions.OverflowError.$pyclass(
+                    'int too large to convert to float'
+                )
+            }
+            if ((otherNum > thisNum && thisNum > 0) || (thisNum > otherNum && thisNum < 0) || thisNum === 0) {
+                return new Float(thisNum)
+            }
+            if (result.valueOf() === 0 && (thisNum % otherNum) + otherNum === otherNum) {
+                return new Float(otherNum)
+            }
+            return result
         }
     } else if (types.isinstance(other, Float)) {
         if (other.valueOf() === 0) {
@@ -341,13 +429,22 @@ Float.prototype.__add__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Int, Float])) {
-        return new Float(this.valueOf() + parseFloat(other.valueOf()))
+        var value = new Float(this.valueOf() + parseFloat(other.valueOf()))
+        if (value.toString() === 'inf' || value.toString() === '-inf') {
+            throw new exceptions.OverflowError.$pyclass(
+                'int too large to convert to float'
+            )
+        }
+        return value
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() + 1.0)
         } else {
             return new Float(this.valueOf())
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var real = new Float(this.valueOf() + other.real)
+        return new types.Complex(real.valueOf(), other.imag.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'")
     }
@@ -357,13 +454,22 @@ Float.prototype.__sub__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Int, Float])) {
-        return new Float(this.valueOf() - other.valueOf())
+        var value = new Float(this.valueOf() - other.valueOf())
+        if (value.toString() === 'inf' || value.toString() === '-inf') {
+            throw new exceptions.OverflowError.$pyclass(
+                'int too large to convert to float'
+            )
+        }
+        return value
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() - 1.0)
         } else {
             return new Float(this.valueOf())
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var real = new Float(this.valueOf() - other.real)
+        return new types.Complex(real.valueOf(), -other.imag.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
     }

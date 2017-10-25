@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var type_name = require('../core').type_name
 var None = require('../core').None
 
@@ -65,12 +66,28 @@ JSDict.prototype.__lt__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() < ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() < other.valueOf()
         }
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: dict() < NoneType()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: dict() < NoneType()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<' not supported between instances of 'dict' and 'NoneType'"
+        )
+    }
 }
 
 JSDict.prototype.__le__ = function(other) {
@@ -82,12 +99,28 @@ JSDict.prototype.__le__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() <= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() <= other.valueOf()
         }
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: dict() <= NoneType()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: dict() <= NoneType()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<=' not supported between instances of 'dict' and 'NoneType'"
+        )
+    }
 }
 
 JSDict.prototype.__eq__ = function(other) {
@@ -108,12 +141,28 @@ JSDict.prototype.__gt__ = function(other) {
             types.NoneType, types.Set, types.Str,
             types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() > ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: dict() > NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: dict() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'dict' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -126,12 +175,28 @@ JSDict.prototype.__ge__ = function(other) {
             types.Int, types.JSDict, types.List,
             types.NoneType, types.Str, types.Tuple
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() >= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: dict() >= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: dict() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'dict' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -208,11 +273,11 @@ JSDict.prototype.__setitem__ = function(key, value) {
 }
 
 JSDict.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__lshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__rshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__and__ = function(other) {
@@ -220,11 +285,11 @@ JSDict.prototype.__and__ = function(other) {
 }
 
 JSDict.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__xor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__or__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -232,51 +297,51 @@ JSDict.prototype.__or__ = function(other) {
  **************************************************/
 
 JSDict.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ifloordiv__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__itruediv__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__iadd__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__isub__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__imul__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__imod__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ipow__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ilshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__irshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__iand__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ixor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Dict.__ior__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__getitem__ = function(other) {

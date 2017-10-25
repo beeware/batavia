@@ -6,7 +6,7 @@ class EvalTests(TranspileTestCase):
 
 
 class BuiltinEvalFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["eval"]
+    function = "eval"
 
     not_implemented = [
         'test_noargs',

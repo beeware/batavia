@@ -35,9 +35,6 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
         # Python differences
         # TODO: re-implement the Python float printing function.
 
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
-
         'test_power_complex',
         'test_power_float',
         'test_power_int',
@@ -48,9 +45,6 @@ class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'complex'
 
     not_implemented = [
-
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
 
         'test_power_bool',
         'test_power_bytearray',

@@ -12,7 +12,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_int_neg_y_pos_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -21,7 +20,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_int_neg_y_neg_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -30,7 +28,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_float_x_with_z(self):
         self.assertCodeExecution("""
             x = 3.3
@@ -39,7 +36,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
             """)
 
-    @expectedFailure
     def test_float_y_with_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -48,7 +44,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
             """)
 
-    @expectedFailure
     def test_float(self):
         self.assertCodeExecution("""
             x = 3.3
@@ -57,7 +52,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expectedFailure
     def test_float_neg_y_with_z(self):
         self.assertCodeExecution("""
             x = 3.3
@@ -98,11 +92,13 @@ class PowTests(TranspileTestCase):
             print(pow(955, 154, 834))
         """)
 
+
 class BuiltinPowFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["pow"]
+    function = "pow"
+
 
 class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["pow"]
+    function = "pow"
 
     not_implemented = [
         'test_bool_int',
@@ -171,22 +167,4 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_range_slice',
         'test_range_str',
         'test_range_tuple',
-
-        'test_slice_bool',
-        'test_slice_bytearray',
-        'test_slice_bytes',
-        'test_slice_class',
-        'test_slice_complex',
-        'test_slice_dict',
-        'test_slice_float',
-        'test_slice_frozenset',
-        'test_slice_int',
-        'test_slice_list',
-        'test_slice_None',
-        'test_slice_NotImplemented',
-        'test_slice_range',
-        'test_slice_set',
-        'test_slice_slice',
-        'test_slice_str',
-        'test_slice_tuple',
     ]

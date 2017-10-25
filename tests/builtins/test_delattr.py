@@ -57,7 +57,7 @@ class DelattrTests(TranspileTestCase):
 
 
 class BuiltinDelattrFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
-    functions = ["delattr"]
+    function = "delattr"
 
     not_implemented = [
         'test_class_str',

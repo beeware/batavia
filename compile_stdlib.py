@@ -16,6 +16,28 @@ import sys
 import tempfile
 
 
+IGNORE_MODULES = set([
+    '__builtins__',
+    '__init__',
+    'plat-aix4',
+    'plat-darwin',
+    'plat-freebsd4',
+    'plat-freebsd5',
+    'plat-freebsd6',
+    'plat-freebsd7',
+    'plat-freebsd8',
+    'plat-generic',
+    'plat-linux',
+    'plat-netbsd1',
+    'plat-next3',
+    'plat-sunos5',
+    'plat-unixware7',
+    'site-packages',
+    'tkinter',
+    'turtle',
+    'turtledemo',
+])
+
 def parse_args():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('modules', metavar='module', nargs='*',
@@ -24,25 +46,30 @@ def parse_args():
 
     args = parser.parse_args()
 
-    enabled_modules = args.modules or [
-        '_weakrefset',
-        'abc',
-        'antigravity',
-        'bisect',
-        'colorsys',
-        'copyreg',
-        'hashlib',
-        'token',
-        'operator',
-        'stat',
-        'this',
-    ]
-
     # find the ouroboros directory
     if os.path.exists('./node_modules/@pybee/ouroboros'):
         ouroboros = './node_modules/@pybee/ouroboros'
     else:
         exit("Please install the development dependencies with `npm install`.")
+
+    if args.modules:
+        enabled_modules = args.modules
+    else:
+        native_modules = []
+        native_path = os.path.join(os.path.dirname(__file__), 'batavia', 'modules')
+        for name in os.listdir(native_path):
+            module_name, ext = os.path.splitext(name)
+            if ext == '.js':
+                native_modules.append(module_name)
+
+        enabled_modules = []
+        for name in os.listdir(os.path.join(ouroboros, 'ouroboros')):
+            module_name, ext = os.path.splitext(name)
+            if (ext == '.py' or
+                ext == '' and os.path.isdir(os.path.join(ouroboros, name))):
+                if (module_name not in IGNORE_MODULES
+                    and module_name not in native_modules):
+                    enabled_modules.append(module_name)
 
     return ouroboros, enabled_modules
 

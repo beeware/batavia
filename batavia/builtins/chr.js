@@ -1,3 +1,4 @@
+var version = require('../core').version
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
@@ -9,7 +10,18 @@ function chr(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('chr() takes no keyword arguments')
     }
     if (!args || args.length !== 1) {
-        throw new exceptions.TypeError.$pyclass('chr() takes exactly 1 argument (' + args.length + ' given)')
+        if (version.later('3.4')) {
+            throw new exceptions.TypeError.$pyclass(
+                'chr() takes exactly one argument (' + args.length + ' given)'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                'chr() takes exactly 1 argument (' + args.length + ' given)'
+            )
+        }
+    }
+    if (args[0].__name__ === 'NoneType') {
+        throw new exceptions.TypeError.$pyclass('an integer is required (got type NoneType)')
     }
     return new types.Str(String.fromCharCode(args[0]))
     // After tests pass, let's try saving one object creation

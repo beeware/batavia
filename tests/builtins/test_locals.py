@@ -6,7 +6,7 @@ class LocalsTests(TranspileTestCase):
 
 
 class BuiltinLocalsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["locals"]
+    function = "locals"
 
     not_implemented = [
         'test_noargs',

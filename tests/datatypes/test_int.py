@@ -62,10 +62,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
 
     not_implemented = [
-        'test_modulo_complex',
-
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
         'test_multiply_complex',
 
         'test_power_complex',
@@ -86,15 +82,10 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_modulo_complex',
 
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
         'test_multiply_complex',
 
         'test_power_complex',
         'test_power_float',
-
-        'test_rshift_int', # this works, but some of the cases are too large
-                           # until we replace bignumber.js
 
         'test_subtract_complex',
 

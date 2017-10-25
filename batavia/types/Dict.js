@@ -1,5 +1,6 @@
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
@@ -94,6 +95,12 @@ Dict.prototype._increase_size = function() {
     this.mask = new_mask
 }
 
+function deleteAt(dict, index) {
+    dict.data_keys[index] = DELETED
+    dict.data_values[index] = null
+    dict.size--
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
@@ -105,6 +112,10 @@ Dict.prototype.toString = function() {
 /**************************************************
  * Type conversions
  **************************************************/
+
+Dict.prototype.__len__ = function() {
+    return this.size
+}
 
 Dict.prototype.__bool__ = function() {
     return this.size > 0
@@ -158,24 +169,58 @@ Dict.prototype.__lt__ = function(other) {
     var types = require('../types')
     if (other !== None) {
         if (types.isbataviainstance(other)) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() < ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'dict' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() < other.valueOf()
         }
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: dict() < NoneType()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: dict() < NoneType()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<' not supported between instances of 'dict' and 'NoneType'"
+        )
+    }
 }
 
 Dict.prototype.__le__ = function(other) {
     var types = require('../types')
     if (other !== None) {
         if (types.isbataviainstance(other)) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() <= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'dict' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() <= other.valueOf()
         }
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: dict() <= NoneType()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: dict() <= NoneType()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<=' not supported between instances of 'dict' and 'NoneType'"
+        )
+    }
 }
 
 Dict.prototype.__eq__ = function(other) {
@@ -214,12 +259,29 @@ Dict.prototype.__gt__ = function(other) {
     var types = require('../types')
     if (other !== None) {
         if (types.isbataviainstance(other)) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() > ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'dict' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: dict() > NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: dict() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'dict' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -227,12 +289,29 @@ Dict.prototype.__ge__ = function(other) {
     var types = require('../types')
     if (other !== None) {
         if (types.isbataviainstance(other)) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: dict() >= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: dict() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'dict' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: dict() >= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: dict() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'dict' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -289,7 +368,8 @@ Dict.prototype.__mul__ = function(other) {
         types.Bool, types.Dict, types.Float,
         types.JSDict, types.Int, types.NoneType,
         types.Slice, types.Set, types.FrozenSet,
-        types.NotImplementedType, types.Complex, types.Range])) {
+        types.NotImplementedType, types.Complex, types.Range,
+        types.Type])) {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'dict'")
@@ -502,9 +582,7 @@ Dict.prototype.__delitem__ = function(key) {
             throw new exceptions.KeyError.$pyclass(key)
         }
     }
-    this.data_keys[i] = DELETED
-    this.data_values[i] = null
-    this.size--
+    deleteAt(this, i)
 }
 
 /**************************************************
@@ -610,6 +688,104 @@ Dict.prototype.clear = function() {
     this.mask = 0
     this.data_keys = []
     this.data_values = []
+}
+
+Dict.prototype.pop = function(key, def) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'pop expected at least 1 arguments, got 0'
+        )
+    } else if (arguments.length > 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'pop expected at most 2 arguments, got ' + arguments.length
+        )
+    }
+
+    var i = this._find_index(key)
+    if (i === null) {
+        if (def === undefined) {
+            throw new exceptions.KeyError.$pyclass(key)
+        }
+        return def
+    }
+
+    var val = this.data_values[i]
+    deleteAt(this, i)
+    return val
+}
+
+Dict.prototype.popitem = function() {
+    if (arguments.length > 0) {
+        throw new exceptions.TypeError.$pyclass(
+            'popitem() takes no arguments (' + arguments.length + ' given)'
+        )
+    }
+    if (this.size < 1) {
+        throw new exceptions.KeyError.$pyclass(
+            'popitem(): dictionary is empty'
+        )
+    }
+
+    for (var i = 0; i < this.data_keys.length; i++) {
+        // ignore deleted or empty
+        var key = this.data_keys[i]
+        if (!isEmpty(key) && !isDeleted(key)) {
+            var types = require('../types')
+            var val = this.data_values[i]
+            deleteAt(this, i)
+            return new types.Tuple([key, val])
+        }
+    }
+
+    // just in case
+    throw new exceptions.KeyError.$pyclass(
+        'popitem(): dictionary is empty'
+    )
+}
+
+Dict.prototype.setdefault = function(key, def) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'setdefault expected at least 1 arguments, got 0'
+        )
+    } else if (arguments.length > 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'setdefault expected at most 2 arguments, got ' + arguments.length
+        )
+    }
+
+    if (def === undefined) {
+        def = None
+    }
+    var i = this._find_index(key)
+    if (i === null) {
+        this.__setitem__(key, def)
+        return def
+    } else {
+        return this.data_values[i]
+    }
+}
+
+Dict.prototype.fromkeys = function(iterable, value) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass(
+            'fromkeys expected at least 1 arguments, got 0'
+        )
+    } else if (arguments.length > 2) {
+        throw new exceptions.TypeError.$pyclass(
+            'fromkeys expected at most 2 arguments, got ' + arguments.length
+        )
+    }
+    if (value === undefined) {
+        value = None
+    }
+
+    var builtins = require('../builtins')
+    var d = new Dict()
+    callables.iter_for_each(builtins.iter([iterable], null), function(key) {
+        d.__setitem__(key, value)
+    })
+    return d
 }
 
 /**************************************************

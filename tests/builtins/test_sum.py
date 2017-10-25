@@ -34,7 +34,7 @@ class SumTests(TranspileTestCase):
 
 
 class BuiltinSumFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["sum"]
+    function = "sum"
 
     not_implemented = [
         'test_noargs',

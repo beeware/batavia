@@ -172,6 +172,7 @@ class TupleTests(TranspileTestCase):
             print(x[-1:0:-1])
             """)
 
+
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
 
@@ -182,64 +183,3 @@ class BinaryTupleOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 class InplaceTupleOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'tuple'
-
-    not_implemented = [
-
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
-
-        'test_or_bool',
-        'test_or_bytearray',
-        'test_or_bytes',
-        'test_or_class',
-        'test_or_complex',
-        'test_or_dict',
-        'test_or_float',
-        'test_or_frozenset',
-        'test_or_int',
-        'test_or_list',
-        'test_or_None',
-        'test_or_NotImplemented',
-        'test_or_range',
-        'test_or_set',
-        'test_or_slice',
-        'test_or_str',
-        'test_or_tuple',
-
-        'test_rshift_bool',
-        'test_rshift_bytearray',
-        'test_rshift_bytes',
-        'test_rshift_class',
-        'test_rshift_complex',
-        'test_rshift_dict',
-        'test_rshift_float',
-        'test_rshift_frozenset',
-        'test_rshift_int',
-        'test_rshift_list',
-        'test_rshift_None',
-        'test_rshift_NotImplemented',
-        'test_rshift_range',
-        'test_rshift_set',
-        'test_rshift_slice',
-        'test_rshift_str',
-        'test_rshift_tuple',
-
-        'test_xor_bool',
-        'test_xor_bytearray',
-        'test_xor_bytes',
-        'test_xor_class',
-        'test_xor_complex',
-        'test_xor_dict',
-        'test_xor_float',
-        'test_xor_frozenset',
-        'test_xor_int',
-        'test_xor_list',
-        'test_xor_None',
-        'test_xor_NotImplemented',
-        'test_xor_range',
-        'test_xor_set',
-        'test_xor_slice',
-        'test_xor_str',
-        'test_xor_tuple',
-    ]

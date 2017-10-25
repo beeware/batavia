@@ -2,6 +2,7 @@ var Buffer = require('buffer').Buffer
 
 var PyObject = require('../core').Object
 var constants = require('../core').constants
+var version = require('../core').version
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
@@ -62,8 +63,8 @@ Str.prototype.__str__ = function() {
  * Attribute manipulation
  **************************************************/
 
-Str.prototype.__getattr__ = function(attr) {
-    return PyObject.prototype.__getattr__.call(this, attr)
+Str.prototype.__getattribute__ = function(attr) {
+    return PyObject.prototype.__class__.__getattribute__(this, attr)
 }
 
 Str.prototype.__setattr__ = function(attr, value) {
@@ -90,12 +91,29 @@ Str.prototype.__lt__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.FrozenSet
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: str() < ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() < other
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: str() < NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() < NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'str' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -110,12 +128,29 @@ Str.prototype.__le__ = function(other) {
             types.Type, types.Complex, types.NotImplementedType,
             types.Range, types.Slice, types.FrozenSet
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: str() <= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() <= other
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: str() <= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() <= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'str' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -166,12 +201,29 @@ Str.prototype.__gt__ = function(other) {
             types.NotImplementedType, types.Range,
             types.Slice, types.FrozenSet
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: str() > ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() > other
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: str() > NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'str' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -187,12 +239,29 @@ Str.prototype.__ge__ = function(other) {
             types.Range, types.Slice, types.FrozenSet
 
         ])) {
-            throw new exceptions.TypeError.$pyclass('unorderable types: str() >= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: str() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'str' and '" +
+                    type_name(other) + "'"
+                )
+            }
         } else {
             return this.valueOf() >= other
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: str() >= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: str() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'str' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -288,7 +357,13 @@ Str.prototype.__add__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
-        throw new exceptions.TypeError.$pyclass("Can't convert '" + type_name(other) + "' object to str implicitly")
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                "Can't convert '" + type_name(other) + "' object to str implicitly"
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+        }
     }
 }
 
@@ -450,7 +525,13 @@ Str.prototype.__iadd__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
-        throw new exceptions.TypeError.$pyclass("Can't convert '" + type_name(other) + "' object to str implicitly")
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                "Can't convert '" + type_name(other) + "' object to str implicitly"
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+        }
     }
 }
 
@@ -496,6 +577,11 @@ Str.prototype.__ior__ = function(other) {
  * Methods
  * https://docs.python.org/3.4/library/stdtypes.html#string-methods
  **************************************************/
+
+Str.prototype.__len__ = function() {
+    var types = require('../types')
+    return new types.Int(this.length)
+}
 
 Str.prototype.join = function(iter) {
     var types = require('../types')
@@ -702,6 +788,14 @@ Str.prototype.capitalize = function() {
     }
 }
 
+Str.prototype.format = function(args, kwargs) {
+    const types = require('../types')
+    const positionalArguments = new types.Tuple(types.js2py(args))
+    const keywordArguments = types.js2py(kwargs)
+    return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
+}
+
+Str.prototype.format.$pyargs = true
 /**************************************************
  * Module exports
  **************************************************/

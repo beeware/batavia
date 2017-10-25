@@ -6,7 +6,7 @@ class RoundTests(TranspileTestCase):
 
 
 class BuiltinRoundFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["round"]
+    function = "round"
 
     not_implemented = [
         'test_noargs',

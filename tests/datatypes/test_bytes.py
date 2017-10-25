@@ -93,20 +93,38 @@ class BytesTests(TranspileTestCase):
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
-    not_implemented = [
-        'test_unary_invert',
-        'test_unary_negative',
-        'test_unary_not',
-        'test_unary_positive',
-    ]
+    not_implemented = []
 
 
 class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
+    not_implemented_versions = {
+        'test_subscr_bytearray': ['3.4'],
+        'test_subscr_bytes': ['3.4'],
+        'test_subscr_class': ['3.4'],
+        'test_subscr_complex': ['3.4'],
+        'test_subscr_dict': ['3.4'],
+        'test_subscr_float': ['3.4'],
+        'test_subscr_frozenset': ['3.4'],
+        'test_subscr_list': ['3.4'],
+        'test_subscr_None': ['3.4'],
+        'test_subscr_NotImplemented': ['3.4'],
+        'test_subscr_range': ['3.4'],
+        'test_subscr_set': ['3.4'],
+        'test_subscr_str': ['3.4'],
+        'test_subscr_tuple': ['3.4'],
+    }
+
     not_implemented = [
 
         'test_add_bytearray',
+        'test_add_class',
+        'test_add_complex',
+        'test_add_frozenset',
+        'test_add_NotImplemented',
+        'test_add_range',
+        'test_add_slice',
 
         'test_eq_bytearray',
 
@@ -121,22 +139,19 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_ne_bytearray',
 
         'test_subscr_bool',
-        'test_subscr_bytearray',
-        'test_subscr_bytes',
-        'test_subscr_class',
-        'test_subscr_complex',
-        'test_subscr_dict',
-        'test_subscr_float',
-        'test_subscr_frozenset',
         'test_subscr_int',
-        'test_subscr_list',
-        'test_subscr_None',
-        'test_subscr_NotImplemented',
-        'test_subscr_range',
-        'test_subscr_set',
         'test_subscr_slice',
         'test_subscr_str',
         'test_subscr_tuple',
+
+
+        'test_subtract_bytearray',
+        'test_subtract_class',
+        'test_subtract_complex',
+        'test_subtract_frozenset',
+        'test_subtract_NotImplemented',
+        'test_subtract_range',
+        'test_subtract_slice',
     ]
 
 
@@ -161,42 +176,6 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_add_slice',
         'test_add_str',
         'test_add_tuple',
-
-        'test_and_bool',
-        'test_and_bytearray',
-        'test_and_bytes',
-        'test_and_class',
-        'test_and_complex',
-        'test_and_dict',
-        'test_and_float',
-        'test_and_frozenset',
-        'test_and_int',
-        'test_and_list',
-        'test_and_None',
-        'test_and_NotImplemented',
-        'test_and_range',
-        'test_and_set',
-        'test_and_slice',
-        'test_and_str',
-        'test_and_tuple',
-
-        'test_floor_divide_bool',
-        'test_floor_divide_bytearray',
-        'test_floor_divide_bytes',
-        'test_floor_divide_class',
-        'test_floor_divide_complex',
-        'test_floor_divide_dict',
-        'test_floor_divide_float',
-        'test_floor_divide_frozenset',
-        'test_floor_divide_int',
-        'test_floor_divide_list',
-        'test_floor_divide_None',
-        'test_floor_divide_NotImplemented',
-        'test_floor_divide_range',
-        'test_floor_divide_set',
-        'test_floor_divide_slice',
-        'test_floor_divide_str',
-        'test_floor_divide_tuple',
 
         'test_lshift_bool',
         'test_lshift_bytearray',

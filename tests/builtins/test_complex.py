@@ -6,4 +6,4 @@ class ComplexTests(TranspileTestCase):
 
 
 class BuiltinComplexFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["complex"]
+    function = "complex"

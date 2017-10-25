@@ -7,8 +7,11 @@ function str(args, kwargs) {
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new exceptions.TypeError.$pyclass("str() doesn't accept keyword arguments")
     }
-    if (!args || args.length !== 1) {
-        throw new exceptions.TypeError.$pyclass('str() takes exactly 1 argument (' + args.length + ' given)')
+
+    if (!args || args.length === 0) {
+        return ''
+    } else if (args.length > 1) {
+        throw new exceptions.TypeError.$pyclass('str() takes at most 1 argument (' + args.length + ' given)')
     }
 
     if (args[0] === null) {

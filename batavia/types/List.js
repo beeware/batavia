@@ -1,4 +1,4 @@
-var constants = require('../core').constants
+var version = require('../core').version
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
@@ -84,7 +84,16 @@ List.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() < ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() < ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 
     if (other !== None) {
@@ -106,10 +115,27 @@ List.prototype.__lt__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length < other.length
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: list() < ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() < NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() < NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'list' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -117,7 +143,16 @@ List.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() <= ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() <= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 
     if (other !== None) {
@@ -139,10 +174,27 @@ List.prototype.__le__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length <= other.length
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: list() <= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() <= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() <= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'list' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -173,7 +225,16 @@ List.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() > ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() > ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 
     if (other !== None) {
@@ -195,10 +256,27 @@ List.prototype.__gt__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length > other.length
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: list() > ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() > NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'list' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -206,7 +284,16 @@ List.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() >= ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() >= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'list' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 
     if (other !== None) {
@@ -228,10 +315,27 @@ List.prototype.__ge__ = function(other) {
             // got through loop and all values were equal. Determine by comparing length
             return this.length >= other.length
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: list() >= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: list() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'list' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: list() >= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: list() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'list' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -451,7 +555,7 @@ List.prototype.__getitem__ = function(index) {
         }
     } else {
         var msg = 'list indices must be integers or slices, not '
-        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (!version.later('3.4')) {
             msg = 'list indices must be integers, not '
         }
         throw new exceptions.TypeError.$pyclass(msg + type_name(index))
@@ -657,6 +761,60 @@ List.prototype.pop = function(index) {
         throw new exceptions.IndexError.$pyclass('pop index out of range')
     }
     return this.splice(index, 1)[0]
+}
+
+List.prototype.clear = function() {
+    if (arguments.length !== 0) {
+        throw new exceptions.TypeError.$pyclass(
+            'clear() takes no arguments (' + arguments.length + ' given)'
+        )
+    }
+    this.splice(0, this.length)
+}
+
+List.prototype.count = function(value) {
+    if (arguments.length !== 1) {
+        throw new exceptions.TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
+    }
+    var count = 0
+    for (var i = 0; i < this.length; ++i) {
+        if (this[i].__eq__(value)) {
+            count++
+        }
+    }
+    return count
+}
+
+List.prototype.index = function(value, start, stop) {
+    if (arguments.length < 1) {
+        throw new exceptions.TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
+    } else if (arguments.length > 3) {
+        throw new exceptions.TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
+    }
+
+    if (start < 0) {
+        start = Number(this.length.valueOf()) + Number(start.valueOf())
+        if (start < 0) {
+            start = 0
+        }
+    }
+    if (stop < 0) {
+        stop = Number(this.length.valueOf()) + Number(stop.valueOf())
+    }
+
+    for (var i = (start || 0); i < (stop || this.length); ++i) {
+        if (this[i].__eq__(value)) {
+            return i
+        }
+    }
+    throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
+}
+
+List.prototype.reverse = function() {
+    if (arguments.length > 0) {
+        throw new exceptions.TypeError.$pyclass('reverse() takes no arguments (' + arguments.length + ' given)')
+    }
+    Array.prototype.reverse.apply(this)
 }
 
 function validateIndexType(index) {

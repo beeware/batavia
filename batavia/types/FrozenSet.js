@@ -1,6 +1,7 @@
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var SetIterator = require('./SetIterator')
@@ -34,6 +35,10 @@ FrozenSet.prototype.toString = function() {
  * Type conversions
  **************************************************/
 
+FrozenSet.prototype.__len__ = function() {
+    return this.data.size
+}
+
 FrozenSet.prototype.__bool__ = function() {
     return this.data.__bool__()
 }
@@ -66,7 +71,16 @@ FrozenSet.prototype.__lt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() < ' + type_name(other) + '()')
+
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: frozenset() < ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 FrozenSet.prototype.__le__ = function(other) {
@@ -75,7 +89,15 @@ FrozenSet.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() <= ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: frozenset() <= ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 FrozenSet.prototype.__eq__ = function(other) {
@@ -107,7 +129,15 @@ FrozenSet.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() > ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: frozenset() > ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'>' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 FrozenSet.prototype.__ge__ = function(other) {
@@ -116,7 +146,15 @@ FrozenSet.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: frozenset() >= ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: frozenset() >= ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'>=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 FrozenSet.prototype.__contains__ = function(other) {

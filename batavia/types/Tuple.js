@@ -1,4 +1,4 @@
-var constants = require('../core').constants
+var version = require('../core').version
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
@@ -87,7 +87,15 @@ Tuple.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() < ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: tuple() < ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+            )
+        }
     }
     if (this.length === 0 && other.length > 0) {
         return new types.Bool(true)
@@ -111,7 +119,15 @@ Tuple.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() <= ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: tuple() <= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+            )
+        }
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
@@ -153,7 +169,15 @@ Tuple.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() > ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: tuple() > ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+            )
+        }
     }
     if (this.length === 0 && other.length > 0) {
         return new types.Bool(false)
@@ -178,7 +202,15 @@ Tuple.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new exceptions.TypeError.$pyclass('unorderable types: tuple() >= ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: tuple() >= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+            )
+        }
     }
     for (var i = 0; i < this.length; i++) {
         if (i >= other.length) {
@@ -405,7 +437,7 @@ Tuple.prototype.__getitem__ = function(index) {
         return new Tuple(steppedArray)
     } else {
         var msg = 'tuple indices must be integers or slices, not '
-        if (constants.BATAVIA_MAGIC === constants.BATAVIA_MAGIC_34) {
+        if (!version.later('3.4')) {
             msg = 'tuple indices must be integers, not '
         }
         throw new exceptions.TypeError.$pyclass(msg + type_name(index))
@@ -437,7 +469,12 @@ Tuple.prototype.__or__ = function(other) {
  **************************************************/
 
 Tuple.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
+    }
 }
 
 Tuple.prototype.__itruediv__ = function(other) {
@@ -489,7 +526,12 @@ Tuple.prototype.__imul__ = function(other) {
 }
 
 Tuple.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'tuple' and '" + type_name(other) + "'")
+    var types = require('../types')
+    if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'tuple' and '" + type_name(other) + "'")
+    }
 }
 
 Tuple.prototype.__ipow__ = function(other) {
@@ -501,7 +543,7 @@ Tuple.prototype.__ilshift__ = function(other) {
 }
 
 Tuple.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__irshift__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__iand__ = function(other) {
@@ -509,11 +551,11 @@ Tuple.prototype.__iand__ = function(other) {
 }
 
 Tuple.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__ixor__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Tuple.__ior__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'tuple' and '" + type_name(other) + "'")
 }
 
 /**************************************************

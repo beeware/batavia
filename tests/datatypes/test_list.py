@@ -15,7 +15,6 @@ def string_permutations(test_list, list_to_permutate):
 
 
 class ListTests(TranspileTestCase):
-
     def assertOrdering(self, col1, col2):
         """
         runs assertCodeExecution with col1 [<, <=, >, >=] col2
@@ -122,6 +121,31 @@ class ListTests(TranspileTestCase):
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
             print(x[-10])
+            """)
+
+    def test_index(self):
+        self.assertCodeExecution("""
+            x = [1, 2, 2, 3]
+            print(x.index(1))
+            print(x.index(2))
+            print(x.index(3))
+            print(x.index(2, 1))
+            try:
+                x.index(3)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, 2, 3)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, 0, -1)
+            except ValueError as e:
+                print(e)
+            try:
+                x.index(2, -4, 4)
+            except ValueError as e:
+                print(e)
             """)
 
     def test_slice(self):
@@ -346,6 +370,90 @@ class ListTests(TranspileTestCase):
             class I(int): pass
             l = [1, 2]
             l.pop(I())
+        """)
+
+    def test_clear_success(self):
+
+        self.assertCodeExecution("""
+            l = ["one", "two", 3]
+            l.clear()
+            print(l)
+        """)
+
+    def test_clear_args(self):
+
+        self.assertCodeExecution("""
+            l = ["one", "two", 3]
+            l.clear("invalid")
+            print(l)
+        """)
+
+    def test_clear_empty_list(self):
+
+        self.assertCodeExecution("""
+            l = []
+            l.clear()
+            print(l)
+        """)
+
+    def test_count(self):
+        self.assertCodeExecution("""
+        x = [1, 2, 2, 3]
+        print(x.count(2))
+        print(x.count(3))
+        print(x.count(4))
+        """)
+
+        # count on empty list
+        self.assertCodeExecution("""
+        x = []
+        print(x.count(1))
+        """)
+
+        # TypeError on too many or too few args
+        self.assertCodeExecution("""
+        x = [1, 2]
+        try:
+            x.count(3, 4)
+        except TypeError as e:
+            print(e)
+        try:
+            x.count()
+        except TypeError as e:
+            print(e)
+        """)
+
+    def test_reverse(self):
+        self.assertCodeExecution("""
+        x = []
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [1]
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [0, 0]
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [1, 2]
+        x.reverse()
+        print(x)
+        """)
+
+        self.assertCodeExecution("""
+        x = [1, 2, 3]
+        try:
+            x.reverse(0)
+        except TypeError as e:
+            print(e)
         """)
 
 

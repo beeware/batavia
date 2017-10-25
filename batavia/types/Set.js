@@ -1,6 +1,7 @@
 /* eslint-disable no-extend-native */
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
@@ -34,6 +35,10 @@ Set.prototype.toString = function() {
  * Type conversions
  **************************************************/
 
+Set.prototype.__len__ = function() {
+    return this.data.size
+}
+
 Set.prototype.__bool__ = function() {
     return this.data.__bool__()
 }
@@ -65,7 +70,15 @@ Set.prototype.__lt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: set() < ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: set() < ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<' not supported between instances of 'set' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 Set.prototype.__le__ = function(other) {
@@ -74,7 +87,15 @@ Set.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: set() <= ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: set() <= ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'<=' not supported between instances of 'set' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 Set.prototype.__eq__ = function(other) {
@@ -106,7 +127,15 @@ Set.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: set() > ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: set() > ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'>' not supported between instances of 'set' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 Set.prototype.__ge__ = function(other) {
@@ -115,7 +144,15 @@ Set.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    throw new exceptions.TypeError.$pyclass('unorderable types: set() >= ' + type_name(other) + '()')
+    if (version.earlier('3.6')) {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: set() >= ' + type_name(other) + '()'
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            "'>=' not supported between instances of 'set' and '" + type_name(other) + "'"
+        )
+    }
 }
 
 Set.prototype.__contains__ = function(other) {
@@ -125,9 +162,20 @@ Set.prototype.__contains__ = function(other) {
 /**************************************************
  * Unary operators
  **************************************************/
+Set.prototype.__pos__ = function() {
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'set'")
+}
+
+Set.prototype.__neg__ = function() {
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'set'")
+}
 
 Set.prototype.__not__ = function() {
     return this.__bool__().__not__()
+}
+
+Set.prototype.__invert__ = function() {
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'set'")
 }
 
 /**************************************************
@@ -430,7 +478,7 @@ Set.prototype.update = function(args) {
     var builtins = require('../builtins')
 
     var new_args = types.js2py(args)
-    if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Str, types.Tuple])) {
+    if (types.isinstance(new_args, [types.FrozenSet, types.List, types.Set, types.Dict, types.Str, types.Tuple])) {
         var iterobj = builtins.iter([new_args], null)
         var self = this
         callables.iter_for_each(iterobj, function(val) {

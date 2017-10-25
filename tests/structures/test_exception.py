@@ -1,3 +1,4 @@
+from unittest import expectedFailure
 from ..utils import TranspileTestCase
 
 
@@ -17,10 +18,21 @@ class ExceptionTests(TranspileTestCase):
             print('Done.')
             """)
 
-    def test_raise_class(self):
+    @expectedFailure
+    def test_custom_exception(self):
+        self.assertCodeExecution("""
+            class Ex(Exception):
+                pass
+            try:
+                raise Ex
+            except Ex as err:
+                print(type(err), err)
+        """)
+
+    def test_raise_type(self):
         self.assertCodeExecution("""
             try:
                 raise Exception
             except Exception as err:
-                print(err)
+                print(type(err), err)
         """)

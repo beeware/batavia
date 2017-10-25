@@ -4,6 +4,7 @@ import unittest
 
 
 class DictTests(TranspileTestCase):
+
     @unittest.expectedFailure
     def test_setattr(self):
         self.assertCodeExecution("""
@@ -32,11 +33,16 @@ class DictTests(TranspileTestCase):
             print(x)
             """)
 
+        subst = {
+            'str() < int()': ['int() < str()'],
+            "'str' and 'int'": ["'int' and 'str'"],
+        }
+
         # keys with the same string representation
         self.assertCodeExecution("""
             x = {1: 2, '1': 1}
             print(sorted(x.items()))
-            """, substitutions={'str() < int()': ['int() < str()']})
+        """, substitutions=subst)
 
     def test_getitem(self):
         # Simple existent key
@@ -167,6 +173,95 @@ class DictTests(TranspileTestCase):
             x = dict([('a', 1), False, ('b', 2)])
             """, run_in_function=False)
 
+    def test_pop_success(self):
+
+        self.assertCodeExecution("""
+            d = {'a': 1}
+            print(d.pop('b', 2), d)
+        """)
+
+        self.assertCodeExecution("""
+            d = {'a': 1}
+            print(d.pop('a'), d)
+        """)
+
+    def test_pop_fail(self):
+
+        self.assertCodeExecution("""
+            d = {'a': 1}
+            d.pop('b')
+        """)
+
+        self.assertCodeExecution("""
+            d = {}
+            d.pop(1, 2, 3)
+        """)
+
+    def test_popitem_success(self):
+
+        self.assertCodeExecution("""
+            d = {'c': 3}
+            print(d.popitem(), d)
+        """)
+
+        self.assertCodeExecution("""
+            d = {'a': 1, 'b': 2, 'c': 3, 'd': 4}
+            l = [d.popitem(), d.popitem(), d.popitem(), d.popitem()]
+            l.sort()
+            print(d, l)
+        """)
+
+    def test_popitem_fail(self):
+
+        self.assertCodeExecution("""
+            d = {}
+            d.popitem(1)
+        """)
+
+        self.assertCodeExecution("""
+            d = {}
+            d.popitem()
+        """)
+
+    def test_setdefault_success(self):
+
+        self.assertCodeExecution("""
+            d = {}
+            print(d.setdefault('a', 1), d)
+        """)
+
+        self.assertCodeExecution("""
+            d = {'x': 24}
+            print(d.setdefault('a'), d == {'x': 24, 'a': None})
+        """)
+
+    def test_setdefault_fail(self):
+
+        self.assertCodeExecution("""
+            d = {}
+            d.setdefault()
+        """)
+
+    def test_fromkeys_success(self):
+
+        self.assertCodeExecution("""
+            d = {}
+            print(d.fromkeys(['a', 'a'], 1))
+        """)
+
+        self.assertCodeExecution("""
+            d = {}
+            print(d.fromkeys(['a', 'b', 'c'], 3) == {'a': 3, 'b': 3, 'c': 3})
+        """)
+
+    def test_fromkeys_fail(self):
+
+        self.assertCodeExecution("""
+            d = {}
+            print(d.fromkeys([], None, None))
+        """)
+
+
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
 
@@ -175,8 +270,6 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
 
     not_implemented = [
-        'test_multiply_class',
-
         'test_subscr_class',
         'test_subscr_NotImplemented'
     ]

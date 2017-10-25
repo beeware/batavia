@@ -3,12 +3,13 @@ import re
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 from .. utils import SAMPLE_SUBSTITUTIONS
 
+
 class MinTests(TranspileTestCase):
     pass
 
 
 class BuiltinMinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["min"]
+    function = "min"
     substitutions = SAMPLE_SUBSTITUTIONS.copy()
     substitutions.update({
         # Set/Frozenset ordering can be different in cPython and Batavia

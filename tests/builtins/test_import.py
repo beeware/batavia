@@ -6,7 +6,7 @@ class ImportTests(TranspileTestCase):
 
 
 class BuiltinImportFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["__import__"]
+    function = "__import__"
 
     not_implemented = [
         'test_noargs',

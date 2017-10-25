@@ -2,22 +2,20 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class LenTests(TranspileTestCase):
-    pass
+    def test_len_class(self):
+        self.assertCodeExecution("""
+            class Foo(object):
+                def __len__(self):
+                    return 42
+
+            f = Foo()
+            print(len(f))
+        """)
 
 
 class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["len"]
+    function = "len"
 
     not_implemented = [
-        'test_bool',
-        'test_bytes',
         'test_bytearray',
-        'test_class',
-        'test_complex',
-        'test_dict',
-        'test_frozenset',
-        'test_None',
-        'test_NotImplemented',
-        'test_set',
-        'test_slice',
     ]

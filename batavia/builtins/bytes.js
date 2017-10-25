@@ -3,6 +3,7 @@ var Buffer = require('buffer').Buffer
 var exceptions = require('../core').exceptions
 var callables = require('../core').callables
 var type_name = require('../core').type_name
+var version = require('../core').version
 var types = require('../types')
 var iter = require('./iter')
 
@@ -26,7 +27,15 @@ function bytes(args, kwargs) {
     } else if (args.length === 1) {
         var arg = args[0]
         if (arg === null) {
-            throw new exceptions.TypeError.$pyclass("'NoneType' object is not iterable")
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    "'NoneType' object is not iterable"
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "cannot convert 'NoneType' object to bytes"
+                )
+            }
         } else if (types.isinstance(arg, types.Int)) {
             // bytes(int) -> bytes array of size given by the parameter initialized with null bytes
             // Batavia ints are BigNumbers, so we need to unpack the value from the BigNumber Array.
@@ -98,9 +107,15 @@ function bytes(args, kwargs) {
             return new types.Bytes(Buffer.from(buffer_args))
         } else {
             // the argument is not one of the special cases, and not an iterable, so...
-            throw new exceptions.TypeError.$pyclass(
-            //    "'" + type_name(val) + "' object is not iterable");
-            "'" + type_name(arg) + "' object is not iterable")
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    "'" + type_name(arg) + "' object is not iterable"
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "cannot convert '" + type_name(arg) + "' object to bytes"
+                )
+            }
         }
     } else if (args.length >= 2 && args.length <= 3) {
         //    bytes(string, encoding[, errors]) -> bytes

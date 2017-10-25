@@ -6,7 +6,7 @@ class FormatTests(TranspileTestCase):
 
 
 class BuiltinFormatFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["format"]
+    function = "format"
 
     not_implemented = [
         'test_noargs',

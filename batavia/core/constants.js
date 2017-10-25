@@ -13,7 +13,8 @@ var constants = {
     'BATAVIA_MAGIC_34': String.fromCharCode(238, 12, 13, 10),
     'BATAVIA_MAGIC_35a0': String.fromCharCode(248, 12, 13, 10),
     'BATAVIA_MAGIC_35': String.fromCharCode(22, 13, 13, 10),
-    'BATAVIA_MAGIC_353': String.fromCharCode(23, 13, 13, 10)
+    'BATAVIA_MAGIC_353': String.fromCharCode(23, 13, 13, 10),
+    'BATAVIA_MAGIC_36': String.fromCharCode(51, 13, 13, 10)
 }
 
 module.exports = constants

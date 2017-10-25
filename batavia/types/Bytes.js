@@ -1,6 +1,7 @@
 var Buffer = require('buffer').Buffer
 
 var constants = require('../core').constants
+var version = require('../core').version
 var PyObject = require('../core').Object
 var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
@@ -89,7 +90,16 @@ Bytes.prototype.__lt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val < other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() < ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() < ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 }
 
@@ -99,7 +109,16 @@ Bytes.prototype.__le__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val <= other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() <= ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() <= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 }
 
@@ -127,7 +146,16 @@ Bytes.prototype.__gt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val > other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() > ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() > ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 }
 
@@ -137,7 +165,16 @@ Bytes.prototype.__ge__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val >= other.val
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: bytes() >= ' + type_name(other) + '()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: bytes() >= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'bytes' and '" +
+                type_name(other) + "'"
+            )
+        }
     }
 }
 
@@ -168,19 +205,19 @@ Bytes.prototype.__contains__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__pos__ = function() {
-    return new Bytes(+this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary +: 'bytes'")
 }
 
 Bytes.prototype.__neg__ = function() {
-    return new Bytes(-this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary -: 'bytes'")
 }
 
 Bytes.prototype.__not__ = function() {
-    return new Bytes(!this.valueOf())
+    return this.val.length === 0
 }
 
 Bytes.prototype.__invert__ = function() {
-    return new Bytes(~this.valueOf())
+    throw new exceptions.TypeError.$pyclass("bad operand type for unary ~: 'bytes'")
 }
 
 /**************************************************
@@ -196,7 +233,7 @@ Bytes.prototype.__div__ = function(other) {
 }
 
 Bytes.prototype.__floordiv__ = function(other) {
-    let types = require('../types')
+    var types = require('../types')
 
     if (types.isinstance(other, [types.Complex])) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
@@ -260,7 +297,27 @@ Bytes.prototype.__add__ = function(other) {
         return new Bytes(byteBuffer)
     } else if (types.isinstance(other, [types.Bytearray])) {
         throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
-    } else {
+    } else if (types.isinstance(other, [
+        types.Bool,
+        types.Dict,
+        types.Int,
+        types.Float,
+        types.List,
+        types.NoneType,
+        types.Set,
+        types.Str,
+        types.Tuple ])) {
+        // does not concat with all these
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                "can't concat bytes to " + type_name(other)
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "can't concat " + type_name(other) + ' to bytes'
+            )
+        }
+    } else {        
         throw new exceptions.TypeError.$pyclass("can't concat bytes to " + type_name(other))
     }
 }
@@ -271,9 +328,14 @@ Bytes.prototype.__sub__ = function(other) {
 
 Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
-    var builtins = require('../builtins')
 
-    return new types.Int(this.val[builtins.int(other).valueOf()])
+    if (types.isinstance(other, types.Slice)) {
+        throw new exceptions.NotImplementedError.$pyclass('Bytes.__getitem__ with slice has not been implemented')
+    }
+    if (!types.isinstance(other, types.Int)) {
+        throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
+    }
+    return new types.Int(this.val[other.int32()])
 }
 
 Bytes.prototype.__lshift__ = function(other) {
@@ -301,7 +363,13 @@ Bytes.prototype.__or__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ifloordiv__ has not been implemented')
+    var types = require('../types')
+
+    if (types.isinstance(other, [types.Complex])) {
+        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
+    }
 }
 
 Bytes.prototype.__itruediv__ = function(other) {
@@ -337,7 +405,7 @@ Bytes.prototype.__irshift__ = function(other) {
 }
 
 Bytes.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__iand__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__ixor__ = function(other) {

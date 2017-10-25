@@ -14,10 +14,9 @@ class ReprTests(TranspileTestCase):
 
 
 class BuiltinReprFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["repr"]
+    function = "repr"
 
     not_implemented = [
         'test_noargs',
         'test_class',
-        'test_NotImplemented',
     ]

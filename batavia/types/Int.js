@@ -2,6 +2,7 @@ var BigNumber = require('bignumber.js')
 
 var PyObject = require('../core').Object
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
@@ -49,8 +50,8 @@ Int.prototype.valueOf = function() {
     return this.val.valueOf()
 }
 
-Int.prototype.toString = function() {
-    return this.__str__()
+Int.prototype.toString = function(base = 10) {
+    return this.__str__(base)
 }
 
 /**************************************************
@@ -65,8 +66,8 @@ Int.prototype.__repr__ = function() {
     return this.__str__()
 }
 
-Int.prototype.__str__ = function() {
-    return this.val.toFixed(0)
+Int.prototype.__str__ = function(base = 10) {
+    return this.val.round().toString(base)
 }
 
 var can_float = function(num) {
@@ -105,10 +106,27 @@ Int.prototype.__lt__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.lt(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() < ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() < ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<' not supported between instances of 'int' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() < NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: int() < NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<' not supported between instances of 'int' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -127,10 +145,27 @@ Int.prototype.__le__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.lte(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() <= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() <= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'<=' not supported between instances of 'int' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() <= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: int() <= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'<=' not supported between instances of 'int' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -169,10 +204,27 @@ Int.prototype.__gt__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.gt(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() > ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() > ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>' not supported between instances of 'int' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() > NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: int() > NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>' not supported between instances of 'int' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -191,10 +243,27 @@ Int.prototype.__ge__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.gte(other.valueOf())
         } else {
-            throw new exceptions.TypeError.$pyclass('unorderable types: int() >= ' + type_name(other) + '()')
+            if (version.earlier('3.6')) {
+                throw new exceptions.TypeError.$pyclass(
+                    'unorderable types: int() >= ' + type_name(other) + '()'
+                )
+            } else {
+                throw new exceptions.TypeError.$pyclass(
+                    "'>=' not supported between instances of 'int' and '" +
+                    type_name(other) + "'"
+                )
+            }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass('unorderable types: int() >= NoneType()')
+        if (version.earlier('3.6')) {
+            throw new exceptions.TypeError.$pyclass(
+                'unorderable types: int() >= NoneType()'
+            )
+        } else {
+            throw new exceptions.TypeError.$pyclass(
+                "'>=' not supported between instances of 'int' and 'NoneType'"
+            )
+        }
     }
 }
 
@@ -333,6 +402,9 @@ Int.prototype.__truediv__ = function(other) {
         } else {
             return this.__truediv__(new Int(0))
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var castToComplex = new types.Complex(this.valueOf())
+        return castToComplex.__truediv__(other.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
     }
@@ -405,6 +477,32 @@ Int.prototype.__mul__ = function(other) {
             result = result.__add__(other)
         }
         return result
+    } else if (types.isinstance(other, types.Bytes)) {
+        if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+            throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+        }
+        if ((other.__len__() <= 0) || (this.valueOf() <= 0)) {
+            return new types.Bytes('')
+        }
+        if (this.valueOf() > 4294967295) {
+            throw new exceptions.OverflowError.$pyclass('repeated bytes are too long')
+        }
+        return other.__mul__(this)
+    } else if (types.isinstance(other, types.Bytearray)) {
+        if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
+            throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+        }
+        if ((other.length <= 0) || (this.valueOf() <= 0)) {
+            return new types.Bytearray('')
+        }
+        if (this.valueOf() > 4294967295) {
+            throw new exceptions.MemoryError.$pyclass('')
+        }
+        result = new types.Bytearray('')
+        for (i = 0; i < this.valueOf(); i++) {
+            result = new types.Bytearray(result.valueOf() + other.valueOf())
+        }
+        return result
     } else if (types.isinstance(other, types.Complex)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
             throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
@@ -438,6 +536,8 @@ Int.prototype.__mod__ = function(other) {
         } else {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
     }

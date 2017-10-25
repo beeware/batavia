@@ -172,7 +172,10 @@ Bytearray.prototype.__mod__ = function(other) {
 }
 
 Bytearray.prototype.__add__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__add__ has not been implemented')
+    var types = require('../types')
+    if (types.isinstance(other, types.Bool)) {
+        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
+    }
 }
 
 Bytearray.prototype.__sub__ = function(other) {

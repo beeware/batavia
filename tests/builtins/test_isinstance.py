@@ -6,4 +6,4 @@ class IsinstanceTests(TranspileTestCase):
 
 
 class BuiltinIsinstanceFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
-    functions = ["isinstance"]
+    function = "isinstance"
