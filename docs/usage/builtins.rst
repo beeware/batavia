@@ -10,14 +10,13 @@ directory in the Batavia code. Each built-in is placed inside its own file.
 .. code-block:: javascript
 
     // Example: a function that accepts exactly one argument, and no keyword arguments
-
-    var <fn> = function(<args>, <kwargs>) {
-        // These builtins are designed to be used only inside Batavia, as such they need to ensure
+    // These builtins are designed to be used only inside Batavia, as such they need to ensure
         // they are being used in a compatible manner.
 
         // Batavia will only ever pass two arguments, args and kwargs. If more or fewer arguments
         // are passed, then Batavia is being used in an incompatible way.
         // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
+    var <fn> = function(<args>, <kwargs>) {
         if (arguments.length !== 2) {
             throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
         }
