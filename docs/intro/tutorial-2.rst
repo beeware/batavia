@@ -15,11 +15,11 @@ This runs the ``run_in_batavia.js`` script which in turn runs the Python code.
 This command will only work if you call it within the Batavia project directory
 and provide it the absolute path to the Python file to run.
 
-You can alternatively directly run the ``run_in_batavia.js`` in Node. If
-you are not in the Batavia project directory you can still use this script as
-follows:
+You can alternatively directly run the ``run_in_batavia.js`` in Node. 
+
+If you are not in the Batavia project directory you can still use this script 
+as follows:
 
 .. code-bloc:: bash
 
     node /path/to/batavia/run_in_batavia.js /path/to/python_file.py
-
