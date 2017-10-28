@@ -8,25 +8,25 @@ You'll need to have Python 3.5 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
 <http://pybee.org/contributing/how/first-time/setup/>`_.
 
-1. Setup a `pybee` folder to store everything::
+1. Setup a `pybee` folder to store everything:
 
    $ mkdir pybee
    $ cd pybee
 
-2. Get a copy of the Batavia code by running a :code:`git clone`::
+2. Get a copy of the Batavia code by running a :code:`git clone`:
 
    $ git clone https://github.com/pybee/batavia
 
 3. We'll need to create a virtual environment, and install Batavia into it.
 
- * For Linux, MacOS::
+ * For Linux, MacOS:
 
    $ python3.5 -m venv venv
    $ . venv/bin/activate
    $ cd batavia
    $ pip install -e .
 
- * For Windows::
+ * For Windows:
 
    > py -3.5 -m venv venv
    > venv\Scripts\activate
