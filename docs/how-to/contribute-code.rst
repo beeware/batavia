@@ -13,7 +13,7 @@ Setting up your development environment
 ---------------------------------------
 
 The process of setting up a development environment is very similar to
-the :doc:`/intro/index` process. The biggest difference is that
+the :doc:`/tutorial/tutorial-0` process. The biggest difference is that
 instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
