@@ -24,8 +24,13 @@ function bin(args, kwargs) {
     if (types.isinstance(obj, types.Bool)) {
         return new types.Str('0b' + obj.__int__().toString(2))
     }
-
-    return new types.Str('0b' + obj.toString(2))
+    var binaryDigits = obj.toString(2)
+    var sign = ''
+    if (binaryDigits[0] === '-') {
+        sign = '-'
+        binaryDigits = binaryDigits.slice(1)
+    }
+    return new types.Str(sign + '0b' + binaryDigits)
 }
 bin.__doc__ = 'bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   '
 

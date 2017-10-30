@@ -50,8 +50,8 @@ Int.prototype.valueOf = function() {
     return this.val.valueOf()
 }
 
-Int.prototype.toString = function() {
-    return this.__str__()
+Int.prototype.toString = function(base = 10) {
+    return this.__str__(base)
 }
 
 /**************************************************
@@ -66,8 +66,8 @@ Int.prototype.__repr__ = function() {
     return this.__str__()
 }
 
-Int.prototype.__str__ = function() {
-    return this.val.toFixed(0)
+Int.prototype.__str__ = function(base = 10) {
+    return this.val.round().toString(base)
 }
 
 var can_float = function(num) {

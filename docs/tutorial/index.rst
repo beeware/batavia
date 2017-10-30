@@ -12,3 +12,4 @@ These tutorials are step-by step guides for using Batavia.
 
    tutorial-0
    tutorial-1
+   tutorial-2

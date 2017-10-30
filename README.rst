@@ -127,12 +127,24 @@ For more detailed instructions, see the `Python In The Browser
 <http://batavia.readthedocs.io/en/latest/intro/tutorial-1.html>`_ guide.
 
 
+Running Batavia in the terminal
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to run some Python code from a file in the terminal, you can also run Batavia on Node: ::
+
+$ npm run python /path/to/python/file.py
+
+This will should run the Python file and show output on the terminal.
+
+For more details see `Running Python code using Batavia from the command line
+<http://batavia.readthedocs.io/en/latest/intro/tutorial-2.html>`_.
+
+
 Documentation
 -------------
 
 `Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
 
-* `Project Internals <http://batavia.readthedocs.io/en/latest/internals/index.html>`_
 * `Getting Started <http://batavia.readthedocs.io/en/latest/intro/index.html>`_
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_

@@ -81,8 +81,9 @@ You now have a working Batavia environment!
 Next Steps
 ----------
 
-Next, we can :doc:`setup the sandbox <tutorial-1>`, and try out
-running Python in your browser.
+Next, we can :doc:`setup the sandbox <tutorial-1>`, and try out running Python
+in your browser. Or your can try running some Python code :doc:`from the
+command line <tutorial-2>`.
 
 Troubleshooting Tips
 --------------------

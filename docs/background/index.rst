@@ -8,5 +8,7 @@ About Batavia
    :maxdepth: 1
    :glob:
 
-   community
    faq
+   community
+   releases
+   roadmap
