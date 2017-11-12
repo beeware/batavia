@@ -70,7 +70,7 @@ class SetTests(TranspileTestCase):
         """)
 
     def test__iand__(self):
-        self.assertEqual("""
+        self.assertCodeExecution("""
         a = {'a', 'b', 'c'}
         b = {'a', 'c', 'd'}
         a.__iand__(b)
