@@ -489,6 +489,10 @@ Set.prototype.update = function(args) {
     }
 }
 
+// note that union and intersection are equivalent to __ior__ and __iand__
+Set.prototype.union = Set.prototype.__ior__
+Set.prototype.intersection = Set.prototype.__iand__
+
 /**************************************************
  * Module exports
  **************************************************/

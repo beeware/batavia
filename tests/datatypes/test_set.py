@@ -62,6 +62,34 @@ class SetTests(TranspileTestCase):
             """)
 
 
+    def test__ior__(self):
+        self.assertCodeExecution("""
+        a = {'a', 'b', 'c'}
+        b = {'a', 'c', 'd'}
+        a.__ior__(b)
+        """)
+
+    def test__iand__(self):
+        self.assertEqual("""
+        a = {'a', 'b', 'c'}
+        b = {'a', 'c', 'd'}
+        a.__iand__(b)
+        """)
+
+
+    def test_union(self):
+        self.assertCodeExecution("""
+        a = {'a', 'b', 'c'}
+        b = {'a', 'c', 'd'}
+        a.union(b)        
+        """)
+
+    def test_intersection(self):
+        self.assertCodeExecution("""
+        a = {'a', 'b', 'c'}
+        b = {'a', 'c', 'd'}
+        a.intersection(b)
+        """)
 
 class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
