@@ -18,5 +18,6 @@ module.exports = {
     'time': require('./modules/time'),
     'random': require('./modules/random'),
     'webbrowser': require('./modules/webbrowser'),
-    'json': require('./modules/json')
+    'json': require('./modules/json'),
+	'io': require('./modules/io')
 }
