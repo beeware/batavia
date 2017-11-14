@@ -140,4 +140,78 @@ io.IOBase.prototype.__del__ = function() {
 //
 // }
 
+io.BufferedIOBase = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.BufferedIOBase, 'IOBase')
+
+io.FileIO = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.FileIO, 'FileIO')
+
+io.BytesIO = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.BytesIO, 'BytesIO')
+
+io.BufferedReader = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.BufferedReader, 'BufferedReader')
+
+io.BufferedWriter = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.BufferedWriter, 'BufferedWriter')
+
+io.TextIOBase = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.BufferedWriter, 'BufferedWriter')
+
+io.TextIOWrapper = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.TextIOWrapper, 'TextIOWrapper')
+
+
+io.StringIO = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.StringIO, 'StringIO')
+
+io.IncrementalNewlineDecoder = function(args, kwargs) {
+	var types = require('../types')
+
+	PyObject.call(this)
+}
+
+create_pyclass(io.IncrementalNewlineDecoder, 'IncrementalNewlineDecoder')
+
+
 module.exports = io
