@@ -60,7 +60,7 @@ Downloading and Installing
 
 2. Setup a virtualenv:
 
-(for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_).
+(for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/tutorial/tutorial-0.html>`_).
 
 
 Linux/Unix/Mac
@@ -109,7 +109,7 @@ Run the follwing command in the terminal ::
 $ npm run build
 
 
-For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/intro/tutorial-0.html>`_
+For more detailed setup instructions, see the `Getting Started tutorial <https://batavia.readthedocs.io/en/latest/tutorial/tutorial-0.html>`_
 
 
 Running Batavia in the browser
@@ -124,7 +124,7 @@ $ ./manage.py runserver
 then open a web browser at `http://localhost:8000 <http://localhost:8000>`_
 
 For more detailed instructions, see the `Python In The Browser
-<http://batavia.readthedocs.io/en/latest/intro/tutorial-1.html>`_ guide.
+<http://batavia.readthedocs.io/en/latest/tutorial/tutorial-1.html>`_ guide.
 
 
 Running Batavia in the terminal
@@ -137,7 +137,7 @@ $ npm run python /path/to/python/file.py
 This will should run the Python file and show output on the terminal.
 
 For more details see `Running Python code using Batavia from the command line
-<http://batavia.readthedocs.io/en/latest/intro/tutorial-2.html>`_.
+<http://batavia.readthedocs.io/en/latest/tutorial/tutorial-2.html>`_.
 
 
 Documentation
@@ -145,9 +145,9 @@ Documentation
 
 `Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
 
-* `Getting Started <http://batavia.readthedocs.io/en/latest/intro/index.html>`_
-* `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/intro/faq.html#why-batavia>`_
-* `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/intro/faq.html>`_
+* `Getting Started <http://batavia.readthedocs.io/en/latest/tutorial/index.html>`_
+* `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/background/faq.html#why-batavia>`_
+* `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/background/faq.html>`_
 
 
 Contributing
