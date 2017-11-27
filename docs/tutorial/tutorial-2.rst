@@ -19,7 +19,7 @@ You can alternatively directly run the ``run_in_batavia.js`` in Node. If
 you are not in the Batavia project directory you can still use this script as
 follows:
 
-.. code-bloc:: bash
+.. code-block:: bash
 
     node /path/to/batavia/run_in_batavia.js /path/to/python_file.py
 
