@@ -14,7 +14,15 @@ var utils = require('./utils')
 
 function Int(val) {
     PyObject.call(this)
-    this.val = new BigNumber(val)
+    if (typeof val === 'boolean') {
+        if (this.valueOf()) {
+            this.val = new BigNumber(1)
+        } else {
+            this.val = new BigNumber(0)
+        }
+    } else {
+        this.val = new BigNumber(val)
+    }
 }
 
 create_pyclass(Int, 'int')

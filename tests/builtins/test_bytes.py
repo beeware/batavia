@@ -20,7 +20,3 @@ class BuiltinBytesFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
             re.compile(r"'.*' object cannot be interpreted as an integer"),
         ]
     })
-
-    not_implemented = [
-        'test_bytearray',
-    ]

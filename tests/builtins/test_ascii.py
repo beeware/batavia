@@ -13,7 +13,3 @@ class AsciiTests(TranspileTestCase):
 
 class BuiltinAsciiFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "ascii"
-
-    not_implemented = [
-        'test_class',
-    ]

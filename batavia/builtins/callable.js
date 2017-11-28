@@ -11,7 +11,7 @@ function callable(args, kwargs) {
     if (!args || args.length !== 1) {
         throw new exceptions.TypeError.$pyclass('callable() takes exactly one argument (' + args.length + ' given)')
     }
-    if ((args[0] instanceof Function) || (args[0] instanceof types.Function)) {
+    if ((args[0] instanceof Function) || (args[0] instanceof types.Function) || (args[0] instanceof types.Type)) {
         return new types.Bool(true)
     } else {
         return new types.Bool(false)

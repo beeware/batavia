@@ -10,7 +10,3 @@ class StrTests(TranspileTestCase):
 
 class BuiltinStrFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "str"
-
-    not_implemented = [
-        'test_class',
-    ]

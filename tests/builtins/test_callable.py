@@ -7,7 +7,3 @@ class CallableTests(TranspileTestCase):
 
 class BuiltinCallableFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "callable"
-
-    not_implemented = [
-        'test_class',
-    ]

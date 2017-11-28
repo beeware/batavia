@@ -73,10 +73,7 @@ function bytes(args, kwargs) {
             // let's make that a late-stage TODO)
         } else if (types.isinstance(arg, types.Bytearray)) {
             // byte(bytes_or_buffer) -> mutable copy of bytes_or_buffer
-            // but bytearrray is still not implemented, so...
-            throw new exceptions.NotImplementedError.$pyclass(
-                'Not implemented'
-            )
+            return new types.Bytes(Buffer.from(arg.val.val))
         } else if (types.isinstance(arg, types.Str)) {
             throw new exceptions.TypeError.$pyclass('string argument without an encoding')
         // is the argument iterable and not a Str, Bytes, Bytearray (dealt with above)?

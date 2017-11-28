@@ -35,6 +35,9 @@ Type.prototype.toString = function() {
 Type.prototype.__repr__ = function() {
     // True primitive types won't have __bases__ defined.
     if (this.__bases__) {
+        if (this.dict) {
+            return "<class '__main__." + this.__name__ + "'>"
+        }
         return "<class '" + this.__name__ + "'>"
     } else {
         return this.__name__
