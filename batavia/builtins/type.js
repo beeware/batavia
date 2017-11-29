@@ -20,7 +20,7 @@ var type = function(args, kwargs) {
         }
     } else {
         return (function(name, bases, dict) {
-            var new_type = new types.Type(args[0], args[1], args[2])
+            var new_type = new types.Type(args[0], Array.from(args[1]), args[2])
 
             function NewType() {
                 types.Object.call(this)

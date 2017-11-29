@@ -1363,14 +1363,8 @@ class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinaryStrOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
-    not_implemented = [
-        'test_modulo_class',
-    ]
-
 
 class InplaceStrOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'str'
 
-    not_implemented = [
-        'test_modulo_class',
-    ]
+
