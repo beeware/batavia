@@ -5,7 +5,7 @@ import tempfile
 
 from django.conf.urls import url
 from django.shortcuts import render
-from test import pystone
+#from test import pystone
 
 
 def bytecode(sourcefile):
@@ -34,7 +34,7 @@ def home(request):
         'modules': {
             'sample': bytecode('sample.py'),
             'other': bytecode('other.py'),
-            'pystone': bytecode(pystone.__file__),
+            'pystone': bytecode('pystone.py'),
             'submodule': {
                 'init': bytecode('submodule/__init__.py'),
                 'modulea': bytecode('submodule/modulea.py'),
