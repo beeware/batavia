@@ -34,11 +34,11 @@
     <script src="/static/batavia.js"></script>
 
     <!-- The following <script> tag contains a Base64 encoded PYC file.
-         The file encoded is the entire test.pystone module. The naming
+         The file encoded is the entire pystone module. The naming
          of the ID is significant - it's a naming convention that
          allows the Python `import` statement to find other modules. -->
     <script 
-        id="batavia-test.pystone" 
+        id="batavia-pystone" 
         type="application/python-bytecode"
         data-filename="{{ modules.pystone.filename }}">
 {{ modules.pystone.compiled }}
@@ -176,7 +176,7 @@ function sample() {
 
 function pystone(loops) {
     console.log('Benchmarking...');
-    window.vm.run('test.pystone', [loops]);
+    window.vm.run('pystone', [loops]);
     console.log('done.');
 }
     </script>
