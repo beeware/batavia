@@ -75,6 +75,10 @@ Str.prototype.__setattr__ = function(attr, value) {
     }
 }
 
+Str.prototype.__delattr__ = function(attr) {
+    throw new exceptions.AttributeError.$pyclass("'str' object has no attribute '" + attr + "'")
+}
+
 /**************************************************
  * Comparison operators
  **************************************************/

@@ -445,6 +445,10 @@ List.prototype.__sub__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'list' and '" + type_name(other) + "'")
 }
 
+List.prototype.__delattr__ = function(attr) {
+    throw new exceptions.AttributeError.$pyclass("'list' object has no attribute '" + attr + "'")
+}
+
 List.prototype.__getitem__ = function(index) {
     var types = require('../types')
 

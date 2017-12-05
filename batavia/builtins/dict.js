@@ -9,11 +9,14 @@ function dict(args, kwargs) {
     if (args.length > 1) {
         throw new exceptions.TypeError.$pyclass('dict expected at most 1 arguments, got ' + args.length)
     }
+    if (types.isinstance(args[0], [types.Str, types.Bytes, types.FrozenSet, types.Range]) && new types.Int(args[0].__len__()).val === 0) {
+        return new types.Dict()
+    }
     if (types.isinstance(args[0], [types.Int, types.Bool])) {
         throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
     }
-    if (types.isinstance(args[0], types.Str)) {
-        throw new exceptions.ValueError.$pyclass('dictionary update sequence element #0 has length 1; 2 is required')
+    if (types.isinstance(args[0], types.Bytearray) || types.isinstance(args[0], [types.Bytes, types.Range, types.FrozenSet]) && new types.Int(args[0].__len__()).val > 0 || types.isinstance(args[0], types.Set) && args[0].data.size % 2 !== 0) {
+        throw new exceptions.TypeError.$pyclass('cannot convert dictionary update sequence element #0 to a sequence')
     }
     // if single bool case
 
@@ -32,7 +35,7 @@ function dict(args, kwargs) {
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number or bool in an iterable throws different error
-                if (types.isinstance(args[0][i], [types.Bool, types.Int])) {
+                if (types.isinstance(args[0][i], [types.Bool, types.Int, types.Byte])) {
                     throw new exceptions.TypeError.$pyclass('cannot convert dictionary update sequence element #' + i + ' to a sequence')
                 } else {
                     throw new exceptions.ValueError.$pyclass('dictionary update sequence element #' + i + ' has length ' + args[0][i].length + '; 2 is required')
