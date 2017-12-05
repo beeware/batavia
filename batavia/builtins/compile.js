@@ -2,10 +2,10 @@ var exceptions = require('../core').exceptions
 
 function compile(args, kwargs) {
     var _compile = require('../modules/_compile/_compile')
-    
+
     if (args.length < 3) {
         var argument_names = ['source', 'filename', 'mode']
-        throw new exceptions.TypeError.$pyclass("Required argument '" + argument_names[args.length] + "' (pos " + (args.length + 1) + ") not found")
+        throw new exceptions.TypeError.$pyclass('Required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ') not found')
     }
 
     var source = args[0]
@@ -18,7 +18,6 @@ function compile(args, kwargs) {
         _compile.Py_eval_input,
         _compile.Py_single_input
     ]
-    
 
     var compile_mode
     if (mode === 'exec') {

@@ -119,14 +119,14 @@ Type.prototype.__setattr__ = function(name, value) {
 Type.prototype.__delattr__ = function(name) {
     var exceptions = require('../exceptions')
     var native = require('../native')
-    
+
     if (this.dict) {
         throw new exceptions.AttributeError.$pyclass(name)
     }
-    
+
     if (['int', 'str'].indexOf(this.__name__) > -1) {
         throw new exceptions.TypeError.$pyclass("can't set attributes of built-in/extension type '" + this.__name__ + "'")
-    } 
+    }
 
     var attr = native.getattr_raw(this.$pyclass.prototype, name)
     if (attr === undefined) {
