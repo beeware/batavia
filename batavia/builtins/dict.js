@@ -15,8 +15,9 @@ function dict(args, kwargs) {
     if (types.isinstance(args[0], types.Bytearray) || (types.isinstance(args[0], types.Bytes) && args[0].val.length > 0) || (types.isinstance(args[0], types.Range) && args[0].length > 0) || (types.isinstance(args[0], types.FrozenSet) && args[0].data.size > 0)) {
         throw new exceptions.TypeError.$pyclass('cannot convert dictionary update sequence element #0 to a sequence')
     }
+    var i
     if (types.isinstance(args[0], types.Set)) {
-        for (var i = 0; i < args[0].data.keys().length; i++) {
+        for (i = 0; i < args[0].data.keys().length; i++) {
             var current_item = args[0].data.keys()[i]
             if (!types.isinstance(current_item, types.Tuple) || current_item.length !== 2) {
                 throw new exceptions.TypeError.$pyclass('cannot convert dictionary update sequence element #0 to a sequence')
@@ -27,7 +28,6 @@ function dict(args, kwargs) {
 
     // if multiple bool case
 
-    var i
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {
