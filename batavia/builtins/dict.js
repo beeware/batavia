@@ -12,14 +12,22 @@ function dict(args, kwargs) {
     if (types.isinstance(args[0], [types.Int, types.Bool])) {
         throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
     }
-    if (types.isinstance(args[0], types.Str)) {
-        throw new exceptions.ValueError.$pyclass('dictionary update sequence element #0 has length 1; 2 is required')
+    if (types.isinstance(args[0], types.Bytearray) || (types.isinstance(args[0], types.Bytes) && args[0].val.length > 0) || (types.isinstance(args[0], types.Range) && args[0].length > 0) || (types.isinstance(args[0], types.FrozenSet) && args[0].data.size > 0)) {
+        throw new exceptions.TypeError.$pyclass('cannot convert dictionary update sequence element #0 to a sequence')
+    }
+    var i
+    if (types.isinstance(args[0], types.Set)) {
+        for (i = 0; i < args[0].data.keys().length; i++) {
+            var current_item = args[0].data.keys()[i]
+            if (!types.isinstance(current_item, types.Tuple) || current_item.length !== 2) {
+                throw new exceptions.TypeError.$pyclass('cannot convert dictionary update sequence element #0 to a sequence')
+            }
+        }
     }
     // if single bool case
 
     // if multiple bool case
 
-    var i
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {

@@ -3,6 +3,11 @@ var exceptions = require('../core').exceptions
 function compile(args, kwargs) {
     var _compile = require('../modules/_compile/_compile')
 
+    if (args.length < 3) {
+        var argument_names = ['source', 'filename', 'mode']
+        throw new exceptions.TypeError.$pyclass('Required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ') not found')
+    }
+
     var source = args[0]
     var filename = args[1]
     var mode = args[2]

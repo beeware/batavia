@@ -338,6 +338,10 @@ Tuple.prototype.__sub__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'tuple' and '" + type_name(other) + "'")
 }
 
+Tuple.prototype.__delattr__ = function(attr) {
+    throw new exceptions.AttributeError.$pyclass("'tuple' object has no attribute '" + attr + "'")
+}
+
 Tuple.prototype.__getitem__ = function(index) {
     var types = require('../types')
 
