@@ -1234,9 +1234,9 @@ class BuiltinFunctionTestCase(NotImplementedToExpectedFailure):
                         print('>>> %(format)s%(operation)s')
                         f = %(f)s
                         x = %(x)s
-                        print('|||', %(format)s%(operation)s)
+                        print(%(format)s%(operation)s)
                     except Exception as e:
-                        print('///', type(e), ':', e)
+                        print(type(e), ':', e)
                     print()
                     """ % {
                         'f': function,
