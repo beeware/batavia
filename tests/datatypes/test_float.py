@@ -88,8 +88,6 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         # these work, but print incorrectly
 
-        'test_floor_divide_int',
-
         'test_true_divide_int',
 
 
