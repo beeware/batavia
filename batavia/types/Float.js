@@ -316,7 +316,7 @@ Float.prototype.__floordiv__ = function(other) {
 
     if (types.isinstance(other, types.Int)) {
         if (!other.val.isZero()) {
-            return new Float(Math.floor(this.valueOf() / other.valueOf()))
+            return new Float(Math.floor(this.valueOf() / other.__float__().valueOf()))
         } else {
             throw new exceptions.ZeroDivisionError.$pyclass('float divmod()')
         }
