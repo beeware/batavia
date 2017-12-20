@@ -41,8 +41,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
         # these work, but print incorrectly
 
-        'test_floor_divide_int',
-
         'test_true_divide_int',
 
 
@@ -89,8 +87,6 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
     not_implemented = [
 
         # these work, but print incorrectly
-
-        'test_floor_divide_int',
 
         'test_true_divide_int',
 
