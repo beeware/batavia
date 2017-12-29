@@ -128,6 +128,9 @@ PyConsole.prototype.write = function(buffer) {
     var text = document.createTextNode(buffer);
     this.element.appendChild(text);
 
+    // Console scrollbar stays bottom.
+    this.element.scrollTop = this.element.scrollHeight;
+
     // Also echo to the console.
     console.log(buffer)
 }
