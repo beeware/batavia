@@ -56,7 +56,7 @@ def parse_args():
         enabled_modules = args.modules
     else:
         native_modules = []
-        native_path = os.path.join(os.path.dirname(__file__), 'batavia', 'modules')
+        native_path = os.path.join(os.path.dirname(__file__), 'javascript', 'modules')
         for name in os.listdir(native_path):
             module_name, ext = os.path.splitext(name)
             if ext == '.js':
@@ -84,7 +84,7 @@ def convert_to_pyc(stdlibPath, module_path):
         finally:
             os.unlink(fp.name)
         with open(stdlibPath, 'w') as fout:
-            fout.write("module.exports = '" + base64.b64encode(pyc).decode('utf8') + "'\n")
+            fout.write(base64.b64encode(pyc).decode('utf8'))
     else:
         if not os.path.exists(stdlibPath):
             os.mkdir(stdlibPath)
@@ -105,20 +105,9 @@ def compile_stdlib(ouroboros, enabled_modules):
             exit("Could not find file or directory for module " + module)
         else:
             if fbool:
-                convert_to_pyc(os.path.join('batavia', 'stdlib', module + '.js'), module_fname)
+                convert_to_pyc(os.path.join('javascript', 'stdlib', module + '.pyc.b64'), module_fname)
             else:
-                convert_to_pyc(os.path.join('batavia', 'stdlib', module), module_dirname)
-
-    outfile = os.path.join('batavia', 'stdlib.js')
-    print("Compiling stdlib index %s" % outfile)
-    with open(outfile, 'w') as fout:
-        fout.write("module.exports = {\n    ")
-        module_list = [
-            "'" + module + "': require('./stdlib/" + module + "')"
-            for module in enabled_modules
-        ]
-        fout.write(',\n    '.join(module_list))
-        fout.write("\n}\n")
+                convert_to_pyc(os.path.join('javascript', 'stdlib', module), module_dirname)
 
 
 def main():

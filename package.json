@@ -1,58 +1,42 @@
 {
-  "name": "@pybee/batavia",
-  "version": "3.4.0-dev.19",
+  "name": "batavia",
   "description": "A Javascript implementation of the Python virtual machine.",
-  "main": "batavia/batavia.js",
-  "directories": {
-    "doc": "docs"
-  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "python compile_stdlib.py",
-    "prepublishOnly": "pandoc --from=rst --to=markdown_github README.rst -o README.md",
-    "build": "node_modules/.bin/webpack --progress",
-    "build:noCache": "DISABLE_WEBPACK_CACHE=true node_modules/.bin/webpack --progress",
-    "watch": "node_modules/.bin/webpack --progress --watch",
-    "serve": "node_modules/.bin/webpack-dev-server --inline --hot --port 3000",
-    "lint": "node_modules/.bin/eslint batavia",
+    "build": "node_modules/.bin/rollup -c",
+    "watch": "node_modules/.bin/rollup -c -w",
+    "lint": "node_modules/.bin/eslint javascript",
     "python": "./run_in_batavia.js"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/pybee/batavia.git"
   },
-  "keywords": [
-    "python"
-  ],
-  "author": "Russell Keith-Magee",
   "license": "BSD-3-Clause",
-  "bugs": {
-    "url": "https://github.com/pybee/batavia/issues"
-  },
-  "homepage": "http://pybee.org/batavia",
   "devDependencies": {
-    "@pybee/ouroboros": "~3.4.1-dev.5",
-    "babel-core": "6.18.2",
-    "babel-loader": "6.2.8",
-    "babel-preset-env": "^1.4.0",
-    "cache-loader": "^1.0.3",
-    "eslint": "3.9.1",
-    "eslint-config-standard": "6.2.1",
-    "eslint-loader": "1.6.1",
-    "eslint-plugin-import": "2.1.0",
-    "eslint-plugin-jsx-a11y": "2.2.3",
-    "eslint-plugin-promise": "3.4.2",
-    "eslint-plugin-react": "6.6.0",
-    "eslint-plugin-standard": "2.0.1",
-    "webpack-dev-server": "2.3.0"
+    "@pybee/ouroboros": "^3.4.1-dev3",
+    "babel-core": "^6.26.0",
+    "babel-plugin-external-helpers": "^6.22.0",
+    "babel-preset-env": "^1.6.1",
+    "eslint": "^4.14.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "rollup": "^0.53.2",
+    "rollup-plugin-babel": "^3.0.3",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-json": "^2.3.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^2.0.1"
   },
-  "dev": "webpack-dev-server",
   "dependencies": {
-    "base64-js": "1.2.0",
-    "bignumber.js": "2.4.0",
-    "buffer": "5.0.0",
-    "moment": "2.17.0",
-    "moment-timezone": "0.5.10",
-    "webpack": "2.2.1"
+    "base64-js": "1.2.1",
+    "bignumber.js": "5.0.0",
+    "moment": "^2.20.1",
+    "moment-timezone": "^0.5.14"
   }
 }

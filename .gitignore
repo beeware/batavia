@@ -8,11 +8,9 @@ build
 local
 _build
 distribute-*
-/batavia*.js
-/batavia*.min.js
-/batavia*.map
-/batavia/stdlib.js
-/batavia/stdlib/*.js
+/javascript/stdlib.js
+/javascript/stdlib/*.js
+/batavia/static
 /tests/temp
 /tests/tmp*
 env

@@ -1,24 +1,29 @@
 import io
-import json
+import os
+import re
 from setuptools import setup, find_packages
-
 
 with io.open('README.rst', encoding='utf8') as readme:
     long_description = readme.read()
 
-with io.open('package.json', encoding='utf8') as package:
-    data = json.load(package)
+with io.open('batavia/__init__.py', encoding='utf8') as version_file:
+    version_match = re.search(r"^__version__ = ['\"]([^'\"]*)['\"]", version_file.read(), re.M)
+    if version_match:
+        version = version_match.group(1)
+    else:
+        raise RuntimeError("Unable to find version string.")
 
 
 setup(
     name='batavia',
-    version=data['version'].replace('dev.', 'dev'),
-    description=data['description'],
+    version=version,
+    description='A Javascript implementation of the Python virtual machine.',
     long_description=long_description,
-    author=data['author'],
+    author='Russell Keith-Magee',
     author_email='russell@keith-magee.com',
-    url=data['homepage'],
-    packages=find_packages(exclude=['docs', 'tests']),
+    url='https://pybee.org/batavia',
+    packages=find_packages(exclude=['django', 'tests']),
+    include_package_data=True,
     license='New BSD',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

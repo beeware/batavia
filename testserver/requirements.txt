@@ -1,2 +1,3 @@
-django==1.10
+batavia
+django==1.11
 pytz
