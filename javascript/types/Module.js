@@ -1,4 +1,5 @@
-import { create_pyclass } from '../core'
+import { create_pyclass } from '../core/types'
+
 import JSDict from './JSDict'
 
 /*************************************************************************

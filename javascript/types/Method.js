@@ -1,4 +1,4 @@
-import { create_pyclass } from '../core/types/types'
+import { create_pyclass } from '../core/types'
 import Function from './Function'
 
 /*************************************************************************

@@ -1,11 +1,11 @@
-import { PyObject } from '../../core/types/object'
-import { create_pyclass, type_name } from '../../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../../core/types'
 import * as callables from '../../core/callables'
 import { TypeError, ValueError } from '../../core/exceptions'
-
 import * as version from '../../core/version'
+
 import * as types from '../../types'
 import * as builtins from '../../builtins'
+
 import { validateParams } from './utils'
 
 export function JSONEncoder() {

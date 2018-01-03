@@ -1,5 +1,4 @@
-import { PyObject } from '../core/types/object'
-import { create_pyclass } from '../core/types/types'
+import { create_pyclass, PyObject } from '../core/types'
 import * as exceptions from '../core/exceptions'
 
 /**************************************************

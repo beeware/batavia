@@ -1,5 +1,5 @@
 import { TypeError, ValueError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 import * as types from '../types'
 
 export default function float(args, kwargs) {

@@ -1,5 +1,5 @@
 import { TypeError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 export function inplace_call(f, operand_str, this_obj, other) {
     // Call the method named "f" with argument "other"; if a type error is raised, throw a different type error

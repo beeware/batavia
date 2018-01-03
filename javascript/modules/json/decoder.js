@@ -1,7 +1,6 @@
 import { call_function, call_method } from '../../core/callables'
 import { Exception, ValueError } from '../../core/exceptions'
-import { PyObject } from '../../core/types/object'
-import { create_pyclass, Type } from '../../core/types/types'
+import { create_pyclass, Type, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
 import * as types from '../../types'

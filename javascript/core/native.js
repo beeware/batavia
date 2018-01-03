@@ -1,6 +1,5 @@
 import { AttributeError } from './exceptions'
-import { type_name } from './types/types'
-import { PyObject } from './types/object'
+import { type_name, PyObject } from './types'
 
 export function getattr_raw(obj, attr, attributes_only) {
     var val = obj[attr]

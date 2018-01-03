@@ -1,4 +1,4 @@
-import { set_magic } from '../constants'
+import { set_magic } from './constants'
 
 /*************************************************************************
  * A C-FILE like object

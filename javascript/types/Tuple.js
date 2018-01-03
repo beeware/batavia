@@ -1,7 +1,5 @@
 import { iter_for_each } from '../core/callables'
-import { None } from '../core/types/none'
-import { PyObject } from '../core/types/object'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
 import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
 
@@ -353,7 +351,7 @@ Tuple.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.Slice)) {
         var start, stop, step
-        if (index.start === None) {
+        if (index.start === builtins.None) {
             start = undefined
         } else if (!types.isinstance(index.start, types.Int)) {
             if (index.start.__index__ === undefined) {
@@ -365,7 +363,7 @@ Tuple.prototype.__getitem__ = function(index) {
             start = index.start.int32()
         }
 
-        if (index.stop === None) {
+        if (index.stop === builtins.None) {
             stop = undefined
         } else if (!types.isinstance(index.stop, types.Int)) {
             if (index.stop.__index__ === undefined) {
@@ -377,7 +375,7 @@ Tuple.prototype.__getitem__ = function(index) {
             stop = index.stop.int32()
         }
 
-        if (index.step === None) {
+        if (index.step === builtins.None) {
             step = 1
         } else if (!(types.isinstance(index.step, types.Int))) {
             if (index.step.__index__ === undefined) {

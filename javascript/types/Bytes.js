@@ -1,9 +1,8 @@
 import { Buffer } from 'buffer'
 
 import { TEXT_ENCODINGS } from '../core/constants'
-import { PyObject } from '../core/types/object'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 import { NotImplementedError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name } from '../core/types/types'
 import * as version from '../core/version'
 
 import * as types from '../types'

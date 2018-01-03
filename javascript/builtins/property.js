@@ -1,6 +1,6 @@
 import { TypeError } from '../core/exceptions'
-import { None } from '../core/types/none'
 
+import { None } from '../builtins'
 import * as types from '../types'
 
 export default function property(args, kwargs) {

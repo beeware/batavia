@@ -1,8 +1,8 @@
 import { call_function } from '../core/callables'
 import { AttributeError, TypeError } from '../core/exceptions'
-import { None } from '../core/types/none'
-import { PyObject } from '../core/types/object'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../core/types'
+
+import { None } from '../builtins'
 
 /*************************************************************************
  * A Python float type

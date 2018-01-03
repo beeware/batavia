@@ -1,6 +1,7 @@
 import { TypeError } from '../core/exceptions'
+
+import { None } from '../builtins'
 import * as types from '../types'
-import { None } from '../core/types/none'
 
 export default function slice(args, kwargs) {
     if (!args || args.length === 0) {

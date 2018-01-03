@@ -1,13 +1,13 @@
 /*************************************************************************
  * An implementation of NotImplementedType
  *************************************************************************/
-import { type_name, Type } from './types'
-import { NotImplementedError, TypeError } from '../exceptions'
-import { PyObject } from './object'
-import * as version from '../version'
-import * as types from '../../types'
+import { NotImplementedError, TypeError } from '../core/exceptions'
+import { type_name, Type, PyObject } from '../core/types'
+import * as version from '../core/version'
 
-export function NotImplementedType() {
+import * as types from '../types'
+
+export default function NotImplementedType() {
     PyObject.call(this)
 }
 
@@ -247,7 +247,3 @@ NotImplementedType.prototype.__ixor__ = function(other) {
 NotImplementedType.prototype.__ior__ = function(other) {
     throw new TypeError.$pyclass("unsupported operand type(s) for |=: 'NotImplementedType' and '" + type_name(other) + "'")
 }
-
-/**************************************************/
-
-export var NotImplemented = new NotImplementedType()

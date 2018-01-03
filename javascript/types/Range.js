@@ -1,10 +1,9 @@
 import * as BigNumber from 'bignumber.js'
 
 import { IndexError, TypeError, ValueError } from '../core/exceptions'
-import { PyObject } from '../core/types/object'
-import { create_pyclass, type_name } from '../core/types/types'
-import { None } from '../core/types/none'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 
+import { None } from '../builtins'
 import * as types from '../types'
 
 import * as RangeIterator from './RangeIterator'

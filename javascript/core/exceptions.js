@@ -1,6 +1,5 @@
 /* eslint-disable no-extend-native */
-import { Type } from './types/types'
-import { PyObject } from './types/object'
+import { Type, PyObject } from './types'
 
 /*****************************************************************
  * Root exception

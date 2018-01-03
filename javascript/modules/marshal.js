@@ -33,7 +33,7 @@ import * as base64js from 'base64-js'
 import * as types from '../types'
 import * as builtins from '../builtins'
 import { BataviaError, TypeError, ValueError } from '../core/exceptions'
-import PYCFile from '../core/types/PYCFile'
+import PYCFile from '../core/PYCFile'
 
 export var marshal = {
     '__doc__': '',

@@ -1,7 +1,7 @@
 import { BataviaError, StopIteration, TypeError, ValueError } from '../core/exceptions'
-import { None } from '../core/types/none'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
+import { None } from '../builtins'
 import tuple from './tuple'
 
 export default function max(args, kwargs) {

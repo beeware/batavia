@@ -1,5 +1,5 @@
 import { AttributeError, OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name } from '../core/types'
 import * as version from '../core/version'
 
 import * as types from '../types'

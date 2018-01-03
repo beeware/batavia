@@ -1,6 +1,5 @@
 /* eslint-disable no-extend-native */
-import { PyObject } from '../core/types/object'
-import { create_pyclass } from '../core/types/types'
+import { create_pyclass, PyObject } from '../core/types'
 
 import { inspect } from '../modules/inspect'
 import { dis } from '../modules/dis'

@@ -22,7 +22,7 @@ export default {
       preferBuiltins: true,
     }),
     commonjs(),
-    babel(),
-    uglify()
+    babel()
+    // uglify()
   ]
 };

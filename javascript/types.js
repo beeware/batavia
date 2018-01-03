@@ -1,8 +1,8 @@
 import { BataviaError } from './core/exceptions'
 
-import { Type } from './core'
-import { NoneType } from './core/types/none'
-import { NotImplementedType } from './core/types/notimplemented'
+import { Type, NoneType } from './core/types'
+
+import NotImplementedType from './types/NotImplementedType'
 
 import Code from './types/Code'
 import Module from './types/Module'

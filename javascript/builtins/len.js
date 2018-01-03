@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 import { TypeError } from '../core/exceptions'
 
 export default function len(args, kwargs) {

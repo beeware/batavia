@@ -1,15 +1,17 @@
 /*************************************************************************
  * Virtual Machine
  *************************************************************************/
-import * as types from './types'
-import { PyObject } from './core/types/object'
-import Block from './core/types/Block'
-import * as builtins from './builtins'
-import Frame from './core/types/Frame'
-import * as version from './core/version'
 import { BaseException, BataviaError, StopIteration } from './core/exceptions'
-import * as native from './core/native'
+import { PyObject } from './core/types'
 import * as callables from './core/callables'
+import * as native from './core/native'
+import * as version from './core/version'
+
+import Block from './core/Block'
+import Frame from './core/Frame'
+
+import * as builtins from './builtins'
+
 import { dis } from './modules/dis'
 import { marshal } from './modules/marshal'
 import { sys } from './modules/sys'

@@ -2,7 +2,7 @@ import { Buffer } from 'buffer'
 
 import { BataviaError, OverflowError, TypeError, ValueError } from '../core/exceptions'
 import * as callables from '../core/callables'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 import * as version from '../core/version'
 
 import * as types from '../types'

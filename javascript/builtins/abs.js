@@ -1,5 +1,5 @@
 import { BataviaError, TypeError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 import * as types from '../types'
 
@@ -17,9 +17,7 @@ export default function abs(args, kwargs) {
     var value = args[0]
     if (types.isinstance(value, types.Bool)) {
         return new types.Int(Math.abs(value.valueOf()))
-    } else if (types.isinstance(value, [types.Int,
-        types.Float,
-        types.Complex])) {
+    } else if (types.isinstance(value, [types.Int, types.Float, types.Complex])) {
         return value.__abs__()
     } else {
         throw new TypeError.$pyclass(

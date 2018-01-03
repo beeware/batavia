@@ -2,7 +2,6 @@
   "name": "batavia",
   "description": "A Javascript implementation of the Python virtual machine.",
   "scripts": {
-    "prepare": "python compile_stdlib.py",
     "build": "node_modules/.bin/rollup -c",
     "watch": "node_modules/.bin/rollup -c -w",
     "lint": "node_modules/.bin/eslint javascript",

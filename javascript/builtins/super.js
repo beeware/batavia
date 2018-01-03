@@ -1,5 +1,5 @@
 import { AttributeError, NotImplementedError, TypeError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 export default function make_super(frame, args) {
     // I guess we have to examine the stack to find out which class we are in?

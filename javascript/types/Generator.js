@@ -1,7 +1,6 @@
 import { call_function, call_method } from '../core/callables'
 import { AttributeError, BaseException, GeneratorExit, StopIteration, TypeError } from '../core/exceptions'
-import { PyObject } from '../core/types/object'
-import { create_pyclass } from '../core/types/types'
+import { create_pyclass, PyObject } from '../core/types'
 
 import { dis } from '../modules/dis'
 

@@ -1,6 +1,5 @@
-import { PyObject } from '../core/types/object'
-import { create_pyclass } from '../core/types/types'
 import * as exceptions from '../core/exceptions'
+import { create_pyclass, PyObject } from '../core/types'
 
 /**************************************************
  * List Iterator

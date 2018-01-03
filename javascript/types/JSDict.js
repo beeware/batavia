@@ -1,6 +1,5 @@
 import { KeyError, NotImplementedError, TypeError } from '../core/exceptions'
-import { None } from '../core/types/none'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -59,11 +58,11 @@ JSDict.prototype.__str__ = function() {
  **************************************************/
 
 JSDict.prototype.__lt__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
             types.Int, types.JSDict, types.List,
-            types.NoneType, types.Str, types.Tuple
+            types.Str, types.Tuple
         ])) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(
@@ -90,11 +89,11 @@ JSDict.prototype.__lt__ = function(other) {
 }
 
 JSDict.prototype.__le__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
             types.Int, types.JSDict, types.List,
-            types.NoneType, types.Str, types.Tuple
+            types.Str, types.Tuple
         ])) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(
@@ -129,11 +128,11 @@ JSDict.prototype.__ne__ = function(other) {
 }
 
 JSDict.prototype.__gt__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
             types.Int, types.JSDict, types.List,
-            types.NoneType, types.Set, types.Str,
+            types.Set, types.Str,
             types.Tuple
         ])) {
             if (version.earlier('3.6')) {
@@ -162,11 +161,11 @@ JSDict.prototype.__gt__ = function(other) {
 }
 
 JSDict.prototype.__ge__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, [
             types.Bool, types.Dict, types.Float,
             types.Int, types.JSDict, types.List,
-            types.NoneType, types.Str, types.Tuple
+            types.Str, types.Tuple
         ])) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(

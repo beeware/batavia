@@ -99,12 +99,10 @@ import vars from './builtins/vars'
 import zip from './builtins/zip'
 
 // Copy in core symbols that need to be in the builtins.
-import { None } from './core/types/none'
-import { NotImplemented } from './core/types/notimplemented'
+import { PyObject, NoneType } from './core/types'
+import NotImplementedType from './types/NotImplementedType'
 import { dom } from './modules/dom'
 
-// Copy in the core types
-import { PyObject } from './core/types/object'
 
 // Copy the exceptions into the builtin namespace.
 import {
@@ -151,7 +149,13 @@ import {
     ZeroDivisionError
 } from './core/exceptions'
 
+// Instantiate some Singleton objects.
 var object = PyObject.prototype.__class__
+var None = new NoneType()
+var NotImplemented = new NotImplementedType()
+
+// Now that we have an instance of None, we can fill in the blanks where we needed it
+PyObject.prototype.__class__.__base__ = None
 
 export {
     __import__,

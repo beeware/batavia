@@ -1,6 +1,6 @@
 import { TypeError } from '../core/exceptions'
 import * as native from '../core/native'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 import * as types from '../types'
 

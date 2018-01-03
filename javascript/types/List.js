@@ -1,7 +1,6 @@
 import { iter_for_each } from '../core/callables'
 import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
-import { None } from '../core/types/none'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -93,7 +92,7 @@ List.prototype.__lt__ = function(other) {
         }
     }
 
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.List)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -150,7 +149,7 @@ List.prototype.__le__ = function(other) {
         }
     }
 
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.List)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -228,7 +227,7 @@ List.prototype.__gt__ = function(other) {
         }
     }
 
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.List)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -285,7 +284,7 @@ List.prototype.__ge__ = function(other) {
         }
     }
 
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.List)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {

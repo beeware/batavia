@@ -1,8 +1,7 @@
 /* eslint-disable no-extend-native */
 import { iter_for_each } from '../core/callables'
 import { IndexError, TypeError } from '../core/exceptions'
-import { PyObject } from '../core/types/object'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'

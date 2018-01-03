@@ -6,7 +6,7 @@ import * as BigNumber from 'bignumber.js'
 
 import { iter_for_each } from '../core/callables'
 import { BataviaError, OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 import * as builtins from '../builtins'
 import * as types from '../types'

@@ -1,6 +1,6 @@
 import { call_method } from '../core/callables'
 import { BataviaError, StopIteration, TypeError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 export default function any(args, kwargs) {
     if (args[0] === null) {

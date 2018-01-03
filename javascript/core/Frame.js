@@ -1,5 +1,4 @@
-import { PyObject } from './object'
-import { Type } from './types'
+import { Type, PyObject } from './types'
 import * as Cell from './Cell'
 
 export default function Frame(kwargs) {

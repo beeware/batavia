@@ -1,9 +1,9 @@
-import { None } from '../core/types/none'
 import { BataviaError, ImportError, SystemError } from '../core/exceptions'
 
-import { Int, Module } from '../types'
+import { None } from '../builtins'
 import * as modules from '../modules'
 import * as stdlib from '../stdlib'
+import { Int, Module } from '../types'
 
 export default function __import__(args, kwargs) {
     // console.log("IMPORT", args[0], args[1], args[4]);

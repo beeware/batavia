@@ -1,8 +1,7 @@
 /* eslint-disable no-extend-native */
-import { PyObject } from '../core/types/object'
 import { TypeError } from '../core/exceptions'
 import * as callables from '../core/callables'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
 

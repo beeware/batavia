@@ -1,7 +1,6 @@
 import { call_function, call_method } from '../core/callables'
 import { TypeError } from '../core/exceptions'
-import { PyObject } from '../core/types/object'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
 

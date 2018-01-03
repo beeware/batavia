@@ -1,8 +1,6 @@
 import { iter_for_each } from '../core/callables'
 import { KeyError, TypeError, ValueError } from '../core/exceptions'
-import { None } from '../core/types/none'
-import { PyObject } from '../core/types/object'
-import { create_pyclass, type_name } from '../core/types/types'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -155,7 +153,7 @@ Dict.prototype.__str__ = function() {
  **************************************************/
 
 Dict.prototype.__lt__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isbataviainstance(other)) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(
@@ -183,7 +181,7 @@ Dict.prototype.__lt__ = function(other) {
 }
 
 Dict.prototype.__le__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isbataviainstance(other)) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(
@@ -241,7 +239,7 @@ Dict.prototype.__ne__ = function(other) {
 }
 
 Dict.prototype.__gt__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isbataviainstance(other)) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(
@@ -270,7 +268,7 @@ Dict.prototype.__gt__ = function(other) {
 }
 
 Dict.prototype.__ge__ = function(other) {
-    if (other !== None) {
+    if (other !== builtins.None) {
         if (types.isbataviainstance(other)) {
             if (version.earlier('3.6')) {
                 throw new TypeError.$pyclass(

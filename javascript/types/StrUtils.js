@@ -1,7 +1,7 @@
 import * as BigNumber from 'bignumber.js'
 
 import { OverflowError, TypeError, ValueError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -1226,7 +1226,7 @@ export function _new_subsitute(str, args, kwargs) {
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
         if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
-            throw new types.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+            throw new ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
         }
 
         if (this.type === 'c' && this.sign) {

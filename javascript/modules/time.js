@@ -1,7 +1,7 @@
 import moment from 'moment-timezone'
 
 import { NotImplementedError, OSError, OverflowError, TypeError, ValueError } from '../core/exceptions'
-import { type_name } from '../core/types/types'
+import { type_name } from '../core/types'
 
 import * as types from '../types'
 
