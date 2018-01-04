@@ -19,7 +19,7 @@ ListIterator.prototype.__iter__ = function() {
 
 ListIterator.prototype.__next__ = function() {
     if (this.index >= this.data.length) {
-        throw new exceptions.StopIteration.$pyclass()
+        throw new exceptions.StopIteration()
     }
     var retval = this.data[this.index]
     this.index++

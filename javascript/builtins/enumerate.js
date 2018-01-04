@@ -4,10 +4,10 @@ import * as types from '../types'
 
 export default function enumerate(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("enumerate() doesn't accept keyword arguments")
+        throw new TypeError("enumerate() doesn't accept keyword arguments")
     }
     return new types.Enumerate(args[0])
 }

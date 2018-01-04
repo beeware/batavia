@@ -4,13 +4,13 @@ import * as types from '../types'
 
 export default function callable(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("callable() doesn't accept keyword arguments")
+        throw new TypeError("callable() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('callable() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('callable() takes exactly one argument (' + args.length + ' given)')
     }
     if ((args[0] instanceof Function) || (args[0] instanceof types.Function) || (args[0] instanceof types.Type)) {
         return new types.Bool(true)

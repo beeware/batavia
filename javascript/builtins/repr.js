@@ -2,13 +2,13 @@ import { BataviaError, TypeError } from '../core/exceptions'
 
 export default function repr(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("repr() doesn't accept keyword arguments")
+        throw new TypeError("repr() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('repr() takes exactly 1 argument (' + args.length + ' given)')
+        throw new TypeError('repr() takes exactly 1 argument (' + args.length + ' given)')
     }
 
     if (args[0] === null) {

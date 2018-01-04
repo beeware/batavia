@@ -1,4 +1,4 @@
-import * as BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 
 import { StopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
@@ -25,7 +25,7 @@ RangeIterator.prototype.__next__ = function() {
         this.index = this.index.add(this.step)
         return new types.Int(retval)
     }
-    throw new StopIteration.$pyclass()
+    throw new StopIteration()
 }
 
 RangeIterator.prototype.__str__ = function() {

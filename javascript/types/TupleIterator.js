@@ -16,7 +16,7 @@ create_pyclass(TupleIterator, 'tuple_iterator')
 TupleIterator.prototype.__next__ = function() {
     var retval = this.data[this.index]
     if (retval === undefined) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     this.index++
     return retval

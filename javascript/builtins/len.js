@@ -4,7 +4,7 @@ import { TypeError } from '../core/exceptions'
 
 export default function len(args, kwargs) {
     if (!args || args.length !== 1 || args[0] === undefined) {
-        throw new TypeError.$pyclass('len() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('len() takes exactly one argument (' + args.length + ' given)')
     }
 
     var value = args[0]
@@ -13,7 +13,7 @@ export default function len(args, kwargs) {
         return call_method(value, '__len__', [])
     }
 
-    throw new TypeError.$pyclass("object of type '" + type_name(value) + "' has no len()")
+    throw new TypeError("object of type '" + type_name(value) + "' has no len()")
 }
 
 len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.'

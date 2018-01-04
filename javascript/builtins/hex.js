@@ -2,7 +2,7 @@ import { TypeError } from '../core/exceptions'
 
 export default function hex(args, kwargs) {
     if (args.length !== 1) {
-        throw new TypeError.$pyclass('hex() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('hex() takes exactly one argument (' + args.length + ' given)')
     };
     var int = args[0].val
     return '0x' + int.toString(16)

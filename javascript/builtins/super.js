@@ -6,28 +6,28 @@ export default function make_super(frame, args) {
     // this seems suboptimal...
     // what does CPython do?
     if (args.length !== 0) {
-        throw new NotImplementedError.$pyclass('super does not support arguments yet')
+        throw new NotImplementedError('super does not support arguments yet')
     }
     if (frame.f_code.co_name !== '__init__') {
-        throw new NotImplementedError.$pyclass('super not implemented outside of __init__ yet')
+        throw new NotImplementedError('super not implemented outside of __init__ yet')
     }
     if (frame.f_code.co_argcount === 0) {
-        throw new TypeError.$pyclass('no self found in super in __init__')
+        throw new TypeError('no self found in super in __init__')
     }
     var self_name = frame.f_code.co_varnames[0]
     var self = frame.f_locals[self_name]
     if (self.__bases__.length !== 1) {
-        throw new NotImplementedError.$pyclass('super not implemented for multiple inheritance yet')
+        throw new NotImplementedError('super not implemented for multiple inheritance yet')
     }
 
     var base = self.__base__
 
     var obj = {
-        // __init__: base.$pyclass.__init__.bind(self);
+        // __init__: base.__init__.bind(self);
         __getattribute__: function(name) {
-            var attr = base.$pyclass[name]
+            var attr = base[name]
             if (attr === undefined) {
-                throw new AttributeError.$pyclass(
+                throw new AttributeError(
                     "'" + type_name(self) + "' object has no attribute '" + name + "'"
                 )
             }
@@ -50,7 +50,7 @@ export default function make_super(frame, args) {
 
 function super_(args, kwargs) {
     if (args.length > 0) {
-        throw new NotImplementedError.$pyclass("Builtin Batavia function 'super' with arguments not implemented")
+        throw new NotImplementedError("Builtin Batavia function 'super' with arguments not implemented")
     }
 
     return make_super(this.frame, args)

@@ -4,14 +4,14 @@ import * as types from '../types'
 
 export default function filter(args, kwargs) {
     if (args.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("filter() doesn't accept keyword arguments")
+        throw new TypeError("filter() doesn't accept keyword arguments")
     }
 
     if (args[1].__iter__ === undefined) {
-        throw new TypeError.$pyclass("'" + args[1].__class__.__name__ + "' object is not iterable")
+        throw new TypeError("'" + args[1].__class__.__name__ + "' object is not iterable")
     }
     return new types.Filter(args, kwargs)
 }

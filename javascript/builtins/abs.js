@@ -5,13 +5,13 @@ import * as types from '../types'
 
 export default function abs(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("abs() doesn't accept keyword arguments")
+        throw new TypeError("abs() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('abs() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('abs() takes exactly one argument (' + args.length + ' given)')
     }
 
     var value = args[0]
@@ -20,8 +20,7 @@ export default function abs(args, kwargs) {
     } else if (types.isinstance(value, [types.Int, types.Float, types.Complex])) {
         return value.__abs__()
     } else {
-        throw new TypeError.$pyclass(
-            "bad operand type for abs(): '" + type_name(value) + "'")
+        throw new TypeError("bad operand type for abs(): '" + type_name(value) + "'")
     }
 }
 

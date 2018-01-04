@@ -4,14 +4,14 @@ import * as types from '../types'
 
 export default function isinstance(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass('isinstance() takes no keyword arguments')
+        throw new TypeError('isinstance() takes no keyword arguments')
     }
 
     if (!args || args.length !== 2) {
-        throw new TypeError.$pyclass('isinstance expected 2 arguments, got ' + args.length)
+        throw new TypeError('isinstance expected 2 arguments, got ' + args.length)
     }
 
     return new types.Bool(types.isinstance(args[0], args[1]))

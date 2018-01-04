@@ -6,16 +6,16 @@ import * as types from '../types'
 
 export default function all(args, kwargs) {
     if (args[0] === null) {
-        throw new TypeError.$pyclass("'NoneType' object is not iterable")
+        throw new TypeError("'NoneType' object is not iterable")
     }
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("all() doesn't accept keyword arguments")
+        throw new TypeError("all() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('all() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('all() takes exactly one argument (' + args.length + ' given)')
     }
 
     try {
@@ -29,8 +29,8 @@ export default function all(args, kwargs) {
             }
         }
     } catch (err) {
-        if (!(err instanceof StopIteration.$pyclass)) {
-            throw new TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
+        if (!(err instanceof StopIteration)) {
+            throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
         }
     }
 

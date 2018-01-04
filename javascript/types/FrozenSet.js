@@ -6,7 +6,7 @@ import * as version from '../core/version'
 import * as builtins from '../builtins'
 import * as types from '../types'
 
-import * as SetIterator from './SetIterator'
+import SetIterator from './SetIterator'
 
 /*************************************************************************
  * A Python FrozenSet type, with an underlying Dict.
@@ -71,11 +71,11 @@ FrozenSet.prototype.__lt__ = function(other) {
     }
 
     if (version.earlier('3.6')) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'unorderable types: frozenset() < ' + type_name(other) + '()'
         )
     } else {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             "'<' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
         )
     }
@@ -86,11 +86,11 @@ FrozenSet.prototype.__le__ = function(other) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
     if (version.earlier('3.6')) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'unorderable types: frozenset() <= ' + type_name(other) + '()'
         )
     } else {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             "'<=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
         )
     }
@@ -121,11 +121,11 @@ FrozenSet.prototype.__gt__ = function(other) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
     if (version.earlier('3.6')) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'unorderable types: frozenset() > ' + type_name(other) + '()'
         )
     } else {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             "'>' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
         )
     }
@@ -136,11 +136,11 @@ FrozenSet.prototype.__ge__ = function(other) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
     if (version.earlier('3.6')) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'unorderable types: frozenset() >= ' + type_name(other) + '()'
         )
     } else {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             "'>=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
         )
     }
@@ -159,15 +159,15 @@ FrozenSet.prototype.__not__ = function() {
 }
 
 FrozenSet.prototype.__pos__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary +: 'frozenset'")
+    throw new TypeError("bad operand type for unary +: 'frozenset'")
 }
 
 FrozenSet.prototype.__neg__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary -: 'frozenset'")
+    throw new TypeError("bad operand type for unary -: 'frozenset'")
 }
 
 FrozenSet.prototype.__invert__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary ~: 'frozenset'")
+    throw new TypeError("bad operand type for unary ~: 'frozenset'")
 }
 
 /**************************************************
@@ -175,23 +175,23 @@ FrozenSet.prototype.__invert__ = function() {
  **************************************************/
 
 FrozenSet.prototype.__pow__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__div__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
 FrozenSet.prototype.__truediv__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__mul__ = function(other) {
@@ -199,22 +199,22 @@ FrozenSet.prototype.__mul__ = function(other) {
         types.Bytearray, types.Bytes, types.List,
         types.Str, types.Tuple
     ])) {
-        throw new TypeError.$pyclass("can't multiply sequence by non-int of type 'frozenset'")
+        throw new TypeError("can't multiply sequence by non-int of type 'frozenset'")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
 FrozenSet.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
 FrozenSet.prototype.__add__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__sub__ = function(other) {
@@ -228,28 +228,28 @@ FrozenSet.prototype.__sub__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    throw new TypeError.$pyclass("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__getitem__ = function(other) {
     if (types.isinstance(other, [types.Bool])) {
-        throw new TypeError.$pyclass("'frozenset' object does not support indexing")
+        throw new TypeError("'frozenset' object does not support indexing")
     } else if (types.isinstance(other, [types.Int])) {
         if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
-            throw new IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
+            throw new IndexError("cannot fit 'int' into an index-sized integer")
         } else {
-            throw new TypeError.$pyclass("'frozenset' object does not support indexing")
+            throw new TypeError("'frozenset' object does not support indexing")
         }
     }
-    throw new TypeError.$pyclass("'frozenset' object is not subscriptable")
+    throw new TypeError("'frozenset' object is not subscriptable")
 }
 
 FrozenSet.prototype.__lshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__rshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__and__ = function(other) {
@@ -263,7 +263,7 @@ FrozenSet.prototype.__and__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    throw new TypeError.$pyclass("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__xor__ = function(other) {
@@ -283,7 +283,7 @@ FrozenSet.prototype.__xor__ = function(other) {
         }.bind(this))
         return new FrozenSet(both)
     }
-    throw new TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__or__ = function(other) {
@@ -299,7 +299,7 @@ FrozenSet.prototype.__or__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    throw new TypeError.$pyclass("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -315,6 +315,6 @@ FrozenSet.prototype._update = function(args) {
             self.data.__setitem__(val, val)
         })
     } else {
-        throw new TypeError.$pyclass("'" + type_name(new_args) + "' object is not iterable")
+        throw new TypeError("'" + type_name(new_args) + "' object is not iterable")
     }
 }

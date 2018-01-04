@@ -1,9 +1,11 @@
 /*
  * Python compiler internals.
  */
-import * as tokenizer from './tokenizer'
-import * as types from '../../types'
 import { NotImplementedError } from '../../core/exceptions'
+
+import Int from '../../types/Int'
+
+import * as tokenizer from './tokenizer'
 
 export var _compile = {
     '__doc__': '',
@@ -55,9 +57,9 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
     throw new NotImplementedError.$pyclass('_compile.parsetok is not implemented yet')
 }
 
-_compile['Py_single_input'] = new types.Int(256)
-_compile['Py_file_input'] = new types.Int(257)
-_compile['Py_eval_input'] = new types.Int(258)
+_compile['Py_single_input'] = new Int(256)
+_compile['Py_file_input'] = new Int(257)
+_compile['Py_eval_input'] = new Int(258)
 
 _compile['EOF'] = tokenizer.EOF
 _compile['E_OK'] = tokenizer.E_OK

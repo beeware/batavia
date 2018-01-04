@@ -4,16 +4,16 @@ import * as types from '../types'
 
 export default function range(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("range() doesn't accept keyword arguments")
+        throw new TypeError("range() doesn't accept keyword arguments")
     }
     if (!args || args.length === 0) {
-        throw new TypeError.$pyclass('range() expected 1 arguments, got ' + args.length)
+        throw new TypeError('range() expected 1 arguments, got ' + args.length)
     }
     if (args.length > 3) {
-        throw new TypeError.$pyclass('range() expected at most 3 arguments, got ' + args.length)
+        throw new TypeError('range() expected at most 3 arguments, got ' + args.length)
     }
 
     return new types.Range(args[0], args[1], args[2])

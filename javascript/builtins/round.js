@@ -1,4 +1,4 @@
-import * as BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 
 import { TypeError } from '../core/exceptions'
 import * as types from '../types'
@@ -6,7 +6,7 @@ import * as types from '../types'
 export default function round(args, kwargs) {
     var p = 0 // Precision
     if (!args) {
-        throw new TypeError.$pyclass("Required argument 'number' (pos 1) not found")
+        throw new TypeError("Required argument 'number' (pos 1) not found")
     }
     if (args.length === 2) {
         p = args[1]

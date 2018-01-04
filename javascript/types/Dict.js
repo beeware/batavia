@@ -1,6 +1,6 @@
 import { iter_for_each } from '../core/callables'
 import { KeyError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyObject, None } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'

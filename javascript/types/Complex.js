@@ -49,7 +49,7 @@ export default function Complex(re, im) {
         var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i
         var match = regex.exec(re)
         if (match === null || re === '') {
-            throw new ValueError.$pyclass('complex() arg is a malformed string')
+            throw new ValueError('complex() arg is a malformed string')
         }
         this.real = parseFloat(part_from_str(match[1]))
         this.imag = parseFloat(part_from_str(match[3]))
@@ -58,24 +58,24 @@ export default function Complex(re, im) {
         }
     } else if (!types.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
         if (version.later('3.5')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "complex() first argument must be a string, a bytes-like object or a number, not '" +
                 type_name(re) + "'"
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "complex() argument must be a string, a bytes-like object or a number, not '" +
                 type_name(re) + "'"
             )
         }
     } else if (!types.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
         if (version.later('3.5')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "complex() first argument must be a string, a bytes-like object or a number, not '" +
                 type_name(im) + "'"
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "complex() argument must be a string, a bytes-like object or a number, not '" +
                 type_name(im) + "'"
             )
@@ -93,7 +93,7 @@ export default function Complex(re, im) {
         this.real = re.real
         this.imag = re.imag
     } else {
-        throw new NotImplementedError.$pyclass('Complex initialization from complex argument(s) has not been implemented')
+        throw new NotImplementedError('Complex initialization from complex argument(s) has not been implemented')
     }
 }
 

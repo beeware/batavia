@@ -19,7 +19,7 @@ def bytecode(sourcefile):
                     os.path.dirname(sourcefile),
                     tempname
                 ), 'rb') as compiled:
-            payload = base64.encodebytes(compiled.read())
+            payload = base64.encodebytes(compiled.read()).decode('utf-8')
         os.remove(tempname)
     except Exception as e:
         print(e)
@@ -28,7 +28,7 @@ def bytecode(sourcefile):
         'compiled': payload,
         'filename': sourcefile
     }
-    
+
 def home(request):
     ctx = {
         'modules': {
@@ -50,15 +50,18 @@ def home(request):
                 }
             }
         }
-    } 
+    }
     if request.method.lower() == 'post' and request.POST['code']:
         tempfd, tempname = tempfile.mkstemp()
         with os.fdopen(tempfd, 'w+b') as f:
             f.write(bytes(request.POST['code'], 'utf-8'))
             f.flush()
 
-        customcode = {'code': request.POST['code']}
-        customcode.update(bytecode(tempname))
+        customcode = bytecode(tempname)
+        customcode.update({
+            'code': request.POST['code'],
+            'filename': 'custom.py'
+        })
         ctx['customcode'] = customcode
 
         os.remove(tempname)

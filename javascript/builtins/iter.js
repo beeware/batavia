@@ -6,25 +6,25 @@ import CallableIterator from '../types/CallableIterator'
 
 export default function iter(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("iter() doesn't accept keyword arguments")
+        throw new TypeError("iter() doesn't accept keyword arguments")
     }
     if (!args || args.length === 0) {
-        throw new TypeError.$pyclass('iter() expected at least 1 arguments, got 0')
+        throw new TypeError('iter() expected at least 1 arguments, got 0')
     }
     if (args.length === 2) {
         return new CallableIterator(args[0], args[1])
     }
     if (args.length > 2) {
-        throw new TypeError.$pyclass('iter() expected at most 2 arguments, got 3')
+        throw new TypeError('iter() expected at most 2 arguments, got 3')
     }
 
     try {
         return call_method(args[0], '__iter__', [])
     } catch (e) {
-        throw new TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
+        throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
     }
 }
 

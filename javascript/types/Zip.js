@@ -20,8 +20,8 @@ export default function Zip(args, kwargs) {
         try {
             this._iterators.push(builtins.iter([this._iterables[i]], null))
         } catch (e) {
-            if (e instanceof TypeError.$pyclass) {
-                throw new TypeError.$pyclass('zip argument #' + n + ' must support iteration')
+            if (e instanceof TypeError) {
+                throw new TypeError('zip argument #' + n + ' must support iteration')
             }
         }
     }
@@ -47,7 +47,7 @@ Zip.prototype.__iter__ = function() {
 
 Zip.prototype.__next__ = function() {
     if (this._iterators.length === 0) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
 
     var values = []

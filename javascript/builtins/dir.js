@@ -2,13 +2,13 @@ import { BataviaError, TypeError } from '../core/exceptions'
 
 export default function dir(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("dir() doesn't accept keyword arguments")
+        throw new TypeError("dir() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('dir() expected exactly 1 argument (' + args.length + ' given)')
+        throw new TypeError('dir() expected exactly 1 argument (' + args.length + ' given)')
     }
     return Object.keys(args[0])
 }

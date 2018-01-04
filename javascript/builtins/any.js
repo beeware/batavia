@@ -4,20 +4,20 @@ import { type_name } from '../core/types'
 
 export default function any(args, kwargs) {
     if (args[0] === null) {
-        throw new TypeError.$pyclass("'NoneType' object is not iterable")
+        throw new TypeError("'NoneType' object is not iterable")
     }
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("any() doesn't accept keyword arguments")
+        throw new TypeError("any() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('any() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('any() takes exactly one argument (' + args.length + ' given)')
     }
 
     if (!args[0].__iter__) {
-        throw new TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
+        throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
     }
 
     var iterobj = call_method(args[0], '__iter__', [])
@@ -30,7 +30,7 @@ export default function any(args, kwargs) {
             }
         }
     } catch (err) {
-        if (!(err instanceof StopIteration.$pyclass)) {
+        if (!(err instanceof StopIteration)) {
             throw err
         }
     }

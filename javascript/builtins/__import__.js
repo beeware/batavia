@@ -8,7 +8,7 @@ import { Int, Module } from '../types'
 export default function __import__(args, kwargs) {
     // console.log("IMPORT", args[0], args[1], args[4]);
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
 
     // The root module is the top level namespace (the first
@@ -38,7 +38,7 @@ export default function __import__(args, kwargs) {
             }
 
             if (context.length < level) {
-                throw new SystemError.$pyclass("Parent module '' not loaded, cannot perform relative import")
+                throw new SystemError("Parent module '' not loaded, cannot perform relative import")
             } else {
                 context = context.slice(0, context.length - level)
             }
@@ -93,7 +93,7 @@ export default function __import__(args, kwargs) {
                 if (root_module === undefined) {
                     payload = this.loader(name)
                     if (payload === null) {
-                        throw new ImportError.$pyclass("No module name '" + name + "'")
+                        throw new ImportError("No module name '" + name + "'")
                     } else if (payload.javascript) {
                         root_module = payload.javascript
                         leaf_module = root_module
@@ -125,7 +125,7 @@ export default function __import__(args, kwargs) {
                 if (new_module === undefined) {
                     payload = this.loader(name)
                     if (payload === null) {
-                        throw new ImportError.$pyclass("No module name '" + name + "'")
+                        throw new ImportError("No module name '" + name + "'")
                     } else if (payload.javascript) {
                         new_module = payload.javascript
                         leaf_module[path[n]] = new_module

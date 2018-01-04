@@ -16,7 +16,7 @@ create_pyclass(StrIterator, 'str_iterator')
 StrIterator.prototype.__next__ = function() {
     var retval = this.data[this.index]
     if (retval === undefined) {
-        throw new exceptions.StopIteration.$pyclass()
+        throw new exceptions.StopIteration()
     }
     this.index++
     return retval

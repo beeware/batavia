@@ -1,6 +1,8 @@
 {
   "name": "batavia",
+  "version": "3.4.0-dev.20",
   "description": "A Javascript implementation of the Python virtual machine.",
+  "main": "batavia/static/batavia.js",
   "scripts": {
     "build": "node_modules/.bin/rollup -c",
     "watch": "node_modules/.bin/rollup -c -w",
@@ -11,7 +13,16 @@
     "type": "git",
     "url": "git://github.com/pybee/batavia.git"
   },
+  "keywords": [
+    "python",
+  ],
+  "author": "BeeWare Project",
   "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/pybee/batavia/issues"
+  },
+  "author": "BeeWare Project",
+  "homepage": "https://pybee.org/batavia",
   "devDependencies": {
     "@pybee/ouroboros": "^3.4.1-dev3",
     "babel-core": "^6.26.0",
@@ -35,7 +46,7 @@
   "dependencies": {
     "base64-js": "1.2.1",
     "bignumber.js": "5.0.0",
-    "moment": "^2.20.1",
+    "moment": "2.20.1",
     "moment-timezone": "^0.5.14"
   }
 }

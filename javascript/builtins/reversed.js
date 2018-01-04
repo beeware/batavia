@@ -5,7 +5,7 @@ import * as callables from '../core/callables'
 export default function reversed(args, kwargs) {
     var iterable = args[0]
     if (args.length === 0) {
-        throw new exceptions.TypeError.$pyclass('reversed expected 1 arguments, got 0')
+        throw new exceptions.TypeError('reversed expected 1 arguments, got 0')
     } else if (iterable.__reversed__) {
         return callables.call_method(iterable, '__reversed__', [])
     } else if (iterable.__len__ && iterable.__getitem__) {
@@ -14,7 +14,7 @@ export default function reversed(args, kwargs) {
         return new types.List(new_iterable)
     }
 
-    throw new exceptions.NotImplementedError.$pyclass("Builtin Batavia function 'reversed' not implemented for objects")
+    throw new exceptions.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects")
 }
 
 reversed.__doc__ = 'reversed(sequence) -> reverse iterator over values of the sequence\n\nReturn a reverse iterator'

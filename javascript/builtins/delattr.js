@@ -8,7 +8,7 @@ export default function delattr(args, kwargs) {
     if (args) {
         if (args.length === 2) {
             if (!types.isinstance(args[1], types.Str)) {
-                throw new TypeError.$pyclass("attribute name must be string, not '" + type_name(args[1]) + "'")
+                throw new TypeError("attribute name must be string, not '" + type_name(args[1]) + "'")
             }
 
             if (args[0].__delattr__ === undefined) {
@@ -17,10 +17,10 @@ export default function delattr(args, kwargs) {
                 args[0].__delattr__(args[1])
             }
         } else {
-            throw new TypeError.$pyclass('delattr expected exactly 2 arguments, got ' + args.length)
+            throw new TypeError('delattr expected exactly 2 arguments, got ' + args.length)
         }
     } else {
-        throw new TypeError.$pyclass('delattr expected exactly 2 arguments, got 0')
+        throw new TypeError('delattr expected exactly 2 arguments, got 0')
     }
 }
 

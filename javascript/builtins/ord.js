@@ -6,13 +6,13 @@ import * as types from '../types'
 
 export default function ord(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("ord() doesn't accept keyword arguments")
+        throw new TypeError("ord() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('ord() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('ord() takes exactly one argument (' + args.length + ' given)')
     }
     var value = args[0]
     if (types.isinstance(value, [types.Str, types.Bytes, types.Bytearray])) {
@@ -24,10 +24,10 @@ export default function ord(args, kwargs) {
                 return call_method(value, '__getitem__', [new types.Int(0)])
             }
         } else {
-            throw new TypeError.$pyclass('ord() expected a character, but string of length ' + charLength + ' found')
+            throw new TypeError('ord() expected a character, but string of length ' + charLength + ' found')
         }
     } else {
-        throw new TypeError.$pyclass('ord() expected string of length 1, but ' + type_name(value) + ' found')
+        throw new TypeError('ord() expected string of length 1, but ' + type_name(value) + ' found')
     }
 }
 

@@ -3,13 +3,13 @@ import { type_name, PyObject } from '../core/types'
 
 export default function classmethod(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("classmethod() doesn't accept keyword arguments")
+        throw new TypeError("classmethod() doesn't accept keyword arguments")
     }
     if (args.length !== 1) {
-        throw new TypeError.$pyclass('classmethod expected 1 arguments, got ' + args.length)
+        throw new TypeError('classmethod expected 1 arguments, got ' + args.length)
     }
     var obj = new PyObject()
     obj.toString = function() {
@@ -20,7 +20,7 @@ export default function classmethod(args, kwargs) {
     obj.__class__ = 'classmethod'
     if (type_name(args[0]) === 'function') {
         obj.__call__ = function() {
-            throw new NotImplementedError.$pyclass('classmethod() can\'t get the parent class')
+            throw new NotImplementedError('classmethod() can\'t get the parent class')
         }
     }
     return obj

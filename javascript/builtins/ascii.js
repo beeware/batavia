@@ -4,13 +4,13 @@ import repr from './repr'
 
 export default function ascii(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("ascii() doesn't accept keyword arguments")
+        throw new TypeError("ascii() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('ascii() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('ascii() takes exactly one argument (' + args.length + ' given)')
     }
 
     var repr_string = repr([args[0]], null)

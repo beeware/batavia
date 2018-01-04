@@ -1,8 +1,7 @@
 import { TypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyObject, None } from '../core/types'
 import * as version from '../core/version'
 
-import { None } from '../builtins'
 import * as types from '../types'
 
 /*************************************************************************

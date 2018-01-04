@@ -12,7 +12,7 @@ export default function Filter(args, kwargs) {
     PyObject.call(this)
 
     if (args.length < 2) {
-        throw new TypeError.$pyclass('filter expected 2 arguments, got ' + args.length)
+        throw new TypeError('filter expected 2 arguments, got ' + args.length)
     }
     this._func = args[0]
     this._sequence = args[1]
@@ -41,7 +41,7 @@ Filter.prototype.__next__ = function() {
         this._iter = builtins.iter([this._sequence], null)
     }
     if (!builtins.callable([this._func], null)) {
-        throw new TypeError.$pyclass(type_name(this._func) + "' object is not callable")
+        throw new TypeError(type_name(this._func) + "' object is not callable")
     }
 
     var val, more

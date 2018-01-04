@@ -16,13 +16,13 @@ create_pyclass(CallableIterator, 'callable_iterator')
 
 CallableIterator.prototype.__next__ = function() {
     if (this.exhausted) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
 
     var item = this.callable.__call__([])
     if (item.__eq__(this.sentinel)) {
         this.exhausted = true
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     return item
 }

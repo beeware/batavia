@@ -44,7 +44,7 @@ export function iter_for_each(iterobj, callback) {
             callback(next)
         }
     } catch (err) {
-        if (!(err instanceof StopIteration.$pyclass)) {
+        if (!(err instanceof StopIteration)) {
             throw err
         }
     }

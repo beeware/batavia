@@ -23,7 +23,7 @@ export default function print(args, kwargs) {
                 try {
                     content = call_method(elm, '__str__', [], null)
                 } catch (e) {
-                    if (e instanceof AttributeError.$pyclass) {
+                    if (e instanceof AttributeError) {
                         content = elm.toString()
                     } else {
                         throw e

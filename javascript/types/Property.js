@@ -1,8 +1,6 @@
 import { call_function } from '../core/callables'
 import { AttributeError, TypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
-
-import { None } from '../builtins'
+import { create_pyclass, type_name, PyObject, None } from '../core/types'
 
 /*************************************************************************
  * A Python float type
@@ -58,10 +56,10 @@ Property.prototype.__get__ = function(instance, klass) {
         try {
             return call_function(this.fget, [instance], null)
         } catch (e) {
-            throw new TypeError.$pyclass("'" + type_name(this) + "' object is not callable")
+            throw new TypeError("'" + type_name(this) + "' object is not callable")
         }
     } else {
-        throw new AttributeError.$pyclass("can't get attribute")
+        throw new AttributeError("can't get attribute")
     }
 }
 
@@ -71,10 +69,10 @@ Property.prototype.__set__ = function(instance, value) {
         try {
             call_function(this.fset, [instance, value], null)
         } catch (e) {
-            throw new TypeError.$pyclass("'" + type_name(this) + "' object is not callable")
+            throw new TypeError("'" + type_name(this) + "' object is not callable")
         }
     } else {
-        throw new AttributeError.$pyclass("can't set attribute")
+        throw new AttributeError("can't set attribute")
     }
 }
 
@@ -84,10 +82,10 @@ Property.prototype.__delete__ = function(instance) {
         try {
             call_function(this.fdel, [instance], null)
         } catch (e) {
-            throw new TypeError.$pyclass("'" + type_name(this) + "' object is not callable")
+            throw new TypeError("'" + type_name(this) + "' object is not callable")
         }
     } else {
-        throw new AttributeError.$pyclass("can't delete attribute")
+        throw new AttributeError("can't delete attribute")
     }
 }
 

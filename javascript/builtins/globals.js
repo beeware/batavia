@@ -5,13 +5,13 @@ import * as types from '../types'
 // TODO: this should return a proper dictionary
 export default function globals(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("globals() doesn't accept keyword arguments")
+        throw new TypeError("globals() doesn't accept keyword arguments")
     }
     if (args && args.length !== 0) {
-        throw new TypeError.$pyclass('globals() takes no arguments (' + args.length + ' given)')
+        throw new TypeError('globals() takes no arguments (' + args.length + ' given)')
     }
     var gbl = this.frame.f_globals
 

@@ -3,15 +3,15 @@ import * as types from '../types'
 
 export default function map(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
 
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("map() doesn't accept keyword arguments")
+        throw new TypeError("map() doesn't accept keyword arguments")
     }
 
     if (!args || args.length < 2) {
-        throw new TypeError.$pyclass('map() must have at least two arguments.')
+        throw new TypeError('map() must have at least two arguments.')
     }
 
     return new types.Map(args, kwargs)

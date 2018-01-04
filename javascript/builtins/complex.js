@@ -3,13 +3,13 @@ import * as types from '../types'
 
 export default function complex(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("complex() doesn't accept keyword arguments")
+        throw new TypeError("complex() doesn't accept keyword arguments")
     }
     if (!args || args.length > 2) {
-        throw new TypeError.$pyclass('complex() expected at most 2 arguments (' + args.length + ' given)')
+        throw new TypeError('complex() expected at most 2 arguments (' + args.length + ' given)')
     }
     if (types.isinstance(args[0], types.Complex) && !args[1]) {
         return args[0]

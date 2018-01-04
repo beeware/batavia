@@ -5,7 +5,7 @@ import * as types from '../types'
 
 export default function slice(args, kwargs) {
     if (!args || args.length === 0) {
-        throw new TypeError.$pyclass('slice expected at least 1 arguments, got 0')
+        throw new TypeError('slice expected at least 1 arguments, got 0')
     } else if (args.length === 1) {
         return new types.Slice({
             start: None,
@@ -25,7 +25,7 @@ export default function slice(args, kwargs) {
             step: args[2]
         })
     } else {
-        throw new TypeError.$pyclass('slice expected at most 3 arguments, got ' + args.length)
+        throw new TypeError('slice expected at most 3 arguments, got ' + args.length)
     }
 }
 

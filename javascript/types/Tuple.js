@@ -29,7 +29,7 @@ export default function Tuple(length) {
             })
         }
     } else {
-        throw new TypeError.$pyclass('tuple() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('tuple() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
@@ -85,11 +85,11 @@ Tuple.prototype.__str__ = function() {
 Tuple.prototype.__lt__ = function(other) {
     if (!types.isinstance(other, types.Tuple)) {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: tuple() < ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'<' not supported between instances of 'tuple' and '" + type_name(other) + "'"
             )
         }
@@ -115,11 +115,11 @@ Tuple.prototype.__lt__ = function(other) {
 Tuple.prototype.__le__ = function(other) {
     if (!types.isinstance(other, types.Tuple)) {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: tuple() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'<=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
             )
         }
@@ -161,11 +161,11 @@ Tuple.prototype.__ne__ = function(other) {
 Tuple.prototype.__gt__ = function(other) {
     if (!types.isinstance(other, types.Tuple)) {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: tuple() > ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'>' not supported between instances of 'tuple' and '" + type_name(other) + "'"
             )
         }
@@ -192,11 +192,11 @@ Tuple.prototype.__gt__ = function(other) {
 Tuple.prototype.__ge__ = function(other) {
     if (!types.isinstance(other, types.Tuple)) {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: tuple() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'>=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
             )
         }
@@ -225,11 +225,11 @@ Tuple.prototype.__contains__ = function(other) {
  **************************************************/
 
 Tuple.prototype.__pos__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary +: 'tuple'")
+    throw new TypeError("bad operand type for unary +: 'tuple'")
 }
 
 Tuple.prototype.__neg__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary -: 'tuple'")
+    throw new TypeError("bad operand type for unary -: 'tuple'")
 }
 
 Tuple.prototype.__not__ = function() {
@@ -237,7 +237,7 @@ Tuple.prototype.__not__ = function() {
 }
 
 Tuple.prototype.__invert__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary ~: 'tuple'")
+    throw new TypeError("bad operand type for unary ~: 'tuple'")
 }
 
 Tuple.prototype.__bool__ = function() {
@@ -249,7 +249,7 @@ Tuple.prototype.__bool__ = function() {
  **************************************************/
 
 Tuple.prototype.__pow__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__div__ = function(other) {
@@ -258,14 +258,14 @@ Tuple.prototype.__div__ = function(other) {
 
 Tuple.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
 Tuple.prototype.__truediv__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for /: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__mul__ = function(other) {
@@ -284,15 +284,15 @@ Tuple.prototype.__mul__ = function(other) {
             return new Tuple()
         }
     } else {
-        throw new TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 }
 
 Tuple.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for %: 'tuple' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
@@ -300,7 +300,7 @@ Tuple.prototype.__add__ = function(other) {
     var i
 
     if (!types.isinstance(other, types.Tuple)) {
-        throw new TypeError.$pyclass('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
+        throw new TypeError('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
     } else {
         var result = new Tuple()
         for (i = 0; i < this.length; i++) {
@@ -316,11 +316,11 @@ Tuple.prototype.__add__ = function(other) {
 }
 
 Tuple.prototype.__sub__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for -: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__delattr__ = function(attr) {
-    throw new AttributeError.$pyclass("'tuple' object has no attribute '" + attr + "'")
+    throw new AttributeError("'tuple' object has no attribute '" + attr + "'")
 }
 
 Tuple.prototype.__getitem__ = function(index) {
@@ -328,20 +328,20 @@ Tuple.prototype.__getitem__ = function(index) {
         var idx = index.int32()
         if (idx < 0) {
             if (-idx > this.length) {
-                throw new IndexError.$pyclass('tuple index out of range')
+                throw new IndexError('tuple index out of range')
             } else {
                 return this[this.length + idx]
             }
         } else {
             if (idx >= this.length) {
-                throw new IndexError.$pyclass('tuple index out of range')
+                throw new IndexError('tuple index out of range')
             } else {
                 return this[idx]
             }
         }
     } else if (types.isinstance(index, types.Bool)) {
         if (index >= this.length) {
-            throw new IndexError.$pyclass('tuple index out of range')
+            throw new IndexError('tuple index out of range')
         } else {
             if (index) {
                 return this[1]
@@ -355,7 +355,7 @@ Tuple.prototype.__getitem__ = function(index) {
             start = undefined
         } else if (!types.isinstance(index.start, types.Int)) {
             if (index.start.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 start = index.start.__index__()
             }
@@ -367,7 +367,7 @@ Tuple.prototype.__getitem__ = function(index) {
             stop = undefined
         } else if (!types.isinstance(index.stop, types.Int)) {
             if (index.stop.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 stop = index.stop.__index__()
             }
@@ -379,14 +379,14 @@ Tuple.prototype.__getitem__ = function(index) {
             step = 1
         } else if (!(types.isinstance(index.step, types.Int))) {
             if (index.step.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 step = index.step.__index__()
             }
         } else {
             step = index.step.int32()
             if (step === 0) {
-                throw new ValueError.$pyclass('slice step cannot be zero')
+                throw new ValueError('slice step cannot be zero')
             }
         }
 
@@ -423,28 +423,28 @@ Tuple.prototype.__getitem__ = function(index) {
         if (!version.later('3.4')) {
             msg = 'tuple indices must be integers, not '
         }
-        throw new TypeError.$pyclass(msg + type_name(index))
+        throw new TypeError(msg + type_name(index))
     }
 }
 
 Tuple.prototype.__lshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for <<: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for <<: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__rshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for >>: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for >>: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__and__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for &: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for &: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__xor__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ^: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ^: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__or__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for |: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for |: 'tuple' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -453,14 +453,14 @@ Tuple.prototype.__or__ = function(other) {
 
 Tuple.prototype.__ifloordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //=: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
 Tuple.prototype.__itruediv__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for /=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__iadd__ = function(other) {
@@ -472,12 +472,12 @@ Tuple.prototype.__iadd__ = function(other) {
         }
         return this
     } else {
-        throw new TypeError.$pyclass('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
+        throw new TypeError('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
     }
 }
 
 Tuple.prototype.__isub__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for -=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__imul__ = function(other) {
@@ -500,40 +500,40 @@ Tuple.prototype.__imul__ = function(other) {
             return new Tuple()
         }
     } else {
-        throw new TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 }
 
 Tuple.prototype.__imod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for %=: 'tuple' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %=: 'tuple' and '" + type_name(other) + "'")
     }
 }
 
 Tuple.prototype.__ipow__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__ilshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for <<=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for <<=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__irshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for >>=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for >>=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__iand__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for &=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for &=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__ixor__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ^=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ^=: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__ior__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for |=: 'tuple' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for |=: 'tuple' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -546,7 +546,7 @@ Tuple.prototype.copy = function() {
 
 Tuple.prototype.count = function(value) {
     if (arguments.length !== 1) {
-        throw new TypeError.$pyclass('count() takes exactly one argument (' + arguments.length + ' given)')
+        throw new TypeError('count() takes exactly one argument (' + arguments.length + ' given)')
     }
     var count = 0
     for (var i = 0; i < this.length; ++i) {
@@ -559,14 +559,14 @@ Tuple.prototype.count = function(value) {
 
 Tuple.prototype.index = function(value, start, stop) {
     if (arguments.length < 1) {
-        throw new TypeError.$pyclass('index() takes at least 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('index() takes at least 1 argument (' + arguments.length + ' given)')
     } else if (arguments.length > 3) {
-        throw new TypeError.$pyclass('index() takes at most 3 arguments (' + arguments.length + ' given)')
+        throw new TypeError('index() takes at most 3 arguments (' + arguments.length + ' given)')
     }
     for (var i = (start || 0); i < (stop || this.length); ++i) {
         if (this[i].__eq__(value)) {
             return i
         }
     }
-    throw new ValueError.$pyclass('tuple.index(x): x not in tuple')
+    throw new ValueError('tuple.index(x): x not in tuple')
 }

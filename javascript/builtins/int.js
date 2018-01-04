@@ -6,10 +6,10 @@ import repr from './repr'
 
 export default function int(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("int() doesn't accept keyword arguments")
+        throw new TypeError("int() doesn't accept keyword arguments")
     }
 
     var base = 10
@@ -25,13 +25,13 @@ export default function int(args, kwargs) {
         value = args[0]
         base = args[1]
     } else {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'int() takes at most 2 arguments (' + args.length + ' given)')
     }
     // TODO: this should be able to parse things longer than 53 bits
     var result = parseInt(value, base)
     if (isNaN(result)) {
-        throw new ValueError.$pyclass(
+        throw new ValueError(
             'invalid literal for int() with base ' + base + ': ' + repr([value], null)
         )
     }

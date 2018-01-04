@@ -21,7 +21,7 @@ BytesIterator.prototype.__iter__ = function() {
 
 BytesIterator.prototype.__next__ = function() {
     if (this.index >= this.data.length) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     var retval = this.data[this.index]
     this.index++

@@ -11,6 +11,7 @@ import Block from './core/Block'
 import Frame from './core/Frame'
 
 import * as builtins from './builtins'
+import * as types from './types'
 
 import { dis } from './modules/dis'
 import { marshal } from './modules/marshal'
@@ -145,7 +146,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     }
                 default:
-                    throw new BataviaError.$pyclass('Unknown unary operator ' + operator_name)
+                    throw new BataviaError('Unknown unary operator ' + operator_name)
             }
         } else if (opcode in dis.binary_ops) {
             operator_name = opname.slice(7)
@@ -346,7 +347,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     }
                 default:
-                    throw new BataviaError.$pyclass('Unknown binary operator ' + operator_name)
+                    throw new BataviaError('Unknown binary operator ' + operator_name)
             }
         } else if (opcode in dis.inplace_ops) {
             operator_name = opname.slice(8)
@@ -604,7 +605,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         this.push(result)
                     }
                 default:
-                    throw new BataviaError.$pyclass('Unknown inplace operator ' + operator_name)
+                    throw new BataviaError('Unknown inplace operator ' + operator_name)
             }
         } else {
             // dispatch
@@ -613,7 +614,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                 return bytecode_fn
             } else {
                 return function() {
-                    throw new BataviaError.$pyclass('Unknown opcode ' + opcode + ' (' + opname + ')')
+                    throw new BataviaError('Unknown opcode ' + opcode + ' (' + opname + ')')
                 }
             }
         }
@@ -639,7 +640,7 @@ VirtualMachine.prototype.run = function(tag, args) {
         // Run the code
         return this.run_code({'code': code})
     } catch (e) {
-        if (e instanceof BataviaError.$pyclass) {
+        if (e instanceof BataviaError) {
             sys.stderr.write([e.msg + '\n'])
         } else {
             throw e
@@ -671,7 +672,7 @@ VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_gl
             'f_globals': f_globals
         })
     } catch (e) {
-        if (e instanceof BataviaError.$pyclass) {
+        if (e instanceof BataviaError) {
             sys.stderr.write([e.msg + '\n'])
         } else {
             throw e
@@ -1011,15 +1012,15 @@ VirtualMachine.prototype.run_code = function(kwargs) {
         // Check some invariants
         if (this.has_session) {
             if (this.frames.length > 1) {
-                throw new BataviaError.$pyclass('Frames left over in session!')
+                throw new BataviaError('Frames left over in session!')
             }
         } else {
             if (this.frames.length > 0) {
-                throw new BataviaError.$pyclass('Frames left over!')
+                throw new BataviaError('Frames left over!')
             }
         }
         if (this.frame && this.frame.stack.length > 0) {
-            throw new BataviaError.$pyclass('Data left on stack! ' + this.frame.stack)
+            throw new BataviaError('Data left on stack! ' + this.frame.stack)
         }
         return val
     } catch (e) {
@@ -1171,7 +1172,7 @@ VirtualMachine.prototype.run_frame = function(frame) {
             why = operation.op_method.apply(this, operation.args)
         } catch (err) {
             // deal with exceptions encountered while executing the op.
-            if (err instanceof BataviaError.$pyclass) {
+            if (err instanceof BataviaError) {
                 // Batavia errors are a major problem; ABORT HARD
                 this.last_exception = null
                 throw err
@@ -1278,7 +1279,7 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
             val.__doc__ = doc
         }
     } else {
-        throw new builtins.NameError.$pyclass("name '" + name + "' is not defined")
+        throw new builtins.NameError("name '" + name + "' is not defined")
     }
     this.push(val)
 }
@@ -1296,7 +1297,7 @@ VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name]
     } else {
-        throw new builtins.UnboundLocalError.$pyclass("local variable '" + name + "' referenced before assignment")
+        throw new builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment")
     }
     this.push(val)
 }
@@ -1326,7 +1327,7 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
             val.__doc__ = doc
         }
     } else {
-        throw new builtins.NameError.$pyclass("name '" + name + "' is not defined")
+        throw new builtins.NameError("name '" + name + "' is not defined")
     }
     this.push(val)
 }
@@ -1421,7 +1422,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = items[1] === null
                 break
             default:
-                throw new BataviaError.$pyclass('Unknown operator ' + opnum)
+                throw new BataviaError('Unknown operator ' + opnum)
         }
     } else {
         switch (opnum) {
@@ -1477,7 +1478,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
                 result = types.issubclass(items[0], items[1])
                 break
             default:
-                throw new BataviaError.$pyclass('Unknown operator ' + opnum)
+                throw new BataviaError('Unknown operator ' + opnum)
         }
     }
 
@@ -1576,7 +1577,7 @@ VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
 
 VirtualMachine.prototype.byte_STORE_MAP = function() {
     if (version.later('3.5a0')) {
-        throw new BataviaError.$pyclass(
+        throw new BataviaError(
             'STORE_MAP is unsupported with BATAVIA_MAGIC'
         )
     } else {
@@ -1615,7 +1616,7 @@ VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
         var items = this.popn(count)
         this.push(builtins.slice(items))
     } else {
-        throw new BataviaError.$pyclass('Strange BUILD_SLICE count: ' + count)
+        throw new BataviaError('Strange BUILD_SLICE count: ' + count)
     }
 }
 
@@ -1745,7 +1746,7 @@ VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
         var v = iterobj.__next__()
         this.push(v)
     } catch (err) {
-        if (err instanceof builtins.StopIteration.$pyclass) {
+        if (err instanceof builtins.StopIteration) {
             this.pop()
             this.jump(jump)
         } else {
@@ -1788,7 +1789,7 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
         return null
     } else {
         value = this.pop()
-        if (value instanceof BaseException.$pyclass) {
+        if (value instanceof BaseException) {
             traceback = this.pop()
             this.last_exception = {
                 'exc_type': exc_type,
@@ -1797,7 +1798,7 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
             }
             why = 'reraise'
         } else {
-            throw new BataviaError.$pyclass('Confused END_FINALLY: ' + value.toString())
+            throw new BataviaError('Confused END_FINALLY: ' + value.toString())
         }
     }
     return why
@@ -1826,14 +1827,14 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         } else {
             return 'reraise'
         }
-    } else if (exc instanceof BaseException.$pyclass) {
+    } else if (exc instanceof BaseException) {
         // As in `throw ValueError('foo')`
         exc_type = exc.__class__
         val = exc
-    } else if (exc.$pyclass.prototype instanceof BaseException.$pyclass ||
-               exc.$pyclass === BaseException.$pyclass) {
+    } else if (exc.prototype instanceof BaseException ||
+               exc === BaseException) {
         exc_type = exc
-        val = new exc_type.$pyclass()
+        val = new exc_type() // eslint-disable-line new-cap
     } else {
         return 'exception' // error
     }
@@ -1885,7 +1886,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
             mgr = this.pop(1)
         }
         exc = builtins.None
-    } else if (exc.$pyclass.prototype instanceof BaseException.$pyclass) {
+    } else if (exc.prototype instanceof BaseException) {
         val = this.peek(2)
         tb = this.peek(3)
         mgr = this.pop(6)
@@ -1893,7 +1894,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         var block = this.pop_block()
         this.push_block(block.type, block.handler, block.level - 1)
     } else {
-        throw new BataviaError.$pyclass('Confused WITH_CLEANUP')
+        throw new BataviaError('Confused WITH_CLEANUP')
     }
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
     if (version.earlier('3.5a0')) {
@@ -1910,7 +1911,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
 
 VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
     if (version.earlier('3.5a0')) {
-        throw new BataviaError.$pyclass(
+        throw new BataviaError(
             'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
         )
     }
@@ -2087,7 +2088,7 @@ VirtualMachine.prototype.byte_YIELD_FROM = function() {
             this.return_value = receiver.send(v)
         }
     } catch (e) {
-        if (e instanceof StopIteration.$pyclass) {
+        if (e instanceof StopIteration) {
             this.pop()
             this.push(e.value)
             return
@@ -2172,7 +2173,7 @@ var make_class = function(vm) {
                     PyObject.call(this)
                 } else {
                     for (var b in bases) {
-                        bases[b].$pyclass.call(this)
+                        bases[b].call(this)
                     }
                 }
             }
@@ -2198,7 +2199,6 @@ var make_class = function(vm) {
         // Close the loop so the type knows about the class,
         // track the virtual machine that was used to create the type,
         // and set the type to use Python style initialization.
-        pytype.$pyclass = pyclass
         pytype.$vm = vm
         pytype.$pyinit = true
 

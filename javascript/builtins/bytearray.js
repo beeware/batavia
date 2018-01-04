@@ -27,10 +27,10 @@ export default function bytearray(args, kwargs) {
     ]
 
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("<fn>() doesn't accept keyword arguments.")
+        throw new TypeError("<fn>() doesn't accept keyword arguments.")
     }
     if (args.length === 0) {
         return new types.Bytearray(new types.Bytes([]))
@@ -46,21 +46,21 @@ export default function bytearray(args, kwargs) {
             return new types.Bytearray(new types.Bytes([]))
         }
     } else if (types.isinstance(args[0], notIterableTypes)) {
-        throw new TypeError.$pyclass('\'' + type_name(args[0]) + '\' object is not iterable')
+        throw new TypeError('\'' + type_name(args[0]) + '\' object is not iterable')
     } else if (types.isinstance(args[0], types.Bytearray)) {
         return new types.Bytearray(args[0])
     } else if (types.isinstance(args[0], types.Dict)) {
         var toConvert = args[0].keys()
         let nonDigits = toConvert.filter(nonNumericFilter)
         if (nonDigits.length > 0) {
-            throw new TypeError.$pyclass('an integer is required')
+            throw new TypeError('an integer is required')
         }
         return new types.Bytearray(toConvert.map(asBytes))
     } else if (types.isinstance(args[0], [types.FrozenSet, types.Set])) {
         var asList = new types.List(args[0].data.keys())
         let nonDigits = asList.filter(nonNumericFilter)
         if (nonDigits.length > 0) {
-            throw new TypeError.$pyclass('an integer is required')
+            throw new TypeError('an integer is required')
         }
         return new types.Bytearray(asList.map(function(value) {
             return asBytes([value])
@@ -68,11 +68,11 @@ export default function bytearray(args, kwargs) {
     } else if (types.isinstance(args[0], types.Int)) {
         let asInt = new types.Int(args[0])
         if (asInt.__gt__(asInt.MAX_INT) || asInt.__lt__(asInt.MIN_INT)) {
-            throw new OverflowError.$pyclass('cannot fit \'int\' into an index-sized integer')
+            throw new OverflowError('cannot fit \'int\' into an index-sized integer')
         } else if (asInt.__lt__(new types.Int(0))) {
-            throw new ValueError.$pyclass('negative count')
+            throw new ValueError('negative count')
         } else if (asInt.__eq__(asInt.MAX_INT)) {
-            throw new MemoryError.$pyclass('')
+            throw new MemoryError('')
         }
         let retArray = []
         for (var i = 0; i < args[0]; i++) {
@@ -99,12 +99,12 @@ export default function bytearray(args, kwargs) {
             return !types.isinstance(value, [types.Int, types.Bool])
         })
         if (nonDigits.length > 0) {
-            throw new TypeError.$pyclass('an integer is required')
+            throw new TypeError('an integer is required')
         }
         return new types.Bytearray(new types.Bytes(toConvert))
     } else if (types.isinstance(args[0], types.Str)) {
         if (args.length < 2) {
-            throw new TypeError.$pyclass('string argument without an encoding')
+            throw new TypeError('string argument without an encoding')
         }
         return new types.Bytearray(args[0].encode(args.slice(1), kwargs))
     }

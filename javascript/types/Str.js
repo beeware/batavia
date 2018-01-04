@@ -2,10 +2,9 @@ import { Buffer } from 'buffer'
 
 import { TEXT_ENCODINGS } from '../core/constants'
 import { AttributeError, IndexError, NotImplementedError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyObject, None } from '../core/types'
 import * as version from '../core/version'
 
-import { None } from '../builtins'
 import * as types from '../types'
 
 import * as StrIterator from './StrIterator'
@@ -70,14 +69,14 @@ Str.prototype.__getattribute__ = function(attr) {
 
 Str.prototype.__setattr__ = function(attr, value) {
     if (Object.getPrototypeOf(this)[attr] === undefined) {
-        throw new AttributeError.$pyclass("'str' object has no attribute '" + attr + "'")
+        throw new AttributeError("'str' object has no attribute '" + attr + "'")
     } else {
-        throw new AttributeError.$pyclass("'str' object attribute '" + attr + "' is read-only")
+        throw new AttributeError("'str' object attribute '" + attr + "' is read-only")
     }
 }
 
 Str.prototype.__delattr__ = function(attr) {
-    throw new AttributeError.$pyclass("'str' object has no attribute '" + attr + "'")
+    throw new AttributeError("'str' object has no attribute '" + attr + "'")
 }
 
 /**************************************************
@@ -95,11 +94,11 @@ Str.prototype.__lt__ = function(other) {
             types.FrozenSet
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: str() < ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'<' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -109,11 +108,11 @@ Str.prototype.__lt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: str() < NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'<' not supported between instances of 'str' and 'NoneType'"
             )
         }
@@ -130,11 +129,11 @@ Str.prototype.__le__ = function(other) {
             types.Range, types.Slice, types.FrozenSet
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: str() <= ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'<=' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -144,11 +143,11 @@ Str.prototype.__le__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: str() <= NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'<=' not supported between instances of 'str' and 'NoneType'"
             )
         }
@@ -197,11 +196,11 @@ Str.prototype.__gt__ = function(other) {
             types.Slice, types.FrozenSet
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: str() > ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'>' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -211,11 +210,11 @@ Str.prototype.__gt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: str() > NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'>' not supported between instances of 'str' and 'NoneType'"
             )
         }
@@ -233,11 +232,11 @@ Str.prototype.__ge__ = function(other) {
 
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: str() >= ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'>=' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -247,11 +246,11 @@ Str.prototype.__ge__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: str() >= NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'>=' not supported between instances of 'str' and 'NoneType'"
             )
         }
@@ -260,7 +259,7 @@ Str.prototype.__ge__ = function(other) {
 
 Str.prototype.__contains__ = function(other) {
     if (!types.isinstance(other, [types.Str])) {
-        throw new TypeError.$pyclass("'in <string>' requires string as left operand, not " + type_name(other))
+        throw new TypeError("'in <string>' requires string as left operand, not " + type_name(other))
     } else {
         return this.valueOf().search(other.valueOf()) >= 0
     }
@@ -271,11 +270,11 @@ Str.prototype.__contains__ = function(other) {
  **************************************************/
 
 Str.prototype.__pos__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary +: 'str'")
+    throw new TypeError("bad operand type for unary +: 'str'")
 }
 
 Str.prototype.__neg__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary -: 'str'")
+    throw new TypeError("bad operand type for unary -: 'str'")
 }
 
 Str.prototype.__not__ = function() {
@@ -283,7 +282,7 @@ Str.prototype.__not__ = function() {
 }
 
 Str.prototype.__invert__ = function() {
-    throw new TypeError.$pyclass("bad operand type for unary ~: 'str'")
+    throw new TypeError("bad operand type for unary ~: 'str'")
 }
 
 /**************************************************
@@ -291,7 +290,7 @@ Str.prototype.__invert__ = function() {
  **************************************************/
 
 Str.prototype.__pow__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__div__ = function(other) {
@@ -300,14 +299,14 @@ Str.prototype.__div__ = function(other) {
 
 Str.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, [types.Complex])) {
-        throw new TypeError.$pyclass("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for //: 'str' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'str' and '" + type_name(other) + "'")
     }
 }
 
 Str.prototype.__truediv__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for /: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__mul__ = function(other) {
@@ -326,7 +325,7 @@ Str.prototype.__mul__ = function(other) {
         }
         return result
     } else {
-        throw new TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 }
 
@@ -343,17 +342,17 @@ Str.prototype.__add__ = function(other) {
         return this.valueOf() + other.valueOf()
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "Can't convert '" + type_name(other) + "' object to str implicitly"
             )
         } else {
-            throw new TypeError.$pyclass('must be str, not ' + type_name(other))
+            throw new TypeError('must be str, not ' + type_name(other))
         }
     }
 }
 
 Str.prototype.__sub__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for -: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__getitem__ = function(index) {
@@ -364,13 +363,13 @@ Str.prototype.__getitem__ = function(index) {
         var idx = index.int32()
         if (idx < 0) {
             if (-idx > this.length) {
-                throw new IndexError.$pyclass('string index out of range')
+                throw new IndexError('string index out of range')
             } else {
                 return this[this.length + idx]
             }
         } else {
             if (idx >= this.length) {
-                throw new IndexError.$pyclass('string index out of range')
+                throw new IndexError('string index out of range')
             } else {
                 return this[idx]
             }
@@ -382,7 +381,7 @@ Str.prototype.__getitem__ = function(index) {
             start = undefined
         } else if (!(types.isinstance(index.start, types.Int))) {
             if (index.start.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 start = index.start.__index__()
             }
@@ -394,7 +393,7 @@ Str.prototype.__getitem__ = function(index) {
             stop = undefined
         } else if (!(types.isinstance(index.stop, types.Int))) {
             if (index.stop.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 stop = index.stop.__index__()
             }
@@ -406,14 +405,14 @@ Str.prototype.__getitem__ = function(index) {
             step = 1
         } else if (!(types.isinstance(index.step, types.Int))) {
             if (index.step.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 step = index.step.__index__()
             }
         } else {
             step = index.step.int32()
             if (step === 0) {
-                throw new ValueError.$pyclass('slice step cannot be zero')
+                throw new ValueError('slice step cannot be zero')
             }
         }
 
@@ -450,36 +449,36 @@ Str.prototype.__getitem__ = function(index) {
 
         return result
     } else {
-        throw new TypeError.$pyclass('string indices must be integers')
+        throw new TypeError('string indices must be integers')
     }
 }
 
 Str.prototype.__lshift__ = function(other) {
-    throw new TypeError.$pyclass(
+    throw new TypeError(
         "unsupported operand type(s) for <<: 'str' and '" + type_name(other) + "'"
     )
 }
 
 Str.prototype.__rshift__ = function(other) {
-    throw new TypeError.$pyclass(
+    throw new TypeError(
         "unsupported operand type(s) for >>: 'str' and '" + type_name(other) + "'"
     )
 }
 
 Str.prototype.__and__ = function(other) {
-    throw new TypeError.$pyclass(
+    throw new TypeError(
         "unsupported operand type(s) for &: 'str' and '" + type_name(other) + "'"
     )
 }
 
 Str.prototype.__xor__ = function(other) {
-    throw new TypeError.$pyclass(
+    throw new TypeError(
         "unsupported operand type(s) for ^: 'str' and '" + type_name(other) + "'"
     )
 }
 
 Str.prototype.__or__ = function(other) {
-    throw new TypeError.$pyclass(
+    throw new TypeError(
         "unsupported operand type(s) for |: 'str' and '" + type_name(other) + "'"
     )
 }
@@ -490,14 +489,14 @@ Str.prototype.__or__ = function(other) {
 
 Str.prototype.__ifloordiv__ = function(other) {
     if (types.isinstance(other, [types.Complex])) {
-        throw new TypeError.$pyclass("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for //=: 'str' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //=: 'str' and '" + type_name(other) + "'")
     }
 }
 
 Str.prototype.__itruediv__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for /=: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /=: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__iadd__ = function(other) {
@@ -505,17 +504,17 @@ Str.prototype.__iadd__ = function(other) {
         return this.valueOf() + other.valueOf()
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "Can't convert '" + type_name(other) + "' object to str implicitly"
             )
         } else {
-            throw new TypeError.$pyclass('must be str, not ' + type_name(other))
+            throw new TypeError('must be str, not ' + type_name(other))
         }
     }
 }
 
 Str.prototype.__isub__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for -=: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -=: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__imul__ = function(other) {
@@ -527,29 +526,29 @@ Str.prototype.__imod__ = function(other) {
 }
 
 Str.prototype.__ipow__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__ilshift__ = function(other) {
-    throw new TypeError.$pyclass(
+    throw new TypeError(
         "unsupported operand type(s) for <<=: 'str' and '" + type_name(other) + "'"
     )
 }
 
 Str.prototype.__irshift__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for >>=: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for >>=: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__iand__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for &=: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for &=: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__ixor__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for ^=: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ^=: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__ior__ = function(other) {
-    throw new TypeError.$pyclass("unsupported operand type(s) for |=: 'str' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for |=: 'str' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -565,7 +564,7 @@ Str.prototype.join = function(iter) {
     var l = new types.List(iter)
     for (var i = 0; i < l.length; i++) {
         if (!types.isinstance(l[i], Str)) {
-            throw new TypeError.$pyclass('sequence item ' + i + ': expected str instance, ' + type_name(l[i]) + ' found')
+            throw new TypeError('sequence item ' + i + ': expected str instance, ' + type_name(l[i]) + ' found')
         }
     }
     return l.join(this)
@@ -605,7 +604,7 @@ Str.prototype.lstrip = function() {
     } else if (arguments.length === 1) {
         var charsToTrim = arguments[0]
         if (!types.isinstance(charsToTrim, [types.Str])) {
-            throw new TypeError.$pyclass('lstrip arg must be None or str')
+            throw new TypeError('lstrip arg must be None or str')
         }
         var result = this.valueOf()
         var i = 0
@@ -614,7 +613,7 @@ Str.prototype.lstrip = function() {
         }
         return result.slice(i)
     } else {
-        throw new TypeError.$pyclass('lstrip() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('lstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
@@ -624,7 +623,7 @@ Str.prototype.rstrip = function() {
     } else if (arguments.length === 1) {
         var charsToTrim = arguments[0]
         if (!types.isinstance(charsToTrim, [types.Str])) {
-            throw new TypeError.$pyclass('rstrip arg must be None or str')
+            throw new TypeError('rstrip arg must be None or str')
         }
         var result = this.valueOf()
         var i = result.length
@@ -633,7 +632,7 @@ Str.prototype.rstrip = function() {
         }
         return result.slice(0, i)
     } else {
-        throw new TypeError.$pyclass('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
@@ -643,7 +642,7 @@ Str.prototype.strip = function() {
     } else if (arguments.length === 1) {
         var charsToTrim = arguments[0]
         if (!types.isinstance(charsToTrim, [types.Str])) {
-            throw new TypeError.$pyclass('strip arg must be None or str')
+            throw new TypeError('strip arg must be None or str')
         }
         var result = this.valueOf()
         var i = 0
@@ -656,17 +655,17 @@ Str.prototype.strip = function() {
         }
         return result.slice(i, j)
     } else {
-        throw new TypeError.$pyclass('strip() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('strip() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
 Str.prototype.startswith = function(str) {
     if (arguments.length > 1) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'slice indices must be integers or None or have an __index__ method'
         )
     } else if (arguments.length === 0) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'startswith() takes at least 1 argument (0 given)'
         )
     }
@@ -682,7 +681,7 @@ Str.prototype.startswith = function(str) {
             }
             return false
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'TypeError: startswith first arg must be str or a tuple of str, not ' + type_name(str)
             )
         }
@@ -748,7 +747,7 @@ Str.prototype.capitalize = function() {
     if (arguments.length === 0) {
         return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
     } else {
-        throw new TypeError.$pyclass('capitalize() takes no arguments (' + arguments.length + ' given)')
+        throw new TypeError('capitalize() takes no arguments (' + arguments.length + ' given)')
     }
 }
 

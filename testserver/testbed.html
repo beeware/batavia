@@ -112,7 +112,7 @@
     {% if customcode and customcode.compiled %}
     <script id="batavia-customcode"
         type="application/python-bytecode"
-        data-filename="{{ modules.custom.filename }}">
+        data-filename="{{ customcode.filename }}">
 {{ customcode.compiled }}
     </script>
     {% endif %}

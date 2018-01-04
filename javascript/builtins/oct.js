@@ -3,9 +3,9 @@ import * as types from '../types'
 
 export default function oct(args, kwargs) {
     if (!args) {
-        throw new TypeError.$pyclass('oct() takes exactly one argument (0 given)')
+        throw new TypeError('oct() takes exactly one argument (0 given)')
     } else if (args.length !== 1) {
-        throw new TypeError.$pyclass('oct() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('oct() takes exactly one argument (' + args.length + ' given)')
     }
     var value = args[0]
     if (types.isinstance(value, types.Int)) {
@@ -22,7 +22,7 @@ export default function oct(args, kwargs) {
         if (value.__index__) {
             value = value.__index__()
         } else {
-            throw new TypeError.$pyclass('__index__ method needed for non-integer inputs')
+            throw new TypeError('__index__ method needed for non-integer inputs')
         }
     }
     if (value < 0) {

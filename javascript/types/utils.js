@@ -6,8 +6,8 @@ export function inplace_call(f, operand_str, this_obj, other) {
     try {
         return this_obj[f](other)
     } catch (error) {
-        if (error instanceof TypeError.$pyclass) {
-            throw new TypeError.$pyclass(
+        if (error instanceof TypeError) {
+            throw new TypeError(
                 'unsupported operand type(s) for ' +
                 operand_str + ": '" + type_name(this_obj) +
                 "' and '" + type_name(other) + "'"

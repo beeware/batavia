@@ -99,10 +99,12 @@ import vars from './builtins/vars'
 import zip from './builtins/zip'
 
 // Copy in core symbols that need to be in the builtins.
-import { PyObject, NoneType } from './core/types'
-import NotImplementedType from './types/NotImplementedType'
-import { dom } from './modules/dom'
+import { PyObject, None } from './core/types'
 
+import Ellipsis from './types/Ellipsis'
+import NotImplementedType from './types/NotImplementedType'
+
+import { dom } from './modules/dom'
 
 // Copy the exceptions into the builtin namespace.
 import {
@@ -127,14 +129,13 @@ import {
     LookupError,
     MemoryError,
     NameError,
-    NotImplementedException,
     NotImplementedError,
     OSError,
     OverflowError,
     PolyglotError,
     ReferenceError,
     RuntimeError,
-    StandardError,
+    // StandardError,
     StopIteration,
     SyntaxError,
     SystemError,
@@ -149,9 +150,7 @@ import {
     ZeroDivisionError
 } from './core/exceptions'
 
-// Instantiate some Singleton objects.
-var object = PyObject.prototype.__class__
-var None = new NoneType()
+// A singleton instance of NotImplementedType
 var NotImplemented = new NotImplementedType()
 
 // Now that we have an instance of None, we can fill in the blanks where we needed it
@@ -159,6 +158,7 @@ PyObject.prototype.__class__.__base__ = None
 
 export {
     __import__,
+
     abs,
     all,
     any,
@@ -177,6 +177,7 @@ export {
     delattr,
     dict,
     dir,
+    // display,
     divmod,
     enumerate,
     // eval,
@@ -205,6 +206,7 @@ export {
     memoryview,
     min,
     next,
+    PyObject as object,
     oct,
     open,
     ord,
@@ -229,49 +231,73 @@ export {
     zip,
 
     None,
-    NotImplemented,
-    dom,
-    object,
+    Ellipsis,
 
-    BaseException,
-    SystemExit,
-    KeyboardInterrupt,
-    GeneratorExit,
-    Exception,
-    BataviaError,
     ArithmeticError,
     AssertionError,
     AttributeError,
+    BaseException,
+    // BlockingIOError
+    // BrokenPipeError,
     BufferError,
+    // BytesWarning
+    // ChildProcessError,
+    // ConnectionAbortedError,
+    // ConnectionError,
+    // ConnectionRefusedError,
+    // DeprecationWarning,
     EOFError,
     EnvironmentError,
+    Exception,
+    // FileExistsError,
+    // FileNotFoundError,
     FloatingPointError,
+    // FutureWarning,
+    GeneratorExit,
     IOError,
     ImportError,
+    // ImportWarning,
     IndentationError,
     IndexError,
+    // InterruptedError,
+    // IsADirectoryError,
     KeyError,
+    KeyboardInterrupt,
     LookupError,
     MemoryError,
     NameError,
-    NotImplementedException,
+    // NotADirectoryError,
+    NotImplemented,
     NotImplementedError,
     OSError,
     OverflowError,
-    PolyglotError,
+    // PendingDeprecationWarning,
+    // PermissionError,
+    // ProcessLookupError,
     ReferenceError,
+    // ResourceWarning,
     RuntimeError,
-    StandardError,
+    // RuntimeWarning,
     StopIteration,
     SyntaxError,
+    // SyntaxWarning
     SystemError,
+    SystemExit,
     TabError,
+    // TimeoutError,
     TypeError,
     UnboundLocalError,
     UnicodeDecodeError,
     UnicodeEncodeError,
     UnicodeError,
     UnicodeTranslateError,
+    // UnicodeWarning,
+    // UserWarning,
     ValueError,
-    ZeroDivisionError
+    // Warning,
+    ZeroDivisionError,
+
+    BataviaError,
+    PolyglotError,
+    dom
 }

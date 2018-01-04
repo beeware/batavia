@@ -58,17 +58,8 @@ export function getattr_py(obj, attr) {
     var getattr
 
     if (obj.__class__ !== undefined) {
-        if (obj.__class__.$pyclass !== undefined) {
-            getattribute = getattr_raw(obj.__class__.$pyclass.prototype,
-                '__getattribute__')
-            getattr = getattr_raw(obj.__class__.$pyclass.prototype,
-                '__getattr__')
-        } else {
-            getattribute = getattr_raw(obj.__class__,
-                '__getattribute__')
-            getattr = getattr_raw(obj.__class__,
-                '__getattr__')
-        }
+        getattribute = getattr_raw(obj.__class__, '__getattribute__')
+        getattr = getattr_raw(obj.__class__, '__getattr__')
         // if class of object has __getattribute__ method,
         // call that, otherwise, call
         // object.__getattribute__
@@ -81,7 +72,7 @@ export function getattr_py(obj, attr) {
                 val = PyObject.__class__.__getattribute__(obj, attr)
             }
         } catch (err) {
-            if (err instanceof AttributeError.$pyclass &&
+            if (err instanceof AttributeError &&
                 getattr !== undefined && getattr.__get__ !== undefined) {
                 // clear last_exception because it is handled here
                 getattr.$vm.last_exception = null

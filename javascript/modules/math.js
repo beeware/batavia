@@ -2,14 +2,19 @@
 // https://docs.python.org/3/license.html
 //
 import { Buffer } from 'buffer'
-import * as BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 
 import { iter_for_each } from '../core/callables'
 import { BataviaError, OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as builtins from '../builtins'
-import * as types from '../types'
+import { isinstance } from '../types'
+import Bool from '../types/Bool'
+import Complex from '../types/Complex'
+import Float from '../types/Float'
+import Int from '../types/Int'
+import Tuple from '../types/Tuple'
 
 export var math = {
     '__doc__': '',
@@ -17,23 +22,23 @@ export var math = {
     '__name__': 'math',
     '__package__': '',
 
-    'e': new types.Float(Math.E),
-    'nan': new types.Float(NaN),
-    'pi': new types.Float(Math.PI),
-    'inf': new types.Float(Infinity)
+    'e': new Float(Math.E),
+    'nan': new Float(NaN),
+    'pi': new Float(Math.PI),
+    'inf': new Float(Infinity)
 }
 
 var _checkFloat = function(x) {
-    if (types.isinstance(x, types.Complex)) {
+    if (isinstance(x, Complex)) {
         throw new TypeError.$pyclass("can't convert complex to float")
-    } else if (!types.isinstance(x, [types.Bool, types.Float, types.Int])) {
+    } else if (!isinstance(x, [Bool, Float, Int])) {
         throw new TypeError.$pyclass('a float is required')
     }
 }
 
 math.acos = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.acos(x.__float__().val))
+    return new Float(Math.acos(x.__float__().val))
 }
 math.acos.__doc__ = 'acos(x)\n\nReturn the arc cosine (measured in radians) of x.'
 
@@ -43,25 +48,25 @@ math.acosh = function(x) {
     if (!isFinite(result)) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(result)
+    return new Float(result)
 }
 math.acosh.__doc__ = 'acosh(x)\n\nReturn the inverse hyperbolic cosine of x.'
 
 math.asin = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.asin(x.__float__().val))
+    return new Float(Math.asin(x.__float__().val))
 }
 math.asin.__doc__ = 'asin(x)\n\nReturn the arc sine (measured in radians) of x.'
 
 math.asinh = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.asinh(x.__float__().val))
+    return new Float(Math.asinh(x.__float__().val))
 }
 math.asinh.__doc__ = 'asinh(x)\n\nReturn the inverse hyperbolic sine of x.'
 
 math.atan = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.atan(x.__float__().val))
+    return new Float(Math.atan(x.__float__().val))
 }
 math.atan.__doc__ = 'atan(x)\n\nReturn the arc tangent (measured in radians) of x.'
 
@@ -70,7 +75,7 @@ math.atan2 = function(y, x) {
     var xx = x.__float__().val
     _checkFloat(y)
     var yy = y.__float__().val
-    return new types.Float(Math.atan2(yy, xx))
+    return new Float(Math.atan2(yy, xx))
 }
 math.atan2.__doc__ = 'atan2(y, x)\n\nReturn the arc tangent (measured in radians) of y/x.\nUnlike atan(y/x), the signs of both x and y are considered.'
 
@@ -80,16 +85,16 @@ math.atanh = function(x) {
     if (!isFinite(result)) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(Math.atanh(x.__float__().val))
+    return new Float(Math.atanh(x.__float__().val))
 }
 math.atanh.__doc__ = 'atanh(x)\n\nReturn the inverse hyperbolic tangent of x.'
 
 math.ceil = function(x) {
-    if (types.isinstance(x, types.Int)) {
+    if (isinstance(x, Int)) {
         return x
     }
     _checkFloat(x)
-    return new types.Int(Math.ceil(x.__float__().val))
+    return new Int(Math.ceil(x.__float__().val))
 }
 math.ceil.__doc__ = 'ceil(x)\n\nReturn the ceiling of x as an int.\nThis is the smallest integral value >= x.'
 
@@ -107,7 +112,7 @@ math.copysign.__doc__ = 'copysign(x, y)\n\nReturn a float with the magnitude (ab
 
 math.cos = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.cos(x.__float__().val))
+    return new Float(Math.cos(x.__float__().val))
 }
 math.cos.__doc__ = 'cos(x)\n\nReturn the cosine of x (measured in radians).'
 
@@ -117,14 +122,14 @@ math.cosh = function(x) {
     if (!isFinite(result)) {
         throw new OverflowError.$pyclass('math range error')
     }
-    return new types.Float(Math.cosh(x.__float__().val))
+    return new Float(Math.cosh(x.__float__().val))
 }
 math.cosh.__doc__ = 'cosh(x)\n\nReturn the hyperbolic cosine of x.'
 
 math.degrees = function(x) {
     _checkFloat(x)
     // multiply by 180 / math.pi
-    return new types.Float(x.__float__().val * 57.295779513082322865)
+    return new Float(x.__float__().val * 57.295779513082322865)
 }
 math.degrees.__doc__ = 'degrees(x)\n\nConvert angle x from radians to degrees.'
 
@@ -207,13 +212,13 @@ math.erf = function(x) {
     } else {
         result = 1.0 - _erfc_cfrac(xx)
     }
-    return new types.Float(sign * result)
+    return new Float(sign * result)
 }
 math.erf.__doc__ = 'erf(x)\n\nError function at x.'
 
 math.erfc = function(x) {
     _checkFloat(x)
-    return new types.Float(1.0 - math.erf(x).val)
+    return new Float(1.0 - math.erf(x).val)
 }
 math.erfc.__doc__ = 'erfc(x)\n\nComplementary error function at x.'
 
@@ -223,7 +228,7 @@ math.exp = function(x) {
     if (!isFinite(result)) {
         throw new OverflowError.$pyclass('math range error')
     }
-    return new types.Float(result)
+    return new Float(result)
 }
 math.exp.__doc__ = 'exp(x)\n\nReturn e raised to the power of x.'
 
@@ -233,13 +238,13 @@ math.expm1 = function(x) {
     if (!isFinite(result)) {
         throw new OverflowError.$pyclass('math range error')
     }
-    return new types.Float(Math.expm1(x.__float__().val))
+    return new Float(Math.expm1(x.__float__().val))
 }
 math.expm1.__doc__ = 'expm1(x)\n\nReturn exp(x)-1.\nThis function avoids the loss of precision involved in the direct evaluation of exp(x)-1 for small x.'
 
 math.fabs = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.abs(x.__float__().val))
+    return new Float(Math.abs(x.__float__().val))
 }
 math.fabs.__doc__ = 'fabs(x)\n\nReturn the absolute value of the float x.'
 
@@ -266,16 +271,16 @@ var _mul_list = function(l, start, end) {
 math.factorial = function(x) {
     var num
 
-    if (types.isinstance(x, types.Int)) {
+    if (isinstance(x, Int)) {
         num = x.val
-    } else if (types.isinstance(x, types.Float)) {
+    } else if (isinstance(x, Float)) {
         if (!x.is_integer().valueOf()) {
             throw new ValueError.$pyclass('factorial() only accepts integral values')
         }
         num = new BigNumber(x.valueOf())
-    } else if (types.isinstance(x, types.Bool)) {
-        return new types.Int(1)
-    } else if (types.isinstance(x, types.Complex)) {
+    } else if (isinstance(x, Bool)) {
+        return new Int(1)
+    } else if (isinstance(x, Complex)) {
         throw new TypeError.$pyclass("can't convert complex to int")
     } else if (x === null) {
         throw new TypeError.$pyclass('an integer is required (got type NoneType)')
@@ -288,7 +293,7 @@ math.factorial = function(x) {
     }
 
     if (num.isZero()) {
-        return new types.Int(1)
+        return new Int(1)
     }
 
     // a basic pyramid multiplication
@@ -297,16 +302,16 @@ math.factorial = function(x) {
         nums.push(num)
         num = num.sub(1)
     }
-    return new types.Int(_mul_list(nums, 0, nums.length - 1))
+    return new Int(_mul_list(nums, 0, nums.length - 1))
 }
 math.factorial.__doc__ = 'factorial(x) -> Integral\n\nFind x!. Raise a ValueError if x is negative or non-integral.'
 
 math.floor = function(x) {
-    if (types.isinstance(x, types.Int)) {
+    if (isinstance(x, Int)) {
         return x
     }
     _checkFloat(x)
-    return new types.Int(Math.floor(x.__float__().val))
+    return new Int(Math.floor(x.__float__().val))
 }
 math.floor.__doc__ = 'floor(x)\n\nReturn the floor of x as an int.\nThis is the largest integral value <= x.'
 
@@ -318,7 +323,7 @@ math.fmod = function(x, y) {
     if (yy === 0.0) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(xx % yy)
+    return new Float(xx % yy)
 }
 math.fmod.__doc__ = 'fmod(x, y)\n\nReturn fmod(x, y), according to platform C.  x % y may differ.'
 
@@ -327,7 +332,7 @@ math.frexp = function(x) {
     var xx = x.__float__().val
     // check for 0, -0, NaN, Inf, -Inf
     if (xx === 0 || !isFinite(xx)) {
-        return new types.Tuple([x.__float__(), new types.Int(0)])
+        return new Tuple([x.__float__(), new Int(0)])
     }
     var buff = Buffer.alloc(8)
     buff.writeDoubleLE(x, 0)
@@ -351,7 +356,7 @@ math.frexp = function(x) {
     if (b >> 31) {
         num = -num
     }
-    return new types.Tuple([new types.Float(num), new types.Int(exp)])
+    return new Tuple([new Float(num), new Int(exp)])
 }
 math.frexp.__doc__ = 'frexp(x)\n\nReturn the mantissa and exponent of x, as pair (m, e).\nm is a float and e is an int, such that x = m * 2.**e.\nIf x is 0, m and e are both 0.  Else 0.5 <= abs(m) < 1.0.'
 
@@ -359,12 +364,12 @@ math.fsum = function(iterable) {
     var iterobj = builtins.iter([iterable], null)
     var sum = 0.0
     iter_for_each(iterobj, function(val) {
-        if (!types.isinstance(val, [types.Bool, types.Float, types.Int])) {
+        if (!isinstance(val, [Bool, Float, Int])) {
             throw new TypeError.$pyclass('a float is required')
         }
         sum += val.__float__().val
     })
-    return new types.Float(sum)
+    return new Float(sum)
 }
 math.fsum.__doc__ = 'fsum(iterable)\n\nReturn an accurate floating point sum of values in the iterable.\nAssumes IEEE-754 floating point arithmetic.'
 
@@ -380,7 +385,7 @@ math.gamma = function(x) {
         }
         // analytic continuation using reflection formula
         // gamma(z) * gamma(1-z) = pi / sin(pi * z)
-        return new types.Float(Math.PI / Math.sin(Math.PI * xx) / math.gamma(new types.Float(1 - xx)))
+        return new Float(Math.PI / Math.sin(Math.PI * xx) / math.gamma(new Float(1 - xx)))
     }
 
     // Split the function domain into three intervals:
@@ -396,7 +401,7 @@ math.gamma = function(x) {
     var gamma = 0.577215664901532860606512090 // Euler's gamma constant
 
     if (xx < 0.001) {
-        return new types.Float(1.0 / (x * (1.0 + gamma * x)))
+        return new Float(1.0 / (x * (1.0 + gamma * x)))
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -468,7 +473,7 @@ math.gamma = function(x) {
             }
         }
 
-        return new types.Float(result)
+        return new Float(result)
     }
 
     // /////////////////////////////////////////////////////////////////////////
@@ -484,10 +489,10 @@ math.gamma = function(x) {
 math.gamma.__doc__ = 'gamma(x)\n\nGamma function at x.'
 
 math.gcd = function(x, y) {
-    if (!types.isinstance(x, [types.Bool, types.Int])) {
+    if (!isinstance(x, [Bool, Int])) {
         throw new TypeError.$pyclass("'" + type_name(x) + "' object cannot be interpreted as an integer")
     }
-    if (!types.isinstance(y, [types.Bool, types.Int])) {
+    if (!isinstance(y, [Bool, Int])) {
         throw new TypeError.$pyclass("'" + type_name(y) + "' object cannot be interpreted as an integer")
     }
     var xx = x.__trunc__().val.abs()
@@ -504,7 +509,7 @@ math.gcd = function(x, y) {
         yy = xx.mod(yy)
         xx = t
     }
-    return new types.Int(xx)
+    return new Int(xx)
 }
 math.gcd.__doc__ = 'gcd(x, y) -> int\n\ngreatest common divisor of x and y'
 
@@ -513,7 +518,7 @@ math.hypot = function(x, y) {
     var yy = y.__float__().val
     _checkFloat(x)
     var xx = x.__float__().val
-    return new types.Float(Math.hypot(xx, yy))
+    return new Float(Math.hypot(xx, yy))
 }
 math.hypot.__doc__ = 'hypot(x, y)\n\nReturn the Euclidean distance, sqrt(x*x + y*y).'
 
@@ -532,14 +537,14 @@ math.isclose = function(args, kwargs) {
     }
     var rel_tol = 1e-09
     if ('rel_tol' in kwargs) {
-        if (!types.isinstance(kwargs.rel_tol, [types.Bool, types.Float, types.Int])) {
+        if (!isinstance(kwargs.rel_tol, [Bool, Float, Int])) {
             throw new TypeError.$pyclass('a float is required')
         }
         rel_tol = kwargs.rel_tol.__float__().val
     }
     var abs_tol = 0.0
     if ('abs_tol' in kwargs) {
-        if (!types.isinstance(kwargs.abs_tol, [types.Bool, types.Float, types.Int])) {
+        if (!isinstance(kwargs.abs_tol, [Bool, Float, Int])) {
             throw new TypeError.$pyclass('a float is required')
         }
         abs_tol = kwargs.abs_tol.__float__().val
@@ -552,49 +557,49 @@ math.isclose = function(args, kwargs) {
     var a = args[0].__float__().val
     var b = args[1].__float__().val
     if (a === b) {
-        return new types.Bool(true)
+        return new Bool(true)
     }
     if ((a === Infinity) || (a === -Infinity) || (b === Infinity) || (b === -Infinity)) {
-        return new types.Bool(false)
+        return new Bool(false)
     }
     if (isNaN(a) || isNaN(b)) {
-        return new types.Bool(false)
+        return new Bool(false)
     }
     var delta = Math.abs(a - b)
     if ((delta <= abs_tol) ||
         (delta <= Math.abs(rel_tol * a)) ||
         (delta <= Math.abs(rel_tol * a))) {
-        return new types.Bool(true)
+        return new Bool(true)
     }
-    return new types.Bool(false)
+    return new Bool(false)
 }
 math.isclose.$pyargs = true
 math.isclose.__doc__ = 'is_close(a, b, *, rel_tol=1e-9, abs_tol=0.0) -> bool\n\nDetermine whether two floating point numbers are close in value.\n\n   rel_tol\n       maximum difference for being considered "close", relative to the\n       magnitude of the input values\n    abs_tol\n       maximum difference for being considered "close", regardless of the\n       magnitude of the input values\n\nReturn True if a is close in value to b, and False otherwise.\n\nFor the values to be considered close, the difference between them\nmust be smaller than at least one of the tolerances.\n\n-inf, inf and NaN behave similarly to the IEEE 754 Standard.  That\nis, NaN is not close to anything, even itself.  inf and -inf are\nonly close to themselves.'
 
 math.isfinite = function(x) {
     _checkFloat(x)
-    return new types.Bool(isFinite(x.__float__().val))
+    return new Bool(isFinite(x.__float__().val))
 }
 math.isfinite.__doc__ = 'isfinite(x) -> bool\n\nReturn True if x is neither an infinity nor a NaN, and False otherwise.'
 
 math.isinf = function(x) {
     _checkFloat(x)
     var xx = x.__float__().val
-    return new types.Bool(xx === Infinity || xx === -Infinity)
+    return new Bool(xx === Infinity || xx === -Infinity)
 }
 math.isinf.__doc__ = 'isinf(x) -> bool\n\nReturn True if x is a positive or negative infinity, and False otherwise.'
 
 math.isnan = function(x) {
     _checkFloat(x)
     var xx = x.__float__().val
-    return new types.Bool(isNaN(xx))
+    return new Bool(isNaN(xx))
 }
 math.isnan.__doc__ = 'isnan(x) -> bool\n\nReturn True if x is a NaN (not a number), and False otherwise.'
 
 math.ldexp = function(x, i) {
     _checkFloat(x)
     var xx = x.__float__()
-    if (!types.isinstance(i, [types.Bool, types.Int])) {
+    if (!isinstance(i, [Bool, Int])) {
         throw new TypeError.$pyclass('Expected an int as second argument to ldexp.')
     }
     if (xx.val === 0.0) {
@@ -610,7 +615,7 @@ math.ldexp = function(x, i) {
     if (!isFinite(result)) {
         throw new OverflowError.$pyclass('math range error')
     }
-    return new types.Float(result)
+    return new Float(result)
 }
 math.ldexp.__doc__ = 'ldexp(x, i)\n\nReturn x * (2**i).'
 
@@ -627,12 +632,12 @@ math.lgamma = function(x) {
         // analytic continuation using reflection formula
         // gamma(z) * gamma(1-z) = pi / sin(pi * z)
         // lgamma(z) + lgamma(1-z) = log(pi / sin |pi * z|)
-        return new types.Float(Math.log(Math.abs(Math.PI / Math.sin(Math.PI * xx))) - math.lgamma(new types.Float(1 - xx)))
+        return new Float(Math.log(Math.abs(Math.PI / Math.sin(Math.PI * xx))) - math.lgamma(new Float(1 - xx)))
     }
 
     if (xx < 12.0) {
         var gx = math.gamma(x).val
-        return new types.Float(Math.log(Math.abs(gx)))
+        return new Float(Math.log(Math.abs(gx)))
     }
 
     // Abramowitz and Stegun 6.1.41
@@ -661,7 +666,7 @@ math.lgamma = function(x) {
 
     var halfLogTwoPi = 0.91893853320467274178032973640562
     var logGamma = (xx - 0.5) * Math.log(xx) - xx + halfLogTwoPi + series
-    return new types.Float(logGamma)
+    return new Float(logGamma)
 }
 math.lgamma.__doc__ = 'lgamma(x)\n\nNatural logarithm of absolute value of Gamma function at x.'
 
@@ -671,43 +676,43 @@ math.log = function(x, base) {
     }
 
     // special case if both arguments are very large integers
-    if (types.isinstance(x, types.Int) &&
-        types.isinstance(base, types.Int)) {
+    if (isinstance(x, Int) &&
+        isinstance(base, Int)) {
         return _log2_int(x).__div__(_log2_int(base))
     }
 
     // special case if x is bool it should behave like integer
-    if (types.isinstance(x, types.Bool)) {
+    if (isinstance(x, Bool)) {
         if (x.valueOf()) {
-            x = new types.Int(1)
+            x = new Int(1)
         } else {
-            x = new types.Int(0)
+            x = new Int(0)
         }
     }
 
     // special base is bool it should behave like integer
-    if (types.isinstance(base, types.Bool)) {
+    if (isinstance(base, Bool)) {
         if (base.valueOf()) {
-            base = new types.Int(1)
+            base = new Int(1)
         } else {
-            base = new types.Int(0)
+            base = new Int(0)
         }
     }
 
     _checkFloat(x)
-    if (x.__le__(new types.Float(0.0))) {
+    if (x.__le__(new Float(0.0))) {
         throw new ValueError.$pyclass('math domain error')
     }
-    if (x.__eq__(new types.Float(1.0)) && types.isinstance(base, types.Int) && base.val.gt(1)) {
-        return new types.Float(0.0)
+    if (x.__eq__(new Float(1.0)) && isinstance(base, Int) && base.val.gt(1)) {
+        return new Float(0.0)
     }
     if (typeof base !== 'undefined') {
         _checkFloat(base)
-        if (base.__le__(new types.Float(0.0))) {
+        if (base.__le__(new Float(0.0))) {
             throw new ValueError.$pyclass('math domain error')
         }
         var lg_base
-        if (types.isinstance(base, types.Int)) {
+        if (isinstance(base, Int)) {
             lg_base = _log2_int(base).val
         } else {
             var bb = base.__float__().val
@@ -719,28 +724,28 @@ math.log = function(x, base) {
         if (lg_base === 0.0) {
             throw new ZeroDivisionError.$pyclass('float division by zero')
         }
-        return new types.Float(math.log2(x).val / lg_base)
+        return new Float(math.log2(x).val / lg_base)
     }
 
-    if (types.isinstance(x, types.Int)) {
+    if (isinstance(x, Int)) {
         if (x.val.isZero() || x.val.isNeg()) {
             throw new ValueError.$pyclass('math domain error')
         }
-        if (x.__ge__(types.Int.prototype.MAX_FLOAT)) {
-            return _log2_int(x).__mul__(new types.Float(0.6931471805599453))
+        if (x.__ge__(Int.prototype.MAX_FLOAT)) {
+            return _log2_int(x).__mul__(new Float(0.6931471805599453))
         }
     }
-    return new types.Float(Math.log(x.__float__().val))
+    return new Float(Math.log(x.__float__().val))
 }
 math.log.__doc__ = 'log(x[, base])\n\nReturn the logarithm of x to the given base.\nIf the base not specified, returns the natural logarithm (base e) of x.'
 
 math.log10 = function(x) {
     _checkFloat(x)
-    if (types.isinstance(x, types.Int)) {
+    if (isinstance(x, Int)) {
         if (x.val.isZero() || x.val.isNeg()) {
             throw new ValueError.$pyclass('math domain error')
         }
-        if (x.__ge__(types.Int.prototype.MAX_FLOAT)) {
+        if (x.__ge__(Int.prototype.MAX_FLOAT)) {
             return _log2_int(x) * 0.30102999566398114
         }
     }
@@ -748,7 +753,7 @@ math.log10 = function(x) {
     if (xx <= 0.0) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(Math.log10(xx))
+    return new Float(Math.log10(xx))
 }
 math.log10.__doc__ = 'log10(x)\n\nReturn the base 10 logarithm of x.'
 
@@ -758,7 +763,7 @@ math.log1p = function(x) {
     if (xx <= -1.0) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(Math.log1p(xx))
+    return new Float(Math.log1p(xx))
 }
 math.log1p.__doc__ = 'log1p(x)\n\nReturn the natural logarithm of 1+x (base e).\nThe result is computed in a way which is accurate for x near zero.'
 
@@ -769,26 +774,26 @@ var _log2_int = function(x) {
     }
     var bits = x._bits()
     if (bits.length < 54) {
-        return new types.Float(Math.log2(x.__float__().val))
+        return new Float(Math.log2(x.__float__().val))
     }
     // express x as M * (2**exp) where 0 <= M < 1.0
     var exp = bits.length
     bits = bits.slice(0, 54)
     var num = new BigNumber(bits.join('') || 0, 2).valueOf()
     num = num / 18014398509481984.0
-    return new types.Float(Math.log2(num) + exp)
+    return new Float(Math.log2(num) + exp)
 }
 
 math.log2 = function(x) {
     _checkFloat(x)
-    if (types.isinstance(x, types.Int)) {
+    if (isinstance(x, Int)) {
         return _log2_int(x)
     }
     var result = Math.log2(x.__float__().val)
     if (!isFinite(result)) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(Math.log2(x.__float__().val))
+    return new Float(Math.log2(x.__float__().val))
 }
 math.log2.__doc__ = 'log2(x)\n\nReturn the base 2 logarithm of x.'
 
@@ -797,8 +802,8 @@ math.modf = function(x) {
     var xx = x.__float__().val
     var frac = xx % 1
     var int = Math.round(xx - frac)
-    return new types.Tuple([new types.Float(frac),
-        new types.Float(int)])
+    return new Tuple([new Float(frac),
+        new Float(int)])
 }
 math.modf.__doc__ = 'modf(x)\n\nReturn the fractional and integer parts of x.  Both results carry the sign\nof x and are floats.'
 
@@ -817,20 +822,20 @@ math.pow = function(x, y) {
     if (!isFinite(result)) {
         throw new OverflowError.$pyclass('math range error')
     }
-    return new types.Float(result)
+    return new Float(result)
 }
 math.pow.__doc__ = 'pow(x, y)\n\nReturn x**y (x to the power of y).'
 
 math.radians = function(x) {
     _checkFloat(x)
     // multiply by math.pi / 180
-    return new types.Float(x.__float__().val * 0.017453292519943295)
+    return new Float(x.__float__().val * 0.017453292519943295)
 }
 math.radians.__doc__ = 'radians(x)\n\nConvert angle x from degrees to radians.'
 
 math.sin = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.sin(x.__float__().val))
+    return new Float(Math.sin(x.__float__().val))
 }
 math.sin.__doc__ = 'sin(x)\n\nReturn the sine of x (measured in radians).'
 
@@ -840,7 +845,7 @@ math.sinh = function(x) {
     if (!isFinite(result)) {
         throw new OverflowError.$pyclass('math range error')
     }
-    return new types.Float(result)
+    return new Float(result)
 }
 math.sinh.__doc__ = 'sinh(x)\n\nReturn the hyperbolic sine of x.'
 
@@ -850,19 +855,19 @@ math.sqrt = function(x) {
     if (!isFinite(result)) {
         throw new ValueError.$pyclass('math domain error')
     }
-    return new types.Float(result)
+    return new Float(result)
 }
 math.sqrt.__doc__ = 'sqrt(x)\n\nReturn the square root of x.'
 
 math.tan = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.tan(x.__float__().val))
+    return new Float(Math.tan(x.__float__().val))
 }
 math.tan.__doc__ = 'tan(x)\n\nReturn the tangent of x (measured in radians).'
 
 math.tanh = function(x) {
     _checkFloat(x)
-    return new types.Float(Math.tanh(x.__float__().val))
+    return new Float(Math.tanh(x.__float__().val))
 }
 math.tanh.__doc__ = 'tanh(x)\n\nReturn the hyperbolic tangent of x.'
 

@@ -5,9 +5,10 @@
    parser than when passed from the parser to the interpreter; e.g.
    the parser only returns E_EOF when it hits EOF immediately, and it
    never returns E_OK. */
+import { BataviaError } from '../../core/exceptions'
+
 import * as types from '../../types'
 import * as builtins from '../../builtins'
-import { BataviaError } from '../../core/exceptions'
 
 export const EOF = -1
 export const E_OK = 10 /* No error */

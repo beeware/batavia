@@ -31,7 +31,7 @@ Generator.prototype.__next__ = function() {
 
 Generator.prototype.send = function(value) {
     if (arguments.length !== 1) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'send() takes exactly one argument (' + arguments.length + ' given)'
         )
     }
@@ -40,7 +40,7 @@ Generator.prototype.send = function(value) {
         if (value !== null) {
             if (!types.isinstance(value, types.NoneType)) {
                 // It's illegal to send a non-None value on first call.
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "can't send non-None value to a just-started generator"
                 )
             }
@@ -48,7 +48,7 @@ Generator.prototype.send = function(value) {
         this.started = true
     }
     if (this.finished) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     this.gi_frame.stack.push(value)
     try {
@@ -58,7 +58,7 @@ Generator.prototype.send = function(value) {
         throw e
     }
     if (this.finished) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     return yieldval
 }
@@ -66,20 +66,20 @@ Generator.prototype.send = function(value) {
 Generator.prototype['throw'] = function(ExcType, value, traceback) {
     var yf_gen = yf_subgenerator(this)
     if (yf_gen !== null) {
-        if (ExcType instanceof GeneratorExit.$pyclass ||
-                value instanceof GeneratorExit.$pyclass) {
+        if (ExcType instanceof GeneratorExit ||
+                value instanceof GeneratorExit) {
             call_method(yf_gen, 'close', [])
         } else {
             try {
                 return call_method(yf_gen, 'throw', [ExcType, value, traceback])
             } catch (e) {
-                if (!(e instanceof AttributeError.$pyclass)) {
+                if (!(e instanceof AttributeError)) {
                     throw e
                 }
             }
         }
     }
-    if (ExcType instanceof BaseException.$pyclass) {
+    if (ExcType instanceof BaseException) {
         value = ExcType
         ExcType = ExcType.__class__
     } else {
@@ -97,17 +97,16 @@ Generator.prototype['throw'] = function(ExcType, value, traceback) {
         throw e
     }
     if (this.finished) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     return yieldval
 }
 
 Generator.prototype['close'] = function() {
     try {
-        return this['throw'](new GeneratorExit.$pyclass())
+        return this['throw'](new GeneratorExit())
     } catch (e) {
-        if (e instanceof GeneratorExit.$pyclass ||
-                e instanceof StopIteration.$pyclass) {
+        if (e instanceof GeneratorExit || e instanceof StopIteration) {
             this.vm.last_exception = null
             return null
         }

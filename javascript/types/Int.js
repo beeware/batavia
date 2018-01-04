@@ -1,4 +1,4 @@
-import * as BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 
 import {
     AttributeError,
@@ -9,10 +9,9 @@ import {
     ValueError,
     ZeroDivisionError
 } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyObject, None } from '../core/types'
 import * as version from '../core/version'
 
-import { None } from '../builtins'
 import * as types from '../types'
 
 import * as utils from './utils'
@@ -54,7 +53,7 @@ Int.prototype.MIN_FLOAT = MIN_FLOAT
 
 Int.prototype.int32 = function() {
     if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-        throw new IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
+        throw new IndexError("cannot fit 'int' into an index-sized integer")
     }
     return parseInt(this.valueOf())
 }
@@ -93,7 +92,7 @@ var can_float = function(num) {
 
 Int.prototype.__float__ = function() {
     if (!can_float(this.val)) {
-        throw new OverflowError.$pyclass('int too large to convert to float')
+        throw new OverflowError('int too large to convert to float')
     }
     return new types.Float(parseFloat(this.val))
 }
@@ -120,11 +119,11 @@ Int.prototype.__lt__ = function(other) {
             return this.val.lt(other.valueOf())
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: int() < ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'<' not supported between instances of 'int' and '" +
                     type_name(other) + "'"
                 )
@@ -132,11 +131,11 @@ Int.prototype.__lt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: int() < NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'<' not supported between instances of 'int' and 'NoneType'"
             )
         }
@@ -157,11 +156,11 @@ Int.prototype.__le__ = function(other) {
             return this.val.lte(other.valueOf())
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: int() <= ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'<=' not supported between instances of 'int' and '" +
                     type_name(other) + "'"
                 )
@@ -169,11 +168,11 @@ Int.prototype.__le__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: int() <= NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'<=' not supported between instances of 'int' and 'NoneType'"
             )
         }
@@ -212,11 +211,11 @@ Int.prototype.__gt__ = function(other) {
             return this.val.gt(other.valueOf())
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: int() > ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'>' not supported between instances of 'int' and '" +
                     type_name(other) + "'"
                 )
@@ -224,11 +223,11 @@ Int.prototype.__gt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: int() > NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'>' not supported between instances of 'int' and 'NoneType'"
             )
         }
@@ -249,11 +248,11 @@ Int.prototype.__ge__ = function(other) {
             return this.val.gte(other.valueOf())
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'unorderable types: int() >= ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     "'>=' not supported between instances of 'int' and '" +
                     type_name(other) + "'"
                 )
@@ -261,11 +260,11 @@ Int.prototype.__ge__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 'unorderable types: int() >= NoneType()'
             )
         } else {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 "'>=' not supported between instances of 'int' and 'NoneType'"
             )
         }
@@ -330,7 +329,7 @@ Int.prototype.__pow__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__pow__(other)
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -355,25 +354,25 @@ Int.prototype.__floordiv__ = function(other) {
             }
             return new Int(quo_floor)
         } else {
-            throw new ZeroDivisionError.$pyclass('integer division or modulo by zero')
+            throw new ZeroDivisionError('integer division or modulo by zero')
         }
     } else if (types.isinstance(other, types.Float)) {
         var f = this.__float__()
         if (other.valueOf()) {
             return f.__floordiv__(other)
         } else {
-            throw new ZeroDivisionError.$pyclass('float divmod()')
+            throw new ZeroDivisionError('float divmod()')
         }
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Int(this.val.floor())
         } else {
-            throw new ZeroDivisionError.$pyclass('integer division or modulo by zero')
+            throw new ZeroDivisionError('integer division or modulo by zero')
         }
     } else if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for //: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -381,11 +380,11 @@ Int.prototype.__truediv__ = function(other) {
     // if it is dividing by another int, we can allow both to be bigger than floats
     if (types.isinstance(other, Int)) {
         if (other.val.isZero()) {
-            throw new ZeroDivisionError.$pyclass('division by zero')
+            throw new ZeroDivisionError('division by zero')
         }
         var result = this.val.div(other.val)
         if (!can_float(result)) {
-            throw new OverflowError.$pyclass('integer division result too large for a float')
+            throw new OverflowError('integer division result too large for a float')
         }
         // check for negative 0
         if (other.val.lt(0) && result.isZero()) {
@@ -404,7 +403,7 @@ Int.prototype.__truediv__ = function(other) {
         var castToComplex = new types.Complex(this.valueOf())
         return castToComplex.__truediv__(other.valueOf())
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -423,13 +422,13 @@ Int.prototype.__mul__ = function(other) {
         }
     } else if (types.isinstance(other, types.List)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+            throw new OverflowError("cannot fit 'int' into an index-sized integer")
         }
         if ((other.length === 0) || (this.valueOf() < 0)) {
             return new types.List()
         }
         if (this.valueOf() > 4294967295) {
-            throw new MemoryError.$pyclass('')
+            throw new MemoryError('')
         }
         result = new types.List()
         for (i = 0; i < this.valueOf(); i++) {
@@ -438,20 +437,20 @@ Int.prototype.__mul__ = function(other) {
         return result
     } else if (types.isinstance(other, types.Str)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+            throw new OverflowError("cannot fit 'int' into an index-sized integer")
         }
         if (this.val.isNegative()) {
             return ''
         }
         var size = this.val.mul(other.length)
         if (size.gt(MAX_INT.val)) {
-            throw new OverflowError.$pyclass('repeated string is too long')
+            throw new OverflowError('repeated string is too long')
         }
         if (other.length === 0) {
             return ''
         }
         if ((this.valueOf() > 4294967295) || (this.valueOf() < -4294967296)) {
-            throw new MemoryError.$pyclass('')
+            throw new MemoryError('')
         }
 
         result = ''
@@ -461,13 +460,13 @@ Int.prototype.__mul__ = function(other) {
         return result
     } else if (types.isinstance(other, types.Tuple)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+            throw new OverflowError("cannot fit 'int' into an index-sized integer")
         }
         if ((other.length === 0) || (this.valueOf() < 0)) {
             return new types.Tuple()
         }
         if (this.valueOf() > 4294967295) {
-            throw new MemoryError.$pyclass('')
+            throw new MemoryError('')
         }
         result = new types.Tuple()
         for (i = 0; i < this.valueOf(); i++) {
@@ -476,24 +475,24 @@ Int.prototype.__mul__ = function(other) {
         return result
     } else if (types.isinstance(other, types.Bytes)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+            throw new OverflowError("cannot fit 'int' into an index-sized integer")
         }
         if ((other.__len__() <= 0) || (this.valueOf() <= 0)) {
             return new types.Bytes('')
         }
         if (this.valueOf() > 4294967295) {
-            throw new OverflowError.$pyclass('repeated bytes are too long')
+            throw new OverflowError('repeated bytes are too long')
         }
         return other.__mul__(this)
     } else if (types.isinstance(other, types.Bytearray)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
+            throw new OverflowError("cannot fit 'int' into an index-sized integer")
         }
         if ((other.length <= 0) || (this.valueOf() <= 0)) {
             return new types.Bytearray('')
         }
         if (this.valueOf() > 4294967295) {
-            throw new MemoryError.$pyclass('')
+            throw new MemoryError('')
         }
         result = new types.Bytearray('')
         for (i = 0; i < this.valueOf(); i++) {
@@ -502,12 +501,12 @@ Int.prototype.__mul__ = function(other) {
         return result
     } else if (types.isinstance(other, types.Complex)) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass('int too large to convert to float')
+            throw new OverflowError('int too large to convert to float')
         } else {
             return new types.Complex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber())
         }
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for *: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for *: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -516,25 +515,25 @@ Int.prototype.__mod__ = function(other) {
         if (!other.val.isZero()) {
             return new Int(this.val.mod(other.val).add(other.val).mod(other.val))
         } else {
-            throw new ZeroDivisionError.$pyclass('integer division or modulo by zero')
+            throw new ZeroDivisionError('integer division or modulo by zero')
         }
     } else if (types.isinstance(other, types.Float)) {
         var f = this.__float__()
         if (other.valueOf()) {
             return f.__mod__(other)
         } else {
-            throw new ZeroDivisionError.$pyclass('float modulo')
+            throw new ZeroDivisionError('float modulo')
         }
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Int(0)
         } else {
-            throw new ZeroDivisionError.$pyclass('integer division or modulo by zero')
+            throw new ZeroDivisionError('integer division or modulo by zero')
         }
     } else if (types.isinstance(other, types.Complex)) {
-        throw new TypeError.$pyclass("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -551,12 +550,12 @@ Int.prototype.__add__ = function(other) {
         }
     } else if (types.isinstance(other, types.Complex)) {
         if (this.__float__() > MAX_FLOAT || this.__float__() < MIN_FLOAT) {
-            throw new OverflowError.$pyclass('int too large to convert to float')
+            throw new OverflowError('int too large to convert to float')
         } else {
             return new types.Complex(this.val.add(other.real).toNumber(), other.imag)
         }
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for +: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for +: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -572,16 +571,16 @@ Int.prototype.__sub__ = function(other) {
             return this
         }
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")
     }
 }
 
 Int.prototype.__getitem__ = function(index) {
-    throw new TypeError.$pyclass("'int' object is not subscriptable")
+    throw new TypeError("'int' object is not subscriptable")
 }
 
 Int.prototype.__setattr__ = function(other) {
-    throw new AttributeError.$pyclass("'int' object has no attribute '" + other + "'")
+    throw new AttributeError("'int' object has no attribute '" + other + "'")
 }
 /**************************************************
  * Bitshift and logical ops
@@ -656,13 +655,13 @@ Int.prototype.__lshift__ = function(other) {
         // Anything beyond ~8192 bits is too inefficient to convert to a binary array
         // due to Bignumber.js.
         if (other.val.gt(REASONABLE_SHIFT.val)) {
-            throw new OverflowError.$pyclass('batavia: shift too large')
+            throw new OverflowError('batavia: shift too large')
         }
         if (other.val.gt(MAX_SHIFT.val)) {
-            throw new OverflowError.$pyclass('Python int too large to convert to C ssize_t')
+            throw new OverflowError('Python int too large to convert to C ssize_t')
         }
         if (other.valueOf() < 0) {
-            throw new ValueError.$pyclass('negative shift count')
+            throw new ValueError('negative shift count')
         }
         var arr = toArray(this)
         for (var i = 0; i < other.valueOf(); i++) {
@@ -676,7 +675,7 @@ Int.prototype.__lshift__ = function(other) {
             return this
         }
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for <<: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -688,13 +687,13 @@ Int.prototype.__rshift__ = function(other) {
         // Anything beyond ~8192 bits is too inefficient to convert to a binary array
         // due to Bignumber.js.
         if (other.val.gt(MAX_INT.val) || other.val.lt(MIN_INT.val)) {
-            throw new OverflowError.$pyclass('Python int too large to convert to C ssize_t')
+            throw new OverflowError('Python int too large to convert to C ssize_t')
         }
         if (other.val.gt(REASONABLE_SHIFT.val)) {
-            throw new ValueError.$pyclass('batavia: shift too large')
+            throw new ValueError('batavia: shift too large')
         }
         if (other.val.isNegative()) {
-            throw new ValueError.$pyclass('negative shift count')
+            throw new ValueError('negative shift count')
         }
         if (this.val.isZero()) {
             return this
@@ -710,7 +709,7 @@ Int.prototype.__rshift__ = function(other) {
         }
         return this
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for >>: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -740,7 +739,7 @@ Int.prototype.__and__ = function(other) {
         }
         return new Int(0)
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for &: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -772,7 +771,7 @@ Int.prototype.__xor__ = function(other) {
         }
         return this
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for ^: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^: 'int' and '" + type_name(other) + "'")
     }
 }
 
@@ -811,7 +810,7 @@ Int.prototype.__or__ = function(other) {
         }
         return this
     } else {
-        throw new TypeError.$pyclass("unsupported operand type(s) for |: 'int' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |: 'int' and '" + type_name(other) + "'")
     }
 }
 

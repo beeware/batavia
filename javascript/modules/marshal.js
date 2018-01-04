@@ -27,7 +27,7 @@
 
  *************************************************************************/
 import { Buffer } from 'buffer'
-import * as BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 import * as base64js from 'base64-js'
 
 import * as types from '../types'
@@ -232,7 +232,7 @@ marshal.r_float = function(vm, p) {
     fhi = (buf[6] & 0xF) << 24
 
     if (e === 2047) {
-        throw builtins.RuntimeError.$pyclass("can't unpack IEEE 754 special value on non-IEEE platform")
+        throw builtins.RuntimeError("can't unpack IEEE 754 special value on non-IEEE platform")
     }
 
     /* Third byte */
@@ -423,7 +423,7 @@ marshal.r_object = function(vm, p) {
             fhi = (buf[6] & 0xF) << 24
 
             if (e === 2047) {
-                throw builtins.RuntimeError.$pyclass("can't unpack IEEE 754 special value on non-IEEE platform")
+                throw builtins.RuntimeError("can't unpack IEEE 754 special value on non-IEEE platform")
             }
 
             /* Third byte */
@@ -820,9 +820,9 @@ marshal.read_object = function(vm, p) {
 
 marshal.load_pyc = function(vm, payload) {
     if (payload === null || payload.length === 0) {
-        throw new BataviaError.$pyclass('Empty PYC payload')
+        throw new BataviaError('Empty PYC payload')
     } else if (payload.startswith('ERROR:')) {
-        throw new BataviaError.$pyclass('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'))
+        throw new BataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'))
     }
     return marshal.read_object(vm, new PYCFile(base64js.toByteArray(payload)))
 }

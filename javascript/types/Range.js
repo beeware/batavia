@@ -1,12 +1,11 @@
-import * as BigNumber from 'bignumber.js'
+import BigNumber from 'bignumber.js'
 
 import { IndexError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyObject, None } from '../core/types'
 
-import { None } from '../builtins'
 import * as types from '../types'
 
-import * as RangeIterator from './RangeIterator'
+import RangeIterator from './RangeIterator'
 
 /*************************************************************************
  * An implementation of range
@@ -105,13 +104,13 @@ Range.prototype.__getitem__ = function(index) {
         var idx = index.bigNumber()
         if (idx < 0) {
             if (idx.neg().gt(this.length)) {
-                throw new IndexError.$pyclass('range object index out of range')
+                throw new IndexError('range object index out of range')
             } else {
                 return new types.Int(get_single_item(idx, this))
             }
         } else {
             if (idx.gte(this.length)) {
-                throw new IndexError.$pyclass('range object index out of range')
+                throw new IndexError('range object index out of range')
             } else {
                 return new types.Int(get_single_item(idx, this))
             }
@@ -123,7 +122,7 @@ Range.prototype.__getitem__ = function(index) {
             start = index.start
         } else if (!types.isinstance(index.start, types.Int)) {
             if (index.start.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 start = index.start.__index__()
             }
@@ -135,7 +134,7 @@ Range.prototype.__getitem__ = function(index) {
             stop = index.stop
         } else if (!types.isinstance(index.stop, types.Int)) {
             if (index.stop.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 stop = index.stop.__index__()
             }
@@ -147,14 +146,14 @@ Range.prototype.__getitem__ = function(index) {
             step = 1
         } else if (!(types.isinstance(index.step, types.Int))) {
             if (index.step.__index__ === undefined) {
-                throw new TypeError.$pyclass('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 step = index.step.__index__()
             }
         } else {
             step = index.step.int32()
             if (step === 0) {
-                throw new ValueError.$pyclass('slice step cannot be zero')
+                throw new ValueError('slice step cannot be zero')
             }
         }
 
@@ -192,14 +191,14 @@ Range.prototype.__getitem__ = function(index) {
             new types.Int(this.step.mul(step)))
     } else {
         var msg = 'range indices must be integers or slices, not '
-        throw new TypeError.$pyclass(msg + type_name(index))
+        throw new TypeError(msg + type_name(index))
     }
 }
 
 Range.prototype.__add__ = function(other) {
     if (types.isinstance(other, types.Bool)) {
         var msg = 'unsupported operand type(s) for +: '
-        throw new TypeError.$pyclass(msg +
+        throw new TypeError(msg +
                                      '\'' + type_name(this) +
                                      '\' and \'' +
                                      type_name(other) + '\'')

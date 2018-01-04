@@ -6,10 +6,10 @@ import tuple from './tuple'
 
 export default function min(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (!args || args.length === 0) {
-        throw new TypeError.$pyclass('min expected 1 arguments, got ' + args.length)
+        throw new TypeError('min expected 1 arguments, got ' + args.length)
     }
 
     var iterobj
@@ -17,7 +17,7 @@ export default function min(args, kwargs) {
         iterobj = tuple([args], None).__iter__()
     } else {
         if (!args[0].__iter__) {
-            throw new TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
+            throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
         }
         iterobj = args[0].__iter__()
     }
@@ -26,11 +26,11 @@ export default function min(args, kwargs) {
     try {
         var min = iterobj.__next__()
     } catch (err) {
-        if (err instanceof StopIteration.$pyclass) {
+        if (err instanceof StopIteration) {
             if ('default' in kwargs) {
                 return kwargs['default']
             } else {
-                throw new ValueError.$pyclass('min() arg is an empty sequence')
+                throw new ValueError('min() arg is an empty sequence')
             }
         } else {
             throw err
@@ -45,7 +45,7 @@ export default function min(args, kwargs) {
             }
         }
     } catch (err) {
-        if (!(err instanceof StopIteration.$pyclass)) {
+        if (!(err instanceof StopIteration)) {
             throw err
         }
     }

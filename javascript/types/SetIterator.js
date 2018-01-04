@@ -21,7 +21,7 @@ SetIterator.prototype.__iter__ = function() {
 SetIterator.prototype.__next__ = function() {
     var key = this.keys[this.index]
     if (key === undefined) {
-        throw new StopIteration.$pyclass()
+        throw new StopIteration()
     }
     this.index++
     return key

@@ -5,20 +5,20 @@ import * as types from '../types'
 
 export default function bin(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass("bin() doesn't accept keyword arguments")
+        throw new TypeError("bin() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError.$pyclass('bin() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('bin() takes exactly one argument (' + args.length + ' given)')
     }
 
     var obj = args[0]
 
     if (!types.isinstance(obj, types.Int) &&
         !types.isinstance(obj, types.Bool)) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             "'" + type_name(obj) + "' object cannot be interpreted as an integer")
     }
 

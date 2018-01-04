@@ -3,10 +3,10 @@ import * as types from '../types'
 
 export default function zip(args, kwargs) {
     if (arguments.length !== 2) {
-        throw new BataviaError.$pyclass('Batavia calling convention not used.')
+        throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError.$pyclass('zip() does not take keyword arguments')
+        throw new TypeError('zip() does not take keyword arguments')
     }
 
     return new types.Zip(args, kwargs)
