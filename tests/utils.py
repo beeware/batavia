@@ -421,8 +421,8 @@ def _normalize_outputs(code1, code2, transform_output=None):
     processed_code1 = []
     processed_code2 = []
 
-    lines1 = code1.split(os.linesep)
-    lines2 = code2.split(os.linesep)
+    lines1 = code1.split('\n')
+    lines2 = code2.split('\n')
 
     for line1, line2 in itertools.zip_longest(lines1, lines2, fillvalue=None):
 
