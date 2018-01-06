@@ -1,5 +1,5 @@
 import { BataviaError, TypeError } from '../core/exceptions'
-import { PyObject } from '../core/types'
+import { create_pyclass, PyObject } from '../core/types'
 
 import * as types from '../types'
 
@@ -24,12 +24,12 @@ export default function type(args, kwargs) {
         return (function(name, bases, dict) {
             var new_type = new types.Type(args[0], Array.from(args[1]), args[2])
 
-            function NewType() {
-                PyObject.call(this)
+            var NewType = class extends PyObject {
+                constructor() {
+                    super()
+                }
             }
-
-            NewType.prototype = PyObject.create(PyObject.prototype)
-            NewType.prototype.__class__ = new_type
+            create_pyclass(NewType, name)
 
             for (var attr in dict) {
                 if (dict.hasOwnProperty(attr)) {
