@@ -53,11 +53,12 @@ def setUpSuite():
     if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
         print("building 'batavia.js'")
         proc = subprocess.Popen(
-            [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail"],
+            ['npx rollup -c'],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=True,
+            cwd=os.path.dirname(TESTS_DIR)
         )
 
         try:
@@ -68,9 +69,9 @@ def setUpSuite():
             raise
 
         if proc.returncode != 0:
-            raise Exception("Error compiling batavia sources: " + out.decode('ascii'))
+            raise Exception("Error compiling batavia sources: " + out.decode('utf-8'))
     else:
-        print("Not precompiling 'batavia.js' as part of test run")
+        print("Not precompiling Batavia as part of test run")
 
     _suite_configured = True
 
@@ -699,7 +700,7 @@ class TranspileTestCase(TestCase):
 
         with open(os.path.join(self.temp_dir, 'test.js'), 'w') as js_file:
             js_file.write(adjust("""
-                var batavia = require('../../dist/batavia.js');
+                var batavia = require('../../batavia/static/batavia.js');
                 %s
                 var modules = {
                 %s
