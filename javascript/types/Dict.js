@@ -79,7 +79,7 @@ export default class Dict extends PyObject {
             var value = val[1]
             var hash = builtins.hash([key], null)
             var h = hash.int32() & new_mask
-            while (!isEmpty(new_keys[h])) {
+            while (!this.isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask
             }
             new_keys[h] = key
@@ -138,7 +138,7 @@ export default class Dict extends PyObject {
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i]
-            if (isEmpty(key) || isDeleted(key)) {
+            if (this.isEmpty(key) || this.isDeleted(key)) {
                 continue
             }
             strings.push(builtins.repr([key], null) + ': ' + builtins.repr([this.data_values[i]], null))
@@ -218,7 +218,7 @@ export default class Dict extends PyObject {
 
         for (var i = 0; i < this.data_keys.length; i++) {
             var key = this.data_keys[i]
-            if (isEmpty(key) || isDeleted(key)) {
+            if (this.isEmpty(key) || this.isDeleted(key)) {
                 continue
             }
             if (!other.__contains__(key).valueOf()) {
@@ -397,7 +397,7 @@ export default class Dict extends PyObject {
 
         while (true) {
             var current_key = this.data_keys[h]
-            if (isEmpty(current_key) || isDeleted(current_key)) {
+            if (this.isEmpty(current_key) || this.isDeleted(current_key)) {
                 this.data_keys[h] = key
                 this.data_values[h] = value
                 this.size++
@@ -490,11 +490,11 @@ export default class Dict extends PyObject {
         var h = hash.int32() & this.mask
         while (true) {
             var key = this.data_keys[h]
-            if (isDeleted(key)) {
+            if (this.isDeleted(key)) {
                 h = (h + 1) & this.mask
                 continue
             }
-            if (isEmpty(key)) {
+            if (this.isEmpty(key)) {
                 return null
             }
             if (key === null && other === null) {
@@ -600,7 +600,7 @@ export default class Dict extends PyObject {
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i]
-            if (isEmpty(key) || isDeleted(key)) {
+            if (this.isEmpty(key) || this.isDeleted(key)) {
                 continue
             }
             result.append(new types.Tuple([key, this.data_values[i]]))
@@ -613,7 +613,7 @@ export default class Dict extends PyObject {
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i]
-            if (isEmpty(key) || isDeleted(key)) {
+            if (this.isEmpty(key) || this.isDeleted(key)) {
                 continue
             }
             result.append(key)
@@ -630,7 +630,7 @@ export default class Dict extends PyObject {
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i]
-            if (isEmpty(key) || isDeleted(key)) {
+            if (this.isEmpty(key) || this.isDeleted(key)) {
                 continue
             }
             result.append(this.data_values[i])
@@ -684,7 +684,7 @@ export default class Dict extends PyObject {
         for (var i = 0; i < this.data_keys.length; i++) {
             // ignore deleted or empty
             var key = this.data_keys[i]
-            if (!isEmpty(key) && !isDeleted(key)) {
+            if (!this.isEmpty(key) && !this.isDeleted(key)) {
                 var val = this.data_values[i]
                 deleteAt(this, i)
                 return new types.Tuple([key, val])
