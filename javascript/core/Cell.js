@@ -17,19 +17,20 @@
  *        actual value.
  */
 
-export default function Cell(value) {
-    Object.call(this)
-    this.contents = value
-}
+export default class Cell {
+    constructor(value) {
+        this.contents = value
+    }
 
-Cell.prototype.get = function() {
-    return this.contents
-}
+    get() {
+        return this.contents
+    }
 
-Cell.prototype.set = function(value) {
-    this.contents = value
-}
+    set(value) {
+        this.contents = value
+    }
 
-Cell.prototype.toString = function() {
-    return '<Cell>'
+    toString() {
+        return '<Cell>'
+    }
 }

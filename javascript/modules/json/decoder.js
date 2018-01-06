@@ -7,19 +7,13 @@ import * as types from '../../types'
 
 import { validateParams } from './utils'
 
-function JSONDecodeError(msg) {
-    Exception.call(this, 'JSONDecodeError', msg)
+class JSONDecodeError extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
+create_pyclass(JSONDecodeError, 'JSONDecodeError')
 
-JSONDecodeError.prototype = Object.create(Exception.prototype)
-JSONDecodeError.prototype.__class__ = new Type('JSONDecodeError', [Exception.prototype.__class__])
-JSONDecodeError.prototype.__class__.$pyclass = JSONDecodeError
-
-function JSONDecoder() {
-    PyObject.call(this)
-}
-
-create_pyclass(JSONDecoder, 'JSONDecoder')
 
 // TODO(abonie): actual defaults?
 const decoder_defaults = {
@@ -55,31 +49,37 @@ function _JSONDecoder(args = [], kwargs = {}) {
 
 _JSONDecoder.$pyargs = true
 
-JSONDecoder.prototype.decode = function(s) {
-    // TODO(abonie): what if call to object_hook changes decoder's object_hook property?
-    var object_hook = this.object_hook
-    var reviver = (k, v) => types.js2py(v)
-    if (object_hook !== null && !types.isinstance(object_hook, types.NoneType)) {
-        reviver = function(k, v) {
-            var o = types.js2py(v)
-            if (types.isinstance(o, types.Dict)) {
-                o = call_function(object_hook, [o], null)
-            }
-            return o
-        }
+class JSONDecoder extends PyObject {
+    constructor() {
+        super()
     }
 
-    var ret
-    try {
-        ret = JSON.parse(s, reviver)
-    } catch (e) {
-        if (version.earlier('3.5a0')) {
-            throw new ValueError.$pyclass(e.message)
-        } else {
-            throw new JSONDecodeError.$pyclass(e.message)
+    decode(s) {
+        // TODO(abonie): what if call to object_hook changes decoder's object_hook property?
+        var object_hook = this.object_hook
+        var reviver = (k, v) => types.js2py(v)
+        if (object_hook !== null && !types.isinstance(object_hook, types.NoneType)) {
+            reviver = function(k, v) {
+                var o = types.js2py(v)
+                if (types.isinstance(o, types.Dict)) {
+                    o = call_function(object_hook, [o], null)
+                }
+                return o
+            }
         }
+
+        var ret
+        try {
+            ret = JSON.parse(s, reviver)
+        } catch (e) {
+            if (version.earlier('3.5a0')) {
+                throw new ValueError(e.message)
+            } else {
+                throw new JSONDecodeError(e.message)
+            }
+        }
+        return ret
     }
-    return ret
 }
 
 var loads = function(args, kwargs) {

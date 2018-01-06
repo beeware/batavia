@@ -15,46 +15,46 @@ export var _compile = {
 }
 
 _compile.file_input = function() {
-    throw new NotImplementedError.$pyclass('_compile.file_input is not implemented yet')
+    throw new NotImplementedError('_compile.file_input is not implemented yet')
 }
 
 _compile.eval_input = function() {
-    throw new NotImplementedError.$pyclass('_compile.eval_input is not implemented yet')
+    throw new NotImplementedError('_compile.eval_input is not implemented yet')
 }
 
 _compile.single_input = function() {
-    throw new NotImplementedError.$pyclass('_compile.single_input is not implemented yet')
+    throw new NotImplementedError('_compile.single_input is not implemented yet')
 }
 
 _compile.ast_check = function(obj) {
-    throw new NotImplementedError.$pyclass('_compile.ast_check is not implemented yet')
+    throw new NotImplementedError('_compile.ast_check is not implemented yet')
 }
 
 _compile.compile_string_object = function(str, filename, compile_mode, cf, optimize) {
-    throw new NotImplementedError.$pyclass('_compile.compile_string_object is not implemented yet')
+    throw new NotImplementedError('_compile.compile_string_object is not implemented yet')
 }
 
 _compile.ast_obj2mod = function(source, compile_mode) {
-    throw new NotImplementedError.$pyclass('_compile.ast_obj2mod is not implemented yet')
+    throw new NotImplementedError('_compile.ast_obj2mod is not implemented yet')
 }
 
 _compile.ast_validate = function(mod) {
-    throw new NotImplementedError.$pyclass('_compile.ast_validate is not implemented yet')
+    throw new NotImplementedError('_compile.ast_validate is not implemented yet')
 }
 
 _compile.ast_compile_object = function(mod, filename, cf, optimize) {
-    throw new NotImplementedError.$pyclass('_compile.ast_compile_object is not implemented yet')
+    throw new NotImplementedError('_compile.ast_compile_object is not implemented yet')
 }
 
 _compile.ast_from_string_object = function(str, filename, start, flags) {
-    throw new NotImplementedError.$pyclass('_compile.ast_compile_object is not implemented yet')
+    throw new NotImplementedError('_compile.ast_compile_object is not implemented yet')
 }
 
 _compile.parse_string_object = function(s, filename, grammar, start, iflags) {
-    throw new NotImplementedError.$pyclass('_compile.parse_string_object is not implemented yet')
+    throw new NotImplementedError('_compile.parse_string_object is not implemented yet')
 }
 _compile.parsetok = function(tok, g, start, err_ret, flags) {
-    throw new NotImplementedError.$pyclass('_compile.parsetok is not implemented yet')
+    throw new NotImplementedError('_compile.parsetok is not implemented yet')
 }
 
 _compile['Py_single_input'] = new Int(256)

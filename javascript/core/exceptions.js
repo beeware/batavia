@@ -1,311 +1,344 @@
 /* eslint-disable no-extend-native */
-import { Type, PyObject } from './types'
+import { create_pyclass, Type, PyObject } from './types'
 
 /*****************************************************************
  * Root exception
  *****************************************************************/
-export function BaseException(name, msg) {
-    PyObject.call(this)
-    this.name = name
-    this.msg = msg
-}
+export var BaseException = class extends PyObject {
+    constructor(msg) {
+        super()
+        this.msg = msg
+    }
 
-BaseException.prototype = Object.create(PyObject.prototype)
-BaseException.prototype.__class__ = new Type('BaseException')
+    toString() {
+        return this.__str__()
+    }
 
-BaseException.prototype.toString = function() {
-    return this.__str__()
-}
+    __str__() {
+        if (this.msg) {
+            return this.msg
+        } else {
+            return ''
+        }
+    }
 
-BaseException.prototype.__str__ = function() {
-    if (this.msg) {
-        return this.msg
-    } else {
-        return ''
+    __repr__() {
+        if (this.msg) {
+            return this.__class__.__name__ + '(' + this.msg + ')'
+        } else {
+            return this.__class__.__name__ + '()'
+        }
     }
 }
-
-BaseException.prototype.__repr__ = function() {
-    if (this.msg) {
-        return this.name + '(' + this.msg + ')'
-    } else {
-        return this.name + '()'
-    }
-}
+create_pyclass(BaseException, 'BaseException')
 
 /*****************************************************************
  * Top level exceptions
  *****************************************************************/
 
-export function SystemExit(msg) {
-    BaseException.call(this, 'SystemExit', msg)
-}
-SystemExit.prototype = Object.create(BaseException.prototype)
-SystemExit.prototype.__class__ = new Type('SystemExit', [BaseException.prototype.__class__])
-
-export function KeyboardInterrupt(msg) {
-    BaseException.call(this, 'KeyboardInterrupt', msg)
-}
-KeyboardInterrupt.prototype = Object.create(BaseException.prototype)
-KeyboardInterrupt.prototype.__class__ = new Type('KeyboardInterrupt', [BaseException.prototype.__class__])
-
-export function GeneratorExit(msg) {
-    BaseException.call(this, 'GeneratorExit', msg)
-}
-GeneratorExit.prototype = Object.create(BaseException.prototype)
-GeneratorExit.prototype.__class__ = new Type('GeneratorExit', [BaseException.prototype.__class__])
-
-export function Exception(name, msg) {
-    if (arguments.length === 1) {
-        // If only one argument is provided, it will be the message.
-        BaseException.call(this, 'Exception', name)
-    } else {
-        BaseException.call(this, name, msg)
+export var SystemExit = class extends BaseException {
+    constructor(msg) {
+        super(msg)
     }
 }
-Exception.prototype = Object.create(BaseException.prototype)
-Exception.prototype.__class__ = new Type('Exception', [BaseException.prototype.__class__])
+create_pyclass(SystemExit, 'SystemExit', BaseException)
+
+export var KeyboardInterrupt = class extends BaseException {
+    constructor(msg) {
+        super(msg)
+    }
+}
+create_pyclass(KeyboardInterrupt, 'KeyboardInterrupt', BaseException)
+
+export var GeneratorExit = class extends BaseException {
+    constructor(msg) {
+        super(msg)
+    }
+}
+create_pyclass(GeneratorExit, 'GeneratorExit', BaseException)
+
+export var Exception = class extends BaseException {
+    constructor(msg) {
+        super(msg)
+    }
+}
+create_pyclass(Exception, 'Exception', BaseException)
 
 /*****************************************************************
  * All other exceptions
  *****************************************************************/
 
-export function BataviaError(msg) {
-    Exception.call(this, 'BataviaError', msg)
+export var BataviaError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-BataviaError.prototype = Object.create(Exception.prototype)
-BataviaError.prototype.__class__ = new Type('BataviaError', [Exception.prototype.__class__])
+create_pyclass(BataviaError, 'BataviaError', Exception)
 
-export function ArithmeticError(msg) {
-    Exception.call(this, 'ArithmeticError', msg)
+export var ArithmeticError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-ArithmeticError.prototype = Object.create(Exception.prototype)
-ArithmeticError.prototype.__class__ = new Type('ArithmeticError', [Exception.prototype.__class__])
+create_pyclass(ArithmeticError, 'ArithmeticError', Exception)
 
-export function AssertionError(msg) {
-    Exception.call(this, 'AssertionError', msg)
+export var AssertionError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-AssertionError.prototype = Object.create(Exception.prototype)
-AssertionError.prototype.__class__ = new Type('AssertionError', [Exception.prototype.__class__])
+create_pyclass(AssertionError, 'AssertionError', Exception)
 
-export function AttributeError(msg) {
-    Exception.call(this, 'AttributeError', msg)
+export var AttributeError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-AttributeError.prototype = Object.create(Exception.prototype)
-AttributeError.prototype.__class__ = new Type('AttributeError', [Exception.prototype.__class__])
+create_pyclass(AttributeError, 'AttributeError', Exception)
 
-export function BufferError(msg) {
-    Exception.call(this, 'BufferError', msg)
+export var BufferError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-BufferError.prototype = Object.create(Exception.prototype)
-BufferError.prototype.__class__ = new Type('BufferError', [Exception.prototype.__class__])
+create_pyclass(BufferError, 'BufferError', Exception)
 
 // BytesWarning = undefined
 
 // DeprecationWarning = undefined
 
-export function EOFError(msg) {
-    Exception.call(this, 'EOFError', msg)
+export var EOFError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-EOFError.prototype = Object.create(Exception.prototype)
-EOFError.prototype.__class__ = new Type('EOFError', [Exception.prototype.__class__])
+create_pyclass(EOFError, 'EOFError', Exception)
 
-export function EnvironmentError(msg) {
-    Exception.call(this, 'EnvironmentError', msg)
+export var EnvironmentError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-EnvironmentError.prototype = Object.create(Exception.prototype)
-EnvironmentError.prototype.__class__ = new Type('EnvironmentError', [Exception.prototype.__class__])
+create_pyclass(EnvironmentError, 'EnvironmentError', Exception)
 
-export function FloatingPointError(msg) {
-    Exception.call(this, 'FloatingPointError', msg)
+export var FloatingPointError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-FloatingPointError.prototype = Object.create(Exception.prototype)
-FloatingPointError.prototype.__class__ = new Type('FloatingPointError', [Exception.prototype.__class__])
+create_pyclass(FloatingPointError, 'FloatingPointError', Exception)
 
 // FutureWarning = undefined
 
-export function IOError(msg) {
-    Exception.call(this, 'IOError', msg)
+export var IOError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-IOError.prototype = Object.create(Exception.prototype)
-IOError.prototype.__class__ = new Type('IOError', [Exception.prototype.__class__])
+create_pyclass(IOError, 'IOError', Exception)
 
-export function ImportError(msg) {
-    Exception.call(this, 'ImportError', msg)
+export var ImportError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-ImportError.prototype = Object.create(Exception.prototype)
-ImportError.prototype.__class__ = new Type('ImportError', [Exception.prototype.__class__])
+create_pyclass(ImportError, 'ImportError', Exception)
 
 // ImportWarning = undefined
 
-export function IndentationError(msg) {
-    Exception.call(this, 'IndentationError', msg)
-}
-IndentationError.prototype = Object.create(Exception.prototype)
-IndentationError.prototype.__class__ = new Type('IndentationError', [Exception.prototype.__class__])
-
-export function IndexError(msg) {
-    Exception.call(this, 'IndexError', msg)
-}
-IndexError.prototype = Object.create(Exception.prototype)
-IndexError.prototype.__class__ = new Type('IndexError', [Exception.prototype.__class__])
-
-export function KeyError(key) {
-    var msg = ''
-    if (key === null) {
-        msg = 'None'
-    } else if (key !== undefined) {
-        if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
-            msg = key.__repr__()
-        } else {
-            msg = key.toString()
-        }
+export var IndentationError = class extends Exception {
+    constructor(msg) {
+        super(msg)
     }
-    Exception.call(this, 'KeyError', msg)
 }
-KeyError.prototype = Object.create(Exception.prototype)
-KeyError.prototype.__class__ = new Type('KeyError', [Exception.prototype.__class__])
+create_pyclass(IndentationError, 'IndentationError', Exception)
 
-export function LookupError(msg) {
-    Exception.call(this, 'LookupError', msg)
+export var IndexError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-LookupError.prototype = Object.create(Exception.prototype)
-LookupError.prototype.__class__ = new Type('LookupError', [Exception.prototype.__class__])
+create_pyclass(IndexError, 'IndexError', Exception)
 
-export function MemoryError(msg) {
-    Exception.call(this, 'MemoryError', msg)
+export var KeyError = class extends Exception {
+    constructor(key) {
+        var msg = ''
+        if (key === null) {
+           msg = 'None'
+        } else if (key !== undefined) {
+            if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
+                msg = key.__repr__()
+            } else {
+                msg = key.toString()
+            }
+        }
+        super(msg)
+    }
 }
-MemoryError.prototype = Object.create(Exception.prototype)
-MemoryError.prototype.__class__ = new Type('MemoryError', [Exception.prototype.__class__])
+create_pyclass(KeyError, 'KeyError', Exception)
 
-export function NameError(msg) {
-    Exception.call(this, 'NameError', msg)
+export var LookupError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-NameError.prototype = Object.create(Exception.prototype)
-NameError.prototype.__class__ = new Type('NameError', [Exception.prototype.__class__])
+create_pyclass(LookupError, 'LookupError', Exception)
 
-export function NotImplementedError(msg) {
-    Exception.call(this, 'NotImplementedError', msg)
+export var MemoryError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-NotImplementedError.prototype = Object.create(Exception.prototype)
-NotImplementedError.prototype.__class__ = new Type('NotImplementedError', [Exception.prototype.__class__])
+create_pyclass(MemoryError, 'MemoryError', Exception)
 
-export function OSError(msg) {
-    Exception.call(this, 'OSError', msg)
+export var NameError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-OSError.prototype = Object.create(Exception.prototype)
-OSError.prototype.__class__ = new Type('OSError', [Exception.prototype.__class__])
+create_pyclass(NameError, 'NameError', Exception)
 
-export function OverflowError(msg) {
-    Exception.call(this, 'OverflowError', msg)
+export var NotImplementedError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-OverflowError.prototype = Object.create(Exception.prototype)
-OverflowError.prototype.__class__ = new Type('OverflowError', [Exception.prototype.__class__])
+create_pyclass(NotImplementedError, 'NotImplementedError', Exception)
+
+export var OSError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
+}
+create_pyclass(OSError, 'OSError', Exception)
+
+export var OverflowError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
+}
+create_pyclass(OverflowError, 'OverflowError', Exception)
 
 // PendingDeprecationWarning = undefined
 
-export function PolyglotError(msg) {
-    Exception.call(this, 'PolyglotError', msg)
+export var PolyglotError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-PolyglotError.prototype = Object.create(Exception.prototype)
-PolyglotError.prototype.__class__ = new Type('PolyglotError', [Exception.prototype.__class__])
+create_pyclass(PolyglotError, 'PolyglotError', Exception)
 
-export function ReferenceError(msg) {
-    Exception.call(this, 'ReferenceError', msg)
+export var ReferenceError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-ReferenceError.prototype = Object.create(Exception.prototype)
-ReferenceError.prototype.__class__ = new Type('ReferenceError', [Exception.prototype.__class__])
+create_pyclass(ReferenceError, 'ReferenceError', Exception)
 
-export function RuntimeError(msg) {
-    Exception.call(this, 'RuntimeError', msg)
+export var RuntimeError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-RuntimeError.prototype = Object.create(Exception.prototype)
-RuntimeError.prototype.__class__ = new Type('RuntimeError', [Exception.prototype.__class__])
+create_pyclass(RuntimeError, 'RuntimeError', Exception)
 
 // RuntimeWarning = undefined
 
-export function StandardError(msg) {
-    Exception.call(this, 'StandardError', msg)
+export var StandardError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-StandardError.prototype = Object.create(Exception.prototype)
-StandardError.prototype.__class__ = new Type('StandardError', [Exception.prototype.__class__])
+create_pyclass(StandardError, 'StandardError', Exception)
 
-export function StopIteration(msg) {
-    Exception.call(this, 'StopIteration', msg)
+export var StopIteration = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-StopIteration.prototype = Object.create(Exception.prototype)
-StopIteration.prototype.__class__ = new Type('StopIteration', [Exception.prototype.__class__])
+create_pyclass(StopIteration, 'StopIteration', Exception)
 
-export function SyntaxError(msg) {
-    Exception.call(this, 'SyntaxError', msg)
+export var SyntaxError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-SyntaxError.prototype = Object.create(Exception.prototype)
-SyntaxError.prototype.__class__ = new Type('SyntaxError', [Exception.prototype.__class__])
+create_pyclass(SyntaxError, 'SyntaxError', Exception)
 
 // SyntaxWarning = undefined
 
-export function SystemError(msg) {
-    Exception.call(this, 'SystemError', msg)
+export var SystemError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-SystemError.prototype = Object.create(Exception.prototype)
-SystemError.prototype.__class__ = new Type('SystemError', [Exception.prototype.__class__])
+create_pyclass(SystemError, 'SystemError', Exception)
 
-export function TabError(msg) {
-    Exception.call(this, 'TabError', msg)
+export var TabError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-TabError.prototype = Object.create(Exception.prototype)
-TabError.prototype.__class__ = new Type('TabError', [Exception.prototype.__class__])
+create_pyclass(TabError, 'TabError', Exception)
 
-export function TypeError(msg) {
-    Exception.call(this, 'TypeError', msg)
+export var TypeError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-TypeError.prototype = Object.create(Exception.prototype)
-TypeError.prototype.__class__ = new Type('TypeError', [Exception.prototype.__class__])
+create_pyclass(TypeError, 'TypeError', Exception)
 
-export function UnboundLocalError(msg) {
-    Exception.call(this, 'UnboundLocalError', msg)
+export var UnboundLocalError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-UnboundLocalError.prototype = Object.create(Exception.prototype)
-UnboundLocalError.prototype.__class__ = new Type('UnboundLocalError', [Exception.prototype.__class__])
+create_pyclass(UnboundLocalError, 'UnboundLocalError', Exception)
 
-export function UnicodeDecodeError(msg) {
-    Exception.call(this, 'UnicodeDecodeError', msg)
+export var UnicodeDecodeError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-UnicodeDecodeError.prototype = Object.create(Exception.prototype)
-UnicodeDecodeError.prototype.__class__ = new Type('UnicodeDecodeError', [Exception.prototype.__class__])
+create_pyclass(UnicodeDecodeError, 'UnicodeDecodeError', Exception)
 
-export function UnicodeEncodeError(msg) {
-    Exception.call(this, 'UnicodeEncodeError', msg)
+export var UnicodeEncodeError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-UnicodeEncodeError.prototype = Object.create(Exception.prototype)
-UnicodeEncodeError.prototype.__class__ = new Type('UnicodeEncodeError', [Exception.prototype.__class__])
+create_pyclass(UnicodeEncodeError, 'UnicodeEncodeError', Exception)
 
-export function UnicodeError(msg) {
-    Exception.call(this, 'UnicodeError', msg)
+export var UnicodeError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-UnicodeError.prototype = Object.create(Exception.prototype)
-UnicodeError.prototype.__class__ = new Type('UnicodeError', [Exception.prototype.__class__])
+create_pyclass(UnicodeError, 'UnicodeError', Exception)
 
-export function UnicodeTranslateError(msg) {
-    Exception.call(this, 'UnicodeTranslateError', msg)
+export var UnicodeTranslateError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-UnicodeTranslateError.prototype = Object.create(Exception.prototype)
-UnicodeTranslateError.prototype.__class__ = new Type('UnicodeTranslateError', [Exception.prototype.__class__])
+create_pyclass(UnicodeTranslateError, 'UnicodeTranslateError', Exception)
 
 // UnicodeWarning = undefined
 
 // UserWarning = undefined
 
-export function ValueError(msg) {
-    Exception.call(this, 'ValueError', msg)
+export var ValueError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-ValueError.prototype = Object.create(Exception.prototype)
-ValueError.prototype.__class__ = new Type('ValueError', [Exception.prototype.__class__])
+create_pyclass(ValueError, 'ValueError', Exception)
 
 // Warning = undefined
 
-export function ZeroDivisionError(msg) {
-    Exception.call(this, 'ZeroDivisionError', msg)
+export var ZeroDivisionError = class extends Exception {
+    constructor(msg) {
+        super(msg)
+    }
 }
-ZeroDivisionError.prototype = Object.create(Exception.prototype)
-ZeroDivisionError.prototype.__class__ = new Type('ZeroDivisionError', [Exception.prototype.__class__])
+create_pyclass(ZeroDivisionError, 'ZeroDivisionError', Exception)

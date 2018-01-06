@@ -7,7 +7,7 @@ import * as version from '../core/version'
 
 import * as types from '../types'
 
-import * as StrIterator from './StrIterator'
+import StrIterator from './StrIterator'
 import * as StrUtils from './StrUtils'
 
 /*************************************************************************
@@ -16,7 +16,7 @@ import * as StrUtils from './StrUtils'
 
 var Str = String
 
-create_pyclass(Str, 'str', true)
+create_pyclass(Str, 'str', null)
 
 /**************************************************
  * Type conversions

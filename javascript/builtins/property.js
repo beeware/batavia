@@ -15,7 +15,7 @@ export default function property(args, kwargs) {
     } else if (args.length === 4) {
         return new types.Property(args[0], args[1], args[2], args[3])
     } else {
-        throw new TypeError.$pyclass('property() takes at most 4 arguments (' + args.length + ' given)')
+        throw new TypeError('property() takes at most 4 arguments (' + args.length + ' given)')
     }
 }
 

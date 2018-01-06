@@ -19,9 +19,9 @@ webbrowser.open_new = function(url) {
 webbrowser.open_new_tab = webbrowser.open_new
 
 webbrowser.get = function(name) {
-    throw new NotImplementedError.$pyclass('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
+    throw new NotImplementedError('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
 }
 
 webbrowser.register = function(name, constructor) {
-    throw new NotImplementedError.$pyclass('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
+    throw new NotImplementedError('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
 }

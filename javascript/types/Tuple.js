@@ -13,7 +13,7 @@ import TupleIterator from './TupleIterator'
  *************************************************************************/
 
 export default function Tuple(length) {
-    PyObject.call(this)
+    // PyObject.call(this)
 
     if (arguments.length === 0) {
         this.push.apply(this)
@@ -39,8 +39,8 @@ Array_.prototype = []
 
 Tuple.prototype = Object.create(Array_.prototype)
 Tuple.prototype.length = 0
-create_pyclass(Tuple, 'tuple', true)
 Tuple.prototype.constructor = Tuple
+create_pyclass(Tuple, 'tuple', null)
 
 /**************************************************
  * Javascript compatibility methods

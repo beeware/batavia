@@ -8,12 +8,6 @@ import * as builtins from '../../builtins'
 
 import { validateParams } from './utils'
 
-export function JSONEncoder() {
-    PyObject.call(this)
-}
-
-create_pyclass(JSONEncoder, 'JSONEncoder')
-
 const encoder_defaults = {
     'skipkeys': false,
     'ensure_ascii': true,
@@ -46,7 +40,7 @@ function _JSONEncoder(args = [], kwargs = {}) {
 
     var len = enc.separators.length
     if (len !== 2) {
-        throw new ValueError.$pyclass(
+        throw new ValueError(
             'JSONEncoder separators length must be 2 (got ' + len + ' instead)'
         )
     }
@@ -69,25 +63,32 @@ function _JSONEncoder(args = [], kwargs = {}) {
 
 _JSONEncoder.$pyargs = true
 
-JSONEncoder.prototype.encode = function(obj) {
-    // TODO use iterencode once it is implemented as an actual generator
-
-    var seen
-    if (this.check_circular) {
-        seen = new Set()
+export class JSONEncoder extends PyObject {
+    constructor() {
+        super()
     }
-    return make_encode(
-        this.skipkeys,
-        this.ensure_ascii,
-        this.allow_nan,
-        this.sort_keys,
-        this.indent,
-        this.item_separator,
-        this.key_separator,
-        this.default,
-        seen
-    )(obj, 1)
+
+    encode(obj) {
+        // TODO use iterencode once it is implemented as an actual generator
+
+        var seen
+        if (this.check_circular) {
+            seen = new Set()
+        }
+        return make_encode(
+            this.skipkeys,
+            this.ensure_ascii,
+            this.allow_nan,
+            this.sort_keys,
+            this.indent,
+            this.item_separator,
+            this.key_separator,
+            this.default,
+            seen
+        )(obj, 1)
+    }
 }
+create_pyclass(JSONEncoder, 'JSONEncoder')
 
 var make_encode = function(
     skipkeys,
@@ -141,7 +142,7 @@ var make_encode = function(
                     key + key_separator + encode(obj.get(kv), indent_level + 1)
                 )
             } else if (!skipkeys) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     'keys must be a string'
                 )
             }
@@ -164,7 +165,7 @@ var make_encode = function(
         if (ret === null) {
             if (seen !== undefined) {
                 if (seen.has(obj)) {
-                    throw new ValueError.$pyclass(
+                    throw new ValueError(
                         'Circular reference detected'
                     )
                 }
@@ -179,11 +180,11 @@ var make_encode = function(
                 ret = encode(callables.call_function(default_, [obj]), indent_level)
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError.$pyclass(
+                    throw new TypeError(
                         obj.toString() + ' is not JSON serializable'
                     )
                 } else {
-                    throw new TypeError.$pyclass(
+                    throw new TypeError(
                         "Object of type '" + type_name(obj) + "' is not JSON serializable"
                     )
                 }
@@ -243,7 +244,7 @@ var encodeBasicType = function(o, ensure_ascii, allow_nan) {
             if (allow_nan) {
                 text = transFloat[text]
             } else {
-                throw new ValueError.$pyclass(
+                throw new ValueError(
                     'Out of range float values are not JSON compliant'
                 )
             }
@@ -278,7 +279,7 @@ var encodeKey = function(o, ensure_ascii, allow_nan) {
 
 JSONEncoder.prototype.iterencode = function(obj) {
     if (arguments.length !== 1) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             'iterencode() expected 1 positional argument (got ' +
             arguments.length + ')'
         )

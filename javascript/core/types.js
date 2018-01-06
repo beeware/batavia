@@ -7,19 +7,15 @@ import * as version from './version'
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-export function create_pyclass(type, name, is_native) {
-    if (!is_native) {
-        extend_PyObject(type, name)
+export function create_pyclass(type, name, base) {
+    if (base === undefined) {
+        type.__class__ = new Type(name)
+    } else if (base !== null) {
+        type.__class__ = new Type(name, [base])
+    } else {
+        type.__class__ = new Type(name)
     }
-    make_python_class(type, name)
-}
 
-function extend_PyObject(type, name) {
-    type.prototype = Object.create(PyObject.prototype)
-}
-
-function make_python_class(type, name) {
-    type.__class__ = new Type(name)
     type.prototype.__class__ = type.__class__
 }
 
@@ -27,7 +23,7 @@ function make_python_class(type, name) {
  * Method for outputting the type of a variable
  *************************************************************************/
 
-export var type_name = function(arg) {
+export function type_name(arg) {
     switch (typeof arg) {
         case 'boolean':
             return 'bool'
@@ -48,496 +44,503 @@ export var type_name = function(arg) {
 /*************************************************************************
  * A Python Type
  *************************************************************************/
-export function Type(name, bases, dict) {
-    Object.call(this)
-    this.__name__ = name
-    if (bases && Array.isArray(bases) && bases.length > 0) {
-        this.__base__ = bases[0]
-        this.__bases__ = []
-        for (var base = 0; base < bases.length; base++) {
-            this.__bases__.push(bases[base])
+export var Type = class {
+    constructor(name, bases, dict) {
+        this.__name__ = name
+        if (bases && Array.isArray(bases) && bases.length > 0) {
+            this.__base__ = bases[0]
+            this.__bases__ = []
+            for (var base = 0; base < bases.length; base++) {
+                this.__bases__.push(bases[base])
+            }
+        // } else if (bases) {
+        //     this.__base__ = bases;
+        //     this.__bases__ = [this.__base__];
+        } else if (name === 'object' && bases === undefined) {
+            this.__base__ = null
+            this.__bases__ = []
+        } else {
+            this.__base__ = PyObject
+            this.__bases__ = [PyObject]
         }
-    // } else if (bases) {
-    //     this.__base__ = bases;
-    //     this.__bases__ = [this.__base__];
-    } else if (name === 'object' && bases === undefined) {
-        this.__base__ = null
-        this.__bases__ = []
-    } else {
-        this.__base__ = PyObject.prototype.__class__
-        this.__bases__ = [PyObject.prototype.__class__]
+        this.dict = dict
     }
-    this.dict = dict
+
+    toString() {
+        return this.__repr__()
+    }
+
+    __repr__() {
+        // True primitive types won't have __bases__ defined.
+        if (this.__bases__) {
+            if (this.dict) {
+                return "<class '__main__." + this.__name__ + "'>"
+            }
+            return "<class '" + this.__name__ + "'>"
+        } else {
+            return this.__name__
+        }
+    }
+
+    __str__() {
+        return this.__repr__()
+    }
+
+    __bool__() {
+        return true
+    }
+
+    __call__(args, kwargs) {
+        var instance
+        if (this.$pyinit) {
+            instance = new this()
+
+            if (instance.__init__) {
+                // Bind the constructor to the instance, and invoke.
+                var constructor = new types.Method(instance, instance.__init__)
+                constructor.__call__.apply(instance, [args, kwargs])
+            }
+        } else {
+            instance = Object.create(this.prototype)
+            this.apply(instance, args)
+        }
+        return instance
+    }
+
+    __getattribute__(obj, name) {
+        var attr = native.getattr_raw(obj, name)
+
+        if (attr === undefined && obj !== undefined) {
+            // if it's a 'type' object and doesn't have attr,
+            // look to the prototype of the instance, but exclude functions
+            attr = native.getattr_raw(obj.prototype, name, true)
+        }
+        if (attr === undefined) {
+            if (obj === undefined) {
+                throw new AttributeError(
+                    "'" + type_name(obj) + "' object has no attribute '" + name + "'"
+                )
+            } else {
+                throw new AttributeError(
+                    "type object '" + obj.__name__ + "' has no attribute '" + name + "'"
+                )
+            }
+        }
+
+        var value
+        if (attr.__get__) {
+            value = attr.__get__(obj, obj.__class__)
+        } else {
+            value = attr
+        }
+
+        return value
+    }
+
+    __setattr__(name, value) {
+        if (Object.getPrototypeOf(this) === Type) {
+            throw new TypeError(
+                "can't set attributes of built-in/extension type '" + this.__name__ + "'"
+            )
+        }
+
+        native.setattr(this.prototype, name, value)
+    }
+
+    __delattr__(name) {
+        if (this.dict) {
+            throw new AttributeError(name)
+        }
+
+        if (['int', 'str'].indexOf(this.__name__) > -1) {
+            throw new TypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
+        }
+
+        var attr = native.getattr_raw(this.prototype, name)
+        if (attr === undefined) {
+            throw new AttributeError(
+                "type object '" + this.__name__ + "' has no attribute '" + name + "'"
+            )
+        }
+
+        native.delattr(this.prototype, name)
+    }
+
+    valueOf() {
+        return this.prototype
+    }
+
+    mro() {
+        // Cache the MRO on the __mro__ attribute
+        if (this.__mro__ === undefined) {
+            // Self is always the first port of call for the MRO
+            this.__mro__ = [this]
+            if (this.__bases__) {
+                // Now traverse and add the base classes.
+                for (var b in this.__bases__) {
+                    this.__mro__.push(this.__bases__[b].__class__)
+                    var submro = this.__bases__[b].__class__.mro()
+                    for (var sub in submro) {
+                        // If the base class is already in the MRO,
+                        // push it to the end of the MRO list.
+                        var index = this.__mro__.indexOf(submro[sub])
+                        if (index !== -1) {
+                            this.__mro__.splice(index, 1)
+                        }
+                        this.__mro__.push(submro[sub])
+                    }
+                }
+            } else {
+                // Primitives have no base class;
+                this.__mro__ = [this]
+            }
+        }
+        return this.__mro__
+    }
 }
 
 // Set the type properties of the Type class
+create_pyclass(Type, 'type', null)
 Type.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type"
-// make_python_class(Type, 'type')
-Type.prototype.__class__ = new Type('type')
-
-Type.prototype.toString = function() {
-    return this.__repr__()
-}
-
-Type.prototype.__repr__ = function() {
-    // True primitive types won't have __bases__ defined.
-    if (this.__bases__) {
-        if (this.dict) {
-            return "<class '__main__." + this.__name__ + "'>"
-        }
-        return "<class '" + this.__name__ + "'>"
-    } else {
-        return this.__name__
-    }
-}
-
-Type.prototype.__str__ = function() {
-    return this.__repr__()
-}
-
-Type.prototype.__bool__ = function() {
-    return true
-}
-
-Type.prototype.__call__ = function(args, kwargs) {
-    var instance
-    if (this.$pyinit) {
-        instance = new this()
-
-        if (instance.__init__) {
-            // Bind the constructor to the instance, and invoke.
-            var constructor = new types.Method(instance, instance.__init__)
-            constructor.__call__.apply(instance, [args, kwargs])
-        }
-    } else {
-        instance = Object.create(this.prototype)
-        this.apply(instance, args)
-    }
-    return instance
-}
-
-Type.prototype.__getattribute__ = function(obj, name) {
-    var attr = native.getattr_raw(obj, name)
-
-    if (attr === undefined && obj !== undefined) {
-        // if it's a 'type' object and doesn't have attr,
-        // look to the prototype of the instance, but exclude functions
-        attr = native.getattr_raw(obj.prototype, name, true)
-    }
-    if (attr === undefined) {
-        if (obj === undefined) {
-            throw new AttributeError(
-                "'" + type_name(obj) + "' object has no attribute '" + name + "'"
-            )
-        } else {
-            throw new AttributeError(
-                "type object '" + obj.__name__ + "' has no attribute '" + name + "'"
-            )
-        }
-    }
-
-    var value
-    if (attr.__get__) {
-        value = attr.__get__(obj, obj.__class__)
-    } else {
-        value = attr
-    }
-
-    return value
-}
-
-Type.prototype.__setattr__ = function(name, value) {
-    if (Object.getPrototypeOf(this) === Type) {
-        throw new TypeError(
-            "can't set attributes of built-in/extension type '" + this.__name__ + "'"
-        )
-    }
-
-    native.setattr(this.prototype, name, value)
-}
-
-Type.prototype.__delattr__ = function(name) {
-    if (this.dict) {
-        throw new AttributeError(name)
-    }
-
-    if (['int', 'str'].indexOf(this.__name__) > -1) {
-        throw new TypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
-    }
-
-    var attr = native.getattr_raw(this.prototype, name)
-    if (attr === undefined) {
-        throw new AttributeError(
-            "type object '" + this.__name__ + "' has no attribute '" + name + "'"
-        )
-    }
-
-    native.delattr(this.prototype, name)
-}
-
-Type.prototype.valueOf = function() {
-    return this.prototype
-}
-
-Type.prototype.mro = function() {
-    // Cache the MRO on the __mro__ attribute
-    if (this.__mro__ === undefined) {
-        // Self is always the first port of call for the MRO
-        this.__mro__ = [this]
-        if (this.__bases__) {
-            // Now traverse and add the base classes.
-            for (var b in this.__bases__) {
-                this.__mro__.push(this.__bases__[b])
-                var submro = this.__bases__[b].mro()
-                for (var sub in submro) {
-                    // If the base class is already in the MRO,
-                    // push it to the end of the MRO list.
-                    var index = this.__mro__.indexOf(submro[sub])
-                    if (index !== -1) {
-                        this.__mro__.splice(index, 1)
-                    }
-                    this.__mro__.push(submro[sub])
-                }
-            }
-        } else {
-            // Primitives have no base class;
-            this.__mro__ = [this]
-        }
-    }
-    return this.__mro__
-}
 
 /*************************************************************************
  * A base Python object
  *************************************************************************/
-export function PyObject() {
-    Object.call(this)
-
-    // Iterate over base classes in reverse order.
-    // Ignore the class at position 0, because that will
-    // be self.
-    var bases = this.__class__.mro()
-    for (var b = bases.length - 1; b >= 1; b--) {
-        var klass = bases[b].prototype
-        for (var attr in klass) {
-            if (this[attr] === undefined) {
-                this[attr] = klass[attr]
+export var PyObject = class {
+    constructor() {
+        // Iterate over base classes in reverse order.
+        // Ignore the class at position 0, because that will
+        // be self.
+        var bases = this.__class__.mro()
+        for (var b = bases.length - 1; b >= 1; b--) {
+            var klass = bases[b].prototype
+            for (var attr in klass) {
+                if (this[attr] === undefined) {
+                    this[attr] = klass[attr]
+                }
             }
+        }
+    }
+
+    toString() {
+        return '<' + this.__class__.__name__ + ' 0x...>'
+    }
+
+    __repr__() {
+        return '<' + this.__class__.__name__ + ' 0x...>'
+    }
+
+    __str__() {
+        return '<' + this.__class__.__name__ + ' 0x...>'
+    }
+
+    __getattribute__(name) {
+        var value = this.__class__.__getattribute__(this, name)
+        return value
+    }
+
+    __setattr__(name, value) {
+        if (Object.getPrototypeOf(this) === PyObject) {
+            throw new AttributeError("'" + type_name(this) +
+                "' object has no attribute '" + name + "'"
+            )
+        }
+
+        var attr = this[name]
+        if (attr !== undefined && attr.__set__ !== undefined) {
+            attr.__set__(this, value)
+        } else {
+            this[name] = value
+        }
+    }
+
+    __delattr__(name) {
+        var attr = this[name]
+        if (attr === undefined) {
+            throw new AttributeError("'" + type_name(this) +
+                "' object has no attribute '" + name + "'"
+            )
+        }
+
+        if (attr.__delete__ !== undefined) {
+            attr.__delete__(this)
+        } else {
+            delete this[name]
         }
     }
 }
 
 // Set the type properties of the PyObject class
 PyObject.prototype.__doc__ = 'The most base type'
-make_python_class(PyObject, 'object')
-
-PyObject.prototype.toString = function() {
-    return '<' + this.__class__.__name__ + ' 0x...>'
-}
-
-PyObject.prototype.__repr__ = function() {
-    return '<' + this.__class__.__name__ + ' 0x...>'
-}
-
-PyObject.prototype.__str__ = function() {
-    return '<' + this.__class__.__name__ + ' 0x...>'
-}
-
-PyObject.prototype.__getattribute__ = function(name) {
-    var value = this.__class__.__getattribute__(this, name)
-    return value
-}
-
-PyObject.prototype.__setattr__ = function(name, value) {
-    if (Object.getPrototypeOf(this) === PyObject) {
-        throw new AttributeError("'" + type_name(this) +
-            "' object has no attribute '" + name + "'"
-        )
-    }
-
-    var attr = this[name]
-    if (attr !== undefined && attr.__set__ !== undefined) {
-        attr.__set__(this, value)
-    } else {
-        this[name] = value
-    }
-}
-
-PyObject.prototype.__delattr__ = function(name) {
-    var attr = this[name]
-    if (attr === undefined) {
-        throw new AttributeError("'" + type_name(this) +
-            "' object has no attribute '" + name + "'"
-        )
-    }
-
-    if (attr.__delete__ !== undefined) {
-        attr.__delete__(this)
-    } else {
-        delete this[name]
-    }
-}
+create_pyclass(PyObject, 'object')
 
 /*************************************************************************
  * An implementation of NoneType
  *************************************************************************/
-export function NoneType() {
-    PyObject.call(this)
+export var NoneType = class extends PyObject {
+    constructor() {
+        super()
+    }
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    __bool__() {
+        return new types.Bool(false)
+    }
+
+    __repr__() {
+        return new types.Str('None')
+    }
+
+    __str__() {
+        return new types.Str('None')
+    }
+    /**************************************************
+     * Attribute manipulation
+     **************************************************/
+
+    __setattr__(attr, value) {
+        if (Object.getPrototypeOf(this)[attr] === undefined) {
+            throw new AttributeError("'NoneType' object has no attribute '" + attr + "'")
+        } else {
+            throw new AttributeError("'NoneType' object attribute '" + attr + "' is read-only")
+        }
+    }
+
+    /**************************************************
+     * Comparison operators
+     **************************************************/
+
+    __lt__(other) {
+        if (version.earlier('3.6')) {
+            throw new TypeError(
+                'unorderable types: NoneType() < ' + type_name(other) + '()'
+            )
+        } else {
+            throw new TypeError(
+                "'<' not supported between instances of 'NoneType' and '" +
+                type_name(other) + "'"
+            )
+        }
+    }
+
+    __le__(other) {
+        if (version.earlier('3.6')) {
+            throw new TypeError(
+                'unorderable types: NoneType() <= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new TypeError(
+                "'<=' not supported between instances of 'NoneType' and '" +
+                type_name(other) + "'"
+            )
+        }
+    }
+
+    __eq__(other) {
+        return other === this
+    }
+
+    __ne__(other) {
+        return other !== this
+    }
+
+    __gt__(other) {
+        if (version.earlier('3.6')) {
+            throw new TypeError(
+                'unorderable types: NoneType() > ' + type_name(other) + '()'
+            )
+        } else {
+            throw new TypeError(
+                "'>' not supported between instances of 'NoneType' and '" +
+                type_name(other) + "'"
+            )
+        }
+    }
+
+    __ge__(other) {
+        if (version.earlier('3.6')) {
+            throw new TypeError(
+                'unorderable types: NoneType() >= ' + type_name(other) + '()'
+            )
+        } else {
+            throw new TypeError(
+                "'>=' not supported between instances of 'NoneType' and '" +
+                type_name(other) + "'"
+            )
+        }
+    }
+
+    __contains__(other) {
+        return false
+    }
+
+    /**************************************************
+     * Unary operators
+     **************************************************/
+
+    __pos__() {
+        throw new TypeError("bad operand type for unary +: 'NoneType'")
+    }
+
+    __neg__() {
+        throw new TypeError("bad operand type for unary -: 'NoneType'")
+    }
+
+    __not__() {
+        return true
+    }
+
+    __invert__() {
+        throw new TypeError("bad operand type for unary ~: 'NoneType'")
+    }
+
+    /**************************************************
+     * Binary operators
+     **************************************************/
+
+    __pow__(other) {
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __div__(other) {
+        return NoneType.__truediv__(other)
+    }
+
+    __floordiv__(other) {
+        if (types.isinstance(other, types.Complex)) {
+            throw new TypeError("can't take floor of complex number.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for //: 'NoneType' and '" + type_name(other) + "'")
+        }
+    }
+
+    __truediv__(other) {
+        throw new TypeError("unsupported operand type(s) for /: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __mul__(other) {
+        if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
+            throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
+        } else {
+            throw new TypeError("unsupported operand type(s) for *: 'NoneType' and '" + type_name(other) + "'")
+        }
+    }
+
+    __mod__(other) {
+        if (types.isinstance(other, types.Complex)) {
+            throw new TypeError("can't mod complex numbers.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for %: 'NoneType' and '" + type_name(other) + "'")
+        }
+    }
+
+    __add__(other) {
+        throw new TypeError("unsupported operand type(s) for +: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __sub__(other) {
+        throw new TypeError("unsupported operand type(s) for -: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __getitem__(other) {
+        throw new TypeError("'NoneType' object is not subscriptable")
+    }
+
+    __lshift__(other) {
+        throw new TypeError("unsupported operand type(s) for <<: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __rshift__(other) {
+        throw new TypeError("unsupported operand type(s) for >>: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __and__(other) {
+        throw new TypeError("unsupported operand type(s) for &: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __xor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __or__(other) {
+        throw new TypeError("unsupported operand type(s) for |: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    /**************************************************
+     * Inplace operators
+     **************************************************/
+
+    __ifloordiv__(other) {
+        if (types.isinstance(other, types.Complex)) {
+            throw new TypeError("can't take floor of complex number.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for //=: 'NoneType' and '" + type_name(other) + "'")
+        }
+    }
+
+    __itruediv__(other) {
+        throw new TypeError("unsupported operand type(s) for /=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __iadd__(other) {
+        throw new TypeError("unsupported operand type(s) for +=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __isub__(other) {
+        throw new TypeError("unsupported operand type(s) for -=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __imul__(other) {
+        if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
+            throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
+        } else {
+            throw new TypeError("unsupported operand type(s) for *=: 'NoneType' and '" + type_name(other) + "'")
+        }
+    }
+
+    __imod__(other) {
+        if (types.isinstance(other, types.Complex)) {
+            throw new TypeError("can't mod complex numbers.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for %=: 'NoneType' and '" + type_name(other) + "'")
+        }
+    }
+
+    __ipow__(other) {
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __ilshift__(other) {
+        throw new TypeError("unsupported operand type(s) for <<=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __irshift__(other) {
+        throw new TypeError("unsupported operand type(s) for >>=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __iand__(other) {
+        throw new TypeError("unsupported operand type(s) for &=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __ixor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
+    __ior__(other) {
+        throw new TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + type_name(other) + "'")
+    }
+
 }
 
 NoneType.prototype = Object.create(PyObject.prototype)
-make_python_class(NoneType, 'NoneType')
+create_pyclass(NoneType, 'NoneType')
 
-/**************************************************
- * Type conversions
- **************************************************/
-
-NoneType.prototype.__bool__ = function() {
-    return new types.Bool(false)
-}
-
-NoneType.prototype.__repr__ = function() {
-    return new types.Str('None')
-}
-
-NoneType.prototype.__str__ = function() {
-    return new types.Str('None')
-}
-/**************************************************
- * Attribute manipulation
- **************************************************/
-
-NoneType.prototype.__setattr__ = function(attr, value) {
-    if (Object.getPrototypeOf(this)[attr] === undefined) {
-        throw new AttributeError("'NoneType' object has no attribute '" + attr + "'")
-    } else {
-        throw new AttributeError("'NoneType' object attribute '" + attr + "' is read-only")
-    }
-}
-
-/**************************************************
- * Comparison operators
- **************************************************/
-
-NoneType.prototype.__lt__ = function(other) {
-    if (version.earlier('3.6')) {
-        throw new TypeError(
-            'unorderable types: NoneType() < ' + type_name(other) + '()'
-        )
-    } else {
-        throw new TypeError(
-            "'<' not supported between instances of 'NoneType' and '" +
-            type_name(other) + "'"
-        )
-    }
-}
-
-NoneType.prototype.__le__ = function(other) {
-    if (version.earlier('3.6')) {
-        throw new TypeError(
-            'unorderable types: NoneType() <= ' + type_name(other) + '()'
-        )
-    } else {
-        throw new TypeError(
-            "'<=' not supported between instances of 'NoneType' and '" +
-            type_name(other) + "'"
-        )
-    }
-}
-
-NoneType.prototype.__eq__ = function(other) {
-    return other === this
-}
-
-NoneType.prototype.__ne__ = function(other) {
-    return other !== this
-}
-
-NoneType.prototype.__gt__ = function(other) {
-    if (version.earlier('3.6')) {
-        throw new TypeError(
-            'unorderable types: NoneType() > ' + type_name(other) + '()'
-        )
-    } else {
-        throw new TypeError(
-            "'>' not supported between instances of 'NoneType' and '" +
-            type_name(other) + "'"
-        )
-    }
-}
-
-NoneType.prototype.__ge__ = function(other) {
-    if (version.earlier('3.6')) {
-        throw new TypeError(
-            'unorderable types: NoneType() >= ' + type_name(other) + '()'
-        )
-    } else {
-        throw new TypeError(
-            "'>=' not supported between instances of 'NoneType' and '" +
-            type_name(other) + "'"
-        )
-    }
-}
-
-NoneType.prototype.__contains__ = function(other) {
-    return false
-}
-
-/**************************************************
- * Unary operators
- **************************************************/
-
-NoneType.prototype.__pos__ = function() {
-    throw new TypeError("bad operand type for unary +: 'NoneType'")
-}
-
-NoneType.prototype.__neg__ = function() {
-    throw new TypeError("bad operand type for unary -: 'NoneType'")
-}
-
-NoneType.prototype.__not__ = function() {
-    return true
-}
-
-NoneType.prototype.__invert__ = function() {
-    throw new TypeError("bad operand type for unary ~: 'NoneType'")
-}
-
-/**************************************************
- * Binary operators
- **************************************************/
-
-NoneType.prototype.__pow__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__div__ = function(other) {
-    return NoneType.__truediv__(other)
-}
-
-NoneType.prototype.__floordiv__ = function(other) {
-    if (types.isinstance(other, types.Complex)) {
-        throw new TypeError("can't take floor of complex number.")
-    } else {
-        throw new TypeError("unsupported operand type(s) for //: 'NoneType' and '" + type_name(other) + "'")
-    }
-}
-
-NoneType.prototype.__truediv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for /: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__mul__ = function(other) {
-    if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
-        throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
-    } else {
-        throw new TypeError("unsupported operand type(s) for *: 'NoneType' and '" + type_name(other) + "'")
-    }
-}
-
-NoneType.prototype.__mod__ = function(other) {
-    if (types.isinstance(other, types.Complex)) {
-        throw new TypeError("can't mod complex numbers.")
-    } else {
-        throw new TypeError("unsupported operand type(s) for %: 'NoneType' and '" + type_name(other) + "'")
-    }
-}
-
-NoneType.prototype.__add__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for +: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__sub__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for -: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__getitem__ = function(other) {
-    throw new TypeError("'NoneType' object is not subscriptable")
-}
-
-NoneType.prototype.__lshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for <<: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__rshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for >>: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__and__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for &: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__xor__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ^: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__or__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for |: 'NoneType' and '" + type_name(other) + "'")
-}
-
-/**************************************************
- * Inplace operators
- **************************************************/
-
-NoneType.prototype.__ifloordiv__ = function(other) {
-    if (types.isinstance(other, types.Complex)) {
-        throw new TypeError("can't take floor of complex number.")
-    } else {
-        throw new TypeError("unsupported operand type(s) for //=: 'NoneType' and '" + type_name(other) + "'")
-    }
-}
-
-NoneType.prototype.__itruediv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for /=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__iadd__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for +=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__isub__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for -=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__imul__ = function(other) {
-    if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
-        throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
-    } else {
-        throw new TypeError("unsupported operand type(s) for *=: 'NoneType' and '" + type_name(other) + "'")
-    }
-}
-
-NoneType.prototype.__imod__ = function(other) {
-    if (types.isinstance(other, types.Complex)) {
-        throw new TypeError("can't mod complex numbers.")
-    } else {
-        throw new TypeError("unsupported operand type(s) for %=: 'NoneType' and '" + type_name(other) + "'")
-    }
-}
-
-NoneType.prototype.__ipow__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__ilshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for <<=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__irshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for >>=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__iand__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for &=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__ixor__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ^=: 'NoneType' and '" + type_name(other) + "'")
-}
-
-NoneType.prototype.__ior__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + type_name(other) + "'")
-}
+/*************************************************************************
+ * Resolve circular reference issues
+ *************************************************************************/
 
 // Create a singleton instance of None
 export var None = new NoneType()

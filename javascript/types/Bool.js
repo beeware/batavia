@@ -12,7 +12,7 @@ import * as utils from './utils'
 
 var Bool = Boolean
 
-create_pyclass(Bool, 'bool', true)
+create_pyclass(Bool, 'bool', null)
 
 /**************************************************
  * Type conversions

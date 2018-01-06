@@ -6,14 +6,13 @@ import JSDict from './JSDict'
  * A Python module type
  *************************************************************************/
 
-export default function Module(name, filename, pkg) {
-    JSDict.call(this)
+export default class Module extends JSDict {
+    constructor(name, filename, pkg) {
+        super()
 
-    this.__name__ = name
-    this.__file__ = filename
-    this.__package__ = pkg
+        this.__name__ = name
+        this.__file__ = filename
+        this.__package__ = pkg
+    }
 }
-
-Module.prototype = Object.create(JSDict.prototype)
-
-create_pyclass(Module, 'module', true)
+create_pyclass(Module, 'module', null)

@@ -48,7 +48,7 @@ inspect.FullArgSpec = function(kwargs) {
 //     var params = sig.parameters.values()
 
 //     if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-//         throw new ValueError.$pyclass('invalid method signature')
+//         throw new ValueError('invalid method signature')
 //     }
 
 //     var kind = params[0].kind
@@ -60,7 +60,7 @@ inspect.FullArgSpec = function(kwargs) {
 //         if (kind !== _VAR_POSITIONAL) {
 //             // Unless we add a new parameter type we never
 //             // get here
-//             throw new ValueError.$pyclass('invalid argument type')
+//             throw new ValueError('invalid argument type')
 //         }
 //         // It's a var-positional parameter.
 //         // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
@@ -335,7 +335,7 @@ inspect.getfullargspec = function(func) {
 }
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw RuntimeError.$pyclass('Missing arguments')
+    throw RuntimeError('Missing arguments')
     // var names = [];
     // for (var name in argnames) {
     //     if (!name in values) {
@@ -359,7 +359,7 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw RuntimeError.$pyclass('FIXME: Too many arguments')
+    throw RuntimeError('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
@@ -427,14 +427,14 @@ inspect.getcallargs = function(func, positional, named) {
         if (named.hasOwnProperty(kw)) {
             if (!possible_kwargs.__contains__(new types.Str(kw)).valueOf()) {
                 if (!func.argspec.varkw) {
-                    throw new TypeError.$pyclass('%s() got an unexpected keyword argument %r' %
+                    throw new TypeError('%s() got an unexpected keyword argument %r' %
                                 (func.__name__, kw))
                 }
                 arg2value[func.argspec.varkw][kw] = named[kw]
                 continue
             }
             if (kw in arg2value) {
-                throw new TypeError.$pyclass('%s() got multiple values for argument %r' %
+                throw new TypeError('%s() got multiple values for argument %r' %
                                 (func.__name__, kw))
             }
             arg2value[kw] = named[kw]

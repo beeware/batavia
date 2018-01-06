@@ -45,7 +45,7 @@ export function getattr_raw(obj, attr, attributes_only) {
 export function getattr(obj, attr) {
     var val = getattr_raw(obj, attr)
     if (val === undefined) {
-        throw new AttributeError.$pyclass(
+        throw new AttributeError(
             "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
         )
     }
@@ -93,7 +93,7 @@ export function setattr(obj, attr, value) {
 
 export function delattr(obj, attr) {
     if (obj[attr] === undefined) {
-        throw new AttributeError.$pyclass("'" + type_name(obj) +
+        throw new AttributeError("'" + type_name(obj) +
                         "' object has no attribute '" + attr + "'"
         )
     } else {

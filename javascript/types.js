@@ -110,7 +110,7 @@ export function issubclass(cls, type) {
                 } else {
                     var mro = cls.mro()
                     for (t in mro) {
-                        if (mro[t] === type) {
+                        if (mro[t] === type.__class__) {
                             return true
                         }
                     }
@@ -164,7 +164,7 @@ export function js2py(arg) {
                 return dict
             }
         default:
-            throw new BataviaError.$pyclass('Unknown type ' + (typeof arg))
+            throw new BataviaError('Unknown type ' + (typeof arg))
     }
 }
 

@@ -1,6 +1,6 @@
 import { iter_for_each } from '../core/callables'
 import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, None } from '../core/types'
+import { type_name, None, create_pyclass } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -37,8 +37,8 @@ Array_.prototype = []
 
 List.prototype = Object.create(Array_.prototype)
 List.prototype.length = 0
-create_pyclass(List, 'list', true)
 List.prototype.constructor = List
+create_pyclass(List, 'list', null)
 
 /**************************************************
  * Javascript compatibility methods

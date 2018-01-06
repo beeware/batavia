@@ -13,7 +13,7 @@ export function validateParams({
     funcName = requiredArg('funcName')
 } = {}) {
     if (args.length > names.length) {
-        throw new TypeError.$pyclass(
+        throw new TypeError(
             funcName + '() takes ' + numRequired + ' - ' + names.length +
             ' positional arguments but ' + args.length + ' were given'
         )
@@ -29,13 +29,13 @@ export function validateParams({
     for (var key in kwargs.valueOf()) {
         if (kwargs.hasOwnProperty(key)) {
             if (!ret.hasOwnProperty(key) && required.indexOf(key) < 0) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     funcName + "() got an unexpected keyword argument '" +
                     key + "'"
                 )
             }
             if (names.indexOf(key) < 0) {
-                throw new TypeError.$pyclass(
+                throw new TypeError(
                     funcName + "() got multiple values for argument '" +
                     key + "'"
                 )
@@ -47,7 +47,7 @@ export function validateParams({
 
     for (let req of required) {
         if (!ret.hasOwnProperty(req)) {
-            throw new TypeError.$pyclass(
+            throw new TypeError(
                 funcName + "() missing required positional argument '" +
                 req + "'"
             )

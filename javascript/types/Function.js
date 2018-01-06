@@ -38,44 +38,45 @@ var make_callable = function(func) {
     return fn.bind(func.$vm)
 }
 
-export default function Function(name, code, globals, defaults, closure, vm) {
-    PyObject.call(this)
+export default class Function extends PyObject {
+    constructor(name, code, globals, defaults, closure, vm) {
+        super()
 
-    this.$pyargs = true
-    this.$vm = vm
-    this.__code__ = code
-    this.__globals__ = globals
-    this.__defaults__ = defaults
-    this.__kwdefaults__ = null
-    this.__closure__ = closure
-    if (code.co_consts.length > 0) {
-        this.__doc__ = code.co_consts[0]
-    } else {
-        this.__doc__ = null
+        this.$pyargs = true
+        this.$vm = vm
+        this.__code__ = code
+        this.__globals__ = globals
+        this.__defaults__ = defaults
+        this.__kwdefaults__ = null
+        this.__closure__ = closure
+        if (code.co_consts.length > 0) {
+            this.__doc__ = code.co_consts[0]
+        } else {
+            this.__doc__ = null
+        }
+        this.__name__ = name || code.co_name
+        this.__dict__ = new types.Dict()
+        this.__annotations__ = new types.Dict()
+        this.__qualname__ = this.__name__
+
+        // var kw = {
+        //     'argdefs': this.__defaults__,
+        // }
+        // if (closure) {
+        //     kw['closure'] = tuple(make_cell(0) for _ in closure)
+        // }
+
+        this.__call__ = make_callable(this)
+
+        this.argspec = inspect.getfullargspec(this)
     }
-    this.__name__ = name || code.co_name
-    this.__dict__ = new types.Dict()
-    this.__annotations__ = new types.Dict()
-    this.__qualname__ = this.__name__
 
-    // var kw = {
-    //     'argdefs': this.__defaults__,
-    // }
-    // if (closure) {
-    //     kw['closure'] = tuple(make_cell(0) for _ in closure)
-    // }
-
-    this.__call__ = make_callable(this)
-
-    this.argspec = inspect.getfullargspec(this)
+    __get__(instance) {
+        // Module functions don't need to be bound to the instance as methods.
+        if (instance instanceof types.Module) {
+            return this
+        }
+        return new types.Method(instance, this)
+    }
 }
-
 create_pyclass(Function, 'function')
-
-Function.prototype.__get__ = function(instance) {
-    // Module functions don't need to be bound to the instance as methods.
-    if (instance instanceof types.Module) {
-        return this
-    }
-    return new types.Method(instance, this)
-}

@@ -9,420 +9,417 @@ import * as types from '../types'
  * A Python dict type wrapping JS objects
  *************************************************************************/
 
-export default function JSDict(args, kwargs) {
-    Object.call(this)
-    if (args) {
-        this.update(args)
-    }
-}
-
-JSDict.prototype = Object.create(Object.prototype)
-// JSDict doesn't need to appear as a Python type,
-// so we don't need to set __class__ or define a Type().
-
-/**************************************************
- * Javascript compatibility methods
- **************************************************/
-
-JSDict.prototype.toString = function() {
-    return this.__str__()
-}
-
-/**************************************************
- * Type conversions
- **************************************************/
-
-JSDict.prototype.__bool__ = function() {
-    return Object.keys(this).length > 0
-}
-
-JSDict.prototype.__repr__ = function() {
-    return this.__str__()
-}
-
-JSDict.prototype.__str__ = function() {
-    var result = '{'
-    var values = []
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            values.push(builtins.repr([key], null) + ': ' + builtins.repr([this[key]], null))
+export default class JSDict {
+    constructor(args, kwargs) {
+        if (args) {
+            this.update(args)
         }
     }
-    result += values.join(', ')
-    result += '}'
-    return result
-}
 
-/**************************************************
- * Comparison operators
- **************************************************/
+    /**************************************************
+     * Javascript compatibility methods
+     **************************************************/
 
-JSDict.prototype.__lt__ = function(other) {
-    if (other !== builtins.None) {
-        if (types.isinstance(other, [
-            types.Bool, types.Dict, types.Float,
-            types.Int, types.JSDict, types.List,
-            types.Str, types.Tuple
-        ])) {
-            if (version.earlier('3.6')) {
-                throw new TypeError(
-                    'unorderable types: dict() < ' + type_name(other) + '()'
-                )
-            } else {
-                throw new TypeError(
-                    "'<' not supported between instances of 'dict' and '" + type_name(other) + "'"
-                )
+    toString() {
+        return this.__str__()
+    }
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    __bool__() {
+        return Object.keys(this).length > 0
+    }
+
+    __repr__() {
+        return this.__str__()
+    }
+
+    __str__() {
+        var result = '{'
+        var values = []
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                values.push(builtins.repr([key], null) + ': ' + builtins.repr([this[key]], null))
             }
-        } else {
-            return this.valueOf() < other.valueOf()
         }
+        result += values.join(', ')
+        result += '}'
+        return result
     }
-    if (version.earlier('3.6')) {
-        throw new TypeError(
-            'unorderable types: dict() < NoneType()'
-        )
-    } else {
-        throw new TypeError(
-            "'<' not supported between instances of 'dict' and 'NoneType'"
-        )
-    }
-}
 
-JSDict.prototype.__le__ = function(other) {
-    if (other !== builtins.None) {
-        if (types.isinstance(other, [
-            types.Bool, types.Dict, types.Float,
-            types.Int, types.JSDict, types.List,
-            types.Str, types.Tuple
-        ])) {
-            if (version.earlier('3.6')) {
-                throw new TypeError(
-                    'unorderable types: dict() <= ' + type_name(other) + '()'
-                )
+    /**************************************************
+     * Comparison operators
+     **************************************************/
+
+    __lt__(other) {
+        if (other !== builtins.None) {
+            if (types.isinstance(other, [
+                types.Bool, types.Dict, types.Float,
+                types.Int, types.JSDict, types.List,
+                types.Str, types.Tuple
+            ])) {
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        'unorderable types: dict() < ' + type_name(other) + '()'
+                    )
+                } else {
+                    throw new TypeError(
+                        "'<' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+                }
             } else {
-                throw new TypeError(
-                    "'<=' not supported between instances of 'dict' and '" + type_name(other) + "'"
-                )
+                return this.valueOf() < other.valueOf()
             }
-        } else {
-            return this.valueOf() <= other.valueOf()
         }
-    }
-    if (version.earlier('3.6')) {
-        throw new TypeError(
-            'unorderable types: dict() <= NoneType()'
-        )
-    } else {
-        throw new TypeError(
-            "'<=' not supported between instances of 'dict' and 'NoneType'"
-        )
-    }
-}
-
-JSDict.prototype.__eq__ = function(other) {
-    return this.valueOf() === other
-}
-
-JSDict.prototype.__ne__ = function(other) {
-    return this.valueOf() !== other
-}
-
-JSDict.prototype.__gt__ = function(other) {
-    if (other !== builtins.None) {
-        if (types.isinstance(other, [
-            types.Bool, types.Dict, types.Float,
-            types.Int, types.JSDict, types.List,
-            types.Set, types.Str,
-            types.Tuple
-        ])) {
-            if (version.earlier('3.6')) {
-                throw new TypeError(
-                    'unorderable types: dict() > ' + type_name(other) + '()'
-                )
-            } else {
-                throw new TypeError(
-                    "'>' not supported between instances of 'dict' and '" + type_name(other) + "'"
-                )
-            }
-        } else {
-            return this.valueOf() > other.valueOf()
-        }
-    } else {
         if (version.earlier('3.6')) {
             throw new TypeError(
-                'unorderable types: dict() > NoneType()'
+                'unorderable types: dict() < NoneType()'
             )
         } else {
             throw new TypeError(
-                "'>' not supported between instances of 'dict' and 'NoneType'"
+                "'<' not supported between instances of 'dict' and 'NoneType'"
             )
         }
     }
-}
 
-JSDict.prototype.__ge__ = function(other) {
-    if (other !== builtins.None) {
-        if (types.isinstance(other, [
-            types.Bool, types.Dict, types.Float,
-            types.Int, types.JSDict, types.List,
-            types.Str, types.Tuple
-        ])) {
+    __le__(other) {
+        if (other !== builtins.None) {
+            if (types.isinstance(other, [
+                types.Bool, types.Dict, types.Float,
+                types.Int, types.JSDict, types.List,
+                types.Str, types.Tuple
+            ])) {
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        'unorderable types: dict() <= ' + type_name(other) + '()'
+                    )
+                } else {
+                    throw new TypeError(
+                        "'<=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+                }
+            } else {
+                return this.valueOf() <= other.valueOf()
+            }
+        }
+        if (version.earlier('3.6')) {
+            throw new TypeError(
+                'unorderable types: dict() <= NoneType()'
+            )
+        } else {
+            throw new TypeError(
+                "'<=' not supported between instances of 'dict' and 'NoneType'"
+            )
+        }
+    }
+
+    __eq__(other) {
+        return this.valueOf() === other
+    }
+
+    __ne__(other) {
+        return this.valueOf() !== other
+    }
+
+    __gt__(other) {
+        if (other !== builtins.None) {
+            if (types.isinstance(other, [
+                types.Bool, types.Dict, types.Float,
+                types.Int, types.JSDict, types.List,
+                types.Set, types.Str,
+                types.Tuple
+            ])) {
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        'unorderable types: dict() > ' + type_name(other) + '()'
+                    )
+                } else {
+                    throw new TypeError(
+                        "'>' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+                }
+            } else {
+                return this.valueOf() > other.valueOf()
+            }
+        } else {
             if (version.earlier('3.6')) {
                 throw new TypeError(
-                    'unorderable types: dict() >= ' + type_name(other) + '()'
+                    'unorderable types: dict() > NoneType()'
                 )
             } else {
                 throw new TypeError(
-                    "'>=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    "'>' not supported between instances of 'dict' and 'NoneType'"
                 )
             }
+        }
+    }
+
+    __ge__(other) {
+        if (other !== builtins.None) {
+            if (types.isinstance(other, [
+                types.Bool, types.Dict, types.Float,
+                types.Int, types.JSDict, types.List,
+                types.Str, types.Tuple
+            ])) {
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        'unorderable types: dict() >= ' + type_name(other) + '()'
+                    )
+                } else {
+                    throw new TypeError(
+                        "'>=' not supported between instances of 'dict' and '" + type_name(other) + "'"
+                    )
+                }
+            } else {
+                return this.valueOf() >= other.valueOf()
+            }
         } else {
-            return this.valueOf() >= other.valueOf()
+            if (version.earlier('3.6')) {
+                throw new TypeError(
+                    'unorderable types: dict() >= NoneType()'
+                )
+            } else {
+                throw new TypeError(
+                    "'>=' not supported between instances of 'dict' and 'NoneType'"
+                )
+            }
         }
-    } else {
-        if (version.earlier('3.6')) {
-            throw new TypeError(
-                'unorderable types: dict() >= NoneType()'
-            )
+    }
+
+    __contains__(other) {
+        return this.valueOf().hasOwnProperty(other)
+    }
+
+    /**************************************************
+     * Unary operators
+     **************************************************/
+
+    __pos__() {
+        throw new TypeError("bad operand type for unary +: 'jsdict'")
+    }
+
+    __neg__() {
+        throw new TypeError("bad operand type for unary -: 'jsdict'")
+    }
+
+    __not__() {
+        return this.__bool__().__not__()
+    }
+
+    __invert__() {
+        throw new TypeError("bad operand type for unary ~: 'jsdict'")
+    }
+
+    /**************************************************
+     * Binary operators
+     **************************************************/
+
+    __pow__(other) {
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'")
+    }
+
+    __div__(other) {
+        return this.__truediv__(other)
+    }
+
+    __floordiv__(other) {
+        throw new TypeError("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'")
+    }
+
+    __truediv__(other) {
+        throw new TypeError("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'")
+    }
+
+    __mul__(other) {
+        if (types.isinstance(other, [
+            types.Bool, types.Dict, types.Float,
+            types.JSDict, types.Int, types.NoneType])) {
+            throw new TypeError("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'")
         } else {
-            throw new TypeError(
-                "'>=' not supported between instances of 'dict' and 'NoneType'"
-            )
+            throw new TypeError("can't multiply sequence by non-int of type 'jsdict'")
         }
     }
-}
 
-JSDict.prototype.__contains__ = function(other) {
-    return this.valueOf().hasOwnProperty(other)
-}
-
-/**************************************************
- * Unary operators
- **************************************************/
-
-JSDict.prototype.__pos__ = function() {
-    throw new TypeError("bad operand type for unary +: 'jsdict'")
-}
-
-JSDict.prototype.__neg__ = function() {
-    throw new TypeError("bad operand type for unary -: 'jsdict'")
-}
-
-JSDict.prototype.__not__ = function() {
-    return this.__bool__().__not__()
-}
-
-JSDict.prototype.__invert__ = function() {
-    throw new TypeError("bad operand type for unary ~: 'jsdict'")
-}
-
-/**************************************************
- * Binary operators
- **************************************************/
-
-JSDict.prototype.__pow__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__div__ = function(other) {
-    return this.__truediv__(other)
-}
-
-JSDict.prototype.__floordiv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__truediv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__mul__ = function(other) {
-    if (types.isinstance(other, [
-        types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType])) {
-        throw new TypeError("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'")
-    } else {
-        throw new TypeError("can't multiply sequence by non-int of type 'jsdict'")
+    __mod__(other) {
+        throw new NotImplementedError('Dict.__mod__ has not been implemented')
     }
-}
 
-JSDict.prototype.__mod__ = function(other) {
-    throw new NotImplementedError('Dict.__mod__ has not been implemented')
-}
+    __add__(other) {
+        throw new TypeError("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__add__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'")
-}
+    __sub__(other) {
+        throw new TypeError("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__sub__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'")
-}
+    __setitem__(key, value) {
+        this[key] = value
+    }
 
-JSDict.prototype.__setitem__ = function(key, value) {
-    this[key] = value
-}
+    __lshift__(other) {
+        throw new TypeError("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__lshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'")
-}
+    __rshift__(other) {
+        throw new TypeError("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__rshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'")
-}
+    __and__(other) {
+        throw new TypeError("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__and__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'")
-}
+    __xor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__xor__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
-}
+    __or__(other) {
+        throw new TypeError("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__or__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
-}
+    /**************************************************
+     * Inplace operators
+     **************************************************/
 
-/**************************************************
- * Inplace operators
- **************************************************/
+    __ifloordiv__(other) {
+        throw new TypeError("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__ifloordiv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __itruediv__(other) {
+        throw new TypeError("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__itruediv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __iadd__(other) {
+        throw new TypeError("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__iadd__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __isub__(other) {
+        throw new TypeError("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__isub__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __imul__(other) {
+        throw new TypeError("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__imul__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __imod__(other) {
+        throw new TypeError("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__imod__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __ipow__(other) {
+        throw new TypeError("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__ipow__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __ilshift__(other) {
+        throw new TypeError("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__ilshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __irshift__(other) {
+        throw new TypeError("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__irshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __iand__(other) {
+        throw new TypeError("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__iand__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __ixor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__ixor__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
-}
+    __ior__(other) {
+        throw new TypeError("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
+    }
 
-JSDict.prototype.__ior__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__getitem__ = function(other) {
-    var value = this[other]
-    if (value === undefined) {
-        if (other === null) {
-            throw new KeyError('None')
-        } else {
-            throw new KeyError(other.__str__())
+    __getitem__(other) {
+        var value = this[other]
+        if (value === undefined) {
+            if (other === null) {
+                throw new KeyError('None')
+            } else {
+                throw new KeyError(other.__str__())
+            }
         }
+        return value
     }
-    return value
-}
 
-JSDict.prototype.__delitem__ = function(key) {
-    if (!this.__contains__(key)) {
-        if (key === null) {
-            throw new KeyError('None')
-        } else {
-            throw new KeyError(key)
+    __delitem__(key) {
+        if (!this.__contains__(key)) {
+            if (key === null) {
+                throw new KeyError('None')
+            } else {
+                throw new KeyError(key)
+            }
         }
-    }
-    delete this[key]
-}
-
-/**************************************************
- * Methods
- **************************************************/
-
-JSDict.prototype.get = function(key, backup) {
-    if (this.__contains__(key)) {
-        return this[key]
-    } else if (typeof backup === 'undefined') {
-        if (key === null) {
-            throw new KeyError('None')
-        } else {
-            throw new KeyError(key)
-        }
-    } else {
-        return backup
-    }
-}
-
-JSDict.prototype.update = function(values) {
-    for (var key in values) {
-        if (values.hasOwnProperty(key)) {
-            this[key] = values[key]
-        }
-    }
-}
-
-JSDict.prototype.copy = function() {
-    return new JSDict(this)
-}
-
-JSDict.prototype.items = function() {
-    var result = new types.List()
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            result.append(new types.Tuple([key, this[key]]))
-        }
-    }
-    return result
-}
-
-JSDict.prototype.keys = function() {
-    var result = []
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            result.push(key)
-        }
-    }
-    return new types.List(result)
-}
-
-JSDict.prototype.__iter__ = function() {
-    return this.keys().__iter__()
-}
-
-JSDict.prototype.values = function() {
-    var result = []
-    for (var key in this) {
-        if (this.hasOwnProperty(key)) {
-            result.push(this[key])
-        }
-    }
-    return new types.List(result)
-}
-
-JSDict.prototype.clear = function() {
-    for (var key in this) {
         delete this[key]
+    }
+
+    /**************************************************
+     * Methods
+     **************************************************/
+
+    get(key, backup) {
+        if (this.__contains__(key)) {
+            return this[key]
+        } else if (typeof backup === 'undefined') {
+            if (key === null) {
+                throw new KeyError('None')
+            } else {
+                throw new KeyError(key)
+            }
+        } else {
+            return backup
+        }
+    }
+
+    update(values) {
+        for (var key in values) {
+            if (values.hasOwnProperty(key)) {
+                this[key] = values[key]
+            }
+        }
+    }
+
+    copy() {
+        return new JSDict(this)
+    }
+
+    items() {
+        var result = new types.List()
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                result.append(new types.Tuple([key, this[key]]))
+            }
+        }
+        return result
+    }
+
+    keys() {
+        var result = []
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                result.push(key)
+            }
+        }
+        return new types.List(result)
+    }
+
+    __iter__() {
+        return this.keys().__iter__()
+    }
+
+    values() {
+        var result = []
+        for (var key in this) {
+            if (this.hasOwnProperty(key)) {
+                result.push(this[key])
+            }
+        }
+        return new types.List(result)
+    }
+
+    clear() {
+        for (var key in this) {
+            delete this[key]
+        }
     }
 }
