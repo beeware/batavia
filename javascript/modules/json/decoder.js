@@ -1,18 +1,18 @@
 import { call_function, call_method } from '../../core/callables'
-import { Exception, ValueError } from '../../core/exceptions'
-import { create_pyclass, Type, PyObject } from '../../core/types'
+import { PyException, PyValueError } from '../../core/exceptions'
+import { create_pyclass, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
 import * as types from '../../types'
 
 import { validateParams } from './utils'
 
-class JSONDecodeError extends Exception {
+class PyJSONDecodeError extends PyException {
     constructor(msg) {
         super(msg)
     }
 }
-create_pyclass(JSONDecodeError, 'JSONDecodeError')
+create_pyclass(PyJSONDecodeError, 'PyJSONDecodeError')
 
 
 // TODO(abonie): actual defaults?
@@ -58,10 +58,10 @@ class JSONDecoder extends PyObject {
         // TODO(abonie): what if call to object_hook changes decoder's object_hook property?
         var object_hook = this.object_hook
         var reviver = (k, v) => types.js2py(v)
-        if (object_hook !== null && !types.isinstance(object_hook, types.NoneType)) {
+        if (object_hook !== null && !types.isinstance(object_hook, types.PyNoneType)) {
             reviver = function(k, v) {
                 var o = types.js2py(v)
-                if (types.isinstance(o, types.Dict)) {
+                if (types.isinstance(o, types.PyDict)) {
                     o = call_function(object_hook, [o], null)
                 }
                 return o
@@ -73,9 +73,9 @@ class JSONDecoder extends PyObject {
             ret = JSON.parse(s, reviver)
         } catch (e) {
             if (version.earlier('3.5a0')) {
-                throw new ValueError(e.message)
+                throw new PyValueError(e.message)
             } else {
-                throw new JSONDecodeError(e.message)
+                throw new PyJSONDecodeError(e.message)
             }
         }
         return ret
@@ -145,6 +145,6 @@ load.$pyargs = true
 export {
     loads,
     load,
-    JSONDecodeError,
+    PyJSONDecodeError,
     _JSONDecoder as JSONDecoder
 }

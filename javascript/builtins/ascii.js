@@ -1,4 +1,4 @@
-import { BataviaError, TypeError } from '../core/exceptions'
+import { BataviaError, PyTypeError } from '../core/exceptions'
 
 import repr from './repr'
 
@@ -7,10 +7,10 @@ export default function ascii(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("ascii() doesn't accept keyword arguments")
+        throw new PyTypeError("ascii() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError('ascii() takes exactly one argument (' + args.length + ' given)')
+        throw new PyTypeError('ascii() takes exactly one argument (' + args.length + ' given)')
     }
 
     var repr_string = repr([args[0]], null)

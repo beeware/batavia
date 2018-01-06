@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { StopIteration } from '../core/exceptions'
+import { PyStopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 import * as types from '../types'
@@ -9,7 +9,7 @@ import * as types from '../types'
  * Range Iterator
  **************************************************/
 
-export default class RangeIterator extends PyObject {
+export default class PyRangeIterator extends PyObject {
     constructor(data) {
         super()
         this.index = data.start
@@ -22,13 +22,13 @@ export default class RangeIterator extends PyObject {
         if ((this.step.gt(0) && this.index.lt(this.stop)) ||
             (this.step.lt(0) && this.index.gt(this.stop))) {
             this.index = this.index.add(this.step)
-            return new types.Int(retval)
+            return new types.PyInt(retval)
         }
-        throw new StopIteration()
+        throw new PyStopIteration()
     }
 
     __str__() {
         return '<range_iterator object at 0x99999999>'
     }
 }
-create_pyclass(RangeIterator, 'range_iterator')
+create_pyclass(PyRangeIterator, 'range_iterator')

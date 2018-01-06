@@ -17,7 +17,7 @@
  *        actual value.
  */
 
-export default class Cell {
+export default class PyCell {
     constructor(value) {
         this.contents = value
     }

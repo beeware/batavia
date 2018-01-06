@@ -1,11 +1,11 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
 export default function pow(args, kwargs) {
     var x, y, z
     if (!args) {
-        throw new TypeError('pow expected at least 2 arguments, got 0')
+        throw new PyTypeError('pow expected at least 2 arguments, got 0')
     }
     if (args.length === 2) {
         x = args[0]
@@ -16,13 +16,13 @@ export default function pow(args, kwargs) {
         y = args[1]
         z = args[2]
 
-        if (!types.isinstance(x, types.Int) ||
-            !types.isinstance(y, types.Int) ||
-            !types.isinstance(z, types.Int)) {
-            throw new TypeError('pow() 3rd argument not allowed unless all arguments are integers')
+        if (!types.isinstance(x, types.PyInt) ||
+            !types.isinstance(y, types.PyInt) ||
+            !types.isinstance(z, types.PyInt)) {
+            throw new PyTypeError('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new TypeError('pow() 2nd argument cannot be negative when 3rd argument specified')
+            throw new PyTypeError('pow() 2nd argument cannot be negative when 3rd argument specified')
         }
         if (y === 0) {
             return 1
@@ -44,7 +44,7 @@ export default function pow(args, kwargs) {
         }
         return result
     } else {
-        throw new TypeError('pow expected at least 2 arguments, got ' + args.length)
+        throw new PyTypeError('pow expected at least 2 arguments, got ' + args.length)
     }
 }
 

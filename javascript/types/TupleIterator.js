@@ -1,4 +1,4 @@
-import { StopIteration } from '../core/exceptions'
+import { PyStopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 /**************************************************
@@ -15,7 +15,7 @@ export default class TupleIterator extends PyObject {
     __next__() {
         var retval = this.data[this.index]
         if (retval === undefined) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
         this.index++
         return retval

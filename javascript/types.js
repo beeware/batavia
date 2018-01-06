@@ -1,51 +1,52 @@
 import { BataviaError } from './core/exceptions'
 
-import { Type, NoneType } from './core/types'
-
-import NotImplementedType from './types/NotImplementedType'
-
-import Code from './types/Code'
-import Module from './types/Module'
 import JSDict from './types/JSDict'
 
-import Property from './types/Property'
+import { PyType, PyNoneType } from './core/types'
 
-import SetIterator from './types/SetIterator'
+import PyNotImplementedType from './types/NotImplementedType'
 
-import Bool from './types/Bool'
-import Float from './types/Float'
-import Int from './types/Int'
+import PyCode from './types/Code'
+import PyModule from './types/Module'
 
-import Dict from './types/Dict'
-import List from './types/List'
-import Set from './types/Set'
-import Tuple from './types/Tuple'
-import FrozenSet from './types/FrozenSet'
+import PyProperty from './types/Property'
 
-import Str from './types/Str'
-import Bytes from './types/Bytes'
-import Bytearray from './types/Bytearray'
+import PySetIterator from './types/SetIterator'
 
-import Complex from './types/Complex'
+import PyBool from './types/Bool'
+import PyFloat from './types/Float'
+import PyInt from './types/Int'
 
-import DictView from './types/DictView'
-import Ellipsis from './types/Ellipsis'
+import PyDict from './types/Dict'
+import PyList from './types/List'
+import PySet from './types/Set'
+import PyTuple from './types/Tuple'
+import PyFrozenSet from './types/FrozenSet'
 
-import Filter from './types/Filter'
-import Map from './types/Map'
-import Zip from './types/Zip'
+import PyStr from './types/Str'
+import PyBytes from './types/Bytes'
+import PyBytearray from './types/Bytearray'
 
-import Function from './types/Function'
-import Method from './types/Method'
+import PyComplex from './types/Complex'
 
-import Generator from './types/Generator'
+import PyDictView from './types/DictView'
+import PyEllipsis from './types/Ellipsis'
 
-import Range from './types/Range'
-import Slice from './types/Slice'
+import PyFilter from './types/Filter'
+import PyMap from './types/Map'
+import PyZip from './types/Zip'
 
-import CallableIterator from './types/CallableIterator'
+import PyFunction from './types/Function'
+import PyMethod from './types/Method'
 
-import Enumerate from './types/Enumerate'
+import PyGenerator from './types/Generator'
+
+import PyRange from './types/Range'
+import PySlice from './types/Slice'
+
+import PyCallableIterator from './types/CallableIterator'
+
+import PyEnumerate from './types/Enumerate'
 
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
@@ -62,11 +63,11 @@ export function isinstance(obj, type) {
     } else {
         switch (typeof obj) {
             case 'boolean':
-                return type === Bool
+                return type === PyBool
             case 'number':
-                return type === Int
+                return type === PyInt
             case 'string':
-                return type === Str
+                return type === PyStr
             case 'object':
                 return obj instanceof type
             default:
@@ -77,13 +78,13 @@ export function isinstance(obj, type) {
 
 export function isbataviainstance(obj) {
     return isinstance(obj, [
-        Bool, Dict, Float,
-        Int, JSDict, List,
-        NoneType, Tuple, Slice,
-        Bytes, Bytearray, Type,
-        Str, Set, Range,
-        FrozenSet, Complex,
-        NotImplementedType
+        PyBool, PyDict, PyFloat,
+        PyInt, PyJSDict, PyList,
+        PyNoneType, PyTuple, PySlice,
+        PyBytes, PyBytearray, PyType,
+        PyStr, PySet, PyRange,
+        PyFrozenSet, PyComplex,
+        PyNotImplementedType
     ])
 }
 
@@ -99,13 +100,13 @@ export function issubclass(cls, type) {
     } else {
         switch (typeof cls) {
             case 'boolean':
-                return type === Bool
+                return type === PyBool
             case 'number':
-                return type === Int
+                return type === PyInt
             case 'string':
-                return type === Str
+                return type === PyStr
             case 'object':
-                if (type === null || type === NoneType) {
+                if (type === null || type === PyNoneType) {
                     return cls === null
                 } else {
                     var mro = cls.mro()
@@ -125,7 +126,7 @@ export function issubclass(cls, type) {
 export function js2py(arg) {
     if (Array.isArray(arg)) {
         // recurse
-        var arr = new List()
+        var arr = new PyList()
         for (var i = 0; i < arg.length; i++) {
             arr.append(js2py(arg[i]))
         }
@@ -137,14 +138,14 @@ export function js2py(arg) {
             return arg
         case 'number':
             if (Number.isInteger(arg)) {
-                return new Int(arg)
+                return new PyInt(arg)
             } else {
-                return new Float(arg)
+                return new PyFloat(arg)
             }
         case 'string':
-            return new Str(arg)
+            return new PyStr(arg)
         case 'object':
-            if (arg === null || arg === NoneType) {
+            if (arg === null || arg === PyNoneType) {
                 return null
             } else if (
                 arg.__class__ !== undefined &&
@@ -155,7 +156,7 @@ export function js2py(arg) {
                 return arg
             } else {
                 // this is a generic object; turn it into a dictionary
-                var dict = new Dict()
+                var dict = new PyDict()
                 for (var k in arg) {
                     if (arg.hasOwnProperty(k)) {
                         dict.__setitem__(js2py(k), js2py(arg[k]))
@@ -169,36 +170,37 @@ export function js2py(arg) {
 }
 
 export {
-    Bool,
-    Bytearray,
-    Bytes,
-    CallableIterator,
-    Code,
-    Complex,
-    Dict,
-    DictView,
-    Ellipsis,
-    Enumerate,
-    Filter,
-    Float,
-    FrozenSet,
-    Function,
-    Generator,
-    Int,
     JSDict,
-    List,
-    Map,
-    Method,
-    Module,
-    NoneType,
-    NotImplementedType,
-    Property,
-    Range,
-    Set,
-    SetIterator,
-    Slice,
-    Str,
-    Tuple,
-    Type,
-    Zip
+
+    PyBool,
+    PyBytearray,
+    PyBytes,
+    PyCallableIterator,
+    PyCode,
+    PyComplex,
+    PyDict,
+    PyDictView,
+    PyEllipsis,
+    PyEnumerate,
+    PyFilter,
+    PyFloat,
+    PyFrozenSet,
+    PyFunction,
+    PyGenerator,
+    PyInt,
+    PyList,
+    PyMap,
+    PyMethod,
+    PyModule,
+    PyNoneType,
+    PyNotImplementedType,
+    PyProperty,
+    PyRange,
+    PySet,
+    PySetIterator,
+    PySlice,
+    PyStr,
+    PyTuple,
+    PyType,
+    PyZip
 }

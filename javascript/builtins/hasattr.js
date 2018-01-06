@@ -1,4 +1,4 @@
-import { AttributeError, TypeError } from '../core/exceptions'
+import { PyAttributeError, PyTypeError } from '../core/exceptions'
 import * as native from '../core/native'
 
 import * as types from '../types'
@@ -6,8 +6,8 @@ import * as types from '../types'
 export default function hasattr(args, kwargs) {
     if (args) {
         if (args.length === 2) {
-            if (!types.isinstance(args[1], types.Str)) {
-                throw new TypeError('hasattr(): attribute name must be string')
+            if (!types.isinstance(args[1], types.PyStr)) {
+                throw new PyTypeError('hasattr(): attribute name must be string')
             }
 
             var val
@@ -18,7 +18,7 @@ export default function hasattr(args, kwargs) {
                     val = native.getattr_py(args[0], args[1])
                 }
             } catch (err) {
-                if (err instanceof AttributeError) {
+                if (err instanceof PyAttributeError) {
                     val = undefined
                 } else {
                     throw err
@@ -27,12 +27,12 @@ export default function hasattr(args, kwargs) {
 
             return val !== undefined
         } else {
-            throw new TypeError('hasattr expected exactly 2 arguments, got ' + args.length)
+            throw new PyTypeError('hasattr expected exactly 2 arguments, got ' + args.length)
         }
     } else {
-        throw new TypeError('hasattr expected exactly 2 arguments, got 0')
+        throw new PyTypeError('hasattr expected exactly 2 arguments, got 0')
     }
 }
 
-hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)'
+hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching PyAttributeError.)'
 hasattr.$pyargs = true

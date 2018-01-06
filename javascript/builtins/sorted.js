@@ -1,4 +1,4 @@
-import { NotImplementedError, TypeError } from '../core/exceptions'
+import { PyNotImplementedError, PyTypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -15,7 +15,7 @@ function _validateInput(args, kwargs) {
 
     if (kwargs !== undefined) {
         if (kwargs['iterable'] !== undefined) {
-            throw new TypeError("'iterable' is an invalid keyword argument for this function")
+            throw new PyTypeError("'iterable' is an invalid keyword argument for this function")
         }
 
         if (kwargs['reverse'] !== undefined && kwargs['reverse'] === true) {
@@ -25,7 +25,7 @@ function _validateInput(args, kwargs) {
 
         if (kwargs['key'] !== undefined) {
             // TODO: Fix context of python functions calling with proper vm
-            throw new NotImplementedError('Builtin Batavia sorted function "key" function is not implemented.')
+            throw new PyNotImplementedError('Builtin Batavia sorted function "key" function is not implemented.')
             // preparingFunction = export default function (value) {
             //    return {
             //        "key": kwargs["key"].__call__.apply(kwargs["key"].$vm, [value], null),
@@ -36,7 +36,7 @@ function _validateInput(args, kwargs) {
     }
 
     if (args === undefined || args.length === 0) {
-        throw new TypeError("Required argument 'iterable' (pos 1) not found")
+        throw new PyTypeError("Required argument 'iterable' (pos 1) not found")
     }
 
     return {
@@ -51,7 +51,7 @@ export default function sorted(args, kwargs) {
     var validatedInput = _validateInput(args, kwargs)
     var iterable = validatedInput['iterable']
 
-    if (types.isinstance(iterable, [types.List, types.Tuple])) {
+    if (types.isinstance(iterable, [types.PyList, types.PyTuple])) {
         iterable = iterable.map(validatedInput['preparingFunction'])
         iterable.sort(function(a, b) {
             // TODO: Replace this with a better, guaranteed stable sort.
@@ -63,7 +63,7 @@ export default function sorted(args, kwargs) {
 
             // Order of conditions does matter here.
             // Because if we get unorderable types, CPython gives always '<' in Exception:
-            // TypeError: unorderable types: str() < int()
+            // PyTypeError: unorderable types: str() < int()
             if (a['key'].__lt__(b['key'])) {
                 return validatedInput['smaller']
             }
@@ -74,12 +74,12 @@ export default function sorted(args, kwargs) {
             return 0
         })
 
-        return new types.List(iterable.map(function(element) {
+        return new types.PyList(iterable.map(function(element) {
             return element['value']
         }))
     }
 
-    throw new NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
+    throw new PyNotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
 }
 
 sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list'

@@ -1,5 +1,5 @@
 
-export default class Block {
+export default class PyBlock {
     constructor(type, handler, level) {
 
         this.type = type

@@ -1,4 +1,4 @@
-import { AttributeError, TypeError } from './exceptions'
+import { PyAttributeError, PyTypeError } from './exceptions'
 import * as native from './native'
 import * as types from '../types'
 import * as version from './version'
@@ -7,16 +7,20 @@ import * as version from './version'
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-export function create_pyclass(type, name, base) {
+export function create_pyclass(Class, name, base) {
+    var type
     if (base === undefined) {
-        type.__class__ = new Type(name)
+        type = new PyType(name)
     } else if (base !== null) {
-        type.__class__ = new Type(name, [base])
+        type = new PyType(name, [base])
     } else {
-        type.__class__ = new Type(name)
+        type = new PyType(name)
     }
 
-    type.prototype.__class__ = type.__class__
+    type.$pyclass = Class
+
+    Class.__class__ = type
+    Class.prototype.__class__ = type
 }
 
 /*************************************************************************
@@ -44,7 +48,7 @@ export function type_name(arg) {
 /*************************************************************************
  * A Python Type
  *************************************************************************/
-export var Type = class {
+export var PyType = class {
     constructor(name, bases, dict) {
         this.__name__ = name
         if (bases && Array.isArray(bases) && bases.length > 0) {
@@ -91,18 +95,12 @@ export var Type = class {
     }
 
     __call__(args, kwargs) {
-        var instance
-        if (this.$pyinit) {
-            instance = new this()
+        var instance = new this.$pyclass()
 
-            if (instance.__init__) {
-                // Bind the constructor to the instance, and invoke.
-                var constructor = new types.Method(instance, instance.__init__)
-                constructor.__call__.apply(instance, [args, kwargs])
-            }
-        } else {
-            instance = Object.create(this.prototype)
-            this.apply(instance, args)
+        if (instance.__init__) {
+            // Bind the constructor to the instance, and invoke.
+            var constructor = new types.PyMethod(instance, instance.__init__)
+            constructor.__call__.apply(instance, [args, kwargs])
         }
         return instance
     }
@@ -117,11 +115,11 @@ export var Type = class {
         }
         if (attr === undefined) {
             if (obj === undefined) {
-                throw new AttributeError(
+                throw new PyAttributeError(
                     "'" + type_name(obj) + "' object has no attribute '" + name + "'"
                 )
             } else {
-                throw new AttributeError(
+                throw new PyAttributeError(
                     "type object '" + obj.__name__ + "' has no attribute '" + name + "'"
                 )
             }
@@ -138,8 +136,8 @@ export var Type = class {
     }
 
     __setattr__(name, value) {
-        if (Object.getPrototypeOf(this) === Type) {
-            throw new TypeError(
+        if (Object.getPrototypeOf(this) === PyType) {
+            throw new PyTypeError(
                 "can't set attributes of built-in/extension type '" + this.__name__ + "'"
             )
         }
@@ -149,16 +147,16 @@ export var Type = class {
 
     __delattr__(name) {
         if (this.dict) {
-            throw new AttributeError(name)
+            throw new PyAttributeError(name)
         }
 
         if (['int', 'str'].indexOf(this.__name__) > -1) {
-            throw new TypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
+            throw new PyTypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
         }
 
         var attr = native.getattr_raw(this.prototype, name)
         if (attr === undefined) {
-            throw new AttributeError(
+            throw new PyAttributeError(
                 "type object '" + this.__name__ + "' has no attribute '" + name + "'"
             )
         }
@@ -200,8 +198,8 @@ export var Type = class {
 }
 
 // Set the type properties of the Type class
-create_pyclass(Type, 'type', null)
-Type.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type"
+create_pyclass(PyType, 'type', null)
+PyType.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type"
 
 /*************************************************************************
  * A base Python object
@@ -241,7 +239,7 @@ export var PyObject = class {
 
     __setattr__(name, value) {
         if (Object.getPrototypeOf(this) === PyObject) {
-            throw new AttributeError("'" + type_name(this) +
+            throw new PyAttributeError("'" + type_name(this) +
                 "' object has no attribute '" + name + "'"
             )
         }
@@ -257,7 +255,7 @@ export var PyObject = class {
     __delattr__(name) {
         var attr = this[name]
         if (attr === undefined) {
-            throw new AttributeError("'" + type_name(this) +
+            throw new PyAttributeError("'" + type_name(this) +
                 "' object has no attribute '" + name + "'"
             )
         }
@@ -277,7 +275,7 @@ create_pyclass(PyObject, 'object')
 /*************************************************************************
  * An implementation of NoneType
  *************************************************************************/
-export var NoneType = class extends PyObject {
+export var PyNoneType = class extends PyObject {
     constructor() {
         super()
     }
@@ -287,15 +285,15 @@ export var NoneType = class extends PyObject {
      **************************************************/
 
     __bool__() {
-        return new types.Bool(false)
+        return new types.PyBool(false)
     }
 
     __repr__() {
-        return new types.Str('None')
+        return new types.PyStr('None')
     }
 
     __str__() {
-        return new types.Str('None')
+        return new types.PyStr('None')
     }
     /**************************************************
      * Attribute manipulation
@@ -303,9 +301,9 @@ export var NoneType = class extends PyObject {
 
     __setattr__(attr, value) {
         if (Object.getPrototypeOf(this)[attr] === undefined) {
-            throw new AttributeError("'NoneType' object has no attribute '" + attr + "'")
+            throw new PyAttributeError("'NoneType' object has no attribute '" + attr + "'")
         } else {
-            throw new AttributeError("'NoneType' object attribute '" + attr + "' is read-only")
+            throw new PyAttributeError("'NoneType' object attribute '" + attr + "' is read-only")
         }
     }
 
@@ -315,11 +313,11 @@ export var NoneType = class extends PyObject {
 
     __lt__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() < ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -328,11 +326,11 @@ export var NoneType = class extends PyObject {
 
     __le__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<=' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -349,11 +347,11 @@ export var NoneType = class extends PyObject {
 
     __gt__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() > ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'>' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -362,11 +360,11 @@ export var NoneType = class extends PyObject {
 
     __ge__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'>=' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -382,11 +380,11 @@ export var NoneType = class extends PyObject {
      **************************************************/
 
     __pos__() {
-        throw new TypeError("bad operand type for unary +: 'NoneType'")
+        throw new PyTypeError("bad operand type for unary +: 'NoneType'")
     }
 
     __neg__() {
-        throw new TypeError("bad operand type for unary -: 'NoneType'")
+        throw new PyTypeError("bad operand type for unary -: 'NoneType'")
     }
 
     __not__() {
@@ -394,7 +392,7 @@ export var NoneType = class extends PyObject {
     }
 
     __invert__() {
-        throw new TypeError("bad operand type for unary ~: 'NoneType'")
+        throw new PyTypeError("bad operand type for unary ~: 'NoneType'")
     }
 
     /**************************************************
@@ -402,71 +400,71 @@ export var NoneType = class extends PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
-        return NoneType.__truediv__(other)
+        return PyNoneType.__truediv__(other)
     }
 
     __floordiv__(other) {
-        if (types.isinstance(other, types.Complex)) {
-            throw new TypeError("can't take floor of complex number.")
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new PyTypeError("can't take floor of complex number.")
         } else {
-            throw new TypeError("unsupported operand type(s) for //: 'NoneType' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for //: 'NoneType' and '" + type_name(other) + "'")
         }
     }
 
     __truediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for /: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
-        if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
+        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
+            throw new PyTypeError("can't multiply sequence by non-int of type 'NoneType'")
         } else {
-            throw new TypeError("unsupported operand type(s) for *: 'NoneType' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *: 'NoneType' and '" + type_name(other) + "'")
         }
     }
 
     __mod__(other) {
-        if (types.isinstance(other, types.Complex)) {
-            throw new TypeError("can't mod complex numbers.")
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new PyTypeError("can't mod complex numbers.")
         } else {
-            throw new TypeError("unsupported operand type(s) for %: 'NoneType' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for %: 'NoneType' and '" + type_name(other) + "'")
         }
     }
 
     __add__(other) {
-        throw new TypeError("unsupported operand type(s) for +: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for +: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __sub__(other) {
-        throw new TypeError("unsupported operand type(s) for -: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __getitem__(other) {
-        throw new TypeError("'NoneType' object is not subscriptable")
+        throw new PyTypeError("'NoneType' object is not subscriptable")
     }
 
     __lshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for <<: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for >>: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        throw new TypeError("unsupported operand type(s) for &: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        throw new TypeError("unsupported operand type(s) for |: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |: 'NoneType' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -474,76 +472,75 @@ export var NoneType = class extends PyObject {
      **************************************************/
 
     __ifloordiv__(other) {
-        if (types.isinstance(other, types.Complex)) {
-            throw new TypeError("can't take floor of complex number.")
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new PyTypeError("can't take floor of complex number.")
         } else {
-            throw new TypeError("unsupported operand type(s) for //=: 'NoneType' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for //=: 'NoneType' and '" + type_name(other) + "'")
         }
     }
 
     __itruediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for /=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __iadd__(other) {
-        throw new TypeError("unsupported operand type(s) for +=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for +=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __isub__(other) {
-        throw new TypeError("unsupported operand type(s) for -=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __imul__(other) {
-        if (types.isinstance(other, [types.List, types.Tuple, types.Str, types.Bytes, types.Bytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
+        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
+            throw new PyTypeError("can't multiply sequence by non-int of type 'NoneType'")
         } else {
-            throw new TypeError("unsupported operand type(s) for *=: 'NoneType' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *=: 'NoneType' and '" + type_name(other) + "'")
         }
     }
 
     __imod__(other) {
-        if (types.isinstance(other, types.Complex)) {
-            throw new TypeError("can't mod complex numbers.")
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new PyTypeError("can't mod complex numbers.")
         } else {
-            throw new TypeError("unsupported operand type(s) for %=: 'NoneType' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for %=: 'NoneType' and '" + type_name(other) + "'")
         }
     }
 
     __ipow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
     }
 
     __ilshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for <<=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __irshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for >>=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new TypeError("unsupported operand type(s) for &=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^=: 'NoneType' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |=: 'NoneType' and '" + type_name(other) + "'")
     }
 
 }
 
-NoneType.prototype = Object.create(PyObject.prototype)
-create_pyclass(NoneType, 'NoneType')
+create_pyclass(PyNoneType, 'NoneType')
 
 /*************************************************************************
  * Resolve circular reference issues
  *************************************************************************/
 
 // Create a singleton instance of None
-export var None = new NoneType()
+export var PyNone = new PyNoneType()
 
 // Now that we have an instance of None, we can fill in the blanks where we needed it
-PyObject.prototype.__class__.__base__ = None
+PyObject.prototype.__class__.__base__ = PyNone

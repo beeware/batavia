@@ -1,4 +1,4 @@
-import { BataviaError, MemoryError, OverflowError, TypeError, ValueError } from '../core/exceptions'
+import { BataviaError, PyMemoryError, PyOverflowError, PyTypeError, PyValueError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -8,7 +8,7 @@ function nonNumericFilter(value) {
 }
 
 function asBytes(value) {
-    return new types.Bytes(value)
+    return new types.PyBytes(value)
 }
 
 export default function bytearray(args, kwargs) {
@@ -18,95 +18,95 @@ export default function bytearray(args, kwargs) {
 //    bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
 //    bytearray() -> empty bytes array
     var notIterableTypes = [
-        types.NoneType,
-        types.NotImplementedType,
-        types.Type,
-        types.Complex,
-        types.Float,
-        types.Slice
+        types.PyNoneType,
+        types.PyNotImplementedType,
+        types.PyType,
+        types.PyComplex,
+        types.PyFloat,
+        types.PySlice
     ]
 
     if (arguments.length !== 2) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("<fn>() doesn't accept keyword arguments.")
+        throw new PyTypeError("<fn>() doesn't accept keyword arguments.")
     }
     if (args.length === 0) {
-        return new types.Bytearray(new types.Bytes([]))
-    } else if (args.length === 1 && types.isinstance(args[0], types.Bytes)) {
+        return new types.PyBytearray(new types.PyBytes([]))
+    } else if (args.length === 1 && types.isinstance(args[0], types.PyBytes)) {
         // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
-        return new types.Bytearray(args[0])
-    } else if (args.length === 1 && types.isinstance(args[0], types.Bool)) {
+        return new types.PyBytearray(args[0])
+    } else if (args.length === 1 && types.isinstance(args[0], types.PyBool)) {
         // bytearray(True) -> bytearray(b'\x00')
         if (args[0]) {
-            return new types.Bytearray(new types.Bytes([0]))
+            return new types.PyBytearray(new types.PyBytes([0]))
         // bytearray(False) -> bytearray(b'')
         } else {
-            return new types.Bytearray(new types.Bytes([]))
+            return new types.PyBytearray(new types.PyBytes([]))
         }
     } else if (types.isinstance(args[0], notIterableTypes)) {
-        throw new TypeError('\'' + type_name(args[0]) + '\' object is not iterable')
-    } else if (types.isinstance(args[0], types.Bytearray)) {
-        return new types.Bytearray(args[0])
-    } else if (types.isinstance(args[0], types.Dict)) {
+        throw new PyTypeError('\'' + type_name(args[0]) + '\' object is not iterable')
+    } else if (types.isinstance(args[0], types.PyBytearray)) {
+        return new types.PyBytearray(args[0])
+    } else if (types.isinstance(args[0], types.PyDict)) {
         var toConvert = args[0].keys()
         let nonDigits = toConvert.filter(nonNumericFilter)
         if (nonDigits.length > 0) {
-            throw new TypeError('an integer is required')
+            throw new PyTypeError('an integer is required')
         }
-        return new types.Bytearray(toConvert.map(asBytes))
-    } else if (types.isinstance(args[0], [types.FrozenSet, types.Set])) {
-        var asList = new types.List(args[0].data.keys())
+        return new types.PyBytearray(toConvert.map(asBytes))
+    } else if (types.isinstance(args[0], [types.PyFrozenSet, types.PySet])) {
+        var asList = new types.PyList(args[0].data.keys())
         let nonDigits = asList.filter(nonNumericFilter)
         if (nonDigits.length > 0) {
-            throw new TypeError('an integer is required')
+            throw new PyTypeError('an integer is required')
         }
-        return new types.Bytearray(asList.map(function(value) {
+        return new types.PyBytearray(asList.map(function(value) {
             return asBytes([value])
         }))
-    } else if (types.isinstance(args[0], types.Int)) {
-        let asInt = new types.Int(args[0])
+    } else if (types.isinstance(args[0], types.PyInt)) {
+        let asInt = new types.PyInt(args[0])
         if (asInt.__gt__(asInt.MAX_INT) || asInt.__lt__(asInt.MIN_INT)) {
-            throw new OverflowError('cannot fit \'int\' into an index-sized integer')
-        } else if (asInt.__lt__(new types.Int(0))) {
-            throw new ValueError('negative count')
+            throw new PyOverflowError('cannot fit \'int\' into an index-sized integer')
+        } else if (asInt.__lt__(new types.PyInt(0))) {
+            throw new PyValueError('negative count')
         } else if (asInt.__eq__(asInt.MAX_INT)) {
-            throw new MemoryError('')
+            throw new PyMemoryError('')
         }
         let retArray = []
         for (var i = 0; i < args[0]; i++) {
             retArray.push(0)
         }
-        return new types.Bytearray(new types.Bytes(retArray))
-    } else if (types.isinstance(args[0], [types.List, types.Range, types.Tuple])) {
+        return new types.PyBytearray(new types.PyBytes(retArray))
+    } else if (types.isinstance(args[0], [types.PyList, types.PyRange, types.PyTuple])) {
         let toConvert
-        if (types.isinstance(args[0], [types.Range, types.Tuple])) {
-            toConvert = new types.List(args[0])
+        if (types.isinstance(args[0], [types.PyRange, types.PyTuple])) {
+            toConvert = new types.PyList(args[0])
         } else {
             toConvert = args[0]
         }
         toConvert = toConvert.map(function(value) {
-            if (types.isinstance(value, types.Bool)) {
+            if (types.isinstance(value, types.PyBool)) {
                 return value.__int__()
             }
-            if (types.isinstance(value, types.Int)) {
+            if (types.isinstance(value, types.PyInt)) {
                 return value.int32()
             }
             return value
         })
         let nonDigits = toConvert.filter(function(value) {
-            return !types.isinstance(value, [types.Int, types.Bool])
+            return !types.isinstance(value, [types.PyInt, types.PyBool])
         })
         if (nonDigits.length > 0) {
-            throw new TypeError('an integer is required')
+            throw new PyTypeError('an integer is required')
         }
-        return new types.Bytearray(new types.Bytes(toConvert))
-    } else if (types.isinstance(args[0], types.Str)) {
+        return new types.PyBytearray(new types.PyBytes(toConvert))
+    } else if (types.isinstance(args[0], types.PyStr)) {
         if (args.length < 2) {
-            throw new TypeError('string argument without an encoding')
+            throw new PyTypeError('string argument without an encoding')
         }
-        return new types.Bytearray(args[0].encode(args.slice(1), kwargs))
+        return new types.PyBytearray(args[0].encode(args.slice(1), kwargs))
     }
 }
 

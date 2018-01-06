@@ -1,7 +1,7 @@
-import { BataviaError, StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { BataviaError, PyStopIteration, PyTypeError, PyValueError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
-import { None } from '../builtins'
+import { PyNone } from '../builtins'
 import tuple from './tuple'
 
 export default function max(args, kwargs) {
@@ -9,15 +9,15 @@ export default function max(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (!args || args.length === 0) {
-        throw new TypeError('max expected 1 arguments, got ' + args.length)
+        throw new PyTypeError('max expected 1 arguments, got ' + args.length)
     }
 
     var iterobj
     if (args.length > 1) {
-        iterobj = tuple([args], None).__iter__()
+        iterobj = tuple([args], PyNone).__iter__()
     } else {
         if (!args[0].__iter__) {
-            throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
+            throw new PyTypeError("'" + type_name(args[0]) + "' object is not iterable")
         }
         iterobj = args[0].__iter__()
     }
@@ -26,11 +26,11 @@ export default function max(args, kwargs) {
     try {
         var max = iterobj.__next__()
     } catch (err) {
-        if (err instanceof StopIteration) {
+        if (err instanceof PyStopIteration) {
             if ('default' in kwargs) {
                 return kwargs['default']
             } else {
-                throw new ValueError('max() arg is an empty sequence')
+                throw new PyValueError('max() arg is an empty sequence')
             }
         } else {
             throw err
@@ -45,7 +45,7 @@ export default function max(args, kwargs) {
             }
         }
     } catch (err) {
-        if (!(err instanceof StopIteration)) {
+        if (!(err instanceof PyStopIteration)) {
             throw err
         }
     }

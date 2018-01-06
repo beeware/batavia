@@ -1,4 +1,4 @@
-import { AttributeError } from './exceptions'
+import { PyAttributeError } from './exceptions'
 import { type_name, PyObject } from './types'
 
 export function getattr_raw(obj, attr, attributes_only) {
@@ -45,7 +45,7 @@ export function getattr_raw(obj, attr, attributes_only) {
 export function getattr(obj, attr) {
     var val = getattr_raw(obj, attr)
     if (val === undefined) {
-        throw new AttributeError(
+        throw new PyAttributeError(
             "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
         )
     }
@@ -63,7 +63,7 @@ export function getattr_py(obj, attr) {
         // if class of object has __getattribute__ method,
         // call that, otherwise, call
         // object.__getattribute__
-        // if they fail with an AttributeError,
+        // if they fail with an PyAttributeError,
         // call __getattr__ (if it exists)
         try {
             if (getattribute !== undefined && getattribute.__get__ !== undefined) {
@@ -72,7 +72,7 @@ export function getattr_py(obj, attr) {
                 val = PyObject.__class__.__getattribute__(obj, attr)
             }
         } catch (err) {
-            if (err instanceof AttributeError &&
+            if (err instanceof PyAttributeError &&
                 getattr !== undefined && getattr.__get__ !== undefined) {
                 // clear last_exception because it is handled here
                 getattr.$vm.last_exception = null
@@ -93,7 +93,7 @@ export function setattr(obj, attr, value) {
 
 export function delattr(obj, attr) {
     if (obj[attr] === undefined) {
-        throw new AttributeError("'" + type_name(obj) +
+        throw new PyAttributeError("'" + type_name(obj) +
                         "' object has no attribute '" + attr + "'"
         )
     } else {

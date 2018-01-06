@@ -1,4 +1,4 @@
-import { BataviaError, NotImplementedError, TypeError } from '../core/exceptions'
+import { BataviaError, PyNotImplementedError, PyTypeError } from '../core/exceptions'
 import { type_name, PyObject } from '../core/types'
 
 export default function classmethod(args, kwargs) {
@@ -6,10 +6,10 @@ export default function classmethod(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("classmethod() doesn't accept keyword arguments")
+        throw new PyTypeError("classmethod() doesn't accept keyword arguments")
     }
     if (args.length !== 1) {
-        throw new TypeError('classmethod expected 1 arguments, got ' + args.length)
+        throw new PyTypeError('classmethod expected 1 arguments, got ' + args.length)
     }
     var obj = new PyObject()
     obj.toString = function() {
@@ -20,7 +20,7 @@ export default function classmethod(args, kwargs) {
     obj.__class__ = 'classmethod'
     if (type_name(args[0]) === 'function') {
         obj.__call__ = function() {
-            throw new NotImplementedError('classmethod() can\'t get the parent class')
+            throw new PyNotImplementedError('classmethod() can\'t get the parent class')
         }
     }
     return obj

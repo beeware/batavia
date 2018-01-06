@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { BataviaError, TypeError } from '../core/exceptions'
+import { BataviaError, PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -9,25 +9,25 @@ export default function ord(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("ord() doesn't accept keyword arguments")
+        throw new PyTypeError("ord() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new TypeError('ord() takes exactly one argument (' + args.length + ' given)')
+        throw new PyTypeError('ord() takes exactly one argument (' + args.length + ' given)')
     }
     var value = args[0]
-    if (types.isinstance(value, [types.Str, types.Bytes, types.Bytearray])) {
+    if (types.isinstance(value, [types.PyStr, types.PyBytes, types.PyBytearray])) {
         var charLength = call_method(value, '__len__')
-        if (call_method(charLength, '__eq__', [new types.Int(1)])) {
-            if (types.isinstance(value, types.Str)) {
-                return new types.Int(value.charCodeAt(0))
+        if (call_method(charLength, '__eq__', [new types.PyInt(1)])) {
+            if (types.isinstance(value, types.PyStr)) {
+                return new types.PyInt(value.charCodeAt(0))
             } else {
-                return call_method(value, '__getitem__', [new types.Int(0)])
+                return call_method(value, '__getitem__', [new types.PyInt(0)])
             }
         } else {
-            throw new TypeError('ord() expected a character, but string of length ' + charLength + ' found')
+            throw new PyTypeError('ord() expected a character, but string of length ' + charLength + ' found')
         }
     } else {
-        throw new TypeError('ord() expected string of length 1, but ' + type_name(value) + ' found')
+        throw new PyTypeError('ord() expected string of length 1, but ' + type_name(value) + ' found')
     }
 }
 

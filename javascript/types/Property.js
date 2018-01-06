@@ -1,6 +1,6 @@
 import { call_function } from '../core/callables'
-import { AttributeError, TypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject, None } from '../core/types'
+import { PyAttributeError, PyTypeError } from '../core/exceptions'
+import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
 /*************************************************************************
  * A Python float type
@@ -51,40 +51,40 @@ export default class Property extends PyObject {
 
     __get__(instance, klass) {
         // console.log("Property __get__ on " + instance);
-        if (this.fget !== None) {
+        if (this.fget !== PyNone) {
             try {
                 return call_function(this.fget, [instance], null)
             } catch (e) {
-                throw new TypeError("'" + type_name(this) + "' object is not callable")
+                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new AttributeError("can't get attribute")
+            throw new PyAttributeError("can't get attribute")
         }
     }
 
     __set__(instance, value) {
         // console.log("Property __set__ on " + instance);
-        if (this.fset !== None) {
+        if (this.fset !== PyNone) {
             try {
                 call_function(this.fset, [instance, value], null)
             } catch (e) {
-                throw new TypeError("'" + type_name(this) + "' object is not callable")
+                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new AttributeError("can't set attribute")
+            throw new PyAttributeError("can't set attribute")
         }
     }
 
     __delete__(instance) {
         // console.log("Property __delete__ on " + instance);
-        if (this.fdel !== None) {
+        if (this.fdel !== PyNone) {
             try {
                 call_function(this.fdel, [instance], null)
             } catch (e) {
-                throw new TypeError("'" + type_name(this) + "' object is not callable")
+                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new AttributeError("can't delete attribute")
+            throw new PyAttributeError("can't delete attribute")
         }
     }
 

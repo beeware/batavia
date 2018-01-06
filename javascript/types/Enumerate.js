@@ -6,7 +6,7 @@ import * as types from '../types'
  * Enumerate
  **************************************************/
 
-export default class Enumerate extends PyObject {
+export default class PyEnumerate extends PyObject {
     constructor(iterable) {
         super()
         this.iterator = iterable.__iter__([])
@@ -15,10 +15,10 @@ export default class Enumerate extends PyObject {
 
     __next__() {
         var item = this.iterator.__next__([])
-        var index = new types.Int(this.count)
+        var index = new types.PyInt(this.count)
         this.count += 1
 
-        return new types.Tuple([index, item])
+        return new types.PyTuple([index, item])
     }
 
     __iter__() {
@@ -29,4 +29,4 @@ export default class Enumerate extends PyObject {
         return '<enumerate object at 0x99999999>'
     }
 }
-create_pyclass(Enumerate, 'enumerate')
+create_pyclass(PyEnumerate, 'enumerate')

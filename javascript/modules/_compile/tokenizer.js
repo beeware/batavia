@@ -385,7 +385,7 @@ export function Tokenizer(str) {
                              NEWLINE token after i */
 }
 
-Tokenizer.prototype.__class__ = new types.Type('Tokenizer')
+Tokenizer.prototype.__class__ = new types.PyType('Tokenizer')
 
 // Get next token, after space stripping etc.
 Tokenizer.prototype.get_token = function() {
@@ -397,7 +397,7 @@ Tokenizer.prototype.get_token = function() {
 
     // nothing left to process
     if (tok.cur >= tok.buf.length) {
-        return builtins.None
+        return builtins.PyNone
     }
 
     var process_line = function() {
@@ -541,7 +541,7 @@ Tokenizer.prototype.again = function() {
         } else {
             marker = ERRORTOKEN
         }
-        return [marker, builtins.None, builtins.None, 5]
+        return [marker, builtins.PyNone, builtins.PyNone, 5]
     }
 
     // Identifier (most frequent token!)
@@ -555,7 +555,7 @@ Tokenizer.prototype.again = function() {
         if (tok.level > 0) {
             // process next line
             tok.continue_processing = true
-            return builtins.None
+            return builtins.PyNone
         }
         tok.cont_line = 0
         if (tok.async_def) {
@@ -668,7 +668,7 @@ Tokenizer.prototype.again = function() {
     }
 
     var result = tok.letter_quote(c)
-    if (result !== builtins.None) {
+    if (result !== builtins.PyNone) {
         return result
     }
 
@@ -853,7 +853,7 @@ Tokenizer.prototype.letter_quote = function(c) {
         p_end = tok.cur
         return [STRING, p_start, p_end]
     }
-    return builtins.None
+    return builtins.PyNone
 }
 
 Tokenizer.prototype.fraction = function(c) {

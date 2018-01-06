@@ -1,4 +1,4 @@
-import { StopIteration } from './exceptions'
+import { PyStopIteration } from './exceptions'
 import * as native from './native'
 
 /********************
@@ -44,7 +44,7 @@ export function iter_for_each(iterobj, callback) {
             callback(next)
         }
     } catch (err) {
-        if (!(err instanceof StopIteration)) {
+        if (!(err instanceof PyStopIteration)) {
             throw err
         }
     }

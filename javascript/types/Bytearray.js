@@ -1,16 +1,16 @@
-import { NotImplementedError, TypeError } from '../core/exceptions'
+import { PyNotImplementedError, PyTypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
-import { None } from '../builtins'
+import { PyNone } from '../builtins'
 import * as types from '../types'
 
-import BytearrayIterator from './BytearrayIterator'
+import PyBytearrayIterator from './BytearrayIterator'
 
 /*************************************************************************
  * A Python bytearray type
  *************************************************************************/
 
-export default class Bytearray extends PyObject {
+export default class PyBytearray extends PyObject {
     constructor(val) {
         super()
         this.val = val
@@ -48,7 +48,7 @@ export default class Bytearray extends PyObject {
         if (this.val.__iter__) {
             return this.val.__iter__()
         } else {
-            return new BytearrayIterator(this.val)
+            return new PyBytearrayIterator(this.val)
         }
     }
 
@@ -57,24 +57,24 @@ export default class Bytearray extends PyObject {
      **************************************************/
 
     __lt__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             return this.valueOf() < other
         }
         return false
     }
 
     __le__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             return this.valueOf() <= other
         }
         return false
     }
 
     __eq__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             var val
             if (types.isinstance(other, [
-                types.Bool, types.Int, types.Float])
+                types.PyBool, types.PyInt, types.PyFloat])
             ) {
                 return false
             } else {
@@ -85,10 +85,10 @@ export default class Bytearray extends PyObject {
     }
 
     __ne__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             var val
             if (types.isinstance(other, [
-                types.Bool, types.Int, types.Float])
+                types.PyBool, types.PyInt, types.PyFloat])
             ) {
                 return true
             } else {
@@ -99,21 +99,21 @@ export default class Bytearray extends PyObject {
     }
 
     __gt__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             return this.valueOf() > other
         }
         return false
     }
 
     __ge__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             return this.valueOf() >= other
         }
         return false
     }
 
     __contains__(other) {
-        if (other !== None) {
+        if (other !== PyNone) {
             return this.valueOf().hasOwnProperty(other)
         }
         return false
@@ -124,19 +124,19 @@ export default class Bytearray extends PyObject {
      **************************************************/
 
     __pos__() {
-        return new Bytearray(+this.valueOf())
+        return new PyBytearray(+this.valueOf())
     }
 
     __neg__() {
-        return new Bytearray(-this.valueOf())
+        return new PyBytearray(-this.valueOf())
     }
 
     __not__() {
-        return new Bytearray(!this.valueOf())
+        return new PyBytearray(!this.valueOf())
     }
 
     __invert__() {
-        return new Bytearray(~this.valueOf())
+        return new PyBytearray(~this.valueOf())
     }
 
     /**************************************************
@@ -144,61 +144,61 @@ export default class Bytearray extends PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new NotImplementedError('Bytearray.__pow__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__pow__ has not been implemented')
     }
 
     __div__(other) {
-        throw new NotImplementedError('Bytearray.__div__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__div__ has not been implemented')
     }
 
     __floordiv__(other) {
-        throw new NotImplementedError('Bytearray.__floordiv__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__floordiv__ has not been implemented')
     }
 
     __truediv__(other) {
-        throw new NotImplementedError('Bytearray.__truediv__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__truediv__ has not been implemented')
     }
 
     __mul__(other) {
-        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new PyTypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 
     __mod__(other) {
-        throw new NotImplementedError('Bytearray.__mod__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__mod__ has not been implemented')
     }
 
     __add__(other) {
-        if (types.isinstance(other, types.Bool)) {
-            throw new TypeError("can't concat bytearray to " + type_name(other))
+        if (types.isinstance(other, types.PyBool)) {
+            throw new PyTypeError("can't concat bytearray to " + type_name(other))
         }
     }
 
     __sub__(other) {
-        throw new NotImplementedError('Bytearray.__sub__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__sub__ has not been implemented')
     }
 
     __getitem__(other) {
-        throw new NotImplementedError('Bytearray.__getitem__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__getitem__ has not been implemented')
     }
 
     __lshift__(other) {
-        throw new NotImplementedError('Bytearray.__lshift__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__lshift__ has not been implemented')
     }
 
     __rshift__(other) {
-        throw new NotImplementedError('Bytearray.__rshift__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__rshift__ has not been implemented')
     }
 
     __and__(other) {
-        throw new NotImplementedError('Bytearray.__and__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__and__ has not been implemented')
     }
 
     __xor__(other) {
-        throw new NotImplementedError('Bytearray.__xor__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__xor__ has not been implemented')
     }
 
     __or__(other) {
-        throw new NotImplementedError('Bytearray.__or__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__or__ has not been implemented')
     }
 
     /**************************************************
@@ -206,55 +206,55 @@ export default class Bytearray extends PyObject {
      **************************************************/
 
     __idiv__(other) {
-        throw new NotImplementedError('Bytearray.__idiv__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__idiv__ has not been implemented')
     }
 
     __ifloordiv__(other) {
-        throw new NotImplementedError('Bytearray.__ifloordiv__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__ifloordiv__ has not been implemented')
     }
 
     __itruediv__(other) {
-        throw new NotImplementedError('Bytearray.__itruediv__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__itruediv__ has not been implemented')
     }
 
     __iadd__(other) {
-        throw new NotImplementedError('Bytearray.__iadd__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__iadd__ has not been implemented')
     }
 
     __isub__(other) {
-        throw new NotImplementedError('Bytearray.__isub__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__isub__ has not been implemented')
     }
 
     __imul__(other) {
-        throw new NotImplementedError('Bytearray.__imul__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__imul__ has not been implemented')
     }
 
     __imod__(other) {
-        throw new NotImplementedError('Bytearray.__imod__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__imod__ has not been implemented')
     }
 
     __ipow__(other) {
-        throw new NotImplementedError('Bytearray.__ipow__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__ipow__ has not been implemented')
     }
 
     __ilshift__(other) {
-        throw new NotImplementedError('Bytearray.__ilshift__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__ilshift__ has not been implemented')
     }
 
     __irshift__(other) {
-        throw new NotImplementedError('Bytearray.__irshift__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__irshift__ has not been implemented')
     }
 
     __iand__(other) {
-        throw new NotImplementedError('Bytearray.__iand__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__iand__ has not been implemented')
     }
 
     __ixor__(other) {
-        throw new NotImplementedError('Bytearray.__ixor__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__ixor__ has not been implemented')
     }
 
     __ior__(other) {
-        throw new NotImplementedError('Bytearray.__ior__ has not been implemented')
+        throw new PyNotImplementedError('PyBytearray.__ior__ has not been implemented')
     }
 
     /**************************************************
@@ -262,7 +262,7 @@ export default class Bytearray extends PyObject {
      **************************************************/
 
     copy() {
-        return new Bytearray(this.valueOf())
+        return new PyBytearray(this.valueOf())
     }
 }
-create_pyclass(Bytearray, 'bytearray')
+create_pyclass(PyBytearray, 'bytearray')

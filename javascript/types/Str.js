@@ -1,36 +1,36 @@
 import { Buffer } from 'buffer'
 
 import { TEXT_ENCODINGS } from '../core/constants'
-import { AttributeError, IndexError, NotImplementedError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject, None } from '../core/types'
+import { PyAttributeError, PyIndexError, PyNotImplementedError, PyTypeError, PyValueError } from '../core/exceptions'
+import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
 
 import * as types from '../types'
 
-import StrIterator from './StrIterator'
+import PyStrIterator from './StrIterator'
 import * as StrUtils from './StrUtils'
 
 /*************************************************************************
  * Modify String to behave like a Python String
  *************************************************************************/
 
-var Str = String
+var PyStr = String
 
-create_pyclass(Str, 'str', null)
+create_pyclass(PyStr, 'str', null)
 
 /**************************************************
  * Type conversions
  **************************************************/
 
-Str.prototype.__bool__ = function() {
+PyStr.prototype.__bool__ = function() {
     return this.length > 0
 }
 
-Str.prototype.__iter__ = function() {
-    return new StrIterator(this)
+PyStr.prototype.__iter__ = function() {
+    return new PyStrIterator(this)
 }
 
-Str.prototype.__repr__ = function() {
+PyStr.prototype.__repr__ = function() {
     // we have to replace all non-printable characters
     return "'" + this.toString()
         .replace(/\\/g, '\\\\')
@@ -55,7 +55,7 @@ Str.prototype.__repr__ = function() {
         }) + "'"
 }
 
-Str.prototype.__str__ = function() {
+PyStr.prototype.__str__ = function() {
     return this.toString()
 }
 
@@ -63,42 +63,42 @@ Str.prototype.__str__ = function() {
  * Attribute manipulation
  **************************************************/
 
-Str.prototype.__getattribute__ = function(attr) {
+PyStr.prototype.__getattribute__ = function(attr) {
     return PyObject.prototype.__class__.__getattribute__(this, attr)
 }
 
-Str.prototype.__setattr__ = function(attr, value) {
+PyStr.prototype.__setattr__ = function(attr, value) {
     if (Object.getPrototypeOf(this)[attr] === undefined) {
-        throw new AttributeError("'str' object has no attribute '" + attr + "'")
+        throw new PyAttributeError("'str' object has no attribute '" + attr + "'")
     } else {
-        throw new AttributeError("'str' object attribute '" + attr + "' is read-only")
+        throw new PyAttributeError("'str' object attribute '" + attr + "' is read-only")
     }
 }
 
-Str.prototype.__delattr__ = function(attr) {
-    throw new AttributeError("'str' object has no attribute '" + attr + "'")
+PyStr.prototype.__delattr__ = function(attr) {
+    throw new PyAttributeError("'str' object has no attribute '" + attr + "'")
 }
 
 /**************************************************
  * Comparison operators
  **************************************************/
 
-Str.prototype.__lt__ = function(other) {
-    if (other !== None) {
+PyStr.prototype.__lt__ = function(other) {
+    if (other !== PyNone) {
         if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float,
-            types.List, types.Dict, types.Tuple,
-            types.Bytearray, types.Bytes, types.Type,
-            types.Complex, types.NotImplementedType,
-            types.Range, types.Set, types.Slice,
-            types.FrozenSet
+            types.PyBool, types.PyInt, types.PyFloat,
+            types.PyList, types.PyDict, types.PyTuple,
+            types.PyBytearray, types.PyBytes, types.PyType,
+            types.PyComplex, types.PyNotImplementedType,
+            types.PyRange, types.PySet, types.PySlice,
+            types.PyFrozenSet
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: str() < ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'<' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -108,32 +108,32 @@ Str.prototype.__lt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: str() < NoneType()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<' not supported between instances of 'str' and 'NoneType'"
             )
         }
     }
 }
 
-Str.prototype.__le__ = function(other) {
-    if (other !== None) {
+PyStr.prototype.__le__ = function(other) {
+    if (other !== PyNone) {
         if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float,
-            types.List, types.Dict, types.Tuple,
-            types.Set, types.Bytearray, types.Bytes,
-            types.Type, types.Complex, types.NotImplementedType,
-            types.Range, types.Slice, types.FrozenSet
+            types.PyBool, types.PyInt, types.PyFloat,
+            types.PyList, types.PyDict, types.PyTuple,
+            types.PySet, types.PyBytearray, types.PyBytes,
+            types.PyType, types.PyComplex, types.PyNotImplementedType,
+            types.PyRange, types.PySlice, types.PyFrozenSet
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: str() <= ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'<=' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -143,22 +143,22 @@ Str.prototype.__le__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: str() <= NoneType()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<=' not supported between instances of 'str' and 'NoneType'"
             )
         }
     }
 }
 
-Str.prototype.__eq__ = function(other) {
-    if (other !== None) {
+PyStr.prototype.__eq__ = function(other) {
+    if (other !== PyNone) {
         if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float,
-            types.List, types.Dict, types.Tuple
+            types.PyBool, types.PyInt, types.PyFloat,
+            types.PyList, types.PyDict, types.PyTuple
         ])) {
             return false
         } else {
@@ -169,11 +169,11 @@ Str.prototype.__eq__ = function(other) {
     }
 }
 
-Str.prototype.__ne__ = function(other) {
-    if (other !== None) {
+PyStr.prototype.__ne__ = function(other) {
+    if (other !== PyNone) {
         if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float,
-            types.List, types.Dict, types.Tuple
+            types.PyBool, types.PyInt, types.PyFloat,
+            types.PyList, types.PyDict, types.PyTuple
 
         ])) {
             return true
@@ -185,22 +185,22 @@ Str.prototype.__ne__ = function(other) {
     }
 }
 
-Str.prototype.__gt__ = function(other) {
-    if (other !== None) {
+PyStr.prototype.__gt__ = function(other) {
+    if (other !== PyNone) {
         if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float,
-            types.List, types.Dict, types.Tuple,
-            types.Set, types.Bytearray, types.Bytes,
-            types.Type, types.Complex,
-            types.NotImplementedType, types.Range,
-            types.Slice, types.FrozenSet
+            types.PyBool, types.PyInt, types.PyFloat,
+            types.PyList, types.PyDict, types.PyTuple,
+            types.PySet, types.PyBytearray, types.PyBytes,
+            types.PyType, types.PyComplex,
+            types.PyNotImplementedType, types.PyRange,
+            types.PySlice, types.PyFrozenSet
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: str() > ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -210,33 +210,33 @@ Str.prototype.__gt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: str() > NoneType()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'>' not supported between instances of 'str' and 'NoneType'"
             )
         }
     }
 }
 
-Str.prototype.__ge__ = function(other) {
-    if (other !== None) {
+PyStr.prototype.__ge__ = function(other) {
+    if (other !== PyNone) {
         if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float,
-            types.List, types.Dict, types.Tuple,
-            types.Set, types.Bytearray, types.Bytes,
-            types.Type, types.Complex, types.NotImplementedType,
-            types.Range, types.Slice, types.FrozenSet
+            types.PyBool, types.PyInt, types.PyFloat,
+            types.PyList, types.PyDict, types.PyTuple,
+            types.PySet, types.PyBytearray, types.PyBytes,
+            types.PyType, types.PyComplex, types.PyNotImplementedType,
+            types.PyRange, types.PySlice, types.PyFrozenSet
 
         ])) {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: str() >= ' + type_name(other) + '()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>=' not supported between instances of 'str' and '" +
                     type_name(other) + "'"
                 )
@@ -246,20 +246,20 @@ Str.prototype.__ge__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: str() >= NoneType()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'>=' not supported between instances of 'str' and 'NoneType'"
             )
         }
     }
 }
 
-Str.prototype.__contains__ = function(other) {
-    if (!types.isinstance(other, [types.Str])) {
-        throw new TypeError("'in <string>' requires string as left operand, not " + type_name(other))
+PyStr.prototype.__contains__ = function(other) {
+    if (!types.isinstance(other, [types.PyStr])) {
+        throw new PyTypeError("'in <string>' requires string as left operand, not " + type_name(other))
     } else {
         return this.valueOf().search(other.valueOf()) >= 0
     }
@@ -269,55 +269,55 @@ Str.prototype.__contains__ = function(other) {
  * Unary operators
  **************************************************/
 
-Str.prototype.__pos__ = function() {
-    throw new TypeError("bad operand type for unary +: 'str'")
+PyStr.prototype.__pos__ = function() {
+    throw new PyTypeError("bad operand type for unary +: 'str'")
 }
 
-Str.prototype.__neg__ = function() {
-    throw new TypeError("bad operand type for unary -: 'str'")
+PyStr.prototype.__neg__ = function() {
+    throw new PyTypeError("bad operand type for unary -: 'str'")
 }
 
-Str.prototype.__not__ = function() {
+PyStr.prototype.__not__ = function() {
     return this.length === 0
 }
 
-Str.prototype.__invert__ = function() {
-    throw new TypeError("bad operand type for unary ~: 'str'")
+PyStr.prototype.__invert__ = function() {
+    throw new PyTypeError("bad operand type for unary ~: 'str'")
 }
 
 /**************************************************
  * Binary operators
  **************************************************/
 
-Str.prototype.__pow__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__pow__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__div__ = function(other) {
+PyStr.prototype.__div__ = function(other) {
     return this.__truediv__(other)
 }
 
-Str.prototype.__floordiv__ = function(other) {
-    if (types.isinstance(other, [types.Complex])) {
-        throw new TypeError("can't take floor of complex number.")
+PyStr.prototype.__floordiv__ = function(other) {
+    if (types.isinstance(other, [types.PyComplex])) {
+        throw new PyTypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError("unsupported operand type(s) for //: 'str' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for //: 'str' and '" + type_name(other) + "'")
     }
 }
 
-Str.prototype.__truediv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for /: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__truediv__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for /: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__mul__ = function(other) {
+PyStr.prototype.__mul__ = function(other) {
     var result
-    if (types.isinstance(other, types.Int)) {
+    if (types.isinstance(other, types.PyInt)) {
         result = ''
         for (var i = 0; i < other.valueOf(); i++) {
             result += this.valueOf()
         }
         return result
-    } else if (types.isinstance(other, types.Bool)) {
+    } else if (types.isinstance(other, types.PyBool)) {
         if (other === true) {
             result = this.valueOf()
         } else {
@@ -325,63 +325,63 @@ Str.prototype.__mul__ = function(other) {
         }
         return result
     } else {
-        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new PyTypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 }
 
-Str.prototype.__mod__ = function(other) {
-    if (types.isinstance(other, types.Tuple)) {
+PyStr.prototype.__mod__ = function(other) {
+    if (types.isinstance(other, types.PyTuple)) {
         return StrUtils._substitute(this, other)
     } else {
         return StrUtils._substitute(this, [other])
     }
 }
 
-Str.prototype.__add__ = function(other) {
+PyStr.prototype.__add__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 "Can't convert '" + type_name(other) + "' object to str implicitly"
             )
         } else {
-            throw new TypeError('must be str, not ' + type_name(other))
+            throw new PyTypeError('must be str, not ' + type_name(other))
         }
     }
 }
 
-Str.prototype.__sub__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for -: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__sub__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for -: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__getitem__ = function(index) {
-    if (types.isinstance(index, types.Bool)) {
+PyStr.prototype.__getitem__ = function(index) {
+    if (types.isinstance(index, types.PyBool)) {
         index = index.__int__()
     }
-    if (types.isinstance(index, types.Int)) {
+    if (types.isinstance(index, types.PyInt)) {
         var idx = index.int32()
         if (idx < 0) {
             if (-idx > this.length) {
-                throw new IndexError('string index out of range')
+                throw new PyIndexError('string index out of range')
             } else {
                 return this[this.length + idx]
             }
         } else {
             if (idx >= this.length) {
-                throw new IndexError('string index out of range')
+                throw new PyIndexError('string index out of range')
             } else {
                 return this[idx]
             }
         }
-    } else if (types.isinstance(index, types.Slice)) {
+    } else if (types.isinstance(index, types.PySlice)) {
         var start, stop, step
 
-        if (index.start === None) {
+        if (index.start === PyNone) {
             start = undefined
-        } else if (!(types.isinstance(index.start, types.Int))) {
+        } else if (!(types.isinstance(index.start, types.PyInt))) {
             if (index.start.__index__ === undefined) {
-                throw new TypeError('slice indices must be integers or None or have an __index__ method')
+                throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 start = index.start.__index__()
             }
@@ -389,11 +389,11 @@ Str.prototype.__getitem__ = function(index) {
             start = index.start.int32()
         }
 
-        if (index.stop === None) {
+        if (index.stop === PyNone) {
             stop = undefined
-        } else if (!(types.isinstance(index.stop, types.Int))) {
+        } else if (!(types.isinstance(index.stop, types.PyInt))) {
             if (index.stop.__index__ === undefined) {
-                throw new TypeError('slice indices must be integers or None or have an __index__ method')
+                throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 stop = index.stop.__index__()
             }
@@ -401,18 +401,18 @@ Str.prototype.__getitem__ = function(index) {
             stop = index.stop.int32()
         }
 
-        if (index.step === None) {
+        if (index.step === PyNone) {
             step = 1
-        } else if (!(types.isinstance(index.step, types.Int))) {
+        } else if (!(types.isinstance(index.step, types.PyInt))) {
             if (index.step.__index__ === undefined) {
-                throw new TypeError('slice indices must be integers or None or have an __index__ method')
+                throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 step = index.step.__index__()
             }
         } else {
             step = index.step.int32()
             if (step === 0) {
-                throw new ValueError('slice step cannot be zero')
+                throw new PyValueError('slice step cannot be zero')
             }
         }
 
@@ -449,36 +449,36 @@ Str.prototype.__getitem__ = function(index) {
 
         return result
     } else {
-        throw new TypeError('string indices must be integers')
+        throw new PyTypeError('string indices must be integers')
     }
 }
 
-Str.prototype.__lshift__ = function(other) {
-    throw new TypeError(
+PyStr.prototype.__lshift__ = function(other) {
+    throw new PyTypeError(
         "unsupported operand type(s) for <<: 'str' and '" + type_name(other) + "'"
     )
 }
 
-Str.prototype.__rshift__ = function(other) {
-    throw new TypeError(
+PyStr.prototype.__rshift__ = function(other) {
+    throw new PyTypeError(
         "unsupported operand type(s) for >>: 'str' and '" + type_name(other) + "'"
     )
 }
 
-Str.prototype.__and__ = function(other) {
-    throw new TypeError(
+PyStr.prototype.__and__ = function(other) {
+    throw new PyTypeError(
         "unsupported operand type(s) for &: 'str' and '" + type_name(other) + "'"
     )
 }
 
-Str.prototype.__xor__ = function(other) {
-    throw new TypeError(
+PyStr.prototype.__xor__ = function(other) {
+    throw new PyTypeError(
         "unsupported operand type(s) for ^: 'str' and '" + type_name(other) + "'"
     )
 }
 
-Str.prototype.__or__ = function(other) {
-    throw new TypeError(
+PyStr.prototype.__or__ = function(other) {
+    throw new PyTypeError(
         "unsupported operand type(s) for |: 'str' and '" + type_name(other) + "'"
     )
 }
@@ -487,68 +487,68 @@ Str.prototype.__or__ = function(other) {
  * Inplace operators
  **************************************************/
 
-Str.prototype.__ifloordiv__ = function(other) {
-    if (types.isinstance(other, [types.Complex])) {
-        throw new TypeError("can't take floor of complex number.")
+PyStr.prototype.__ifloordiv__ = function(other) {
+    if (types.isinstance(other, [types.PyComplex])) {
+        throw new PyTypeError("can't take floor of complex number.")
     } else {
-        throw new TypeError("unsupported operand type(s) for //=: 'str' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for //=: 'str' and '" + type_name(other) + "'")
     }
 }
 
-Str.prototype.__itruediv__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for /=: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__itruediv__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for /=: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__iadd__ = function(other) {
+PyStr.prototype.__iadd__ = function(other) {
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
     } else {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 "Can't convert '" + type_name(other) + "' object to str implicitly"
             )
         } else {
-            throw new TypeError('must be str, not ' + type_name(other))
+            throw new PyTypeError('must be str, not ' + type_name(other))
         }
     }
 }
 
-Str.prototype.__isub__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for -=: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__isub__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for -=: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__imul__ = function(other) {
+PyStr.prototype.__imul__ = function(other) {
     return this.__mul__(other)
 }
 
-Str.prototype.__imod__ = function(other) {
+PyStr.prototype.__imod__ = function(other) {
     return this.__mod__(other)
 }
 
-Str.prototype.__ipow__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__ipow__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__ilshift__ = function(other) {
-    throw new TypeError(
+PyStr.prototype.__ilshift__ = function(other) {
+    throw new PyTypeError(
         "unsupported operand type(s) for <<=: 'str' and '" + type_name(other) + "'"
     )
 }
 
-Str.prototype.__irshift__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for >>=: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__irshift__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for >>=: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__iand__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for &=: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__iand__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for &=: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__ixor__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for ^=: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__ixor__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for ^=: 'str' and '" + type_name(other) + "'")
 }
 
-Str.prototype.__ior__ = function(other) {
-    throw new TypeError("unsupported operand type(s) for |=: 'str' and '" + type_name(other) + "'")
+PyStr.prototype.__ior__ = function(other) {
+    throw new PyTypeError("unsupported operand type(s) for |=: 'str' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -556,55 +556,55 @@ Str.prototype.__ior__ = function(other) {
  * https://docs.python.org/3.4/library/stdtypes.html#string-methods
  **************************************************/
 
-Str.prototype.__len__ = function() {
-    return new types.Int(this.length)
+PyStr.prototype.__len__ = function() {
+    return new types.PyInt(this.length)
 }
 
-Str.prototype.join = function(iter) {
-    var l = new types.List(iter)
+PyStr.prototype.join = function(iter) {
+    var l = new types.PyList(iter)
     for (var i = 0; i < l.length; i++) {
         if (!types.isinstance(l[i], Str)) {
-            throw new TypeError('sequence item ' + i + ': expected str instance, ' + type_name(l[i]) + ' found')
+            throw new PyTypeError('sequence item ' + i + ': expected str instance, ' + type_name(l[i]) + ' found')
         }
     }
     return l.join(this)
 }
 
-Str.prototype.copy = function() {
+PyStr.prototype.copy = function() {
     return this.valueOf()
 }
 
-Str.prototype.encode = function(encoding, errors) {
+PyStr.prototype.encode = function(encoding, errors) {
     if (errors !== undefined) {
-        return new NotImplementedError(
+        return new PyNotImplementedError(
             "'errors' parameter of str.encode not implemented"
         )
     }
     encoding = encoding.toLowerCase()
     var encs = TEXT_ENCODINGS
     if (encs.ascii.indexOf(encoding) !== -1) {
-        return new types.Bytes(
+        return new types.PyBytes(
             Buffer.from(this.valueOf(), 'ascii'))
     } else if (encs.latin_1.indexOf(encoding) !== -1) {
-        return new types.Bytes(
+        return new types.PyBytes(
             Buffer.from(this.valueOf(), 'latin1'))
     } else if (encs.utf_8.indexOf(encoding) !== -1) {
-        return new types.Bytes(
+        return new types.PyBytes(
             Buffer.from(this.valueOf(), 'utf8'))
     } else {
-        return new NotImplementedError(
+        return new PyNotImplementedError(
             'encoding not implemented or incorrect encoding'
         )
     }
 }
 
-Str.prototype.lstrip = function() {
+PyStr.prototype.lstrip = function() {
     if (arguments.length === 0) {
         return this.valueOf().trimLeft()
     } else if (arguments.length === 1) {
         var charsToTrim = arguments[0]
-        if (!types.isinstance(charsToTrim, [types.Str])) {
-            throw new TypeError('lstrip arg must be None or str')
+        if (!types.isinstance(charsToTrim, [types.PyStr])) {
+            throw new PyTypeError('lstrip arg must be None or str')
         }
         var result = this.valueOf()
         var i = 0
@@ -613,17 +613,17 @@ Str.prototype.lstrip = function() {
         }
         return result.slice(i)
     } else {
-        throw new TypeError('lstrip() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new PyTypeError('lstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
-Str.prototype.rstrip = function() {
+PyStr.prototype.rstrip = function() {
     if (arguments.length === 0) {
         return this.valueOf().trimRight()
     } else if (arguments.length === 1) {
         var charsToTrim = arguments[0]
-        if (!types.isinstance(charsToTrim, [types.Str])) {
-            throw new TypeError('rstrip arg must be None or str')
+        if (!types.isinstance(charsToTrim, [types.PyStr])) {
+            throw new PyTypeError('rstrip arg must be None or str')
         }
         var result = this.valueOf()
         var i = result.length
@@ -632,17 +632,17 @@ Str.prototype.rstrip = function() {
         }
         return result.slice(0, i)
     } else {
-        throw new TypeError('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new PyTypeError('rstrip() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
-Str.prototype.strip = function() {
+PyStr.prototype.strip = function() {
     if (arguments.length === 0) {
         return this.valueOf().trim()
     } else if (arguments.length === 1) {
         var charsToTrim = arguments[0]
-        if (!types.isinstance(charsToTrim, [types.Str])) {
-            throw new TypeError('strip arg must be None or str')
+        if (!types.isinstance(charsToTrim, [types.PyStr])) {
+            throw new PyTypeError('strip arg must be None or str')
         }
         var result = this.valueOf()
         var i = 0
@@ -655,25 +655,25 @@ Str.prototype.strip = function() {
         }
         return result.slice(i, j)
     } else {
-        throw new TypeError('strip() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new PyTypeError('strip() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
-Str.prototype.startswith = function(str) {
+PyStr.prototype.startswith = function(str) {
     if (arguments.length > 1) {
-        throw new TypeError(
+        throw new PyTypeError(
             'slice indices must be integers or None or have an __index__ method'
         )
     } else if (arguments.length === 0) {
-        throw new TypeError(
+        throw new PyTypeError(
             'startswith() takes at least 1 argument (0 given)'
         )
     }
 
-    if (str !== None) {
-        if (types.isinstance(str, [types.Str])) {
+    if (str !== PyNone) {
+        if (types.isinstance(str, [types.PyStr])) {
             return this.slice(0, str.length) === str
-        } else if (types.isinstance(str, [types.Tuple])) {
+        } else if (types.isinstance(str, [types.PyTuple])) {
             for (var i = 0; i < str.length; i++) {
                 if (this.startswith(str[i])) {
                     return true
@@ -681,18 +681,18 @@ Str.prototype.startswith = function(str) {
             }
             return false
         } else {
-            throw new TypeError(
-                'TypeError: startswith first arg must be str or a tuple of str, not ' + type_name(str)
+            throw new PyTypeError(
+                'PyTypeError: startswith first arg must be str or a tuple of str, not ' + type_name(str)
             )
         }
     }
 }
 
-Str.prototype.endswith = function(str) {
+PyStr.prototype.endswith = function(str) {
     return this.slice(this.length - str.length) === str
 }
 
-Str.prototype.isupper = function() {
+PyStr.prototype.isupper = function() {
     if (!this.match('[a-zA-Z]')) {
         return false
     } else {
@@ -700,7 +700,7 @@ Str.prototype.isupper = function() {
     }
 }
 
-Str.prototype.islower = function() {
+PyStr.prototype.islower = function() {
     if (!this.match('[a-zA-Z]')) {
         return false
     } else {
@@ -708,15 +708,15 @@ Str.prototype.islower = function() {
     }
 }
 
-Str.prototype.lower = function() {
+PyStr.prototype.lower = function() {
     return this.valueOf().toLowerCase()
 }
 
-Str.prototype.upper = function() {
+PyStr.prototype.upper = function() {
     return this.valueOf().toUpperCase()
 }
 
-Str.prototype.swapcase = function() {
+PyStr.prototype.swapcase = function() {
     var swapped = ''
     for (var i = 0; i < this.length; i++) {
         if (this[i] === this[i].toLowerCase()) {
@@ -734,30 +734,30 @@ Str.prototype.swapcase = function() {
 // CPython returns signed 64-bit integers. But, JS is awful at 64-bit integers,
 // so we return signed 32-bit integers. This shouldn't be a problem, since
 // technically we can just return 0 and everything should still work :P
-Str.prototype.__hash__ = function() {
+PyStr.prototype.__hash__ = function() {
     // |0 is used to ensure that we return signed 32-bit integers
     var h = 5381 | 0
     for (var i = 0; i < this.length; i++) {
         h = ((h * 33) | 0) ^ this[i]
     }
-    return new types.Int(h)
+    return new types.PyInt(h)
 }
 
-Str.prototype.capitalize = function() {
+PyStr.prototype.capitalize = function() {
     if (arguments.length === 0) {
         return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase()
     } else {
-        throw new TypeError('capitalize() takes no arguments (' + arguments.length + ' given)')
+        throw new PyTypeError('capitalize() takes no arguments (' + arguments.length + ' given)')
     }
 }
 
-Str.prototype.format = function(args, kwargs) {
+PyStr.prototype.format = function(args, kwargs) {
     const types = require('../types')
-    const positionalArguments = new types.Tuple(types.js2py(args))
+    const positionalArguments = new types.PyTuple(types.js2py(args))
     const keywordArguments = types.js2py(kwargs)
     return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
 }
 
-Str.prototype.format.$pyargs = true
+PyStr.prototype.format.$pyargs = true
 
-export default Str
+export default PyStr

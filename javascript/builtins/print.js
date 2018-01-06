@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { AttributeError } from '../core/exceptions'
+import { PyAttributeError } from '../core/exceptions'
 
 import { sys } from '../modules'
 
@@ -23,7 +23,7 @@ export default function print(args, kwargs) {
                 try {
                     content = call_method(elm, '__str__', [], null)
                 } catch (e) {
-                    if (e instanceof AttributeError) {
+                    if (e instanceof PyAttributeError) {
                         content = elm.toString()
                     } else {
                         throw e

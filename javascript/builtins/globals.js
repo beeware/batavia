@@ -1,4 +1,4 @@
-import { BataviaError, TypeError } from '../core/exceptions'
+import { BataviaError, PyTypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -8,10 +8,10 @@ export default function globals(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("globals() doesn't accept keyword arguments")
+        throw new PyTypeError("globals() doesn't accept keyword arguments")
     }
     if (args && args.length !== 0) {
-        throw new TypeError('globals() takes no arguments (' + args.length + ' given)')
+        throw new PyTypeError('globals() takes no arguments (' + args.length + ' given)')
     }
     var gbl = this.frame.f_globals
 
@@ -25,9 +25,9 @@ export default function globals(args, kwargs) {
             if (k === 'items') {
                 continue
             }
-            l.push(new types.Tuple([k, gbl[k]]))
+            l.push(new types.PyTuple([k, gbl[k]]))
         }
-        l = new types.List(l)
+        l = new types.PyList(l)
         return l
     }
     return gbl

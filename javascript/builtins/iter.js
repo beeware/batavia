@@ -1,4 +1,4 @@
-import { BataviaError, TypeError } from '../core/exceptions'
+import { BataviaError, PyTypeError } from '../core/exceptions'
 import { call_method } from '../core/callables'
 import { type_name } from '../core/types'
 
@@ -9,22 +9,22 @@ export default function iter(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("iter() doesn't accept keyword arguments")
+        throw new PyTypeError("iter() doesn't accept keyword arguments")
     }
     if (!args || args.length === 0) {
-        throw new TypeError('iter() expected at least 1 arguments, got 0')
+        throw new PyTypeError('iter() expected at least 1 arguments, got 0')
     }
     if (args.length === 2) {
         return new CallableIterator(args[0], args[1])
     }
     if (args.length > 2) {
-        throw new TypeError('iter() expected at most 2 arguments, got 3')
+        throw new PyTypeError('iter() expected at most 2 arguments, got 3')
     }
 
     try {
         return call_method(args[0], '__iter__', [])
     } catch (e) {
-        throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
+        throw new PyTypeError("'" + type_name(args[0]) + "' object is not iterable")
     }
 }
 

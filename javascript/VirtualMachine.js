@@ -1,14 +1,14 @@
 /*************************************************************************
  * Virtual Machine
  *************************************************************************/
-import { BaseException, BataviaError, StopIteration } from './core/exceptions'
-import { PyObject } from './core/types'
+import { PyBaseException, PyException, BataviaError, PyStopIteration } from './core/exceptions'
+import { create_pyclass, PyObject } from './core/types'
 import * as callables from './core/callables'
 import * as native from './core/native'
 import * as version from './core/version'
 
-import Block from './core/Block'
-import Frame from './core/Frame'
+import PyBlock from './core/Block'
+import PyFrame from './core/Frame'
 
 import * as builtins from './builtins'
 import * as types from './types'
@@ -49,7 +49,7 @@ export default function VirtualMachine(args) {
             return {
                 '$pyclass': true,
                 'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, '').trim(),
-                'filename': new types.Str(filename)
+                'filename': new types.PyStr(filename)
             }
         }
     } else {
@@ -105,7 +105,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop()
                         if (x === null) {
-                            this.push(types.NoneType.__pos__())
+                            this.push(types.PyNoneType.__pos__())
                         } else if (x.__pos__) {
                             this.push(x.__pos__())
                         } else {
@@ -116,7 +116,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop()
                         if (x === null) {
-                            this.push(types.NoneType.__neg__())
+                            this.push(types.PyNoneType.__neg__())
                         } else if (x.__neg__) {
                             this.push(x.__neg__())
                         } else {
@@ -127,7 +127,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop()
                         if (x === null) {
-                            this.push(types.NoneType.__not__())
+                            this.push(types.PyNoneType.__not__())
                         } else if (x.__not__) {
                             this.push(x.__not__())
                         } else {
@@ -138,7 +138,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var x = this.pop()
                         if (x === null) {
-                            this.push(types.NoneType.__invert__())
+                            this.push(types.PyNoneType.__invert__())
                         } else if (x.__invert__) {
                             this.push(x.__invert__())
                         } else {
@@ -155,7 +155,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__pow__(items[1]))
+                            this.push(types.PyNoneType.__pow__(items[1]))
                         } else if (items[0].__pow__) {
                             if (items[0].__pow__.__call__) {
                                 this.push(items[0].__pow__.__call__(items))
@@ -170,7 +170,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__mul__(items[1]))
+                            this.push(types.PyNoneType.__mul__(items[1]))
                         } else if (items[0].__mul__) {
                             if (items[0].__mul__.__call__) {
                                 this.push(items[0].__mul__.__call__(items))
@@ -185,7 +185,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__mod__(items[1]))
+                            this.push(types.PyNoneType.__mod__(items[1]))
                         } else if (items[0].__mod__) {
                             if (items[0].__mod__.__call__) {
                                 this.push(items[0].__mod__.__call__(items))
@@ -200,7 +200,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__add__(items[1]))
+                            this.push(types.PyNoneType.__add__(items[1]))
                         } else if (items[0].__add__) {
                             if (items[0].__add__.__call__) {
                                 this.push(items[0].__add__.__call__(items))
@@ -215,7 +215,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__sub__(items[1]))
+                            this.push(types.PyNoneType.__sub__(items[1]))
                         } else if (items[0].__sub__) {
                             if (items[0].__sub__.__call__) {
                                 this.push(items[0].__sub__.__call__(items))
@@ -230,7 +230,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__getitem__(items[1]))
+                            this.push(types.PyNoneType.__getitem__(items[1]))
                         } else if (items[0].__getitem__) {
                             if (items[0].__getitem__.__call__) {
                                 this.push(items[0].__getitem__.__call__(items))
@@ -245,7 +245,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__floordiv__(items[1]))
+                            this.push(types.PyNoneType.__floordiv__(items[1]))
                         } else if (items[0].__floordiv__) {
                             if (items[0].__floordiv__.__call__) {
                                 this.push(items[0].__floordiv__.__call__(items))
@@ -260,7 +260,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__truediv__(items[1]))
+                            this.push(types.PyNoneType.__truediv__(items[1]))
                         } else if (items[0].__truediv__) {
                             if (items[0].__truediv__.__call__) {
                                 this.push(items[0].__truediv__.__call__(items))
@@ -275,7 +275,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__lshift__(items[1]))
+                            this.push(types.PyNoneType.__lshift__(items[1]))
                         } else if (items[0].__lshift__) {
                             if (items[0].__lshift__.__call__) {
                                 this.push(items[0].__lshift__.__call__(items))
@@ -290,7 +290,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__rshift__(items[1]))
+                            this.push(types.PyNoneType.__rshift__(items[1]))
                         } else if (items[0].__rshift__) {
                             if (items[0].__rshift__.__call__) {
                                 this.push(items[0].__rshift__.__call__(items))
@@ -305,7 +305,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__and__(items[1]))
+                            this.push(types.PyNoneType.__and__(items[1]))
                         } else if (items[0].__and__) {
                             if (items[0].__and__.__call__) {
                                 this.push(items[0].__and__.__call__(items))
@@ -320,7 +320,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__xor__(items[1]))
+                            this.push(types.PyNoneType.__xor__(items[1]))
                         } else if (items[0].__xor__) {
                             if (items[0].__xor__.__call__) {
                                 this.push(items[0].__xor__.__call__(items))
@@ -335,7 +335,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                     return function() {
                         var items = this.popn(2)
                         if (items[0] === null) {
-                            this.push(types.NoneType.__or__(items[1]))
+                            this.push(types.PyNoneType.__or__(items[1]))
                         } else if (items[0].__or__) {
                             if (items[0].__or__.__call__) {
                                 this.push(items[0].__or__.__call__(items))
@@ -357,7 +357,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__ifloordiv__(items[1])
+                            result = types.PyNoneType.__ifloordiv__(items[1])
                         } else if (items[0].__ifloordiv__) {
                             if (items[0].__ifloordiv__.__call__) {
                                 result = items[0].__ifloordiv__.__call__(items)
@@ -378,7 +378,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__itruediv__(items[1])
+                            result = types.PyNoneType.__itruediv__(items[1])
                         } else if (items[0].__itruediv__) {
                             if (items[0].__itruediv__.__call__) {
                                 result = items[0].__itruediv__.__call__(items)
@@ -399,7 +399,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__iadd__(items[1])
+                            result = types.PyNoneType.__iadd__(items[1])
                         } else if (items[0].__iadd__) {
                             if (items[0].__iadd__.__call__) {
                                 result = items[0].__iadd__.__call__(items)
@@ -420,7 +420,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__isub__(items[1])
+                            result = types.PyNoneType.__isub__(items[1])
                         } else if (items[0].__isub__) {
                             if (items[0].__isub__.__call__) {
                                 result = items[0].__isub__.__call__(items)
@@ -441,7 +441,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__imul__(items[1])
+                            result = types.PyNoneType.__imul__(items[1])
                         } else if (items[0].__imul__) {
                             if (items[0].__imul__.__call__) {
                                 result = items[0].__imul__.__call__(items)
@@ -462,7 +462,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__imod__(items[1])
+                            result = types.PyNoneType.__imod__(items[1])
                         } else if (items[0].__imod__) {
                             if (items[0].__imod__.__call__) {
                                 result = items[0].__imod__.__call__(items)
@@ -483,7 +483,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__ipow__(items[1])
+                            result = types.PyNoneType.__ipow__(items[1])
                         } else if (items[0].__ipow__) {
                             if (items[0].__ipow__.__call__) {
                                 result = items[0].__ipow__.__call__(items)
@@ -504,7 +504,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__ilshift__(items[1])
+                            result = types.PyNoneType.__ilshift__(items[1])
                         } else if (items[0].__ilshift__) {
                             if (items[0].__ilshift__.__call__) {
                                 result = items[0].__ilshift__.__call__(items)
@@ -525,7 +525,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__irshift__(items[1])
+                            result = types.PyNoneType.__irshift__(items[1])
                         } else if (items[0].__irshift__) {
                             if (items[0].__irshift__.__call__) {
                                 result = items[0].__irshift__.__call__(items)
@@ -546,7 +546,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__iand__(items[1])
+                            result = types.PyNoneType.__iand__(items[1])
                         } else if (items[0].__iand__) {
                             if (items[0].__iand__.__call__) {
                                 result = items[0].__iand__.__call__(items)
@@ -567,7 +567,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__ixor__(items[1])
+                            result = types.PyNoneType.__ixor__(items[1])
                         } else if (items[0].__ixor__) {
                             if (items[0].__ixor__.__call__) {
                                 result = items[0].__ixor__.__call__(items)
@@ -588,7 +588,7 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result
                         if (items[0] === null) {
-                            result = types.NoneType.__ior__(items[1])
+                            result = types.PyNoneType.__ior__(items[1])
                         } else if (items[0].__ior__) {
                             if (items[0].__ior__.__call__) {
                                 result = items[0].__ior__.__call__(items)
@@ -632,7 +632,7 @@ VirtualMachine.prototype.run = function(tag, args) {
         var code = marshal.load_pyc(this, payload.bytecode)
 
         // Set up sys.argv
-        sys.argv = new types.List(['batavia'])
+        sys.argv = new types.PyList(['batavia'])
         if (args) {
             sys.argv.extend(args)
         }
@@ -687,7 +687,7 @@ VirtualMachine.prototype.PyErr_Occurred = function() {
 }
 
 VirtualMachine.prototype.PyErr_SetString = function(Exception, message) {
-    var exception = new Exception(message)
+    var exception = new PyException(message)
     this.last_exception = {
         'exc_type': exception.__class__,
         'value': exception,
@@ -762,7 +762,7 @@ VirtualMachine.prototype.push_block = function(type, handler, level) {
     if (level === null || level === undefined) {
         level = this.frame.stack.length
     }
-    this.frame.block_stack.push(new Block(type, handler, level))
+    this.frame.block_stack.push(new PyBlock(type, handler, level))
 }
 
 VirtualMachine.prototype.pop_block = function() {
@@ -798,7 +798,7 @@ VirtualMachine.prototype.make_frame = function(kwargs) {
     }
     f_locals.update(callargs)
 
-    return new Frame({
+    return new PyFrame({
         'f_code': code,
         'f_globals': f_globals,
         'f_locals': f_locals,
@@ -1283,7 +1283,7 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
             val.__doc__ = doc
         }
     } else {
-        throw new builtins.NameError("name '" + name + "' is not defined")
+        throw new builtins.PyNameError("name '" + name + "' is not defined")
     }
     this.push(val)
 }
@@ -1301,7 +1301,7 @@ VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name]
     } else {
-        throw new builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment")
+        throw new builtins.PyUnboundLocalError("local variable '" + name + "' referenced before assignment")
     }
     this.push(val)
 }
@@ -1331,7 +1331,7 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
             val.__doc__ = doc
         }
     } else {
-        throw new builtins.NameError("name '" + name + "' is not defined")
+        throw new builtins.PyNameError("name '" + name + "' is not defined")
     }
     this.push(val)
 }
@@ -1382,7 +1382,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 
     if (opnum === 6) { // x in None
         if (items[1] === null) {
-            result = types.NoneType.__contains__(items[0])
+            result = types.PyNoneType.__contains__(items[0])
         } if (items[1].__contains__) {
             result = items[1].__contains__(items[0])
         } else {
@@ -1390,7 +1390,7 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
         }
     } else if (opnum === 7) {
         if (items[1] === null) { // x not in None
-            result = types.NoneType.__contains__(items[0]).__not__()
+            result = types.PyNoneType.__contains__(items[0]).__not__()
         } else if (items[1].__contains__) {
             result = items[1].__contains__(items[0]).__not__()
         } else {
@@ -1399,22 +1399,22 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
     } else if (items[0] === null) {
         switch (opnum) {
             case 0: // <
-                result = types.NoneType.__lt__(items[1])
+                result = types.PyNoneType.__lt__(items[1])
                 break
             case 1: // <=
-                result = types.NoneType.__le__(items[1])
+                result = types.PyNoneType.__le__(items[1])
                 break
             case 2: // ==
-                result = types.NoneType.__eq__(items[1])
+                result = types.PyNoneType.__eq__(items[1])
                 break
             case 3: // !=
-                result = types.NoneType.__ne__(items[1])
+                result = types.PyNoneType.__ne__(items[1])
                 break
             case 4: // >
-                result = types.NoneType.__gt__(items[1])
+                result = types.PyNoneType.__gt__(items[1])
                 break
             case 5: // >=
-                result = types.NoneType.__ge__(items[1])
+                result = types.PyNoneType.__ge__(items[1])
                 break
             case 8: // is
                 result = items[1] === null
@@ -1540,23 +1540,23 @@ VirtualMachine.prototype.byte_DELETE_SUBSCR = function() {
 
 VirtualMachine.prototype.byte_BUILD_TUPLE = function(count) {
     var items = this.popn(count)
-    this.push(new types.Tuple(items))
+    this.push(new types.PyTuple(items))
 }
 
 VirtualMachine.prototype.byte_BUILD_LIST = function(count) {
     var items = this.popn(count)
-    this.push(new types.List(items))
+    this.push(new types.PyList(items))
 }
 
 VirtualMachine.prototype.byte_BUILD_SET = function(count) {
     var items = this.popn(count)
-    this.push(new types.Set(items))
+    this.push(new types.PySet(items))
 }
 
 VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
     if (version.later('3.5a0')) {
         var items = this.popn(size * 2)
-        var dict = new types.Dict()
+        var dict = new types.PyDict()
 
         for (var i = 0; i < items.length; i += 2) {
             dict.__setitem__(items[i], items[i + 1])
@@ -1564,14 +1564,14 @@ VirtualMachine.prototype.byte_BUILD_MAP = function(size) {
 
         this.push(dict)
     } else {
-        this.push(new types.Dict())
+        this.push(new types.PyDict())
     }
 }
 
 VirtualMachine.prototype.byte_BUILD_CONST_KEY_MAP = function(size) {
     var keys = this.pop()
     var values = this.popn(size)
-    var dict = new types.Dict()
+    var dict = new types.PyDict()
 
     for (var i = 0; i < values.length; i += 1) {
         dict.__setitem__(keys[i], values[i])
@@ -1750,7 +1750,7 @@ VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
         var v = iterobj.__next__()
         this.push(v)
     } catch (err) {
-        if (err instanceof builtins.StopIteration) {
+        if (err instanceof builtins.PyStopIteration) {
             this.pop()
             this.jump(jump)
         } else {
@@ -1785,7 +1785,7 @@ VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
 VirtualMachine.prototype.byte_END_FINALLY = function() {
     var why, value, traceback
     var exc_type = this.pop()
-    if (exc_type === builtins.None) {
+    if (exc_type === builtins.PyNone) {
         why = null
     } else if (exc_type === 'silenced') {
         var block = this.pop_block() // should be except-handler
@@ -1793,7 +1793,7 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
         return null
     } else {
         value = this.pop()
-        if (value instanceof BaseException) {
+        if (value instanceof PyBaseException) {
             traceback = this.pop()
             this.last_exception = {
                 'exc_type': exc_type,
@@ -1831,12 +1831,12 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         } else {
             return 'reraise'
         }
-    } else if (exc instanceof BaseException) {
-        // As in `throw ValueError('foo')`
+    } else if (exc instanceof PyBaseException) {
+        // As in `throw PyValueError('foo')`
         exc_type = exc.__class__
         val = exc
-    } else if (exc.prototype instanceof BaseException ||
-               exc === BaseException) {
+    } else if (exc.prototype instanceof PyBaseException ||
+               exc === PyBaseException) {
         exc_type = exc
         val = new exc_type() // eslint-disable-line new-cap
     } else {
@@ -1847,7 +1847,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
     // val is a valid exception instance and exc_type is its class.
     // Now do a similar thing for the cause, if present.
     if (cause) {
-        // if not isinstance(cause, BaseException):
+        // if not isinstance(cause, PyBaseException):
         //     return 'exception' // error
 
         val.__cause__ = cause
@@ -1879,9 +1879,9 @@ VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
 VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
     var exc = this.top()
     var mgr
-    var val = builtins.None
-    var tb = builtins.None
-    if (exc instanceof types.NoneType) {
+    var val = builtins.PyNone
+    var tb = builtins.PyNone
+    if (exc instanceof types.PyNoneType) {
         mgr = this.pop(1)
     } else if (exc instanceof String) {
         if (exc === 'return' || exc === 'continue') {
@@ -1889,12 +1889,12 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         } else {
             mgr = this.pop(1)
         }
-        exc = builtins.None
-    } else if (exc.prototype instanceof BaseException) {
+        exc = builtins.PyNone
+    } else if (exc.prototype instanceof PyBaseException) {
         val = this.peek(2)
         tb = this.peek(3)
         mgr = this.pop(6)
-        this.push_at(builtins.None, 3)
+        this.push_at(builtins.PyNone, 3)
         var block = this.pop_block()
         this.push_block(block.type, block.handler, block.level - 1)
     } else {
@@ -1902,7 +1902,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
     }
     var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
     if (version.earlier('3.5a0')) {
-        if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+        if (!(exc instanceof types.PyNoneType) && ret.__bool__ !== undefined &&
                 ret.__bool__().valueOf()) {
             this.push('silenced')
         }
@@ -1922,7 +1922,7 @@ VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
     // Assuming Python 3.5
     var ret = this.pop()
     var exc = this.pop()
-    if (!(exc instanceof types.NoneType) && ret.__bool__ !== undefined &&
+    if (!(exc instanceof types.PyNoneType) && ret.__bool__ !== undefined &&
             ret.__bool__().valueOf()) {
         this.push('silenced')
     }
@@ -1955,7 +1955,7 @@ VirtualMachine.prototype.byte_MAKE_FUNCTION = function(arg) {
         defaults = this.popn(arg)
     }
 
-    var fn = new types.Function(name, code, this.frame.f_globals, defaults, closure, this)
+    var fn = new types.PyFunction(name, code, this.frame.f_globals, defaults, closure, this)
     this.push(fn)
 }
 
@@ -1967,7 +1967,7 @@ VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
     var name = this.pop()
     var items = this.popn(2)
     var defaults = this.popn(argc)
-    var fn = new types.Function(name, items[1], this.frame.f_globals, defaults, items[0], this)
+    var fn = new types.PyFunction(name, items[1], this.frame.f_globals, defaults, items[0], this)
     this.push(fn)
 }
 
@@ -2085,14 +2085,14 @@ VirtualMachine.prototype.byte_YIELD_FROM = function() {
     var receiver = this.top()
 
     try {
-        if (types.isinstance(v, types.NoneType) ||
-                !types.isinstance(receiver, types.Generator)) {
+        if (types.isinstance(v, types.PyNoneType) ||
+                !types.isinstance(receiver, types.PyGenerator)) {
             this.return_value = callables.call_method(receiver, '__next__', [])
         } else {
             this.return_value = receiver.send(v)
         }
     } catch (e) {
-        if (e instanceof StopIteration) {
+        if (e instanceof PyStopIteration) {
             this.pop()
             this.push(e.value)
             return
@@ -2163,7 +2163,7 @@ var make_class = function(vm) {
         // var kwds = kwargs.kwds || args[4] || [];
 
         // Create a locals context, and run the class function in it.
-        var locals = new types.Dict()
+        var locals = new types.PyDict()
         func.__call__.apply(this, [[], [], locals])
 
         // Now construct the class, based on the constructed local context.
@@ -2171,52 +2171,60 @@ var make_class = function(vm) {
         // constructor. The Javascript constructor just sets up the object.
         // The Python __init__ invocation is done outside the constructor, as part
         // of the __call__ that invokes the constructor.
-        var pyclass = (function(vm, name, bases) {
-            return function() {
-                if (bases.length === 0) {
-                    PyObject.call(this)
-                } else {
-                    for (var b in bases) {
-                        bases[b].call(this)
-                    }
-                }
+        var pyclass = class extends PyObject {
+            constructor() {
+                super()
             }
-        }(vm, name, bases))
+        }
+        //     function(vm, name, bases) {
+        //     return function() {
+        //         if (bases.length === 0) {
+        //             PyObject.call(this)
+        //         } else {
+        //             for (var b in bases) {
+        //                 bases[b].call(this)
+        //             }
+        //         }
+        //     }
+        // }(vm, name, bases))
 
         // If there are no explicitly named bases, the class
         // inherits from `object`. Otherwise, populate __base__
         // and __bases__, and copy in all the methods from
         // any base class so that the prototype of pyclass
         // has all the available methods.
-        if (bases.length === 0) {
-            pyclass.prototype.__bases__ = [PyObject.prototype.__class__]
-            pyclass.prototype.__base__ = PyObject.prototype.__class__
-        } else {
-            pyclass.prototype.__bases__ = bases
-            pyclass.prototype.__base__ = bases[0]
-        }
+        // if (bases.length === 0) {
+        //     pyclass.prototype.__bases__ = [PyObject]
+        //     pyclass.prototype.__base__ = PyObject
+        // } else {
+        //     pyclass.prototype.__bases__ = bases
+        //     pyclass.prototype.__base__ = bases[0]
+        // }
 
+        create_pyclass(pyclass, name, bases[0])
         // Set the type of the object
-        var pytype = new types.Type(name, bases)
-        pyclass.prototype.__class__ = pytype
+        // var pytype = new types.PyType(name, bases)
+        // pytype.$pyclass = pyclass
+
+        // pyclass.__class__ = pytype
+        // pyclass.prototype.__class__ = pytype
 
         // Close the loop so the type knows about the class,
         // track the virtual machine that was used to create the type,
         // and set the type to use Python style initialization.
-        pytype.$vm = vm
-        pytype.$pyinit = true
+        pyclass.__class__.$vm = vm
 
         // Copy in all the attributes that were created
         // as part of object construction.
-        for (var attr in locals) {
-            if (locals.hasOwnProperty(attr)) {
-                pyclass[attr] = locals[attr]
-                pyclass.prototype[attr] = locals[attr]
-            }
-        }
+        // for (var attr in locals) {
+        //     if (locals.hasOwnProperty(attr)) {
+        //         pyclass[attr] = locals[attr]
+        //         pyclass.prototype[attr] = locals[attr]
+        //     }
+        // }
 
-        // Return the type. Calling the type will construct instances.
-        return pytype
+        // Return the class. Calling the type will construct instances.
+        return pyclass.__class__
     }
 }
 

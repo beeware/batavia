@@ -1,4 +1,4 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 
 export var webbrowser = {
     __doc__: '',
@@ -19,9 +19,9 @@ webbrowser.open_new = function(url) {
 webbrowser.open_new_tab = webbrowser.open_new
 
 webbrowser.get = function(name) {
-    throw new NotImplementedError('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
+    throw new PyNotImplementedError('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
 }
 
 webbrowser.register = function(name, constructor) {
-    throw new NotImplementedError('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
+    throw new PyNotImplementedError('Multiple web browsers not supported in DOM-embedded webbrowser module; only the host browser.')
 }

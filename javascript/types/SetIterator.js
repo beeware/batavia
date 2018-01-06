@@ -1,4 +1,4 @@
-import { StopIteration } from '../core/exceptions'
+import { PyStopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 /**************************************************
@@ -20,7 +20,7 @@ export default class SetIterator extends PyObject {
     __next__() {
         var key = this.keys[this.index]
         if (key === undefined) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
         this.index++
         return key

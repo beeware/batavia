@@ -1,21 +1,21 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 
-import { None } from '../builtins'
+import { PyNone } from '../builtins'
 import * as types from '../types'
 
 export default function property(args, kwargs) {
     if (args.length === 0) {
-        return new types.Property(None, None, None, None)
+        return new types.PyProperty(PyNone, PyNone, PyNone, PyNone)
     } else if (args.length === 1) {
-        return new types.Property(args[0], None, None, None)
+        return new types.PyProperty(args[0], PyNone, PyNone, PyNone)
     } else if (args.length === 2) {
-        return new types.Property(args[0], args[1], None, None)
+        return new types.PyProperty(args[0], args[1], PyNone, PyNone)
     } else if (args.length === 3) {
-        return new types.Property(args[0], args[1], args[2], None)
+        return new types.PyProperty(args[0], args[1], args[2], PyNone)
     } else if (args.length === 4) {
-        return new types.Property(args[0], args[1], args[2], args[3])
+        return new types.PyProperty(args[0], args[1], args[2], args[3])
     } else {
-        throw new TypeError('property() takes at most 4 arguments (' + args.length + ' given)')
+        throw new PyTypeError('property() takes at most 4 arguments (' + args.length + ' given)')
     }
 }
 

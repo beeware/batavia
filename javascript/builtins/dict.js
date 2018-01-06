@@ -1,4 +1,4 @@
-import { BataviaError, TypeError, ValueError } from '../core/exceptions'
+import { BataviaError, PyTypeError, PyValueError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -8,20 +8,20 @@ export default function dict(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (args.length > 1) {
-        throw new TypeError('dict expected at most 1 arguments, got ' + args.length)
+        throw new PyTypeError('dict expected at most 1 arguments, got ' + args.length)
     }
-    if (types.isinstance(args[0], [types.Int, types.Bool])) {
-        throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
+    if (types.isinstance(args[0], [types.PyInt, types.PyBool])) {
+        throw new PyTypeError("'" + type_name(args[0]) + "' object is not iterable")
     }
-    if (types.isinstance(args[0], types.Bytearray) || (types.isinstance(args[0], types.Bytes) && args[0].val.length > 0) || (types.isinstance(args[0], types.Range) && args[0].length > 0) || (types.isinstance(args[0], types.FrozenSet) && args[0].data.size > 0)) {
-        throw new TypeError('cannot convert dictionary update sequence element #0 to a sequence')
+    if (types.isinstance(args[0], types.PyBytearray) || (types.isinstance(args[0], types.PyBytes) && args[0].val.length > 0) || (types.isinstance(args[0], types.PyRange) && args[0].length > 0) || (types.isinstance(args[0], types.PyFrozenSet) && args[0].data.size > 0)) {
+        throw new PyTypeError('cannot convert dictionary update sequence element #0 to a sequence')
     }
     var i
-    if (types.isinstance(args[0], types.Set)) {
+    if (types.isinstance(args[0], types.PySet)) {
         for (i = 0; i < args[0].data.keys().length; i++) {
             var current_item = args[0].data.keys()[i]
-            if (!types.isinstance(current_item, types.Tuple) || current_item.length !== 2) {
-                throw new TypeError('cannot convert dictionary update sequence element #0 to a sequence')
+            if (!types.isinstance(current_item, types.PyTuple) || current_item.length !== 2) {
+                throw new PyTypeError('cannot convert dictionary update sequence element #0 to a sequence')
             }
         }
     }
@@ -32,33 +32,33 @@ export default function dict(args, kwargs) {
     // handling keyword arguments and no arguments
     if (args.length === 0 || args[0].length === 0) {
         if (kwargs) {
-            return new types.Dict(kwargs)
+            return new types.PyDict(kwargs)
         } else {
-            return new types.Dict()
+            return new types.PyDict()
         }
     } else {
         // iterate through array to find any errors
         for (i = 0; i < args[0].length; i++) {
             if (args[0][i].length !== 2) {
                 // single number or bool in an iterable throws different error
-                if (types.isinstance(args[0][i], [types.Bool, types.Int])) {
-                    throw new TypeError('cannot convert dictionary update sequence element #' + i + ' to a sequence')
+                if (types.isinstance(args[0][i], [types.PyBool, types.PyInt])) {
+                    throw new PyTypeError('cannot convert dictionary update sequence element #' + i + ' to a sequence')
                 } else {
-                    throw new ValueError('dictionary update sequence element #' + i + ' has length ' + args[0][i].length + '; 2 is required')
+                    throw new PyValueError('dictionary update sequence element #' + i + ' has length ' + args[0][i].length + '; 2 is required')
                 }
             }
         }
     }
     // Passing a dictionary as argument
-    if (types.isinstance(args[0], types.Dict)) {
+    if (types.isinstance(args[0], types.PyDict)) {
         return args[0]
     }
 
     // passing a list as argument
     if (args.length === 1) {
-        var args0 = new types.List(args[0])
+        var args0 = new types.PyList(args[0])
 
-        var dict = new types.Dict()
+        var dict = new types.PyDict()
         for (i = 0; i < args0.length; i++) {
             var sub_array = args0[i]
 
@@ -66,7 +66,7 @@ export default function dict(args, kwargs) {
                 dict.__setitem__(sub_array[0], sub_array[1])
             }
         }
-        return new types.Dict(dict)
+        return new types.PyDict(dict)
     }
 }
 

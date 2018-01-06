@@ -1,9 +1,9 @@
-import { BataviaError, ImportError, SystemError } from '../core/exceptions'
+import { BataviaError, PyImportError, PySystemError } from '../core/exceptions'
 
-import { None } from '../builtins'
+import { PyNone } from '../builtins'
 import * as modules from '../modules'
 import * as stdlib from '../stdlib'
-import { Int, Module } from '../types'
+import { PyInt, PyModule } from '../types'
 
 export default function __import__(args, kwargs) {
     // console.log("IMPORT", args[0], args[1], args[4]);
@@ -38,7 +38,7 @@ export default function __import__(args, kwargs) {
             }
 
             if (context.length < level) {
-                throw new SystemError("Parent module '' not loaded, cannot perform relative import")
+                throw new PySystemError("Parent module '' not loaded, cannot perform relative import")
             } else {
                 context = context.slice(0, context.length - level)
             }
@@ -71,7 +71,7 @@ export default function __import__(args, kwargs) {
         if (root_module === undefined) {
             payload = stdlib[name]
             if (payload) {
-                root_module = new Module(name, null, name)
+                root_module = new PyModule(name, null, name)
                 leaf_module = root_module
                 modules.sys.modules[name] = root_module
 
@@ -93,7 +93,7 @@ export default function __import__(args, kwargs) {
                 if (root_module === undefined) {
                     payload = this.loader(name)
                     if (payload === null) {
-                        throw new ImportError("No module name '" + name + "'")
+                        throw new PyImportError("No module name '" + name + "'")
                     } else if (payload.javascript) {
                         root_module = payload.javascript
                         leaf_module = root_module
@@ -102,7 +102,7 @@ export default function __import__(args, kwargs) {
                         // console.log('LOAD ' + name);
                         code = modules.marshal.load_pyc(this, payload.bytecode)
 
-                        root_module = new Module(name, payload.filename, name)
+                        root_module = new PyModule(name, payload.filename, name)
                         leaf_module = root_module
                         modules.sys.modules[name] = root_module
 
@@ -125,7 +125,7 @@ export default function __import__(args, kwargs) {
                 if (new_module === undefined) {
                     payload = this.loader(name)
                     if (payload === null) {
-                        throw new ImportError("No module name '" + name + "'")
+                        throw new PyImportError("No module name '" + name + "'")
                     } else if (payload.javascript) {
                         new_module = payload.javascript
                         leaf_module[path[n]] = new_module
@@ -140,7 +140,7 @@ export default function __import__(args, kwargs) {
                             pkg = name
                         }
 
-                        new_module = new Module(name, payload.filename, pkg)
+                        new_module = new PyModule(name, payload.filename, pkg)
                         leaf_module[path[n]] = new_module
                         leaf_module = new_module
                         modules.sys.modules[name] = leaf_module
@@ -164,12 +164,12 @@ export default function __import__(args, kwargs) {
     // is a "from ..." statement. This will yield the
     // final module to be imported.
     var module
-    if (args[3] === None) {
+    if (args[3] === PyNone) {
         // import <mod>
         module = root_module
     } else if (args[3][0] === '*') {
         // from <mod> import *
-        module = new Module(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
+        module = new PyModule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
         for (name in leaf_module) {
             if (leaf_module.hasOwnProperty(name)) {
                 module[name] = leaf_module[name]
@@ -177,11 +177,11 @@ export default function __import__(args, kwargs) {
         }
     } else {
         // from <mod> import <name>, <name>
-        module = new Module(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
+        module = new PyModule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
         for (var sn = 0; sn < args[3].length; sn++) {
             name = args[3][sn]
             if (leaf_module[name] === undefined) {
-                __import__.apply(this, [[leaf_module.__name__ + '.' + name, this.frame.f_globals, null, None, new Int(0)], null])
+                __import__.apply(this, [[leaf_module.__name__ + '.' + name, this.frame.f_globals, null, PyNone, new PyInt(0)], null])
             }
             module[name] = leaf_module[name]
         }

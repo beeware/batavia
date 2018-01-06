@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { BataviaError, StopIteration, TypeError } from '../core/exceptions'
+import { BataviaError, PyStopIteration, PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 export default function next(args, kwargs) {
@@ -9,29 +9,29 @@ export default function next(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError('next() takes no keyword arguments')
+        throw new PyTypeError('next() takes no keyword arguments')
     }
     if (!args || args.length === 0) {
-        throw new TypeError('next expected at least 1 arguments, got 0')
+        throw new PyTypeError('next expected at least 1 arguments, got 0')
     }
     if (args.length > 2) {
-        throw new TypeError('next expected at most 2 arguments, got ' + args.length)
+        throw new PyTypeError('next expected at most 2 arguments, got ' + args.length)
     }
 
     try {
         return call_method(args[0], '__next__', [])
     } catch (e) {
-        if (e instanceof StopIteration) {
+        if (e instanceof PyStopIteration) {
             if (args.length === 2) {
                 return args[1]
             } else {
                 throw e
             }
         } else {
-            throw new TypeError("'" + type_name(args[0]) + "' object is not an iterator")
+            throw new PyTypeError("'" + type_name(args[0]) + "' object is not an iterator")
         }
     }
 }
 
-next.__doc__ = 'next(iterator[, default])\n\nReturn the next item from the iterator. If default is given and the iterator\nis exhausted, it is returned instead of raising StopIteration.'
+next.__doc__ = 'next(iterator[, default])\n\nReturn the next item from the iterator. If default is given and the iterator\nis exhausted, it is returned instead of raising PyStopIteration.'
 next.$pyargs = true

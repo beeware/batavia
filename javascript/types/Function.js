@@ -27,7 +27,7 @@ var make_callable = function(func) {
         })
 
         if (func.__code__.co_flags & dis.CO_GENERATOR) {
-            frame.generator = new types.Generator(frame, this)
+            frame.generator = new types.PyGenerator(frame, this)
             retval = frame.generator
         } else {
             retval = this.run_frame(frame)
@@ -38,7 +38,7 @@ var make_callable = function(func) {
     return fn.bind(func.$vm)
 }
 
-export default class Function extends PyObject {
+export default class PyFunction extends PyObject {
     constructor(name, code, globals, defaults, closure, vm) {
         super()
 
@@ -55,8 +55,8 @@ export default class Function extends PyObject {
             this.__doc__ = null
         }
         this.__name__ = name || code.co_name
-        this.__dict__ = new types.Dict()
-        this.__annotations__ = new types.Dict()
+        this.__dict__ = new types.PyDict()
+        this.__annotations__ = new types.PyDict()
         this.__qualname__ = this.__name__
 
         // var kw = {
@@ -73,10 +73,10 @@ export default class Function extends PyObject {
 
     __get__(instance) {
         // Module functions don't need to be bound to the instance as methods.
-        if (instance instanceof types.Module) {
+        if (instance instanceof types.PyModule) {
             return this
         }
-        return new types.Method(instance, this)
+        return new types.PyMethod(instance, this)
     }
 }
-create_pyclass(Function, 'function')
+create_pyclass(PyFunction, 'function')

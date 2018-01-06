@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { OverflowError, TypeError, ValueError } from '../core/exceptions'
+import { PyOverflowError, PyTypeError, PyValueError } from '../core/exceptions'
 import { type_name } from '../core/types'
 import * as version from '../core/version'
 
@@ -15,8 +15,8 @@ export function _substitute(format, args) {
     var usesKwargs = (format.match(kwRe) !== null)
 
     // if using kwargs, fail if first arg isn't a dict or more than 1 arg given
-    if (usesKwargs && (!types.isinstance(args[0], types.Dict) || args.length !== 1)) {
-        throw new TypeError('format requires a mapping')
+    if (usesKwargs && (!types.isinstance(args[0], types.PyDict) || args.length !== 1)) {
+        throw new PyTypeError('format requires a mapping')
     }
 
     function Args(workingArgs) {
@@ -65,7 +65,7 @@ export function _substitute(format, args) {
             var keyRe = /\((.+?)\)(.+)/
             var m = fullText.match(keyRe)
             if (m === null) {
-                throw new ValueError('incomplete format key')
+                throw new PyValueError('incomplete format key')
             }
             this.myKey = m[1]
             this.fullText = '%' + m[2]
@@ -129,7 +129,7 @@ export function _substitute(format, args) {
             }
 
             // getting here means its an illegal character!
-            throw new TypeError('illegal character')
+            throw new PyTypeError('illegal character')
         } // end getNextStep
 
         this.step = function(char, step) {
@@ -177,7 +177,7 @@ export function _substitute(format, args) {
                             /* this isn't a python error. I'm just throwing an exception to the
                             * caller that the conversion flag isn't legal
                             */
-                            throw new TypeError('illegal character')
+                            throw new PyTypeError('illegal character')
                     } // end inner switch 2
                     break
 
@@ -188,27 +188,27 @@ export function _substitute(format, args) {
                         // (one for this, another for the actual conversion)
                         if (this.usesKwargs) {
                             // not allowed with kwargs!
-                            throw new TypeError('* wants int')
+                            throw new PyTypeError('* wants int')
                         }
                         // can't be using numerics or have another * already
                         if (this.fieldWidth.value === '' && this.fieldWidth.numeric === null) {
                             arg = workingArgs.getArg()
 
                             // arg must be an int
-                            if (!types.isinstance(arg, types.Int)) {
-                                throw new TypeError('* wants int')
+                            if (!types.isinstance(arg, types.PyInt)) {
+                                throw new PyTypeError('* wants int')
                             }
 
                             // need to have at least one arg left
                             if (this.remainingArgs.length === 0) {
-                                throw new TypeError('not enough arguments for format string')
+                                throw new PyTypeError('not enough arguments for format string')
                             }
                             this.args.push(arg)
 
                             this.fieldWidth.value = '*'
                             this.fieldWidth.numeric = false
                         } else {
-                            throw new TypeError('illegal character')
+                            throw new PyTypeError('illegal character')
                         }
                     } else if (!isNaN(char)) {
                         // value is numeric
@@ -217,10 +217,10 @@ export function _substitute(format, args) {
                             this.fieldWidth.value += char
                             this.fieldWidth.numeric = true
                         } else {
-                            throw new TypeError('illegal character')
+                            throw new PyTypeError('illegal character')
                         }
                     } else {
-                        throw new TypeError('illegal character')
+                        throw new PyTypeError('illegal character')
                     } // end if
                     break
 
@@ -229,26 +229,26 @@ export function _substitute(format, args) {
                     if (char === '*') {
                         if (this.usesKwargs) {
                             // not allowed with kwargs!
-                            throw new TypeError('* wants int')
+                            throw new PyTypeError('* wants int')
                         }
                         // can't be using numerics or have another * already
                         if (this.precision.value === '' && this.precision.numeric === undefined) {
                             arg = workingArgs.getArg()
                             // arg must be an int
-                            if (!types.isinstance(arg, types.Int)) {
-                                throw new TypeError('* wants int')
+                            if (!types.isinstance(arg, types.PyInt)) {
+                                throw new PyTypeError('* wants int')
                             }
 
                             // need to have at least one arg left
                             if (this.remainingArgs === []) {
-                                throw new TypeError('not enough arguments for format string')
+                                throw new PyTypeError('not enough arguments for format string')
                             }
                             this.args.push(arg)
 
                             this.precision.value = '*'
                             this.precision.numeric = false
                         } else {
-                            throw new TypeError('illegal character')
+                            throw new PyTypeError('illegal character')
                         }
                     } else if (!isNaN(char)) {
                         // value is numeric
@@ -272,7 +272,7 @@ export function _substitute(format, args) {
                     // conversion type
                     arg = workingArgs.getArg(this.myKey)
                     if (arg === undefined) {
-                        throw new TypeError('not enough arguments for format string')
+                        throw new PyTypeError('not enough arguments for format string')
                     }
                     this.args.push(arg)
                     this.conversionType = char
@@ -287,22 +287,22 @@ export function _substitute(format, args) {
                 // throws an error if the arg is an invalid type
 
                 if (/[diouxX]/.test(conversion)) {
-                    if (!types.isinstance(arg, [types.Int, types.Float])) {
-                        throw new TypeError(`%${conversion} format: a number is required, not str`)
+                    if (!types.isinstance(arg, [types.PyInt, types.PyFloat])) {
+                        throw new PyTypeError(`%${conversion} format: a number is required, not str`)
                     }
                 } else if (/[eEfFgG]/.test(conversion)) {
-                    if (!types.isinstance(arg, [types.Float, types.Int])) {
-                        throw new TypeError('a float is required')
+                    if (!types.isinstance(arg, [types.PyFloat, types.PyInt])) {
+                        throw new PyTypeError('a float is required')
                     }
                 } else if (conversion === 'c') {
                     // there might be a problem with the error
                     // message from C Python but floats ARE allowed.
                     // multi character strings are not allowed
-                    if (types.isinstance(arg, types.Str) && arg.valueOf().length > 1) {
-                        throw new TypeError('%c requires int or char')
-                    } else if (types.isinstance(arg, [types.Int, types.Float])) {
+                    if (types.isinstance(arg, types.PyStr) && arg.valueOf().length > 1) {
+                        throw new PyTypeError('%c requires int or char')
+                    } else if (types.isinstance(arg, [types.PyInt, types.PyFloat])) {
                         if (arg < 0) {
-                            throw new OverflowError('%c arg not in range(0xXXXXXXXX)')
+                            throw new PyOverflowError('%c arg not in range(0xXXXXXXXX)')
                         }
                     }
                 } // end outer if
@@ -375,7 +375,7 @@ export function _substitute(format, args) {
             var conversionArgValue = getJSValue(conversionArgRaw)
             var conversionArg, base, exp, asExp, numLeadingZeros
             // floats with no decimal: preserve!
-            if (types.isinstance(conversionArgRaw, types.Float) && conversionArgValue % 1 === 0) {
+            if (types.isinstance(conversionArgRaw, types.PyFloat) && conversionArgValue % 1 === 0) {
                 conversionArgValue = conversionArgValue.toFixed(1)
             }
 
@@ -574,7 +574,7 @@ export function _substitute(format, args) {
                     // and this is platform specific. currently, Batavia is not enforcing any
                     // kind of upper bound.
 
-                    if (types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
+                    if (types.isinstance(conversionArgRaw, [types.PyInt, types.PyFloat])) {
                         conversionArg = String.fromCharCode(Number(conversionArgValue))
                     } else {
                         conversionArg = conversionArgValue
@@ -582,7 +582,7 @@ export function _substitute(format, args) {
                     break
 
                 case ('r'):
-                    if (types.isinstance(conversionArgRaw, types.Str)) {
+                    if (types.isinstance(conversionArgRaw, types.PyStr)) {
                         conversionArg = `'${conversionArgValue}'`
                     } else {
                         // handle as a number
@@ -598,7 +598,7 @@ export function _substitute(format, args) {
                     }
                     break
                 case ('s'):
-                    if (types.isinstance(conversionArgRaw, types.Str)) {
+                    if (types.isinstance(conversionArgRaw, types.PyStr)) {
                         conversionArg = conversionArgValue
                     } else {
                         // handle as a number
@@ -616,7 +616,7 @@ export function _substitute(format, args) {
             } // end switch
 
             // only do the below for numbers
-            if (types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
+            if (types.isinstance(conversionArgRaw, [types.PyInt, types.PyFloat])) {
                 if (this.conversionFlags[' ']) {
                     // A blank should be left before a positive number (or empty string)
                     // produced by a signed conversion.
@@ -634,7 +634,7 @@ export function _substitute(format, args) {
 
             var padSize = cellWidth - conversionArg.length
             var retVal
-            if (this.conversionFlags['0'] && types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
+            if (this.conversionFlags['0'] && types.isinstance(conversionArgRaw, [types.PyInt, types.PyFloat])) {
                 // example: '00005'
                 retVal = '0'.repeat(padSize) + conversionArg
             } else if (this.conversionFlags['-']) {
@@ -662,7 +662,7 @@ export function _substitute(format, args) {
             } catch (err) {
                 if (err.msg === 'illegal character') {
                     var charAsHex = nextChar.charCodeAt(0).toString(16)
-                    throw new ValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
+                    throw new PyValueError(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
                 } else {
                     // its some other error
                     throw err
@@ -677,7 +677,7 @@ export function _substitute(format, args) {
 
         // check that a conversion type was found. Otherwise throw error!
         if (this.conversionType === undefined && !this.literalPercent) {
-            throw new ValueError('incomplete format')
+            throw new PyValueError('incomplete format')
         }; // end parse main loop
     } // END SPECIFIER
 
@@ -707,9 +707,9 @@ export function _substitute(format, args) {
         // its ok to having arguments left over if they are any of the below
 
         workingArgs.remainingArgs.forEach(function(arg) {
-            if (!types.isinstance(arg, [types.Bytes, types.Bytearray, types.Dict,
-                types.List, types.Range])) {
-                throw new TypeError('not all arguments converted during string formatting')
+            if (!types.isinstance(arg, [types.PyBytes, types.PyBytearray, types.PyDict,
+                types.PyList, types.PyRange])) {
+                throw new PyTypeError('not all arguments converted during string formatting')
             }
         })
     }
@@ -752,7 +752,7 @@ export function _new_subsitute(str, args, kwargs) {
             this.mode = newMode
         } else if (this.mode !== newMode) {
             // mode has already been set. check if it conflicts with set mode
-            throw new TypeError(`cannot switch from ${this.mode} to ${newMode}`)
+            throw new PyTypeError(`cannot switch from ${this.mode} to ${newMode}`)
         }
     }
 
@@ -820,20 +820,20 @@ export function _new_subsitute(str, args, kwargs) {
                         case ':':
                             // ensure that we don't have a lone '!'
                             if (this.conversionFlag === '!') {
-                                throw new ValueError('Unknown conversion specifier :')
+                                throw new PyValueError('Unknown conversion specifier :')
                             }
                             currentParseGroup = 3
                             break
                         default:
                             if (this.conversionFlag.length === 2) {
                                 // conversion flags are one character
-                                throw new ValueError("expected ':' after conversion specifier")
+                                throw new PyValueError("expected ':' after conversion specifier")
                             }
                             if (/[!sar]/.test(char)) {
                                 // valid the conversion flag
                                 this.conversionFlag += char
                             } else {
-                                throw new ValueError(`Unknown conversion specifier ${char}`)
+                                throw new PyValueError(`Unknown conversion specifier ${char}`)
                             }
                             break
                     }
@@ -940,7 +940,7 @@ export function _new_subsitute(str, args, kwargs) {
                         this.fill = char
                         return 4
                     } else {
-                        throw new ValueError('Invalid format specifier')
+                        throw new PyValueError('Invalid format specifier')
                     }
                 case 4:
                     // width
@@ -970,7 +970,7 @@ export function _new_subsitute(str, args, kwargs) {
                     // format type.
                     if (this.type) {
                         // format specifiers can't be more than one char
-                        throw new ValueError('Invalid format specifier')
+                        throw new PyValueError('Invalid format specifier')
                     } else {
                         this.type = char
                     }
@@ -1018,7 +1018,7 @@ export function _new_subsitute(str, args, kwargs) {
             const getItemMatch = contents.match(/\[(.*?)\]/)
             if (getItemMatch) {
                 if (getItemMatch[1] === '') {
-                    throw new ValueError('Empty attribute in format string')
+                    throw new PyValueError('Empty attribute in format string')
                 }
                 return {type: 'getitem', name: getItemMatch[1]}
             }
@@ -1032,12 +1032,12 @@ export function _new_subsitute(str, args, kwargs) {
             // check for unmatched '['
             const openBracketRe = /\[/
             if (openBracketRe.test(contents)) {
-                throw new ValueError("expected '}' before end of string")
+                throw new PyValueError("expected '}' before end of string")
             }
 
             // check for a '.' with nothing after
             if (contents === '.') {
-                throw new ValueError('Empty attribute in format string')
+                throw new PyValueError('Empty attribute in format string')
             }
             // otherwise its a name, just return
             return {type: 'name', name: contents}
@@ -1103,15 +1103,15 @@ export function _new_subsitute(str, args, kwargs) {
         let pulledArg
 
         if (fieldParsed.name === '') {
-            const key = new types.Int(this.specIndex)
+            const key = new types.PyInt(this.specIndex)
             pulledArg = this.args.__getitem__(key)
         } else if (!isNaN(Number(fieldParsed.name))) {
             // using sequential arguments
-            const key = new types.Int(fieldParsed.name)
+            const key = new types.PyInt(fieldParsed.name)
             pulledArg = this.args.__getitem__(key)
         } else {
             // using keyword argument
-            const key = new types.Str(fieldParsed.name)
+            const key = new types.PyStr(fieldParsed.name)
             pulledArg = this.kwargs.__getitem__(key)
         }
 
@@ -1124,9 +1124,9 @@ export function _new_subsitute(str, args, kwargs) {
                     // if getter.name can be an int, it should be. otherwise keep as string
                     let key
                     if (!isNaN(getter.name)) {
-                        key = new types.Int(getter.name)
+                        key = new types.PyInt(getter.name)
                     } else {
-                        key = new types.Str(getter.name)
+                        key = new types.PyStr(getter.name)
                     }
 
                     rawValue = rawValue.__getitem__(key)
@@ -1145,11 +1145,11 @@ export function _new_subsitute(str, args, kwargs) {
           Everything else should be converted to a string
        */
 
-        if (types.isinstance(rawValue, [types.Int, types.Float])) {
+        if (types.isinstance(rawValue, [types.PyInt, types.PyFloat])) {
             return rawValue
-        } else if (types.isinstance(rawValue, [types.NoneType])) {
+        } else if (types.isinstance(rawValue, [types.PyNoneType])) {
             return 'None'
-        } else if (types.isinstance(rawValue, [types.NotImplementedType])) {
+        } else if (types.isinstance(rawValue, [types.PyNotImplementedType])) {
             return 'NotImplemented'
         } else {
             switch (this.conversionFlag) {
@@ -1169,7 +1169,7 @@ export function _new_subsitute(str, args, kwargs) {
 
         const type = this.type || 's'
         if (!type.match(/[s ]/)) {
-            throw new ValueError(`Unknown format code '${this.type}' for object of type 'str'`)
+            throw new PyValueError(`Unknown format code '${this.type}' for object of type 'str'`)
         }
 
         // things that aren't allowed with strings:
@@ -1178,22 +1178,22 @@ export function _new_subsitute(str, args, kwargs) {
         // alternate form
         if (this.grouping === ',') {
             if (version.earlier('3.6')) {
-                throw new ValueError("Cannot specify ',' with 's'.")
+                throw new PyValueError("Cannot specify ',' with 's'.")
             } else {
-                throw new ValueError("Cannot specify ',' or '_' with 's'.")
+                throw new PyValueError("Cannot specify ',' or '_' with 's'.")
             }
         }
 
         if (this.sign) {
-            throw new ValueError('Sign not allowed in string format specifier')
+            throw new PyValueError('Sign not allowed in string format specifier')
         }
 
         if (this.alternate) {
-            throw new ValueError('Alternate form (#) not allowed in string format specifier')
+            throw new PyValueError('Alternate form (#) not allowed in string format specifier')
         }
 
         if ((this.align === '=') || (this.fill === '0')) {
-            throw new ValueError("'=' alignment not allowed in string format specifier")
+            throw new PyValueError("'=' alignment not allowed in string format specifier")
         }
         // the field must be atleast as big as this.width
         // if this.precision is set and smaller than this.arg, trim this.arg to fit
@@ -1225,25 +1225,25 @@ export function _new_subsitute(str, args, kwargs) {
 
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
-        if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
-            throw new ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+        if (types.isinstance(this.arg, [types.PyFloat]) && /[bcdoxX]/.test(type)) {
+            throw new PyValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
         }
 
         if (this.type === 'c' && this.sign) {
-            throw new ValueError("Sign not allowed with integer format specifier 'c'")
+            throw new PyValueError("Sign not allowed with integer format specifier 'c'")
         }
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
             // used a , with a bad conversion type:
-            throw new ValueError(`Cannot specify ',' with '${type}'.`)
+            throw new PyValueError(`Cannot specify ',' with '${type}'.`)
         }
 
         if (this.precision && type.match(/[bcdoxXn]/)) {
-            throw new ValueError('Precision not allowed in integer format specifier')
+            throw new PyValueError('Precision not allowed in integer format specifier')
         }
 
         if (type === 's') {
-            throw new ValueError("Unknown format code 's' for object of type 'int'")
+            throw new PyValueError("Unknown format code 's' for object of type 'int'")
         }
 
         let precision
@@ -1305,7 +1305,7 @@ export function _new_subsitute(str, args, kwargs) {
                 // else use e and p-1
 
                 if (type === 'n' && this.precision) {
-                    throw new ValueError('Precision not allowed in integer format specifier')
+                    throw new PyValueError('Precision not allowed in integer format specifier')
                 }
 
                 num = new BigNumber(this.argAbs).toExponential()
@@ -1336,7 +1336,7 @@ export function _new_subsitute(str, args, kwargs) {
                 // else use e and p-1
 
                 if (type === 'n' && this.precision) {
-                    throw new ValueError('Precision not allowed in integer format specifier')
+                    throw new PyValueError('Precision not allowed in integer format specifier')
                 }
 
                 num = new BigNumber(this.argAbs).toExponential()
@@ -1360,7 +1360,7 @@ export function _new_subsitute(str, args, kwargs) {
                 percent = '%'
                 break
             default:
-                throw new ValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+                throw new PyValueError(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
         } // switch
 
         // determine sign

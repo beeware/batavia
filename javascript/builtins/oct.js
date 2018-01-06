@@ -1,28 +1,28 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import * as types from '../types'
 
 export default function oct(args, kwargs) {
     if (!args) {
-        throw new TypeError('oct() takes exactly one argument (0 given)')
+        throw new PyTypeError('oct() takes exactly one argument (0 given)')
     } else if (args.length !== 1) {
-        throw new TypeError('oct() takes exactly one argument (' + args.length + ' given)')
+        throw new PyTypeError('oct() takes exactly one argument (' + args.length + ' given)')
     }
     var value = args[0]
-    if (types.isinstance(value, types.Int)) {
+    if (types.isinstance(value, types.PyInt)) {
         if (value.val.isNeg()) {
             return '-0o' + value.val.toString(8).substr(1)
         } else {
             return '0o' + value.val.toString(8)
         }
-    } else if (types.isinstance(value, types.Bool)) {
+    } else if (types.isinstance(value, types.PyBool)) {
         return '0o' + value.__int__().toString(8)
     }
 
-    if (!types.isinstance(value, types.Int)) {
+    if (!types.isinstance(value, types.PyInt)) {
         if (value.__index__) {
             value = value.__index__()
         } else {
-            throw new TypeError('__index__ method needed for non-integer inputs')
+            throw new PyTypeError('__index__ method needed for non-integer inputs')
         }
     }
     if (value < 0) {

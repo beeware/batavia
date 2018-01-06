@@ -1,10 +1,10 @@
-import { TypeError, ValueError } from '../core/exceptions'
+import { PyTypeError, PyValueError } from '../core/exceptions'
 import { _compile } from '../modules'
 
 export default function compile(args, kwargs) {
     if (args.length < 3) {
         var argument_names = ['source', 'filename', 'mode']
-        throw new TypeError('Required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ') not found')
+        throw new PyTypeError('Required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ') not found')
     }
 
     var source = args[0]
@@ -26,7 +26,7 @@ export default function compile(args, kwargs) {
     } else if (mode === 'single') {
         compile_mode = 2
     } else {
-        throw new ValueError("compile() mode must be 'exec', 'eval' or 'single'")
+        throw new PyValueError("compile() mode must be 'exec', 'eval' or 'single'")
     }
 
     var ast_check = _compile.ast_check(source)

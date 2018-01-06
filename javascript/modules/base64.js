@@ -1,6 +1,6 @@
 import * as base64js from 'base64-js'
 
-import { ValueError } from '../core/exceptions'
+import { PyValueError } from '../core/exceptions'
 import * as types from '../types'
 
 export var base64 = {
@@ -17,17 +17,17 @@ base64.b64encode = function(data) {
         var code = encode.charCodeAt(i)
         bytes = bytes.concat([code])
     };
-    return new types.Bytes(bytes)
+    return new types.PyBytes(bytes)
 }
 base64.b64encode.__doc__ = "Decode the Base64 encoded bytes-like object or ASCII string s.\n\nOptional altchars must be a bytes-like object or ASCII string of length 2\n    which specifies the alternative alphabet used instead of the '+' and '/'\n    characters.\n\n    The result is returned as a bytes object.  A binascii.Error is raised if\n    s is incorrectly padded.\n\n    If validate is False (the default), characters that are neither in the\n    normal base-64 alphabet nor the alternative alphabet are discarded prior\n    to the padding check.  If validate is True, these non-alphabet characters\n    in the input result in a binascii.Error.\n    "
 
 base64.b64decode = function(data) {
     var data_str = String.fromCharCode.apply(null, data.val)
     if (data_str.length % 4 !== 0) {
-        throw new ValueError('Incorrect padding')
+        throw new PyValueError('Incorrect padding')
     }
     var encode = base64js.toByteArray(data_str)
-    return new types.Bytes(encode)
+    return new types.PyBytes(encode)
 }
 base64.b64decode.__doc__ = "Encode the bytes-like object s using Base64 and return a bytes object.\n\n    Optional altchars should be a byte string of length 2 which specifies an\n    alternative alphabet for the '+' and '/' characters.  This allows an\n    application to e.g. generate url or filesystem safe Base64 strings.\n    "
 
@@ -78,11 +78,11 @@ base64.urlsafe_b64encode = function(data) {
         var code = encode.charCodeAt(i)
         bytes = bytes.concat([code])
     };
-    return new types.Bytes(bytes)
+    return new types.PyBytes(bytes)
 }
 
 base64.urlsafe_b64decode = function(data) {
     var data_str = String.fromCharCode.apply(null, data.val)
     var encode = base64js.toByteArray(data_str)
-    return new types.Bytes(encode)
+    return new types.PyBytes(encode)
 }

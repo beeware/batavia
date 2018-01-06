@@ -1,6 +1,6 @@
 import { create_pyclass, type_name, PyObject } from '../../core/types'
 import * as callables from '../../core/callables'
-import { TypeError, ValueError } from '../../core/exceptions'
+import { PyTypeError, PyValueError } from '../../core/exceptions'
 import * as version from '../../core/version'
 
 import * as types from '../../types'
@@ -40,7 +40,7 @@ function _JSONEncoder(args = [], kwargs = {}) {
 
     var len = enc.separators.length
     if (len !== 2) {
-        throw new ValueError(
+        throw new PyValueError(
             'JSONEncoder separators length must be 2 (got ' + len + ' instead)'
         )
     }
@@ -104,7 +104,7 @@ var make_encode = function(
     var indentstr
     if (!indent) {
         indentstr = function() { return '' }
-    } else if (types.isinstance(indent, types.Str)) {
+    } else if (types.isinstance(indent, types.PyStr)) {
         indentstr = function(lvl) { return '\n' + indent.repeat(lvl) }
     } else {
         indentstr = function(lvl) { return '\n' + ' '.repeat(lvl * indent) }
@@ -142,7 +142,7 @@ var make_encode = function(
                     key + key_separator + encode(obj.get(kv), indent_level + 1)
                 )
             } else if (!skipkeys) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'keys must be a string'
                 )
             }
@@ -165,26 +165,26 @@ var make_encode = function(
         if (ret === null) {
             if (seen !== undefined) {
                 if (seen.has(obj)) {
-                    throw new ValueError(
+                    throw new PyValueError(
                         'Circular reference detected'
                     )
                 }
                 seen.add(obj)
             }
 
-            if (types.isinstance(obj, [types.List, types.Tuple])) {
+            if (types.isinstance(obj, [types.PyList, types.PyTuple])) {
                 ret = encodeList(obj, indent_level)
-            } else if (types.isinstance(obj, types.Dict)) {
+            } else if (types.isinstance(obj, types.PyDict)) {
                 ret = encodeDict(obj, indent_level)
             } else if (default_) {
                 ret = encode(callables.call_function(default_, [obj]), indent_level)
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         obj.toString() + ' is not JSON serializable'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "Object of type '" + type_name(obj) + "' is not JSON serializable"
                     )
                 }
@@ -195,7 +195,7 @@ var make_encode = function(
             }
         }
 
-        return new types.Str(ret)
+        return new types.PyStr(ret)
     }
 
     return encode
@@ -230,7 +230,7 @@ var encode_ascii = function(s) {
 }
 
 var encodeBasicType = function(o, ensure_ascii, allow_nan) {
-    if (types.isinstance(o, types.Str)) {
+    if (types.isinstance(o, types.PyStr)) {
         var ret = JSON.stringify(o)
         if (ensure_ascii) {
             ret = encode_ascii(ret)
@@ -238,13 +238,13 @@ var encodeBasicType = function(o, ensure_ascii, allow_nan) {
         return ret
     }
 
-    if (types.isinstance(o, [types.Int, types.Float])) {
+    if (types.isinstance(o, [types.PyInt, types.PyFloat])) {
         var text = o.toString()
         if (transFloat.hasOwnProperty(text)) {
             if (allow_nan) {
                 text = transFloat[text]
             } else {
-                throw new ValueError(
+                throw new PyValueError(
                     'Out of range float values are not JSON compliant'
                 )
             }
@@ -253,11 +253,11 @@ var encodeBasicType = function(o, ensure_ascii, allow_nan) {
         return text
     }
 
-    if (types.isinstance(o, types.NoneType)) {
+    if (types.isinstance(o, types.PyNoneType)) {
         return 'null'
     }
 
-    if (types.isinstance(o, types.Bool)) {
+    if (types.isinstance(o, types.PyBool)) {
         if (o) {
             return 'true'
         } else {
@@ -270,7 +270,7 @@ var encodeBasicType = function(o, ensure_ascii, allow_nan) {
 
 var encodeKey = function(o, ensure_ascii, allow_nan) {
     var ret = encodeBasicType(o, ensure_ascii, allow_nan)
-    if (ret !== null && !types.isinstance(o, types.Str)) {
+    if (ret !== null && !types.isinstance(o, types.PyStr)) {
         ret = '"' + ret + '"'
     }
 
@@ -279,14 +279,14 @@ var encodeKey = function(o, ensure_ascii, allow_nan) {
 
 JSONEncoder.prototype.iterencode = function(obj) {
     if (arguments.length !== 1) {
-        throw new TypeError(
+        throw new PyTypeError(
             'iterencode() expected 1 positional argument (got ' +
             arguments.length + ')'
         )
     }
 
     // TODO should return generator
-    return new types.List([this.encode(obj)])
+    return new types.PyList([this.encode(obj)])
 }
 
 export function dumps(args, kwargs) {
@@ -317,7 +317,7 @@ export function dumps(args, kwargs) {
     var cls = enc['cls']
     delete enc['cls']
 
-    if (cls === null || types.isinstance(cls, types.NoneType)) {
+    if (cls === null || types.isinstance(cls, types.PyNoneType)) {
         cls = _JSONEncoder
     }
 
