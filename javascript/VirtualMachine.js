@@ -1030,10 +1030,14 @@ VirtualMachine.prototype.run_code = function(kwargs) {
                 frame = this.last_exception.traceback[t]
                 trace.push('  File "' + frame.filename + '", line ' + frame.line + ', in ' + frame.module)
             }
-            if (this.last_exception.value.toString().length > 0) {
-                trace.push(this.last_exception.value.name + ': ' + this.last_exception.value.toString())
+            if (this.last_exception.value.__class__) {
+                if (this.last_exception.value.toString().length > 0) {
+                    trace.push(this.last_exception.value.__class__.__name__ + ': ' + this.last_exception.value.toString())
+                } else {
+                    trace.push(this.last_exception.value.__class__.__name__)
+                }
             } else {
-                trace.push(this.last_exception.value.name)
+                throw this.last_exception.value;
             }
             sys.stderr.write([trace.join('\n') + '\n'])
             this.last_exception = null
