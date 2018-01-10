@@ -587,6 +587,13 @@ Str.prototype.__len__ = function() {
     return new types.Int(this.length)
 }
 
+var jsSplit = String.prototype.split
+
+Str.prototype.split = function(sep) {
+    var types = require('../types')
+    return new types.List(jsSplit.apply(this, [sep]))
+}
+
 Str.prototype.join = function(iter) {
     var types = require('../types')
 
@@ -765,6 +772,11 @@ Str.prototype.swapcase = function() {
         }
     }
     return swapped
+}
+
+Str.prototype.isidentifier = function() {
+    // TODO: implement
+    return true
 }
 
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
