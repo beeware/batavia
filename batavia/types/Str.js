@@ -459,7 +459,7 @@ Str.prototype.__getitem__ = function(index) {
                 stop = result.length
             }
 
-            result = result.slice(stop, start).split('').reverse().join('')
+            result = jsSplit.apply(result.slice(stop, start), ['']).reverse().join('')
         }
 
         var steppedResult = ''
