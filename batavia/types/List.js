@@ -57,7 +57,8 @@ List.prototype.__iter__ = function() {
 }
 
 List.prototype.__len__ = function() {
-    return this.length
+    var types = require('../types')
+    return new types.Int(this.length)
 }
 
 List.prototype.__repr__ = function() {
