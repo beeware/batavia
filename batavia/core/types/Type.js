@@ -48,6 +48,21 @@ Type.prototype.__str__ = function() {
     return this.__repr__()
 }
 
+Type.prototype.__eq__ = function(obj) {
+    if (this === obj) {
+        return true
+    }
+    if (typeof obj === 'function') {
+        // check for builtin function types, which are native functions
+        var name = obj.name
+        if (name.startswith('bound ')) {
+            name = name.substring(6)
+        }
+        return this.__name__ === name
+    }
+    return false
+}
+
 Type.prototype.__bool__ = function() {
     return true
 }
