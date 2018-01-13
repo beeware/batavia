@@ -587,6 +587,11 @@ Str.prototype.__len__ = function() {
     return new types.Int(this.length)
 }
 
+Str.prototype.index = function(needle) {
+    var types = require('../types')
+    return new types.Int(this.indexOf(needle))
+}
+
 var jsSplit = String.prototype.split
 
 Str.prototype.split = function(sep) {
@@ -736,6 +741,23 @@ Str.prototype.startswith = function(str) {
 
 Str.prototype.endswith = function(str) {
     return this.slice(this.length - str.length) === str
+}
+
+Str.prototype.isalpha = function() {
+    // TODO: should check unicode category is Lm, Lt, Lu, Ll, or Lo
+    if (this.match('[a-zA-Z]+')) {
+        return true
+    } else {
+        return false
+    }
+}
+
+Str.prototype.isdigit = function() {
+    if (this.match('[0-9]+')) {
+        return true
+    } else {
+        return false
+    }
 }
 
 Str.prototype.isupper = function() {
