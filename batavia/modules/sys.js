@@ -10,7 +10,7 @@ IOBuffer.prototype.write = function(args, kwargs) {
     if (lines.length === 1) {
         // If there's only one element in the split,
         // there were no newlines. Accumulate a buffer.
-        this.buf += lines
+        this.buf += lines[0]
     } else if (lines.length > 1) {
         // Flush everything in the buffer, and then everything
         // up to the first newline.
