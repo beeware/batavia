@@ -600,7 +600,11 @@ var jsSplit = String.prototype.split
 
 Str.prototype.split = function(sep) {
     var types = require('../types')
-    return new types.List(jsSplit.apply(this, [sep]))
+    if (sep !== undefined) {
+        return new types.List(jsSplit.apply(this, [sep]))
+    }
+    // default is to split on all white space
+    return new types.List(jsSplit.apply(this, [/\s/]))
 }
 
 Str.prototype.join = function(iter) {
