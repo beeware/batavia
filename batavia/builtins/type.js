@@ -42,4 +42,8 @@ var type = function(args, kwargs) {
 }
 type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type"
 
+// TODO: this should be a mappingproxy
+// it is used in the 'collections' module
+type.__dict__ = new types.Dict()
+
 module.exports = type

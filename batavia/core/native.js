@@ -15,7 +15,7 @@ native.getattr_raw = function(obj, attr, attributes_only) {
         // proxying the call.
         if (val.prototype && Object.keys(val.prototype).length > 0) {
             // Python class
-            val = (function(func, doc) {
+            val = (function(func, doc, dict) {
                 var fn = function(args, kwargs) {
                     function F() {
                         return func.apply(this, args)
@@ -24,20 +24,24 @@ native.getattr_raw = function(obj, attr, attributes_only) {
                     return new F()
                 }
                 fn.__doc__ = doc
+                fn.__dict__ = dict
                 return fn
-            }(val, val.__doc__))
+            }(val, val.__doc__, val.__dict__))
         } else if (val.$pyargs) {
             var doc = val.__doc__
+            var dict = val.__dict__
             val = val.bind(obj)
             val.__doc__ = doc
+            val.__dict__ = dict
         } else {
-            val = (function(obj, func, doc) {
+            val = (function(obj, func, doc, dict) {
                 var fn = function(args, kwargs) {
                     return func.apply(obj, args)
                 }
                 fn.__doc__ = doc
+                fn.__dict__ = dict
                 return fn
-            }(obj, val, val.__doc__))
+            }(obj, val, val.__doc__, val.__dict__))
         }
     }
     return val

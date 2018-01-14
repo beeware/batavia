@@ -71,7 +71,29 @@ types.isinstance = function(obj, type) {
             case 'string':
                 return type === types.Str
             case 'object':
-                return obj instanceof type
+                if (typeof type === 'object') {
+                    var leftName = obj.__class__.__name__
+                    var rightName = type.__name__
+                    if (leftName === rightName) {
+                        return true
+                    }
+                }
+                if (typeof type === 'function') {
+                    if (obj instanceof type) {
+                        return true
+                    }
+                    // check for builtin function types, which are native functions
+                    var name = type.name
+                    if (name.startswith('bound ')) {
+                        name = name.substring(6)
+                    }
+                    if ((typeof obj).__class__) {
+                        return ((typeof obj).__class__.__name__ === name)
+                    }
+                    return false
+                    // TODO: check subtypes
+                }
+                return false
             default:
                 return false
         }

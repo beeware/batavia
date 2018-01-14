@@ -459,7 +459,7 @@ Str.prototype.__getitem__ = function(index) {
                 stop = result.length
             }
 
-            result = result.slice(stop, start).split('').reverse().join('')
+            result = jsSplit.apply(result.slice(stop, start), ['']).reverse().join('')
         }
 
         var steppedResult = ''
@@ -585,6 +585,26 @@ Str.prototype.__ior__ = function(other) {
 Str.prototype.__len__ = function() {
     var types = require('../types')
     return new types.Int(this.length)
+}
+
+Str.prototype.index = function(needle) {
+    var types = require('../types')
+    var i = this.indexOf(needle)
+    if (i < 0) {
+        throw new exceptions.ValueError.$pyclass('substring not found')
+    }
+    return new types.Int(i)
+}
+
+var jsSplit = String.prototype.split
+
+Str.prototype.split = function(sep) {
+    var types = require('../types')
+    if (sep !== undefined) {
+        return new types.List(jsSplit.apply(this, [sep]))
+    }
+    // default is to split on all white space
+    return new types.List(jsSplit.apply(this, [/\s/]))
 }
 
 Str.prototype.join = function(iter) {
@@ -731,6 +751,23 @@ Str.prototype.endswith = function(str) {
     return this.slice(this.length - str.length) === str
 }
 
+Str.prototype.isalpha = function() {
+    // TODO: should check unicode category is Lm, Lt, Lu, Ll, or Lo
+    if (this.match('[a-zA-Z]+')) {
+        return true
+    } else {
+        return false
+    }
+}
+
+Str.prototype.isdigit = function() {
+    if (this.match('[0-9]+')) {
+        return true
+    } else {
+        return false
+    }
+}
+
 Str.prototype.isupper = function() {
     if (!this.match('[a-zA-Z]')) {
         return false
@@ -765,6 +802,11 @@ Str.prototype.swapcase = function() {
         }
     }
     return swapped
+}
+
+Str.prototype.isidentifier = function() {
+    // TODO: implement
+    return true
 }
 
 // Based on https://en.wikipedia.org/wiki/Universal_hashing#Hashing_strings
