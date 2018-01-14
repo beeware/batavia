@@ -456,6 +456,13 @@ class ListTests(TranspileTestCase):
             print(e)
         """)
 
+    def test_len(self):
+        self.assertCodeExecution("""
+        x = []
+        print(len(x))
+        print(type(len(x)))
+        """)
+
 
 class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'list'

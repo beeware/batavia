@@ -589,7 +589,11 @@ Str.prototype.__len__ = function() {
 
 Str.prototype.index = function(needle) {
     var types = require('../types')
-    return new types.Int(this.indexOf(needle))
+    var i = this.indexOf(needle)
+    if (i < 0) {
+        throw new exceptions.ValueError.$pyclass('substring not found')
+    }
+    return new types.Int(i)
 }
 
 var jsSplit = String.prototype.split
