@@ -114,7 +114,8 @@ Dict.prototype.toString = function() {
  **************************************************/
 
 Dict.prototype.__len__ = function() {
-    return this.size
+    var types = require('../types')
+    return new types.Int(this.size)
 }
 
 Dict.prototype.__bool__ = function() {

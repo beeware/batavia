@@ -172,6 +172,13 @@ class TupleTests(TranspileTestCase):
             print(x[-1:0:-1])
             """)
 
+    def test_len(self):
+        self.assertCodeExecution("""
+        print(len(tuple()))
+        print(type(len(tuple())))
+        print(len((1,2,3)))
+        """)
+
 
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'tuple'

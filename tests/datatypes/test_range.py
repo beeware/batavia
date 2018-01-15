@@ -6,6 +6,7 @@ import unittest
 class RangeTests(TranspileTestCase):
     def test_lengths(self):
         self.assertCodeExecution("""
+            print(type(len(range(10))))
             print("len(range(0, 10)) =", len(range(0, 10)))
             print("len(range(0, 10, 2)) =", len(range(0, 10, 2)))
             print("len(range(0, 11, 2)) =", len(range(0, 11, 2)))

@@ -36,7 +36,7 @@ FrozenSet.prototype.toString = function() {
  **************************************************/
 
 FrozenSet.prototype.__len__ = function() {
-    return this.data.size
+    return this.data.__len__()
 }
 
 FrozenSet.prototype.__bool__ = function() {
