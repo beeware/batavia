@@ -102,7 +102,7 @@ export default class PyFrozenSet extends PyObject {
         if (this.data.keys().length !== other.data.keys().length) {
             return new types.PyBool(false)
         }
-        var iterobj = builtins.iter([this], null)
+        var iterobj = builtins.iter(this)
         var equal = true
         iter_for_each(iterobj, function(val) {
             equal = equal && other.__contains__(val).valueOf()
@@ -219,7 +219,7 @@ export default class PyFrozenSet extends PyObject {
     __sub__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 if (!(other.__contains__(val).valueOf())) {
                     both.push(val)
@@ -254,7 +254,7 @@ export default class PyFrozenSet extends PyObject {
     __and__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj = builtins.iter([this], null)
+            var iterobj = builtins.iter(this)
             iter_for_each(iterobj, function(val) {
                 if (other.__contains__(val).valueOf()) {
                     both.push(val)
@@ -268,13 +268,13 @@ export default class PyFrozenSet extends PyObject {
     __xor__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 if (!(other.__contains__(val).valueOf())) {
                     both.push(val)
                 }
             })
-            var iterobj2 = builtins.iter([other], null)
+            var iterobj2 = builtins.iter(other)
             iter_for_each(iterobj2, function(val) {
                 if (!(this.__contains__(val).valueOf())) {
                     both.push(val)
@@ -288,11 +288,11 @@ export default class PyFrozenSet extends PyObject {
     __or__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 both.push(val)
             })
-            var iterobj2 = builtins.iter([other], null)
+            var iterobj2 = builtins.iter(other)
             iter_for_each(iterobj2, function(val) {
                 both.push(val)
             })
@@ -308,7 +308,7 @@ export default class PyFrozenSet extends PyObject {
     _update(args) {
         var new_args = types.js2py(args)
         if (types.isinstance(new_args, [types.PyFrozenSet, types.PyList, types.PySet, types.PyStr, types.PyTuple])) {
-            var iterobj = builtins.iter([new_args], null)
+            var iterobj = builtins.iter(new_args)
             var self = this
             iter_for_each(iterobj, function(val) {
                 self.data.__setitem__(val, val)

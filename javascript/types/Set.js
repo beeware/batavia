@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import { iter_for_each } from '../core/callables'
+import { iter_for_each, python } from '../core/callables'
 import { IndexError, TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
@@ -12,12 +12,13 @@ import * as types from '../types'
  *************************************************************************/
 
 export default class PySet extends PyObject {
-    constructor(args, kwargs) {
-        super()
-
+    @python({
+        default_args: ['iterable']
+    })
+    __init__(iterable) {
         this.data = new types.PyDict()
-        if (args) {
-            this.update(args)
+        if (iterable) {
+            this.update(iterable)
         }
     }
     /**************************************************
@@ -97,7 +98,7 @@ export default class PySet extends PyObject {
         if (this.data.keys().length !== other.data.keys().length) {
             return new types.PyBool(false)
         }
-        var iterobj = builtins.iter([this], null)
+        var iterobj = builtins.iter(this)
         var equal = true
         iter_for_each(iterobj, function(val) {
             equal = equal && other.__contains__(val).valueOf()
@@ -213,7 +214,7 @@ export default class PySet extends PyObject {
     __sub__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 if (!(other.__contains__(val).valueOf())) {
                     both.push(val)
@@ -248,7 +249,7 @@ export default class PySet extends PyObject {
     __and__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj = builtins.iter([this], null)
+            var iterobj = builtins.iter(this)
             iter_for_each(iterobj, function(val) {
                 if (other.__contains__(val).valueOf()) {
                     both.push(val)
@@ -262,13 +263,13 @@ export default class PySet extends PyObject {
     __xor__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 if (!(other.__contains__(val).valueOf())) {
                     both.push(val)
                 }
             })
-            var iterobj2 = builtins.iter([other], null)
+            var iterobj2 = builtins.iter(other)
             iter_for_each(iterobj2, function(val) {
                 if (!(this.__contains__(val).valueOf())) {
                     both.push(val)
@@ -282,11 +283,11 @@ export default class PySet extends PyObject {
     __or__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 both.push(val)
             })
-            var iterobj2 = builtins.iter([other], null)
+            var iterobj2 = builtins.iter(other)
             iter_for_each(iterobj2, function(val) {
                 both.push(val)
             })
@@ -318,7 +319,7 @@ export default class PySet extends PyObject {
     __isub__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 if (!(other.__contains__(val).valueOf())) {
                     both.push(val)
@@ -357,7 +358,7 @@ export default class PySet extends PyObject {
     __iand__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var intersection = new Set()
-            var iterobj = builtins.iter([this], null)
+            var iterobj = builtins.iter(this)
             iter_for_each(iterobj, function(val) {
                 if (other.__contains__(val).valueOf()) {
                     intersection.add(val)
@@ -371,13 +372,13 @@ export default class PySet extends PyObject {
     __ixor__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 if (!(other.__contains__(val).valueOf())) {
                     both.push(val)
                 }
             })
-            var iterobj2 = builtins.iter([other], null)
+            var iterobj2 = builtins.iter(other)
             iter_for_each(iterobj2, function(val) {
                 if (!(this.__contains__(val).valueOf())) {
                     both.push(val)
@@ -392,11 +393,11 @@ export default class PySet extends PyObject {
     __ior__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
             var both = []
-            var iterobj1 = builtins.iter([this], null)
+            var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
                 both.push(val)
             })
-            var iterobj2 = builtins.iter([other], null)
+            var iterobj2 = builtins.iter(other)
             iter_for_each(iterobj2, function(val) {
                 both.push(val)
             })
@@ -425,7 +426,7 @@ export default class PySet extends PyObject {
     update(args) {
         var new_args = types.js2py(args)
         if (types.isinstance(new_args, [types.PyFrozenSet, types.PyList, types.PySet, types.PyDict, types.PyStr, types.PyTuple])) {
-            var iterobj = builtins.iter([new_args], null)
+            var iterobj = builtins.iter(new_args)
             var self = this
             iter_for_each(iterobj, function(val) {
                 self.data.__setitem__(val, val)
@@ -435,5 +436,6 @@ export default class PySet extends PyObject {
         }
     }
 }
+PySet.prototype.__doc__ = 'set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.'
 create_pyclass(PySet, 'set')
 

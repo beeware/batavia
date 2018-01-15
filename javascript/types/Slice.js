@@ -1,3 +1,4 @@
+import { python } from '../core/callables'
 import { TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
@@ -9,13 +10,24 @@ import * as types from '../types'
  *************************************************************************/
 
 export default class PySlice extends PyObject {
-    constructor(kwargs) {
-        super()
-
-        // BUG: slices can support arbitrary-sized arguments.
-        this.start = kwargs.start
-        this.stop = kwargs.stop
-        this.step = kwargs.step
+    @python({
+        args: ['start_or_stop'],
+        default_args: ['stop', 'step']
+    })
+    __init__(start_or_stop, stop, step) {
+        if (stop === undefined && step === undefined) {
+            this.start = PyNone
+            this.stop = start_or_stop
+            this.step = PyNone
+        } else if (step === undefined) {
+            this.start = start_or_stop
+            this.stop = stop
+            this.step = PyNone
+        } else {
+            this.start = start_or_stop
+            this.stop = stop
+            this.step = step
+        }
     }
 
     /**************************************************

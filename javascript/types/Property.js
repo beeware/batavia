@@ -1,4 +1,4 @@
-import { call_function } from '../core/callables'
+import { call_function, python } from '../core/callables'
 import { AttributeError, TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
@@ -7,9 +7,10 @@ import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
  *************************************************************************/
 
 export default class Property extends PyObject {
-    constructor(fget, fset, fdel, doc) {
-        super()
-
+    @python({
+        default_args: ['fget', 'fset', 'fdel', 'doc']
+    })
+    __init__() {
         this.fget = fget
         this.fset = fset
         this.fdel = fdel

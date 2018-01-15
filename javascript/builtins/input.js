@@ -5,4 +5,6 @@ export default function input(prompt_text) {
 }
 
 input.__doc__ = 'input([prompt]) -> string\n\nRead a string from standard input.  The trailing newline is stripped.\nIf the user hits EOF (Unix: Ctl-D, Windows: Ctl-Z+Return), raise EOFError.\nOn Unix, GNU readline is used if enabled.  The prompt string, if given,\nis printed without a trailing newline before reading.'
-input.$pyargs = true
+input.$pyargs = {
+    default_args: ['prompt']
+}

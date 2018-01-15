@@ -1,16 +1,7 @@
 import { TypeError, ValueError } from '../core/exceptions'
 import { _compile } from '../modules'
 
-export default function compile(args, kwargs) {
-    if (args.length < 3) {
-        var argument_names = ['source', 'filename', 'mode']
-        throw new TypeError('Required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ') not found')
-    }
-
-    var source = args[0]
-    var filename = args[1]
-    var mode = args[2]
-    // var flags = args[3];
+export default function compile(source, filename, mode, flags, dont_inherit) {
     var cf = null // compiler flags
     var start = [
         _compile.Py_file_input,
@@ -49,4 +40,7 @@ export default function compile(args, kwargs) {
 }
 
 compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified."
-compile.$pyargs = true
+compile.$pyargs = {
+    args: ['source', 'filename', 'mode'],
+    default_args: ['flags', 'dont_inherit']
+}

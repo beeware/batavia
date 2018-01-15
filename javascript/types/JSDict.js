@@ -1,5 +1,5 @@
 import { KeyError, NotImplementedError, TypeError } from '../core/exceptions'
-import { type_name } from '../core/types'
+import { type_name, PyNone } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -41,7 +41,7 @@ export default class JSDict {
         var values = []
         for (var key in this) {
             if (this.hasOwnProperty(key)) {
-                values.push(builtins.repr([key], null) + ': ' + builtins.repr([this[key]], null))
+                values.push(builtins.repr(key) + ': ' + builtins.repr(this[key]))
             }
         }
         result += values.join(', ')
@@ -54,7 +54,7 @@ export default class JSDict {
      **************************************************/
 
     __lt__(other) {
-        if (other !== builtins.None) {
+        if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
@@ -85,7 +85,7 @@ export default class JSDict {
     }
 
     __le__(other) {
-        if (other !== builtins.None) {
+        if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
@@ -124,7 +124,7 @@ export default class JSDict {
     }
 
     __gt__(other) {
-        if (other !== builtins.None) {
+        if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
@@ -157,7 +157,7 @@ export default class JSDict {
     }
 
     __ge__(other) {
-        if (other !== builtins.None) {
+        if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,

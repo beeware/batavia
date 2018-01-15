@@ -2,6 +2,7 @@ import { delattr, getattr, hasattr, setattr } from './core/attrs'
 
 import { PyNone, PyObject, PyType } from './core/types'
 
+// Types whose constructors double as functions
 import PyBool from './types/Bool'
 import PyBytearray from './types/Bytearray'
 import PyBytes from './types/Bytes'
@@ -22,6 +23,12 @@ import PySlice from './types/Slice'
 import PyStr from './types/Str'
 import PyTuple from './types/Tuple'
 
+// Types with special constructor handling
+import map from './builtins/map'
+import type from './builtins/type'
+import zip from './builtins/zip'
+
+// Other builtin functions
 import __import__ from './builtins/__import__'
 import abs from './builtins/abs'
 import all from './builtins/all'
@@ -50,7 +57,6 @@ import iter from './builtins/iter'
 import len from './builtins/len'
 import license from './builtins/license'
 import locals from './builtins/locals'
-import map from './builtins/map'
 import max from './builtins/max'
 import memoryview from './builtins/memoryview'
 import min from './builtins/min'
@@ -66,60 +72,82 @@ import round from './builtins/round'
 import sorted from './builtins/sorted'
 import staticmethod from './builtins/staticmethod'
 import sum from './builtins/sum'
-import type from './builtins/type'
 // import super from './builtins/super'
 import vars from './builtins/vars'
-import zip from './builtins/zip'
 
 
 import { dom } from './modules/dom'
 
 // Copy the exceptions into the builtin namespace.
 import {
-    BaseException,
-    SystemExit,
-    KeyboardInterrupt,
-    GeneratorExit,
-    Exception,
     ArithmeticError,
     AssertionError,
     AttributeError,
+    BaseException,
+    // BlockingIOError
+    // BrokenPipeError,
     BufferError,
+    // PyBytesWarning
+    // ChildProcessError,
+    // ConnectionAbortedError,
+    // ConnectionError,
+    // ConnectionRefusedError,
+    // PyDeprecationWarning,
     EOFError,
     EnvironmentError,
+    Exception,
+    // FileExistsError,
+    // FileNotFoundError,
     FloatingPointError,
+    // PyFutureWarning,
+    GeneratorExit,
     IOError,
     ImportError,
+    // PyImportWarning,
     IndentationError,
     IndexError,
+    // InterruptedError,
+    // IsADirectoryError,
     KeyError,
+    KeyboardInterrupt,
     LookupError,
     MemoryError,
     NameError,
+    // NotADirectoryError,
     NotImplementedError,
     OSError,
     OverflowError,
+    // PyPendingDeprecationWarning,
+    // PermissionError,
+    // ProcessLookupError,
     ReferenceError,
+    // PyResourceWarning,
     RuntimeError,
-    // StandardError,
+    // PyRuntimeWarning,
     StopIteration,
     SyntaxError,
+    // PySyntaxWarning
     SystemError,
+    SystemExit,
     TabError,
+    // TimeoutError,
     TypeError,
     UnboundLocalError,
     UnicodeDecodeError,
     UnicodeEncodeError,
     UnicodeError,
     UnicodeTranslateError,
+    // PyUnicodeWarning,
+    // PyUserWarning,
     ValueError,
+    // Warning,
     ZeroDivisionError,
 
     BataviaError,
     PolyglotError
 } from './core/exceptions'
 
-// The type constructors
+// The builtin type constructors
 var bool = PyBool.__class__
 var bytearray = PyBytearray.__class__
 var bytes = PyBytes.__class__

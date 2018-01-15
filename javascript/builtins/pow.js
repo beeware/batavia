@@ -2,20 +2,10 @@ import { TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
-export default function pow(args, kwargs) {
-    var x, y, z
-    if (!args) {
-        throw new TypeError('pow expected at least 2 arguments, got 0')
-    }
-    if (args.length === 2) {
-        x = args[0]
-        y = args[1]
+export default function pow(x, y, z) {
+    if (z === undefined) {
         return x.__pow__(y)
-    } else if (args.length === 3) {
-        x = args[0]
-        y = args[1]
-        z = args[2]
-
+    } else {
         if (!types.isinstance(x, types.PyInt) ||
             !types.isinstance(y, types.PyInt) ||
             !types.isinstance(z, types.PyInt)) {
@@ -43,10 +33,11 @@ export default function pow(args, kwargs) {
             base = (base * base) % z
         }
         return result
-    } else {
-        throw new TypeError('pow expected at least 2 arguments, got ' + args.length)
     }
 }
 
 pow.__doc__ = 'pow(x, y[, z]) -> number\n\nWith two arguments, equivalent to x**y.  With three arguments,\nequivalent to (x**y) % z, but may be more efficient (e.g. for ints).'
-pow.$pyargs = true
+pow.$pyargs = {
+    args: ['a', 'b'],
+    default_args: ['z']
+}

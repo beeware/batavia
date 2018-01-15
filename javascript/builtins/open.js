@@ -5,4 +5,4 @@ export default function open(args, kwargs) {
 }
 
 open.__doc__ = 'open() is complicated.' // 6575 character long docstring
-open.$pyargs = true
+open.$pyargs = {}

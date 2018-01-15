@@ -19,7 +19,7 @@ export default class Zip extends PyObject {
 
         for (var i = 0, n = 1; i < args.length; i++, n++) {
             try {
-                this._iterators.push(builtins.iter([this._iterables[i]], null))
+                this._iterators.push(builtins.iter(this._iterables[i]))
             } catch (e) {
                 if (e instanceof TypeError) {
                     throw new TypeError('zip argument #' + n + ' must support iteration')

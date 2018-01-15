@@ -4,52 +4,37 @@ import * as version from '../core/version'
 
 import * as types from '../types'
 
-export default function chr(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError('chr() takes no keyword arguments')
-    }
-    if (!args || args.length !== 1) {
-        if (version.later('3.4')) {
-            throw new TypeError(
-                'chr() takes exactly one argument (' + args.length + ' given)'
-            )
-        } else {
-            throw new TypeError(
-                'chr() takes exactly 1 argument (' + args.length + ' given)'
-            )
-        }
-    }
-    if (types.isinstance(args[0], types.PyComplex)) {
+export default function chr(i) {
+    if (types.isinstance(i, types.PyComplex)) {
         throw new TypeError('can\'t convert complex to int')
     }
-    if (types.isinstance(args[0], types.PyFloat)) {
+    if (types.isinstance(i, types.PyFloat)) {
         throw new TypeError('integer argument expected, got float')
     }
-    if (types.isinstance(args[0], types.PyBool)) {
-        return new types.PyStr(String.fromCharCode(args[0].__int__()))
+    if (types.isinstance(i, types.PyBool)) {
+        return new types.PyStr(String.fromCharCode(i.__int__()))
     }
-    if (!types.isinstance(args[0], types.PyInt)) {
-        throw new TypeError('an integer is required (got type ' + type_name(args[0]) + ')')
+    if (!types.isinstance(i, types.PyInt)) {
+        throw new TypeError('an integer is required (got type ' + type_name(i) + ')')
     }
-    if (args[0].__ge__(new types.PyInt(0).MAX_INT.__add__(new types.PyInt(1))) || args[0].__le__(new types.PyInt(0).MIN_INT.__sub__(new types.PyInt(1)))) {
+    if (i.__ge__(new types.PyInt(0).MAX_INT.__add__(new types.PyInt(1))) || i.__le__(new types.PyInt(0).MIN_INT.__sub__(new types.PyInt(1)))) {
         throw new OverflowError('Python int too large to convert to C long')
     }
-    if (args[0].__ge__(new types.PyInt(0).MAX_INT)) {
+    if (i.__ge__(new types.PyInt(0).MAX_INT)) {
         throw new OverflowError('signed integer is greater than maximum')
     }
-    if (args[0].__le__(new types.PyInt(0).MIN_INT.__add__(new types.PyInt(1)))) {
+    if (i.__le__(new types.PyInt(0).MIN_INT.__add__(new types.PyInt(1)))) {
         throw new OverflowError('signed integer is less than minimum')
     }
-    if (args[0].__lt__(new types.PyInt(0))) {
+    if (i.__lt__(new types.PyInt(0))) {
         throw new ValueError('chr() arg not in range(0xXXXXXXXX)')
     }
-    return new types.PyStr(String.fromCharCode(new types.PyInt(args[0])))
+    return new types.PyStr(String.fromCharCode(new types.PyInt(i)))
     // After tests pass, let's try saving one object creation
-    // return new types.PyStr.fromCharCode(args[0]);
+    // return new types.PyStr.fromCharCode(i);
 }
 
 chr.__doc__ = 'chr(i) -> Unicode character\n\nReturn a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.'
-chr.$pyargs = true
+chr.$pyargs = {
+    args: ['i']
+}

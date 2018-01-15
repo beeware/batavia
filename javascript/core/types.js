@@ -116,7 +116,7 @@ export var PyType = class {
     }
 
     __call__() {
-        return new this.$pyclass(arguments)
+        return new this.$pyclass(...arguments)
     }
 
     @python({
@@ -206,6 +206,7 @@ export function create_pyclass(Class, name, bases=[]) {
     if (Class.prototype.__doc__ === undefined) {
         Class.prototype.__doc__ = ''
     }
+    type.__doc__ = Class.prototype.__doc__
 
     // Iterate over base classes, adding any methods from
     // the bases that aren't natively defined on the class

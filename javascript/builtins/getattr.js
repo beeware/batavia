@@ -1,35 +1,28 @@
 import { AttributeError, TypeError } from '../core/exceptions'
-import * as native from '../core/native'
+import * as attrs from '../core/attrs'
 
 import * as types from '../types'
 
-export default function getattr(args, kwargs) {
-    if (args) {
-        if (args.length === 2 || args.length === 3) {
-            if (!types.isinstance(args[1], types.PyStr)) {
-                throw new TypeError('getattr(): attribute name must be string')
-            }
+export default function getattr(object, name, default) {
+    if (!types.isinstance(name, types.PyStr)) {
+        throw new TypeError('getattr(): attribute name must be string')
+    }
 
-            try {
-                if (args[0].__getattribute__ === undefined) {
-                    return native.getattr(args[0], args[1])
-                } else {
-                    return native.getattr_py(args[0], args[1])
-                }
-            } catch (e) {
-                if (e instanceof AttributeError && args.length === 3) {
-                    return args[2]
-                } else {
-                    throw e
-                }
-            }
-        } else if (args.length < 2) {
-            throw new TypeError('getattr expected at least 2 arguments, got ' + args.length)
-        } else {
-            throw new TypeError('getattr expected at most 3 arguments, got ' + args.length)
+    try {
+        if (object.__getattribute__ === undefined) {
+            return attrs.getattr(object, name)
         }
-    } else {
-        throw new TypeError('getattr expected at least 2 arguments, got 0')
+    } catch (e) {
+        if (e instanceof AttributeError && args.length === 3) {
+            return default
+        } else {
+            throw e
+        }
     }
 }
 
+getattr.__doc__ = "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case."
+getattr.$pyargs = {
+    args: ['object', 'name'],
+    default_args: ['default']
+}

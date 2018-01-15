@@ -1,5 +1,5 @@
 import { iter_for_each } from '../core/callables'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyNone, PyObject } from '../core/types'
 import * as version from '../core/version'
 import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
 
@@ -22,7 +22,7 @@ export default function PyTuple(length) {
         if (Array.isArray(arguments[0])) {
             this.push.apply(this, arguments[0])
         } else {
-            var iterobj = builtins.iter([arguments[0]], null)
+            var iterobj = builtins.iter(arguments[0])
             var self = this
             iter_for_each(iterobj, function(val) {
                 self.push(val)
@@ -37,6 +37,7 @@ function Array_() {}
 
 Array_.prototype = []
 
+PyTuple.prototype.__doc__ = "tuple() -> empty tuple\ntuple(iterable) -> tuple initialized from iterable's items\n\nIf the argument is a tuple, the return value is the same object."
 PyTuple.prototype = Object.create(Array_.prototype)
 PyTuple.prototype.length = 0
 PyTuple.prototype.constructor = PyTuple
@@ -74,7 +75,7 @@ PyTuple.prototype.__str__ = function() {
         close = ')'
     }
     return '(' + this.map(function(obj) {
-        return builtins.repr([obj], null)
+        return builtins.repr(obj)
     }).join(', ') + close
 }
 
@@ -351,7 +352,7 @@ PyTuple.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.PySlice)) {
         var start, stop, step
-        if (index.start === builtins.None) {
+        if (index.start === PyNone) {
             start = undefined
         } else if (!types.isinstance(index.start, types.PyInt)) {
             if (index.start.__index__ === undefined) {
@@ -363,7 +364,7 @@ PyTuple.prototype.__getitem__ = function(index) {
             start = index.start.int32()
         }
 
-        if (index.stop === builtins.None) {
+        if (index.stop === PyNone) {
             stop = undefined
         } else if (!types.isinstance(index.stop, types.PyInt)) {
             if (index.stop.__index__ === undefined) {
@@ -375,7 +376,7 @@ PyTuple.prototype.__getitem__ = function(index) {
             stop = index.stop.int32()
         }
 
-        if (index.step === builtins.None) {
+        if (index.step === PyNone) {
             step = 1
         } else if (!(types.isinstance(index.step, types.PyInt))) {
             if (index.step.__index__ === undefined) {

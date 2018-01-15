@@ -2,18 +2,8 @@ import { BataviaError, TypeError } from '../core/exceptions'
 
 import repr from './repr'
 
-export default function ascii(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("ascii() doesn't accept keyword arguments")
-    }
-    if (!args || args.length !== 1) {
-        throw new TypeError('ascii() takes exactly one argument (' + args.length + ' given)')
-    }
-
-    var repr_string = repr([args[0]], null)
+export default function ascii(object) {
+    var repr_string = repr(object)
     var ascii_string = ''
     var lead_surrogate = 0x0
 
@@ -62,4 +52,6 @@ export default function ascii(args, kwargs) {
 }
 
 ascii.__doc__ = 'ascii(object) -> string\n\nAs repr(), return a string containing a printable representation of an\nobject, but escape the non-ASCII characters in the string returned by\nrepr() using \\x, \\u or \\U escapes.  This generates a string similar\nto that returned by repr() in Python 2.'
-ascii.$pyargs = true
+ascii.$pyargs = {
+    args: ['object']
+}

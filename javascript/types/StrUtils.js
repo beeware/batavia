@@ -1154,11 +1154,11 @@ export function _new_subsitute(str, args, kwargs) {
         } else {
             switch (this.conversionFlag) {
                 case '!r':
-                    return builtins.repr([rawValue], {})
+                    return builtins.repr(rawValue)
                 case '!a':
-                    return builtins.ascii([rawValue], {})
+                    return builtins.ascii(rawValue)
                 default:
-                    return builtins.str([rawValue], {})
+                    return builtins.str(rawValue)
             } // end switch
         }
     }

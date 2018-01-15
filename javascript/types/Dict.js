@@ -74,10 +74,8 @@ export default class PyDict extends PyObject {
         for (i = 0; i < new_keys.length; i++) {
             new_keys[i] = EMPTY
         }
-        iter_for_each(builtins.iter([this.items()], null), function(val) {
-            var key = val[0]
-            var value = val[1]
-            var hash = builtins.hash([key], null)
+        iter_for_each(builtins.iter(this.items()), function(key, value) {
+            var hash = builtins.hash(key)
             var h = hash.int32() & new_mask
             while (!this.isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask
@@ -122,13 +120,13 @@ export default class PyDict extends PyObject {
 
     isDeleted(x) {
         return x !== null &&
-            builtins.hash([x], null).__eq__(new types.PyInt(0)).valueOf() &&
+            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
             x.__eq__(DELETED).valueOf()
     }
 
     isEmpty(x) {
         return x !== null &&
-            builtins.hash([x], null).__eq__(new types.PyInt(0)).valueOf() &&
+            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
             x.__eq__(EMPTY).valueOf()
     }
 
@@ -141,7 +139,7 @@ export default class PyDict extends PyObject {
             if (this.isEmpty(key) || this.isDeleted(key)) {
                 continue
             }
-            strings.push(builtins.repr([key], null) + ': ' + builtins.repr([this.data_values[i]], null))
+            strings.push(builtins.repr(key) + ': ' + builtins.repr(this.data_values[i]))
         }
         result += strings.join(', ')
         result += '}'
@@ -392,7 +390,7 @@ export default class PyDict extends PyObject {
         if (this.size + 1 > this.data_keys.length * MAX_LOAD_FACTOR) {
             this._increase_size()
         }
-        var hash = builtins.hash([key], null)
+        var hash = builtins.hash(key)
         var h = hash.int32() & this.mask
 
         while (true) {
@@ -406,7 +404,7 @@ export default class PyDict extends PyObject {
                 this.data_keys[h] = key
                 this.data_values[h] = value
                 return
-            } else if (builtins.hash([current_key], null).__eq__(hash).valueOf() &&
+            } else if (builtins.hash(current_key).__eq__(hash).valueOf() &&
                        current_key.__eq__(key).valueOf()) {
                 this.data_keys[h] = key
                 this.data_values[h] = value
@@ -486,7 +484,7 @@ export default class PyDict extends PyObject {
         if (this.size === 0) {
             return null
         }
-        var hash = builtins.hash([other], null)
+        var hash = builtins.hash(other)
         var h = hash.int32() & this.mask
         while (true) {
             var key = this.data_keys[h]
@@ -500,7 +498,7 @@ export default class PyDict extends PyObject {
             if (key === null && other === null) {
                 return h
             }
-            if (builtins.hash([key], null).__eq__(hash).valueOf() &&
+            if (builtins.hash(key).__eq__(hash).valueOf() &&
                 ((key === null && other === null) || key.__eq__(other).valueOf())) {
                 return h
             }
@@ -572,9 +570,9 @@ export default class PyDict extends PyObject {
     update(values) {
         var updates
         if (types.isinstance(values, [types.PyDict, types.JSDict])) {
-            updates = builtins.iter([values.items()], null)
+            updates = builtins.iter(values.items())
         } else {
-            updates = builtins.iter([values], null)
+            updates = builtins.iter(values)
         }
         var i = 0
         var self = this
@@ -622,7 +620,7 @@ export default class PyDict extends PyObject {
     }
 
     __iter__() {
-        return builtins.iter([this.keys()], null)
+        return builtins.iter(this.keys())
     }
 
     values() {
@@ -735,7 +733,7 @@ export default class PyDict extends PyObject {
         }
 
         var d = new Dict()
-        iter_for_each(builtins.iter([iterable], null), function(key) {
+        iter_for_each(builtins.iter(iterable), function(key) {
             d.__setitem__(key, value)
         })
         return d

@@ -3,29 +3,17 @@ import { type_name } from '../core/types'
 
 import * as types from '../types'
 
-export default function bin(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("bin() doesn't accept keyword arguments")
-    }
-    if (!args || args.length !== 1) {
-        throw new TypeError('bin() takes exactly one argument (' + args.length + ' given)')
-    }
-
-    var obj = args[0]
-
-    if (!types.isinstance(obj, types.PyInt) &&
-        !types.isinstance(obj, types.PyBool)) {
+export default function bin(number) {
+    if (!types.isinstance(number, types.PyInt) &&
+        !types.isinstance(number, types.PyBool)) {
         throw new TypeError(
-            "'" + type_name(obj) + "' object cannot be interpreted as an integer")
+            "'" + type_name(number) + "' object cannot be interpreted as an integer")
     }
 
-    if (types.isinstance(obj, types.PyBool)) {
-        return new types.PyStr('0b' + obj.__int__().toString(2))
+    if (types.isinstance(number, types.PyBool)) {
+        return new types.PyStr('0b' + number.__int__().toString(2))
     }
-    var binaryDigits = obj.toString(2)
+    var binaryDigits = number.toString(2)
     var sign = ''
     if (binaryDigits[0] === '-') {
         sign = '-'
@@ -35,4 +23,6 @@ export default function bin(args, kwargs) {
 }
 
 bin.__doc__ = 'bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   '
-bin.$pyargs = true
+bin.$pyargs = {
+    args: ['object']
+}

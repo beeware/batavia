@@ -1,11 +1,9 @@
 import { NotImplementedError, TypeError } from '../core/exceptions'
+import { PyNone } from '../core/types'
 
 import * as types from '../types'
 
-function _validateInput(args, kwargs) {
-    var bigger = 1
-    var smaller = -1
-
+export default function sorted(iterable, key=PyNone, reverse=False) {
     function preparingFunction(value) {
         return {
             'key': value,
@@ -13,46 +11,8 @@ function _validateInput(args, kwargs) {
         }
     }
 
-    if (kwargs !== undefined) {
-        if (kwargs['iterable'] !== undefined) {
-            throw new TypeError("'iterable' is an invalid keyword argument for this function")
-        }
-
-        if (kwargs['reverse'] !== undefined && kwargs['reverse'] === true) {
-            bigger = -1
-            smaller = 1
-        }
-
-        if (kwargs['key'] !== undefined) {
-            // TODO: Fix context of python functions calling with proper vm
-            throw new NotImplementedError('Builtin Batavia sorted function "key" function is not implemented.')
-            // preparingFunction = export default function (value) {
-            //    return {
-            //        "key": kwargs["key"].__call__.apply(kwargs["key"].$vm, [value], null),
-            //        "value": value
-            //    };
-            // }
-        }
-    }
-
-    if (args === undefined || args.length === 0) {
-        throw new TypeError("Required argument 'iterable' (pos 1) not found")
-    }
-
-    return {
-        iterable: args[0],
-        bigger: bigger,
-        smaller: smaller,
-        preparingFunction: preparingFunction
-    }
-}
-
-export default function sorted(args, kwargs) {
-    var validatedInput = _validateInput(args, kwargs)
-    var iterable = validatedInput['iterable']
-
     if (types.isinstance(iterable, [types.PyList, types.PyTuple])) {
-        iterable = iterable.map(validatedInput['preparingFunction'])
+        iterable = iterable.map(preparingFunction)
         iterable.sort(function(a, b) {
             // TODO: Replace this with a better, guaranteed stable sort.
             // Javascript's default sort has performance problems in some
@@ -65,11 +25,11 @@ export default function sorted(args, kwargs) {
             // Because if we get unorderable types, CPython gives always '<' in Exception:
             // TypeError: unorderable types: str() < int()
             if (a['key'].__lt__(b['key'])) {
-                return validatedInput['smaller']
+                return reverse ? 1 : -1
             }
 
             if (a['key'].__gt__(b['key'])) {
-                return validatedInput['bigger']
+                return reverse ? -1 : 1
             }
             return 0
         })
@@ -83,4 +43,7 @@ export default function sorted(args, kwargs) {
 }
 
 sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list'
-sorted.$pyargs = true
+sorted.$pyargs = {
+    args: ['iterable'],
+    default_args: ['key', 'reverse']
+}

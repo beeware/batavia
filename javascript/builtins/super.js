@@ -1,7 +1,7 @@
 import { AttributeError, NotImplementedError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
-export default function make_super(frame, args) {
+function make_super(frame, args) {
     // I guess we have to examine the stack to find out which class we are in?
     // this seems suboptimal...
     // what does CPython do?
@@ -48,8 +48,8 @@ export default function make_super(frame, args) {
     return obj
 }
 
-function super_(args, kwargs) {
-    if (args.length > 0) {
+export default function super_(type, obj) {
+    if (type !== undefined || obj !== undefined) {
         throw new NotImplementedError("Builtin Batavia function 'super' with arguments not implemented")
     }
 
@@ -57,4 +57,6 @@ function super_(args, kwargs) {
 }
 
 super_.__doc__ = 'super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)\n'
-super_.$pyargs = true
+super_.$pyargs = {
+    defaultargs: [type, obj]
+}

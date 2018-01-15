@@ -12,4 +12,4 @@ export default function license() {
 }
 
 license.__doc__ = 'license()\n\nPrompt printing the license text, a list of contributors, and the copyright notice'
-license.$pyargs = true
+license.$pyargs = {}

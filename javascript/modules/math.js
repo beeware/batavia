@@ -361,7 +361,7 @@ math.frexp = function(x) {
 math.frexp.__doc__ = 'frexp(x)\n\nReturn the mantissa and exponent of x, as pair (m, e).\nm is a float and e is an int, such that x = m * 2.**e.\nIf x is 0, m and e are both 0.  Else 0.5 <= abs(m) < 1.0.'
 
 math.fsum = function(iterable) {
-    var iterobj = builtins.iter([iterable], null)
+    var iterobj = builtins.iter(iterable)
     var sum = 0.0
     iter_for_each(iterobj, function(val) {
         if (!isinstance(val, [Bool, Float, Int])) {

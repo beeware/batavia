@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 
+import { python } from '../core/callables'
 import {
     AttributeError,
     IndexError,
@@ -21,16 +22,23 @@ import * as utils from './utils'
  *************************************************************************/
 
 export default class PyInt extends PyObject {
-    constructor(val) {
-        super()
-        if (typeof val === 'boolean') {
-            if (this.valueOf()) {
-                this.val = new BigNumber(1)
-            } else {
-                this.val = new BigNumber(0)
-            }
+    @python({
+        default_args: ['x', 'base']
+    })
+    __init__(x, base) {
+        if (x === undefined && base === undefined) {
+            this.val = new BigNumber(0)
         } else {
-            this.val = new BigNumber(val)
+            if (base === undefined) {
+                if (x.__int__) {
+                    this.val = new BigNumber(x.__int__())
+                } else {
+                    this.val = new BigNumber(x)
+                }
+            } else {
+                this.val = new BigNumber(parseInt(x, base))
+            }
+
         }
     }
 
@@ -100,7 +108,7 @@ export default class PyInt extends PyObject {
                 } else {
                     return this.val.lt(0)
                 }
-            } else if (types.isinstance(other, Int)) {
+            } else if (types.isinstance(other, PyInt)) {
                 return this.val.lt(other.val)
             } else if (types.isinstance(other, types.PyFloat)) {
                 return this.val.lt(other.valueOf())
@@ -137,7 +145,7 @@ export default class PyInt extends PyObject {
                 } else {
                     return this.val.lte(new PyInt(0))
                 }
-            } else if (types.isinstance(other, Int)) {
+            } else if (types.isinstance(other, PyInt)) {
                 return this.val.lte(other.val)
             } else if (types.isinstance(other, types.PyFloat)) {
                 return this.val.lte(other.valueOf())
@@ -167,7 +175,7 @@ export default class PyInt extends PyObject {
     }
 
     __eq__(other) {
-        if (types.isinstance(other, [types.PyFloat, Int])) {
+        if (types.isinstance(other, [types.PyFloat, PyInt])) {
             return this.val.eq(other.val)
         } else if (types.isinstance(other, types.PyBool)) {
             if (other) {
@@ -192,7 +200,7 @@ export default class PyInt extends PyObject {
                 } else {
                     return this.val.gt(new PyInt(0))
                 }
-            } else if (types.isinstance(other, Int)) {
+            } else if (types.isinstance(other, PyInt)) {
                 return this.val.gt(other.val)
             } else if (types.isinstance(other, types.PyFloat)) {
                 return this.val.gt(other.valueOf())
@@ -229,7 +237,7 @@ export default class PyInt extends PyObject {
                 } else {
                     return this.val.gte(new PyInt(0))
                 }
-            } else if (types.isinstance(other, Int)) {
+            } else if (types.isinstance(other, PyInt)) {
                 return this.val.gte(other.val)
             } else if (types.isinstance(other, types.PyFloat)) {
                 return this.val.gte(other.valueOf())
@@ -297,7 +305,7 @@ export default class PyInt extends PyObject {
             } else {
                 return new PyInt(1)
             }
-        } else if (types.isinstance(other, Int)) {
+        } else if (types.isinstance(other, PyInt)) {
             if (other.val.isNegative()) {
                 return this.__float__().__pow__(other)
             } else {
@@ -325,7 +333,7 @@ export default class PyInt extends PyObject {
     }
 
     __floordiv__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             if (!other.val.isZero()) {
                 var quo = this.val.div(other.val)
                 var quo_floor = quo.floor()
@@ -365,7 +373,7 @@ export default class PyInt extends PyObject {
 
     __truediv__(other) {
         // if it is dividing by another int, we can allow both to be bigger than floats
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             if (other.val.isZero()) {
                 throw new ZeroDivisionError('division by zero')
             }
@@ -397,7 +405,7 @@ export default class PyInt extends PyObject {
     __mul__(other) {
         var result, i
 
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             return new PyInt(this.val.mul(other.val))
         } else if (types.isinstance(other, types.PyFloat)) {
             return this.__float__().__mul__(other.val)
@@ -498,7 +506,7 @@ export default class PyInt extends PyObject {
     }
 
     __mod__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             if (!other.val.isZero()) {
                 return new PyInt(this.val.mod(other.val).add(other.val).mod(other.val))
             } else {
@@ -525,7 +533,7 @@ export default class PyInt extends PyObject {
     }
 
     __add__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             return new PyInt(this.val.add(other.val))
         } else if (types.isinstance(other, types.PyFloat)) {
             return this.__float__().__add__(other)
@@ -547,7 +555,7 @@ export default class PyInt extends PyObject {
     }
 
     __sub__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             return new PyInt(this.val.sub(other.val))
         } else if (types.isinstance(other, types.PyFloat)) {
             return this.__float__().__sub__(other)
@@ -638,7 +646,7 @@ export default class PyInt extends PyObject {
     }
 
     __lshift__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             // Anything beyond ~8192 bits is too inefficient to convert to a binary array
             // due to Bignumber.js.
             if (other.val.gt(PyInt.REASONABLE_SHIFT.val)) {
@@ -667,7 +675,7 @@ export default class PyInt extends PyObject {
     }
 
     __rshift__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             if (this.val.isNegative()) {
                 return this.__invert__().__rshift__(other).__invert__()
             }
@@ -701,7 +709,7 @@ export default class PyInt extends PyObject {
     }
 
     __and__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             var a = twos_complement(this)
             var b = twos_complement(other)
             extend(a, b, this.val.isNeg())
@@ -731,7 +739,7 @@ export default class PyInt extends PyObject {
     }
 
     __xor__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             if (this.val.isNeg()) {
                 return this.__invert__().__xor__(other).__invert__()
             }
@@ -763,7 +771,7 @@ export default class PyInt extends PyObject {
     }
 
     __or__(other) {
-        if (types.isinstance(other, Int)) {
+        if (types.isinstance(other, PyInt)) {
             if (this.val.eq(other.val)) {
                 return this
             }

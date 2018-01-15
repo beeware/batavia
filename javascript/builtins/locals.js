@@ -4,4 +4,4 @@ export default function locals() {
 }
 
 locals.__doc__ = "locals() -> dictionary\n\nUpdate and return a dictionary containing the current scope's local variables."
-locals.$pyargs = true
+locals.$pyargs = {}

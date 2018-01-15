@@ -38,9 +38,9 @@ export default class Map extends PyObject {
 
     __next__() {
         if (!this._iter) {
-            this._iter = builtins.iter([this._sequence], null)
+            this._iter = builtins.iter(this._sequence)
         }
-        if (!builtins.callable([this._func], null)) {
+        if (!builtins.callable(this._func)) {
             throw new TypeError(
                 type_name(this._func) + "' object is not callable")
         }

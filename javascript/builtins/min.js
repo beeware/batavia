@@ -1,27 +1,20 @@
 import { BataviaError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import { type_name, PyNone } from '../core/types'
 
-import tuple from './tuple'
+import { tuple } from '../builtins'
 
-export default function min(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (!args || args.length === 0) {
-        throw new TypeError('min expected 1 arguments, got ' + args.length)
-    }
-
+export default function min(iterable, args, kwargs) {
     var iterobj
-    if (args.length > 1) {
-        iterobj = tuple([args], PyNone).__iter__()
+    if (args.length > 0) {
+        iterobj = tuple(iterable, ...args).__iter__()
     } else {
-        if (!args[0].__iter__) {
-            throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
+        if (!iterable.__iter__) {
+            throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
         }
-        iterobj = args[0].__iter__()
+        iterobj = iterable.__iter__()
     }
 
-    // If iterator is empty returns arror or default value
+    // If iterator is empty returns an error or default value
     try {
         var min = iterobj.__next__()
     } catch (err) {
@@ -52,4 +45,7 @@ export default function min(args, kwargs) {
 }
 
 min.__doc__ = 'min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.'
-min.$pyargs = true
+min.$pyargs = {
+    args: ['iterable'],
+    kwonlyargs: ['default', 'key']
+}

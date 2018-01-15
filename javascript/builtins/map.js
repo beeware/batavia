@@ -1,21 +1,12 @@
 import { BataviaError, TypeError } from '../core/exceptions'
 import * as types from '../types'
 
-export default function map(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("map() doesn't accept keyword arguments")
-    }
-
-    if (!args || args.length < 2) {
-        throw new TypeError('map() must have at least two arguments.')
-    }
-
-    return new types.PyMap(args, kwargs)
+export default function map(func, iterables) {
+    return new types.PyMap(func, iterables)
 }
 
 map.__doc__ = 'map(func, *iterables) --> map object\n\nMake an iterator that computes the function using arguments from\neach of the iterables.  Stops when the shortest iterable is exhausted.'
-map.$pyargs = true
+map.$pyargs = {
+    args: ['func'],
+    varargs: 'iterables'
+}

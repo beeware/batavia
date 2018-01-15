@@ -3,31 +3,23 @@ import { type_name } from '../core/types'
 
 import * as types from '../types'
 
-export default function hash(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("hash() doesn't accept keyword arguments")
-    }
-    if (!args || args.length !== 1) {
-        throw new TypeError('hash() expected exactly 1 argument (' + args.length + ' given)')
-    }
-    var arg = args[0]
-    // None
-    if (arg === null) {
+export default function hash(object) {
+    // Hash of a Javascript "null" is a fixed value
+    if (object === null) {
         return 278918143
     }
-    if (types.isinstance(arg, [types.PyBytearray, types.PyDict, types.JSDict, types.PyList, types.PySet, types.PySlice])) {
-        throw new TypeError("unhashable type: '" + type_name(arg) + "'")
+    if (types.isinstance(object, [types.PyBytearray, types.PyDict, types.JSDict, types.PyList, types.PySet, types.PySlice])) {
+        throw new TypeError("unhashable type: '" + type_name(object) + "'")
     }
-    if (typeof arg.__hash__ !== 'undefined') {
-        return arg.__hash__()
+    if (object.__hash__ !== undefined) {
+        return object.__hash__()
     }
     // Use JS toString() to do a simple default hash, for now.
     // (This is similar to how JS objects work.)
-    return new types.PyStr(arg.toString()).__hash__()
+    return new types.PyStr(object.toString()).__hash__()
 }
 
 hash.__doc__ = 'hash(object) -> integer\n\nReturn a hash value for the object.  Two objects with the same value have\nthe same hash value.  The reverse is not necessarily true, but likely.'
-hash.$pyargs = true
+hash.$pyargs = {
+    args: ['object']
+}

@@ -2,25 +2,12 @@ import { call_method } from '../core/callables'
 import { BataviaError, StopIteration, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
-export default function any(args, kwargs) {
-    if (args[0] === null) {
-        throw new TypeError("'NoneType' object is not iterable")
-    }
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("any() doesn't accept keyword arguments")
-    }
-    if (!args || args.length !== 1) {
-        throw new TypeError('any() takes exactly one argument (' + args.length + ' given)')
+export default function any(iterable) {
+    if (!iterable.__iter__) {
+        throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
     }
 
-    if (!args[0].__iter__) {
-        throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
-    }
-
-    var iterobj = call_method(args[0], '__iter__', [])
+    var iterobj = call_method(iterable, '__iter__', [])
     try {
         while (true) {
             var next = call_method(iterobj, '__next__', [])
@@ -38,4 +25,6 @@ export default function any(args, kwargs) {
 }
 
 any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.'
-any.$pyargs = true
+any.$pyargs = {
+    args: ['iterable']
+}

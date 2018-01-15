@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js'
 
+import { python } from '../core/callables'
 import { IndexError, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
@@ -12,9 +13,11 @@ import PyRangeIterator from './RangeIterator'
  *************************************************************************/
 
 export default class PyRange extends PyObject {
-    constructor(start, stop, step) {
-        super()
-
+    @python({
+        args: ['start'],
+        default_args: ['stop', 'step']
+    })
+    __init__(start, stop, step) {
         this.start = start.bigNumber()
         if (step === undefined) {
             this.step = new BigNumber(1)

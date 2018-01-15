@@ -6,9 +6,9 @@
    the parser only returns E_EOF when it hits EOF immediately, and it
    never returns E_OK. */
 import { BataviaError } from '../../core/exceptions'
+import { PyNone } from '../../core/types'
 
 import * as types from '../../types'
-import * as builtins from '../../builtins'
 
 export const EOF = -1
 export const E_OK = 10 /* No error */
@@ -397,7 +397,7 @@ Tokenizer.prototype.get_token = function() {
 
     // nothing left to process
     if (tok.cur >= tok.buf.length) {
-        return builtins.None
+        return PyNone
     }
 
     var process_line = function() {
@@ -541,7 +541,7 @@ Tokenizer.prototype.again = function() {
         } else {
             marker = ERRORTOKEN
         }
-        return [marker, builtins.None, builtins.None, 5]
+        return [marker, PyNone, PyNone, 5]
     }
 
     // Identifier (most frequent token!)
@@ -555,7 +555,7 @@ Tokenizer.prototype.again = function() {
         if (tok.level > 0) {
             // process next line
             tok.continue_processing = true
-            return builtins.None
+            return PyNone
         }
         tok.cont_line = 0
         if (tok.async_def) {
@@ -668,7 +668,7 @@ Tokenizer.prototype.again = function() {
     }
 
     var result = tok.letter_quote(c)
-    if (result !== builtins.None) {
+    if (result !== PyNone) {
         return result
     }
 
@@ -853,7 +853,7 @@ Tokenizer.prototype.letter_quote = function(c) {
         p_end = tok.cur
         return [STRING, p_start, p_end]
     }
-    return builtins.None
+    return PyNone
 }
 
 Tokenizer.prototype.fraction = function(c) {

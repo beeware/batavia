@@ -5,8 +5,8 @@ import * as modules from '../modules'
 import * as stdlib from '../stdlib'
 import { PyInt, PyModule } from '../types'
 
-export default function __import__(args, kwargs) {
-    // console.log("IMPORT", args[0], args[1], args[4]);
+export default function __import__(name, globals, locals, fromlist, level) {
+    // console.log("IMPORT", name, globals, level);
     if (arguments.length !== 2) {
         throw new BataviaError('Batavia calling convention not used.')
     }
@@ -18,22 +18,22 @@ export default function __import__(args, kwargs) {
     var code, frame, payload, n
 
     // "import builtins" can be shortcut
-    if (args[0] === 'builtins' && args[4].int32() === 0) {
+    if (name === 'builtins' && level.int32() === 0) {
         root_module = require('../builtins')
         leaf_module = root_module
     } else {
         // Pull apart the requested name.
-        var level = args[4].int32()
+        var level = level.int32()
         var path
 
         if (level === 0) {
-            path = args[0].split('.')
+            path = name.split('.')
         } else {
             var import_path
-            var context = args[1].__name__.split('.')
+            var context = globals.__name__.split('.')
 
             // Adjust level to deal with imports inside a __init__.py file
-            if (args[1].__file__.endswith('__init__.py')) {
+            if (globals.__file__.endswith('__init__.py')) {
                 level = level - 1
             }
 
@@ -44,8 +44,8 @@ export default function __import__(args, kwargs) {
             }
 
             var a
-            if (args[0] !== '') {
-                import_path = args[0].split('.')
+            if (name !== '') {
+                import_path = name.split('.')
                 path = new Array(context.length + import_path.length)
 
                 for (a = 0; a < context.length; a++) {
@@ -77,7 +77,7 @@ export default function __import__(args, kwargs) {
 
                 code = modules.marshal.load_pyc(this, payload)
                 // Convert code object to module
-                // args[1].__name__ = args[0]
+                // globals.__name__ = name
                 frame = this.make_frame({
                     'code': code,
                     'f_globals': root_module,
@@ -164,10 +164,10 @@ export default function __import__(args, kwargs) {
     // is a "from ..." statement. This will yield the
     // final module to be imported.
     var module
-    if (args[3] === PyNone) {
+    if (fromlist === PyNone) {
         // import <mod>
         module = root_module
-    } else if (args[3][0] === '*') {
+    } else if (fromlist[0] === '*') {
         // from <mod> import *
         module = new PyModule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
         for (name in leaf_module) {
@@ -178,8 +178,8 @@ export default function __import__(args, kwargs) {
     } else {
         // from <mod> import <name>, <name>
         module = new PyModule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
-        for (var sn = 0; sn < args[3].length; sn++) {
-            name = args[3][sn]
+        for (var sn = 0; sn < fromlist.length; sn++) {
+            name = fromlist[sn]
             if (leaf_module[name] === undefined) {
                 __import__.apply(this, [[leaf_module.__name__ + '.' + name, this.frame.f_globals, null, PyNone, new PyInt(0)], null])
             }
@@ -187,4 +187,10 @@ export default function __import__(args, kwargs) {
         }
     }
     return module
+}
+
+__import__.__doc__ = "__import__(name, globals=None, locals=None, fromlist=(), level=0) -> module\n\nImport a module. Because this function is meant for use by the Python\ninterpreter and not for general use it is better to use\nimportlib.import_module() to programmatically import a module.\n\nThe globals argument is only used to determine the context;\nthey are not modified.  The locals argument is unused.  The fromlist\nshould be a list of names to emulate ``from name import ...'', or an\nempty list to emulate ``import name''.\nWhen importing a module from a package, note that __import__('A.B', ...)\nreturns package A when fromlist is empty, but its submodule B when\nfromlist is not empty.  Level is used to determine whether to perform \nabsolute or relative imports. 0 is absolute while a positive number\nis the number of parent directories to search relative to the current module."
+__import__.$pyargs = {
+    args: ['name'],
+    default_args: ['globals', 'locals', 'fromlist', 'level']
 }

@@ -16,7 +16,20 @@ import * as StrUtils from './StrUtils'
 
 var PyStr = String
 
-create_pyclass(PyStr, 'str')
+PyStr.prototype.__doc__ = 'str(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) === object.'
+
+PyStr.prototype.__init__ = function(str) {
+    if (str === null) {
+        return 'None'
+    } else if (str.__str__) {
+        return str.__str__()
+    } else {
+        return str.toString()
+    }
+}
+PyStr.prototype.__init__.$pyargs = {
+    default_args: ['str']
+}
 
 PyStr.prototype.toString = function() {
     return this
@@ -761,5 +774,7 @@ PyStr.prototype.format = function(args, kwargs) {
     const keywordArguments = types.js2py(kwargs)
     return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
 }
+
+create_pyclass(PyStr, 'str')
 
 export default PyStr

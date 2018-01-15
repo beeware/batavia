@@ -27,16 +27,29 @@ export function call_function(self, func, args=[], kwargs={}) {
         // if (kwargs && Object.keys(kwargs).length > 0) {
         //     throw new TypeError(func.name + "() doesn't accept keyword arguments")
         // }
-        // if (func.$pyargs.args && args.length !== func.$pyargs.args.length) {
-        //     throw new TypeError(func.name + '() takes exactly one argument (' + args.length + ' given)')
-        // }
 
         let kw = Object.assign({}, kwargs)
 
         // Positional arguments
         if (func.$pyargs.args) {
             for (let index in func.$pyargs.args) {
-                js_args.push(args[index])
+                let arg = args[index]
+                if (arg === undefined) {
+                    let msg
+                    if (func.$pyargs.default_args || func.$pyargs.varargs) {
+                        msg = 'at least'
+                    } else {
+                        msg = 'exactly'
+                    }
+
+                    if (index == 0) {
+                        throw new TypeError(func.name + '() takes ' + msg + ' one argument (' + args.length + ' given)')
+                    } else {
+                        throw new TypeError(func.name + '() takes ' + msg + ' ' + func.$pyargs.args.length + ' arguments (' + args.length + ' given)')
+                    }
+                } else {
+                    js_args.push(args[index])
+                }
             }
         }
 

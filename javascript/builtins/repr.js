@@ -1,24 +1,16 @@
 import { BataviaError, TypeError } from '../core/exceptions'
 
-export default function repr(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("repr() doesn't accept keyword arguments")
-    }
-    if (!args || args.length !== 1) {
-        throw new TypeError('repr() takes exactly 1 argument (' + args.length + ' given)')
-    }
-
-    if (args[0] === null) {
+export default function repr(object) {
+    if (object === null) {
         return 'None'
-    } else if (args[0].__repr__) {
-        return args[0].__repr__()
+    } else if (object.__repr__) {
+        return object.__repr__()
     } else {
-        return args[0].toString()
+        return object.toString()
     }
 }
 
 repr.__doc__ = 'repr(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) === object.'
-repr.$pyargs = true
+repr.$pyargs = {
+    args: ['object']
+}

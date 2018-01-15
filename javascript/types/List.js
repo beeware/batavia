@@ -20,7 +20,7 @@ export default function PyList() {
         if (Array.isArray(arguments[0])) {
             this.push.apply(this, arguments[0])
         } else {
-            var iterobj = builtins.iter([arguments[0]], null)
+            var iterobj = builtins.iter(arguments[0])
             var self = this
             iter_for_each(iterobj, function(val) {
                 self.push(val)
@@ -92,7 +92,7 @@ PyList.prototype.__lt__ = function(other) {
         }
     }
 
-    if (other !== builtins.None) {
+    if (other !== PyNone) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -149,7 +149,7 @@ PyList.prototype.__le__ = function(other) {
         }
     }
 
-    if (other !== builtins.None) {
+    if (other !== PyNone) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -227,7 +227,7 @@ PyList.prototype.__gt__ = function(other) {
         }
     }
 
-    if (other !== builtins.None) {
+    if (other !== PyNone) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -284,7 +284,7 @@ PyList.prototype.__ge__ = function(other) {
         }
     }
 
-    if (other !== builtins.None) {
+    if (other !== PyNone) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
