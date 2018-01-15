@@ -587,9 +587,9 @@ Str.prototype.__len__ = function() {
     return new types.Int(this.length)
 }
 
-Str.prototype.index = function(needle) {
+Str.prototype.index = function(needle, offset) {
     var types = require('../types')
-    var i = this.indexOf(needle)
+    var i = this.indexOf(needle, offset)
     if (i < 0) {
         throw new exceptions.ValueError.$pyclass('substring not found')
     }
