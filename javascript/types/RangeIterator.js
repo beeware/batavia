@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { PyStopIteration } from '../core/exceptions'
+import { StopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 import * as types from '../types'
@@ -24,7 +24,7 @@ export default class PyRangeIterator extends PyObject {
             this.index = this.index.add(this.step)
             return new types.PyInt(retval)
         }
-        throw new PyStopIteration()
+        throw new StopIteration()
     }
 
     __str__() {

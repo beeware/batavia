@@ -15,7 +15,7 @@ export default class StrIterator extends PyObject {
     __next__() {
         var retval = this.data[this.index]
         if (retval === undefined) {
-            throw new exceptions.PyStopIteration()
+            throw new exceptions.StopIteration()
         }
         this.index++
         return retval

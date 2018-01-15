@@ -1,4 +1,4 @@
-import { PyTypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 export function inplace_call(f, operand_str, this_obj, other) {
@@ -6,8 +6,8 @@ export function inplace_call(f, operand_str, this_obj, other) {
     try {
         return this_obj[f](other)
     } catch (error) {
-        if (error instanceof PyTypeError) {
-            throw new PyTypeError(
+        if (error instanceof TypeError) {
+            throw new TypeError(
                 'unsupported operand type(s) for ' +
                 operand_str + ": '" + type_name(this_obj) +
                 "' and '" + type_name(other) + "'"

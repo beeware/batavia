@@ -1,4 +1,4 @@
-import { PyAttributeError, PyTypeError } from '../core/exceptions'
+import { AttributeError, TypeError } from '../core/exceptions'
 import * as native from '../core/native'
 
 import * as types from '../types'
@@ -7,7 +7,7 @@ export default function getattr(args, kwargs) {
     if (args) {
         if (args.length === 2 || args.length === 3) {
             if (!types.isinstance(args[1], types.PyStr)) {
-                throw new PyTypeError('getattr(): attribute name must be string')
+                throw new TypeError('getattr(): attribute name must be string')
             }
 
             try {
@@ -17,21 +17,19 @@ export default function getattr(args, kwargs) {
                     return native.getattr_py(args[0], args[1])
                 }
             } catch (e) {
-                if (e instanceof PyAttributeError && args.length === 3) {
+                if (e instanceof AttributeError && args.length === 3) {
                     return args[2]
                 } else {
                     throw e
                 }
             }
         } else if (args.length < 2) {
-            throw new PyTypeError('getattr expected at least 2 arguments, got ' + args.length)
+            throw new TypeError('getattr expected at least 2 arguments, got ' + args.length)
         } else {
-            throw new PyTypeError('getattr expected at most 3 arguments, got ' + args.length)
+            throw new TypeError('getattr expected at most 3 arguments, got ' + args.length)
         }
     } else {
-        throw new PyTypeError('getattr expected at least 2 arguments, got 0')
+        throw new TypeError('getattr expected at least 2 arguments, got 0')
     }
 }
 
-getattr.__doc__ = "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case."
-getattr.$pyargs = true

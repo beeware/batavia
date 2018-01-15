@@ -1,6 +1,6 @@
 import { create_pyclass, type_name, PyObject } from '../../core/types'
 import * as callables from '../../core/callables'
-import { PyTypeError, PyValueError } from '../../core/exceptions'
+import { TypeError, ValueError } from '../../core/exceptions'
 import * as version from '../../core/version'
 
 import * as types from '../../types'
@@ -40,7 +40,7 @@ function _JSONEncoder(args = [], kwargs = {}) {
 
     var len = enc.separators.length
     if (len !== 2) {
-        throw new PyValueError(
+        throw new ValueError(
             'JSONEncoder separators length must be 2 (got ' + len + ' instead)'
         )
     }
@@ -142,7 +142,7 @@ var make_encode = function(
                     key + key_separator + encode(obj.get(kv), indent_level + 1)
                 )
             } else if (!skipkeys) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'keys must be a string'
                 )
             }
@@ -165,7 +165,7 @@ var make_encode = function(
         if (ret === null) {
             if (seen !== undefined) {
                 if (seen.has(obj)) {
-                    throw new PyValueError(
+                    throw new ValueError(
                         'Circular reference detected'
                     )
                 }
@@ -180,11 +180,11 @@ var make_encode = function(
                 ret = encode(callables.call_function(default_, [obj]), indent_level)
             } else {
                 if (version.earlier('3.6')) {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         obj.toString() + ' is not JSON serializable'
                     )
                 } else {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         "Object of type '" + type_name(obj) + "' is not JSON serializable"
                     )
                 }
@@ -244,7 +244,7 @@ var encodeBasicType = function(o, ensure_ascii, allow_nan) {
             if (allow_nan) {
                 text = transFloat[text]
             } else {
-                throw new PyValueError(
+                throw new ValueError(
                     'Out of range float values are not JSON compliant'
                 )
             }
@@ -279,7 +279,7 @@ var encodeKey = function(o, ensure_ascii, allow_nan) {
 
 JSONEncoder.prototype.iterencode = function(obj) {
     if (arguments.length !== 1) {
-        throw new PyTypeError(
+        throw new TypeError(
             'iterencode() expected 1 positional argument (got ' +
             arguments.length + ')'
         )

@@ -1,5 +1,5 @@
 import { call_function, call_method } from '../../core/callables'
-import { PyException, PyValueError } from '../../core/exceptions'
+import { Exception, ValueError } from '../../core/exceptions'
 import { create_pyclass, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
@@ -7,12 +7,12 @@ import * as types from '../../types'
 
 import { validateParams } from './utils'
 
-class PyJSONDecodeError extends PyException {
+class JSONDecodeError extends Exception {
     constructor(msg) {
         super(msg)
     }
 }
-create_pyclass(PyJSONDecodeError, 'PyJSONDecodeError')
+create_pyclass(JSONDecodeError, 'JSONDecodeError')
 
 
 // TODO(abonie): actual defaults?
@@ -73,9 +73,9 @@ class JSONDecoder extends PyObject {
             ret = JSON.parse(s, reviver)
         } catch (e) {
             if (version.earlier('3.5a0')) {
-                throw new PyValueError(e.message)
+                throw new ValueError(e.message)
             } else {
-                throw new PyJSONDecodeError(e.message)
+                throw new JSONDecodeError(e.message)
             }
         }
         return ret
@@ -145,6 +145,6 @@ load.$pyargs = true
 export {
     loads,
     load,
-    PyJSONDecodeError,
+    JSONDecodeError,
     _JSONDecoder as JSONDecoder
 }

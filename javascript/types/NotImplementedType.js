@@ -1,7 +1,7 @@
 /*************************************************************************
  * An implementation of NotImplementedType
  *************************************************************************/
-import { PyNotImplementedError, PyTypeError } from '../core/exceptions'
+import { NotImplementedError, TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
 
@@ -42,11 +42,11 @@ export default class PyNotImplementedType extends PyObject {
 
     __lt__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: NotImplementedType() < ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<' not supported between instances of 'NotImplementedType' and '" +
                 type_name(other) + "'"
             )
@@ -55,11 +55,11 @@ export default class PyNotImplementedType extends PyObject {
 
     __le__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: NotImplementedType() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<=' not supported between instances of 'NotImplementedType' and '" +
                 type_name(other) + "'"
             )
@@ -76,11 +76,11 @@ export default class PyNotImplementedType extends PyObject {
 
     __gt__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: NotImplementedType() > ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>' not supported between instances of 'NotImplementedType' and '" +
                 type_name(other) + "'"
             )
@@ -89,11 +89,11 @@ export default class PyNotImplementedType extends PyObject {
 
     __ge__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: NotImplementedType() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>=' not supported between instances of 'NotImplementedType' and '" +
                 type_name(other) + "'"
             )
@@ -129,62 +129,62 @@ export default class PyNotImplementedType extends PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
-        throw new PyNotImplementedError('NotImplementedType.__div__ has not been implemented')
+        throw new NotImplementedError('NotImplementedType.__div__ has not been implemented')
     }
 
     __floordiv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for //: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __truediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
         if (types.isinstance(other, [types.PyTuple, types.PyStr, types.PyList, types.PyBytes, types.PyBytearray])) {
-            throw new PyTypeError("can't multiply sequence by non-int of type 'NotImplementedType'")
+            throw new TypeError("can't multiply sequence by non-int of type 'NotImplementedType'")
         }
-        throw new PyTypeError("unsupported operand type(s) for *: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for *: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __mod__(other) {
-        throw new PyTypeError("unsupported operand type(s) for %: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __add__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for +: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __sub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __getitem__(other) {
-        throw new PyNotImplementedError('NotImplementedType.__getitem__ has not been implemented')
+        throw new NotImplementedError('NotImplementedType.__getitem__ has not been implemented')
     }
 
     __lshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -192,58 +192,58 @@ export default class PyNotImplementedType extends PyObject {
      **************************************************/
 
     __idiv__(other) {
-        throw new PyNotImplementedError('NotImplementedType.__idiv__ has not been implemented')
+        throw new NotImplementedError('NotImplementedType.__idiv__ has not been implemented')
     }
 
     __ifloordiv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for //=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __itruediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __iadd__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for +=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __isub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __imul__(other) {
         if (types.isinstance(other, [types.PyTuple, types.PyStr, types.PyList, types.PyBytes, types.PyBytearray])) {
-            throw new PyTypeError("can't multiply sequence by non-int of type 'NotImplementedType'")
+            throw new TypeError("can't multiply sequence by non-int of type 'NotImplementedType'")
         }
-        throw new PyTypeError("unsupported operand type(s) for *=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for *=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __imod__(other) {
-        throw new PyTypeError("unsupported operand type(s) for %=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __ipow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __ilshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __irshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |=: 'NotImplementedType' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |=: 'NotImplementedType' and '" + type_name(other) + "'")
     }
 }
 create_pyclass(PyNotImplementedType, 'NotImplementedType')

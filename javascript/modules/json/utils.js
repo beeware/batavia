@@ -1,7 +1,7 @@
-import { PyTypeError } from '../../core/exceptions'
+import { TypeError } from '../../core/exceptions'
 
 export function requiredArg(arg) {
-    throw new PyTypeError('validateParams missing required argument ' + arg)
+    throw new TypeError('validateParams missing required argument ' + arg)
 }
 
 export function validateParams({
@@ -13,7 +13,7 @@ export function validateParams({
     funcName = requiredArg('funcName')
 } = {}) {
     if (args.length > names.length) {
-        throw new PyTypeError(
+        throw new TypeError(
             funcName + '() takes ' + numRequired + ' - ' + names.length +
             ' positional arguments but ' + args.length + ' were given'
         )
@@ -29,13 +29,13 @@ export function validateParams({
     for (var key in kwargs.valueOf()) {
         if (kwargs.hasOwnProperty(key)) {
             if (!ret.hasOwnProperty(key) && required.indexOf(key) < 0) {
-                throw new PyTypeError(
+                throw new TypeError(
                     funcName + "() got an unexpected keyword argument '" +
                     key + "'"
                 )
             }
             if (names.indexOf(key) < 0) {
-                throw new PyTypeError(
+                throw new TypeError(
                     funcName + "() got multiple values for argument '" +
                     key + "'"
                 )
@@ -47,7 +47,7 @@ export function validateParams({
 
     for (let req of required) {
         if (!ret.hasOwnProperty(req)) {
-            throw new PyTypeError(
+            throw new TypeError(
                 funcName + "() missing required positional argument '" +
                 req + "'"
             )

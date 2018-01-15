@@ -140,6 +140,11 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
     if args is None:
         args = []
 
+    # print("Python code:")
+    # with open(os.path.join(test_dir, 'test.py')) as py_file:
+    #     print(py_file.read())
+    # print("=" * 80)
+
     env_copy = os.environ.copy()
     env_copy['PYTHONIOENCODING'] = 'UTF-8'
     proc = subprocess.Popen(
@@ -727,9 +732,10 @@ class TranspileTestCase(TestCase):
                 )
             )
 
-        # print("JS CODE:")
+        # print("Javascript code:")
         # with open(os.path.join(self.temp_dir, 'test.js')) as js_file:
         #     print(js_file.read())
+        # print("=" * 80)
 
         proc = subprocess.Popen(
             ['node', 'test.js'] + args,

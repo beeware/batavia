@@ -1,5 +1,5 @@
 import { call_function } from '../core/callables'
-import { PyAttributeError, PyTypeError } from '../core/exceptions'
+import { AttributeError, TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
 /*************************************************************************
@@ -55,10 +55,10 @@ export default class Property extends PyObject {
             try {
                 return call_function(this.fget, [instance], null)
             } catch (e) {
-                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
+                throw new TypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new PyAttributeError("can't get attribute")
+            throw new AttributeError("can't get attribute")
         }
     }
 
@@ -68,10 +68,10 @@ export default class Property extends PyObject {
             try {
                 call_function(this.fset, [instance, value], null)
             } catch (e) {
-                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
+                throw new TypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new PyAttributeError("can't set attribute")
+            throw new AttributeError("can't set attribute")
         }
     }
 
@@ -81,10 +81,10 @@ export default class Property extends PyObject {
             try {
                 call_function(this.fdel, [instance], null)
             } catch (e) {
-                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
+                throw new TypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new PyAttributeError("can't delete attribute")
+            throw new AttributeError("can't delete attribute")
         }
     }
 

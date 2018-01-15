@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -9,10 +9,10 @@ export default function ord(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("ord() doesn't accept keyword arguments")
+        throw new TypeError("ord() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new PyTypeError('ord() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('ord() takes exactly one argument (' + args.length + ' given)')
     }
     var value = args[0]
     if (types.isinstance(value, [types.PyStr, types.PyBytes, types.PyBytearray])) {
@@ -24,10 +24,10 @@ export default function ord(args, kwargs) {
                 return call_method(value, '__getitem__', [new types.PyInt(0)])
             }
         } else {
-            throw new PyTypeError('ord() expected a character, but string of length ' + charLength + ' found')
+            throw new TypeError('ord() expected a character, but string of length ' + charLength + ' found')
         }
     } else {
-        throw new PyTypeError('ord() expected string of length 1, but ' + type_name(value) + ' found')
+        throw new TypeError('ord() expected string of length 1, but ' + type_name(value) + ' found')
     }
 }
 

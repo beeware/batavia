@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -8,17 +8,17 @@ export default function bin(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("bin() doesn't accept keyword arguments")
+        throw new TypeError("bin() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new PyTypeError('bin() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('bin() takes exactly one argument (' + args.length + ' given)')
     }
 
     var obj = args[0]
 
     if (!types.isinstance(obj, types.PyInt) &&
         !types.isinstance(obj, types.PyBool)) {
-        throw new PyTypeError(
+        throw new TypeError(
             "'" + type_name(obj) + "' object cannot be interpreted as an integer")
     }
 

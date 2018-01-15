@@ -1,5 +1,5 @@
 import { iter_for_each } from '../core/callables'
-import { PyAttributeError, PyIndexError, PyTypeError, PyValueError } from '../core/exceptions'
+import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyNone } from '../core/types'
 import * as version from '../core/version'
 
@@ -27,7 +27,7 @@ export default function PyList() {
             })
         }
     } else {
-        throw new PyTypeError('list() takes at most 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('list() takes at most 1 argument (' + arguments.length + ' given)')
     }
 }
 
@@ -38,7 +38,7 @@ Array_.prototype = []
 PyList.prototype = Object.create(Array_.prototype)
 PyList.prototype.length = 0
 PyList.prototype.constructor = PyList
-create_pyclass(PyList, 'list', null)
+create_pyclass(PyList, 'list')
 
 /**************************************************
  * Javascript compatibility methods
@@ -81,18 +81,18 @@ PyList.prototype.__bool__ = function() {
 PyList.prototype.__lt__ = function(other) {
     if (types.isinstance(other, [types.PyBytes, types.PyBytearray])) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() < ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<' not supported between instances of 'list' and '" +
                 type_name(other) + "'"
             )
         }
     }
 
-    if (other !== builtins.PyNone) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -112,11 +112,11 @@ PyList.prototype.__lt__ = function(other) {
             return this.length < other.length
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: list() < ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'<' not supported between instances of 'list' and '" +
                     type_name(other) + "'"
                 )
@@ -124,11 +124,11 @@ PyList.prototype.__lt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() < NoneType()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<' not supported between instances of 'list' and 'NoneType'"
             )
         }
@@ -138,18 +138,18 @@ PyList.prototype.__lt__ = function(other) {
 PyList.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.PyBytes, types.PyBytearray])) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<=' not supported between instances of 'list' and '" +
                 type_name(other) + "'"
             )
         }
     }
 
-    if (other !== builtins.PyNone) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -169,11 +169,11 @@ PyList.prototype.__le__ = function(other) {
             return this.length <= other.length
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: list() <= ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'<=' not supported between instances of 'list' and '" +
                     type_name(other) + "'"
                 )
@@ -181,11 +181,11 @@ PyList.prototype.__le__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() <= NoneType()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<=' not supported between instances of 'list' and 'NoneType'"
             )
         }
@@ -216,18 +216,18 @@ PyList.prototype.__ne__ = function(other) {
 PyList.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.PyBytes, types.PyBytearray])) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() > ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>' not supported between instances of 'list' and '" +
                 type_name(other) + "'"
             )
         }
     }
 
-    if (other !== builtins.PyNone) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -247,11 +247,11 @@ PyList.prototype.__gt__ = function(other) {
             return this.length > other.length
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: list() > ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'>' not supported between instances of 'list' and '" +
                     type_name(other) + "'"
                 )
@@ -259,11 +259,11 @@ PyList.prototype.__gt__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() > NoneType()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>' not supported between instances of 'list' and 'NoneType'"
             )
         }
@@ -273,18 +273,18 @@ PyList.prototype.__gt__ = function(other) {
 PyList.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.PyBytes, types.PyBytearray])) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>=' not supported between instances of 'list' and '" +
                 type_name(other) + "'"
             )
         }
     }
 
-    if (other !== builtins.PyNone) {
+    if (other !== builtins.None) {
         if (types.isinstance(other, types.PyList)) {
             // edge case where this==[]
             if (this.length === 0 && other.length > 0) {
@@ -304,11 +304,11 @@ PyList.prototype.__ge__ = function(other) {
             return this.length >= other.length
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: list() >= ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'>=' not supported between instances of 'list' and '" +
                     type_name(other) + "'"
                 )
@@ -316,11 +316,11 @@ PyList.prototype.__ge__ = function(other) {
         }
     } else {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: list() >= NoneType()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>=' not supported between instances of 'list' and 'NoneType'"
             )
         }
@@ -336,11 +336,11 @@ PyList.prototype.__contains__ = function(other) {
  **************************************************/
 
 PyList.prototype.__pos__ = function() {
-    throw new PyTypeError("bad operand type for unary +: 'list'")
+    throw new TypeError("bad operand type for unary +: 'list'")
 }
 
 PyList.prototype.__neg__ = function() {
-    throw new PyTypeError("bad operand type for unary -: 'list'")
+    throw new TypeError("bad operand type for unary -: 'list'")
 }
 
 PyList.prototype.__not__ = function() {
@@ -348,7 +348,7 @@ PyList.prototype.__not__ = function() {
 }
 
 PyList.prototype.__invert__ = function() {
-    throw new PyTypeError("bad operand type for unary ~: 'list'")
+    throw new TypeError("bad operand type for unary ~: 'list'")
 }
 
 /**************************************************
@@ -356,23 +356,23 @@ PyList.prototype.__invert__ = function() {
  **************************************************/
 
 PyList.prototype.__pow__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__div__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for /: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new PyTypeError("unsupported operand type(s) for //: 'list' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'list' and '" + type_name(other) + "'")
     }
 }
 
 PyList.prototype.__truediv__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for /: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__mul__ = function(other) {
@@ -393,15 +393,15 @@ PyList.prototype.__mul__ = function(other) {
             return new List()
         }
     } else {
-        throw new PyTypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 }
 
 PyList.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
-        throw new PyTypeError("unsupported operand type(s) for %: 'list' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %: 'list' and '" + type_name(other) + "'")
     }
 }
 
@@ -420,16 +420,16 @@ PyList.prototype.__add__ = function(other) {
 
         return result
     } else {
-        throw new PyTypeError('can only concatenate list (not "' + type_name(other) + '") to list')
+        throw new TypeError('can only concatenate list (not "' + type_name(other) + '") to list')
     }
 }
 
 PyList.prototype.__sub__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for -: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__delattr__ = function(attr) {
-    throw new PyAttributeError("'list' object has no attribute '" + attr + "'")
+    throw new AttributeError("'list' object has no attribute '" + attr + "'")
 }
 
 PyList.prototype.__getitem__ = function(index) {
@@ -437,13 +437,13 @@ PyList.prototype.__getitem__ = function(index) {
         var idx = index.int32()
         if (idx < 0) {
             if (-idx > this.length) {
-                throw new PyIndexError('list index out of range')
+                throw new IndexError('list index out of range')
             } else {
                 return this[this.length + idx]
             }
         } else {
             if (idx >= this.length) {
-                throw new PyIndexError('list index out of range')
+                throw new IndexError('list index out of range')
             } else {
                 return this[idx]
             }
@@ -454,7 +454,7 @@ PyList.prototype.__getitem__ = function(index) {
             start = undefined
         } else if (!(types.isinstance(index.start, types.PyInt))) {
             if (index.start.__index__ === undefined) {
-                throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 start = index.start.__index__()
             }
@@ -466,7 +466,7 @@ PyList.prototype.__getitem__ = function(index) {
             stop = undefined
         } else if (!(types.isinstance(index.stop, types.PyInt))) {
             if (index.stop.__index__ === undefined) {
-                throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 stop = index.stop.__index__()
             }
@@ -478,14 +478,14 @@ PyList.prototype.__getitem__ = function(index) {
             step = 1
         } else if (!(types.isinstance(index.step, types.PyInt))) {
             if (index.step.__index__ === undefined) {
-                throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
+                throw new TypeError('slice indices must be integers or None or have an __index__ method')
             } else {
                 step = index.step.__index__()
             }
         } else {
             step = index.step.int32()
             if (step === 0) {
-                throw new PyValueError('slice step cannot be zero')
+                throw new ValueError('slice step cannot be zero')
             }
         }
 
@@ -528,10 +528,10 @@ PyList.prototype.__getitem__ = function(index) {
             idx = 0
         }
         if (this.length === 0) {
-            throw new PyIndexError('list index out of range')
+            throw new IndexError('list index out of range')
         } else if (this.length === 1) {
             if (idx === 1) {
-                throw new PyIndexError('list index out of range')
+                throw new IndexError('list index out of range')
             } else {
                 return this[0]
             }
@@ -543,7 +543,7 @@ PyList.prototype.__getitem__ = function(index) {
         if (!version.later('3.4')) {
             msg = 'list indices must be integers, not '
         }
-        throw new PyTypeError(msg + type_name(index))
+        throw new TypeError(msg + type_name(index))
     }
 }
 
@@ -552,40 +552,40 @@ PyList.prototype.__delitem__ = function(index) {
         var idx = index.int32()
         if (idx < 0) {
             if (-idx > this.length) {
-                throw new PyIndexError('list index out of range')
+                throw new IndexError('list index out of range')
             } else {
                 this.splice(this.length + idx, 1)
             }
         } else {
             if (idx >= this.length) {
-                throw new PyIndexError('list index out of range')
+                throw new IndexError('list index out of range')
             } else {
                 this.splice(idx, 1)
             }
         }
     } else {
-        throw new PyTypeError('list indices must be integers, not ' + type_name(index))
+        throw new TypeError('list indices must be integers, not ' + type_name(index))
     }
 }
 
 PyList.prototype.__lshift__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for <<: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for <<: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__rshift__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for >>: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for >>: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__and__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for &: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for &: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__xor__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for ^: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ^: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__or__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for |: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for |: 'list' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -594,14 +594,14 @@ PyList.prototype.__or__ = function(other) {
 
 PyList.prototype.__ifloordiv__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new PyTypeError("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
     }
 }
 
 PyList.prototype.__itruediv__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for /=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for /=: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__iadd__ = function(other) {
@@ -616,13 +616,13 @@ PyList.prototype.__iadd__ = function(other) {
             this.push(right_operand[i])
         }
     } else {
-        throw new PyTypeError("'" + type_name(other) + "' object is not iterable")
+        throw new TypeError("'" + type_name(other) + "' object is not iterable")
     }
     return this
 }
 
 PyList.prototype.__isub__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for -=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for -=: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__imul__ = function(other) {
@@ -647,40 +647,40 @@ PyList.prototype.__imul__ = function(other) {
             return new List()
         }
     } else {
-        throw new PyTypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
 }
 
 PyList.prototype.__imod__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
-        throw new PyTypeError("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
     }
 }
 
 PyList.prototype.__ipow__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ** or pow(): 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__ilshift__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for <<=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for <<=: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__irshift__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for >>=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for >>=: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__iand__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for &=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for &=: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__ixor__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for ^=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for ^=: 'list' and '" + type_name(other) + "'")
 }
 
 PyList.prototype.__ior__ = function(other) {
-    throw new PyTypeError("unsupported operand type(s) for |=: 'list' and '" + type_name(other) + "'")
+    throw new TypeError("unsupported operand type(s) for |=: 'list' and '" + type_name(other) + "'")
 }
 
 /**************************************************
@@ -703,7 +703,7 @@ PyList.prototype.extend = function(values) {
 
 PyList.prototype.insert = function(index, value) {
     if (arguments.length !== 2) {
-        throw new PyTypeError(
+        throw new TypeError(
             'insert() takes exactly 2 arguments (' + arguments.length + ' given)'
         )
     }
@@ -713,20 +713,20 @@ PyList.prototype.insert = function(index, value) {
 
 PyList.prototype.remove = function(value) {
     if (arguments.length !== 1) {
-        throw new PyTypeError(
+        throw new TypeError(
             'remove() takes exactly one argument (' + arguments.length + ' given)'
         )
     }
     var index = this.indexOf(value)
     if (index === -1) {
-        throw new PyValueError('list.remove(x): x not in list')
+        throw new ValueError('list.remove(x): x not in list')
     }
     this.splice(index, 1)
 }
 
 PyList.prototype.pop = function(index) {
     if (arguments.length > 1) {
-        throw new PyTypeError(
+        throw new TypeError(
             'pop() takes at most 1 argument (' + arguments.length + ' given)'
         )
     }
@@ -735,14 +735,14 @@ PyList.prototype.pop = function(index) {
     }
     validateIndexType(index)
     if (index >= this.length || index < -this.length) {
-        throw new PyIndexError('pop index out of range')
+        throw new IndexError('pop index out of range')
     }
     return this.splice(index, 1)[0]
 }
 
 PyList.prototype.clear = function() {
     if (arguments.length !== 0) {
-        throw new PyTypeError(
+        throw new TypeError(
             'clear() takes no arguments (' + arguments.length + ' given)'
         )
     }
@@ -751,7 +751,7 @@ PyList.prototype.clear = function() {
 
 PyList.prototype.count = function(value) {
     if (arguments.length !== 1) {
-        throw new PyTypeError('count() takes exactly one argument (' + arguments.length + ' given)')
+        throw new TypeError('count() takes exactly one argument (' + arguments.length + ' given)')
     }
     var count = 0
     for (var i = 0; i < this.length; ++i) {
@@ -764,9 +764,9 @@ PyList.prototype.count = function(value) {
 
 PyList.prototype.index = function(value, start, stop) {
     if (arguments.length < 1) {
-        throw new PyTypeError('index() takes at least 1 argument (' + arguments.length + ' given)')
+        throw new TypeError('index() takes at least 1 argument (' + arguments.length + ' given)')
     } else if (arguments.length > 3) {
-        throw new PyTypeError('index() takes at most 3 arguments (' + arguments.length + ' given)')
+        throw new TypeError('index() takes at most 3 arguments (' + arguments.length + ' given)')
     }
 
     if (start < 0) {
@@ -784,12 +784,12 @@ PyList.prototype.index = function(value, start, stop) {
             return i
         }
     }
-    throw new PyValueError('list.index(x): x not in list')
+    throw new ValueError('list.index(x): x not in list')
 }
 
 PyList.prototype.reverse = function() {
     if (arguments.length > 0) {
-        throw new PyTypeError('reverse() takes no arguments (' + arguments.length + ' given)')
+        throw new TypeError('reverse() takes no arguments (' + arguments.length + ' given)')
     }
     Array.prototype.reverse.apply(this)
 }
@@ -797,9 +797,9 @@ PyList.prototype.reverse = function() {
 function validateIndexType(index) {
     if (!types.isinstance(index, types.PyInt)) {
         if (types.isinstance(index, types.PyFloat)) {
-            throw new PyTypeError('integer argument expected, got float')
+            throw new TypeError('integer argument expected, got float')
         }
-        throw new PyTypeError(
+        throw new TypeError(
             "'" + type_name(index) + "' object cannot be interpreted as an integer"
         )
     }

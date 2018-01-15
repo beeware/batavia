@@ -1,8 +1,11 @@
 {
-  "presets": [
-    ["env", {
-      "modules": false
-    }]
-  ],
-  "plugins": ["external-helpers"]
+    "presets": [
+        ["env", {
+            "modules": false
+        }]
+    ],
+    "plugins": [
+        "external-helpers",
+        "transform-decorators-legacy"
+    ]
 }

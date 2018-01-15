@@ -1,4 +1,4 @@
-import { PyAttributeError, PyOverflowError, PyTypeError, PyValueError, PyZeroDivisionError } from '../core/exceptions'
+import { AttributeError, OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name } from '../core/types'
 import * as version from '../core/version'
 
@@ -12,7 +12,7 @@ import * as utils from './utils'
 
 var PyBool = Boolean
 
-create_pyclass(PyBool, 'bool', null)
+create_pyclass(PyBool, 'bool')
 
 /**************************************************
  * Type conversions
@@ -100,16 +100,16 @@ PyBool.prototype.__ge__ = function(other) {
         return new PyBool(this_bool >= other_bool)
     } else if (types.isbataviainstance(other)) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: bool() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>=' not supported between instances of 'bool' and '" + type_name(other) + "'"
             )
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for >=: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >=: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -139,17 +139,17 @@ PyBool.prototype.__gt__ = function(other) {
         return new PyBool(this_bool > other_bool)
     } else if (types.isbataviainstance(other)) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: bool() > ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>' not supported between instances of 'bool' and '" +
                 type_name(other) + "'"
             )
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for >: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -179,17 +179,17 @@ PyBool.prototype.__le__ = function(other) {
         return new PyBool(this_bool <= other_bool)
     } else if (types.isbataviainstance(other)) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: bool() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<=' not supported between instances of 'bool' and '" +
                 type_name(other) + "'"
             )
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for <=: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <=: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -219,17 +219,17 @@ PyBool.prototype.__lt__ = function(other) {
         return new PyBool(this_bool < other_bool)
     } else if (types.isbataviainstance(other)) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: bool() < ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<' not supported between instances of 'bool' and '" +
                 type_name(other) + "'"
             )
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for <: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -291,9 +291,9 @@ PyBool.prototype.__pow__ = function(other) {
             }
         } else {
             if (types.isinstance(other, types.PyComplex)) {
-                throw new PyZeroDivisionError('0.0 to a negative or complex power')
+                throw new ZeroDivisionError('0.0 to a negative or complex power')
             } else if (other.__lt__(new types.PyFloat(0.0))) {
-                throw new PyZeroDivisionError('0.0 cannot be raised to a negative power')
+                throw new ZeroDivisionError('0.0 cannot be raised to a negative power')
             } else if (types.isinstance(other, types.PyInt)) {
                 return new types.PyInt(Math.pow(0, other.valueOf()))
             } else {
@@ -301,7 +301,7 @@ PyBool.prototype.__pow__ = function(other) {
             }
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -319,9 +319,9 @@ PyBool.prototype.__floordiv__ = function(other) {
         }
         return thisValue.__floordiv__(other)
     } else if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
-        throw new PyTypeError("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -335,7 +335,7 @@ PyBool.prototype.__truediv__ = function(other) {
         }
         return thisValue.__truediv__(other)
     } else {
-        throw new PyTypeError("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -399,15 +399,15 @@ PyBool.prototype.__mul__ = function(other) {
             return new types.PyBytearray(new types.PyBytes(''))
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
     }
 }
 
 PyBool.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else if ((types.isinstance(other, types.PyInt) && other.val.isZero()) || (types.isinstance(other, types.PyBool) && !other.valueOf())) {
-        throw new PyZeroDivisionError('integer division or modulo by zero')
+        throw new ZeroDivisionError('integer division or modulo by zero')
     } else if (this.valueOf() && (types.isinstance(other, types.PyInt) && other.valueOf() > 1)) {
         return new types.PyBool(true)
     } else if (this.valueOf() && (types.isinstance(other, types.PyBool) && other.valueOf())) {
@@ -431,12 +431,12 @@ PyBool.prototype.__mod__ = function(other) {
         }
         var result = ((this_val2 % other) + other) % other
         if (other.valueOf() === 0.0) {
-            throw new PyZeroDivisionError('float modulo')
+            throw new ZeroDivisionError('float modulo')
         } else {
             return new types.PyFloat(result)
         }
     } else {
-        throw new PyTypeError("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -473,7 +473,7 @@ PyBool.prototype.__add__ = function(other) {
         }
         return new types.PyComplex(this_bool + other.real, other.imag)
     } else {
-        throw new PyTypeError("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -512,16 +512,16 @@ PyBool.prototype.__sub__ = function(other) {
         }
         return new types.PyComplex(this_bool - other.real, 0 - other.imag)
     } else {
-        throw new PyTypeError("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'")
     }
 }
 
 PyBool.prototype.__getitem__ = function(other) {
-    throw new PyTypeError("'bool' object is not subscriptable")
+    throw new TypeError("'bool' object is not subscriptable")
 }
 
 PyBool.prototype.__setattr__ = function(other) {
-    throw new PyAttributeError("'bool' object has no attribute '" + other + "'")
+    throw new AttributeError("'bool' object has no attribute '" + other + "'")
 }
 
 PyBool.prototype.__lshift__ = function(other) {
@@ -539,10 +539,10 @@ PyBool.prototype.__lshift__ = function(other) {
         }
     } else if (types.isinstance(other, types.PyInt)) {
         if (other.valueOf() < 0) {
-            throw new PyValueError('negative shift count')
+            throw new ValueError('negative shift count')
         }
         if (Number.MAX_SAFE_INTEGER < other.valueOf()) {
-            throw new PyOverflowError('Python int too large to convert to C ssize_t')
+            throw new OverflowError('Python int too large to convert to C ssize_t')
         }
         if (this.valueOf()) {
             this_bool = 1
@@ -551,7 +551,7 @@ PyBool.prototype.__lshift__ = function(other) {
         }
         return new types.PyInt(this_bool << other.valueOf())
     } else {
-        throw new PyTypeError("unsupported operand type(s) for <<: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -566,10 +566,10 @@ PyBool.prototype.__rshift__ = function(other) {
         }
     } else if (types.isinstance(other, types.PyInt)) {
         if (other.valueOf() < 0) {
-            throw new PyValueError('negative shift count')
+            throw new ValueError('negative shift count')
         }
         if (Number.MAX_SAFE_INTEGER < Math.abs(other.valueOf())) {
-            throw new PyOverflowError('Python int too large to convert to C ssize_t')
+            throw new OverflowError('Python int too large to convert to C ssize_t')
         }
         if (this.valueOf()) {
             this_bool = 1
@@ -578,7 +578,7 @@ PyBool.prototype.__rshift__ = function(other) {
         }
         return new types.PyInt(this_bool >> other.valueOf())
     } else {
-        throw new PyTypeError("unsupported operand type(s) for >>: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -600,7 +600,7 @@ PyBool.prototype.__and__ = function(other) {
         }
         return new PyBool(this_bool & other_bool)
     } else {
-        throw new PyTypeError("unsupported operand type(s) for &: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -622,7 +622,7 @@ PyBool.prototype.__xor__ = function(other) {
         }
         return new PyBool(this_bool ^ other_bool)
     } else {
-        throw new PyTypeError("unsupported operand type(s) for ^: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -644,7 +644,7 @@ PyBool.prototype.__or__ = function(other) {
         }
         return new PyBool(this_bool | other_bool)
     } else {
-        throw new PyTypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'")
     }
 }
 
@@ -654,7 +654,7 @@ PyBool.prototype.__or__ = function(other) {
 
 PyBool.prototype.__ifloordiv__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     } else {
         return utils.inplace_call('__floordiv__', '//=', this, other)
     }
@@ -678,7 +678,7 @@ PyBool.prototype.__imul__ = function(other) {
 
 PyBool.prototype.__imod__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
-        throw new PyTypeError("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     } else {
         return utils.inplace_call('__mod__', '%=', this, other)
     }

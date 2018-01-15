@@ -1,10 +1,10 @@
 /*************************************************************************
  * Virtual Machine
  *************************************************************************/
-import { PyBaseException, PyException, BataviaError, PyStopIteration } from './core/exceptions'
-import { create_pyclass, PyObject } from './core/types'
+import * as attrs from './core/attrs'
 import * as callables from './core/callables'
-import * as native from './core/native'
+import { BaseException, BataviaError, StopIteration } from './core/exceptions'
+import { create_pyclass, PyObject, PyType } from './core/types'
 import * as version from './core/version'
 
 import PyBlock from './core/Block'
@@ -641,7 +641,7 @@ VirtualMachine.prototype.run = function(tag, args) {
         return this.run_code({'code': code})
     } catch (e) {
         if (e instanceof BataviaError) {
-            sys.stderr.write([e.msg + '\n'])
+            sys.stderr.write(e.msg + '\n')
         } else {
             throw e
         }
@@ -673,7 +673,7 @@ VirtualMachine.prototype.run_method = function(tag, args, kwargs, f_locals, f_gl
         })
     } catch (e) {
         if (e instanceof BataviaError) {
-            sys.stderr.write([e.msg + '\n'])
+            sys.stderr.write(e.msg + '\n')
         } else {
             throw e
         }
@@ -687,7 +687,7 @@ VirtualMachine.prototype.PyErr_Occurred = function() {
 }
 
 VirtualMachine.prototype.PyErr_SetString = function(Exception, message) {
-    var exception = new PyException(message)
+    var exception = new Exception(message)
     this.last_exception = {
         'exc_type': exception.__class__,
         'value': exception,
@@ -1037,9 +1037,9 @@ VirtualMachine.prototype.run_code = function(kwargs) {
                     trace.push(this.last_exception.value.__class__.__name__)
                 }
             } else {
-                throw this.last_exception.value;
+                throw this.last_exception.value
             }
-            sys.stderr.write([trace.join('\n') + '\n'])
+            sys.stderr.write(trace.join('\n') + '\n')
             this.last_exception = null
         } else {
             throw e
@@ -1276,14 +1276,8 @@ VirtualMachine.prototype.byte_LOAD_NAME = function(name) {
         val = frame.f_globals[name]
     } else if (name in frame.f_builtins) {
         val = frame.f_builtins[name]
-        // Functions loaded from builtins need to be bound to this VM.
-        if (val instanceof Function) {
-            var doc = val.__doc__
-            val = val.bind(this)
-            val.__doc__ = doc
-        }
     } else {
-        throw new builtins.PyNameError("name '" + name + "' is not defined")
+        throw new builtins.NameError("name '" + name + "' is not defined")
     }
     this.push(val)
 }
@@ -1301,7 +1295,7 @@ VirtualMachine.prototype.byte_LOAD_FAST = function(name) {
     if (name in this.frame.f_locals) {
         val = this.frame.f_locals[name]
     } else {
-        throw new builtins.PyUnboundLocalError("local variable '" + name + "' referenced before assignment")
+        throw new builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment")
     }
     this.push(val)
 }
@@ -1331,7 +1325,7 @@ VirtualMachine.prototype.byte_LOAD_GLOBAL = function(name) {
             val.__doc__ = doc
         }
     } else {
-        throw new builtins.PyNameError("name '" + name + "' is not defined")
+        throw new builtins.NameError("name '" + name + "' is not defined")
     }
     this.push(val)
 }
@@ -1490,34 +1484,19 @@ VirtualMachine.prototype.byte_COMPARE_OP = function(opnum) {
 }
 
 VirtualMachine.prototype.byte_LOAD_ATTR = function(attr) {
-    var obj = this.pop()
-    var val
-    if (obj.__getattribute__ === undefined) {
-        // No __getattribute__(), so it's a native object.
-        val = native.getattr(obj, attr)
-    } else {
-        val = native.getattr_py(obj, attr)
-    }
-
+    let obj = this.pop()
+    let val = attrs.getattr(obj, attr)
     this.push(val)
 }
 
 VirtualMachine.prototype.byte_STORE_ATTR = function(name) {
-    var items = this.popn(2)
-    if (items[1].__setattr__ === undefined) {
-        native.setattr(items[1], name, items[0])
-    } else {
-        items[1].__setattr__(name, items[0])
-    }
+    let items = this.popn(2)
+    attrs.setattr(items[1], name, items[0])
 }
 
 VirtualMachine.prototype.byte_DELETE_ATTR = function(name) {
-    var obj = this.pop()
-    if (obj.__delattr__ === undefined) {
-        native.delattr(obj, name)
-    } else {
-        obj.__delattr__(name)
-    }
+    let obj = this.pop()
+    attrs.delattr(obj, name)
 }
 
 VirtualMachine.prototype.byte_STORE_SUBSCR = function() {
@@ -1750,7 +1729,7 @@ VirtualMachine.prototype.byte_FOR_ITER = function(jump) {
         var v = iterobj.__next__()
         this.push(v)
     } catch (err) {
-        if (err instanceof builtins.PyStopIteration) {
+        if (err instanceof builtins.StopIteration) {
             this.pop()
             this.jump(jump)
         } else {
@@ -1785,7 +1764,7 @@ VirtualMachine.prototype.byte_SETUP_FINALLY = function(dest) {
 VirtualMachine.prototype.byte_END_FINALLY = function() {
     var why, value, traceback
     var exc_type = this.pop()
-    if (exc_type === builtins.PyNone) {
+    if (exc_type === builtins.None) {
         why = null
     } else if (exc_type === 'silenced') {
         var block = this.pop_block() // should be except-handler
@@ -1793,7 +1772,7 @@ VirtualMachine.prototype.byte_END_FINALLY = function() {
         return null
     } else {
         value = this.pop()
-        if (value instanceof PyBaseException) {
+        if (value instanceof BaseException) {
             traceback = this.pop()
             this.last_exception = {
                 'exc_type': exc_type,
@@ -1831,12 +1810,12 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
         } else {
             return 'reraise'
         }
-    } else if (exc instanceof PyBaseException) {
-        // As in `throw PyValueError('foo')`
+    } else if (exc instanceof BaseException) {
+        // As in `throw ValueError('foo')`
         exc_type = exc.__class__
         val = exc
-    } else if (exc.prototype instanceof PyBaseException ||
-               exc === PyBaseException) {
+    } else if (exc.prototype instanceof BaseException ||
+               exc === BaseException) {
         exc_type = exc
         val = new exc_type() // eslint-disable-line new-cap
     } else {
@@ -1847,7 +1826,7 @@ VirtualMachine.prototype.do_raise = function(exc, cause) {
     // val is a valid exception instance and exc_type is its class.
     // Now do a similar thing for the cause, if present.
     if (cause) {
-        // if not isinstance(cause, PyBaseException):
+        // if not isinstance(cause, BaseException):
         //     return 'exception' // error
 
         val.__cause__ = cause
@@ -1879,8 +1858,8 @@ VirtualMachine.prototype.byte_SETUP_WITH = function(dest) {
 VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
     var exc = this.top()
     var mgr
-    var val = builtins.PyNone
-    var tb = builtins.PyNone
+    var val = builtins.None
+    var tb = builtins.None
     if (exc instanceof types.PyNoneType) {
         mgr = this.pop(1)
     } else if (exc instanceof String) {
@@ -1889,12 +1868,12 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
         } else {
             mgr = this.pop(1)
         }
-        exc = builtins.PyNone
-    } else if (exc.prototype instanceof PyBaseException) {
+        exc = builtins.None
+    } else if (exc.prototype instanceof BaseException) {
         val = this.peek(2)
         tb = this.peek(3)
         mgr = this.pop(6)
-        this.push_at(builtins.PyNone, 3)
+        this.push_at(builtins.None, 3)
         var block = this.pop_block()
         this.push_block(block.type, block.handler, block.level - 1)
     } else {
@@ -2009,6 +1988,7 @@ VirtualMachine.prototype.byte_CALL_FUNCTION_VAR_KW = function(arg) {
 }
 
 VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
+    let self
     if (!version.earlier('3.6')) {
         let namedargs = new types.JSDict()
         let lenPos = arg
@@ -2024,11 +2004,16 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
             }
         }
         let func = this.pop()
-        if (func.__call__ !== undefined) {
-            func = func.__call__.bind(func)
+
+        // If this is a type function (i.e., an object constructor), self
+        // is the type, not the virtual machine.
+        if (func instanceof PyType) {
+            self = func
+        } else {
+            self = this
         }
 
-        let retval = func(posargs, namedargs)
+        let retval = callables.call_function(self, func, posargs, namedargs)
         this.push(retval)
     } else {
         let namedargs = new types.JSDict()
@@ -2050,11 +2035,16 @@ VirtualMachine.prototype.call_function = function(arg, args, kwargs) {
             }
         }
         let func = this.pop()
-        if (func.__call__ !== undefined) {
-            func = func.__call__.bind(func)
+
+        // If this is a type function (i.e., an object constructor), self
+        // is the type, not the virtual machine.
+        if (func instanceof PyType) {
+            self = func
+        } else {
+            self = this
         }
 
-        let retval = func(posargs, namedargs)
+        let retval = callables.call_function(self, func, posargs, namedargs)
         this.push(retval)
     }
 }
@@ -2092,7 +2082,7 @@ VirtualMachine.prototype.byte_YIELD_FROM = function() {
             this.return_value = receiver.send(v)
         }
     } catch (e) {
-        if (e instanceof PyStopIteration) {
+        if (e instanceof StopIteration) {
             this.pop()
             this.push(e.value)
             return
@@ -2122,20 +2112,18 @@ VirtualMachine.prototype.byte_IMPORT_NAME = function(name) {
 }
 
 VirtualMachine.prototype.byte_IMPORT_STAR = function() {
-    // Although modules may not be native, the native getattr works
-    // because it's a simple object subscript.
     // TODO: this doesn't use __all__ properly.
     var mod = this.pop()
     var name
     if ('__all__' in mod) {
         for (var n = 0; n < mod.__all__.length; n++) {
             name = mod.__all__[n]
-            this.frame.f_locals[name] = native.getattr(mod, name)
+            this.frame.f_locals[name] = attrs.getattr(mod, name)
         }
     } else {
         for (name in mod) {
             if (name[0] !== '_') {
-                this.frame.f_locals[name] = native.getattr(mod, name)
+                this.frame.f_locals[name] = attrs.getattr(mod, name)
             }
         }
     }
@@ -2143,9 +2131,7 @@ VirtualMachine.prototype.byte_IMPORT_STAR = function() {
 
 VirtualMachine.prototype.byte_IMPORT_FROM = function(name) {
     var mod = this.top()
-    // Although modules may not be native, the native getattr works
-    // because it's a simple object subscript.
-    var val = native.getattr(mod, name)
+    var val = attrs.getattr(mod, name)
     this.push(val)
 }
 
@@ -2171,57 +2157,19 @@ var make_class = function(vm) {
         // constructor. The Javascript constructor just sets up the object.
         // The Python __init__ invocation is done outside the constructor, as part
         // of the __call__ that invokes the constructor.
-        var pyclass = class extends PyObject {
-            constructor() {
-                super()
-            }
-        }
-        //     function(vm, name, bases) {
-        //     return function() {
-        //         if (bases.length === 0) {
-        //             PyObject.call(this)
-        //         } else {
-        //             for (var b in bases) {
-        //                 bases[b].call(this)
-        //             }
-        //         }
-        //     }
-        // }(vm, name, bases))
 
-        // If there are no explicitly named bases, the class
-        // inherits from `object`. Otherwise, populate __base__
-        // and __bases__, and copy in all the methods from
-        // any base class so that the prototype of pyclass
-        // has all the available methods.
-        // if (bases.length === 0) {
-        //     pyclass.prototype.__bases__ = [PyObject]
-        //     pyclass.prototype.__base__ = PyObject
-        // } else {
-        //     pyclass.prototype.__bases__ = bases
-        //     pyclass.prototype.__base__ = bases[0]
-        // }
-
-        create_pyclass(pyclass, name, bases[0])
-        // Set the type of the object
-        // var pytype = new types.PyType(name, bases)
-        // pytype.$pyclass = pyclass
-
-        // pyclass.__class__ = pytype
-        // pyclass.prototype.__class__ = pytype
-
-        // Close the loop so the type knows about the class,
-        // track the virtual machine that was used to create the type,
-        // and set the type to use Python style initialization.
+        var pyclass = class extends PyObject {}
+        create_pyclass(pyclass, name, bases)
         pyclass.__class__.$vm = vm
 
         // Copy in all the attributes that were created
         // as part of object construction.
-        // for (var attr in locals) {
-        //     if (locals.hasOwnProperty(attr)) {
-        //         pyclass[attr] = locals[attr]
-        //         pyclass.prototype[attr] = locals[attr]
-        //     }
-        // }
+        for (var attr in locals) {
+            if (locals.hasOwnProperty(attr)) {
+                pyclass[attr] = locals[attr]
+                pyclass.prototype[attr] = locals[attr]
+            }
+        }
 
         // Return the class. Calling the type will construct instances.
         return pyclass.__class__

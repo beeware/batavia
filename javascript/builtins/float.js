@@ -1,10 +1,10 @@
-import { PyTypeError, PyValueError } from '../core/exceptions'
+import { TypeError, ValueError } from '../core/exceptions'
 import { type_name } from '../core/types'
 import * as types from '../types'
 
 export default function float(args, kwargs) {
     if (args.length > 1) {
-        throw new PyTypeError('float() takes at most 1 argument (' + args.length + ' given)')
+        throw new TypeError('float() takes at most 1 argument (' + args.length + ' given)')
     }
     if (args.length === 0) {
         return new types.PyFloat(0.0)
@@ -14,7 +14,7 @@ export default function float(args, kwargs) {
 
     if (types.isinstance(value, types.PyStr)) {
         if (value.length === 0) {
-            throw new PyValueError('could not convert string to float: ')
+            throw new ValueError('could not convert string to float: ')
         } else if (value.search(/[^0-9.]/g) === -1) {
             return new types.PyFloat(parseFloat(value))
         } else {
@@ -25,12 +25,12 @@ export default function float(args, kwargs) {
             } else if (value === '-inf') {
                 return new types.PyFloat(-Infinity)
             }
-            throw new PyValueError("could not convert string to float: '" + args[0] + "'")
+            throw new ValueError("could not convert string to float: '" + args[0] + "'")
         }
     } else if (types.isinstance(value, [types.PyInt, types.PyBool, types.PyFloat])) {
         return args[0].__float__()
     } else {
-        throw new PyTypeError(
+        throw new TypeError(
             "float() argument must be a string, a bytes-like object or a number, not '" + type_name(args[0]) + "'")
     }
 }

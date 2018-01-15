@@ -1,5 +1,5 @@
 import { call_function, call_method } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -13,7 +13,7 @@ export default class Filter extends PyObject {
         super()
 
         if (args.length < 2) {
-            throw new PyTypeError('filter expected 2 arguments, got ' + args.length)
+            throw new TypeError('filter expected 2 arguments, got ' + args.length)
         }
         this._func = args[0]
         this._sequence = args[1]
@@ -40,7 +40,7 @@ export default class Filter extends PyObject {
             this._iter = builtins.iter([this._sequence], null)
         }
         if (!builtins.callable([this._func], null)) {
-            throw new PyTypeError(type_name(this._func) + "' object is not callable")
+            throw new TypeError(type_name(this._func) + "' object is not callable")
         }
 
         var val, more

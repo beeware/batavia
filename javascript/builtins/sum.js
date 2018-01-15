@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -8,16 +8,16 @@ export default function sum(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("sum() doesn't accept keyword arguments")
+        throw new TypeError("sum() doesn't accept keyword arguments")
     }
     if (!args || args.length === 0) {
-        throw new PyTypeError('sum() expected at least 1 argument, got ' + args.length)
+        throw new TypeError('sum() expected at least 1 argument, got ' + args.length)
     }
     if (args.length > 2) {
-        throw new PyTypeError('sum() expected at most 2 argument, got ' + args.length)
+        throw new TypeError('sum() expected at most 2 argument, got ' + args.length)
     }
     if (!args[0].__iter__) {
-        throw new PyTypeError("'" + type_name(args[0]) + "' object is not iterable")
+        throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
     }
 
     try {
@@ -29,7 +29,7 @@ export default function sum(args, kwargs) {
         // all of which would need to be reflected in this error message -
         // but we don't have to check for them here, because we've already
         // tested for them in __add__.
-        throw new PyTypeError(err.msg)
+        throw new TypeError(err.msg)
     }
 }
 

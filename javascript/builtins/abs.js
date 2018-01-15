@@ -1,28 +1,20 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { call_method } from '../core/callables'
+import { BataviaError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
-export default function abs(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("abs() doesn't accept keyword arguments")
-    }
-    if (!args || args.length !== 1) {
-        throw new PyTypeError('abs() takes exactly one argument (' + args.length + ' given)')
-    }
-
-    var value = args[0]
-    if (types.isinstance(value, types.PyBool)) {
-        return new types.PyInt(Math.abs(value.valueOf()))
-    } else if (types.isinstance(value, [types.PyInt, types.PyFloat, types.PyComplex])) {
-        return value.__abs__()
+export default function abs(x) {
+    if (types.isinstance(x, types.PyBool)) {
+        return new types.PyInt(Math.abs(x.valueOf()))
+    } else if (types.isinstance(x, [types.PyInt, types.PyFloat, types.PyComplex])) {
+        return call_method(x, '__abs__')
     } else {
-        throw new PyTypeError("bad operand type for abs(): '" + type_name(value) + "'")
+        throw new TypeError("bad operand type for abs(): '" + type_name(x) + "'")
     }
 }
 
-abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.'
-abs.$pyargs = true
+abs.__doc__ = 'Return the absolute value of the argument.'
+abs.$pyargs = {
+    args: ['x']
+}

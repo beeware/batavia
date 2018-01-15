@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import { PyTypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import * as callables from '../core/callables'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
@@ -14,7 +14,7 @@ export default class Map extends PyObject {
         super()
 
         if (args.length < 2) {
-            throw new PyTypeError('map expected 2 arguments, got ' + args.length)
+            throw new TypeError('map expected 2 arguments, got ' + args.length)
         }
         this._func = args[0]
         this._sequence = args[1]
@@ -41,7 +41,7 @@ export default class Map extends PyObject {
             this._iter = builtins.iter([this._sequence], null)
         }
         if (!builtins.callable([this._func], null)) {
-            throw new PyTypeError(
+            throw new TypeError(
                 type_name(this._func) + "' object is not callable")
         }
 

@@ -1,21 +1,21 @@
 import { call_method } from '../core/callables'
-import { BataviaError, PyStopIteration, PyTypeError } from '../core/exceptions'
+import { BataviaError, StopIteration, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function all(args, kwargs) {
     if (args[0] === null) {
-        throw new PyTypeError("'NoneType' object is not iterable")
+        throw new TypeError("'NoneType' object is not iterable")
     }
     if (arguments.length !== 2) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("all() doesn't accept keyword arguments")
+        throw new TypeError("all() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new PyTypeError('all() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('all() takes exactly one argument (' + args.length + ' given)')
     }
 
     try {
@@ -29,8 +29,8 @@ export default function all(args, kwargs) {
             }
         }
     } catch (err) {
-        if (!(err instanceof PyStopIteration)) {
-            throw new PyTypeError("'" + type_name(args[0]) + "' object is not iterable")
+        if (!(err instanceof StopIteration)) {
+            throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
         }
     }
 

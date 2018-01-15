@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 
-import { BataviaError, PyOverflowError, PyTypeError, PyValueError } from '../core/exceptions'
+import { BataviaError, OverflowError, TypeError, ValueError } from '../core/exceptions'
 import * as callables from '../core/callables'
 import { type_name } from '../core/types'
 import * as version from '../core/version'
@@ -20,7 +20,7 @@ export default function bytes(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("<fn>() doesn't accept keyword arguments.")
+        throw new TypeError("<fn>() doesn't accept keyword arguments.")
     }
 
     if (args.length === 0) {
@@ -30,24 +30,24 @@ export default function bytes(args, kwargs) {
         var arg = args[0]
         if (arg === null) {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'NoneType' object is not iterable"
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "cannot convert 'NoneType' object to bytes"
                 )
             }
         } else if (types.isinstance(arg, types.PyInt)) {
             // bytes(int) -> bytes array of size given by the parameter initialized with null bytes
             // Batavia ints are BigNumbers, so we need to unpack the value from the BigNumber Array.
-            // We throw PyOverflowError when we find a PyRangeError, so implementation dependent
+            // We throw OverflowError when we find a RangeError, so implementation dependent
             var bignumsign = arg.val.s
             var bignumarray = arg.val.c
             var bignumexp = arg.val.e
             var too_large = false
             if (bignumsign === -1) {
-                throw new PyValueError(
+                throw new ValueError(
                     'negative count'
                 )
             } else if (bignumarray.length > 1 || bignumexp !== 0) {
@@ -57,11 +57,11 @@ export default function bytes(args, kwargs) {
                 try {
                     var bytesbuffer = Buffer.alloc(byteslength)
                 } catch (e) {
-                    if (e.name === 'PyRangeError') { too_large = true }
+                    if (e.name === 'RangeError') { too_large = true }
                 }
             }
             if (too_large) {
-                throw new PyOverflowError('byte string is too large')
+                throw new OverflowError('byte string is too large')
             } else {
                 return new types.PyBytes(bytesbuffer)
             }
@@ -77,7 +77,7 @@ export default function bytes(args, kwargs) {
             // byte(bytes_or_buffer) -> mutable copy of bytes_or_buffer
             return new types.PyBytes(Buffer.from(arg.val.val))
         } else if (types.isinstance(arg, types.PyStr)) {
-            throw new PyTypeError('string argument without an encoding')
+            throw new TypeError('string argument without an encoding')
         // is the argument iterable and not a Str, Bytes, Bytearray (dealt with above)?
         } else if (arg.__iter__ !== undefined) {
             // bytearray(iterable_of_ints) -> bytearray
@@ -96,10 +96,10 @@ export default function bytes(args, kwargs) {
                     }
                 } else {
                     if (!types.isinstance(val, types.PyInt)) {
-                        throw new PyTypeError(
+                        throw new TypeError(
                             "'" + type_name(val) + "' object cannot be interpreted as an integer")
                     } else {
-                        throw new PyValueError('bytes must be in range(0, 256)')
+                        throw new ValueError('bytes must be in range(0, 256)')
                     }
                 }
             })
@@ -107,11 +107,11 @@ export default function bytes(args, kwargs) {
         } else {
             // the argument is not one of the special cases, and not an iterable, so...
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'" + type_name(arg) + "' object is not iterable"
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "cannot convert '" + type_name(arg) + "' object to bytes"
                 )
             }

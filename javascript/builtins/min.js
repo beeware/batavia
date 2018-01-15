@@ -1,7 +1,6 @@
-import { BataviaError, PyStopIteration, PyTypeError, PyValueError } from '../core/exceptions'
-import { type_name } from '../core/types'
+import { BataviaError, StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { type_name, PyNone } from '../core/types'
 
-import { PyNone } from '../builtins'
 import tuple from './tuple'
 
 export default function min(args, kwargs) {
@@ -9,7 +8,7 @@ export default function min(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (!args || args.length === 0) {
-        throw new PyTypeError('min expected 1 arguments, got ' + args.length)
+        throw new TypeError('min expected 1 arguments, got ' + args.length)
     }
 
     var iterobj
@@ -17,7 +16,7 @@ export default function min(args, kwargs) {
         iterobj = tuple([args], PyNone).__iter__()
     } else {
         if (!args[0].__iter__) {
-            throw new PyTypeError("'" + type_name(args[0]) + "' object is not iterable")
+            throw new TypeError("'" + type_name(args[0]) + "' object is not iterable")
         }
         iterobj = args[0].__iter__()
     }
@@ -26,11 +25,11 @@ export default function min(args, kwargs) {
     try {
         var min = iterobj.__next__()
     } catch (err) {
-        if (err instanceof PyStopIteration) {
+        if (err instanceof StopIteration) {
             if ('default' in kwargs) {
                 return kwargs['default']
             } else {
-                throw new PyValueError('min() arg is an empty sequence')
+                throw new ValueError('min() arg is an empty sequence')
             }
         } else {
             throw err
@@ -45,7 +44,7 @@ export default function min(args, kwargs) {
             }
         }
     } catch (err) {
-        if (!(err instanceof PyStopIteration)) {
+        if (!(err instanceof StopIteration)) {
             throw err
         }
     }

@@ -1,4 +1,4 @@
-import { PyNotImplementedError, PyTypeError, PyValueError, PyZeroDivisionError } from '../core/exceptions'
+import { NotImplementedError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
 
@@ -50,7 +50,7 @@ export default class PyComplex extends PyObject {
             var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i
             var match = regex.exec(re)
             if (match === null || re === '') {
-                throw new PyValueError('complex() arg is a malformed string')
+                throw new ValueError('complex() arg is a malformed string')
             }
             this.real = parseFloat(part_from_str(match[1]))
             this.imag = parseFloat(part_from_str(match[3]))
@@ -59,24 +59,24 @@ export default class PyComplex extends PyObject {
             }
         } else if (!types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool, types.PyComplex])) {
             if (version.later('3.5')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     "complex() first argument must be a string, a bytes-like object or a number, not '" +
                     type_name(re) + "'"
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "complex() argument must be a string, a bytes-like object or a number, not '" +
                     type_name(re) + "'"
                 )
             }
         } else if (!types.isinstance(im, [types.PyFloat, types.PyInt, types.PyBool, types.PyComplex])) {
             if (version.later('3.5')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     "complex() first argument must be a string, a bytes-like object or a number, not '" +
                     type_name(im) + "'"
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "complex() argument must be a string, a bytes-like object or a number, not '" +
                     type_name(im) + "'"
                 )
@@ -94,7 +94,7 @@ export default class PyComplex extends PyObject {
             this.real = re.real
             this.imag = re.imag
         } else {
-            throw new PyNotImplementedError('Complex initialization from complex argument(s) has not been implemented')
+            throw new NotImplementedError('Complex initialization from complex argument(s) has not been implemented')
         }
     }
 
@@ -138,11 +138,11 @@ export default class PyComplex extends PyObject {
 
     __lt__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: complex() < ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<' not supported between instances of 'complex' and '" + type_name(other) + "'"
             )
         }
@@ -150,11 +150,11 @@ export default class PyComplex extends PyObject {
 
     __le__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: complex() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<=' not supported between instances of 'complex' and '" + type_name(other) + "'"
             )
         }
@@ -186,11 +186,11 @@ export default class PyComplex extends PyObject {
 
     __gt__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: complex() > ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>' not supported between instances of 'complex' and '" + type_name(other) + "'"
             )
         }
@@ -198,11 +198,11 @@ export default class PyComplex extends PyObject {
 
     __ge__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: complex() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'>=' not supported between instances of 'complex' and '" + type_name(other) + "'"
             )
         }
@@ -225,7 +225,7 @@ export default class PyComplex extends PyObject {
     }
 
     __invert__() {
-        throw new PyTypeError("bad operand type for unary ~: 'complex'")
+        throw new TypeError("bad operand type for unary ~: 'complex'")
     }
 
     __abs__() {
@@ -249,7 +249,7 @@ export default class PyComplex extends PyObject {
         // else if (types.isinstance(exponent, [types.PyFloat, types.PyInt, types.PyComplex]) {
         // { do some stuff }
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
             )
         }
@@ -260,19 +260,19 @@ export default class PyComplex extends PyObject {
             if (!y.val.isZero()) {
                 return new Complex(x.real / y.__float__().val, x.imag / y.__float__().val)
             } else {
-                throw new PyZeroDivisionError('complex division by zero')
+                throw new ZeroDivisionError('complex division by zero')
             }
         } else if (types.isinstance(y, types.PyFloat)) {
             if (y.valueOf()) {
                 return new Complex(x.real / y.valueOf(), x.imag / y.valueOf())
             } else {
-                throw new PyZeroDivisionError('complex division by zero')
+                throw new ZeroDivisionError('complex division by zero')
             }
         } else if (types.isinstance(y, types.PyBool)) {
             if (y.valueOf()) {
                 return new Complex(x.real, x.imag)
             } else {
-                throw new PyZeroDivisionError('complex division by zero')
+                throw new ZeroDivisionError('complex division by zero')
             }
         } else if (types.isinstance(y, types.PyComplex)) {
             var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2)
@@ -288,7 +288,7 @@ export default class PyComplex extends PyObject {
             } else {
                 prefix = ''
             }
-            throw new PyTypeError(
+            throw new TypeError(
                 'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
             )
         }
@@ -299,7 +299,7 @@ export default class PyComplex extends PyObject {
     }
 
     __floordiv__(other) {
-        throw new PyTypeError("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     }
 
     __truediv__(other) {
@@ -328,7 +328,7 @@ export default class PyComplex extends PyObject {
         } else if (types.isinstance(y, types.PyComplex)) {
             return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
         } else if (types.isinstance(y, [types.PyList, types.PyStr, types.PyTuple, types.PyBytearray, types.PyBytes])) {
-            throw new PyTypeError("can't multiply sequence by non-int of type 'complex'")
+            throw new TypeError("can't multiply sequence by non-int of type 'complex'")
         } else {
             var prefix
             if (inplace) {
@@ -336,7 +336,7 @@ export default class PyComplex extends PyObject {
             } else {
                 prefix = ''
             }
-            throw new PyTypeError(
+            throw new TypeError(
                 'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
             )
         }
@@ -347,7 +347,7 @@ export default class PyComplex extends PyObject {
     }
 
     __mod__(other) {
-        throw new PyTypeError("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     }
 
     __add__(x, y, inplace) {
@@ -370,7 +370,7 @@ export default class PyComplex extends PyObject {
             } else {
                 prefix = ''
             }
-            throw new PyTypeError(
+            throw new TypeError(
                 'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
             )
         }
@@ -400,7 +400,7 @@ export default class PyComplex extends PyObject {
             } else {
                 prefix = ''
             }
-            throw new PyTypeError(
+            throw new TypeError(
                 'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
             )
         }
@@ -411,35 +411,35 @@ export default class PyComplex extends PyObject {
     }
 
     __getitem__(other) {
-        throw new PyTypeError("'complex' object is not subscriptable")
+        throw new TypeError("'complex' object is not subscriptable")
     }
 
     __lshift__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for <<: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __rshift__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for >>: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __and__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for &: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __xor__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for ^: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __or__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for |: 'complex' and '" + type_name(other) + "'"
         )
     }
@@ -449,7 +449,7 @@ export default class PyComplex extends PyObject {
      **************************************************/
 
     __ifloordiv__(other) {
-        throw new PyTypeError("can't take floor of complex number.")
+        throw new TypeError("can't take floor of complex number.")
     }
 
     __itruediv__(other) {
@@ -469,39 +469,39 @@ export default class PyComplex extends PyObject {
     }
 
     __imod__(other) {
-        throw new PyTypeError("can't mod complex numbers.")
+        throw new TypeError("can't mod complex numbers.")
     }
 
     __ipow__(other) {
-        throw new PyNotImplementedError('Complex.__ipow__ has not been implemented')
+        throw new NotImplementedError('Complex.__ipow__ has not been implemented')
     }
 
     __ilshift__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for <<=: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __irshift__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for >>=: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __iand__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for &=: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __ixor__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for ^=: 'complex' and '" + type_name(other) + "'"
         )
     }
 
     __ior__(other) {
-        throw new PyTypeError(
+        throw new TypeError(
             "unsupported operand type(s) for |=: 'complex' and '" + type_name(other) + "'"
         )
     }

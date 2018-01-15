@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -8,10 +8,10 @@ export default function globals(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("globals() doesn't accept keyword arguments")
+        throw new TypeError("globals() doesn't accept keyword arguments")
     }
     if (args && args.length !== 0) {
-        throw new PyTypeError('globals() takes no arguments (' + args.length + ' given)')
+        throw new TypeError('globals() takes no arguments (' + args.length + ' given)')
     }
     var gbl = this.frame.f_globals
 

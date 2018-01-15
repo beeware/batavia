@@ -1,9 +1,9 @@
-import { PyTypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import * as native from '../core/native'
 
 export default function setattr(args, kwargs) {
     if (args.length !== 3) {
-        throw new PyTypeError('setattr expected exactly 3 arguments, got ' + args.length)
+        throw new TypeError('setattr expected exactly 3 arguments, got ' + args.length)
     }
 
     if (args[0].__setattr__ === undefined) {

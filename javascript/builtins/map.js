@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 import * as types from '../types'
 
 export default function map(args, kwargs) {
@@ -7,11 +7,11 @@ export default function map(args, kwargs) {
     }
 
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("map() doesn't accept keyword arguments")
+        throw new TypeError("map() doesn't accept keyword arguments")
     }
 
     if (!args || args.length < 2) {
-        throw new PyTypeError('map() must have at least two arguments.')
+        throw new TypeError('map() must have at least two arguments.')
     }
 
     return new types.PyMap(args, kwargs)

@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -9,12 +9,12 @@ export default function bool(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("bool() doesn't accept keyword arguments")
+        throw new TypeError("bool() doesn't accept keyword arguments")
     }
     if (!args || args.length === 0) {
         return new types.PyBool(false)
     } else if (args.length !== 1) {
-        throw new PyTypeError('bool() expected exactly 1 argument (' + args.length + ' given)')
+        throw new TypeError('bool() expected exactly 1 argument (' + args.length + ' given)')
     }
 
     if (args[0] === null) {
@@ -27,7 +27,7 @@ export default function bool(args, kwargs) {
         if (types.isinstance(output, types.PyBool)) {
             return output
         } else {
-            throw new PyTypeError('__bool__ should return bool, returned ' + type_name(output))
+            throw new TypeError('__bool__ should return bool, returned ' + type_name(output))
         }
     // Python bool() checks for __bool__ and then, if __bool__ is not defined,
     // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
@@ -41,7 +41,7 @@ export default function bool(args, kwargs) {
             // output in the browser is an integer.
             return !!parseInt(output.valueOf())
         } else {
-            throw new PyTypeError("'" + output_type + "' object cannot be interpreted as an integer")
+            throw new TypeError("'" + output_type + "' object cannot be interpreted as an integer")
         }
     } else {
         return new types.PyBool((!!args[0].valueOf()))

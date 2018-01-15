@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -7,11 +7,11 @@ export default function filter(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("filter() doesn't accept keyword arguments")
+        throw new TypeError("filter() doesn't accept keyword arguments")
     }
 
     if (args[1].__iter__ === undefined) {
-        throw new PyTypeError("'" + args[1].__class__.__name__ + "' object is not iterable")
+        throw new TypeError("'" + args[1].__class__.__name__ + "' object is not iterable")
     }
     return new types.PyFilter(args, kwargs)
 }

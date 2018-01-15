@@ -1,17 +1,17 @@
 /* eslint-disable no-extend-native */
+import { call_method, call_super, python } from './callables'
 import { create_pyclass, PyObject } from './types'
 
 /*****************************************************************
  * Root exception
  *****************************************************************/
-export var PyBaseException = class extends PyObject {
-    constructor(msg) {
-        super()
+export var BaseException = class extends PyObject {
+    @python({
+        args: ['msg']
+    })
+    __init__(msg) {
+        super.__init__()
         this.msg = msg
-    }
-
-    toString() {
-        return this.__str__()
     }
 
     __str__() {
@@ -30,138 +30,74 @@ export var PyBaseException = class extends PyObject {
         }
     }
 }
-create_pyclass(PyBaseException, 'BaseException')
+create_pyclass(BaseException, 'BaseException')
 
 /*****************************************************************
  * Top level exceptions
  *****************************************************************/
 
-export var PySystemExit = class extends PyBaseException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PySystemExit, 'SystemExit', PyBaseException)
+export var SystemExit = class extends PyObject {}
+create_pyclass(SystemExit, 'SystemExit', [BaseException])
 
-export var PyKeyboardInterrupt = class extends PyBaseException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyKeyboardInterrupt, 'KeyboardInterrupt', PyBaseException)
+export var KeyboardInterrupt = class extends PyObject {}
+create_pyclass(KeyboardInterrupt, 'KeyboardInterrupt', [BaseException])
 
-export var PyGeneratorExit = class extends PyBaseException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyGeneratorExit, 'GeneratorExit', PyBaseException)
+export var GeneratorExit = class extends PyObject {}
+create_pyclass(GeneratorExit, 'GeneratorExit', [BaseException])
 
-export var PyException = class extends PyBaseException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyException, 'Exception', PyBaseException)
+export var Exception = class extends PyObject {}
+create_pyclass(Exception, 'Exception', [BaseException])
 
 /*****************************************************************
  * All other exceptions
  *****************************************************************/
 
-export var BataviaError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(BataviaError, 'BataviaError', PyException)
+export var BataviaError = class extends PyObject {}
+create_pyclass(BataviaError, 'BataviaError', [Exception])
 
-export var PyArithmeticError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyArithmeticError, 'PyArithmeticError', PyException)
+export var ArithmeticError = class extends PyObject {}
+create_pyclass(ArithmeticError, 'ArithmeticError', [Exception])
 
-export var PyAssertionError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyAssertionError, 'AssertionError', PyException)
+export var AssertionError = class extends PyObject {}
+create_pyclass(AssertionError, 'AssertionError', [Exception])
 
-export var PyAttributeError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyAttributeError, 'AttributeError', PyException)
+export var AttributeError = class extends PyObject {}
+create_pyclass(AttributeError, 'AttributeError', [Exception])
 
-export var PyBufferError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyBufferError, 'BufferError', PyException)
+export var BufferError = class extends PyObject {}
+create_pyclass(BufferError, 'BufferError', [Exception])
 
 // PyBytesWarning = undefined
 
 // PyDeprecationWarning = undefined
 
-export var PyEOFError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyEOFError, 'EOFError', PyException)
+export var EOFError = class extends PyObject {}
+create_pyclass(EOFError, 'EOFError', [Exception])
 
-export var PyEnvironmentError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyEnvironmentError, 'EnvironmentError', PyException)
+export var EnvironmentError = class extends PyObject {}
+create_pyclass(EnvironmentError, 'EnvironmentError', [Exception])
 
-export var PyFloatingPointError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyFloatingPointError, 'FloatingPointError', PyException)
+export var FloatingPointError = class extends PyObject {}
+create_pyclass(FloatingPointError, 'FloatingPointError', [Exception])
 
 // PyFutureWarning = undefined
 
-export var PyIOError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyIOError, 'IOError', PyException)
+export var IOError = class extends PyObject {}
+create_pyclass(IOError, 'IOError', [Exception])
 
-export var PyImportError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyImportError, 'ImportError', PyException)
+export var ImportError = class extends PyObject {}
+create_pyclass(ImportError, 'ImportError', [Exception])
 
 // PyImportWarning = undefined
 
-export var PyIndentationError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyIndentationError, 'IndentationError', PyException)
+export var IndentationError = class extends PyObject {}
+create_pyclass(IndentationError, 'IndentationError', [Exception])
 
-export var PyIndexError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyIndexError, 'IndexError', PyException)
+export var IndexError = class extends PyObject {}
+create_pyclass(IndexError, 'IndexError', [Exception])
 
-export var PyKeyError = class extends PyException {
-    constructor(key) {
+export var KeyError = class extends PyObject {
+    __init__(key) {
         var msg = ''
         if (key === null) {
            msg = 'None'
@@ -172,173 +108,85 @@ export var PyKeyError = class extends PyException {
                 msg = key.toString()
             }
         }
-        super(msg)
+        call_super(this, '__init__', msg)
     }
 }
-create_pyclass(PyKeyError, 'KeyError', PyException)
+create_pyclass(KeyError, 'KeyError', [Exception])
 
-export var PyLookupError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyLookupError, 'LookupError', PyException)
+export var LookupError = class extends PyObject {}
+create_pyclass(LookupError, 'LookupError', [Exception])
 
-export var PyMemoryError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyMemoryError, 'MemoryError', PyException)
+export var MemoryError = class extends PyObject {}
+create_pyclass(MemoryError, 'MemoryError', [Exception])
 
-export var PyNameError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyNameError, 'NameError', PyException)
+export var NameError = class extends PyObject {}
+create_pyclass(NameError, 'NameError', [Exception])
 
-export var PyNotImplementedError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyNotImplementedError, 'NotImplementedError', PyException)
+export var NotImplementedError = class extends PyObject {}
+create_pyclass(NotImplementedError, 'NotImplementedError', [Exception])
 
-export var PyOSError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyOSError, 'OSError', PyException)
+export var OSError = class extends PyObject {}
+create_pyclass(OSError, 'OSError', [Exception])
 
-export var PyOverflowError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyOverflowError, 'OverflowError', PyException)
+export var OverflowError = class extends PyObject {}
+create_pyclass(OverflowError, 'OverflowError', [Exception])
 
 // PyPendingDeprecationWarning = undefined
 
-export var PolyglotError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PolyglotError, 'PolyglotError', PyException)
+export var PolyglotError = class extends PyObject {}
+create_pyclass(PolyglotError, 'PolyglotError', [Exception])
 
-export var PyReferenceError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyReferenceError, 'ReferenceError', PyException)
+export var ReferenceError = class extends PyObject {}
+create_pyclass(ReferenceError, 'ReferenceError', [Exception])
 
-export var PyRuntimeError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyRuntimeError, 'RuntimeError', PyException)
+export var RuntimeError = class extends PyObject {}
+create_pyclass(RuntimeError, 'RuntimeError', [Exception])
 
 // PyRuntimeWarning = undefined
 
-export var PyStandardError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyStandardError, 'StandardError', PyException)
+export var StandardError = class extends PyObject {}
+create_pyclass(StandardError, 'StandardError', [Exception])
 
-export var PyStopIteration = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyStopIteration, 'PyStopIteration', PyException)
+export var StopIteration = class extends PyObject {}
+create_pyclass(StopIteration, 'StopIteration', [Exception])
 
-export var PySyntaxError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PySyntaxError, 'SyntaxError', PyException)
+export var SyntaxError = class extends PyObject {}
+create_pyclass(SyntaxError, 'SyntaxError', [Exception])
 
 // PySyntaxWarning = undefined
 
-export var PySystemError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PySystemError, 'SystemError', PyException)
+export var SystemError = class extends PyObject {}
+create_pyclass(SystemError, 'SystemError', [Exception])
 
-export var PyTabError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyTabError, 'TabError', PyException)
+export var TabError = class extends PyObject {}
+create_pyclass(TabError, 'TabError', [Exception])
 
-export var PyTypeError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyTypeError, 'TypeError', PyException)
+export var TypeError = class extends PyObject {}
+create_pyclass(TypeError, 'TypeError', [Exception])
 
-export var PyUnboundLocalError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyUnboundLocalError, 'UnboundLocalError', PyException)
+export var UnboundLocalError = class extends PyObject {}
+create_pyclass(UnboundLocalError, 'UnboundLocalError', [Exception])
 
-export var PyUnicodeDecodeError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyUnicodeDecodeError, 'UnicodeDecodeError', PyException)
+export var UnicodeDecodeError = class extends PyObject {}
+create_pyclass(UnicodeDecodeError, 'UnicodeDecodeError', [Exception])
 
-export var PyUnicodeEncodeError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyUnicodeEncodeError, 'UnicodeEncodeError', PyException)
+export var UnicodeEncodeError = class extends PyObject {}
+create_pyclass(UnicodeEncodeError, 'UnicodeEncodeError', [Exception])
 
-export var PyUnicodeError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyUnicodeError, 'UnicodeError', PyException)
+export var UnicodeError = class extends PyObject {}
+create_pyclass(UnicodeError, 'UnicodeError', [Exception])
 
-export var PyUnicodeTranslateError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyUnicodeTranslateError, 'UnicodeTranslateError', PyException)
+export var UnicodeTranslateError = class extends PyObject {}
+create_pyclass(UnicodeTranslateError, 'UnicodeTranslateError', [Exception])
 
 // PyUnicodeWarning = undefined
 
 // PyUserWarning = undefined
 
-export var PyValueError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyValueError, 'ValueError', PyException)
+export var ValueError = class extends PyObject {}
+create_pyclass(ValueError, 'ValueError', [Exception])
 
 // Warning = undefined
 
-export var PyZeroDivisionError = class extends PyException {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(PyZeroDivisionError, 'ZeroDivisionError', PyException)
+export var ZeroDivisionError = class extends PyObject {}
+create_pyclass(ZeroDivisionError, 'ZeroDivisionError', [Exception])

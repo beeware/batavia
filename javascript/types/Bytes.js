@@ -2,7 +2,7 @@ import { Buffer } from 'buffer'
 
 import { TEXT_ENCODINGS } from '../core/constants'
 import { create_pyclass, type_name, PyObject } from '../core/types'
-import { PyNotImplementedError, PyTypeError, PyValueError } from '../core/exceptions'
+import { NotImplementedError, TypeError, ValueError } from '../core/exceptions'
 import * as version from '../core/version'
 
 import * as types from '../types'
@@ -88,11 +88,11 @@ export default class PyBytes extends PyObject {
             return this.val < other.val
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: bytes() < ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'<' not supported between instances of 'bytes' and '" +
                     type_name(other) + "'"
                 )
@@ -105,11 +105,11 @@ export default class PyBytes extends PyObject {
             return this.val <= other.val
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: bytes() <= ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'<=' not supported between instances of 'bytes' and '" +
                     type_name(other) + "'"
                 )
@@ -122,7 +122,7 @@ export default class PyBytes extends PyObject {
             var equal = (this.val.compare(other.val) === 0)
             return new types.PyBool(equal)
         } else if (types.isinstance(other, types.PyBytearray)) {
-            throw new PyNotImplementedError(
+            throw new NotImplementedError(
                 'Comparison between bytes and bytearrays has not been implemented')
         } else {
             return new types.PyBool(false)
@@ -138,11 +138,11 @@ export default class PyBytes extends PyObject {
             return this.val > other.val
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: bytes() > ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'>' not supported between instances of 'bytes' and '" +
                     type_name(other) + "'"
                 )
@@ -155,11 +155,11 @@ export default class PyBytes extends PyObject {
             return this.val >= other.val
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: bytes() >= ' + type_name(other) + '()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'>=' not supported between instances of 'bytes' and '" +
                     type_name(other) + "'"
                 )
@@ -173,7 +173,7 @@ export default class PyBytes extends PyObject {
             if (other >= 0 && other <= 255) {
                 other_value = parseInt(other.valueOf())
             } else {
-                throw new PyValueError(
+                throw new ValueError(
                     'byte must be in range (0, 256)'
                 )
             }
@@ -192,11 +192,11 @@ export default class PyBytes extends PyObject {
      **************************************************/
 
     __pos__() {
-        throw new PyTypeError("bad operand type for unary +: 'bytes'")
+        throw new TypeError("bad operand type for unary +: 'bytes'")
     }
 
     __neg__() {
-        throw new PyTypeError("bad operand type for unary -: 'bytes'")
+        throw new TypeError("bad operand type for unary -: 'bytes'")
     }
 
     __not__() {
@@ -204,7 +204,7 @@ export default class PyBytes extends PyObject {
     }
 
     __invert__() {
-        throw new PyTypeError("bad operand type for unary ~: 'bytes'")
+        throw new TypeError("bad operand type for unary ~: 'bytes'")
     }
 
     /**************************************************
@@ -212,7 +212,7 @@ export default class PyBytes extends PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'bytes' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
@@ -221,14 +221,14 @@ export default class PyBytes extends PyObject {
 
     __floordiv__(other) {
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new PyTypeError("can't take floor of complex number.")
+            throw new TypeError("can't take floor of complex number.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
+            throw new TypeError("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
         }
     }
 
     __truediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /: 'bytes' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
@@ -256,7 +256,7 @@ export default class PyBytes extends PyObject {
                 return new PyBytes('')
             }
         } else {
-            throw new PyTypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+            throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
         }
     }
 
@@ -264,9 +264,9 @@ export default class PyBytes extends PyObject {
         let types = require('../types')
 
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new PyTypeError("can't mod complex numbers.")
+            throw new TypeError("can't mod complex numbers.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for %: 'bytes' and '" + type_name(other) + "'")
+            throw new TypeError("unsupported operand type(s) for %: 'bytes' and '" + type_name(other) + "'")
         }
     }
 
@@ -277,7 +277,7 @@ export default class PyBytes extends PyObject {
             byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
             return new PyBytes(byteBuffer)
         } else if (types.isinstance(other, [types.PyBytearray])) {
-            throw new PyNotImplementedError('Bytes.__add__ has not been implemented')
+            throw new NotImplementedError('Bytes.__add__ has not been implemented')
         } else if (types.isinstance(other, [
             types.PyBool,
             types.PyDict,
@@ -290,51 +290,51 @@ export default class PyBytes extends PyObject {
             types.PyTuple ])) {
             // does not concat with all these
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     "can't concat bytes to " + type_name(other)
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "can't concat " + type_name(other) + ' to bytes'
                 )
             }
         } else {
-            throw new PyTypeError("can't concat bytes to " + type_name(other))
+            throw new TypeError("can't concat bytes to " + type_name(other))
         }
     }
 
     __sub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -: 'bytes' and '" + type_name(other) + "'")
     }
 
     __getitem__(other) {
         if (types.isinstance(other, types.PySlice)) {
-            throw new PyNotImplementedError('Bytes.__getitem__ with slice has not been implemented')
+            throw new NotImplementedError('Bytes.__getitem__ with slice has not been implemented')
         }
         if (!types.isinstance(other, types.PyInt)) {
-            throw new PyTypeError('byte indices must be integers or slices, not ' + type_name(other))
+            throw new TypeError('byte indices must be integers or slices, not ' + type_name(other))
         }
         return new types.PyInt(this.val[other.int32()])
     }
 
     __lshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<: 'bytes' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>: 'bytes' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &: 'bytes' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^: 'bytes' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |: 'bytes' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -343,54 +343,54 @@ export default class PyBytes extends PyObject {
 
     __ifloordiv__(other) {
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new PyTypeError("can't take floor of complex number.")
+            throw new TypeError("can't take floor of complex number.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
+            throw new TypeError("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
         }
     }
 
     __itruediv__(other) {
-        throw new PyNotImplementedError('Bytes.__itruediv__ has not been implemented')
+        throw new NotImplementedError('Bytes.__itruediv__ has not been implemented')
     }
 
     __iadd__(other) {
-        throw new PyNotImplementedError('Bytes.__iadd__ has not been implemented')
+        throw new NotImplementedError('Bytes.__iadd__ has not been implemented')
     }
 
     __isub__(other) {
-        throw new PyNotImplementedError('Bytes.__isub__ has not been implemented')
+        throw new NotImplementedError('Bytes.__isub__ has not been implemented')
     }
 
     __imul__(other) {
-        throw new PyNotImplementedError('Bytes.__imul__ has not been implemented')
+        throw new NotImplementedError('Bytes.__imul__ has not been implemented')
     }
 
     __imod__(other) {
-        throw new PyNotImplementedError('Bytes.__imod__ has not been implemented')
+        throw new NotImplementedError('Bytes.__imod__ has not been implemented')
     }
 
     __ipow__(other) {
-        throw new PyNotImplementedError('Bytes.__ipow__ has not been implemented')
+        throw new NotImplementedError('Bytes.__ipow__ has not been implemented')
     }
 
     __ilshift__(other) {
-        throw new PyNotImplementedError('Bytes.__ilshift__ has not been implemented')
+        throw new NotImplementedError('Bytes.__ilshift__ has not been implemented')
     }
 
     __irshift__(other) {
-        throw new PyNotImplementedError('Bytes.__irshift__ has not been implemented')
+        throw new NotImplementedError('Bytes.__irshift__ has not been implemented')
     }
 
     __iand__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &=: 'bytes' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &=: 'bytes' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new PyNotImplementedError('Bytes.__ixor__ has not been implemented')
+        throw new NotImplementedError('Bytes.__ixor__ has not been implemented')
     }
 
     __ior__(other) {
-        throw new PyNotImplementedError('Bytes.__ior__ has not been implemented')
+        throw new NotImplementedError('Bytes.__ior__ has not been implemented')
     }
 
     /**************************************************
@@ -403,7 +403,7 @@ export default class PyBytes extends PyObject {
 
     decode(encoding, errors) {
         if (errors !== undefined) {
-            return new PyNotImplementedError(
+            return new NotImplementedError(
                 "'errors' parameter of String.encode not implemented"
             )
         }
@@ -416,7 +416,7 @@ export default class PyBytes extends PyObject {
         } else if (encs.utf_8.indexOf(encoding) !== -1) {
             return this.val.toString('utf8')
         } else {
-            return new PyNotImplementedError(
+            return new NotImplementedError(
                 'encoding not implemented or incorrect encoding'
             )
         }

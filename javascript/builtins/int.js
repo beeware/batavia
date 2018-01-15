@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError, PyValueError } from '../core/exceptions'
+import { BataviaError, TypeError, ValueError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -9,7 +9,7 @@ export default function int(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("int() doesn't accept keyword arguments")
+        throw new TypeError("int() doesn't accept keyword arguments")
     }
 
     var base = 10
@@ -25,13 +25,13 @@ export default function int(args, kwargs) {
         value = args[0]
         base = args[1]
     } else {
-        throw new PyTypeError(
+        throw new TypeError(
             'int() takes at most 2 arguments (' + args.length + ' given)')
     }
     // TODO: this should be able to parse things longer than 53 bits
     var result = parseInt(value, base)
     if (isNaN(result)) {
-        throw new PyValueError(
+        throw new ValueError(
             'invalid literal for int() with base ' + base + ': ' + repr([value], null)
         )
     }

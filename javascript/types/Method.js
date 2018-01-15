@@ -20,4 +20,4 @@ export default class Method extends Function {
         this.__class__ = instance.__class__
     }
 }
-create_pyclass(Method, 'method', null)
+create_pyclass(Method, 'method')

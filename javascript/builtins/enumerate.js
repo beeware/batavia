@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -7,7 +7,7 @@ export default function enumerate(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("enumerate() doesn't accept keyword arguments")
+        throw new TypeError("enumerate() doesn't accept keyword arguments")
     }
     return new types.PyEnumerate(args[0])
 }

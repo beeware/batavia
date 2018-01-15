@@ -16,13 +16,15 @@ export default {
   },
   plugins: [
     json(),
+    babel({
+      exclude: 'node_modules/**' // only transpile our source code
+    }),
     globals(),
     builtins(),
     resolve({
       preferBuiltins: true,
     }),
     commonjs(),
-    babel(),
-    uglify()
+    // uglify()
   ]
 };

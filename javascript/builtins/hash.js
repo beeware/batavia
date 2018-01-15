@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -8,10 +8,10 @@ export default function hash(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("hash() doesn't accept keyword arguments")
+        throw new TypeError("hash() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new PyTypeError('hash() expected exactly 1 argument (' + args.length + ' given)')
+        throw new TypeError('hash() expected exactly 1 argument (' + args.length + ' given)')
     }
     var arg = args[0]
     // None
@@ -19,7 +19,7 @@ export default function hash(args, kwargs) {
         return 278918143
     }
     if (types.isinstance(arg, [types.PyBytearray, types.PyDict, types.JSDict, types.PyList, types.PySet, types.PySlice])) {
-        throw new PyTypeError("unhashable type: '" + type_name(arg) + "'")
+        throw new TypeError("unhashable type: '" + type_name(arg) + "'")
     }
     if (typeof arg.__hash__ !== 'undefined') {
         return arg.__hash__()

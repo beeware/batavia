@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -7,10 +7,10 @@ export default function set(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("set() doesn't accept keyword arguments.")
+        throw new TypeError("set() doesn't accept keyword arguments.")
     }
     if (args && args.length > 1) {
-        throw new PyTypeError('set expected at most 1 arguments, got ' + args.length)
+        throw new TypeError('set expected at most 1 arguments, got ' + args.length)
     }
     if (!args || args.length === 0) {
         return new types.PySet()

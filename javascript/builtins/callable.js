@@ -1,4 +1,4 @@
-import { BataviaError, PyTypeError } from '../core/exceptions'
+import { BataviaError, TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -7,10 +7,10 @@ export default function callable(args, kwargs) {
         throw new BataviaError('Batavia calling convention not used.')
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new PyTypeError("callable() doesn't accept keyword arguments")
+        throw new TypeError("callable() doesn't accept keyword arguments")
     }
     if (!args || args.length !== 1) {
-        throw new PyTypeError('callable() takes exactly one argument (' + args.length + ' given)')
+        throw new TypeError('callable() takes exactly one argument (' + args.length + ' given)')
     }
     if ((args[0] instanceof Function) || (args[0] instanceof types.PyFunction) || (args[0] instanceof types.PyType)) {
         return new types.PyBool(true)

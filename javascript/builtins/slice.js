@@ -1,11 +1,11 @@
-import { PyTypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
+import { PyNone } from '../core/types'
 
-import { PyNone } from '../builtins'
 import * as types from '../types'
 
 export default function slice(args, kwargs) {
     if (!args || args.length === 0) {
-        throw new PyTypeError('slice expected at least 1 arguments, got 0')
+        throw new TypeError('slice expected at least 1 arguments, got 0')
     } else if (args.length === 1) {
         return new types.PySlice({
             start: PyNone,
@@ -25,7 +25,7 @@ export default function slice(args, kwargs) {
             step: args[2]
         })
     } else {
-        throw new PyTypeError('slice expected at most 3 arguments, got ' + args.length)
+        throw new TypeError('slice expected at most 3 arguments, got ' + args.length)
     }
 }
 

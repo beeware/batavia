@@ -1,4 +1,4 @@
-import { PyKeyError, PyNotImplementedError, PyTypeError } from '../core/exceptions'
+import { KeyError, NotImplementedError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 import * as version from '../core/version'
 
@@ -54,18 +54,18 @@ export default class JSDict {
      **************************************************/
 
     __lt__(other) {
-        if (other !== builtins.PyNone) {
+        if (other !== builtins.None) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
                 types.PyStr, types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         'unorderable types: dict() < ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         "'<' not supported between instances of 'dict' and '" + type_name(other) + "'"
                     )
                 }
@@ -74,29 +74,29 @@ export default class JSDict {
             }
         }
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: dict() < NoneType()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<' not supported between instances of 'dict' and 'NoneType'"
             )
         }
     }
 
     __le__(other) {
-        if (other !== builtins.PyNone) {
+        if (other !== builtins.None) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
                 types.PyStr, types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         'unorderable types: dict() <= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         "'<=' not supported between instances of 'dict' and '" + type_name(other) + "'"
                     )
                 }
@@ -105,11 +105,11 @@ export default class JSDict {
             }
         }
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw new TypeError(
                 'unorderable types: dict() <= NoneType()'
             )
         } else {
-            throw new PyTypeError(
+            throw new TypeError(
                 "'<=' not supported between instances of 'dict' and 'NoneType'"
             )
         }
@@ -124,7 +124,7 @@ export default class JSDict {
     }
 
     __gt__(other) {
-        if (other !== builtins.PyNone) {
+        if (other !== builtins.None) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
@@ -132,11 +132,11 @@ export default class JSDict {
                 types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         'unorderable types: dict() > ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         "'>' not supported between instances of 'dict' and '" + type_name(other) + "'"
                     )
                 }
@@ -145,11 +145,11 @@ export default class JSDict {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: dict() > NoneType()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'>' not supported between instances of 'dict' and 'NoneType'"
                 )
             }
@@ -157,18 +157,18 @@ export default class JSDict {
     }
 
     __ge__(other) {
-        if (other !== builtins.PyNone) {
+        if (other !== builtins.None) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
                 types.PyInt, types.JSDict, types.PyList,
                 types.PyStr, types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         'unorderable types: dict() >= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new PyTypeError(
+                    throw new TypeError(
                         "'>=' not supported between instances of 'dict' and '" + type_name(other) + "'"
                     )
                 }
@@ -177,11 +177,11 @@ export default class JSDict {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new PyTypeError(
+                throw new TypeError(
                     'unorderable types: dict() >= NoneType()'
                 )
             } else {
-                throw new PyTypeError(
+                throw new TypeError(
                     "'>=' not supported between instances of 'dict' and 'NoneType'"
                 )
             }
@@ -197,11 +197,11 @@ export default class JSDict {
      **************************************************/
 
     __pos__() {
-        throw new PyTypeError("bad operand type for unary +: 'jsdict'")
+        throw new TypeError("bad operand type for unary +: 'jsdict'")
     }
 
     __neg__() {
-        throw new PyTypeError("bad operand type for unary -: 'jsdict'")
+        throw new TypeError("bad operand type for unary -: 'jsdict'")
     }
 
     __not__() {
@@ -209,7 +209,7 @@ export default class JSDict {
     }
 
     __invert__() {
-        throw new PyTypeError("bad operand type for unary ~: 'jsdict'")
+        throw new TypeError("bad operand type for unary ~: 'jsdict'")
     }
 
     /**************************************************
@@ -217,7 +217,7 @@ export default class JSDict {
      **************************************************/
 
     __pow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
@@ -225,33 +225,33 @@ export default class JSDict {
     }
 
     __floordiv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __truediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
         if (types.isinstance(other, [
             types.PyBool, types.PyDict, types.PyFloat,
             types.JSDict, types.PyInt, types.PyNoneType])) {
-            throw new PyTypeError("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'")
+            throw new TypeError("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'")
         } else {
-            throw new PyTypeError("can't multiply sequence by non-int of type 'jsdict'")
+            throw new TypeError("can't multiply sequence by non-int of type 'jsdict'")
         }
     }
 
     __mod__(other) {
-        throw new PyNotImplementedError('Dict.__mod__ has not been implemented')
+        throw new NotImplementedError('Dict.__mod__ has not been implemented')
     }
 
     __add__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __sub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __setitem__(key, value) {
@@ -259,23 +259,23 @@ export default class JSDict {
     }
 
     __lshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -283,60 +283,60 @@ export default class JSDict {
      **************************************************/
 
     __ifloordiv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __itruediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __iadd__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __isub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __imul__(other) {
-        throw new PyTypeError("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __imod__(other) {
-        throw new PyTypeError("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __ipow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __ilshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __irshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
     }
 
     __getitem__(other) {
         var value = this[other]
         if (value === undefined) {
             if (other === null) {
-                throw new PyKeyError('None')
+                throw new KeyError('None')
             } else {
-                throw new PyKeyError(other.__str__())
+                throw new KeyError(other.__str__())
             }
         }
         return value
@@ -345,9 +345,9 @@ export default class JSDict {
     __delitem__(key) {
         if (!this.__contains__(key)) {
             if (key === null) {
-                throw new PyKeyError('None')
+                throw new KeyError('None')
             } else {
-                throw new PyKeyError(key)
+                throw new KeyError(key)
             }
         }
         delete this[key]
@@ -362,9 +362,9 @@ export default class JSDict {
             return this[key]
         } else if (typeof backup === 'undefined') {
             if (key === null) {
-                throw new PyKeyError('None')
+                throw new KeyError('None')
             } else {
-                throw new PyKeyError(key)
+                throw new KeyError(key)
             }
         } else {
             return backup

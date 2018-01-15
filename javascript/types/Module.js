@@ -15,4 +15,4 @@ export default class Module extends JSDict {
         this.__package__ = pkg
     }
 }
-create_pyclass(Module, 'module', null)
+create_pyclass(Module, 'module')

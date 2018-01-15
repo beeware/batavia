@@ -1,4 +1,4 @@
-import { PyStopIteration } from '../core/exceptions'
+import { StopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 import * as types from '../types'
@@ -20,7 +20,7 @@ export default class PyBytearrayIterator extends PyObject {
 
     __next__() {
         if (this.index >= this.data.length) {
-            throw new PyStopIteration()
+            throw new StopIteration()
         }
         var retval = this.data[this.index]
         this.index++

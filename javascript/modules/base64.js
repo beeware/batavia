@@ -1,6 +1,6 @@
 import * as base64js from 'base64-js'
 
-import { PyValueError } from '../core/exceptions'
+import { ValueError } from '../core/exceptions'
 import * as types from '../types'
 
 export var base64 = {
@@ -24,7 +24,7 @@ base64.b64encode.__doc__ = "Decode the Base64 encoded bytes-like object or ASCII
 base64.b64decode = function(data) {
     var data_str = String.fromCharCode.apply(null, data.val)
     if (data_str.length % 4 !== 0) {
-        throw new PyValueError('Incorrect padding')
+        throw new ValueError('Incorrect padding')
     }
     var encode = base64js.toByteArray(data_str)
     return new types.PyBytes(encode)

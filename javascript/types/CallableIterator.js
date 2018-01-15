@@ -1,4 +1,4 @@
-import { PyStopIteration } from '../core/exceptions'
+import { StopIteration } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 /**************************************************
@@ -15,13 +15,13 @@ export default class CallableIterator extends PyObject {
 
     __next__() {
         if (this.exhausted) {
-            throw new PyStopIteration()
+            throw new StopIteration()
         }
 
         var item = this.callable.__call__([])
         if (item.__eq__(this.sentinel)) {
             this.exhausted = true
-            throw new PyStopIteration()
+            throw new StopIteration()
         }
         return item
     }

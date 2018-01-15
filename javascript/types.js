@@ -54,7 +54,7 @@ import PyEnumerate from './types/Enumerate'
 
 export function isinstance(obj, type) {
     if (type instanceof Array) {
-        for (var t in type) {
+        for (let t in type) {
             if (isinstance(obj, type[t])) {
                 return true
             }
@@ -89,9 +89,8 @@ export function isbataviainstance(obj) {
 }
 
 export function issubclass(cls, type) {
-    var t
     if (type instanceof Array) {
-        for (t in type) {
+        for (let t in type) {
             if (issubclass(cls, type[t])) {
                 return true
             }
@@ -109,8 +108,8 @@ export function issubclass(cls, type) {
                 if (type === null || type === PyNoneType) {
                     return cls === null
                 } else {
-                    var mro = cls.mro()
-                    for (t in mro) {
+                    let mro = cls.mro()
+                    for (let t in mro) {
                         if (mro[t] === type.__class__) {
                             return true
                         }
@@ -126,8 +125,8 @@ export function issubclass(cls, type) {
 export function js2py(arg) {
     if (Array.isArray(arg)) {
         // recurse
-        var arr = new PyList()
-        for (var i = 0; i < arg.length; i++) {
+        let arr = new PyList()
+        for (let i = 0; i < arg.length; i++) {
             arr.append(js2py(arg[i]))
         }
         return arr
@@ -156,8 +155,8 @@ export function js2py(arg) {
                 return arg
             } else {
                 // this is a generic object; turn it into a dictionary
-                var dict = new PyDict()
-                for (var k in arg) {
+                let dict = new PyDict()
+                for (let k in arg) {
                     if (arg.hasOwnProperty(k)) {
                         dict.__setitem__(js2py(k), js2py(arg[k]))
                     }

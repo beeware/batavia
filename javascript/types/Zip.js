@@ -1,5 +1,5 @@
 import * as callables from '../core/callables'
-import { PyStopIteration, PyTypeError } from '../core/exceptions'
+import { StopIteration, TypeError } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -21,8 +21,8 @@ export default class Zip extends PyObject {
             try {
                 this._iterators.push(builtins.iter([this._iterables[i]], null))
             } catch (e) {
-                if (e instanceof PyTypeError) {
-                    throw new PyTypeError('zip argument #' + n + ' must support iteration')
+                if (e instanceof TypeError) {
+                    throw new TypeError('zip argument #' + n + ' must support iteration')
                 }
             }
         }
@@ -46,7 +46,7 @@ export default class Zip extends PyObject {
 
     __next__() {
         if (this._iterators.length === 0) {
-            throw new PyStopIteration()
+            throw new StopIteration()
         }
 
         var values = []
