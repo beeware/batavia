@@ -15,7 +15,7 @@ function float(args, kwargs) {
     if (types.isinstance(value, types.Str)) {
         if (value.length === 0) {
             throw new exceptions.ValueError.$pyclass('could not convert string to float: ')
-        } else if (value.search(/[^0-9.]/g) === -1) {
+        } else if (value.search(/[^-0-9.]/g) === -1) {
             return new types.Float(parseFloat(value))
         } else {
             if (value === 'nan' || value === '+nan' || value === '-nan') {
