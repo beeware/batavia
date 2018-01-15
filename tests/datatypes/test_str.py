@@ -698,6 +698,11 @@ class StrTests(TranspileTestCase):
         print("abc".index("d"))
         """)
 
+    def test_contains_escapes_regular_expressions(self):
+        self.assertCodeExecution("""
+        print('(' not in '(/)')
+        """)
+
 class FormatTests(TranspileTestCase):
         alternate = ('#', '')
 
