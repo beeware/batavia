@@ -269,12 +269,20 @@ Str.prototype.__ge__ = function(other) {
     }
 }
 
+// ********************************************************************************************
+// By Mozilla Contributors under CC-BY-SA v2.5 or later
+// From MDN: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+var escapeRegExp = function(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
+}
+// ********************************************************************************************
+
 Str.prototype.__contains__ = function(other) {
     var types = require('../types')
     if (!types.isinstance(other, [types.Str])) {
         throw new exceptions.TypeError.$pyclass("'in <string>' requires string as left operand, not " + type_name(other))
     } else {
-        return this.valueOf().search(other.valueOf()) >= 0
+        return this.valueOf().search(escapeRegExp(other.valueOf())) >= 0
     }
 }
 
@@ -587,9 +595,9 @@ Str.prototype.__len__ = function() {
     return new types.Int(this.length)
 }
 
-Str.prototype.index = function(needle) {
+Str.prototype.index = function(needle, offset) {
     var types = require('../types')
-    var i = this.indexOf(needle)
+    var i = this.indexOf(needle, offset)
     if (i < 0) {
         throw new exceptions.ValueError.$pyclass('substring not found')
     }
