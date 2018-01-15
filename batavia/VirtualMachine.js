@@ -683,7 +683,7 @@ VirtualMachine.prototype.PyErr_Occurred = function() {
 }
 
 VirtualMachine.prototype.PyErr_SetString = function(Exception, message) {
-    var exception = new Exception(message)
+    var exception = Exception.__call__([message])
     this.last_exception = {
         'exc_type': exception.__class__,
         'value': exception,
