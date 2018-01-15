@@ -13,6 +13,8 @@ function repr(args, kwargs) {
 
     if (args[0] === null) {
         return 'None'
+    } else if (args[0].__repr__ && args[0].__repr__.__call__) {
+        return args[0].__repr__.__call__([args[0]])
     } else if (args[0].__repr__) {
         return args[0].__repr__()
     } else {
