@@ -8,6 +8,13 @@ class FrozensetTests(TranspileTestCase):
             print(x)
             """, substitutions={"{1, '1'}": ["{'1', 1}"]})
 
+    def test_len(self):
+        self.assertCodeExecution("""
+        print(len(frozenset()))
+        print(type(len(frozenset())))
+        print(len(frozenset([1, 2])))
+        """)
+
 
 class UnaryFrozensetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'frozenset'

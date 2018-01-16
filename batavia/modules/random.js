@@ -10,4 +10,9 @@ random.choice = function(choices) {
     return choices[index]
 }
 
+random.random = function() {
+    var types = require('../types')
+    return new types.Float(Math.random())
+}
+
 module.exports = random

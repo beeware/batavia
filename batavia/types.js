@@ -65,20 +65,25 @@ types.isinstance = function(obj, type) {
     } else {
         switch (typeof obj) {
             case 'boolean':
+                if (typeof type === 'function' && (type.name === 'bool' || type.name === 'bound bool')) {
+                    return true
+                }
                 return type === types.Bool
             case 'number':
                 return type === types.Int
             case 'string':
+                if (typeof type === 'function' && (type.name === 'str' || type.name === 'bound str')) {
+                    return true
+                }
                 return type === types.Str
             case 'object':
-                if (typeof type === 'object') {
+                if (typeof type === 'object' && obj && obj.__class__) {
                     var leftName = obj.__class__.__name__
                     var rightName = type.__name__
                     if (leftName === rightName) {
                         return true
                     }
-                }
-                if (typeof type === 'function') {
+                } else if (typeof type === 'function') {
                     if (obj instanceof type) {
                         return true
                     }
@@ -86,6 +91,9 @@ types.isinstance = function(obj, type) {
                     var name = type.name
                     if (name.startswith('bound ')) {
                         name = name.substring(6)
+                    }
+                    if (obj && obj.__class__ && obj.__class__.__name__) {
+                      return (obj.__class__.__name__ === name)
                     }
                     if ((typeof obj).__class__) {
                         return ((typeof obj).__class__.__name__ === name)

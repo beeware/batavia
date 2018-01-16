@@ -261,6 +261,14 @@ class DictTests(TranspileTestCase):
             print(d.fromkeys([], None, None))
         """)
 
+    def test_len(self):
+        self.assertCodeExecution("""
+        print(len(dict()))
+        print(type(len(dict())))
+        print(len({1: 2}))
+        """)
+
+
 
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'

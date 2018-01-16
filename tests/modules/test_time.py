@@ -7,7 +7,6 @@ import unittest
 
 class TimeTests(TranspileTestCase):
 
-    @unittest.expectedFailure
     def test_time(self):
         self.assertCodeExecution("""
             import time
@@ -371,7 +370,7 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         """)
-    
+
         expected_output = adjust("""
             >>> import time
             >>> time.mktime({seed_expand})

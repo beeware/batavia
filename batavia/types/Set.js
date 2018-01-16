@@ -36,7 +36,7 @@ Set.prototype.toString = function() {
  **************************************************/
 
 Set.prototype.__len__ = function() {
-    return this.data.size
+    return this.data.__len__()
 }
 
 Set.prototype.__bool__ = function() {

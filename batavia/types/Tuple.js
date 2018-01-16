@@ -59,7 +59,8 @@ Tuple.prototype.__iter__ = function() {
 }
 
 Tuple.prototype.__len__ = function() {
-    return this.length
+    var types = require('../types')
+    return new types.Int(this.length)
 }
 
 Tuple.prototype.__repr__ = function() {

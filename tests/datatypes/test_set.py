@@ -24,6 +24,13 @@ class SetTests(TranspileTestCase):
             print('Done.')
             """)
 
+    def test_len(self):
+        self.assertCodeExecution("""
+        print(len(set()))
+        print(type(len(set())))
+        print(len({1,2,3}))
+        """)
+
     def test_creation(self):
         # Empty set
         self.assertCodeExecution("""

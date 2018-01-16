@@ -75,9 +75,7 @@ Bytearray.prototype.__eq__ = function(other) {
 
     if (other !== None) {
         var val
-        if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float])
-                ) {
+        if (types.isinstance(other, [types.Bool, types.Int, types.Float])) {
             return false
         } else {
             return this.valueOf() === val
@@ -91,9 +89,7 @@ Bytearray.prototype.__ne__ = function(other) {
 
     if (other !== None) {
         var val
-        if (types.isinstance(other, [
-            types.Bool, types.Int, types.Float])
-                ) {
+        if (types.isinstance(other, [types.Bool, types.Int, types.Float])) {
             return true
         } else {
             return this.valueOf() !== val
@@ -268,6 +264,10 @@ Bytearray.prototype.__ior__ = function(other) {
 
 Bytearray.prototype.copy = function() {
     return new Bytearray(this.valueOf())
+}
+
+Bytearray.prototype.__len__ = function() {
+    return this.val.__len__()
 }
 
 /**************************************************

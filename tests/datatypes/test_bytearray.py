@@ -2,7 +2,13 @@ from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationT
 
 
 class BytearrayTests(TranspileTestCase):
-    pass
+    def test_len(self):
+        self.assertCodeExecution("""
+        print(len(bytearray()))
+        print(type(len(bytearray())))
+        print(len(bytearray([1, 2])))
+        """)
+
 
 
 class UnaryBytearrayOperationTests(UnaryOperationTestCase, TranspileTestCase):
