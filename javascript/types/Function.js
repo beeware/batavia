@@ -1,4 +1,5 @@
 /* eslint-disable no-extend-native */
+import { raw } from '../core/callables'
 import { create_pyclass, PyObject } from '../core/types'
 
 import { inspect } from '../modules/inspect'
@@ -10,39 +11,8 @@ import * as types from '../types'
  * A Python function type.
  *************************************************************************/
 
-var make_callable = function(func) {
-    var fn = function(args, kwargs, locals) {
-        var retval
-        var callargs = inspect.getcallargs(func, args, kwargs)
-
-        if (locals === undefined) {
-            locals = new types.JSDict()
-        }
-
-        var frame = this.make_frame({
-            'code': func.__code__,
-            'callargs': callargs,
-            'f_globals': func.__globals__,
-            'f_locals': locals
-        })
-
-        if (func.__code__.co_flags & dis.CO_GENERATOR) {
-            frame.generator = new types.PyGenerator(frame, this)
-            retval = frame.generator
-        } else {
-            retval = this.run_frame(frame)
-        }
-        return retval
-    }
-    fn.$pyargs = true
-    return fn.bind(func.$vm)
-}
-
 export default class PyFunction extends PyObject {
-    constructor(name, code, globals, defaults, closure, vm) {
-        super()
-
-        this.$pyargs = true
+    __init__(name, code, globals, defaults, closure, vm) {
         this.$vm = vm
         this.__code__ = code
         this.__globals__ = globals
@@ -59,16 +29,39 @@ export default class PyFunction extends PyObject {
         this.__annotations__ = new types.PyDict()
         this.__qualname__ = this.__name__
 
-        // var kw = {
+        // let kw = {
         //     'argdefs': this.__defaults__,
         // }
         // if (closure) {
         //     kw['closure'] = tuple(make_cell(0) for _ in closure)
         // }
 
-        this.__call__ = make_callable(this)
-
         this.argspec = inspect.getfullargspec(this)
+    }
+
+    @raw()
+    __call__(args, kwargs, locals) {
+        let retval
+        let callargs = inspect.getcallargs(this, args, kwargs)
+
+        if (locals === undefined) {
+            locals = new types.JSDict()
+        }
+
+        let frame = this.$vm.make_frame({
+            'code': this.__code__,
+            'callargs': callargs,
+            'f_globals': this.__globals__,
+            'f_locals': locals
+        })
+
+        if (this.__code__.co_flags & dis.CO_GENERATOR) {
+            frame.generator = new types.PyGenerator(frame, this)
+            retval = frame.generator
+        } else {
+            retval = this.$vm.run_frame(frame)
+        }
+        return retval
     }
 
     __get__(instance) {

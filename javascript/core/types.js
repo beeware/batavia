@@ -9,7 +9,12 @@ import * as types from '../types'
  *************************************************************************/
 export var PyObject = class {
     constructor() {
-        this.__init__.apply(this, arguments)
+        if (this.__init__.__call__) {
+            this.__init__.__call__(arguments)
+        } else {
+            this.__init__.apply(this, arguments)
+        }
+
     }
 
     toString() {
@@ -92,19 +97,17 @@ export var PyType = class {
             this.__base__ = PyObject.__class__
             this.__bases__ = [PyObject.__class__]
         }
-        this.attrs = attrs
+
+        if (attrs === undefined) {
+            this.$builtin = true
+        }
     }
 
     __repr__() {
-        // True primitive types won't have __bases__ defined.
-        if (this.__bases__) {
-            if (this.attrs) {
-                return "<class '__main__." + this.__name__ + "'>"
-            }
+        if (this.$builtin) {
             return "<class '" + this.__name__ + "'>"
-        } else {
-            return this.__name__
         }
+        return "<class '__main__." + this.__name__ + "'>"
     }
 
     __str__() {
@@ -191,12 +194,12 @@ PyType.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> t
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-export function create_pyclass(Class, name, bases=[]) {
+export function create_pyclass(Class, name, bases=[], attrs=undefined) {
     let py_bases = []
     for (let base of bases) {
         py_bases.push(base.__class__)
     }
-    let type = new PyType(name, py_bases)
+    let type = new PyType(name, py_bases, attrs)
 
     type.$pyclass = Class
 

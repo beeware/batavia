@@ -66,7 +66,7 @@ PyList.prototype.__repr__ = function() {
 
 PyList.prototype.__str__ = function() {
     return '[' + this.map(function(obj) {
-        return builtins.repr([obj], null)
+        return builtins.repr(obj)
     }).join(', ') + ']'
 }
 

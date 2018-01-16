@@ -16,16 +16,17 @@ export var inspect = {
     'CO_NOFREE': 0x40
 }
 
-inspect.FullArgSpec = function(kwargs) {
-    this.args = kwargs.args || []
-    this.varargs = kwargs.getcallargs
-    this.varkw = kwargs.varkw
-    this.defaults = kwargs.defaults || {}
-    this.kwonlyargs = kwargs.kwonlyargs || []
-    this.kwonlydefaults = kwargs.kwonlydefaults || {}
-    this.annotations = kwargs.annotations || {}
+inspect.FullArgSpec = class {
+    constructor(args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations) {
+        this.args = args
+        this.varargs = varargs
+        this.varkw = varkw
+        this.defaults = defaults
+        this.kwonlyargs = kwonlyargs
+        this.kwonlydefaults = kwonlydefaults
+        this.annotations = annotations
+    }
 }
-
 // inspect._signature_get_user_defined_method = function(cls, method_name) {
 // try:
 //     meth = getattr(cls, method_name)
@@ -314,15 +315,15 @@ inspect.getfullargspec = function(func) {
         defaults = null
     }
 
-    return new inspect.FullArgSpec({
-        'args': args,
-        'varargs': varargs,
-        'varkw': varkw,
-        'defaults': defaults,
-        'kwonlyargs': kwonlyargs,
-        'kwdefaults': kwdefaults,
-        'annotations': annotations
-    })
+    return new inspect.FullArgSpec(
+        args=args,
+        varargs=varargs,
+        varkw=varkw,
+        defaults=defaults,
+        kwonlyargs=kwonlyargs,
+        kwdefaults=kwdefaults,
+        annotations=annotations
+    )
 
     // } catch (ex) {
     // Most of the times 'signature' will raise ValueError.
@@ -333,9 +334,12 @@ inspect.getfullargspec = function(func) {
     // throw TypeError('unsupported callable');
     // }
 }
+inspect.getfullargspec.$pyargs = {
+    args: ['func']
+}
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw RuntimeError('Missing arguments')
+    throw new RuntimeError('Missing arguments')
     // var names = [];
     // for (var name in argnames) {
     //     if (!name in values) {
@@ -359,7 +363,7 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw RuntimeError('FIXME: Too many arguments')
+    throw new RuntimeError('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
@@ -476,6 +480,11 @@ inspect.getcallargs = function(func, positional, named) {
         inspect._missing_arguments(func.__name__, func.argspec.kwonlyargs, false, arg2value)
     }
     return arg2value
+}
+inspect.getcallargs.$pyargs = {
+    args: ['func'],
+    varargs: ['positional'],
+    kwargs: ['named']
 }
 
 /*

@@ -1314,17 +1314,11 @@ export default class VirtualMachine {
     }
 
     byte_LOAD_GLOBAL(name) {
-        var val
+        let val
         if (name in this.frame.f_globals) {
             val = this.frame.f_globals[name]
         } else if (name in this.frame.f_builtins) {
             val = this.frame.f_builtins[name]
-            // Functions loaded from builtins need to be bound to this VM.
-            if (val instanceof Function) {
-                var doc = val.__doc__
-                val = val.bind(this)
-                val.__doc__ = doc
-            }
         } else {
             throw new builtins.NameError("name '" + name + "' is not defined")
         }
@@ -2149,7 +2143,7 @@ export default class VirtualMachine {
 
             // Create a locals context, and run the class function in it.
             let locals = new types.PyDict()
-            build_locals.__call__.apply(vm, [[], [], locals])
+            build_locals.__call__([], {}, locals)
 
             // Now construct the class, based on the constructed local context.
             // The *Javascript* constructor isn't the same as the *Python*

@@ -8,7 +8,7 @@ export default function type(object_or_name, bases, dict) {
         return object_or_name.__class__
     } else if (object_or_name !== undefined && bases !== undefined && dict !== undefined) {
         let NewClass = class extends PyObject {}
-        let new_type = create_pyclass(NewClass, name, bases)
+        let new_type = create_pyclass(NewClass, object_or_name, bases, {})
 
         for (var attr in dict) {
             if (dict.hasOwnProperty(attr)) {

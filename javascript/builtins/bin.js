@@ -13,7 +13,7 @@ export default function bin(number) {
     if (types.isinstance(number, types.PyBool)) {
         return new types.PyStr('0b' + number.__int__().toString(2))
     }
-    var binaryDigits = number.toString(2)
+    var binaryDigits = number.val.toString(2)
     var sign = ''
     if (binaryDigits[0] === '-') {
         sign = '-'
