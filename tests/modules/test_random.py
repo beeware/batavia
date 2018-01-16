@@ -10,3 +10,11 @@ class RandomTests(TranspileTestCase):
             random_number = random.choice(numbers)
             self.assertIn(random_number, numbers)
             """)
+
+    def test_random(self):
+        self.assertCodeExecution("""
+            import random
+
+            r = random.random()
+            print(type(r))
+            """)
