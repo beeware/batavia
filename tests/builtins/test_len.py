@@ -15,7 +15,3 @@ class LenTests(TranspileTestCase):
 
 class BuiltinLenFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "len"
-
-    not_implemented = [
-        'test_bytearray',
-    ]

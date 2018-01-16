@@ -47,7 +47,3 @@ class OrdTests(TranspileTestCase):
 
 class BuiltinOrdFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "ord"
-
-    not_implemented = [
-        'test_bytearray'
-    ]
