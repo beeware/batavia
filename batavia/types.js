@@ -93,7 +93,7 @@ types.isinstance = function(obj, type) {
                         name = name.substring(6)
                     }
                     if (obj && obj.__class__ && obj.__class__.__name__) {
-                      return (obj.__class__.__name__ === name)
+                        return (obj.__class__.__name__ === name)
                     }
                     if ((typeof obj).__class__) {
                         return ((typeof obj).__class__.__name__ === name)
