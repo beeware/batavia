@@ -9,12 +9,12 @@ import * as types from '../types'
  *************************************************************************/
 export var PyObject = class {
     constructor() {
-        if (this.__init__.__call__) {
-            this.__init__.__call__(arguments)
+        let init = this.__getattribute__('__init__')
+        if (init.__call__) {
+            init.__call__(...arguments)
         } else {
-            this.__init__.apply(this, arguments)
+            init.apply(this, arguments)
         }
-
     }
 
     toString() {
@@ -194,33 +194,33 @@ PyType.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> t
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-export function create_pyclass(Class, name, bases=[], attrs=undefined) {
+export function create_pyclass(PyClass, name, bases=[], attrs=undefined) {
     let py_bases = []
     for (let base of bases) {
         py_bases.push(base.__class__)
     }
-    let type = new PyType(name, py_bases, attrs)
+    let pytype = new PyType(name, py_bases, attrs)
 
-    type.$pyclass = Class
+    pytype.$pyclass = PyClass
 
-    Class.__class__ = type
-    Class.prototype.__class__ = type
+    PyClass.__class__ = pytype
+    PyClass.prototype.__class__ = pytype
 
-    if (Class.prototype.__doc__ === undefined) {
-        Class.prototype.__doc__ = ''
+    if (PyClass.prototype.__doc__ === undefined) {
+        PyClass.prototype.__doc__ = ''
     }
-    type.__doc__ = Class.prototype.__doc__
+    pytype.__doc__ = PyClass.prototype.__doc__
 
     // Iterate over base classes, adding any methods from
     // the bases that aren't natively defined on the class
     // itself.
-    // console.log(Class.__class__.__name__)
-    for (var base of type.__bases__) {
+    // console.log(PyClass.__class__.__name__)
+    for (var base of pytype.__bases__) {
         // console.log('  ' + base.__name__)
         for (var attr of Object.getOwnPropertyNames(base.$pyclass.prototype)) {
             // console.log('    attr ' + attr)
-            if (!Class.prototype.hasOwnProperty(attr)) {
-                Class.prototype[attr] = base.$pyclass.prototype[attr]
+            if (!PyClass.prototype.hasOwnProperty(attr)) {
+                PyClass.prototype[attr] = base.$pyclass.prototype[attr]
             //    console.log ('      copied from ' + base.__name__)
             // } else {
             //     console.log ('    already exists')
@@ -228,7 +228,23 @@ export function create_pyclass(Class, name, bases=[], attrs=undefined) {
         }
     }
 
-    return type
+    // If attributes are specified, this is a Python-defined class.
+    // Make the constructor raw, and copy all the attributes onto
+    // the newly constructed class.
+    if (attrs) {
+        pytype.__call__.$pyraw = true
+
+        // Copy in all the attributes that were created
+        // as part of object construction.
+        for (let attr in attrs) {
+            if (attrs.hasOwnProperty(attr)) {
+                PyClass[attr] = attrs[attr]
+                PyClass.prototype[attr] = attrs[attr]
+            }
+        }
+    }
+
+    return pytype
 }
 
 // Now that we have PyType and PyObject, we can start setting them up

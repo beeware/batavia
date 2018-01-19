@@ -2136,14 +2136,14 @@ export default class VirtualMachine {
     // };
 
     make_class(vm) {
-        return function(build_locals, name, bases) {
+        return function(build_attrs, name, bases) {
             // let bases = kwargs.bases || args.slice(2, args.length)
             // let metaclass = kwargs.metaclass || args[3];
             // let kwds = kwargs.kwds || args[4] || [];
 
-            // Create a locals context, and run the class function in it.
-            let locals = new types.PyDict()
-            build_locals.__call__([], {}, locals)
+            // Create a attrs context, and run the class function in it.
+            let attrs = new types.PyDict()
+            build_attrs.__call__([], {}, attrs)
 
             // Now construct the class, based on the constructed local context.
             // The *Javascript* constructor isn't the same as the *Python*
@@ -2152,16 +2152,7 @@ export default class VirtualMachine {
             // of the __call__ that invokes the constructor.
 
             let pyclass = class extends PyObject {}
-            create_pyclass(pyclass, name, bases)
-
-            // Copy in all the attributes that were created
-            // as part of object construction.
-            for (let attr in locals) {
-                if (locals.hasOwnProperty(attr)) {
-                    pyclass[attr] = locals[attr]
-                    pyclass.prototype[attr] = locals[attr]
-                }
-            }
+            create_pyclass(pyclass, name, bases, attrs)
 
             // Return the class. Calling the type will construct instances.
             return pyclass.__class__

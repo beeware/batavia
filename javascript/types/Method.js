@@ -1,11 +1,11 @@
-import { create_pyclass } from '../core/types'
+import { create_pyclass, PyObject } from '../core/types'
 import Function from './Function'
 
 /*************************************************************************
  * A Python method type
  *************************************************************************/
 
-export default class Method extends Function {
+export default class Method extends PyObject {
     constructor(instance, func) {
         super(
             func.__name__,
@@ -20,4 +20,4 @@ export default class Method extends Function {
         this.__class__ = instance.__class__
     }
 }
-create_pyclass(Method, 'method')
+create_pyclass(Method, 'method', [Function])
