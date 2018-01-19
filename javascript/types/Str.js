@@ -355,7 +355,7 @@ PyStr.prototype.__mod__ = function(other) {
 }
 
 PyStr.prototype.__add__ = function(other) {
-    if (types.isinstance(other, Str)) {
+    if (types.isinstance(other, PyStr)) {
         return this.valueOf() + other.valueOf()
     } else {
         if (version.earlier('3.6')) {
@@ -517,7 +517,7 @@ PyStr.prototype.__itruediv__ = function(other) {
 }
 
 PyStr.prototype.__iadd__ = function(other) {
-    if (types.isinstance(other, Str)) {
+    if (types.isinstance(other, PyStr)) {
         return this.valueOf() + other.valueOf()
     } else {
         if (version.earlier('3.6')) {
@@ -580,7 +580,7 @@ PyStr.prototype.__len__ = function() {
 PyStr.prototype.join = function(iter) {
     var l = new types.PyList(iter)
     for (var i = 0; i < l.length; i++) {
-        if (!types.isinstance(l[i], Str)) {
+        if (!types.isinstance(l[i], PyStr)) {
             throw new TypeError('sequence item ' + i + ': expected str instance, ' + type_name(l[i]) + ' found')
         }
     }
