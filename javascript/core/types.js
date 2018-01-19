@@ -228,12 +228,9 @@ export function create_pyclass(PyClass, name, bases=[], attrs=undefined) {
         }
     }
 
-    // If attributes are specified, this is a Python-defined class.
-    // Make the constructor raw, and copy all the attributes onto
-    // the newly constructed class.
+    // If attributes are specified, copy all the attributes
+    // onto the newly constructed class.
     if (attrs) {
-        pytype.__call__.$pyraw = true
-
         // Copy in all the attributes that were created
         // as part of object construction.
         for (let attr in attrs) {

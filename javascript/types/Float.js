@@ -1,4 +1,5 @@
-import { OverflowError, TypeError, ZeroDivisionError } from '../core/exceptions'
+import { python } from '../core/callables'
+import { OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
 
@@ -13,10 +14,33 @@ function python_modulo(n, m) {
 }
 
 export default class PyFloat extends PyObject {
-    constructor(val) {
-        super()
-
-        this.val = val
+    @python({
+        default_args: ['x']
+    })
+    __init__(x=0.0) {
+        if (typeof x === 'number') {
+            this.val = x
+        } else if (types.isinstance(x, types.PyStr)) {
+            if (x.length === 0) {
+                throw new ValueError('could not convert string to float: ')
+            } else if (x.search(/[^-0-9.]/g) === -1) {
+                this.val = parseFloat(x)
+            } else {
+                if (x === 'nan' || x === '+nan' || x === '-nan') {
+                    this.val = NaN
+                } else if (x === 'inf' || x === '+inf') {
+                    this.val = Infinity
+                } else if (x === '-inf') {
+                    this.val = -Infinity
+                }
+                throw new ValueError("could not convert string to float: '" + x + "'")
+            }
+        } else if (types.isinstance(x, [types.PyInt, types.PyBool, types.PyFloat])) {
+            this.val = x.__float__().val
+        } else {
+            throw new TypeError(
+                "float() argument must be a string, a bytes-like object or a number, not '" + type_name(x) + "'")
+        }
     }
 
     /**************************************************
@@ -37,6 +61,10 @@ export default class PyFloat extends PyObject {
 
     __bool__() {
         return this.val !== 0.0
+    }
+
+    __int__() {
+        return new types.PyInt(Math.trunc(this.val))
     }
 
     __repr__() {

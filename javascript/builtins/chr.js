@@ -17,16 +17,16 @@ export default function chr(i) {
     if (!types.isinstance(i, types.PyInt)) {
         throw new TypeError('an integer is required (got type ' + type_name(i) + ')')
     }
-    if (i.__ge__(new types.PyInt(0).MAX_INT.__add__(new types.PyInt(1))) || i.__le__(new types.PyInt(0).MIN_INT.__sub__(new types.PyInt(1)))) {
+    if (i.__ge__(types.PyInt.MAX_INT.__add__(1)) || i.__le__(types.PyInt.MIN_INT.__sub__(1))) {
         throw new OverflowError('Python int too large to convert to C long')
     }
-    if (i.__ge__(new types.PyInt(0).MAX_INT)) {
+    if (i.__ge__(types.PyInt.MAX_INT)) {
         throw new OverflowError('signed integer is greater than maximum')
     }
-    if (i.__le__(new types.PyInt(0).MIN_INT.__add__(new types.PyInt(1)))) {
+    if (i.__le__(types.PyInt.MIN_INT.__add__(1))) {
         throw new OverflowError('signed integer is less than minimum')
     }
-    if (i.__lt__(new types.PyInt(0))) {
+    if (i.__lt__(types.PyInt)) {
         throw new ValueError('chr() arg not in range(0xXXXXXXXX)')
     }
     return new types.PyStr(String.fromCharCode(new types.PyInt(i)))

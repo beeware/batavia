@@ -13,6 +13,7 @@ import {
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
 
+import { repr } from '../builtins'
 import * as types from '../types'
 
 import * as utils from './utils'
@@ -21,6 +22,10 @@ import * as utils from './utils'
  * A Python int type
  *************************************************************************/
 
+function can_float(num) {
+    return !(num.gt(PyInt.MAX_FLOAT.val) || num.lt(PyInt.MIN_FLOAT.val))
+}
+
 export default class PyInt extends PyObject {
     @python({
         default_args: ['x', 'base']
@@ -28,17 +33,33 @@ export default class PyInt extends PyObject {
     __init__(x, base) {
         if (x === undefined && base === undefined) {
             this.val = new BigNumber(0)
-        } else {
-            if (base === undefined) {
-                if (x.__int__) {
-                    this.val = new BigNumber(x.__int__())
+        } else if (base === undefined) {
+            try {
+                if (typeof x === 'string' || typeof x === 'number') {
+                    this.val = new BigNumber(x)
+                } else if (typeof x === 'boolean') {
+                    if (x) {
+                        this.val = new BigNumber(1)
+                    } else {
+                        this.val = new BigNumber(0)
+                    }
+                } else if (types.isinstance(x, [PyInt, types.PyBool, types.PyFloat])) {
+                    this.val = x.__int__().val
                 } else {
                     this.val = new BigNumber(x)
                 }
-            } else {
-                this.val = new BigNumber(parseInt(x, base))
+            } catch (e) {
+                throw new ValueError(
+                    'invalid literal for int() with base 10: ' + repr(x)
+                )
             }
-
+        } else {
+            this.val = parseInt(x, base)
+            if (isNaN(this.val)) {
+                throw new ValueError(
+                    'invalid literal for int() with base ' + base + ': ' + repr(x)
+                )
+            }
         }
     }
 
@@ -79,10 +100,6 @@ export default class PyInt extends PyObject {
 
     __str__() {
         return this.val.round().toString()
-    }
-
-    can_float(num) {
-        return !(num.gt(PyInt.MAX_FLOAT.val) || num.lt(PyInt.MIN_FLOAT.val))
     }
 
     __float__() {

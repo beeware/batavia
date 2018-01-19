@@ -3,7 +3,6 @@ import { delattr, getattr, hasattr, setattr } from './core/attrs'
 import { PyNone, PyObject, PyType } from './core/types'
 
 // Types whose constructors double as functions
-import PyBool from './types/Bool'
 import PyBytearray from './types/Bytearray'
 import PyBytes from './types/Bytes'
 import PyComplex from './types/Complex'
@@ -20,11 +19,12 @@ import PyProperty from './types/Property'
 import PyRange from './types/Range'
 import PySet from './types/Set'
 import PySlice from './types/Slice'
-import PyStr from './types/Str'
 import PyTuple from './types/Tuple'
 
 // Types with special constructor handling
+import bool from './builtins/bool'
 import map from './builtins/map'
+import str from './builtins/str'
 import type from './builtins/type'
 import zip from './builtins/zip'
 
@@ -148,7 +148,6 @@ import {
 } from './core/exceptions'
 
 // The builtin type constructors
-var bool = PyBool.__class__
 var bytearray = PyBytearray.__class__
 var bytes = PyBytes.__class__
 var complex = PyComplex.__class__
@@ -164,7 +163,6 @@ var property = PyProperty.__class__
 var range = PyRange.__class__
 var set = PySet.__class__
 var slice = PySlice.__class__
-var str = PyStr.__class__
 var tuple = PyTuple.__class__
 
 // A singleton instance of NotImplementedType
