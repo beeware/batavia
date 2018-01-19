@@ -1,8 +1,13 @@
-import { AttributeError } from './exceptions'
+import { AttributeError, TypeError } from './exceptions'
 import { type_name } from './types'
+
+import { isinstance, PyStr } from '../types'
 
 export function getattr(obj, attr, default_) {
     let val
+    if (!isinstance(attr, PyStr)) {
+        throw new TypeError('getattr(): attribute name must be string')
+    }
 
     if (obj.__class__ === undefined) {
         // A native Javascript object
@@ -43,6 +48,9 @@ getattr.$pyargs = {
 
 export function hasattr(obj, attr) {
     let val
+    if (!isinstance(name, PyStr)) {
+        throw new TypeError('hasattr(): attribute name must be string')
+    }
 
     if (obj.__class__ === undefined) {
         // A native Javascript object
@@ -66,6 +74,10 @@ hasattr.$pyargs = {
 }
 
 export function setattr(obj, attr, value) {
+    if (!isinstance(attr, PyStr)) {
+        throw new TypeError('setattr(): attribute name must be string')
+    }
+
     if (obj.__class__ === undefined) {
         obj[attr] = value
     } else {
@@ -78,6 +90,10 @@ setattr.$pyargs = {
 }
 
 export function delattr(obj, attr) {
+    if (!isinstance(attr, PyStr)) {
+        throw new TypeError('delattr(): attribute name must be string')
+    }
+
     if (obj.__class === undefined) {
         if (obj[attr] === undefined) {
             throw new AttributeError("'" + type_name(obj) +
