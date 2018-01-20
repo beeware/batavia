@@ -1,3 +1,4 @@
+import { python } from '../core/callables'
 import { NotImplementedError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
@@ -41,60 +42,71 @@ function part_to_str(x) {
 }
 
 export default class PyComplex extends PyObject {
-    constructor(re, im) {
-        super()
-
+    @python({
+        default_args: ['re', 'im']
+    })
+    __init__(re, im) {
         // console.log(100000, re, im);
-        if (types.isinstance(re, types.PyStr)) {
-            // console.log(1000, re, im);
-            var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i
-            var match = regex.exec(re)
-            if (match === null || re === '') {
-                throw new ValueError('complex() arg is a malformed string')
-            }
-            this.real = parseFloat(part_from_str(match[1]))
-            this.imag = parseFloat(part_from_str(match[3]))
-            if (match[2] === '-') {
-                this.imag = -this.imag
-            }
-        } else if (!types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool, types.PyComplex])) {
-            if (version.later('3.5')) {
-                throw new TypeError(
-                    "complex() first argument must be a string, a bytes-like object or a number, not '" +
-                    type_name(re) + "'"
-                )
+        if (re === undefined && im === undefined) {
+            this.real = 0
+            this.imag = 0
+        } else if (types.isinstance(re, types.PyStr)) {
+            if (im === undefined) {
+                var regex = /^\(?(-?[\d.]+)?([+-])?(?:([\d.]+)j)?\)?$/i
+                var match = regex.exec(re)
+                if (match === null || re === '') {
+                    throw new ValueError('complex() arg is a malformed string')
+                }
+                this.real = parseFloat(part_from_str(match[1]))
+                this.imag = parseFloat(part_from_str(match[3]))
+                if (match[2] === '-') {
+                    this.imag = -imag
+                }
             } else {
-                throw new TypeError(
-                    "complex() argument must be a string, a bytes-like object or a number, not '" +
-                    type_name(re) + "'"
-                )
+                throw new TypeError("complex() can't take second arg if first is a string")
             }
-        } else if (!types.isinstance(im, [types.PyFloat, types.PyInt, types.PyBool, types.PyComplex])) {
-            if (version.later('3.5')) {
-                throw new TypeError(
-                    "complex() first argument must be a string, a bytes-like object or a number, not '" +
-                    type_name(im) + "'"
-                )
+        } else if (types.isinstance(re, PyComplex)) {
+            if (im === undefined) {
+                this.real = re.real
+                this.imag = re.imag
             } else {
-                throw new TypeError(
-                    "complex() argument must be a string, a bytes-like object or a number, not '" +
-                    type_name(im) + "'"
-                )
+                throw new NotImplementedError('Complex initialization from complex argument(s) has not been implemented')
             }
-        } else if (typeof re === 'number' && typeof im === 'number') {
-            this.real = re
-            this.imag = im
-        } else if (types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool]) &&
-            types.isinstance(im, [types.PyFloat, types.PyInt, types.PyBool])) {
-            // console.log(2000, re, im);
+        } else if (types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool])) {
             this.real = re.__float__().valueOf()
-            this.imag = im.__float__().valueOf()
-        } else if (types.isinstance(re, types.PyComplex) && !im) {
-            // console.log(3000, re, im);
-            this.real = re.real
-            this.imag = re.imag
+            if (im === undefined) {
+                this.imag = 0
+            } else if (types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool])) {
+                this.imag = im.__float__().valueOf()
+            } else {
+                if (version.later('3.5')) {
+                    if (isinstance(types.isinstance(im, types.PyStr))) {
+                        throw new TypeError("complex() second argument can't be a string")
+                    } else {
+                        throw new TypeError(
+                            "complex() second argument must be a number, not '" +
+                            type_name(re) + "'"
+                        )
+                    }
+                } else {
+                    throw new TypeError(
+                        "complex() argument must be a number, not '" +
+                        type_name(re) + "'"
+                    )
+                }
+            }
         } else {
-            throw new NotImplementedError('Complex initialization from complex argument(s) has not been implemented')
+            if (version.later('3.5')) {
+                throw new TypeError(
+                    "complex() first argument must be a string, a bytes-like object or a number, not '" +
+                    type_name(re) + "'"
+                )
+            } else {
+                throw new TypeError(
+                    "complex() argument must be a string, a bytes-like object or a number, not '" +
+                    type_name(re) + "'"
+                )
+            }
         }
     }
 

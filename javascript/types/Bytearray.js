@@ -1,18 +1,103 @@
-import { NotImplementedError, TypeError } from '../core/exceptions'
+import { iter_for_each, python } from '../core/callables'
+import { MemoryError, NotImplementedError, OverflowError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
+import * as version from '../core/version'
 
+import { iter } from '../builtins'
 import * as types from '../types'
 
-import PyBytearrayIterator from './BytearrayIterator'
+/**************************************************
+ * Bytearray Iterator
+ **************************************************/
+
+class PyBytearrayIterator extends PyObject {
+    constructor(data) {
+        super()
+        this.index = 0
+        this.data = data
+    }
+
+    __iter__() {
+        return this
+    }
+
+    __next__() {
+        if (this.index >= this.data.length) {
+            throw new StopIteration()
+        }
+        var retval = this.data[this.index]
+        this.index++
+        return new types.PyInt(retval)
+    }
+
+    __str__() {
+        return '<bytearray_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyBytearrayIterator, 'bytearray_iterator')
 
 /*************************************************************************
  * A Python bytearray type
  *************************************************************************/
 
 export default class PyBytearray extends PyObject {
-    constructor(val) {
-        super()
-        this.val = val
+    @python({
+        default_args: ['data', 'encoding', 'errors']
+    })
+    __init__(data, encoding, errors) {
+        //    bytearray(string, encoding[, errors]) -> bytearray
+        //    bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+        //    bytearray(iterable_of_ints) -> bytearray
+        //    bytearray(int) -> bytes array of size given by the parameter initialized with null bytes
+        //    bytearray() -> empty bytes array
+        if (data === undefined) {
+            this.val = new types.PyBytes()
+        } else if (encoding === undefined && errors === undefined) {
+            if (types.isinstance(data, types.PyBytes)) {
+                // bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+                this.val = data
+            } else if (types.isinstance(data, types.PyBool)) {
+                if (data) {
+                    // bytearray(True) -> bytearray(b'\x00')
+                    this.val = new types.PyBytes(new types.PyInt(1))
+                } else {
+                    // bytearray(False) -> bytearray(b'')
+                    this.val = new types.PyBytes()
+                }
+            } else if (types.isinstance(data, types.PyBytearray)) {
+                this.val = data.val
+            } else if (types.isinstance(data, types.PyInt)) {
+                if (data.__gt__(types.PyInt.MAX_INT) || data.__lt__(types.PyInt.MIN_INT)) {
+                    throw new OverflowError('cannot fit \'int\' into an index-sized integer')
+                } else if (data.val.lt(0)) {
+                    throw new ValueError('negative count')
+                } else if (data.val.gte(types.PyInt.MAX_INT.val)) {
+                    throw new MemoryError('')
+                }
+                this.val = new types.PyBytes(data)
+            } else if (types.isinstance(data, types.PyStr)) {
+                throw new TypeError('string argument without an encoding')
+            } else if (data.__iter__ !== undefined) {
+                // we have an iterable (iter is not undefined) that's not a string(nor a Bytes/Bytearray)
+                // build a JS array of numbers while validating inputs are all int
+                iter_for_each(iter(data), function(val) {
+                    if (!types.isinstance(val, [types.PyBool, types.PyInt])) {
+                        throw new TypeError('an integer is required')
+                    }
+                })
+                this.val = new types.PyBytes(data)
+            } else if (types.isinstance(data, types.PyStr)) {
+                throw new TypeError('string argument without an encoding')
+            } else {
+                throw new TypeError('\'' + type_name(data) + '\' object is not iterable')
+            }
+        } else {
+            if (types.isinstance(data, types.PyStr)) {
+                this.val = data.encode(encoding, errors)
+            } else {
+                throw new TypeError('\'' + type_name(data) + '\' object is not iterable')
+            }
+        }
     }
 
     /**************************************************
@@ -264,4 +349,5 @@ export default class PyBytearray extends PyObject {
         return new PyBytearray(this.valueOf())
     }
 }
+PyBytearray.prototype.__doc__ = 'bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct an mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer'
 create_pyclass(PyBytearray, 'bytearray')

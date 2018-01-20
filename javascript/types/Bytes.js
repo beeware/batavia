@@ -1,23 +1,173 @@
 import { Buffer } from 'buffer'
 
+import { iter_for_each, python } from '../core/callables'
 import { TEXT_ENCODINGS } from '../core/constants'
 import { create_pyclass, type_name, PyObject } from '../core/types'
-import { NotImplementedError, TypeError, ValueError } from '../core/exceptions'
+import { NotImplementedError, OverflowError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import * as version from '../core/version'
 
 import * as types from '../types'
+import { iter } from '../builtins'
 
-import PyBytesIterator from './BytesIterator'
+/**************************************************
+ * Bytes Iterator
+ **************************************************/
+
+class PyBytesIterator extends PyObject {
+    constructor(data) {
+        super()
+        this.index = 0
+        this.data = data
+    }
+
+    __iter__() {
+        return this
+    }
+
+    __next__() {
+        if (this.index >= this.data.length) {
+            throw new StopIteration()
+        }
+        var retval = this.data[this.index]
+        this.index++
+        return new types.PyInt(retval)
+    }
+
+    __str__() {
+        return '<bytes_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyBytesIterator, 'bytes_iterator')
 
 /*************************************************************************
  * A Python bytes type
  *************************************************************************/
 
 export default class PyBytes extends PyObject {
-    constructor (val) {
-        // the value is an instance of Feross's Buffer class
-        super()
-        this.val = val
+    @python({
+        default_args: ['data', 'encoding', 'errors']
+    })
+    __init__(data, encoding, errors) {
+        //    bytes(iterable_of_ints) -> bytes
+        //    bytes(string, encoding[, errors]) -> bytes
+        //    bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
+        //    bytes(int) -> bytes object of size given by the parameter initialized with null bytes
+        //    bytes() -> empty bytes object
+
+        if (data === undefined) {
+            //    bytes() -> empty bytes object
+            this.val = Buffer.alloc(0)
+        } else if (encoding === undefined && errors === undefined) {
+            if (data === null) {
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        "'NoneType' object is not iterable"
+                    )
+                } else {
+                    throw new TypeError(
+                        "cannot convert 'NoneType' object to bytes"
+                    )
+                }
+            } else if (types.isinstance(data, [types.PyInt, types.PyBool])) {
+                // Python bool is subclassed from int, but Batavia's Boolean is a fake int:
+                if (types.isinstance(data, types.PyBool)) {
+                    data = data.__int__()
+                }
+
+                // bytes(int) -> bytes array of size given by the parameter initialized with null bytes
+                // Batavia ints are BigNumbers, so we need to unpack the value from the BigNumber Array.
+                // We throw OverflowError when we find a RangeError, so implementation dependent
+                var bignumsign = data.val.s
+                var bignumarray = data.val.c
+                var bignumexp = data.val.e
+                var too_large = false
+                if (bignumsign === -1) {
+                    throw new ValueError('negative count')
+                } else if (bignumarray.length > 1 || bignumexp !== 0) {
+                    too_large = true
+                } else {
+                    var byteslength = bignumarray[0]
+                    try {
+                        var bytesbuffer = Buffer.alloc(byteslength)
+                    } catch (e) {
+                        if (e.name === 'RangeError') {
+                            too_large = true
+                        }
+                    }
+                }
+                if (too_large) {
+                    throw new OverflowError('byte string is too large')
+                } else {
+                    this.val = bytesbuffer
+                }
+            } else if (types.isinstance(data, types.PyBytes)) {
+                // bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
+                this.val = Buffer.from(data.val)
+                // (we actually ignore python's bytearray/buffer/memoryview (not JS buffer)
+                // let's make that a late-stage TODO)
+            } else if (types.isinstance(data, types.PyBytearray)) {
+                // byte(bytes_or_buffer) -> mutable copy of bytes_or_buffer
+                this.val = Buffer.from(data.val.val)
+            } else if (types.isinstance(data, types.PyStr)) {
+                throw new TypeError('string argument without an encoding')
+            // is the argument iterable and not a Str, Bytes, Bytearray (dealt with above)?
+            } else if (data instanceof Uint8Array) {
+                // Passing in an array of bytes. This is an affordance for Javascript.
+                this.val = Buffer.from(data)
+            } else if (data.__iter__ !== undefined) {
+                // bytearray(iterable_of_ints) -> bytearray
+                // we have an iterable (iter is not undefined) that's not a string(nor a Bytes/Bytearray)
+                // build a JS array of numbers while validating inputs are all int
+                var values = []
+                iter_for_each(iter(data), function(val) {
+                    if (types.isinstance(val, types.PyInt) && (val >= 0) && (val <= 255)) {
+                        values.push(val)
+                    } else if (types.isinstance(val, types.PyBool)) {
+                        if (val) {
+                            values.push(1)
+                        } else {
+                            values.push(0)
+                        }
+                    } else {
+                        if (!types.isinstance(val, types.PyInt)) {
+                            throw new TypeError(
+                                "'" + type_name(val) + "' object cannot be interpreted as an integer")
+                        } else {
+                            throw new ValueError('bytes must be in range(0, 256)')
+                        }
+                    }
+                })
+                this.val = Buffer.from(values)
+            } else {
+                // the argument is not one of the special cases, and not an iterable, so...
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        "'" + type_name(data) + "' object is not iterable"
+                    )
+                } else {
+                    throw new TypeError(
+                        "cannot convert '" + type_name(data) + "' object to bytes"
+                    )
+                }
+            }
+        } else {
+            if (types.isinstance(data, types.PyStr)) {
+                //    bytes(string, encoding[, errors]) -> bytes
+                //    we delegate to str.encode(encoding, errors)
+                //    we need to rewrap the first argument because somehow it's coming unwrapped!
+                this.val = data.encode(data, errors)
+            } else {
+                if (version.earlier('3.6')) {
+                    throw new TypeError(
+                        "'" + type_name(data) + "' object is not iterable"
+                    )
+                } else {
+                    throw new TypeError(
+                        "cannot convert '" + type_name(data) + "' object to bytes"
+                    )
+                }
+            }
+        }
     }
 
     /**************************************************
@@ -84,7 +234,7 @@ export default class PyBytes extends PyObject {
      **************************************************/
 
     __lt__(other) {
-        if (types.isinstance(other, Bytes)) {
+        if (types.isinstance(other, PyBytes)) {
             return this.val < other.val
         } else {
             if (version.earlier('3.6')) {
@@ -101,7 +251,7 @@ export default class PyBytes extends PyObject {
     }
 
     __le__(other) {
-        if (types.isinstance(other, Bytes)) {
+        if (types.isinstance(other, PyBytes)) {
             return this.val <= other.val
         } else {
             if (version.earlier('3.6')) {
@@ -118,7 +268,7 @@ export default class PyBytes extends PyObject {
     }
 
     __eq__(other) {
-        if (types.isinstance(other, Bytes)) {
+        if (types.isinstance(other, PyBytes)) {
             var equal = (this.val.compare(other.val) === 0)
             return new types.PyBool(equal)
         } else if (types.isinstance(other, types.PyBytearray)) {
@@ -134,7 +284,7 @@ export default class PyBytes extends PyObject {
     }
 
     __gt__(other) {
-        if (types.isinstance(other, Bytes)) {
+        if (types.isinstance(other, PyBytes)) {
             return this.val > other.val
         } else {
             if (version.earlier('3.6')) {
@@ -151,7 +301,7 @@ export default class PyBytes extends PyObject {
     }
 
     __ge__(other) {
-        if (types.isinstance(other, Bytes)) {
+        if (types.isinstance(other, PyBytes)) {
             return this.val >= other.val
         } else {
             if (version.earlier('3.6')) {
@@ -177,7 +327,7 @@ export default class PyBytes extends PyObject {
                     'byte must be in range (0, 256)'
                 )
             }
-        } else if (types.isinstance(other, Bytes)) {
+        } else if (types.isinstance(other, PyBytes)) {
             other_value = this.val
         }
         if (other_value !== null) {
@@ -220,7 +370,7 @@ export default class PyBytes extends PyObject {
     }
 
     __floordiv__(other) {
-        if (types.isinstance(other, [types.PyComplex])) {
+        if (types.isinstance(other, types.PyComplex)) {
             throw new TypeError("can't take floor of complex number.")
         } else {
             throw new TypeError("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
@@ -263,7 +413,7 @@ export default class PyBytes extends PyObject {
     __mod__(other) {
         let types = require('../types')
 
-        if (types.isinstance(other, [types.PyComplex])) {
+        if (types.isinstance(other, types.PyComplex)) {
             throw new TypeError("can't mod complex numbers.")
         } else {
             throw new TypeError("unsupported operand type(s) for %: 'bytes' and '" + type_name(other) + "'")
@@ -271,12 +421,12 @@ export default class PyBytes extends PyObject {
     }
 
     __add__(other) {
-        if (types.isinstance(other, [Bytes])) {
+        if (types.isinstance(other, PyBytes)) {
             // create a new buffer object of combined length and then write the concatenated string value of both byte objects
             let byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
             byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
             return new PyBytes(byteBuffer)
-        } else if (types.isinstance(other, [types.PyBytearray])) {
+        } else if (types.isinstance(other, types.PyBytearray)) {
             throw new NotImplementedError('Bytes.__add__ has not been implemented')
         } else if (types.isinstance(other, [
             types.PyBool,
@@ -342,7 +492,7 @@ export default class PyBytes extends PyObject {
      **************************************************/
 
     __ifloordiv__(other) {
-        if (types.isinstance(other, [types.PyComplex])) {
+        if (types.isinstance(other, types.PyComplex)) {
             throw new TypeError("can't take floor of complex number.")
         } else {
             throw new TypeError("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
@@ -422,4 +572,5 @@ export default class PyBytes extends PyObject {
         }
     }
 }
+PyBytes.prototype.__doc__ = 'bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer'
 create_pyclass(PyBytes, 'bytes')
