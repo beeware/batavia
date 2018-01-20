@@ -10,7 +10,7 @@ export default class Property extends PyObject {
     @python({
         default_args: ['fget', 'fset', 'fdel', 'doc']
     })
-    __init__() {
+    __init__(fget, fset, fdel, doc) {
         this.fget = fget
         this.fset = fset
         this.fdel = fdel

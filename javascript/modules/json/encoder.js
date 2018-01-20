@@ -64,10 +64,6 @@ function _JSONEncoder(args = [], kwargs = {}) {
 _JSONEncoder.$pyargs = true
 
 export class JSONEncoder extends PyObject {
-    constructor() {
-        super()
-    }
-
     encode(obj) {
         // TODO use iterencode once it is implemented as an actual generator
 

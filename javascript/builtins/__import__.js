@@ -23,7 +23,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
         leaf_module = root_module
     } else {
         // Pull apart the requested name.
-        var level = level.int32()
+        level = level.int32()
         var path
 
         if (level === 0) {
@@ -60,16 +60,16 @@ export default function __import__(name, globals, locals, fromlist, level) {
             }
         }
 
-        var name = path[0]
+        let name_part = path[0]
 
         // Now try the import.
         // Try native modules first
-        root_module = modules[name]
+        root_module = modules[name_part]
         leaf_module = root_module
 
         // Check if there is a stdlib (pyc) module.
         if (root_module === undefined) {
-            payload = stdlib[name]
+            payload = stdlib[name_part]
             if (payload) {
                 root_module = new PyModule(name, null, name)
                 leaf_module = root_module

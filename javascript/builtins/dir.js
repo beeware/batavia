@@ -1,4 +1,3 @@
-import { BataviaError, TypeError } from '../core/exceptions'
 
 export default function dir(object) {
     return Object.keys(object)

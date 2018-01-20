@@ -79,7 +79,7 @@ export function isinstance(obj, type) {
 export function isbataviainstance(obj) {
     return isinstance(obj, [
         PyBool, PyDict, PyFloat,
-        PyInt, PyJSDict, PyList,
+        PyInt, JSDict, PyList,
         PyNoneType, PyTuple, PySlice,
         PyBytes, PyBytearray, PyType,
         PyStr, PySet, PyRange,

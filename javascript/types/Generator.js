@@ -6,7 +6,6 @@ import { dis } from '../modules/dis'
 
 import * as types from '../types'
 
-
 const YIELD_FROM = dis.opmap['YIELD_FROM']
 
 // returns subgenerator gen is yielding from or null if there is none

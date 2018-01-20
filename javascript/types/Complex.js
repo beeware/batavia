@@ -213,11 +213,11 @@ export default class PyComplex extends PyObject {
      **************************************************/
 
     __pos__() {
-        return new Complex(this.real, this.imag)
+        return new PyComplex(this.real, this.imag)
     }
 
     __neg__() {
-        return new Complex(-this.real, -this.imag)
+        return new PyComplex(-this.real, -this.imag)
     }
 
     __not__() {
@@ -244,7 +244,7 @@ export default class PyComplex extends PyObject {
             if (exponent.valueOf()) {
                 return this
             } else {
-                return new Complex(1, 0)
+                return new PyComplex(1, 0)
             }
         // else if (types.isinstance(exponent, [types.PyFloat, types.PyInt, types.PyComplex]) {
         // { do some stuff }
@@ -258,19 +258,19 @@ export default class PyComplex extends PyObject {
     __div__(x, y, inplace) {
         if (types.isinstance(y, types.PyInt)) {
             if (!y.val.isZero()) {
-                return new Complex(x.real / y.__float__().val, x.imag / y.__float__().val)
+                return new PyComplex(x.real / y.__float__().val, x.imag / y.__float__().val)
             } else {
                 throw new ZeroDivisionError('complex division by zero')
             }
         } else if (types.isinstance(y, types.PyFloat)) {
             if (y.valueOf()) {
-                return new Complex(x.real / y.valueOf(), x.imag / y.valueOf())
+                return new PyComplex(x.real / y.valueOf(), x.imag / y.valueOf())
             } else {
                 throw new ZeroDivisionError('complex division by zero')
             }
         } else if (types.isinstance(y, types.PyBool)) {
             if (y.valueOf()) {
-                return new Complex(x.real, x.imag)
+                return new PyComplex(x.real, x.imag)
             } else {
                 throw new ZeroDivisionError('complex division by zero')
             }
@@ -280,7 +280,7 @@ export default class PyComplex extends PyObject {
             var num_imag = x.imag * y.real - x.real * y.imag
             var real = num_real / den
             var imag = num_imag / den
-            return new Complex(real, imag)
+            return new PyComplex(real, imag)
         } else {
             var prefix
             if (inplace) {
@@ -309,24 +309,24 @@ export default class PyComplex extends PyObject {
     __mul__(x, y, inplace) {
         if (types.isinstance(y, types.PyInt)) {
             if (!y.val.isZero()) {
-                return new Complex(x.real * y.__float__().val, x.imag * y.__float__().val)
+                return new PyComplex(x.real * y.__float__().val, x.imag * y.__float__().val)
             } else {
-                return new Complex(0, 0)
+                return new PyComplex(0, 0)
             }
         } else if (types.isinstance(y, types.PyFloat)) {
             if (y.valueOf()) {
-                return new Complex(x.real * y.valueOf(), x.imag * y.valueOf())
+                return new PyComplex(x.real * y.valueOf(), x.imag * y.valueOf())
             } else {
-                return new Complex(0, 0)
+                return new PyComplex(0, 0)
             }
         } else if (types.isinstance(y, types.PyBool)) {
             if (y.valueOf()) {
-                return new Complex(x.real, x.imag)
+                return new PyComplex(x.real, x.imag)
             } else {
-                return new Complex(0, 0)
+                return new PyComplex(0, 0)
             }
         } else if (types.isinstance(y, types.PyComplex)) {
-            return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
+            return new PyComplex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
         } else if (types.isinstance(y, [types.PyList, types.PyStr, types.PyTuple, types.PyBytearray, types.PyBytes])) {
             throw new TypeError("can't multiply sequence by non-int of type 'complex'")
         } else {
@@ -352,17 +352,17 @@ export default class PyComplex extends PyObject {
 
     __add__(x, y, inplace) {
         if (types.isinstance(y, types.PyInt)) {
-            return new Complex(x.real + y.__float__().val, x.imag)
+            return new PyComplex(x.real + y.__float__().val, x.imag)
         } else if (types.isinstance(y, types.PyFloat)) {
-            return new Complex(x.real + y.valueOf(), x.imag)
+            return new PyComplex(x.real + y.valueOf(), x.imag)
         } else if (types.isinstance(y, types.PyBool)) {
             if (y.valueOf()) {
-                return new Complex(x.real + 1.0, x.imag)
+                return new PyComplex(x.real + 1.0, x.imag)
             } else {
-                return new Complex(x.real, x.imag)
+                return new PyComplex(x.real, x.imag)
             }
         } else if (types.isinstance(y, types.PyComplex)) {
-            return new Complex(x.real + y.real, x.imag + y.imag)
+            return new PyComplex(x.real + y.real, x.imag + y.imag)
         } else {
             var prefix
             if (inplace) {
@@ -382,17 +382,17 @@ export default class PyComplex extends PyObject {
 
     __sub__(x, y, inplace) {
         if (types.isinstance(y, types.PyInt)) {
-            return new Complex(x.real - y.__float__().val, x.imag)
+            return new PyComplex(x.real - y.__float__().val, x.imag)
         } else if (types.isinstance(y, types.PyFloat)) {
-            return new Complex(x.real - y.valueOf(), x.imag)
+            return new PyComplex(x.real - y.valueOf(), x.imag)
         } else if (types.isinstance(y, types.PyBool)) {
             if (y.valueOf()) {
-                return new Complex(x.real - 1.0, x.imag)
+                return new PyComplex(x.real - 1.0, x.imag)
             } else {
-                return new Complex(x.real, x.imag)
+                return new PyComplex(x.real, x.imag)
             }
         } else if (types.isinstance(y, types.PyComplex)) {
-            return new Complex(x.real - y.real, x.imag - y.imag)
+            return new PyComplex(x.real - y.real, x.imag - y.imag)
         } else {
             var prefix
             if (inplace) {
@@ -515,7 +515,7 @@ export default class PyComplex extends PyObject {
     }
 
     copy() {
-        return new Complex(this)
+        return new PyComplex(this)
     }
 
     remove(v) {

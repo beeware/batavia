@@ -1,10 +1,5 @@
-import { call_method } from '../core/callables'
-import { TypeError } from '../core/exceptions'
-import { type_name } from '../core/types'
 
-import * as types from '../types'
-
-export default function str(object='') {
+export default function str(object = '') {
     if (object === null) {
         return 'None'
     } else if (object.__str__) {

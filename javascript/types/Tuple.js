@@ -1,5 +1,5 @@
 import { iter_for_each } from '../core/callables'
-import { create_pyclass, type_name, PyNone, PyObject } from '../core/types'
+import { create_pyclass, type_name, PyNone } from '../core/types'
 import * as version from '../core/version'
 import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
 
@@ -271,7 +271,7 @@ PyTuple.prototype.__truediv__ = function(other) {
 
 PyTuple.prototype.__mul__ = function(other) {
     if (types.isinstance(other, types.PyInt)) {
-        var result = new Tuple()
+        var result = new PyTuple()
         for (var i = 0; i < other.valueOf(); i++) {
             for (var j = 0; j < this.length; j++) {
                 result.push(this[j])
@@ -282,7 +282,7 @@ PyTuple.prototype.__mul__ = function(other) {
         if (other.valueOf()) {
             return this.copy()
         } else {
-            return new Tuple()
+            return new PyTuple()
         }
     } else {
         throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
@@ -303,7 +303,7 @@ PyTuple.prototype.__add__ = function(other) {
     if (!types.isinstance(other, types.PyTuple)) {
         throw new TypeError('can only concatenate tuple (not "' + type_name(other) + '") to tuple')
     } else {
-        var result = new Tuple()
+        var result = new PyTuple()
         for (i = 0; i < this.length; i++) {
             result.push(this[i])
         }
@@ -394,7 +394,7 @@ PyTuple.prototype.__getitem__ = function(index) {
         // clone tuple
         var slicedArray = Array_.prototype.slice.call(this)
         if (step === 1) {
-            return new Tuple(slicedArray.slice(start, stop))
+            return new PyTuple(slicedArray.slice(start, stop))
         } else if (step > 0) {
             slicedArray = slicedArray.slice(start, stop)
         } else {
@@ -418,7 +418,7 @@ PyTuple.prototype.__getitem__ = function(index) {
             steppedArray.push(slicedArray[i])
         }
 
-        return new Tuple(steppedArray)
+        return new PyTuple(steppedArray)
     } else {
         var msg = 'tuple indices must be integers or slices, not '
         if (!version.later('3.4')) {
@@ -487,18 +487,18 @@ PyTuple.prototype.__imul__ = function(other) {
         const otherVal = other.int32()
 
         if (otherVal <= 0) {
-            return new Tuple()
+            return new PyTuple()
         }
 
         let arrays = Array.apply(arrayChange, new Array(other.int32()))
         arrays = arrays.map(function() { return (arrayChange || []) })
         const concatedArray = arrays.concat.apply([], arrays.map(function(arr) { return [].concat.apply([], arr) }))
-        return new Tuple(concatedArray)
+        return new PyTuple(concatedArray)
     } else if (types.isinstance(other, types.PyBool)) {
         if (other) {
             return this
         } else {
-            return new Tuple()
+            return new PyTuple()
         }
     } else {
         throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
@@ -542,7 +542,7 @@ PyTuple.prototype.__ior__ = function(other) {
  **************************************************/
 
 PyTuple.prototype.copy = function() {
-    return new Tuple(this)
+    return new PyTuple(this)
 }
 
 PyTuple.prototype.count = function(value) {

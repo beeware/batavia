@@ -49,7 +49,7 @@ PyBool.prototype.__float__ = function() {
  **************************************************/
 
 PyBool.prototype.__eq__ = function(other) {
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         return this.valueOf() === other.__bool__()
     } else if (types.isinstance(other, types.PyFloat)) {
         if (other.valueOf() === 0.0) {
@@ -86,7 +86,7 @@ PyBool.prototype.__ge__ = function(other) {
         return new PyBool(this_bool >= other.valueOf())
     } else if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__ge__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -125,7 +125,7 @@ PyBool.prototype.__gt__ = function(other) {
         return new PyBool(this_bool > other.valueOf())
     } else if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__gt__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -165,7 +165,7 @@ PyBool.prototype.__le__ = function(other) {
         return new PyBool(this_bool <= other.valueOf())
     } else if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__le__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -205,7 +205,7 @@ PyBool.prototype.__lt__ = function(other) {
         return new PyBool(this_bool < other.valueOf())
     } else if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__lt__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -250,7 +250,7 @@ PyBool.prototype.__neg__ = function() {
 }
 
 PyBool.prototype.__not__ = function() {
-    return Bool(!this.valueOf())
+    return PyBool(!this.valueOf())
 }
 
 PyBool.prototype.__invert__ = function() {
@@ -270,7 +270,7 @@ PyBool.prototype.__int__ = function() {
  **************************************************/
 
 PyBool.prototype.__pow__ = function(other) {
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         if (this.valueOf() && other.valueOf()) {
             return new types.PyInt(1)
         } else if (this.valueOf()) {
@@ -342,7 +342,7 @@ PyBool.prototype.__truediv__ = function(other) {
 PyBool.prototype.__mul__ = function(other) {
     var this_bool
 
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         if (this.valueOf() && other.valueOf()) {
             return new types.PyInt(1)
         } else {
@@ -443,7 +443,7 @@ PyBool.prototype.__mod__ = function(other) {
 PyBool.prototype.__add__ = function(other) {
     var this_bool
 
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         if (this.valueOf() && other.valueOf()) {
             return new types.PyInt(2)
         } else if (this.valueOf() || other.valueOf()) {
@@ -480,7 +480,7 @@ PyBool.prototype.__add__ = function(other) {
 PyBool.prototype.__sub__ = function(other) {
     var this_bool
 
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         if (this.valueOf() && other.valueOf()) {
             return new types.PyInt(0)
         } else if (this.valueOf()) {
@@ -527,7 +527,7 @@ PyBool.prototype.__setattr__ = function(other) {
 PyBool.prototype.__lshift__ = function(other) {
     var this_bool
 
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         if (this.valueOf() && other.valueOf()) {
             return new types.PyInt(2)
         } else if (this.valueOf()) {
@@ -558,7 +558,7 @@ PyBool.prototype.__lshift__ = function(other) {
 PyBool.prototype.__rshift__ = function(other) {
     var this_bool
 
-    if (types.isinstance(other, Bool)) {
+    if (types.isinstance(other, PyBool)) {
         if (this.valueOf() && !other.valueOf()) {
             return new types.PyInt(1)
         } else {
@@ -587,7 +587,7 @@ PyBool.prototype.__and__ = function(other) {
 
     if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__and__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -609,7 +609,7 @@ PyBool.prototype.__xor__ = function(other) {
 
     if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__xor__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {
@@ -631,7 +631,7 @@ PyBool.prototype.__or__ = function(other) {
 
     if (types.isinstance(other, types.PyInt)) {
         return this.__int__().__or__(other)
-    } else if (types.isinstance(other, Bool)) {
+    } else if (types.isinstance(other, PyBool)) {
         if (this.valueOf()) {
             this_bool = 1
         } else {

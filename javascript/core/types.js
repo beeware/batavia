@@ -90,7 +90,7 @@ export var PyType = class {
         if (bases && Array.isArray(bases) && bases.length > 0) {
             this.__base__ = bases[0]
             this.__bases__ = bases.slice()
-        } else if (name == 'object') {
+        } else if (name === 'object') {
             this.__base__ = null
             this.__bases__ = []
         } else {
@@ -194,7 +194,7 @@ PyType.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> t
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-export function create_pyclass(PyClass, name, bases=[], attrs=undefined) {
+export function create_pyclass(PyClass, name, bases = [], attrs = undefined) {
     let py_bases = []
     for (let base of bases) {
         py_bases.push(base.__class__)
@@ -527,7 +527,6 @@ export var PyNoneType = class extends PyObject {
     __ior__(other) {
         throw new TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + type_name(other) + "'")
     }
-
 }
 create_pyclass(PyNoneType, 'NoneType')
 

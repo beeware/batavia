@@ -1,6 +1,6 @@
 import { delattr, getattr, hasattr, setattr } from './core/attrs'
 
-import { PyNone, PyObject, PyType } from './core/types'
+import { PyNone, PyObject } from './core/types'
 
 // Types whose constructors double as functions
 import PyBytearray from './types/Bytearray'
@@ -74,7 +74,6 @@ import staticmethod from './builtins/staticmethod'
 import sum from './builtins/sum'
 // import super from './builtins/super'
 import vars from './builtins/vars'
-
 
 import { dom } from './modules/dom'
 

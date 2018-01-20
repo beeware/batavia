@@ -225,7 +225,7 @@ export default class PyFrozenSet extends PyObject {
                     both.push(val)
                 }
             })
-            return new FrozenSet(both)
+            return new PyFrozenSet(both)
         }
         throw new TypeError("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'")
     }
@@ -260,7 +260,7 @@ export default class PyFrozenSet extends PyObject {
                     both.push(val)
                 }
             })
-            return new FrozenSet(both)
+            return new PyFrozenSet(both)
         }
         throw new TypeError("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'")
     }
@@ -280,7 +280,7 @@ export default class PyFrozenSet extends PyObject {
                     both.push(val)
                 }
             }.bind(this))
-            return new FrozenSet(both)
+            return new PyFrozenSet(both)
         }
         throw new TypeError("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
     }
@@ -296,7 +296,7 @@ export default class PyFrozenSet extends PyObject {
             iter_for_each(iterobj2, function(val) {
                 both.push(val)
             })
-            return new FrozenSet(both)
+            return new PyFrozenSet(both)
         }
         throw new TypeError("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
     }

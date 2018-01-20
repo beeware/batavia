@@ -1,5 +1,3 @@
-import { BataviaError, TypeError } from '../core/exceptions'
-
 export default function repr(object) {
     if (object === null) {
         return 'None'

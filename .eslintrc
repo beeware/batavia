@@ -1,4 +1,6 @@
 {
+    parser: "babel-eslint",
+
     // Use JS Standard format...
     extends: "standard",
 

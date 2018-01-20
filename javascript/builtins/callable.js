@@ -1,5 +1,3 @@
-import { BataviaError, TypeError } from '../core/exceptions'
-
 import * as types from '../types'
 
 export default function callable(object) {

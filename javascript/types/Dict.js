@@ -88,10 +88,10 @@ export default class PyDict extends PyObject {
         this.mask = new_mask
     }
 
-    deleteAt(dict, index) {
-        dict.data_keys[index] = DELETED
-        dict.data_values[index] = null
-        dict.size--
+    deleteAt(index) {
+        this.data_keys[index] = DELETED
+        this.data_values[index] = null
+        this.size--
     }
 
     /**************************************************
@@ -545,7 +545,7 @@ export default class PyDict extends PyObject {
                 throw new KeyError(key)
             }
         }
-        deleteAt(this, i)
+        this.deleteAt(i)
     }
 
     /**************************************************
@@ -590,7 +590,7 @@ export default class PyDict extends PyObject {
     }
 
     copy() {
-        return new Dict(this)
+        return new PyDict(this)
     }
 
     items() {
@@ -663,7 +663,7 @@ export default class PyDict extends PyObject {
         }
 
         var val = this.data_values[i]
-        deleteAt(this, i)
+        this.deleteAt(i)
         return val
     }
 
@@ -684,7 +684,7 @@ export default class PyDict extends PyObject {
             var key = this.data_keys[i]
             if (!this.isEmpty(key) && !this.isDeleted(key)) {
                 var val = this.data_values[i]
-                deleteAt(this, i)
+                this.deleteAt(i)
                 return new types.PyTuple([key, val])
             }
         }
@@ -732,7 +732,7 @@ export default class PyDict extends PyObject {
             value = PyNone
         }
 
-        var d = new Dict()
+        var d = new PyDict()
         iter_for_each(builtins.iter(iterable), function(key) {
             d.__setitem__(key, value)
         })

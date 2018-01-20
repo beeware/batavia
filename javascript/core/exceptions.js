@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import { call_method, call_super, python } from './callables'
+import { call_super, python } from './callables'
 import { create_pyclass, PyObject } from './types'
 
 /*****************************************************************
@@ -100,7 +100,7 @@ export var KeyError = class extends PyObject {
     __init__(key) {
         var msg = ''
         if (key === null) {
-           msg = 'None'
+            msg = 'None'
         } else if (key !== undefined) {
             if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
                 msg = key.__repr__()

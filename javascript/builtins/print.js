@@ -3,7 +3,7 @@ import { AttributeError } from '../core/exceptions'
 
 import { sys } from '../modules'
 
-export default function print(value, sep=' ', end='\n', file=sys.stdout, flush=true) {
+export default function print(value, sep = ' ', end = '\n', file = sys.stdout, flush = true) {
     let elm
     let content
 

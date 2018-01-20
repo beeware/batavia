@@ -1,4 +1,3 @@
-import { TypeError } from '../core/exceptions'
 
 export default function hex(number) {
     var int = number.val

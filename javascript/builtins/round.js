@@ -2,14 +2,15 @@ import BigNumber from 'bignumber.js'
 
 import * as types from '../types'
 
-export default function round(number, ndigits=0) {
+export default function round(number, ndigits = 0) {
     var result = 0
-    if (types.isinstance(args[0], types.PyBool)) {
-        result = args[0].__int__()
+    if (types.isinstance(number, types.PyBool)) {
+        result = number.__int__()
     } else {
-        result = new BigNumber(args[0]).round(p)
+        result = new BigNumber(number).round(ndigits)
     }
-    if (args.length === 1) {
+
+    if (ndigits === 0) {
         return new types.PyInt(result)
     }
     return types.PyFloat(result.valueOf())

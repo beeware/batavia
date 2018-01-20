@@ -1,8 +1,6 @@
-import { BataviaError, TypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import { call_method } from '../core/callables'
 import { type_name } from '../core/types'
-
-import CallableIterator from '../types/CallableIterator'
 
 export default function iter(iterable) {
     try {

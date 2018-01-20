@@ -1,4 +1,4 @@
-import { BataviaError, NotImplementedError, TypeError } from '../core/exceptions'
+import { NotImplementedError } from '../core/exceptions'
 import { type_name, PyObject } from '../core/types'
 
 export default function classmethod(fn) {

@@ -438,4 +438,3 @@ export default class PySet extends PyObject {
 }
 PySet.prototype.__doc__ = 'set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.'
 create_pyclass(PySet, 'set')
-

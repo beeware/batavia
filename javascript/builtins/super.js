@@ -1,11 +1,11 @@
 import { AttributeError, NotImplementedError, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
-function make_super(frame, args) {
+function make_super(frame, type, obj) {
     // I guess we have to examine the stack to find out which class we are in?
     // this seems suboptimal...
     // what does CPython do?
-    if (args.length !== 0) {
+    if (type !== undefined || obj !== undefined) {
         throw new NotImplementedError('super does not support arguments yet')
     }
     if (frame.f_code.co_name !== '__init__') {
@@ -22,7 +22,7 @@ function make_super(frame, args) {
 
     var base = self.__base__
 
-    var obj = {
+    return {
         // __init__: base.__init__.bind(self);
         __getattribute__: function(name) {
             var attr = base[name]
@@ -44,8 +44,6 @@ function make_super(frame, args) {
             return value
         }
     }
-    // obj.__init__.$pyargs = true;
-    return obj
 }
 
 export default function super_(type, obj) {
@@ -53,10 +51,10 @@ export default function super_(type, obj) {
         throw new NotImplementedError("Builtin Batavia function 'super' with arguments not implemented")
     }
 
-    return make_super(this.frame, args)
+    return make_super(this.frame, type, obj)
 }
 
 super_.__doc__ = 'super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)\n'
 super_.$pyargs = {
-    defaultargs: [type, obj]
+    defaultargs: ['type', 'obj']
 }

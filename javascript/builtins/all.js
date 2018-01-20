@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { BataviaError, StopIteration, TypeError } from '../core/exceptions'
+import { StopIteration, TypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'

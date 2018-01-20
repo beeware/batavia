@@ -1,9 +1,9 @@
-import { NotImplementedError, TypeError } from '../core/exceptions'
+import { NotImplementedError } from '../core/exceptions'
 import { PyNone } from '../core/types'
 
 import * as types from '../types'
 
-export default function sorted(iterable, key=PyNone, reverse=False) {
+export default function sorted(iterable, key = PyNone, reverse = false) {
     function preparingFunction(value) {
         return {
             'key': value,
@@ -25,11 +25,19 @@ export default function sorted(iterable, key=PyNone, reverse=False) {
             // Because if we get unorderable types, CPython gives always '<' in Exception:
             // TypeError: unorderable types: str() < int()
             if (a['key'].__lt__(b['key'])) {
-                return reverse ? 1 : -1
+                if (reverse) {
+                    return 1
+                } else {
+                    return -1
+                }
             }
 
             if (a['key'].__gt__(b['key'])) {
-                return reverse ? -1 : 1
+                if (reverse) {
+                    return -1
+                } else {
+                    return 1
+                }
             }
             return 0
         })

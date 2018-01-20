@@ -377,7 +377,7 @@ PyList.prototype.__truediv__ = function(other) {
 
 PyList.prototype.__mul__ = function(other) {
     if (types.isinstance(other, types.PyInt)) {
-        var result = new List()
+        var result = new PyList()
         if (other <= 0) {
             return result
         } else {
@@ -390,7 +390,7 @@ PyList.prototype.__mul__ = function(other) {
         if (other) {
             return this.copy()
         } else {
-            return new List()
+            return new PyList()
         }
     } else {
         throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
@@ -409,7 +409,7 @@ PyList.prototype.__add__ = function(other) {
     var i
 
     if (types.isinstance(other, types.PyList)) {
-        var result = new List()
+        var result = new PyList()
         for (i = 0; i < this.length; i++) {
             result.push(this[i])
         }
@@ -450,7 +450,7 @@ PyList.prototype.__getitem__ = function(index) {
         }
     } else if (types.isinstance(index, types.PySlice)) {
         var start, stop, step
-        if (index.start === None) {
+        if (index.start === PyNone) {
             start = undefined
         } else if (!(types.isinstance(index.start, types.PyInt))) {
             if (index.start.__index__ === undefined) {
@@ -462,7 +462,7 @@ PyList.prototype.__getitem__ = function(index) {
             start = index.start.int32()
         }
 
-        if (index.stop === None) {
+        if (index.stop === PyNone) {
             stop = undefined
         } else if (!(types.isinstance(index.stop, types.PyInt))) {
             if (index.stop.__index__ === undefined) {
@@ -474,7 +474,7 @@ PyList.prototype.__getitem__ = function(index) {
             stop = index.stop.int32()
         }
 
-        if (index.step === None) {
+        if (index.step === PyNone) {
             step = 1
         } else if (!(types.isinstance(index.step, types.PyInt))) {
             if (index.step.__index__ === undefined) {
@@ -494,7 +494,7 @@ PyList.prototype.__getitem__ = function(index) {
 
         // handle step
         if (step === 1) {
-            return new List(result.slice(start, stop))
+            return new PyList(result.slice(start, stop))
         } else if (step > 0) {
             result = result.slice(start, stop)
         } else if (step < 0) {
@@ -520,7 +520,7 @@ PyList.prototype.__getitem__ = function(index) {
 
         result = steppedResult
 
-        return new List(result)
+        return new PyList(result)
     } else if (types.isinstance(index, types.PyBool)) {
         if (index) {
             idx = 1
@@ -628,7 +628,7 @@ PyList.prototype.__isub__ = function(other) {
 PyList.prototype.__imul__ = function(other) {
     if (types.isinstance(other, types.PyInt)) {
         if (other <= 0) {
-            return new List()
+            return new PyList()
         } else {
             // Need to cache the length beacuse it will change
             // as a result of inline modification.
@@ -644,7 +644,7 @@ PyList.prototype.__imul__ = function(other) {
         if (other === true) {
             return this
         } else {
-            return new List()
+            return new PyList()
         }
     } else {
         throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
@@ -692,7 +692,7 @@ PyList.prototype.append = function(value) {
 }
 
 PyList.prototype.copy = function() {
-    return new List(this)
+    return new PyList(this)
 }
 
 PyList.prototype.extend = function(values) {

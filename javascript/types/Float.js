@@ -17,7 +17,7 @@ export default class PyFloat extends PyObject {
     @python({
         default_args: ['x']
     })
-    __init__(x=0.0) {
+    __init__(x = 0.0) {
         if (typeof x === 'number') {
             this.val = x
         } else if (types.isinstance(x, types.PyStr)) {
@@ -306,7 +306,7 @@ export default class PyFloat extends PyObject {
             } else {
                 return new PyFloat(Math.pow(this.valueOf(), 0))
             }
-        } else if (types.isinstance(other, [Float, types.PyInt])) {
+        } else if (types.isinstance(other, [PyFloat, types.PyInt])) {
             if (this.valueOf() === 0 && other.valueOf() < 0) {
                 throw new ZeroDivisionError('0.0 cannot be raised to a negative power')
             } else {
@@ -328,7 +328,7 @@ export default class PyFloat extends PyObject {
             } else {
                 throw new ZeroDivisionError('float divmod()')
             }
-        } else if (types.isinstance(other, Float)) {
+        } else if (types.isinstance(other, PyFloat)) {
             if (other.valueOf()) {
                 return new PyFloat(Math.floor(this.valueOf() / other.valueOf()))
             } else {
@@ -352,7 +352,7 @@ export default class PyFloat extends PyObject {
             } else {
                 throw new ZeroDivisionError('float division by zero')
             }
-        } else if (types.isinstance(other, Float)) {
+        } else if (types.isinstance(other, PyFloat)) {
             if (other.valueOf()) {
                 return new PyFloat(this.valueOf() / other.valueOf())
             } else {
@@ -378,7 +378,7 @@ export default class PyFloat extends PyObject {
             } else {
                 return new PyFloat(this.valueOf() * 0)
             }
-        } else if (types.isinstance(other, [Float, types.PyInt])) {
+        } else if (types.isinstance(other, [PyFloat, types.PyInt])) {
             return new PyFloat(this.valueOf() * other.valueOf())
         } else if (types.isinstance(other, [types.PyList, types.PyStr, types.PyTuple, types.PyBytes, types.PyBytearray])) {
             throw new TypeError("can't multiply sequence by non-int of type 'float'")
@@ -408,7 +408,7 @@ export default class PyFloat extends PyObject {
                 }
                 return result
             }
-        } else if (types.isinstance(other, Float)) {
+        } else if (types.isinstance(other, PyFloat)) {
             if (other.valueOf() === 0) {
                 throw new ZeroDivisionError('float modulo')
             } else {
@@ -428,7 +428,7 @@ export default class PyFloat extends PyObject {
     }
 
     __add__(other) {
-        if (types.isinstance(other, [types.PyInt, Float])) {
+        if (types.isinstance(other, [types.PyInt, PyFloat])) {
             var value = new PyFloat(this.valueOf() + parseFloat(other.valueOf()))
             if (value.toString() === 'inf' || value.toString() === '-inf') {
                 throw new OverflowError(
@@ -451,7 +451,7 @@ export default class PyFloat extends PyObject {
     }
 
     __sub__(other) {
-        if (types.isinstance(other, [types.PyInt, Float])) {
+        if (types.isinstance(other, [types.PyInt, PyFloat])) {
             var value = new PyFloat(this.valueOf() - other.valueOf())
             if (value.toString() === 'inf' || value.toString() === '-inf') {
                 throw new OverflowError(

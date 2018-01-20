@@ -1,6 +1,6 @@
 import { PolyglotError, StopIteration, TypeError } from './exceptions'
 import * as attrs from './attrs'
-import { PyNone, PyType } from './types'
+import { PyType } from './types'
 
 /*************************************************************************
  * Decorate the Python argument requirements of a function
@@ -32,7 +32,7 @@ import { PyNone, PyType } from './types'
  *************************************************************************/
 
 export function python(pyargs) {
-    return function (target, key, descriptor) {
+    return function(target, key, descriptor) {
         descriptor.value.$pyargs = pyargs
         return descriptor
     }
@@ -42,7 +42,7 @@ export function python(pyargs) {
  * Invoking functions
  *************************************************************************/
 
-export function call_function(self, func, args=[], kwargs={}) {
+export function call_function(self, func, args = [], kwargs = {}) {
     let callable, pyargs
 
     if (func instanceof PyType) {
@@ -88,7 +88,7 @@ export function call_function(self, func, args=[], kwargs={}) {
                         msg = 'exactly'
                     }
 
-                    if (index == 0) {
+                    if (index === 0) {
                         throw new TypeError(callable.name + '() takes ' + msg + ' one argument (' + args.length + ' given)')
                     } else {
                         throw new TypeError(callable.name + '() takes ' + msg + ' ' + pyargs.args.length + ' arguments (' + args.length + ' given)')
@@ -125,7 +125,6 @@ export function call_function(self, func, args=[], kwargs={}) {
         if (pyargs.kwargs) {
             js_args.push(kw)
         }
-
     } else {
         if (kwargs && Object.getOwnPropertyNames(kwargs).length > 0) {
             throw new PolyglotError("Can't pass kwargs to native Javascript function")

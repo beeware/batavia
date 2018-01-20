@@ -1,5 +1,3 @@
-import { BataviaError, TypeError } from '../core/exceptions'
-
 import repr from './repr'
 
 export default function ascii(object) {

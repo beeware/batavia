@@ -52,7 +52,6 @@ var IOBuffer = class IOBuffer {
     }
 }
 
-
 // Define an instance of the buffer that works on the console.
 var console_output = new IOBuffer(console)
 

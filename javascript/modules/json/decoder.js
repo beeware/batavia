@@ -7,13 +7,8 @@ import * as types from '../../types'
 
 import { validateParams } from './utils'
 
-class JSONDecodeError extends Exception {
-    constructor(msg) {
-        super(msg)
-    }
-}
-create_pyclass(JSONDecodeError, 'JSONDecodeError')
-
+class JSONDecodeError extends PyObject {}
+create_pyclass(JSONDecodeError, 'JSONDecodeError', [Exception])
 
 // TODO(abonie): actual defaults?
 const decoder_defaults = {
@@ -50,10 +45,6 @@ function _JSONDecoder(args = [], kwargs = {}) {
 _JSONDecoder.$pyargs = true
 
 class JSONDecoder extends PyObject {
-    constructor() {
-        super()
-    }
-
     decode(s) {
         // TODO(abonie): what if call to object_hook changes decoder's object_hook property?
         var object_hook = this.object_hook

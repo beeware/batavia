@@ -316,13 +316,13 @@ inspect.getfullargspec = function(func) {
     }
 
     return new inspect.FullArgSpec(
-        args=args,
-        varargs=varargs,
-        varkw=varkw,
-        defaults=defaults,
-        kwonlyargs=kwonlyargs,
-        kwdefaults=kwdefaults,
-        annotations=annotations
+        args,
+        varargs,
+        varkw,
+        defaults,
+        kwonlyargs,
+        kwdefaults,
+        annotations
     )
 
     // } catch (ex) {

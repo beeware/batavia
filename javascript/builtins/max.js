@@ -1,5 +1,5 @@
-import { BataviaError, StopIteration, TypeError, ValueError } from '../core/exceptions'
-import { type_name, PyNone } from '../core/types'
+import { StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { type_name } from '../core/types'
 
 import { tuple } from '../builtins'
 

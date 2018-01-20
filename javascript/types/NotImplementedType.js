@@ -8,10 +8,6 @@ import * as version from '../core/version'
 import * as types from '../types'
 
 export default class PyNotImplementedType extends PyObject {
-    constructor() {
-        super()
-    }
-
     /**************************************************
      * Javascript compatibility methods
      **************************************************/
@@ -109,19 +105,19 @@ export default class PyNotImplementedType extends PyObject {
      **************************************************/
 
     __pos__() {
-        return new NotImplementedType(+this.valueOf())
+        return new PyNotImplementedType(+this.valueOf())
     }
 
     __neg__() {
-        return new NotImplementedType(-this.valueOf())
+        return new PyNotImplementedType(-this.valueOf())
     }
 
     __not__() {
-        return new NotImplementedType(!this.valueOf())
+        return new PyNotImplementedType(!this.valueOf())
     }
 
     __invert__() {
-        return new NotImplementedType(~this.valueOf())
+        return new PyNotImplementedType(~this.valueOf())
     }
 
     /**************************************************

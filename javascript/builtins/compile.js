@@ -1,4 +1,4 @@
-import { TypeError, ValueError } from '../core/exceptions'
+import { ValueError } from '../core/exceptions'
 import { _compile } from '../modules'
 
 export default function compile(source, filename, mode, flags, dont_inherit) {

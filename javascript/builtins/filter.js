@@ -1,4 +1,4 @@
-import { BataviaError, TypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 
 import * as types from '../types'
 

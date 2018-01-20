@@ -48,7 +48,7 @@ getattr.$pyargs = {
 
 export function hasattr(obj, attr) {
     let val
-    if (!isinstance(name, PyStr)) {
+    if (!isinstance(attr, PyStr)) {
         throw new TypeError('hasattr(): attribute name must be string')
     }
 
@@ -91,14 +91,15 @@ setattr.$pyargs = {
 
 export function delattr(obj, attr) {
     if (!isinstance(attr, PyStr)) {
-        throw new TypeError('delattr(): attribute name must be string')
+        throw new TypeError("attribute name must be string, not '" + type_name(attr) + "'")
     }
 
-    if (obj.__class === undefined) {
+    if (obj.__class__ === undefined) {
         if (obj[attr] === undefined) {
             throw new AttributeError("'" + type_name(obj) +
                             "' object has no attribute '" + attr + "'"
             )
+        } else {
             delete obj[attr]
         }
     } else {

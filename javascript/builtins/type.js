@@ -1,10 +1,8 @@
-import { BataviaError, TypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
-import * as types from '../types'
-
 export default function type(object_or_name, bases, dict) {
-    if (object_or_name !== undefined && bases === undefined && dict == undefined) {
+    if (object_or_name !== undefined && bases === undefined && dict === undefined) {
         return object_or_name.__class__
     } else if (object_or_name !== undefined && bases !== undefined && dict !== undefined) {
         let NewClass = class extends PyObject {}
