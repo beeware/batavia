@@ -24,7 +24,10 @@ export default function all(iterable) {
     return new types.PyBool(true)
 }
 
-all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.'
+all.__doc__ = `all(iterable) -> bool
+
+Return True if bool(x) is True for all values x in the iterable.
+If the iterable is empty, return True.`
 all.$pyargs = {
     args: ['iterable']
 }

@@ -16,7 +16,11 @@ export default function round(number, ndigits = 0) {
     return types.PyFloat(result.valueOf())
 }
 
-round.__doc__ = 'round(number[, ndigits]) -> number\n\nRound a number to a given precision in decimal digits (default 0 digits).\nThis returns an int when called with one argument, otherwise the\nsame type as the number. ndigits may be negative.'
+round.__doc__ = `round(number[, ndigits]) -> number
+
+Round a number to a given precision in decimal digits (default 0 digits).
+This returns an int when called with one argument, otherwise the
+same type as the number. ndigits may be negative.`
 round.$pyargs = {
     args: ['number'],
     default_args: ['ndigits']

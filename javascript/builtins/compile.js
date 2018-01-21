@@ -39,8 +39,21 @@ export default function compile(source, filename, mode, flags, dont_inherit) {
     return _compile.ast_compile_object(mod, filename, cf, false)
 }
 
-compile.__doc__ = "compile(source, filename, mode[, flags[, dont_inherit]]) -> code object\n\nCompile the source (a Python module, statement or expression)\ninto a code object that can be executed by exec() or eval().\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if non-zero, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or zero these statements do influence the compilation,\nin addition to any features explicitly specified."
+compile.__doc__ = `compile(source, filename, mode[, flags[, dont_inherit]]) -> code object
+
+Compile the source (a Python module, statement or expression)
+into a code object that can be executed by exec() or eval().
+The filename will be used for run-time error messages.
+The mode must be 'exec' to compile a module, 'single' to compile a
+single (interactive) statement, or 'eval' to compile an expression.
+The flags argument, if present, controls which future statements influence
+the compilation of the code.
+The dont_inherit argument, if non-zero, stops the compilation inheriting
+the effects of any future statements in effect in the code calling
+compile; if absent or zero these statements do influence the compilation,
+in addition to any features explicitly specified.`
 compile.$pyargs = {
     args: ['source', 'filename', 'mode'],
-    default_args: ['flags', 'dont_inherit']
+    default_args: ['flags', 'dont_inherit'],
+    invalid_args: (e) => `Required argument '${e.arg}' (pos ${e.argpos}) not found`
 }

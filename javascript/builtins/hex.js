@@ -4,7 +4,13 @@ export default function hex(number) {
     return '0x' + int.toString(16)
 }
 
-hex.__doc__ = "hex(number) -> string\n\nReturn the hexadecimal representation of an integer.\n\n   >>> hex(3735928559)\n   '0xdeadbeef'\n"
+hex.__doc__ = `hex(number) -> string
+
+Return the hexadecimal representation of an integer.
+
+   >>> hex(3735928559)
+   '0xdeadbeef'
+`
 hex.$pyargs = {
     args: ['number']
 }

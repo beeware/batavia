@@ -14,7 +14,9 @@ export default function reversed(sequence) {
     throw new exceptions.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects")
 }
 
-reversed.__doc__ = 'reversed(sequence) -> reverse iterator over values of the sequence\n\nReturn a reverse iterator'
+reversed.__doc__ = `reversed(sequence) -> reverse iterator over values of the sequence
+
+Return a reverse iterator`
 reversed.$pyargs = {
     args: ['sequence']
 }

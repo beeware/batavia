@@ -21,7 +21,11 @@ export default function sum(iterable, start) {
     }
 }
 
-sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start."
+sum.__doc__ = `sum(iterable[, start]) -> value
+
+Return the sum of an iterable of numbers (NOT strings) plus the value
+of parameter 'start' (which defaults to 0).  When the iterable is
+empty, return start.`
 sum.$pyargs = {
     args: ['iterable'],
     default_args: ['start']

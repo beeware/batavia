@@ -18,7 +18,10 @@ export default function next(iterator, default_val) {
     }
 }
 
-next.__doc__ = 'next(iterator[, default])\n\nReturn the next item from the iterator. If default is given and the iterator\nis exhausted, it is returned instead of raising StopIteration.'
+next.__doc__ = `next(iterator[, default])
+
+Return the next item from the iterator. If default is given and the iterator
+is exhausted, it is returned instead of raising StopIteration.`
 next.$pyargs = {
     args: ['iterator'],
     default_args: ['default_val']

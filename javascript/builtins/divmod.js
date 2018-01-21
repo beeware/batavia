@@ -18,5 +18,6 @@ export default function divmod(x, y) {
 }
 divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod === x.'
 divmod.$pyargs = {
-    args: ['x', 'y']
+    args: ['x', 'y'],
+    invalid_args: (e) => `divmod expected 2 arguments, got ${e.given}`
 }

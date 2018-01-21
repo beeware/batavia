@@ -19,7 +19,9 @@ export default function type(object_or_name, bases, dict) {
     }
 }
 
-type.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type"
+type.__doc__ = `type(object_or_name, bases, dict)
+type(object) -> the object's type
+type(name, bases, dict) -> a new type`
 type.$pyargs = {
     args: ['object_or_name'],
     default_args: ['bases', 'dict']

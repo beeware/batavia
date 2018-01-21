@@ -49,7 +49,12 @@ export default function ascii(object) {
     return ascii_string
 }
 
-ascii.__doc__ = 'ascii(object) -> string\n\nAs repr(), return a string containing a printable representation of an\nobject, but escape the non-ASCII characters in the string returned by\nrepr() using \\x, \\u or \\U escapes.  This generates a string similar\nto that returned by repr() in Python 2.'
+ascii.__doc__ = `ascii(object) -> string
+
+As repr(), return a string containing a printable representation of an
+object, but escape the non-ASCII characters in the string returned by
+repr() using \\x, \\u or \\U escapes.  This generates a string similar
+to that returned by repr() in Python 2.`
 ascii.$pyargs = {
     args: ['object']
 }

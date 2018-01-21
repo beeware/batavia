@@ -81,18 +81,31 @@ export function call_function(self, func, args = [], kwargs = {}) {
             for (let index in pyargs.args) {
                 let arg = args[index]
                 if (arg === undefined) {
-                    let msg
-                    if (pyargs.default_args || pyargs.varargs) {
-                        msg = 'at least'
+                    let err
+                    if (pyargs.invalid_args) {
+                        err = pyargs.invalid_args
+                    } else if (pyargs.args.length === 1) {
+                        if (pyargs.default_args || pyargs.varargs) {
+                            err = (e) => `${e.name}() takes at least one argument (${e.given} given)`
+                        } else {
+                            err = (e) => `${e.name}() takes exactly one argument (${e.given} given)`
+                        }
                     } else {
-                        msg = 'exactly'
+                        if (pyargs.default_args || pyargs.varargs) {
+                            err = (e) => `${e.name}() takes at least ${e.nargs} arguments (${e.given} given)`
+                        } else {
+                            err = (e) => `${e.name}() takes exactly ${e.nargs} arguments (${e.given} given)`
+                        }
                     }
-
-                    if (index === 0) {
-                        throw new TypeError(callable.name + '() takes ' + msg + ' one argument (' + args.length + ' given)')
-                    } else {
-                        throw new TypeError(callable.name + '() takes ' + msg + ' ' + pyargs.args.length + ' arguments (' + args.length + ' given)')
-                    }
+                    throw new TypeError(
+                        err({
+                            name: callable.name,
+                            nargs: pyargs.args.length,
+                            arg: pyargs.args[index],
+                            argpos: parseInt(index) + 1,
+                            given: args.length
+                        })
+                    )
                 } else {
                     js_args.push(args[index])
                 }

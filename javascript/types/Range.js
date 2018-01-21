@@ -1,12 +1,38 @@
 import BigNumber from 'bignumber.js'
 
 import { python } from '../core/callables'
-import { IndexError, TypeError, ValueError } from '../core/exceptions'
+import { IndexError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
 import * as types from '../types'
 
-import PyRangeIterator from './RangeIterator'
+/**************************************************
+ * Range Iterator
+ **************************************************/
+
+class PyRangeIterator extends PyObject {
+    constructor(data) {
+        super()
+        this.index = data.start
+        this.step = data.step
+        this.stop = data.stop
+    }
+
+    __next__() {
+        var retval = new BigNumber(this.index)
+        if ((this.step.gt(0) && this.index.lt(this.stop)) ||
+            (this.step.lt(0) && this.index.gt(this.stop))) {
+            this.index = this.index.add(this.step)
+            return new types.PyInt(retval)
+        }
+        throw new StopIteration()
+    }
+
+    __str__() {
+        return '<range_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyRangeIterator, 'range_iterator')
 
 /*************************************************************************
  * An implementation of range

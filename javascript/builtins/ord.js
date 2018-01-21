@@ -21,7 +21,9 @@ export default function ord(c) {
     }
 }
 
-ord.__doc__ = 'ord(c) -> integer\n\nReturn the integer ordinal of a one-character string.'
+ord.__doc__ = `ord(c) -> integer
+
+Return the integer ordinal of a one-character string.`
 ord.$pyargs = {
     args: ['c']
 }

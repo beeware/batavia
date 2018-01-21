@@ -8,7 +8,10 @@ export default function repr(object) {
     }
 }
 
-repr.__doc__ = 'repr(object) -> string\n\nReturn the canonical string representation of the object.\nFor most object types, eval(repr(object)) === object.'
+repr.__doc__ = `repr(object) -> string
+
+Return the canonical string representation of the object.
+For most object types, eval(repr(object)) === object.`
 repr.$pyargs = {
     args: ['object']
 }

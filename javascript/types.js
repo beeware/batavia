@@ -11,8 +11,6 @@ import PyModule from './types/Module'
 
 import PyProperty from './types/Property'
 
-import PySetIterator from './types/SetIterator'
-
 import PyBool from './types/Bool'
 import PyFloat from './types/Float'
 import PyInt from './types/Int'
@@ -196,7 +194,6 @@ export {
     PyProperty,
     PyRange,
     PySet,
-    PySetIterator,
     PySlice,
     PyStr,
     PyTuple,

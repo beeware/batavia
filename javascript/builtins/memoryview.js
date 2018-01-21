@@ -4,7 +4,9 @@ export default function memoryview(object) {
     throw new NotImplementedError("Builtin Batavia function 'memoryview' not implemented")
 }
 
-memoryview.__doc__ = 'memoryview(object)\n\nCreate a new memoryview object which references the given object.'
+memoryview.__doc__ = `memoryview(object)
+
+Create a new memoryview object which references the given object.`
 memoryview.$pyargs = {
     args: ['object']
 }

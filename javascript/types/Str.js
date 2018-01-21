@@ -1,14 +1,39 @@
 import { Buffer } from 'buffer'
 
 import { TEXT_ENCODINGS } from '../core/constants'
-import { IndexError, NotImplementedError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyNone } from '../core/types'
+import { AttributeError, IndexError, NotImplementedError, StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { create_pyclass, type_name, PyNone, PyObject } from '../core/types'
 import * as version from '../core/version'
 
 import * as types from '../types'
 
-import PyStrIterator from './StrIterator'
 import * as StrUtils from './StrUtils'
+
+/**************************************************
+ * Str Iterator
+ **************************************************/
+
+class PyStrIterator extends PyObject {
+    constructor(data) {
+        super()
+        this.index = 0
+        this.data = data
+    }
+
+    __next__() {
+        var retval = this.data[this.index]
+        if (retval === undefined) {
+            throw new StopIteration()
+        }
+        this.index++
+        return retval
+    }
+
+    __str__() {
+        return '<str_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyStrIterator, 'str_iterator')
 
 /*************************************************************************
  * Modify String to behave like a Python String
@@ -67,21 +92,17 @@ PyStr.prototype.__str__ = function() {
  * Attribute manipulation
  **************************************************/
 
-// PyStr.prototype.__getattribute__ = function(attr) {
-//     return PyObject.prototype.__class__.__getattribute__(this, attr)
-// }
+PyStr.prototype.__setattr__ = function(attr, value) {
+    if (Object.getPrototypeOf(this)[attr] === undefined) {
+        throw new AttributeError("'str' object has no attribute '" + attr + "'")
+    } else {
+        throw new AttributeError("'str' object attribute '" + attr + "' is read-only")
+    }
+}
 
-// PyStr.prototype.__setattr__ = function(attr, value) {
-//     if (Object.getPrototypeOf(this)[attr] === undefined) {
-//         throw new AttributeError("'str' object has no attribute '" + attr + "'")
-//     } else {
-//         throw new AttributeError("'str' object attribute '" + attr + "' is read-only")
-//     }
-// }
-
-// PyStr.prototype.__delattr__ = function(attr) {
-//     throw new AttributeError("'str' object has no attribute '" + attr + "'")
-// }
+PyStr.prototype.__delattr__ = function(attr) {
+    throw new AttributeError("'str' object has no attribute '" + attr + "'")
+}
 
 /**************************************************
  * Comparison operators

@@ -26,7 +26,13 @@ export default function oct(number) {
     return '0o' + number.toString(8)
 }
 
-oct.__doc__ = "oct(number) -> string\n\nReturn the octal representation of an integer.\n\n   >>> oct(342391)\n   '0o1234567'\n"
+oct.__doc__ = `oct(number) -> string
+
+Return the octal representation of an integer.
+
+   >>> oct(342391)
+   '0o1234567'
+`
 oct.$pyargs = {
     args: ['number']
 }

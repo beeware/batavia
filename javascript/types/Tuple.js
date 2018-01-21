@@ -1,12 +1,36 @@
 import { iter_for_each } from '../core/callables'
-import { create_pyclass, type_name, PyNone } from '../core/types'
+import { create_pyclass, type_name, PyNone, PyObject } from '../core/types'
 import * as version from '../core/version'
-import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
+import { AttributeError, IndexError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 
 import * as builtins from '../builtins'
 import * as types from '../types'
 
-import PyTupleIterator from './TupleIterator'
+/**************************************************
+ * Tuple Iterator
+ **************************************************/
+
+class PyTupleIterator extends PyObject {
+    constructor(data) {
+        super()
+        this.index = 0
+        this.data = data
+    }
+
+    __next__() {
+        var retval = this.data[this.index]
+        if (retval === undefined) {
+            throw new StopIteration()
+        }
+        this.index++
+        return retval
+    }
+
+    __str__() {
+        return '<tuple_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyTupleIterator, 'tuple_iterator')
 
 /*************************************************************************
  * A Python Tuple type

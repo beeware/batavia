@@ -1,4 +1,4 @@
-import { iter_for_each } from '../core/callables'
+import { iter_for_each, python } from '../core/callables'
 import { KeyError, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
@@ -40,58 +40,137 @@ var DELETED = {
 }
 
 export default class PyDict extends PyObject {
-    constructor(args, kwargs) {
-        super()
+    @python({
+        default_args: ['iterable'],
+        kwargs: ['kwargs']
+    })
+    __init__(iterable, kwargs) {
+        this.$data_keys = []
+        this.$data_values = []
+        this.$size = 0
+        this.$mask = 0
 
-        this.data_keys = []
-        this.data_values = []
-        this.size = 0
-        this.mask = 0
+        if (iterable !== undefined) {
+            // Passing a dictionary as argument
+            if (types.isinstance(iterable, types.PyDict)) {
+                this.update(iterable)
+            } else {
+                // we have an iterable (iter is not undefined) that's not a string(nor a Bytes/Bytearray)
+                // build a JS array of numbers while validating inputs are all int
+                let self = this
+                let i = 0
+                let iter = builtins.iter(iterable)
+                iter_for_each(iter, function(val) {
+                    // single number or bool in an iterable throws different error
+                    let len
+                    try {
+                        len = builtins.len(val)
+                    } catch (e) {
+                        throw new TypeError('cannot convert dictionary update sequence element #' + i + ' to a sequence')
+                    }
 
-        if (args) {
-            this.update(args)
+                    if (len == 2) {
+                        self.__setitem__(
+                            val.__getitem__(new types.PyInt(0)),
+                            val.__getitem__(new types.PyInt(1))
+                        )
+                    } else {
+                        throw new ValueError('dictionary update sequence element #' + i + ' has length ' + builtins.len(val) + '; 2 is required')
+                    }
+
+                    i += 1
+                })
+            }
+        }
+
+        if (kwargs) {
+            for (let key in kwargs) {
+                this.__setitem__(key, kwargs[key])
+            }
         }
     }
 
-    _increase_size() {
-        var i
-
+    $increase_size() {
         // increase the table size and rehash
-        if (this.data_keys.length === 0) {
-            this.mask = INITIAL_SIZE - 1
-            this.data_keys = new Array(INITIAL_SIZE)
-            this.data_values = new Array(INITIAL_SIZE)
+        if (this.$data_keys.length === 0) {
+            this.$mask = INITIAL_SIZE - 1
+            this.$data_keys = new Array(INITIAL_SIZE)
+            this.$data_values = new Array(INITIAL_SIZE)
 
-            for (i = 0; i < INITIAL_SIZE; i++) {
-                this.data_keys[i] = EMPTY
+            for (let i = 0; i < INITIAL_SIZE; i++) {
+                this.$data_keys[i] = EMPTY
             }
             return
         }
 
-        var new_keys = new Array(this.data_keys.length * 2)
-        var new_values = new Array(this.data_keys.length * 2)
-        var new_mask = this.data_keys.length * 2 - 1 // assumes power of two
-        for (i = 0; i < new_keys.length; i++) {
+        let new_keys = new Array(this.$data_keys.length * 2)
+        let new_values = new Array(this.$data_keys.length * 2)
+        let new_mask = this.$data_keys.length * 2 - 1 // assumes power of two
+        for (let i = 0; i < new_keys.length; i++) {
             new_keys[i] = EMPTY
         }
+        let self = this
         iter_for_each(builtins.iter(this.items()), function(key, value) {
             var hash = builtins.hash(key)
             var h = hash.int32() & new_mask
-            while (!this.isEmpty(new_keys[h])) {
+            while (!self.$isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask
             }
             new_keys[h] = key
             new_values[h] = value
         })
-        this.data_keys = new_keys
-        this.data_values = new_values
-        this.mask = new_mask
+        this.$data_keys = new_keys
+        this.$data_values = new_values
+        this.$mask = new_mask
     }
 
-    deleteAt(index) {
-        this.data_keys[index] = DELETED
-        this.data_values[index] = null
-        this.size--
+    $deleteAt(index) {
+        this.$data_keys[index] = DELETED
+        this.$data_values[index] = null
+        this.$size--
+    }
+
+    $isDeleted(x) {
+        return x !== null &&
+            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
+            x.__eq__(DELETED).valueOf()
+    }
+
+    $isEmpty(x) {
+        return x !== null &&
+            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
+            x.__eq__(EMPTY).valueOf()
+    }
+
+    $find_index(other) {
+        if (this.$size === 0) {
+            return null
+        }
+        var hash = builtins.hash(other)
+        var h = hash.int32() & this.$mask
+        while (true) {
+            var key = this.$data_keys[h]
+            if (this.$isDeleted(key)) {
+                h = (h + 1) & this.$mask
+                continue
+            }
+            if (this.$isEmpty(key)) {
+                return null
+            }
+            if (key === null && other === null) {
+                return h
+            }
+            if (builtins.hash(key).__eq__(hash).valueOf() &&
+                ((key === null && other === null) || key.__eq__(other).valueOf())) {
+                return h
+            }
+            h = (h + 1) & this.$mask
+
+            if (h === (hash.int32() & this.$mask)) {
+                // we have looped, definitely not here
+                return null
+            }
+        }
     }
 
     /**************************************************
@@ -107,39 +186,27 @@ export default class PyDict extends PyObject {
      **************************************************/
 
     __len__() {
-        return this.size
+        return this.$size
     }
 
     __bool__() {
-        return this.size > 0
+        return this.$size > 0
     }
 
     __repr__() {
         return this.__str__()
     }
 
-    isDeleted(x) {
-        return x !== null &&
-            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
-            x.__eq__(DELETED).valueOf()
-    }
-
-    isEmpty(x) {
-        return x !== null &&
-            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
-            x.__eq__(EMPTY).valueOf()
-    }
-
     __str__() {
-        var result = '{'
-        var strings = []
-        for (var i = 0; i < this.data_keys.length; i++) {
+        let result = '{'
+        let strings = []
+        for (let i = 0; i < this.$data_keys.length; i++) {
+            let key = this.$data_keys[i]
             // ignore deleted or empty
-            var key = this.data_keys[i]
-            if (this.isEmpty(key) || this.isDeleted(key)) {
+            if (this.$isEmpty(key) || this.$isDeleted(key)) {
                 continue
             }
-            strings.push(builtins.repr(key) + ': ' + builtins.repr(this.data_values[i]))
+            strings.push(builtins.repr(key) + ': ' + builtins.repr(this.$data_values[i]))
         }
         result += strings.join(', ')
         result += '}'
@@ -210,13 +277,13 @@ export default class PyDict extends PyObject {
         if (!types.isinstance(other, [types.PyDict])) {
             return new types.PyBool(false)
         }
-        if (this.data_keys.length !== other.data_keys.length) {
+        if (this.$data_keys.length !== other.$data_keys.length) {
             return new types.PyBool(false)
         }
 
-        for (var i = 0; i < this.data_keys.length; i++) {
-            var key = this.data_keys[i]
-            if (this.isEmpty(key) || this.isDeleted(key)) {
+        for (var i = 0; i < this.$data_keys.length; i++) {
+            var key = this.$data_keys[i]
+            if (this.$isEmpty(key) || this.$isDeleted(key)) {
                 continue
             }
             if (!other.__contains__(key).valueOf()) {
@@ -387,35 +454,35 @@ export default class PyDict extends PyObject {
     }
 
     __setitem__(key, value) {
-        if (this.size + 1 > this.data_keys.length * MAX_LOAD_FACTOR) {
-            this._increase_size()
+        if (this.$size + 1 > this.$data_keys.length * MAX_LOAD_FACTOR) {
+            this.$increase_size()
         }
         var hash = builtins.hash(key)
-        var h = hash.int32() & this.mask
+        var h = hash.int32() & this.$mask
 
         while (true) {
-            var current_key = this.data_keys[h]
-            if (this.isEmpty(current_key) || this.isDeleted(current_key)) {
-                this.data_keys[h] = key
-                this.data_values[h] = value
-                this.size++
+            var current_key = this.$data_keys[h]
+            if (this.$isEmpty(current_key) || this.$isDeleted(current_key)) {
+                this.$data_keys[h] = key
+                this.$data_values[h] = value
+                this.$size++
                 return
             } else if (current_key === null && key === null) {
-                this.data_keys[h] = key
-                this.data_values[h] = value
+                this.$data_keys[h] = key
+                this.$data_values[h] = value
                 return
             } else if (builtins.hash(current_key).__eq__(hash).valueOf() &&
                        current_key.__eq__(key).valueOf()) {
-                this.data_keys[h] = key
-                this.data_values[h] = value
+                this.$data_keys[h] = key
+                this.$data_values[h] = value
                 return
             }
 
-            h = (h + 1) & this.mask
-            if (h === (hash.int32() & this.mask)) {
+            h = (h + 1) & this.$mask
+            if (h === (hash.int32() & this.$mask)) {
                 // we have looped, we'll rehash (should be impossible)
-                this._increase_size()
-                h = hash.int32() & this.mask
+                this.$increase_size()
+                h = hash.int32() & this.$mask
             }
         }
     }
@@ -480,39 +547,8 @@ export default class PyDict extends PyObject {
         throw new TypeError("unsupported operand type(s) for |=: 'dict' and '" + type_name(other) + "'")
     }
 
-    _find_index(other) {
-        if (this.size === 0) {
-            return null
-        }
-        var hash = builtins.hash(other)
-        var h = hash.int32() & this.mask
-        while (true) {
-            var key = this.data_keys[h]
-            if (this.isDeleted(key)) {
-                h = (h + 1) & this.mask
-                continue
-            }
-            if (this.isEmpty(key)) {
-                return null
-            }
-            if (key === null && other === null) {
-                return h
-            }
-            if (builtins.hash(key).__eq__(hash).valueOf() &&
-                ((key === null && other === null) || key.__eq__(other).valueOf())) {
-                return h
-            }
-            h = (h + 1) & this.mask
-
-            if (h === (hash.int32() & this.mask)) {
-                // we have looped, definitely not here
-                return null
-            }
-        }
-    }
-
     __contains__(key) {
-        return new types.PyBool(this._find_index(key) !== null)
+        return new types.PyBool(this.$find_index(key) !== null)
     }
 
     __getitem__(key) {
@@ -524,7 +560,7 @@ export default class PyDict extends PyObject {
             throw new TypeError("unhashable type: '" + type_name(key) + "'")
         }
 
-        var i = this._find_index(key)
+        var i = this.$find_index(key)
 
         if (i === null) {
             if (key === null) {
@@ -533,11 +569,11 @@ export default class PyDict extends PyObject {
                 throw new KeyError(key)
             }
         }
-        return this.data_values[i]
+        return this.$data_values[i]
     }
 
     __delitem__(key) {
-        var i = this._find_index(key)
+        var i = this.$find_index(key)
         if (i === null) {
             if (key === null) {
                 throw new KeyError('PyNone')
@@ -545,7 +581,7 @@ export default class PyDict extends PyObject {
                 throw new KeyError(key)
             }
         }
-        this.deleteAt(i)
+        this.$deleteAt(i)
     }
 
     /**************************************************
@@ -553,9 +589,9 @@ export default class PyDict extends PyObject {
      **************************************************/
 
     get(key, backup) {
-        var i = this._find_index(key)
+        var i = this.$find_index(key)
         if (i !== null) {
-            return this.data_values[i]
+            return this.$data_values[i]
         } else if (typeof backup === 'undefined') {
             if (key === null) {
                 throw new KeyError('PyNone')
@@ -594,24 +630,24 @@ export default class PyDict extends PyObject {
     }
 
     items() {
-        var result = new types.PyList()
-        for (var i = 0; i < this.data_keys.length; i++) {
+        let result = new types.PyList()
+        for (let i = 0; i < this.$data_keys.length; i++) {
             // ignore deleted or empty
-            var key = this.data_keys[i]
-            if (this.isEmpty(key) || this.isDeleted(key)) {
+            let key = this.$data_keys[i]
+            if (this.$isEmpty(key) || this.$isDeleted(key)) {
                 continue
             }
-            result.append(new types.PyTuple([key, this.data_values[i]]))
+            result.append(new types.PyTuple([key, this.$data_values[i]]))
         }
         return result
     }
 
     keys() {
         var result = new types.PyList()
-        for (var i = 0; i < this.data_keys.length; i++) {
+        for (var i = 0; i < this.$data_keys.length; i++) {
             // ignore deleted or empty
-            var key = this.data_keys[i]
-            if (this.isEmpty(key) || this.isDeleted(key)) {
+            var key = this.$data_keys[i]
+            if (this.$isEmpty(key) || this.$isDeleted(key)) {
                 continue
             }
             result.append(key)
@@ -625,22 +661,22 @@ export default class PyDict extends PyObject {
 
     values() {
         var result = new types.PyList()
-        for (var i = 0; i < this.data_keys.length; i++) {
+        for (var i = 0; i < this.$data_keys.length; i++) {
             // ignore deleted or empty
-            var key = this.data_keys[i]
-            if (this.isEmpty(key) || this.isDeleted(key)) {
+            var key = this.$data_keys[i]
+            if (this.$isEmpty(key) || this.$isDeleted(key)) {
                 continue
             }
-            result.append(this.data_values[i])
+            result.append(this.$data_values[i])
         }
         return result
     }
 
     clear() {
-        this.size = 0
-        this.mask = 0
-        this.data_keys = []
-        this.data_values = []
+        this.$size = 0
+        this.$mask = 0
+        this.$data_keys = []
+        this.$data_values = []
     }
 
     pop(key, def) {
@@ -654,7 +690,7 @@ export default class PyDict extends PyObject {
             )
         }
 
-        var i = this._find_index(key)
+        var i = this.$find_index(key)
         if (i === null) {
             if (def === undefined) {
                 throw new KeyError(key)
@@ -662,8 +698,8 @@ export default class PyDict extends PyObject {
             return def
         }
 
-        var val = this.data_values[i]
-        this.deleteAt(i)
+        var val = this.$data_values[i]
+        this.$deleteAt(i)
         return val
     }
 
@@ -673,18 +709,18 @@ export default class PyDict extends PyObject {
                 'popitem() takes no arguments (' + arguments.length + ' given)'
             )
         }
-        if (this.size < 1) {
+        if (this.$size < 1) {
             throw new KeyError(
                 'popitem(): dictionary is empty'
             )
         }
 
-        for (var i = 0; i < this.data_keys.length; i++) {
+        for (var i = 0; i < this.$data_keys.length; i++) {
             // ignore deleted or empty
-            var key = this.data_keys[i]
-            if (!this.isEmpty(key) && !this.isDeleted(key)) {
-                var val = this.data_values[i]
-                this.deleteAt(i)
+            var key = this.$data_keys[i]
+            if (!this.$isEmpty(key) && !this.$isDeleted(key)) {
+                var val = this.$data_values[i]
+                this.$deleteAt(i)
                 return new types.PyTuple([key, val])
             }
         }
@@ -709,12 +745,12 @@ export default class PyDict extends PyObject {
         if (def === undefined) {
             def = PyNone
         }
-        var i = this._find_index(key)
+        var i = this.$find_index(key)
         if (i === null) {
             this.__setitem__(key, def)
             return def
         } else {
-            return this.data_values[i]
+            return this.$data_values[i]
         }
     }
 
@@ -739,4 +775,13 @@ export default class PyDict extends PyObject {
         return d
     }
 }
+PyDict.prototype.__doc__ = `dict() -> new empty dictionary
+dict(mapping) -> new dictionary initialized from a mapping object's
+    (key, value) pairs
+dict(iterable) -> new dictionary initialized as if via:
+    d = {}
+    for k, v in iterable:
+        d[k] = v
+dict(**kwargs) -> new dictionary initialized with the name=value pairs
+    in the keyword argument list.  For example:  dict(one=1, two=2)`
 create_pyclass(PyDict, 'dict')

@@ -1,4 +1,5 @@
-import { iter_for_each } from '../core/callables'
+/* eslint-disable no-extend-native */
+import { iter_for_each, python } from '../core/callables'
 import { IndexError, TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
@@ -6,316 +7,136 @@ import * as version from '../core/version'
 import * as builtins from '../builtins'
 import * as types from '../types'
 
-import PySetIterator from './SetIterator'
+import PySet from './Set'
 
 /*************************************************************************
- * A Python FrozenSet type, with an underlying Dict.
+ * A Python FrozenSet type
  *************************************************************************/
 
 export default class PyFrozenSet extends PyObject {
-    constructor(args, kwargs) {
-        super()
+    @python({
+        default_args: ['iterable']
+    })
+    __init__(iterable) {
+        this.$data_keys = []
+        this.$size = 0
+        this.$mask = 0
 
-        this.data = new types.PyDict()
-        if (args) {
-            this._update(args)
-        }
-    }
-
-    /**************************************************
-     * Javascript compatibility methods
-     **************************************************/
-
-    toString() {
-        return this.__str__()
-    }
-
-    /**************************************************
-     * Type conversions
-     **************************************************/
-
-    __len__() {
-        return this.data.size
-    }
-
-    __bool__() {
-        return this.data.__bool__()
-    }
-
-    __iter__() {
-        return new PySetIterator(this)
-    }
-
-    __repr__() {
-        return this.__str__()
-    }
-
-    __str__() {
-        var keys = this.data.keys()
-        if (keys.length === 0) {
-            return 'frozenset()'
-        }
-        return 'frozenset({' +
-            keys.map(function(x) { return x.__repr__() }).join(', ') +
-            '})'
-    }
-
-    /**************************************************
-     * Comparison operators
-     **************************************************/
-
-    __lt__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.data.keys().length < other.data.keys().length)
-        }
-
-        if (version.earlier('3.6')) {
-            throw new TypeError(
-                'unorderable types: frozenset() < ' + type_name(other) + '()'
-            )
-        } else {
-            throw new TypeError(
-                "'<' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
-            )
-        }
-    }
-
-    __le__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.data.keys().length <= other.data.keys().length)
-        }
-        if (version.earlier('3.6')) {
-            throw new TypeError(
-                'unorderable types: frozenset() <= ' + type_name(other) + '()'
-            )
-        } else {
-            throw new TypeError(
-                "'<=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
-            )
-        }
-    }
-
-    __eq__(other) {
-        if (!types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            return new types.PyBool(false)
-        }
-        if (this.data.keys().length !== other.data.keys().length) {
-            return new types.PyBool(false)
-        }
-        var iterobj = builtins.iter(this)
-        var equal = true
-        iter_for_each(iterobj, function(val) {
-            equal = equal && other.__contains__(val).valueOf()
-        })
-
-        return new types.PyBool(equal)
-    }
-
-    __ne__(other) {
-        return this.__eq__(other).__not__()
-    }
-
-    __gt__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.data.keys().length > other.data.keys().length)
-        }
-        if (version.earlier('3.6')) {
-            throw new TypeError(
-                'unorderable types: frozenset() > ' + type_name(other) + '()'
-            )
-        } else {
-            throw new TypeError(
-                "'>' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
-            )
-        }
-    }
-
-    __ge__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.data.keys().length >= other.data.keys().length)
-        }
-        if (version.earlier('3.6')) {
-            throw new TypeError(
-                'unorderable types: frozenset() >= ' + type_name(other) + '()'
-            )
-        } else {
-            throw new TypeError(
-                "'>=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
-            )
-        }
-    }
-
-    __contains__(other) {
-        return this.data.__contains__(other)
-    }
-
-    /**************************************************
-     * Unary operators
-     **************************************************/
-
-    __not__() {
-        return this.__bool__().__not__()
-    }
-
-    __pos__() {
-        throw new TypeError("bad operand type for unary +: 'frozenset'")
-    }
-
-    __neg__() {
-        throw new TypeError("bad operand type for unary -: 'frozenset'")
-    }
-
-    __invert__() {
-        throw new TypeError("bad operand type for unary ~: 'frozenset'")
-    }
-
-    /**************************************************
-     * Binary operators
-     **************************************************/
-
-    __pow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __div__(other) {
-        throw new TypeError("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __floordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't take floor of complex number.")
-        } else {
-            throw new TypeError("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'")
-        }
-    }
-
-    __truediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __mul__(other) {
-        if (types.isinstance(other, [
-            types.PyBytearray, types.PyBytes, types.PyList,
-            types.PyStr, types.PyTuple
-        ])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'frozenset'")
-        } else {
-            throw new TypeError("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'")
-        }
-    }
-
-    __mod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't mod complex numbers.")
-        } else {
-            throw new TypeError("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'")
-        }
-    }
-
-    __add__(other) {
-        throw new TypeError("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __sub__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            var both = []
-            var iterobj1 = builtins.iter(this)
-            iter_for_each(iterobj1, function(val) {
-                if (!(other.__contains__(val).valueOf())) {
-                    both.push(val)
-                }
-            })
-            return new PyFrozenSet(both)
-        }
-        throw new TypeError("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __getitem__(other) {
-        if (types.isinstance(other, [types.PyBool])) {
-            throw new TypeError("'frozenset' object does not support indexing")
-        } else if (types.isinstance(other, [types.PyInt])) {
-            if (other.val.gt(types.PyInt.prototype.MAX_INT.val) || other.val.lt(types.PyInt.prototype.MIN_INT.val)) {
-                throw new IndexError("cannot fit 'int' into an index-sized integer")
-            } else {
-                throw new TypeError("'frozenset' object does not support indexing")
-            }
-        }
-        throw new TypeError("'frozenset' object is not subscriptable")
-    }
-
-    __lshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __rshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __and__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            var both = []
-            var iterobj = builtins.iter(this)
+        if (iterable !== undefined) {
+            let iterobj = builtins.iter(iterable)
+            let self = this
             iter_for_each(iterobj, function(val) {
-                if (other.__contains__(val).valueOf()) {
-                    both.push(val)
-                }
+                self.$add(val)
             })
-            return new PyFrozenSet(both)
         }
-        throw new TypeError("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'")
     }
 
-    __xor__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            var both = []
-            var iterobj1 = builtins.iter(this)
-            iter_for_each(iterobj1, function(val) {
-                if (!(other.__contains__(val).valueOf())) {
-                    both.push(val)
-                }
-            })
-            var iterobj2 = builtins.iter(other)
-            iter_for_each(iterobj2, function(val) {
-                if (!(this.__contains__(val).valueOf())) {
-                    both.push(val)
-                }
-            }.bind(this))
-            return new PyFrozenSet(both)
-        }
-        throw new TypeError("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
-    }
-
-    __or__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            var both = []
-            var iterobj1 = builtins.iter(this)
-            iter_for_each(iterobj1, function(val) {
-                both.push(val)
-            })
-            var iterobj2 = builtins.iter(other)
-            iter_for_each(iterobj2, function(val) {
-                both.push(val)
-            })
-            return new PyFrozenSet(both)
-        }
-        throw new TypeError("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
-    }
 
     /**************************************************
-     * Methods
+     * Inplace operators
      **************************************************/
+    __isub__(other) {
+        throw new TypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
 
-    _update(args) {
-        var new_args = types.js2py(args)
-        if (types.isinstance(new_args, [types.PyFrozenSet, types.PyList, types.PySet, types.PyStr, types.PyTuple])) {
-            var iterobj = builtins.iter(new_args)
-            var self = this
-            iter_for_each(iterobj, function(val) {
-                self.data.__setitem__(val, val)
-            })
-        } else {
-            throw new TypeError("'" + type_name(new_args) + "' object is not iterable")
-        }
+    __iand__(other) {
+        throw new TypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __ixor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __ior__(other) {
+        throw new TypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 }
+
+/**
+ * The implmentation of FrozenSet is almost identical to Set,
+ * so copy the methods over. We can't use inheritance because
+ * integrating Python and Javascript inheritance at the same
+ * time is a delicate balancing act...
+ */
+
+PyFrozenSet.prototype.$increase_size = PySet.prototype.$increase_size
+PyFrozenSet.prototype.$isDeleted = PySet.prototype.$isDeleted
+PyFrozenSet.prototype.$isEmpty = PySet.prototype.$isEmpty
+PyFrozenSet.prototype.$add = PySet.prototype.add
+PyFrozenSet.prototype.$find_index = PySet.prototype.$find_index
+
+/**************************************************
+ * Javascript compatibility methods
+ **************************************************/
+
+PyFrozenSet.prototype.toString = PySet.prototype.toString
+
+/**************************************************
+ * Type conversions
+ **************************************************/
+
+PyFrozenSet.prototype.__len__ = PySet.prototype.__len__
+PyFrozenSet.prototype.__bool__ = PySet.prototype.__bool__
+PyFrozenSet.prototype.__iter__ = PySet.prototype.__iter__
+PyFrozenSet.prototype.__repr__ = PySet.prototype.__repr__
+PyFrozenSet.prototype.__str__ = PySet.prototype.__str__
+
+/**************************************************
+ * Comparison operators
+ **************************************************/
+
+PyFrozenSet.prototype.__lt__ = PySet.prototype.__lt__
+PyFrozenSet.prototype.__le__ = PySet.prototype.__le__
+PyFrozenSet.prototype.__eq__ = PySet.prototype.__eq__
+PyFrozenSet.prototype.__ne__ = PySet.prototype.__ne__
+PyFrozenSet.prototype.__gt__ = PySet.prototype.__gt__
+PyFrozenSet.prototype.__ge__ = PySet.prototype.__ge__
+PyFrozenSet.prototype.__contains__ = PySet.prototype.__contains__
+
+/**************************************************
+ * Unary operators
+ **************************************************/
+PyFrozenSet.prototype.__pos__ = PySet.prototype.__pos__
+PyFrozenSet.prototype.__neg__ = PySet.prototype.__neg__
+PyFrozenSet.prototype.__not__ = PySet.prototype.__not__
+PyFrozenSet.prototype.__invert__ = PySet.prototype.__invert__
+
+/**************************************************
+ * Binary operators
+ **************************************************/
+
+PyFrozenSet.prototype.__pow__ = PySet.prototype.__pow__
+PyFrozenSet.prototype.__div__ = PySet.prototype.__div__
+PyFrozenSet.prototype.__floordiv__ = PySet.prototype.__floordiv__
+PyFrozenSet.prototype.__truediv__ = PySet.prototype.__truediv__
+PyFrozenSet.prototype.__mul__ = PySet.prototype.__mul__
+PyFrozenSet.prototype.__mod__ = PySet.prototype.__mod__
+PyFrozenSet.prototype.__add__ = PySet.prototype.__add__
+PyFrozenSet.prototype.__sub__ = PySet.prototype.__sub__
+PyFrozenSet.prototype.__getitem__ = PySet.prototype.__getitem__
+PyFrozenSet.prototype.__lshift__ = PySet.prototype.__lshift__
+PyFrozenSet.prototype.__rshift__ = PySet.prototype.__rshift__
+PyFrozenSet.prototype.__and__ = PySet.prototype.__and__
+PyFrozenSet.prototype.__xor__ = PySet.prototype.__xor__
+PyFrozenSet.prototype.__or__ = PySet.prototype.__or__
+
+
+/**************************************************
+ * Methods
+ **************************************************/
+
+PyFrozenSet.prototype.copy = PySet.prototype.copy
+PyFrozenSet.prototype.difference = PySet.prototype.difference
+PyFrozenSet.prototype.intersection = PySet.prototype.intersection
+PyFrozenSet.prototype.isdisjoint = PySet.prototype.isdisjoint
+PyFrozenSet.prototype.issubset = PySet.prototype.issubset
+PyFrozenSet.prototype.issuperset = PySet.prototype.issuperset
+PyFrozenSet.prototype.symmetric_difference = PySet.prototype.symmetric_difference
+PyFrozenSet.prototype.union = PySet.prototype.union
+
+// Now, we can finally document and construct FrozenSet
+PyFrozenSet.prototype.__doc__ = `frozenset() -> empty frozenset object
+frozenset(iterable) -> frozenset object
+
+Build an immutable unordered collection of unique elements.`
 create_pyclass(PyFrozenSet, 'frozenset')

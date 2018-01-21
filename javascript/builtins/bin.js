@@ -21,7 +21,9 @@ export default function bin(number) {
     return new types.PyStr(sign + '0b' + binaryDigits)
 }
 
-bin.__doc__ = 'bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   '
+bin.__doc__ = `bin(number) -> string
+
+Return the binary representation of an integer.`
 bin.$pyargs = {
     args: ['object']
 }

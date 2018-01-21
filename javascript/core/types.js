@@ -7,7 +7,7 @@ import * as types from '../types'
 /*************************************************************************
  * A base Python object
  *************************************************************************/
-export var PyObject = class {
+class PyObject {
     constructor() {
         let init = this.__getattribute__('__init__')
         if (init.__call__) {
@@ -69,7 +69,14 @@ export var PyObject = class {
         args: ['name']
     })
     __delattr__(name) {
-        var attr = this[name]
+        let attr = this[name]
+
+        if (attr === undefined) {
+            throw new AttributeError(
+                "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
+            )
+        }
+
         if (attr.__delete__ !== undefined) {
             attr.__delete__(this)
         } else {
@@ -84,7 +91,7 @@ PyObject.prototype.__doc__ = 'The most base type'
 /*************************************************************************
  * A Python Type
  *************************************************************************/
-export var PyType = class {
+class PyType {
     constructor(name, bases, attrs) {
         this.__name__ = name
         if (bases && Array.isArray(bases) && bases.length > 0) {
@@ -147,11 +154,9 @@ export var PyType = class {
             throw new TypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
         }
 
-        var attr = this.prototype[name]
+        var attr = this[name]
         if (attr === undefined) {
-            throw new AttributeError(
-                "type object '" + this.__name__ + "' has no attribute '" + name + "'"
-            )
+            throw new AttributeError(name)
         }
 
         delete this[name]
@@ -194,7 +199,7 @@ PyType.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> t
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-export function create_pyclass(PyClass, name, bases = [], attrs = undefined) {
+function create_pyclass(PyClass, name, bases = [], attrs = undefined) {
     let py_bases = []
     for (let base of bases) {
         py_bases.push(base.__class__)
@@ -252,7 +257,7 @@ create_pyclass(PyType, 'type')
  * Method for outputting the type of a variable
  *************************************************************************/
 
-export function type_name(arg) {
+function type_name(arg) {
     switch (typeof arg) {
         case 'boolean':
             return 'bool'
@@ -273,7 +278,7 @@ export function type_name(arg) {
 /*************************************************************************
  * An implementation of NoneType
  *************************************************************************/
-export var PyNoneType = class extends PyObject {
+class PyNoneType extends PyObject {
     __init__() {
         call_super(this, '__init__', arguments)
     }
@@ -535,7 +540,16 @@ create_pyclass(PyNoneType, 'NoneType')
  *************************************************************************/
 
 // Create a singleton instance of None
-export var PyNone = new PyNoneType()
+const PyNone = new PyNoneType()
 
 // Now that we have an instance of None, we can fill in the blanks where we needed it
 PyObject.prototype.__class__.__base__ = PyNone
+
+export {
+    PyObject,
+    PyType,
+    create_pyclass,
+    type_name,
+    PyNoneType,
+    PyNone
+}

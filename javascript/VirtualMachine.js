@@ -2136,11 +2136,7 @@ export default class VirtualMachine {
     // };
 
     make_class(vm) {
-        return function(build_attrs, name, bases) {
-            // let bases = kwargs.bases || args.slice(2, args.length)
-            // let metaclass = kwargs.metaclass || args[3];
-            // let kwds = kwargs.kwds || args[4] || [];
-
+        var create_class = function(build_attrs, name, bases) {
             // Create a attrs context, and run the class function in it.
             let attrs = new types.PyDict()
             build_attrs.__call__([], {}, attrs)
@@ -2157,6 +2153,11 @@ export default class VirtualMachine {
             // Return the class. Calling the type will construct instances.
             return pyclass.__class__
         }
+        create_class.$pyargs = {
+            args: ['build_attrs', 'name'],
+            varargs: ['bases']
+        }
+        return create_class
     }
 
     byte_LOAD_BUILD_CLASS() {

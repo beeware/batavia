@@ -24,7 +24,10 @@ export default function any(iterable) {
     return false
 }
 
-any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.'
+any.__doc__ = `any(iterable) -> bool
+
+Return True if bool(x) is True for any x in the iterable.
+If the iterable is empty, return False.`
 any.$pyargs = {
     args: ['iterable']
 }

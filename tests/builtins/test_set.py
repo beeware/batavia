@@ -7,10 +7,3 @@ class SetTests(TranspileTestCase):
 
 class BuiltinSetFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "set"
-
-    not_implemented = [
-        'test_bool',
-        'test_bytearray',
-        'test_bytes',
-        'test_range',
-    ]

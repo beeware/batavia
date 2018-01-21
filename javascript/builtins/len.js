@@ -10,7 +10,9 @@ export default function len(object) {
     throw new TypeError("object of type '" + type_name(object) + "' has no len()")
 }
 
-len.__doc__ = 'len(object)\n\nReturn the number of items of a sequence or collection.'
+len.__doc__ = `len(object)
+
+Return the number of items of a sequence or collection.`
 len.$pyargs = {
     args: ['object']
 }

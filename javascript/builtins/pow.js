@@ -36,7 +36,10 @@ export default function pow(x, y, z) {
     }
 }
 
-pow.__doc__ = 'pow(x, y[, z]) -> number\n\nWith two arguments, equivalent to x**y.  With three arguments,\nequivalent to (x**y) % z, but may be more efficient (e.g. for ints).'
+pow.__doc__ = `pow(x, y[, z]) -> number
+
+With two arguments, equivalent to x**y.  With three arguments,
+equivalent to (x**y) % z, but may be more efficient (e.g. for ints).`
 pow.$pyargs = {
     args: ['a', 'b'],
     default_args: ['z']

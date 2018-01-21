@@ -9,7 +9,9 @@ export default function filter(fn, iterable) {
     return new types.PyFilter(fn, iterable)
 }
 
-filter.__doc__ = 'filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.'
+filter.__doc__ = `filter(function or None, iterable) --> filter object
+Return an iterator yielding those items of iterable for which function(item)
+is true. If function is None, return the items that are true.`
 filter.$pyargs = {
     args: ['fn', 'iterable']
 }

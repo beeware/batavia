@@ -33,5 +33,7 @@ export default function globals(args, kwargs) {
     return gbl
 }
 
-globals.__doc__ = "globals() -> dictionary\n\nReturn the dictionary containing the current scope's global variables."
+globals.__doc__ = `globals() -> dictionary
+
+Return the dictionary containing the current scope's global variables.`
 globals.$pyargs = true

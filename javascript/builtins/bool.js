@@ -36,7 +36,13 @@ export default function bool(x) {
     }
 }
 
-bool.__doc__ = 'bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nIn CPython, the builtins True and False are the only two instances of the class bool.\nAlso in CPython, the class bool is a subclass of the class int, and cannot be subclassed.\nBatavia implements booleans as a native Javascript Boolean, enhanced with additional __dunder__ methods.\n"Integer-ness" of booleans is faked via builtins.Bool\'s __int__ method.'
+bool.__doc__ = `bool(x) -> bool
+
+Returns True when the argument x is true, False otherwise.
+In CPython, the builtins True and False are the only two instances of the class bool.
+Also in CPython, the class bool is a subclass of the class int, and cannot be subclassed.
+Batavia implements booleans as a native Javascript Boolean, enhanced with additional __dunder__ methods.
+"Integer-ness" of booleans is faked via builtins.Bool's __int__ method.`
 bool.$pyargs = {
     default_args: ['x']
 }

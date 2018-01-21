@@ -8,7 +8,11 @@ export default function callable(object) {
     }
 }
 
-callable.__doc__ = 'callable(object) -> bool\n\nReturn whether the object is callable (i.e., some kind of function).\nNote that classes are callable, as are instances of classes with a\n__call__() method.'
+callable.__doc__ = `callable(object) -> bool
+
+Return whether the object is callable (i.e., some kind of function).
+Note that classes are callable, as are instances of classes with a
+__call__() method.`
 callable.$pyargs = {
     args: ['object']
 }
