@@ -444,7 +444,7 @@ export default class PyInt extends PyObject {
             }
             result = new types.PyList()
             for (i = 0; i < this.valueOf(); i++) {
-                result.extend(other)
+                result.$extend(other)
             }
             return result
         } else if (types.isinstance(other, types.PyStr)) {
@@ -600,31 +600,31 @@ export default class PyInt extends PyObject {
 
     // converts this integer to an binary array for efficient bit operations
     // BUG: javascript bignumber is incredibly inefficient for bit operations
-    toArray(self) {
+    $toArray(self) {
         return self.val.abs().toString(2).split('').map(function(x) { return x - '0' })
     }
 
-    _bits() {
-        return toArray(this)
+    $bits() {
+        return this.$toArray(this)
     }
 
     // convert a binary array back into an int
-    fromArray(arr) {
+    $fromArray(arr) {
         return new PyInt(new BigNumber(arr.join('') || 0, 2))
     }
     // return j with the sign inverted if i is negative.
-    fixSign(i, j) {
+    $fixSign(i, j) {
         if (i.val.isNeg()) {
             return j.__neg__()
         }
         return j
     }
     // invert the bits of an array
-    invert(arr) {
+    $invert(arr) {
         return arr.map(function(x) { return 1 - x })
     }
     // add 1 to the bit array
-    plusOne(arr) {
+    $plusOne(arr) {
         for (var i = arr.length - 1; i >= 0; i--) {
             if (arr[i] === 0) {
                 arr[i] = 1
@@ -638,16 +638,16 @@ export default class PyInt extends PyObject {
     }
     // convert the int to an array, and negative ints to their
     // twos complement representation
-    twos_complement(n) {
-        var arr = toArray(n)
+    $twos_complement(n) {
+        var arr = this.$toArray(n)
         if (n.val.isNeg()) {
-            arr = invert(arr)
-            plusOne(arr)
+            arr = this.$invert(arr)
+            this.$plusOne(arr)
         }
         return arr
     }
     // extend a to be at least b bits long (by prepending zeros or ones)
-    extend(a, b, ones) {
+    $extend(a, b, ones) {
         if (a.length >= b.length) {
             return
         }
@@ -675,11 +675,11 @@ export default class PyInt extends PyObject {
             if (other.valueOf() < 0) {
                 throw new ValueError('negative shift count')
             }
-            var arr = toArray(this)
+            var arr = this.$toArray(this)
             for (var i = 0; i < other.valueOf(); i++) {
                 arr.push(0)
             }
-            return fixSign(this, new PyInt(fromArray(arr)))
+            return this.$fixSign(this, new PyInt(this.$fromArray(arr)))
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return this.__lshift__(new PyInt(1))
@@ -710,11 +710,11 @@ export default class PyInt extends PyObject {
             if (this.val.isZero()) {
                 return this
             }
-            var arr = toArray(this)
+            var arr = this.$toArray(this)
             if (other.val.gt(arr.length)) {
                 return new PyInt(0)
             }
-            return fixSign(this, fromArray(arr.slice(0, arr.length - other.valueOf())))
+            return this.$fixSign(this, this.$fromArray(arr.slice(0, arr.length - other.valueOf())))
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return this.__rshift__(new PyInt(1))
@@ -727,10 +727,10 @@ export default class PyInt extends PyObject {
 
     __and__(other) {
         if (types.isinstance(other, PyInt)) {
-            var a = twos_complement(this)
-            var b = twos_complement(other)
-            extend(a, b, this.val.isNeg())
-            extend(b, a, other.val.isNeg())
+            var a = this.$twos_complement(this)
+            var b = this.$twos_complement(other)
+            this.$extend(a, b, this.val.isNeg())
+            this.$extend(b, a, other.val.isNeg())
             var i = a.length - 1
             var j = b.length - 1
             var arr = []
@@ -741,10 +741,10 @@ export default class PyInt extends PyObject {
             }
             arr.reverse()
             if (this.val.isNeg() && other.val.isNeg()) {
-                arr = invert(arr)
-                return fromArray(arr).__add__(new PyInt(1)).__neg__()
+                arr = this.$invert(arr)
+                return this.$fromArray(arr).__add__(new PyInt(1)).__neg__()
             }
-            return fromArray(arr)
+            return this.$fromArray(arr)
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return this.__and__(new PyInt(1))
@@ -763,10 +763,10 @@ export default class PyInt extends PyObject {
             if (other.val.isNeg()) {
                 return this.__xor__(other.__invert__()).__invert__()
             }
-            var a = twos_complement(this)
-            var b = twos_complement(other)
-            extend(a, b)
-            extend(b, a)
+            var a = this.$twos_complement(this)
+            var b = this.$twos_complement(other)
+            this.$extend(a, b)
+            this.$extend(b, a)
             var i = a.length - 1
             var j = b.length - 1
             var arr = []
@@ -776,7 +776,7 @@ export default class PyInt extends PyObject {
                 j--
             }
             arr.reverse()
-            return fromArray(arr)
+            return this.$fromArray(arr)
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return this.__xor__(new PyInt(1))
@@ -798,10 +798,10 @@ export default class PyInt extends PyObject {
             if (this.val.isZero()) {
                 return other
             }
-            var a = twos_complement(this)
-            var b = twos_complement(other)
-            extend(a, b, this.val.isNeg())
-            extend(b, a, other.val.isNeg())
+            var a = this.$twos_complement(this)
+            var b = this.$twos_complement(other)
+            this.$extend(a, b, this.val.isNeg())
+            this.$extend(b, a, other.val.isNeg())
             var i = a.length - 1
             var j = b.length - 1
             var arr = []
@@ -812,10 +812,10 @@ export default class PyInt extends PyObject {
             }
             arr.reverse()
             if (this.val.isNeg() || other.val.isNeg()) {
-                arr = invert(arr)
-                return fromArray(arr).__add__(new PyInt(1)).__neg__()
+                arr = this.$invert(arr)
+                return this.$fromArray(arr).__add__(new PyInt(1)).__neg__()
             }
-            return fromArray(arr)
+            return this.$fromArray(arr)
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return this.__or__(new PyInt(1))

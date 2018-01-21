@@ -1,7 +1,6 @@
 import { iter_for_each, python } from '../core/callables'
 import { MemoryError, NotImplementedError, OverflowError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
-import * as version from '../core/version'
 
 import { iter } from '../builtins'
 import * as types from '../types'

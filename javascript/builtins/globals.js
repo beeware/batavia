@@ -1,5 +1,3 @@
-import { BataviaError, TypeError } from '../core/exceptions'
-
 import * as types from '../types'
 
 // TODO: this should return a proper dictionary

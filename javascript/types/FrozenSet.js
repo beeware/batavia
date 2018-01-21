@@ -1,11 +1,9 @@
 /* eslint-disable no-extend-native */
 import { iter_for_each, python } from '../core/callables'
-import { IndexError, TypeError } from '../core/exceptions'
+import { TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
-import * as version from '../core/version'
 
 import * as builtins from '../builtins'
-import * as types from '../types'
 
 import PySet from './Set'
 
@@ -30,7 +28,6 @@ export default class PyFrozenSet extends PyObject {
             })
         }
     }
-
 
     /**************************************************
      * Inplace operators
@@ -119,7 +116,6 @@ PyFrozenSet.prototype.__rshift__ = PySet.prototype.__rshift__
 PyFrozenSet.prototype.__and__ = PySet.prototype.__and__
 PyFrozenSet.prototype.__xor__ = PySet.prototype.__xor__
 PyFrozenSet.prototype.__or__ = PySet.prototype.__or__
-
 
 /**************************************************
  * Methods

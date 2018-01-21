@@ -772,7 +772,7 @@ var _log2_int = function(x) {
     if (x.val.isNeg() || x.val.isZero()) {
         throw new ValueError('math domain error')
     }
-    var bits = x._bits()
+    var bits = x.$bits()
     if (bits.length < 54) {
         return new Float(Math.log2(x.__float__().val))
     }

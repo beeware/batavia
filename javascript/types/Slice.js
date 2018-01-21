@@ -70,17 +70,17 @@ export default class PySlice extends PyObject {
      **************************************************/
 
     // In CPython, the comparison between two slices is done by converting them into tuples, but conversion by itself is not allowed.
-    as_list(obj) {
+    $as_list(obj) {
         return [obj.start, obj.stop, obj.step]
     }
 
-    as_tuple(obj) {
-        return new types.PyTuple(as_list(obj))
+    $as_tuple(obj) {
+        return new types.PyTuple(this.$as_list(obj))
     }
 
-    strip_and_compare(a, b, comparison_function) {
-        var a_list = as_list(a)
-        var b_list = as_list(b)
+    $strip_and_compare(a, b, comparison_function) {
+        var a_list = this.$as_list(a)
+        var b_list = this.$as_list(b)
         for (var i = 0; i < a_list.length && i < b_list.length; ++i) {
             if (types.isinstance(a_list[i], types.PyNoneType) && types.isinstance(b_list[i], types.PyNoneType)) {
                 a_list.splice(i, 1)
@@ -90,13 +90,13 @@ export default class PySlice extends PyObject {
         return new types.PyTuple(a_list)[comparison_function](new types.PyTuple(b_list))
     }
 
-    unsupported_operand(sign, other) {
+    $unsupported_operand(sign, other) {
         throw new TypeError(
             'unsupported operand type(s) for ' + sign + ': \'slice\' and \'' + type_name(other) + '\''
         )
     }
 
-    unorderable_types(sign, other) {
+    $unorderable_types(sign, other) {
         if (version.earlier('3.6')) {
             throw new TypeError(
                 'unorderable types: slice() ' + sign + ' ' + type_name(other) + '()'
@@ -139,39 +139,39 @@ export default class PySlice extends PyObject {
                 'can\'t take floor of complex number.'
             )
         } else {
-            unsupported_operand('//', other)
+            this.$unsupported_operand('//', other)
         }
     }
 
     __ge__(other) {
         if (types.isinstance(other, types.PySlice)) {
-            return as_tuple(this).__ge__(as_tuple(other))
+            return this.$as_tuple(this).__ge__(this.$as_tuple(other))
         } else {
-            unorderable_types('>=', other)
+            this.$unorderable_types('>=', other)
         }
     }
 
     __le__(other) {
         if (types.isinstance(other, types.PySlice)) {
-            return as_tuple(this).__le__(as_tuple(other))
+            return this.$as_tuple(this).__le__(this.$as_tuple(other))
         } else {
-            unorderable_types('<=', other)
+            this.$unorderable_types('<=', other)
         }
     }
 
     __gt__(other) {
         if (types.isinstance(other, types.PySlice)) {
-            return strip_and_compare(this, other, '__gt__')
+            return this.$strip_and_compare(this, other, '__gt__')
         } else {
-            unorderable_types('>', other)
+            this.$unorderable_types('>', other)
         }
     }
 
     __lt__(other) {
         if (types.isinstance(other, types.PySlice)) {
-            return strip_and_compare(this, other, '__lt__')
+            return this.$strip_and_compare(this, other, '__lt__')
         } else {
-            unorderable_types('<', other)
+            this.$unorderable_types('<', other)
         }
     }
 
@@ -181,7 +181,7 @@ export default class PySlice extends PyObject {
                 'can\'t mod complex numbers.'
             )
         } else {
-            unsupported_operand('%', other)
+            this.$unsupported_operand('%', other)
         }
     }
 
@@ -192,7 +192,7 @@ export default class PySlice extends PyObject {
                 'can\'t multiply sequence by non-int of type \'slice\''
             )
         } else {
-            unsupported_operand('*', other)
+            this.$unsupported_operand('*', other)
         }
     }
 

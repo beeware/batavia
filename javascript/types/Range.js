@@ -66,6 +66,24 @@ export default class PyRange extends PyObject {
         }
     }
 
+    $get_single_item(idx, range) {
+        idx = new BigNumber(idx)
+        var realStop = range.start.add(range.step.mul(range.length))
+        if (idx < 0) {
+            if (idx.neg().gt(range.length)) {
+                return range.start
+            } else {
+                return realStop.add(range.step.mul(idx))
+            }
+        } else {
+            if (idx.gte(range.length)) {
+                return realStop
+            } else {
+                return range.start.add(idx.mul(range.step))
+            }
+        }
+    }
+
     /**************************************************
      * Javascript compatibility methods
      **************************************************/
@@ -106,24 +124,6 @@ export default class PyRange extends PyObject {
      * Binary operators
      **************************************************/
 
-    get_single_item(idx, range) {
-        idx = new BigNumber(idx)
-        var realStop = range.start.add(range.step.mul(range.length))
-        if (idx < 0) {
-            if (idx.neg().gt(range.length)) {
-                return range.start
-            } else {
-                return realStop.add(range.step.mul(idx))
-            }
-        } else {
-            if (idx.gte(range.length)) {
-                return realStop
-            } else {
-                return range.start.add(idx.mul(range.step))
-            }
-        }
-    }
-
     __getitem__(index) {
         if (types.isinstance(index, types.PyBool)) {
             index = index.__int__()
@@ -134,13 +134,13 @@ export default class PyRange extends PyObject {
                 if (idx.neg().gt(this.length)) {
                     throw new IndexError('range object index out of range')
                 } else {
-                    return new types.PyInt(get_single_item(idx, this))
+                    return new types.PyInt(this.$get_single_item(idx, this))
                 }
             } else {
                 if (idx.gte(this.length)) {
                     throw new IndexError('range object index out of range')
                 } else {
-                    return new types.PyInt(get_single_item(idx, this))
+                    return new types.PyInt(this.$get_single_item(idx, this))
                 }
             }
         } else if (types.isinstance(index, types.PySlice)) {
@@ -188,30 +188,30 @@ export default class PyRange extends PyObject {
             var newStart, newStop
             if (step > 0) {
                 if (start !== PyNone) {
-                    newStart = get_single_item(start, this)
+                    newStart = this.$get_single_item(start, this)
                 } else {
-                    newStart = get_single_item(0, this)
+                    newStart = this.$get_single_item(0, this)
                 }
                 if (stop !== PyNone) {
-                    newStop = get_single_item(stop, this)
+                    newStop = this.$get_single_item(stop, this)
                 } else {
-                    newStop = get_single_item(this.length, this)
+                    newStop = this.$get_single_item(this.length, this)
                 }
             } else {
                 if (start === PyNone) {
-                    newStart = get_single_item(this.length, this).sub(this.step)
+                    newStart = this.$get_single_item(this.length, this).sub(this.step)
                 } else if (this.length.lte(-start) || this.length.lt(start)) {
-                    newStart = get_single_item(start, this).sub(this.step)
+                    newStart = this.$get_single_item(start, this).sub(this.step)
                 } else {
-                    newStart = get_single_item(start, this)
+                    newStart = this.$get_single_item(start, this)
                 }
 
                 if (stop === PyNone) {
-                    newStop = get_single_item(0, this).sub(this.step)
+                    newStop = this.$get_single_item(0, this).sub(this.step)
                 } else if (this.length.lte(-stop) || this.length.lt(stop)) {
-                    newStop = get_single_item(stop, this).sub(this.step)
+                    newStop = this.$get_single_item(stop, this).sub(this.step)
                 } else {
-                    newStop = get_single_item(stop, this)
+                    newStop = this.$get_single_item(stop, this)
                 }
             }
             return new PyRange(new types.PyInt(newStart),

@@ -60,7 +60,6 @@ export function call_function(self, func, args = [], kwargs = {}) {
         // Make sure every callable has a name
         // Use the name of the class
         name = func.__name__
-
     } else if (func.__call__) {
         // The function is a callable object. Get the call method.
         callable = attrs.getattr(func, '__call__')
@@ -120,7 +119,7 @@ export function call_function(self, func, args = [], kwargs = {}) {
 
                     throw new TypeError(
                         err({
-                            'name': callable.__name__,
+                            'name': name,
                             'nargs': pyargs.args.length,
                             'arg': pyargs.args[index],
                             'argpos': parseInt(index) + 1,
@@ -165,7 +164,7 @@ export function call_function(self, func, args = [], kwargs = {}) {
 
             throw new TypeError(
                 err({
-                    'name': callable.__name__,
+                    'name': name,
                     'nargs': n_args,
                     'given': args.length
                 })

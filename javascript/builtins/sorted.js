@@ -51,7 +51,7 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
 }
 
 sorted.__name__ = 'sorted'
-sorted.__doc__ = `sorted(iterable, key=None, reverse=False) --> new sorted list`
+sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list'
 sorted.$pyargs = {
     args: ['iterable'],
     default_args: ['key', 'reverse'],

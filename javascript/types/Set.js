@@ -105,7 +105,6 @@ export default class PySet extends PyObject {
         }
 
         let new_keys = new Array(this.$data_keys.length * 2)
-        let new_values = new Array(this.$data_keys.length * 2)
         let new_mask = this.$data_keys.length * 2 - 1 // assumes power of two
         for (let i = 0; i < new_keys.length; i++) {
             new_keys[i] = EMPTY
@@ -309,8 +308,8 @@ export default class PySet extends PyObject {
         }
     }
 
-    __contains__(other) {
-        return new types.PyBool(this.$find_index(key) !== null)
+    __contains__(value) {
+        return new types.PyBool(this.$find_index(value) !== null)
     }
 
     /**************************************************

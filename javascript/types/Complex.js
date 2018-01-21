@@ -41,6 +41,133 @@ function part_to_str(x) {
     return x_str
 }
 
+function complex__div__(x, y, inplace) {
+    if (types.isinstance(y, types.PyInt)) {
+        if (!y.val.isZero()) {
+            return new PyComplex(x.real / y.__float__().val, x.imag / y.__float__().val)
+        } else {
+            throw new ZeroDivisionError('complex division by zero')
+        }
+    } else if (types.isinstance(y, types.PyFloat)) {
+        if (y.valueOf()) {
+            return new PyComplex(x.real / y.valueOf(), x.imag / y.valueOf())
+        } else {
+            throw new ZeroDivisionError('complex division by zero')
+        }
+    } else if (types.isinstance(y, types.PyBool)) {
+        if (y.valueOf()) {
+            return new PyComplex(x.real, x.imag)
+        } else {
+            throw new ZeroDivisionError('complex division by zero')
+        }
+    } else if (types.isinstance(y, types.PyComplex)) {
+        var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2)
+        var num_real = x.real * y.real + x.imag * y.imag
+        var num_imag = x.imag * y.real - x.real * y.imag
+        var real = num_real / den
+        var imag = num_imag / den
+        return new PyComplex(real, imag)
+    } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
+        throw new TypeError(
+            'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
+        )
+    }
+}
+
+function complex__mul__(x, y, inplace) {
+    if (types.isinstance(y, types.PyInt)) {
+        if (!y.val.isZero()) {
+            return new PyComplex(x.real * y.__float__().val, x.imag * y.__float__().val)
+        } else {
+            return new PyComplex(0, 0)
+        }
+    } else if (types.isinstance(y, types.PyFloat)) {
+        if (y.valueOf()) {
+            return new PyComplex(x.real * y.valueOf(), x.imag * y.valueOf())
+        } else {
+            return new PyComplex(0, 0)
+        }
+    } else if (types.isinstance(y, types.PyBool)) {
+        if (y.valueOf()) {
+            return new PyComplex(x.real, x.imag)
+        } else {
+            return new PyComplex(0, 0)
+        }
+    } else if (types.isinstance(y, types.PyComplex)) {
+        return new PyComplex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
+    } else if (types.isinstance(y, [types.PyList, types.PyStr, types.PyTuple, types.PyBytearray, types.PyBytes])) {
+        throw new TypeError("can't multiply sequence by non-int of type 'complex'")
+    } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
+        throw new TypeError(
+            'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
+        )
+    }
+}
+
+function complex__add__(x, y, inplace) {
+    if (types.isinstance(y, types.PyInt)) {
+        return new PyComplex(x.real + y.__float__().val, x.imag)
+    } else if (types.isinstance(y, types.PyFloat)) {
+        return new PyComplex(x.real + y.valueOf(), x.imag)
+    } else if (types.isinstance(y, types.PyBool)) {
+        if (y.valueOf()) {
+            return new PyComplex(x.real + 1.0, x.imag)
+        } else {
+            return new PyComplex(x.real, x.imag)
+        }
+    } else if (types.isinstance(y, types.PyComplex)) {
+        return new PyComplex(x.real + y.real, x.imag + y.imag)
+    } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
+        throw new TypeError(
+            'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
+        )
+    }
+}
+
+function complex__sub__(x, y, inplace) {
+    if (types.isinstance(y, types.PyInt)) {
+        return new PyComplex(x.real - y.__float__().val, x.imag)
+    } else if (types.isinstance(y, types.PyFloat)) {
+        return new PyComplex(x.real - y.valueOf(), x.imag)
+    } else if (types.isinstance(y, types.PyBool)) {
+        if (y.valueOf()) {
+            return new PyComplex(x.real - 1.0, x.imag)
+        } else {
+            return new PyComplex(x.real, x.imag)
+        }
+    } else if (types.isinstance(y, types.PyComplex)) {
+        return new PyComplex(x.real - y.real, x.imag - y.imag)
+    } else {
+        var prefix
+        if (inplace) {
+            prefix = '='
+        } else {
+            prefix = ''
+        }
+        throw new TypeError(
+            'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
+        )
+    }
+}
+
 export default class PyComplex extends PyObject {
     @python({
         default_args: ['re', 'im']
@@ -60,7 +187,7 @@ export default class PyComplex extends PyObject {
                 this.real = parseFloat(part_from_str(match[1]))
                 this.imag = parseFloat(part_from_str(match[3]))
                 if (match[2] === '-') {
-                    this.imag = -imag
+                    this.imag = -this.imag
                 }
             } else {
                 throw new TypeError("complex() can't take second arg if first is a string")
@@ -80,7 +207,7 @@ export default class PyComplex extends PyObject {
                 this.imag = im.__float__().valueOf()
             } else {
                 if (version.later('3.5')) {
-                    if (isinstance(types.isinstance(im, types.PyStr))) {
+                    if (types.isinstance(im, types.PyStr)) {
                         throw new TypeError("complex() second argument can't be a string")
                     } else {
                         throw new TypeError(
@@ -267,45 +394,6 @@ export default class PyComplex extends PyObject {
         }
     }
 
-    __div__(x, y, inplace) {
-        if (types.isinstance(y, types.PyInt)) {
-            if (!y.val.isZero()) {
-                return new PyComplex(x.real / y.__float__().val, x.imag / y.__float__().val)
-            } else {
-                throw new ZeroDivisionError('complex division by zero')
-            }
-        } else if (types.isinstance(y, types.PyFloat)) {
-            if (y.valueOf()) {
-                return new PyComplex(x.real / y.valueOf(), x.imag / y.valueOf())
-            } else {
-                throw new ZeroDivisionError('complex division by zero')
-            }
-        } else if (types.isinstance(y, types.PyBool)) {
-            if (y.valueOf()) {
-                return new PyComplex(x.real, x.imag)
-            } else {
-                throw new ZeroDivisionError('complex division by zero')
-            }
-        } else if (types.isinstance(y, types.PyComplex)) {
-            var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2)
-            var num_real = x.real * y.real + x.imag * y.imag
-            var num_imag = x.imag * y.real - x.real * y.imag
-            var real = num_real / den
-            var imag = num_imag / den
-            return new PyComplex(real, imag)
-        } else {
-            var prefix
-            if (inplace) {
-                prefix = '='
-            } else {
-                prefix = ''
-            }
-            throw new TypeError(
-                'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
-            )
-        }
-    }
-
     __div__(other) {
         return this.__truediv__(other)
     }
@@ -315,111 +403,23 @@ export default class PyComplex extends PyObject {
     }
 
     __truediv__(other) {
-        return __div__(this, other)
-    }
-
-    __mul__(x, y, inplace) {
-        if (types.isinstance(y, types.PyInt)) {
-            if (!y.val.isZero()) {
-                return new PyComplex(x.real * y.__float__().val, x.imag * y.__float__().val)
-            } else {
-                return new PyComplex(0, 0)
-            }
-        } else if (types.isinstance(y, types.PyFloat)) {
-            if (y.valueOf()) {
-                return new PyComplex(x.real * y.valueOf(), x.imag * y.valueOf())
-            } else {
-                return new PyComplex(0, 0)
-            }
-        } else if (types.isinstance(y, types.PyBool)) {
-            if (y.valueOf()) {
-                return new PyComplex(x.real, x.imag)
-            } else {
-                return new PyComplex(0, 0)
-            }
-        } else if (types.isinstance(y, types.PyComplex)) {
-            return new PyComplex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
-        } else if (types.isinstance(y, [types.PyList, types.PyStr, types.PyTuple, types.PyBytearray, types.PyBytes])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'complex'")
-        } else {
-            var prefix
-            if (inplace) {
-                prefix = '='
-            } else {
-                prefix = ''
-            }
-            throw new TypeError(
-                'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
-            )
-        }
+        return complex__div__(this, other)
     }
 
     __mul__(other) {
-        return __mul__(this, other)
+        return complex__mul__(this, other)
     }
 
     __mod__(other) {
         throw new TypeError("can't mod complex numbers.")
     }
 
-    __add__(x, y, inplace) {
-        if (types.isinstance(y, types.PyInt)) {
-            return new PyComplex(x.real + y.__float__().val, x.imag)
-        } else if (types.isinstance(y, types.PyFloat)) {
-            return new PyComplex(x.real + y.valueOf(), x.imag)
-        } else if (types.isinstance(y, types.PyBool)) {
-            if (y.valueOf()) {
-                return new PyComplex(x.real + 1.0, x.imag)
-            } else {
-                return new PyComplex(x.real, x.imag)
-            }
-        } else if (types.isinstance(y, types.PyComplex)) {
-            return new PyComplex(x.real + y.real, x.imag + y.imag)
-        } else {
-            var prefix
-            if (inplace) {
-                prefix = '='
-            } else {
-                prefix = ''
-            }
-            throw new TypeError(
-                'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
-            )
-        }
-    }
-
     __add__(other) {
-        return __add__(this, other)
-    }
-
-    __sub__(x, y, inplace) {
-        if (types.isinstance(y, types.PyInt)) {
-            return new PyComplex(x.real - y.__float__().val, x.imag)
-        } else if (types.isinstance(y, types.PyFloat)) {
-            return new PyComplex(x.real - y.valueOf(), x.imag)
-        } else if (types.isinstance(y, types.PyBool)) {
-            if (y.valueOf()) {
-                return new PyComplex(x.real - 1.0, x.imag)
-            } else {
-                return new PyComplex(x.real, x.imag)
-            }
-        } else if (types.isinstance(y, types.PyComplex)) {
-            return new PyComplex(x.real - y.real, x.imag - y.imag)
-        } else {
-            var prefix
-            if (inplace) {
-                prefix = '='
-            } else {
-                prefix = ''
-            }
-            throw new TypeError(
-                'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
-            )
-        }
+        return complex__add__(this, other)
     }
 
     __sub__(other) {
-        return __sub__(this, other)
+        return complex__sub__(this, other)
     }
 
     __getitem__(other) {
@@ -465,19 +465,19 @@ export default class PyComplex extends PyObject {
     }
 
     __itruediv__(other) {
-        return __div__(this, other, true)
+        return complex__div__(this, other, true)
     }
 
     __iadd__(other) {
-        return __add__(this, other, true)
+        return complex__add__(this, other, true)
     }
 
     __isub__(other) {
-        return __sub__(this, other, true)
+        return complex__sub__(this, other, true)
     }
 
     __imul__(other) {
-        return __mul__(this, other, true)
+        return complex__mul__(this, other, true)
     }
 
     __imod__(other) {

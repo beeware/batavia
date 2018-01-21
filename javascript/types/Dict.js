@@ -69,7 +69,7 @@ export default class PyDict extends PyObject {
                         throw new TypeError('cannot convert dictionary update sequence element #' + i + ' to a sequence')
                     }
 
-                    if (len == 2) {
+                    if (len === 2) {
                         self.__setitem__(
                             val.__getitem__(new types.PyInt(0)),
                             val.__getitem__(new types.PyInt(1))

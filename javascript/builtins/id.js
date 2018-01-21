@@ -5,7 +5,7 @@ export default function id(object) {
 }
 
 id.__name__ = 'id'
-id.__doc__ = `Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it's the object's memory address.)`
+id.__doc__ = 'Return the identity of an object.  This is guaranteed to be unique among simultaneously existing objects.  (Hint: it\'s the object\'s memory address.)'
 id.$pyargs = {
     args: ['object']
 }
