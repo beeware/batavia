@@ -19,6 +19,7 @@ export default function hash(object) {
     return new types.PyStr(object.toString()).__hash__()
 }
 
+hash.__name__ = 'hash'
 hash.__doc__ = `hash(object) -> integer
 
 Return a hash value for the object.  Two objects with the same value have

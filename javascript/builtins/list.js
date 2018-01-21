@@ -7,6 +7,7 @@ export default function list(args) {
     return new types.PyList(args[0])
 }
 
+list.__name__ = 'list'
 list.__doc__ = `list() -> new empty list
 
 list(iterable) -> new list initialized from iterable's items`

@@ -24,6 +24,7 @@ export default function all(iterable) {
     return new types.PyBool(true)
 }
 
+all.__name__ = 'all'
 all.__doc__ = `all(iterable) -> bool
 
 Return True if bool(x) is True for all values x in the iterable.

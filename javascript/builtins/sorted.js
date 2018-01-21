@@ -50,6 +50,7 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
     throw new NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
 }
 
+sorted.__name__ = 'sorted'
 sorted.__doc__ = `sorted(iterable, key=None, reverse=False) --> new sorted list`
 sorted.$pyargs = {
     args: ['iterable'],

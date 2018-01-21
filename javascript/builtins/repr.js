@@ -8,6 +8,7 @@ export default function repr(object) {
     }
 }
 
+repr.__name__ = 'repr'
 repr.__doc__ = `repr(object) -> string
 
 Return the canonical string representation of the object.

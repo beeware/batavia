@@ -4,6 +4,7 @@ export default function zip(iters) {
     return new types.PyZip(...iters)
 }
 
+zip.__name__ = 'zip'
 zip.__doc__ = `zip(iter1 [,iter2 [...]]) --> zip object
 
 Return a zip object whose .__next__() method returns a tuple where

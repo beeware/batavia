@@ -36,6 +36,7 @@ export default function pow(x, y, z) {
     }
 }
 
+pow.__name__ = 'pow'
 pow.__doc__ = `pow(x, y[, z]) -> number
 
 With two arguments, equivalent to x**y.  With three arguments,

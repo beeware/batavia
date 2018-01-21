@@ -189,6 +189,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
     return module
 }
 
+__import__.__name__ = '__import__'
 __import__.__doc__ = `__import__(name, globals=None, locals=None, fromlist=(), level=0) -> module
 
 Import a module. Because this function is meant for use by the Python

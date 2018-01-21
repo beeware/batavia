@@ -49,6 +49,7 @@ export default function ascii(object) {
     return ascii_string
 }
 
+ascii.__name__ = 'ascii'
 ascii.__doc__ = `ascii(object) -> string
 
 As repr(), return a string containing a printable representation of an

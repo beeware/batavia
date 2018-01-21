@@ -17,6 +17,7 @@ export default function classmethod(fn) {
     return obj
 }
 
+classmethod.__name__ = 'classmethod'
 classmethod.__doc__ = `classmethod(function) -> method
 Convert a function to be a class method.
 A class method receives the class as implicit first argument,

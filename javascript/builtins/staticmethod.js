@@ -4,6 +4,7 @@ export default function staticmethod(fn) {
     throw new NotImplementedError("Builtin Batavia function 'staticmethod' not implemented")
 }
 
+staticmethod.__name__ = 'staticmethod'
 staticmethod.__doc__ = `staticmethod(function) -> method
 
 Convert a export default function to be a static method.

@@ -4,6 +4,7 @@ export default function hex(number) {
     return '0x' + int.toString(16)
 }
 
+hex.__name__ = 'hex'
 hex.__doc__ = `hex(number) -> string
 
 Return the hexadecimal representation of an integer.

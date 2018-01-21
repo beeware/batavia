@@ -19,6 +19,7 @@ export default function type(object_or_name, bases, dict) {
     }
 }
 
+type.__name__ = 'type'
 type.__doc__ = `type(object_or_name, bases, dict)
 type(object) -> the object's type
 type(name, bases, dict) -> a new type`

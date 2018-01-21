@@ -4,6 +4,7 @@ export default function issubclass(C, B) {
     throw new NotImplementedError("Builtin Batavia function 'issubclass' not implemented")
 }
 
+issubclass.__name__ = 'issubclass'
 issubclass.__doc__ = `issubclass(C, B) -> bool
 
 Return whether class C is a subclass (i.e., a derived class) of class B.

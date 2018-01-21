@@ -33,6 +33,7 @@ export default function globals(args, kwargs) {
     return gbl
 }
 
+globals.__name__ = 'globals'
 globals.__doc__ = `globals() -> dictionary
 
 Return the dictionary containing the current scope's global variables.`

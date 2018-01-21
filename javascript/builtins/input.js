@@ -4,6 +4,7 @@ export default function input(prompt_text) {
     return user_input
 }
 
+input.__name__ = 'input'
 input.__doc__ = `input([prompt]) -> string
 
 Read a string from standard input.  The trailing newline is stripped.

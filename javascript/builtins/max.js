@@ -44,6 +44,7 @@ export default function max(iterable, args, kwargs) {
     return max
 }
 
+max.__name__ = 'max'
 max.__doc__ = `max(iterable, *[, default=obj, key=func]) -> value
 max(arg1, arg2, *args, *[, key=func]) -> value
 

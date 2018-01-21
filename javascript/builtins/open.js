@@ -4,6 +4,7 @@ export default function open() {
     throw new NotImplementedError("Builtin Batavia function 'open' not implemented")
 }
 
+open.__name__ = 'open'
 open.__doc__ = `Open file and return a stream.  Raise IOError upon failure.
 
 file is either a text or byte string giving the name (and the path

@@ -21,6 +21,7 @@ export default function bin(number) {
     return new types.PyStr(sign + '0b' + binaryDigits)
 }
 
+bin.__name__ = 'bin'
 bin.__doc__ = `bin(number) -> string
 
 Return the binary representation of an integer.`

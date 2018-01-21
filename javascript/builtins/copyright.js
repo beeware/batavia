@@ -5,6 +5,7 @@ export default function copyright() {
                      'byterun: Copyright (c) 2013, Ned Batchelder. (MIT Licence)\n')
 }
 
+copyright.__name__ = 'copyright'
 copyright.__doc__ = `copyright()
 
 interactive prompt objects for printing the license text, a list of

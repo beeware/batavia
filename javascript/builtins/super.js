@@ -54,6 +54,7 @@ export default function super_(type, obj) {
     return make_super(this.frame, type, obj)
 }
 
+super_.__name__ = 'super'
 super_.__doc__ = `super() -> same as super(__class__, <first argument>)
 super(type) -> unbound super object
 super(type, obj) -> bound super object; requires isinstance(obj, type)

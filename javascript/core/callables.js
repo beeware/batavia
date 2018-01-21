@@ -97,13 +97,18 @@ export function call_function(self, func, args = [], kwargs = {}) {
                             err = (e) => `${e.name}() takes exactly ${e.nargs} arguments (${e.given} given)`
                         }
                     }
+
+                    if (callable.__name__ === undefined) {
+                        callable.__name__ = callable.name
+                    }
+
                     throw new TypeError(
                         err({
-                            name: callable.name,
-                            nargs: pyargs.args.length,
-                            arg: pyargs.args[index],
-                            argpos: parseInt(index) + 1,
-                            given: args.length
+                            'name': callable.__name__,
+                            'nargs': pyargs.args.length,
+                            'arg': pyargs.args[index],
+                            'argpos': parseInt(index) + 1,
+                            'given': args.length
                         })
                     )
                 } else {

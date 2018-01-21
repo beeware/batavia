@@ -44,6 +44,7 @@ export default function min(iterable, args, kwargs) {
     return min
 }
 
+min.__name__ = 'min'
 min.__doc__ = `min(iterable, *[, default=obj, key=func]) -> value
 min(arg1, arg2, *args, *[, key=func]) -> value
 

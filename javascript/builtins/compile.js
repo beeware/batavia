@@ -39,6 +39,7 @@ export default function compile(source, filename, mode, flags, dont_inherit) {
     return _compile.ast_compile_object(mod, filename, cf, false)
 }
 
+compile.__name__ = 'compile'
 compile.__doc__ = `compile(source, filename, mode[, flags[, dont_inherit]]) -> code object
 
 Compile the source (a Python module, statement or expression)

@@ -4,6 +4,7 @@ export default function exec(object, globals, locals) {
     throw new NotImplementedError("Builtin Batavia function 'exec' not implemented")
 }
 
+exec.__name__ = 'exec'
 exec.__doc__ = `exec(object[, globals[, locals]])
 
 Read and execute code from an object, which can be a string or a code

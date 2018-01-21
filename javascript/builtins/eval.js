@@ -4,6 +4,7 @@ export default function eval_(source, globals, locals) {
     throw new NotImplementedError("Builtin Batavia function 'eval' not implemented")
 }
 
+eval_.__name__ = 'eval'
 eval_.__doc__ = `eval(source[, globals[, locals]]) -> value
 
 Evaluate the source in the context of globals and locals.

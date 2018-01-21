@@ -32,6 +32,7 @@ export default function chr(i) {
     return new types.PyStr(String.fromCharCode(new types.PyInt(i)))
 }
 
+chr.__name__ = 'chr'
 chr.__doc__ = `chr(i) -> Unicode character
 
 Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.`

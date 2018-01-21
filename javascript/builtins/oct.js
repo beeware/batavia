@@ -26,6 +26,7 @@ export default function oct(number) {
     return '0o' + number.toString(8)
 }
 
+oct.__name__ = 'oct'
 oct.__doc__ = `oct(number) -> string
 
 Return the octal representation of an integer.

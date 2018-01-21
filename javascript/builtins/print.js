@@ -43,6 +43,7 @@ export default function print(value, sep = ' ', end = '\n', file = sys.stdout, f
     }
 }
 
+print.__name__ = 'print'
 print.__doc__ = `print(value, ..., sep=' ', end='\\n', file=sys.stdout, flush=False)
 
 Prints the values to a stream, or to sys.stdout by default.

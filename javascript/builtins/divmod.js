@@ -16,6 +16,8 @@ export default function divmod(x, y) {
     var rem = x % y
     return new types.PyTuple([new types.PyInt(div), new types.PyInt(rem)])
 }
+
+divmod.__name__ = 'divmod'
 divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod === x.'
 divmod.$pyargs = {
     args: ['x', 'y'],

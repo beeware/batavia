@@ -4,6 +4,7 @@ export default function enumerate(iterable, start) {
     return new types.PyEnumerate(iterable)
 }
 
+enumerate.__name__ = 'enumerate'
 enumerate.__doc__ = `enumerate(iterable[, start]) -> iterator for index, value of iterable
 
 Return an enumerate object.  iterable must be another object that supports

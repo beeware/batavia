@@ -40,6 +40,8 @@ export function getattr(obj, attr, default_) {
 
     return val
 }
+
+getattr.__name__ = 'getattr'
 getattr.__doc__ = "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case."
 getattr.$pyargs = {
     args: ['obj', 'attr'],
@@ -68,6 +70,8 @@ export function hasattr(obj, attr) {
 
     return false
 }
+
+hasattr.__name__ = 'hasattr'
 hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)'
 hasattr.$pyargs = {
     args: ['obj', 'attr']
@@ -84,6 +88,8 @@ export function setattr(obj, attr, value) {
         obj.__setattr__(attr, value)
     }
 }
+
+setattr.__name__ = 'setattr'
 setattr.__doc__ = "setattr(object, name, value)\n\nSet a named attribute on an object; setattr(x, 'y', v) is equivalent to\n``x.y = v''."
 setattr.$pyargs = {
     args: ['obj', 'attr', 'value']
@@ -106,6 +112,8 @@ export function delattr(obj, attr) {
         obj.__delattr__(attr)
     }
 }
+
+delattr.__name__ = 'delattr'
 delattr.__doc__ = "delattr(object, name)\n\nDelete a named attribute on an object; delattr(x, 'y') is equivalent to\n``del x.y''."
 delattr.$pyargs = {
     args: ['obj', 'attr']

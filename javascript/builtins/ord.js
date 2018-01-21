@@ -21,6 +21,7 @@ export default function ord(c) {
     }
 }
 
+ord.__name__ = 'ord'
 ord.__doc__ = `ord(c) -> integer
 
 Return the integer ordinal of a one-character string.`

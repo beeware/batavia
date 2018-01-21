@@ -11,6 +11,7 @@ export default function license() {
     copyright()
 }
 
+license.__name__ = 'license'
 license.__doc__ = `license()
 
 Prompt printing the license text, a list of contributors, and the copyright notice`

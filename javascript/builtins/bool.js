@@ -36,6 +36,7 @@ export default function bool(x) {
     }
 }
 
+bool.__name__ = 'bool'
 bool.__doc__ = `bool(x) -> bool
 
 Returns True when the argument x is true, False otherwise.

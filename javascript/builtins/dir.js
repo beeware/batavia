@@ -3,6 +3,7 @@ export default function dir(object) {
     return Object.keys(object)
 }
 
+dir.__name__ = 'dir'
 dir.__doc__ = `dir([object]) -> list of strings
 
 If called without an argument, return the names in the current scope.

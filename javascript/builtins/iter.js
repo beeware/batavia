@@ -10,6 +10,7 @@ export default function iter(iterable) {
     }
 }
 
+iter.__name__ = 'iter'
 iter.__doc__ = `iter(iterable) -> iterator
 iter(callable, sentinel) -> iterator
 

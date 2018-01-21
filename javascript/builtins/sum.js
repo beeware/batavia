@@ -21,6 +21,7 @@ export default function sum(iterable, start) {
     }
 }
 
+sum.__name__ = 'sum'
 sum.__doc__ = `sum(iterable[, start]) -> value
 
 Return the sum of an iterable of numbers (NOT strings) plus the value

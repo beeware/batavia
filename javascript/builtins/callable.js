@@ -8,6 +8,7 @@ export default function callable(object) {
     }
 }
 
+callable.__name__ = 'callable'
 callable.__doc__ = `callable(object) -> bool
 
 Return whether the object is callable (i.e., some kind of function).

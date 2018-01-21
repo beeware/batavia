@@ -16,6 +16,7 @@ export default function round(number, ndigits = 0) {
     return types.PyFloat(result.valueOf())
 }
 
+round.__name__ = 'round'
 round.__doc__ = `round(number[, ndigits]) -> number
 
 Round a number to a given precision in decimal digits (default 0 digits).

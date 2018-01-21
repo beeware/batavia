@@ -18,6 +18,7 @@ export default function next(iterator, default_val) {
     }
 }
 
+next.__name__ = 'next'
 next.__doc__ = `next(iterator[, default])
 
 Return the next item from the iterator. If default is given and the iterator

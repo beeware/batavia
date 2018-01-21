@@ -8,6 +8,8 @@ export default function str(object = '') {
         return object.toString()
     }
 }
+
+str.__name__ = 'str'
 str.__doc__ = `str(object) -> string
 
 Return the canonical string representation of the object.
