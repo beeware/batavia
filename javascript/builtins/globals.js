@@ -3,16 +3,7 @@ import { BataviaError, TypeError } from '../core/exceptions'
 import * as types from '../types'
 
 // TODO: this should return a proper dictionary
-export default function globals(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new TypeError("globals() doesn't accept keyword arguments")
-    }
-    if (args && args.length !== 0) {
-        throw new TypeError('globals() takes no arguments (' + args.length + ' given)')
-    }
+export default function globals() {
     var gbl = this.frame.f_globals
 
     // support items() iterator
@@ -37,4 +28,6 @@ globals.__name__ = 'globals'
 globals.__doc__ = `globals() -> dictionary
 
 Return the dictionary containing the current scope's global variables.`
-globals.$pyargs = true
+globals.$pyargs = {
+    surplus_args_error: (e) => `globals() takes no arguments (${e.given} given)`
+}

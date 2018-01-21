@@ -43,7 +43,7 @@ export function python(pyargs) {
  *************************************************************************/
 
 export function call_function(self, func, args = [], kwargs = {}) {
-    let callable, pyargs
+    let callable, pyargs, name
 
     if (func instanceof PyType) {
         // The function is a type.
@@ -56,25 +56,45 @@ export function call_function(self, func, args = [], kwargs = {}) {
         } else {
             pyargs = null
         }
+
+        // Make sure every callable has a name
+        // Use the name of the class
+        name = func.__name__
+
     } else if (func.__call__) {
         // The function is a callable object. Get the call method.
         callable = attrs.getattr(func, '__call__')
         pyargs = callable.$pyargs
+
+        // Make sure every callable has a name
+        // Use the name of the callable, not the call method
+        if (callable.__name__ === undefined) {
+            name = func.name
+        } else {
+            name = func.__name__
+        }
     } else {
         // The function is a function. Call it as-is.
         callable = func
         pyargs = callable.$pyargs
+
+        // Make sure every callable has a name
+        if (callable.__name__ === undefined) {
+            name = callable.name
+        } else {
+            name = callable.__name__
+        }
     }
 
     let js_args = []
     if (pyargs === null) {
         js_args = [args, kwargs]
         self = func
-    } else if (pyargs) {
+    } else if (pyargs !== undefined) {
         // if (kwargs && Object.keys(kwargs).length > 0) {
         //     throw new TypeError(callable.name + "() doesn't accept keyword arguments")
         // }
-
+        let n_args = 0
         let kw = Object.assign({}, kwargs)
         // Positional arguments
         if (pyargs.args) {
@@ -82,8 +102,8 @@ export function call_function(self, func, args = [], kwargs = {}) {
                 let arg = args[index]
                 if (arg === undefined) {
                     let err
-                    if (pyargs.invalid_args) {
-                        err = pyargs.invalid_args
+                    if (pyargs.missing_args_error) {
+                        err = pyargs.missing_args_error
                     } else if (pyargs.args.length === 1) {
                         if (pyargs.default_args || pyargs.varargs) {
                             err = (e) => `${e.name}() takes at least one argument (${e.given} given)`
@@ -96,10 +116,6 @@ export function call_function(self, func, args = [], kwargs = {}) {
                         } else {
                             err = (e) => `${e.name}() takes exactly ${e.nargs} arguments (${e.given} given)`
                         }
-                    }
-
-                    if (callable.__name__ === undefined) {
-                        callable.__name__ = callable.name
                     }
 
                     throw new TypeError(
@@ -115,19 +131,45 @@ export function call_function(self, func, args = [], kwargs = {}) {
                     js_args.push(args[index])
                 }
             }
+            n_args = js_args.length
         }
 
         // Positional arguments with default values
         if (pyargs.default_args) {
-            let n_args = js_args.length
             for (let index in pyargs.default_args) {
                 js_args.push(args[parseInt(index) + n_args])
             }
+            n_args += pyargs.default_args.length
         }
 
         // Variable arguments
         if (pyargs.varargs) {
             js_args.push(args.slice(js_args.length))
+        } else if (args.length > n_args) {
+            let err
+            if (pyargs.surplus_args_error) {
+                err = pyargs.surplus_args_error
+            } else if (pyargs.args) {
+                if (pyargs.default_args) {
+                    err = (e) => `${e.name}() expects at most ${e.nargs} arguments (${e.given} given)`
+                } else {
+                    err = (e) => `${e.name}() expects ${e.nargs} arguments (${e.given} given)`
+                }
+            } else {
+                if (pyargs.default_args) {
+                    err = (e) => `${e.name}() expects at most ${e.nargs} arguments (${e.given} given)`
+                } else {
+                    err = (e) => `${e.name}() takes no arguments (${e.given})`
+                }
+            }
+
+            throw new TypeError(
+                err({
+                    'name': callable.__name__,
+                    'nargs': n_args,
+                    'given': args.length
+                })
+            )
         }
 
         // kwonly arguments
@@ -142,6 +184,23 @@ export function call_function(self, func, args = [], kwargs = {}) {
         // kw arguments
         if (pyargs.kwargs) {
             js_args.push(kw)
+        } else {
+            for (let arg in Object.getOwnPropertyNames(kw)) {
+                let err
+                if (pyargs.invalid_keyword_error) {
+                    err = pyargs.invalid_keyword_error
+                } else {
+                    err = (e) => `${e.name}() got an unexpected keyword argument '${e.arg}'`
+                }
+
+                throw new TypeError(
+                    err({
+                        'name': callable.__name__,
+                        'nargs': n_args,
+                        'arg': arg
+                    })
+                )
+            }
         }
     } else {
         if (kwargs && Object.getOwnPropertyNames(kwargs).length > 0) {

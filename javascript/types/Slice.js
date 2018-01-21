@@ -12,7 +12,9 @@ import * as types from '../types'
 export default class PySlice extends PyObject {
     @python({
         args: ['start_or_stop'],
-        default_args: ['stop', 'step']
+        default_args: ['stop', 'step'],
+        missing_args_error: (e) => `slice expected at least 1 arguments, got ${e.given}`,
+        surplus_args_error: (e) => `slice expected at most 3 arguments, got ${e.given}`
     })
     __init__(start_or_stop, stop, step) {
         if (stop === undefined && step === undefined) {

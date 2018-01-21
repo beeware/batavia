@@ -19,5 +19,6 @@ reversed.__doc__ = `reversed(sequence) -> reverse iterator over values of the se
 
 Return a reverse iterator`
 reversed.$pyargs = {
-    args: ['sequence']
+    args: ['sequence'],
+    missing_args_error: (e) => `reversed expected 1 arguments, got ${e.given}`
 }

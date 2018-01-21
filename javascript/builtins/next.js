@@ -25,5 +25,6 @@ Return the next item from the iterator. If default is given and the iterator
 is exhausted, it is returned instead of raising StopIteration.`
 next.$pyargs = {
     args: ['iterator'],
-    default_args: ['default_val']
+    default_args: ['default_val'],
+    missing_args_error: (e) => `next expected at least ${e.nargs} arguments, got ${e.given}`
 }

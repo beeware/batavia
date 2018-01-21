@@ -21,5 +21,5 @@ divmod.__name__ = 'divmod'
 divmod.__doc__ = 'Return the tuple ((x-x%y)/y, x%y).  Invariant: div*y + mod === x.'
 divmod.$pyargs = {
     args: ['x', 'y'],
-    invalid_args: (e) => `divmod expected 2 arguments, got ${e.given}`
+    missing_args_error: (e) => `divmod expected 2 arguments, got ${e.given}`
 }

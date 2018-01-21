@@ -56,5 +56,5 @@ in addition to any features explicitly specified.`
 compile.$pyargs = {
     args: ['source', 'filename', 'mode'],
     default_args: ['flags', 'dont_inherit'],
-    invalid_args: (e) => `Required argument '${e.arg}' (pos ${e.argpos}) not found`
+    missing_args_error: (e) => `Required argument '${e.arg}' (pos ${e.argpos}) not found`
 }

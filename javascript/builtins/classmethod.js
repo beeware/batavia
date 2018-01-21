@@ -34,5 +34,5 @@ Class methods are different than C++ or Java static methods.
 If you want those, see the staticmethod builtin.`
 classmethod.$pyargs = {
     args: ['fn'],
-    invalid_args: (e) => `classmethod expected 1 arguments, got ${e.given}`
+    missing_args_error: (e) => `classmethod expected 1 arguments, got ${e.given}`
 }
