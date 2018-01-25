@@ -12,7 +12,7 @@ function dir(args, kwargs) {
     if (!args || args.length > 1) {
         throw new exceptions.TypeError.$pyclass('dir() expected exactly 1 argument (' + args.length + ' given)')
     }
-    if (args.length == 0 || !args[0].__dir__) {
+    if (args.length === 0 || !args[0].__dir__) {
         return new types.List(['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x'])
     }
 
