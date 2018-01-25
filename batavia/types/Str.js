@@ -18,6 +18,13 @@ var Str = String
 
 create_pyclass(Str, 'str', true)
 
+Str.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['strip', 'translate', 'isdecimal', 'lower', '__gt__', '__getitem__', 'startswith', 'maketrans', '__hash__', '__len__', 'rjust', 'find', '__str__', 'rfind', 'replace', '__eq__', '__lt__', '__add__', '__setattr__', '__iter__', '__init__', '__contains__', 'capitalize', 'upper', 'rindex', '__ne__', 'rpartition', 'title', 'split', '__class__', '__getnewargs__', 'istitle', 'lstrip', 'rstrip', 'center', '__reduce__', 'count', 'islower', 'index', '__rmod__', 'endswith', 'isdigit', '__subclasshook__', '__dir__', 'isnumeric', 'isidentifier', '__ge__', 'casefold', '__le__', '__new__', 'ljust', 'encode', 'format_map', 'isupper', '__getattribute__', '__delattr__', 'isspace', 'isalpha', 'expandtabs', 'partition', 'swapcase', '__doc__', '__reduce_ex__', 'isalnum', 'splitlines', '__repr__', '__sizeof__', '__rmul__', '__format__', 'rsplit', 'isprintable', 'zfill', '__mod__', 'join', '__mul__', 'format'])
+}
+
+Str.prototype.__class__.__dir__ = Str.prototype.__dir__
+
 /**************************************************
  * Type conversions
  **************************************************/

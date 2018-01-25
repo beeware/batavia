@@ -42,6 +42,11 @@ Tuple.prototype.length = 0
 create_pyclass(Tuple, 'tuple', true)
 Tuple.prototype.constructor = Tuple
 
+Tuple.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__delattr__', '__dir__', '__new__', '__getitem__', '__hash__', '__len__', '__subclasshook__', '__ge__', '__le__', '__gt__', '__str__', '__getnewargs__', '__eq__', '__lt__', '__getattribute__', '__setattr__', '__init__', '__contains__', '__rmul__', '__doc__', '__ne__', '__repr__', '__sizeof__', '__class__', '__format__', 'count', '__reduce__', 'index', '__mul__', '__reduce_ex__', '__add__', '__iter__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

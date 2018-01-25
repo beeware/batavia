@@ -16,6 +16,11 @@ function Bytearray(val) {
 
 create_pyclass(Bytearray, 'bytearray')
 
+Bytearray.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['center', 'title', '__getattribute__', '__setitem__', '__str__', 'index', '__reduce_ex__', 'decode', 'insert', '__format__', '__subclasshook__', '__eq__', 'isalpha', 'count', 'isalnum', '__repr__', 'clear', 'islower', '__delitem__', '__reduce__', 'swapcase', '__mul__', '__iadd__', 'pop', '__new__', 'remove', '__rmul__', 'copy', 'isdigit', 'startswith', '__ne__', 'fromhex', '__le__', 'ljust', '__lt__', 'lstrip', '__sizeof__', '__dir__', '__gt__', 'append', 'splitlines', 'rjust', '__alloc__', 'strip', 'extend', 'istitle', 'reverse', 'partition', '__add__', '__init__', 'isupper', 'translate', '__delattr__', 'endswith', '__contains__', 'replace', '__ge__', '__class__', 'rstrip', 'rfind', 'rpartition', 'maketrans', 'find', 'join', 'upper', 'zfill', 'isspace', 'rsplit', '__imul__', 'expandtabs', '__iter__', 'split', 'capitalize', '__hash__', 'rindex', '__setattr__', '__getitem__', '__doc__', 'lower', '__len__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

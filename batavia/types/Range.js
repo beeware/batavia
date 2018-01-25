@@ -38,6 +38,11 @@ function Range(start, stop, step) {
 
 create_pyclass(Range, 'range')
 
+Range.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__delattr__', '__dir__', '__new__', '__getitem__', '__reversed__', '__hash__', '__len__', '__subclasshook__', '__ge__', '__le__', '__gt__', '__str__', '__eq__', '__lt__', '__sizeof__', '__getattribute__', '__setattr__', '__class__', 'start', '__init__', '__contains__', '__doc__', '__ne__', '__repr__', 'step', 'stop', '__format__', 'count', 'index', '__reduce__', '__reduce_ex__', '__iter__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

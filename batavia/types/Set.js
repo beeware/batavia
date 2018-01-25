@@ -23,6 +23,11 @@ function Set(args, kwargs) {
 
 create_pyclass(Set, 'set')
 
+Set.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['symmetric_difference', '__new__', '__hash__', '__rand__', '__len__', '__subclasshook__', 'union', '__str__', '__eq__', '__lt__', '__ror__', '__setattr__', 'symmetric_difference_update', 'remove', '__init__', '__isub__', '__ne__', 'add', 'issuperset', '__and__', '__class__', '__or__', '__iand__', 'difference_update', '__ixor__', '__reduce__', '__iter__', '__delattr__', '__dir__', 'intersection', 'copy', 'discard', 'update', 'pop', '__rxor__', '__ge__', '__le__', '__gt__', '__xor__', '__sub__', '__getattribute__', '__rsub__', 'issubset', '__contains__', 'intersection_update', '__doc__', '__reduce_ex__', 'clear', '__repr__', '__sizeof__', '__format__', '__ior__', 'difference', 'isdisjoint'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

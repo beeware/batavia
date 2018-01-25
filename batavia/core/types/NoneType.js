@@ -14,6 +14,12 @@ NoneType.prototype = Object.create(PyObject.prototype)
 NoneType.prototype.__class__ = new basic_types.Type('NoneType')
 NoneType.prototype.__name__ = 'NoneType'
 
+NoneType.prototype.__dir__ = function() {
+    var types = require('../../types')
+
+    return new types.List(['__reduce__', '__setattr__', '__doc__', '__subclasshook__', '__class__', '__ne__', '__new__', '__bool__', '__getattribute__', '__str__', '__format__', '__reduce_ex__', '__delattr__', '__eq__', '__repr__', '__init__', '__le__', '__gt__', '__sizeof__', '__dir__', '__hash__', '__lt__', '__ge__'])
+}
+
 /**************************************************
  * Type conversions
  **************************************************/

@@ -20,6 +20,11 @@ function Slice(kwargs) {
 
 create_pyclass(Slice, 'slice')
 
+Slice.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['indices', '__delattr__', '__dir__', '__subclasshook__', '__hash__', '__ge__', '__new__', '__gt__', '__str__', '__eq__', '__lt__', '__sizeof__', '__getattribute__', '__setattr__', '__class__', 'start', '__init__', '__doc__', '__ne__', '__repr__', 'step', 'stop', '__format__', '__le__', '__reduce__', '__reduce_ex__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

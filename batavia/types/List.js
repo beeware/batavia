@@ -40,6 +40,10 @@ List.prototype.length = 0
 create_pyclass(List, 'list', true)
 List.prototype.constructor = List
 
+List.prototype.__dir__ = function() {
+    return new List(['__gt__', '__delitem__', 'index', '__iter__', '__eq__', '__setitem__', '__setattr__', '__delattr__', '__reduce__', 'copy', 'reverse', '__mul__', '__format__', 'extend', '__new__', '__dir__', 'sort', '__reduce_ex__', '__rmul__', '__doc__', '__ge__', '__add__', '__ne__', '__getattribute__', 'clear', '__reversed__', 'insert', 'count', '__repr__', '__getitem__', '__init__', '__class__', '__imul__', '__le__', 'pop', '__contains__', 'append', '__lt__', '__iadd__', '__subclasshook__', '__hash__', '__str__', '__sizeof__', 'remove', '__len__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
