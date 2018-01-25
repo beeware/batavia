@@ -39,6 +39,13 @@ Int.prototype.MIN_INT = MIN_INT
 Int.prototype.MAX_FLOAT = MAX_FLOAT
 Int.prototype.MIN_FLOAT = MIN_FLOAT
 
+Int.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__rrshift__', '__gt__', 'from_bytes', '__hash__', '__pos__', 'numerator', '__rfloordiv__', '__rdivmod__', '__setattr__', '__mod__', 'real', '__lshift__', '__bool__', '__and__', 'bit_length', '__reduce__', '__new__', '__rpow__', '__subclasshook__', '__mul__', 'to_bytes', '__class__', '__eq__', '__rand__', '__reduce_ex__', '__rshift__', '__ge__', '__doc__', '__xor__', '__add__', '__ne__', '__floor__', '__neg__', '__sub__', '__invert__', '__getattribute__', '__or__', '__dir__', '__int__', '__float__', '__trunc__', '__floordiv__', '__repr__', '__ror__', '__ceil__', '__radd__', '__init__', '__rmul__', '__rtruediv__', '__le__', '__truediv__', 'conjugate', '__pow__', '__rmod__', '__sizeof__', '__round__', '__rlshift__', '__getnewargs__', '__rsub__', '__lt__', '__format__', 'denominator', '__rxor__', '__divmod__', '__str__', 'imag', '__index__', '__abs__', '__delattr__'])
+}
+
+Int.prototype.__class__.__dir__ = Int.prototype.__dir__
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

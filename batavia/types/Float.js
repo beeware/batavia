@@ -27,6 +27,11 @@ var MIN_FLOAT = new Float('-1797693134862315807937289714053034150799341327100378
 Float.prototype.MAX_FLOAT = MAX_FLOAT
 Float.prototype.MIN_FLOAT = MIN_FLOAT
 
+Float.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__gt__', 'is_integer', '__pos__', '__dir__', '__rfloordiv__', '__rdivmod__', '__setattr__', 'hex', '__mod__', 'real', 'fromhex', '__bool__', '__reduce__', '__new__', '__mul__', '__format__', '__class__', '__eq__', '__reduce_ex__', '__rmul__', '__doc__', '__int__', '__ge__', '__add__', '__pow__', '__divmod__', '__neg__', '__sub__', '__getattribute__', '__getformat__', '__float__', '__trunc__', '__rpow__', '__repr__', '__init__', '__rtruediv__', '__le__', '__truediv__', 'conjugate', '__ne__', '__rmod__', '__sizeof__', '__getnewargs__', 'as_integer_ratio', '__rsub__', '__lt__', '__round__', '__subclasshook__', '__floordiv__', '__hash__', '__str__', 'imag', '__radd__', '__setformat__', '__abs__', '__delattr__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

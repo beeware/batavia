@@ -103,6 +103,11 @@ function Complex(re, im) {
 
 create_pyclass(Complex, 'complex')
 
+Complex.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__gt__', '__pos__', '__dir__', '__rfloordiv__', '__rdivmod__', '__setattr__', '__mod__', 'real', '__delattr__', '__bool__', '__reduce__', '__new__', '__mul__', '__class__', '__eq__', '__reduce_ex__', '__rmul__', '__doc__', '__ge__', '__add__', '__pow__', '__divmod__', '__neg__', '__sub__', '__getattribute__', '__int__', '__float__', '__floordiv__', '__repr__', '__init__', '__rtruediv__', '__le__', '__truediv__', 'conjugate', '__ne__', '__rmod__', '__sizeof__', '__getnewargs__', '__rsub__', '__lt__', '__format__', '__subclasshook__', '__rpow__', '__hash__', '__str__', 'imag', '__radd__', '__abs__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

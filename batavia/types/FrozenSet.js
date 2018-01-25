@@ -23,6 +23,11 @@ function FrozenSet(args, kwargs) {
 
 create_pyclass(FrozenSet, 'frozenset')
 
+FrozenSet.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__sub__', '__gt__', '__getattribute__', '__or__', 'intersection', 'difference', 'issuperset', 'isdisjoint', '__dir__', '__rxor__', 'symmetric_difference', '__ne__', '__xor__', '__and__', '__reduce__', '__new__', '__init__', '__iter__', '__str__', 'copy', '__le__', '__ror__', '__contains__', '__class__', 'union', '__eq__', '__subclasshook__', '__rsub__', '__lt__', '__format__', '__rand__', '__reduce_ex__', '__ge__', '__hash__', '__doc__', '__repr__', '__sizeof__', 'issubset', '__len__', '__setattr__', '__delattr__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

@@ -11,6 +11,11 @@ var Bool = Boolean
 
 create_pyclass(Bool, 'bool', true)
 
+Bool.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['conjugate', '__xor__', '__reduce__', 'from_bytes', '__rlshift__', '__getattribute__', '__delattr__', 'bit_length', '__ror__', '__rpow__', '__rmul__', '__divmod__', '__rfloordiv__', '__rrshift__', '__lshift__', '__str__', '__rdivmod__', 'real', '__trunc__', '__index__', '__float__', '__pos__', '__mul__', '__init__', '__and__', '__truediv__', '__radd__', '__ge__', '__le__', '__subclasshook__', '__rtruediv__', '__dir__', '__hash__', '__int__', '__or__', '__eq__', '__invert__', '__mod__', '__setattr__', 'numerator', '__pow__', '__abs__', '__ceil__', '__ne__', '__new__', '__bool__', 'to_bytes', '__sub__', '__rmod__', '__rxor__', 'denominator', '__format__', '__rsub__', '__rand__', '__floordiv__', '__neg__', '__floor__', '__doc__', 'imag', '__repr__', '__rshift__', '__reduce_ex__', '__gt__', '__sizeof__', '__class__', '__getnewargs__', '__round__', '__lt__', '__add__'])
+}
+
 /**************************************************
  * Type conversions
  **************************************************/

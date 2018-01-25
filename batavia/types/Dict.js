@@ -101,6 +101,11 @@ function deleteAt(dict, index) {
     dict.size--
 }
 
+Dict.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['__gt__', '__delitem__', '__getattribute__', '__str__', '__dir__', 'values', '__setitem__', '__setattr__', 'items', 'fromkeys', '__repr__', '__delattr__', '__getitem__', '__init__', 'copy', '__new__', 'get', '__iter__', '__lt__', '__ne__', '__class__', '__le__', 'pop', '__contains__', '__reduce__', 'setdefault', '__eq__', '__subclasshook__', 'update', '__format__', 'clear', 'popitem', '__ge__', '__hash__', '__doc__', '__reduce_ex__', '__sizeof__', 'keys', '__len__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/

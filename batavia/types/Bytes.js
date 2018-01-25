@@ -20,6 +20,11 @@ function Bytes(val) {
 
 create_pyclass(Bytes, 'bytes')
 
+Bytes.prototype.__dir__ = function() {
+    var types = require('../types')
+    return new types.List(['center', 'title', '__getattribute__', '__delattr__', '__str__', 'index', '__len__', 'decode', '__format__', '__subclasshook__', '__eq__', 'isalpha', 'count', 'isalnum', 'islower', '__repr__', '__reduce__', 'swapcase', '__getnewargs__', '__mul__', '__setattr__', '__rmul__', 'zfill', 'isdigit', 'startswith', '__ne__', 'fromhex', '__le__', 'ljust', '__lt__', 'lstrip', 'maketrans', '__dir__', '__gt__', 'upper', 'splitlines', 'rjust', 'expandtabs', 'strip', 'istitle', 'translate', 'partition', '__add__', '__init__', 'isupper', 'endswith', '__contains__', 'replace', '__reduce_ex__', '__ge__', '__class__', 'rstrip', 'rfind', 'rpartition', '__sizeof__', 'find', 'join', '__iter__', 'isspace', 'rsplit', 'split', 'capitalize', '__hash__', 'rindex', '__getitem__', '__doc__', 'lower', '__new__'])
+}
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
