@@ -155,7 +155,7 @@ export default class PyBytes extends PyObject {
                 //    bytes(string, encoding[, errors]) -> bytes
                 //    we delegate to str.encode(encoding, errors)
                 //    we need to rewrap the first argument because somehow it's coming unwrapped!
-                this.val = data.encode(data, errors)
+                this.val = data.encode(encoding, errors).val
             } else {
                 if (version.earlier('3.6')) {
                     throw new TypeError(
@@ -403,7 +403,7 @@ export default class PyBytes extends PyObject {
 
                 return new PyBytes(byteBuffer)
             } else {
-                return new PyBytes('')
+                return new PyBytes()
             }
         } else {
             throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
@@ -411,8 +411,6 @@ export default class PyBytes extends PyObject {
     }
 
     __mod__(other) {
-        let types = require('../types')
-
         if (types.isinstance(other, types.PyComplex)) {
             throw new TypeError("can't mod complex numbers.")
         } else {

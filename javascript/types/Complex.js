@@ -199,6 +199,31 @@ export default class PyComplex extends PyObject {
             } else {
                 throw new NotImplementedError('Complex initialization from complex argument(s) has not been implemented')
             }
+        } else if (typeof re === 'number') {
+            this.real = re
+            if (im === undefined) {
+                this.imag = 0
+            } else if (typeof im === 'number') {
+                this.imag = im
+            } else if (types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool])) {
+                this.imag = im.__float__().valueOf()
+            } else {
+                if (version.later('3.5')) {
+                    if (types.isinstance(im, types.PyStr)) {
+                        throw new TypeError("complex() second argument can't be a string")
+                    } else {
+                        throw new TypeError(
+                            "complex() second argument must be a number, not '" +
+                            type_name(re) + "'"
+                        )
+                    }
+                } else {
+                    throw new TypeError(
+                        "complex() argument must be a number, not '" +
+                        type_name(re) + "'"
+                    )
+                }
+            }
         } else if (types.isinstance(re, [types.PyFloat, types.PyInt, types.PyBool])) {
             this.real = re.__float__().valueOf()
             if (im === undefined) {

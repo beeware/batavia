@@ -42,15 +42,16 @@ export function python(pyargs) {
  * Invoking functions
  *************************************************************************/
 
-export function call_function(self, func, args = [], kwargs = {}) {
+export function call_function(vm, func, args = [], kwargs = {}) {
     let callable, pyargs, name
-
+    let self = vm
     if (func instanceof PyType) {
         // The function is a type.
         // The constructor will be an annotated javascript function if it is
         // a builtin; otherwise, it will be defined in bytecode, and require
         // raw python arguments.
         callable = func.__call__
+        self = func
         if (func.$builtin) {
             pyargs = func.$pyclass.prototype.__init__.$pyargs
         } else {
@@ -90,9 +91,6 @@ export function call_function(self, func, args = [], kwargs = {}) {
         js_args = [args, kwargs]
         self = func
     } else if (pyargs !== undefined) {
-        // if (kwargs && Object.keys(kwargs).length > 0) {
-        //     throw new TypeError(callable.name + "() doesn't accept keyword arguments")
-        // }
         let n_args = 0
         let kw = Object.assign({}, kwargs)
         // Positional arguments

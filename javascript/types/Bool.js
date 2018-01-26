@@ -378,7 +378,7 @@ PyBool.prototype.__mul__ = function(other) {
         if (this.valueOf()) {
             return other
         } else {
-            return new types.PyBytes('')
+            return new types.PyBytes()
         }
     } else if (types.isinstance(other, types.PyTuple)) {
         if (this.valueOf()) {
@@ -396,7 +396,7 @@ PyBool.prototype.__mul__ = function(other) {
         if (this.valueOf()) {
             return new types.PyBytearray(other.valueOf())
         } else {
-            return new types.PyBytearray(new types.PyBytes(''))
+            return new types.PyBytearray(new types.PyBytes())
         }
     } else {
         throw new TypeError("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")

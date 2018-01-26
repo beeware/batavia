@@ -85,7 +85,7 @@ class BytesTests(TranspileTestCase):
             """)
 
         self.assertCodeExecution("""
-            // encoded with latin_1
+            # encoded with latin_1
             x = bytes([82, 97, 109, 243, 110, 32, 100, 101, 32, 69, 115, 112, 97, 241, 97])
             print(x.decode('utf-8'))
             """)
@@ -135,8 +135,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_bool',
         'test_subscr_int',
         'test_subscr_slice',
-        'test_subscr_str',
-        'test_subscr_tuple',
     ]
 
 

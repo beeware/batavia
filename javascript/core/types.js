@@ -50,6 +50,12 @@ class PyObject {
             value = attr
         }
 
+        if (attr instanceof Function) {
+            let args = attr.$pyargs
+            value = attr.bind(this)
+            value.$pyargs = args
+        }
+
         return value
     }
 

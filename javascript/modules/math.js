@@ -522,19 +522,16 @@ math.hypot = function(x, y) {
 }
 math.hypot.__doc__ = 'hypot(x, y)\n\nReturn the Euclidean distance, sqrt(x*x + y*y).'
 
-math.isclose = function(args, kwargs) {
-    if (arguments.length !== 2) {
-        throw new BataviaError('Batavia calling convention not used.')
-    }
-    if (args.length === 0) {
-        throw new TypeError("Required argument 'a' (pos 1) not found")
-    }
-    if (args.length === 1) {
-        throw new TypeError("Required argument 'b' (pos 2) not found")
-    }
-    if (args.length > 2) {
-        throw new TypeError('Function takes at most 2 positional arguments (' + args.length + ' given)')
-    }
+math.isclose = function(a, b, rel_tol=1e-09, abs_tol=0.0) {
+    // if (args.length === 0) {
+    //     throw new TypeError("Required argument 'a' (pos 1) not found")
+    // }
+    // if (args.length === 1) {
+    //     throw new TypeError("Required argument 'b' (pos 2) not found")
+    // }
+    // if (args.length > 2) {
+    //     throw new TypeError('Function takes at most 2 positional arguments (' + args.length + ' given)')
+    // }
     var rel_tol = 1e-09
     if ('rel_tol' in kwargs) {
         if (!isinstance(kwargs.rel_tol, [Bool, Float, Int])) {
@@ -573,8 +570,13 @@ math.isclose = function(args, kwargs) {
     }
     return new Bool(false)
 }
-math.isclose.$pyargs = true
+math.isclose.__name__ = 'isclose'
 math.isclose.__doc__ = 'is_close(a, b, *, rel_tol=1e-9, abs_tol=0.0) -> bool\n\nDetermine whether two floating point numbers are close in value.\n\n   rel_tol\n       maximum difference for being considered "close", relative to the\n       magnitude of the input values\n    abs_tol\n       maximum difference for being considered "close", regardless of the\n       magnitude of the input values\n\nReturn True if a is close in value to b, and False otherwise.\n\nFor the values to be considered close, the difference between them\nmust be smaller than at least one of the tolerances.\n\n-inf, inf and NaN behave similarly to the IEEE 754 Standard.  That\nis, NaN is not close to anything, even itself.  inf and -inf are\nonly close to themselves.'
+math.isclose.$pyargs = {
+    args: ['a', 'b'],
+    kwonlyargs: ['rel_tol', 'abs_tol'],
+    missing_args_error: (e) => `Required argument '${arg}' (pos ${argpos}) not found`
+}
 
 math.isfinite = function(x) {
     _checkFloat(x)

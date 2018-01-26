@@ -3,7 +3,7 @@
  *************************************************************************/
 import * as attrs from './core/attrs'
 import * as callables from './core/callables'
-import { BaseException, BataviaError, StopIteration } from './core/exceptions'
+import { BaseException, BataviaError, NameError, StopIteration, UnboundLocalError } from './core/exceptions'
 import { create_pyclass, PyNone, PyObject, PyType } from './core/types'
 import * as version from './core/version'
 
@@ -1278,7 +1278,7 @@ export default class VirtualMachine {
         } else if (name in frame.f_builtins) {
             val = frame.f_builtins[name]
         } else {
-            throw new builtins.NameError("name '" + name + "' is not defined")
+            throw new NameError("name '" + name + "' is not defined")
         }
         this.push(val)
     }
@@ -1296,7 +1296,7 @@ export default class VirtualMachine {
         if (name in this.frame.f_locals) {
             val = this.frame.f_locals[name]
         } else {
-            throw new builtins.UnboundLocalError("local variable '" + name + "' referenced before assignment")
+            throw new UnboundLocalError("local variable '" + name + "' referenced before assignment")
         }
         this.push(val)
     }
@@ -1320,7 +1320,7 @@ export default class VirtualMachine {
         } else if (name in this.frame.f_builtins) {
             val = this.frame.f_builtins[name]
         } else {
-            throw new builtins.NameError("name '" + name + "' is not defined")
+            throw new NameError("name '" + name + "' is not defined")
         }
         this.push(val)
     }
@@ -1592,7 +1592,7 @@ export default class VirtualMachine {
     byte_BUILD_SLICE(count) {
         if (count === 2 || count === 3) {
             var items = this.popn(count)
-            this.push(builtins.slice(items))
+            this.push(builtins.slice.call(this, items))
         } else {
             throw new BataviaError('Strange BUILD_SLICE count: ' + count)
         }
@@ -1715,7 +1715,7 @@ export default class VirtualMachine {
     }
 
     byte_GET_ITER() {
-        this.push(builtins.iter(this.pop()))
+        this.push(builtins.iter.call(this, this.pop()))
     }
 
     byte_FOR_ITER(jump) {
@@ -1724,7 +1724,7 @@ export default class VirtualMachine {
             var v = iterobj.__next__()
             this.push(v)
         } catch (err) {
-            if (err instanceof builtins.StopIteration) {
+            if (err instanceof StopIteration) {
                 this.pop()
                 this.jump(jump)
             } else {
@@ -2000,15 +2000,7 @@ export default class VirtualMachine {
             }
             let func = this.pop()
 
-            // If this is a type function (i.e., an object constructor), self
-            // is the type, not the virtual machine.
-            if (func instanceof PyType) {
-                self = func
-            } else {
-                self = this
-            }
-
-            let retval = callables.call_function(self, func, posargs, namedargs)
+            let retval = callables.call_function(this, func, posargs, namedargs)
             this.push(retval)
         } else {
             let namedargs = new types.JSDict()
@@ -2031,15 +2023,7 @@ export default class VirtualMachine {
             }
             let func = this.pop()
 
-            // If this is a type function (i.e., an object constructor), self
-            // is the type, not the virtual machine.
-            if (func instanceof PyType) {
-                self = func
-            } else {
-                self = this
-            }
-
-            let retval = callables.call_function(self, func, posargs, namedargs)
+            let retval = callables.call_function(this, func, posargs, namedargs)
             this.push(retval)
         }
     }
@@ -2096,13 +2080,7 @@ export default class VirtualMachine {
     byte_IMPORT_NAME(name) {
         var items = this.popn(2)
         this.push(
-            builtins.__import__.apply(
-                this,
-                [
-                    [name, this.frame.f_globals, this.frame.f_locals, items[1], items[0]],
-                    null
-                ]
-            )
+            builtins.__import__.call(this, name, this.frame.f_globals, this.frame.f_locals, items[1], items[0])
         )
     }
 
