@@ -2137,7 +2137,7 @@ export default class VirtualMachine {
     }
 
     byte_LOAD_BUILD_CLASS() {
-        var pytype = this.make_type.bind(this)
+        var pytype = this.make_type.apply(this)
         this.push(pytype)
     }
 
