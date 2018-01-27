@@ -33,19 +33,19 @@ export default class PyFrozenSet extends PyObject {
      * Inplace operators
      **************************************************/
     __isub__(other) {
-        throw new TypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for -=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new TypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for &=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for ^=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new TypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new TypeError("unsupported operand type(s) for |=: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 

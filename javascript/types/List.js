@@ -23,7 +23,7 @@ class PyListIterator extends PyObject {
 
     __next__() {
         if (this.index >= this.data.length) {
-            throw new exceptions.StopIteration()
+            throw new StopIteration()
         }
         var retval = this.data[this.index]
         this.index++
