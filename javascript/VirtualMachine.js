@@ -4,7 +4,7 @@
 import * as attrs from './core/attrs'
 import * as callables from './core/callables'
 import { BaseException, BataviaError, NameError, StopIteration, UnboundLocalError } from './core/exceptions'
-import { create_pyclass, PyNone, PyObject, PyType } from './core/types'
+import { create_pyclass, PyNone, PyObject } from './core/types'
 import * as version from './core/version'
 
 import PyBlock from './core/Block'
@@ -1982,7 +1982,6 @@ export default class VirtualMachine {
     }
 
     call_function(arg, args, kwargs) {
-        let self
         if (!version.earlier('3.6')) {
             let namedargs = new types.JSDict()
             let lenPos = arg

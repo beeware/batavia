@@ -9,7 +9,6 @@ import PyComplex from './types/Complex'
 import PyDict from './types/Dict'
 import PyEllipsis from './types/Ellipsis'
 import PyEnumerate from './types/Enumerate'
-import PyFilter from './types/Filter'
 import PyFloat from './types/Float'
 import PyFrozenset from './types/Frozenset'
 import PyInt from './types/Int'
@@ -23,10 +22,8 @@ import PyTuple from './types/Tuple'
 
 // Types with special constructor handling
 import bool from './builtins/bool'
-import map from './builtins/map'
 import str from './builtins/str'
 import type from './builtins/type'
-import zip from './builtins/zip'
 
 // Other builtin functions
 import __import__ from './builtins/__import__'
@@ -45,6 +42,7 @@ import dir from './builtins/dir'
 import divmod from './builtins/divmod'
 // import * as eval from './builtins/eval'
 import exec from './builtins/exec'
+import filter from './builtins/filter'
 import globals from './builtins/globals'
 import hash from './builtins/hash'
 import help from './builtins/help'
@@ -57,6 +55,7 @@ import iter from './builtins/iter'
 import len from './builtins/len'
 import license from './builtins/license'
 import locals from './builtins/locals'
+import map from './builtins/map'
 import max from './builtins/max'
 import memoryview from './builtins/memoryview'
 import min from './builtins/min'
@@ -74,6 +73,7 @@ import staticmethod from './builtins/staticmethod'
 import sum from './builtins/sum'
 // import super from './builtins/super'
 import vars from './builtins/vars'
+import zip from './builtins/zip'
 
 import { dom } from './modules/dom'
 
@@ -152,7 +152,6 @@ var bytes = PyBytes.__class__
 var complex = PyComplex.__class__
 var dict = PyDict.__class__
 var enumerate = PyEnumerate.__class__
-var filter = PyFilter.__class__
 var float = PyFloat.__class__
 var frozenset = PyFrozenset.__class__
 var int = PyInt.__class__

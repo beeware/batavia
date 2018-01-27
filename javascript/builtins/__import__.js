@@ -1,4 +1,4 @@
-import { BataviaError, ImportError, SystemError } from '../core/exceptions'
+import { ImportError, SystemError } from '../core/exceptions'
 import { PyNone } from '../core/types'
 
 import * as builtins from '../builtins'

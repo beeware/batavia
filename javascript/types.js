@@ -30,10 +30,6 @@ import PyComplex from './types/Complex'
 import PyDictView from './types/DictView'
 import PyEllipsis from './types/Ellipsis'
 
-import PyFilter from './types/Filter'
-import PyMap from './types/Map'
-import PyZip from './types/Zip'
-
 import PyFunction from './types/Function'
 import PyMethod from './types/Method'
 
@@ -179,14 +175,12 @@ export {
     PyDictView,
     PyEllipsis,
     PyEnumerate,
-    PyFilter,
     PyFloat,
     PyFrozenSet,
     PyFunction,
     PyGenerator,
     PyInt,
     PyList,
-    PyMap,
     PyMethod,
     PyModule,
     PyNoneType,
@@ -197,6 +191,5 @@ export {
     PySlice,
     PyStr,
     PyTuple,
-    PyType,
-    PyZip
+    PyType
 }

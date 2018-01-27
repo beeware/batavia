@@ -28,12 +28,15 @@ export default class PyFloat extends PyObject {
             } else {
                 if (x === 'nan' || x === '+nan' || x === '-nan') {
                     this.val = NaN
-                } else if (x === 'inf' || x === '+inf') {
+                } else if (x === 'inf' || x === '+inf' ||
+                           x === 'infinity' || x === '+infinity' ||
+                           x === 'Infinity' || x === '+Infinity') {
                     this.val = Infinity
-                } else if (x === '-inf') {
+                } else if (x === '-inf' || x === '-infinity' || x === '-Infinity') {
                     this.val = -Infinity
+                } else {
+                    throw new ValueError("could not convert string to float: '" + x + "'")
                 }
-                throw new ValueError("could not convert string to float: '" + x + "'")
             }
         } else if (types.isinstance(x, [types.PyInt, types.PyBool, types.PyFloat])) {
             this.val = x.__float__().val

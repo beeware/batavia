@@ -2,7 +2,15 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class FloatTests(TranspileTestCase):
-    pass
+    def test_infinity(self):
+        self.assertCodeExecution("""
+            print(float('inf'))
+            print(float('-inf'))
+            print(float('infinity'))
+            print(float('-infinity'))
+            print(float('Infinity'))
+            print(float('-Infinity'))
+        """)
 
 
 class BuiltinFloatFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
