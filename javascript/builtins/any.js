@@ -24,7 +24,7 @@ export default function any(iterable) {
     return false
 }
 
-any.__name__ = 'name'
+any.__name__ = 'any'
 any.__doc__ = `any(iterable) -> bool
 
 Return True if bool(x) is True for any x in the iterable.
