@@ -3,7 +3,7 @@ import { type_name } from '../core/types'
 
 import { tuple } from '../builtins'
 
-export default function max(iterable, args, kwargs) {
+export default function max(iterable, args, default_, key) {
     var iterobj
     if (args.length > 0) {
         iterobj = tuple(iterable, ...args).__iter__()
@@ -19,8 +19,8 @@ export default function max(iterable, args, kwargs) {
         var max = iterobj.__next__()
     } catch (err) {
         if (err instanceof StopIteration) {
-            if ('default' in kwargs) {
-                return kwargs['default']
+            if (default_ !== undefined) {
+                return default_
             } else {
                 throw new ValueError('max() arg is an empty sequence')
             }
@@ -55,5 +55,6 @@ With two or more arguments, return the largest argument.`
 max.$pyargs = {
     args: ['iterable'],
     varargs: ['args'],
-    kwonlyargs: ['default', 'key']
+    kwonlyargs: ['default', 'key'],
+    missing_args_error: (e) => `max expected 1 arguments, got 0`
 }

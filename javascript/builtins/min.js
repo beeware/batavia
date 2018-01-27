@@ -3,7 +3,7 @@ import { type_name } from '../core/types'
 
 import { tuple } from '../builtins'
 
-export default function min(iterable, args, kwargs) {
+export default function min(iterable, args, default_, key) {
     var iterobj
     if (args.length > 0) {
         iterobj = tuple(iterable, ...args).__iter__()
@@ -19,8 +19,8 @@ export default function min(iterable, args, kwargs) {
         var min = iterobj.__next__()
     } catch (err) {
         if (err instanceof StopIteration) {
-            if ('default' in kwargs) {
-                return kwargs['default']
+            if (default_ !== undefined) {
+                return default_
             } else {
                 throw new ValueError('min() arg is an empty sequence')
             }
@@ -54,5 +54,7 @@ the provided iterable is empty.
 With two or more arguments, return the smallest argument.`
 min.$pyargs = {
     args: ['iterable'],
-    kwonlyargs: ['default', 'key']
+    varargs: ['args'],
+    kwonlyargs: ['default', 'key'],
+    missing_args_error: (e) => `min expected 1 arguments, got 0`
 }
