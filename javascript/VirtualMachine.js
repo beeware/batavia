@@ -25,7 +25,7 @@ export default class VirtualMachine {
                 // fully qualified module name (e.g., batavia-foo.bar.whiz)
                 var element = document.getElementById('batavia-' + name)
                 if (element === null) {
-                    // If the element doesn't exist, look for a javascript element.
+                    // If the element doesn't exist, look for a HTML element.
                     element = window[name]
                     if (element === undefined) {
                         return null
@@ -48,7 +48,6 @@ export default class VirtualMachine {
                 // Strip all the whitespace out of the text content of
                 // the script tag.
                 return {
-                    '$pyclass': true,
                     'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, '').trim(),
                     'filename': new types.PyStr(filename)
                 }
@@ -2113,8 +2112,8 @@ export default class VirtualMachine {
     //     six.exec_(stmt, globs, locs) f
     // };
 
-    make_class(vm) {
-        var create_class = function(build_attrs, name, bases) {
+    make_type() {
+        var pytype = function(build_attrs, name, bases) {
             // Create a attrs context, and run the class function in it.
             let attrs = new types.PyDict()
             build_attrs.__call__([], {}, attrs)
@@ -2131,15 +2130,15 @@ export default class VirtualMachine {
             // Return the class. Calling the type will construct instances.
             return pyclass.__class__
         }
-        create_class.$pyargs = {
+        pytype.$pyargs = {
             args: ['build_attrs', 'name'],
             varargs: ['bases']
         }
-        return create_class
+        return pytype
     }
 
     byte_LOAD_BUILD_CLASS() {
-        var pytype = this.make_class(this)
+        var pytype = this.make_type.bind(this)
         this.push(pytype)
     }
 

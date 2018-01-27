@@ -50,10 +50,14 @@ class PyObject {
             value = attr
         }
 
-        if (attr instanceof Function) {
-            let args = attr.$pyargs
-            value = attr.bind(this)
-            value.$pyargs = args
+        // If attribute is a function, bind the function to the instance
+        // that we've retrieved it from.
+        if (value instanceof Function) {
+            let pyargs = value.$pyargs
+            let pytype = value.$pytype
+            value = value.bind(this)
+            value.$pyargs = pyargs
+            value.$pytype = pytype
         }
 
         return value

@@ -2,7 +2,7 @@ from .utils import TranspileTestCase, adjust
 
 
 class TestVersionID(TranspileTestCase):
-    def version_test(self, params, result):
+    def version_test(self, v1, v2, op, result):
         self.assertJavaScriptExecution(
             """
             from harness import testfunc
@@ -11,40 +11,44 @@ class TestVersionID(TranspileTestCase):
             """,
             js={
                 'harness': adjust("""
-                var harness = {{
+                let harness = {{
                     testfunc: function() {{
-                        var x = batavia.core.version.version_id('{0}')
-                        var y = batavia.core.version.version_id('{1}')
-                        return new batavia.types.Bool(x {2} y)
+                        let x = batavia.version.version_id('{0}')
+                        let y = batavia.version.version_id('{1}')
+                        return new batavia.types.PyBool(x {2} y)
                     }}
                 }};
-                """.format(*params)),
+                """.format(v1, v2, op)),
             },
             out=result,
         )
 
-    def earlier_test(self, params, result):
-        params.append('<')
-        self.version_test(params, result)
+    def assert_earlier(self, v1, v2):
+        self.version_test(v1, v2, '<', 'True\n')
 
-    def later_test(self, params, result):
-        params.append('>')
-        self.version_test(params, result)
+    def assert_not_earlier(self, v1, v2):
+        self.version_test(v1, v2, '<', 'False\n')
+
+    def assert_later(self, v1, v2):
+        self.version_test(v1, v2, '>', 'True\n')
+
+    def assert_not_later(self, v1, v2):
+        self.version_test(v1, v2, '>', 'False\n')
 
     def test_earlier(self):
-        self.earlier_test(params=['3.6', '3.5'], result='False\n')
-        self.earlier_test(params=['3.6', '3.6'], result='False\n')
-        self.earlier_test(params=['3.5', '3.6'], result='True\n')
+        self.assert_not_earlier('3.6', '3.5')
+        self.assert_not_earlier('3.6', '3.6')
+        self.assert_earlier('3.5', '3.6')
 
     def test_later(self):
-        self.later_test(params=['3.6', '3.5'], result='True\n')
-        self.later_test(params=['3.6', '3.6'], result='False\n')
-        self.later_test(params=['3.5', '3.6'], result='False\n')
+        self.assert_later('3.6', '3.5')
+        self.assert_not_later('3.6', '3.6')
+        self.assert_not_later('3.5', '3.6')
 
     def test_prerelease(self):
-        self.later_test(params=['3.5', '3.5a0'], result='True\n')
-        self.later_test(params=['3.5a0', '3.5'], result='False\n')
-        self.earlier_test(params=['3.5', '3.5a0'], result='False\n')
-        self.earlier_test(params=['3.5a0', '3.5'], result='True\n')
-        self.later_test(params=['3.5a0', '3.5b0'], result='False\n')
-        self.later_test(params=['3.5a1', '3.5a0'], result='True\n')
+        self.assert_later('3.5', '3.5a0')
+        self.assert_not_later('3.5a0', '3.5')
+        self.assert_not_earlier('3.5', '3.5a0')
+        self.assert_earlier('3.5a0', '3.5')
+        self.assert_not_later('3.5a0', '3.5b0')
+        self.assert_later('3.5a1', '3.5a0')

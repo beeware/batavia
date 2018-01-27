@@ -1,8 +1,8 @@
 import { BataviaError, ImportError, SystemError } from '../core/exceptions'
 import { PyNone } from '../core/types'
 
+import * as builtins from '../builtins'
 import * as modules from '../modules'
-import * as stdlib from '../stdlib'
 import { PyInt, PyModule } from '../types'
 
 export default function __import__(name, globals, locals, fromlist, level) {
@@ -13,17 +13,16 @@ export default function __import__(name, globals, locals, fromlist, level) {
     // the last element.
     let root_module, leaf_module
     let code, frame, payload, n
+    let path
 
+    let intlevel = level.int32()
     // "import builtins" can be shortcut
-    if (name === 'builtins' && level.int32() === 0) {
-        root_module = require('../builtins')
-        leaf_module = root_module
+    if (name === 'builtins' && intlevel === 0) {
+        root_module = builtins
+        leaf_module = builtins
     } else {
         // Pull apart the requested name.
-        level = level.int32()
-        let path
-
-        if (level === 0) {
+        if (intlevel === 0) {
             path = name.split('.')
         } else {
             let import_path
@@ -31,13 +30,13 @@ export default function __import__(name, globals, locals, fromlist, level) {
 
             // Adjust level to deal with imports inside a __init__.py file
             if (globals.__file__.endswith('__init__.py')) {
-                level = level - 1
+                intlevel = intlevel - 1
             }
 
-            if (context.length < level) {
+            if (context.length < intlevel) {
                 throw new SystemError("Parent module '' not loaded, cannot perform relative import")
             } else {
-                context = context.slice(0, context.length - level)
+                context = context.slice(0, context.length - intlevel)
             }
 
             let a
@@ -64,95 +63,85 @@ export default function __import__(name, globals, locals, fromlist, level) {
         root_module = modules[name_part]
         leaf_module = root_module
 
-        // Check if there is a stdlib (pyc) module.
+        // If there isn't a native modiule, try loading one from the DOM.
         if (root_module === undefined) {
-            payload = stdlib[name_part]
-            if (payload) {
-                root_module = new PyModule(name, null, name)
-                leaf_module = root_module
-                modules.sys.modules[name] = root_module
-
-                code = modules.marshal.load_pyc(this, payload)
-                // Convert code object to module
-                // globals.__name__ = name
-                frame = this.make_frame({
-                    'code': code,
-                    'f_globals': root_module,
-                    'f_locals': root_module
-                })
-                this.run_frame(frame)
-            }
-
-            // If there still isn't a module, try loading one from the DOM.
+            root_module = modules.sys.modules[name_part]
+            leaf_module = root_module
             if (root_module === undefined) {
-                root_module = modules.sys.modules[name_part]
-                leaf_module = root_module
-                if (root_module === undefined) {
-                    payload = this.loader(name_part)
-                    if (payload === null) {
-                        throw new ImportError("No module name '" + name_part + "'")
-                    } else if (payload.javascript) {
-                        root_module = payload.javascript
-                        leaf_module = root_module
-                        modules.sys.modules[name_part] = root_module
-                    } else {
-                        // console.log('LOAD ' + name_part);
-                        code = modules.marshal.load_pyc(this, payload.bytecode)
+                payload = this.loader(name_part)
+                if (payload === null) {
+                    throw new ImportError("No module name '" + name_part + "'")
+                } else if (payload.javascript) {
+                    root_module = payload.javascript
+                    leaf_module = root_module
 
-                        root_module = new PyModule(name_part, payload.filename, name_part)
-                        leaf_module = root_module
-                        modules.sys.modules[name_part] = root_module
+                    leaf_module.__name__ = name_part
+                    leaf_module.__filename__ = '<javascript>'
+                    leaf_module.__package__ = ''
 
-                        // Convert code object to module
-                        frame = this.make_frame({
-                            'code': code,
-                            'f_globals': root_module,
-                            'f_locals': root_module
-                        })
-                        this.run_frame(frame)
-                    }
+                    modules.sys.modules[name_part] = root_module
+                } else {
+                    // console.log('LOAD ' + name_part);
+                    code = modules.marshal.load_pyc(this, payload.bytecode)
+
+                    root_module = new PyModule(name_part, payload.filename, '')
+                    leaf_module = root_module
+                    modules.sys.modules[name_part] = root_module
+
+                    // Convert code object to module
+                    frame = this.make_frame({
+                        'code': code,
+                        'f_globals': root_module,
+                        'f_locals': root_module
+                    })
+                    this.run_frame(frame)
                 }
             }
+        }
 
-            for (n = 1; n < path.length; n++) {
-                name_part = path.slice(0, n + 1).join('.')
+        for (n = 1; n < path.length; n++) {
+            name_part = path.slice(0, n + 1).join('.')
 
-                let new_module = modules.sys.modules[name_part]
-                let pkg
-                if (new_module === undefined) {
-                    payload = this.loader(name_part)
-                    if (payload === null) {
-                        throw new ImportError("No module name '" + name_part + "'")
-                    } else if (payload.javascript) {
-                        new_module = payload.javascript
-                        leaf_module[path[n]] = new_module
-                        leaf_module = new_module
-                        modules.sys.modules[name] = leaf_module
-                    } else {
-                        code = modules.marshal.load_pyc(this, payload.bytecode)
-
-                        if (payload.filename.endswith('__init__.py')) {
-                            pkg = path.slice(0, n).join('.')
-                        } else {
-                            pkg = name_part
-                        }
-
-                        new_module = new PyModule(name_part, payload.filename, pkg)
-                        leaf_module[path[n]] = new_module
-                        leaf_module = new_module
-                        modules.sys.modules[name_part] = leaf_module
-
-                        // Convert code object to module
-                        frame = this.make_frame({
-                            'code': code,
-                            'f_globals': leaf_module,
-                            'f_locals': leaf_module
-                        })
-                        this.run_frame(frame)
-                    }
-                } else {
+            let new_module = modules.sys.modules[name_part]
+            let pkg
+            if (new_module === undefined) {
+                payload = this.loader(name_part)
+                if (payload === null) {
+                    throw new ImportError("No module name '" + name_part + "'")
+                } else if (payload.javascript) {
+                    new_module = payload.javascript
+                    leaf_module[path[n]] = new_module
                     leaf_module = new_module
+
+                    leaf_module.__name__ = path[n]
+                    leaf_module.__filename__ = '<javascript>'
+                    leaf_module.__package__ = path.slice(0, n).join('.')
+
+                    modules.sys.modules[name_part] = leaf_module
+                } else {
+                    code = modules.marshal.load_pyc(this, payload.bytecode)
+
+                    if (payload.filename.endswith('__init__.py')) {
+                        pkg = path.slice(0, n).join('.')
+                    } else {
+                        pkg = name_part
+                    }
+
+                    new_module = new PyModule(name_part, payload.filename, pkg)
+                    leaf_module[path[n]] = new_module
+                    leaf_module = new_module
+                    modules.sys.modules[name_part] = leaf_module
+
+                    // Convert code object to module
+                    frame = this.make_frame({
+                        'code': code,
+                        'f_globals': leaf_module,
+                        'f_locals': leaf_module
+                    })
+                    this.run_frame(frame)
                 }
+            } else {
+                leaf_module = new_module
             }
         }
     }
@@ -178,7 +167,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
         for (let sn = 0; sn < fromlist.length; sn++) {
             let name_part = fromlist[sn]
             if (leaf_module[name_part] === undefined) {
-                __import__.call(this, leaf_module.__name__ + '.' + name_part, this.frame.f_globals, null, PyNone, new PyInt(0))
+                __import__.call(this, path.join('.') + '.' + name_part, this.frame.f_globals, null, PyNone, new PyInt(0))
             }
             module[name_part] = leaf_module[name_part]
         }

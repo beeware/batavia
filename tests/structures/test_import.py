@@ -1077,6 +1077,7 @@ class NativeImportTests(TranspileTestCase):
                             this.y = y;
                             this.z = z;
                         };
+                        mod.MyClass.$pytype = true
 
                         mod.MyClass.prototype.doStuff = function(a, b, c) {
                             console.log("first: " + a + ' ' + this.x + ' ' + (a.__add__(this.x)));
@@ -1119,6 +1120,7 @@ class NativeImportTests(TranspileTestCase):
                             this.y = y;
                             this.z = z;
                         };
+                        mod.MyClass.$pytype = true
 
                         mod.MyClass.prototype.doStuff = function(a, b, c) {
                             console.log("first: " + a + ' ' + this.x + ' ' + (a.__add__(this.x)));

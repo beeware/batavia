@@ -1,22 +1,28 @@
 var native = function(mod) {
     mod.waggle = function(count) {
-        for (var i = 0; i < count; i++) {
-            batavia.modules.sys.stdout.write(['Waggle ' + i + '\n']);
+        let stdout = batavia.modules.sys.stdout
+        for (let i = 0; i < count; i++) {
+            stdout.write.call(stdout, 'Waggle ' + i + '\n');
         }
     };
 
     mod.wiggle = function(count) {
-        for (var i = 0; i < count; i++) {
-            batavia.modules.sys.stdout.write(['Waggle ' + i + '\n']);
+        let stdout = batavia.modules.sys.stdout
+        for (let i = 0; i < count; i++) {
+            stdout.write.call(stdout, 'Wiggle ' + i + '\n');
         }
     };
 
     mod.MyClass = function(count) {
-        batavia.modules.sys.stdout.write(['Hello class constructor ' + count + '\n']);
+        let stdout = batavia.modules.sys.stdout
+        stdout.write.call(stdout, 'Hello class constructor ' + count + '\n');
+        this.mycount = count
     };
+    mod.MyClass.$pytype = true
 
     mod.MyClass.prototype.doStuff = function(count) {
-        batavia.modules.sys.stdout.write(['Hello class ' + count + '\n']);
+        let stdout = batavia.modules.sys.stdout
+        stdout.write.call(stdout, 'Hello class ' + count + ' ' + this.mycount + ' ' + count.__add__(this.mycount) + '\n' );
     };
 
     mod.foobar = function(a, b, c) {
@@ -37,5 +43,33 @@ var native = function(mod) {
     mod.whizbang.__doc__ = "This is the whizbang method"
     mod.whizbang.$pyargs = true;
 
+    return mod;
+}({});
+
+native.submodule = function(mod) {
+    console.log("Now we're in native.submodule");
+    return mod;
+}({});
+
+native.submodule.other = function(mod) {
+    console.log("Now we're in native.submodule.other");
+
+    mod.some_method = function() {
+        console.log("Now we're calling a submodule method");
+    }
+    return mod;
+}({});
+
+native.submodule.subsubmodule = function(mod) {
+    console.log("Now we're in native.submodule.subsubmodule");
+    return mod;
+}({});
+
+native.submodule.subsubmodule.another = function(mod) {
+    console.log("Now we're in native.submodule.subsubmodule.another");
+
+    mod.another_method = function() {
+        console.log("Now we're calling a subsubmodule method");
+    }
     return mod;
 }({});

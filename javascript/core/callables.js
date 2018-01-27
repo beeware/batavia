@@ -61,6 +61,24 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         // Make sure every callable has a name
         // Use the name of the class
         name = func.__name__
+    } else if (func.$pytype) {
+        callable = function(fn) {
+            let pytype = function() {
+                return new fn(...arguments)
+            }
+
+            fn.__class__ = pytype
+
+            // Use the name of the function if a name hasn't been
+            // explicitly provided
+            if (fn.__name__ === undefined) {
+                pytype.__name__ = fn.name
+            } else {
+                pytype.name = fn.__name__
+            }
+            return pytype
+        }(func)
+        name = callable.name
     } else if (func.__call__) {
         // The function is a callable object. Get the call method.
         callable = attrs.getattr(func, '__call__')

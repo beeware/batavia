@@ -14,7 +14,7 @@ export default function abs(x) {
     }
 }
 
-abs.__name__ = 'name'
+abs.__name__ = 'abs'
 abs.__doc__ = 'Return the absolute value of the argument.'
 abs.$pyargs = {
     args: ['x']

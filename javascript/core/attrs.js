@@ -4,15 +4,15 @@ import { type_name } from './types'
 import { isinstance, PyStr } from '../types'
 
 export function getattr(obj, attr, default_) {
-    let val
+    let value
     if (!isinstance(attr, PyStr)) {
         throw new TypeError('getattr(): attribute name must be string')
     }
 
     if (obj.__class__ === undefined) {
         // A native Javascript object
-        val = obj[attr]
-        if (val === undefined) {
+        value = obj[attr]
+        if (value === undefined) {
             if (default_ !== undefined) {
                 return default_
             } else {
@@ -20,11 +20,19 @@ export function getattr(obj, attr, default_) {
                     "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
                 )
             }
+        } else {
+            if (value instanceof Function) {
+                let pyargs = value.$pyargs
+                let pytype = value.$pytype
+                value = value.bind(obj)
+                value.$pyargs = pyargs
+                value.$pytype = pytype
+            }
         }
     } else {
         // A Python object
         try {
-            val = obj.__getattribute__(attr)
+            value = obj.__getattribute__(attr)
         } catch (e) {
             if (e instanceof AttributeError) {
                 if (default_ !== undefined) {
@@ -38,7 +46,7 @@ export function getattr(obj, attr, default_) {
         }
     }
 
-    return val
+    return value
 }
 
 getattr.__name__ = 'getattr'

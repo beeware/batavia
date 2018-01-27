@@ -37,5 +37,6 @@ chr.__doc__ = `chr(i) -> Unicode character
 
 Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.`
 chr.$pyargs = {
-    args: ['i']
+    args: ['i'],
+    missing_args_error: (e) => `chr takes exactly one argument, got ${e.given}`
 }
