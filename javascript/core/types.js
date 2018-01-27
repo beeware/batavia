@@ -93,6 +93,162 @@ class PyObject {
             delete this[name]
         }
     }
+
+    /**************************************************
+     * Unary operators
+     **************************************************/
+
+    __pos__() {
+        throw new TypeError("bad operand type for unary +: '" + this.__class__.__name__ + "'")
+    }
+
+    __neg__() {
+        throw new TypeError("bad operand type for unary -: '" + this.__class__.__name__ + "'")
+    }
+
+    __not__() {
+        throw new TypeError("bad operand type for unary not: '" + this.__class__.__name__ + "'")
+    }
+
+    __invert__() {
+        throw new TypeError("bad operand type for unary ~: '" + this.__class__.__name__ + "'")
+    }
+
+    /**************************************************
+     * Binary operators
+     **************************************************/
+
+    __pow__(other) {
+        throw new TypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __div__(other) {
+        return PyNoneType.__truediv__(other)
+    }
+
+    __floordiv__(other) {
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new TypeError("can't take floor of complex number.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for //: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        }
+    }
+
+    __truediv__(other) {
+        throw new TypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __mul__(other) {
+        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
+            throw new TypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+        } else {
+            throw new TypeError("unsupported operand type(s) for *: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        }
+    }
+
+    __mod__(other) {
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new TypeError("can't mod complex numbers.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for %: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        }
+    }
+
+    __add__(other) {
+        throw new TypeError("unsupported operand type(s) for +: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __sub__(other) {
+        throw new TypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __getitem__(other) {
+        throw new TypeError("'" + this.__class__.__name__ + "' object is not subscriptable")
+    }
+
+    __lshift__(other) {
+        throw new TypeError("unsupported operand type(s) for <<: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __rshift__(other) {
+        throw new TypeError("unsupported operand type(s) for >>: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __and__(other) {
+        throw new TypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __xor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __or__(other) {
+        throw new TypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    /**************************************************
+     * Inplace operators
+     **************************************************/
+
+    __ifloordiv__(other) {
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new TypeError("can't take floor of complex number.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for //=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        }
+    }
+
+    __itruediv__(other) {
+        throw new TypeError("unsupported operand type(s) for /=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __iadd__(other) {
+        throw new TypeError("unsupported operand type(s) for +=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __isub__(other) {
+        throw new TypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __imul__(other) {
+        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
+            throw new TypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+        } else {
+            throw new TypeError("unsupported operand type(s) for *=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        }
+    }
+
+    __imod__(other) {
+        if (types.isinstance(other, types.PyComplex)) {
+            throw new TypeError("can't mod complex numbers.")
+        } else {
+            throw new TypeError("unsupported operand type(s) for %=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        }
+    }
+
+    __ipow__(other) {
+        throw new TypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __ilshift__(other) {
+        throw new TypeError("unsupported operand type(s) for <<=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __irshift__(other) {
+        throw new TypeError("unsupported operand type(s) for >>=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __iand__(other) {
+        throw new TypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __ixor__(other) {
+        throw new TypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
+
+    __ior__(other) {
+        throw new TypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+    }
 }
 
 // Set the type properties of the PyObject class
@@ -387,160 +543,8 @@ class PyNoneType extends PyObject {
         return false
     }
 
-    /**************************************************
-     * Unary operators
-     **************************************************/
-
-    __pos__() {
-        throw new TypeError("bad operand type for unary +: 'NoneType'")
-    }
-
-    __neg__() {
-        throw new TypeError("bad operand type for unary -: 'NoneType'")
-    }
-
     __not__() {
         return true
-    }
-
-    __invert__() {
-        throw new TypeError("bad operand type for unary ~: 'NoneType'")
-    }
-
-    /**************************************************
-     * Binary operators
-     **************************************************/
-
-    __pow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __div__(other) {
-        return PyNoneType.__truediv__(other)
-    }
-
-    __floordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't take floor of complex number.")
-        } else {
-            throw new TypeError("unsupported operand type(s) for //: 'NoneType' and '" + type_name(other) + "'")
-        }
-    }
-
-    __truediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __mul__(other) {
-        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
-        } else {
-            throw new TypeError("unsupported operand type(s) for *: 'NoneType' and '" + type_name(other) + "'")
-        }
-    }
-
-    __mod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't mod complex numbers.")
-        } else {
-            throw new TypeError("unsupported operand type(s) for %: 'NoneType' and '" + type_name(other) + "'")
-        }
-    }
-
-    __add__(other) {
-        throw new TypeError("unsupported operand type(s) for +: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __sub__(other) {
-        throw new TypeError("unsupported operand type(s) for -: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __getitem__(other) {
-        throw new TypeError("'NoneType' object is not subscriptable")
-    }
-
-    __lshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __rshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __and__(other) {
-        throw new TypeError("unsupported operand type(s) for &: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __xor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __or__(other) {
-        throw new TypeError("unsupported operand type(s) for |: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    /**************************************************
-     * Inplace operators
-     **************************************************/
-
-    __ifloordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't take floor of complex number.")
-        } else {
-            throw new TypeError("unsupported operand type(s) for //=: 'NoneType' and '" + type_name(other) + "'")
-        }
-    }
-
-    __itruediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __iadd__(other) {
-        throw new TypeError("unsupported operand type(s) for +=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __isub__(other) {
-        throw new TypeError("unsupported operand type(s) for -=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __imul__(other) {
-        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'NoneType'")
-        } else {
-            throw new TypeError("unsupported operand type(s) for *=: 'NoneType' and '" + type_name(other) + "'")
-        }
-    }
-
-    __imod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't mod complex numbers.")
-        } else {
-            throw new TypeError("unsupported operand type(s) for %=: 'NoneType' and '" + type_name(other) + "'")
-        }
-    }
-
-    __ipow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __ilshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __irshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __iand__(other) {
-        throw new TypeError("unsupported operand type(s) for &=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __ixor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^=: 'NoneType' and '" + type_name(other) + "'")
-    }
-
-    __ior__(other) {
-        throw new TypeError("unsupported operand type(s) for |=: 'NoneType' and '" + type_name(other) + "'")
     }
 }
 create_pyclass(PyNoneType, 'NoneType')
