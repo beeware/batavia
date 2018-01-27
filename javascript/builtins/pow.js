@@ -43,5 +43,6 @@ With two arguments, equivalent to x**y.  With three arguments,
 equivalent to (x**y) % z, but may be more efficient (e.g. for ints).`
 pow.$pyargs = {
     args: ['a', 'b'],
-    default_args: ['z']
+    default_args: ['z'],
+    missing_args_error: (e) => `pow expected at least 2 arguments, got ${e.given}`
 }
