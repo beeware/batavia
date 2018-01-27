@@ -1,12 +1,40 @@
 import { iter_for_each } from '../core/callables'
-import { AttributeError, IndexError, TypeError, ValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyNone } from '../core/types'
+import { AttributeError, IndexError, StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { create_pyclass, type_name, PyNone, PyObject } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
 import * as types from '../types'
 
-import PyListIterator from './ListIterator'
+/**************************************************
+ * List Iterator
+ **************************************************/
+
+class PyListIterator extends PyObject {
+    constructor(data) {
+        super()
+        this.index = 0
+        this.data = data
+    }
+
+    __iter__() {
+        return this
+    }
+
+    __next__() {
+        if (this.index >= this.data.length) {
+            throw new exceptions.StopIteration()
+        }
+        var retval = this.data[this.index]
+        this.index++
+        return retval
+    }
+
+    __str__() {
+        return '<list_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyListIterator, 'list_iterator')
 
 /*************************************************************************
  * A Python list type
