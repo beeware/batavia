@@ -1,4 +1,4 @@
-import { call_method, call_super, python } from './callables'
+import { call_method, call_super, pyargs } from './callables'
 import { AttributeError, TypeError } from './exceptions'
 import * as version from './version'
 
@@ -31,16 +31,29 @@ class PyObject {
         return '<' + this.__class__.__name__ + ' 0x...>'
     }
 
-    @python({
+    @pyargs({
+        args: ['name']
+    })
+    __getattr__(name) {
+        throw new AttributeError(
+            "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
+        )
+    }
+
+    @pyargs({
         args: ['name']
     })
     __getattribute__(name) {
         let attr = this[name]
 
         if (attr === undefined) {
-            throw new AttributeError(
-                "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
-            )
+            try {
+                // No attribte on this instance; look for a class attribute
+                attr = this.__class__.__getattribute__(name)
+            } catch (e) {
+                // No class attribute either; use the descriptor protocol
+                attr = this.__getattr__(name)
+            }
         }
 
         let value
@@ -63,7 +76,7 @@ class PyObject {
         return value
     }
 
-    @python({
+    @pyargs({
         args: ['name', 'value']
     })
     __setattr__(name, value) {
@@ -75,7 +88,7 @@ class PyObject {
         }
     }
 
-    @python({
+    @pyargs({
         args: ['name']
     })
     __delattr__(name) {
@@ -295,11 +308,43 @@ class PyType {
         return new this.$pyclass(...arguments)
     }
 
-    @python({
+    @pyargs({
+        args: ['name']
+    })
+    __getattribute__(name) {
+        let attr = this[name]
+
+        if (attr === undefined) {
+            throw new AttributeError(
+                "type object '" + this.__name__ + "' has no attribute '" + name + "'"
+            )
+        }
+
+        let value
+        if (attr.__get__) {
+            value = attr.__get__(this, this.__class__)
+        } else {
+            value = attr
+        }
+
+        // If attribute is a function, bind the function to the instance
+        // that we've retrieved it from.
+        if (value instanceof Function) {
+            let pyargs = value.$pyargs
+            let pytype = value.$pytype
+            value = value.bind(this)
+            value.$pyargs = pyargs
+            value.$pytype = pytype
+        }
+
+        return value
+    }
+
+    @pyargs({
         args: ['name', 'value']
     })
     __setattr__(name, value) {
-        if (Object.getPrototypeOf(this) === PyType) {
+        if (this.$builtin) {
             throw new TypeError(
                 "can't set attributes of built-in/extension type '" + this.__name__ + "'"
             )
@@ -308,7 +353,7 @@ class PyType {
         this[name] = value
     }
 
-    @python({
+    @pyargs({
         args: ['name']
     })
     __delattr__(name) {

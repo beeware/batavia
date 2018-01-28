@@ -1,12 +1,52 @@
-import { TypeError } from '../core/exceptions'
-import { call_method } from '../core/callables'
-import { type_name } from '../core/types'
+import { StopIteration, TypeError } from '../core/exceptions'
+import { call_function, call_method } from '../core/callables'
+import { create_pyclass, type_name, PyObject } from '../core/types'
 
-export default function iter(iterable) {
-    try {
-        return call_method(iterable, '__iter__', [])
-    } catch (e) {
-        throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
+/**************************************************
+ * Callable Iterator
+ **************************************************/
+
+class PyCallableIterator extends PyObject {
+    constructor(callable, sentinel) {
+        super()
+        this.callable = callable
+        this.sentinel = sentinel
+        this.exhausted = false
+    }
+
+    __next__() {
+        if (this.exhausted) {
+            throw new StopIteration()
+        }
+
+        var item = call_function(this, this.callable)
+        if (item.__eq__(this.sentinel)) {
+            this.exhausted = true
+            throw new StopIteration()
+        }
+        return item
+    }
+
+    __iter__() {
+        return this
+    }
+
+    __str__() {
+        return '<callable_iterator object at 0x99999999>'
+    }
+}
+create_pyclass(PyCallableIterator, 'callable_iterator')
+
+
+export default function iter(iterable, sentinel) {
+    if (sentinel !== undefined) {
+        return new PyCallableIterator(iterable, sentinel)
+    } else {
+        try {
+            return call_method(iterable, '__iter__', [])
+        } catch (e) {
+            throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
+        }
     }
 }
 
@@ -18,5 +58,6 @@ Get an iterator from an object.  In the first form, the argument must
 supply its own iterator, or be a sequence.
 In the second form, the callable is called until it returns the sentinel.`
 iter.$pyargs = {
-    args: ['iterable']
+    args: ['iterable'],
+    default_args: ['sentinel']
 }

@@ -8,7 +8,6 @@ import PyBytes from './types/Bytes'
 import PyComplex from './types/Complex'
 import PyDict from './types/Dict'
 import PyEllipsis from './types/Ellipsis'
-import PyEnumerate from './types/Enumerate'
 import PyFloat from './types/Float'
 import PyFrozenset from './types/Frozenset'
 import PyInt from './types/Int'
@@ -40,6 +39,7 @@ import copyright from './builtins/copyright'
 import credits from './builtins/credits'
 import dir from './builtins/dir'
 import divmod from './builtins/divmod'
+import enumerate from './builtins/enumerate'
 // import * as eval from './builtins/eval'
 import exec from './builtins/exec'
 import filter from './builtins/filter'
@@ -151,7 +151,6 @@ var bytearray = PyBytearray.__class__
 var bytes = PyBytes.__class__
 var complex = PyComplex.__class__
 var dict = PyDict.__class__
-var enumerate = PyEnumerate.__class__
 var float = PyFloat.__class__
 var frozenset = PyFrozenset.__class__
 var int = PyInt.__class__

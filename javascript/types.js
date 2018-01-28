@@ -38,10 +38,6 @@ import PyGenerator from './types/Generator'
 import PyRange from './types/Range'
 import PySlice from './types/Slice'
 
-import PyCallableIterator from './types/CallableIterator'
-
-import PyEnumerate from './types/Enumerate'
-
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
  *************************************************************************/
@@ -168,13 +164,11 @@ export {
     PyBool,
     PyBytearray,
     PyBytes,
-    PyCallableIterator,
     PyCode,
     PyComplex,
     PyDict,
     PyDictView,
     PyEllipsis,
-    PyEnumerate,
     PyFloat,
     PyFrozenSet,
     PyFunction,
