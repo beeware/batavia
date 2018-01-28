@@ -4,8 +4,6 @@ import * as version from '../core/version'
 
 import * as types from '../types'
 
-import * as utils from './utils'
-
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
  *************************************************************************/
@@ -656,56 +654,152 @@ PyBool.prototype.__ifloordiv__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
         throw new TypeError("can't take floor of complex number.")
     } else {
-        return utils.inplace_call('__floordiv__', '//=', this, other)
+        try {
+            return this.__floordiv__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for //=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 }
 
 PyBool.prototype.__itruediv__ = function(other) {
-    return utils.inplace_call('__truediv__', '/=', this, other)
+    try {
+        return this.__truediv__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for /=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__iadd__ = function(other) {
-    return utils.inplace_call('__add__', '+=', this, other)
+    try {
+        return this.__add__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for +=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__isub__ = function(other) {
-    return utils.inplace_call('__sub__', '-=', this, other)
+    try {
+        return this.__sub__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for -=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__imul__ = function(other) {
-    return utils.inplace_call('__mul__', '*=', this, other)
+    try {
+        return this.__mul__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for *=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__imod__ = function(other) {
     if (types.isinstance(other, types.PyComplex)) {
         throw new TypeError("can't mod complex numbers.")
     } else {
-        return utils.inplace_call('__mod__', '%=', this, other)
+        try {
+            return this.__mod__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for %=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 }
 
 PyBool.prototype.__ipow__ = function(other) {
-    return utils.inplace_call('__pow__', '** or pow()', this, other)
+    try {
+        return this.__pow__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for ** or pow(): '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__ilshift__ = function(other) {
-    return utils.inplace_call('__lshift__', '<<=', this, other)
+    try {
+        return this.__lshift__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for <<=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__irshift__ = function(other) {
-    return utils.inplace_call('__rshift__', '>>=', this, other)
+    try {
+        return this.__rshift__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for >>=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__iand__ = function(other) {
-    return utils.inplace_call('__and__', '&=', this, other)
+    try {
+        return this.__and__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for &=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__ixor__ = function(other) {
-    return utils.inplace_call('__xor__', '^=', this, other)
+    try {
+        return this.__xor__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for ^=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 PyBool.prototype.__ior__ = function(other) {
-    return utils.inplace_call('__or__', '|=', this, other)
+    try {
+        return this.__or__(other)
+    } catch (e) {
+        if (e instanceof TypeError) {
+            throw new TypeError("unsupported operand type(s) for |=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+        } else {
+            throw e
+        }
+    }
 }
 
 /**************************************************

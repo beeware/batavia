@@ -16,8 +16,6 @@ import * as version from '../core/version'
 import { repr } from '../builtins'
 import * as types from '../types'
 
-import * as utils from './utils'
-
 /*************************************************************************
  * A Python int type
  *************************************************************************/
@@ -827,27 +825,75 @@ export default class PyInt extends PyObject {
      **************************************************/
 
     __ifloordiv__(other) {
-        return utils.inplace_call('__floordiv__', '//=', this, other)
+        try {
+            return this.__floordiv__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for //=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __itruediv__(other) {
-        return utils.inplace_call('__truediv__', '/=', this, other)
+        try {
+            return this.__truediv__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for /=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __iadd__(other) {
-        return utils.inplace_call('__add__', '+=', this, other)
+        try {
+            return this.__add__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for +=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __isub__(other) {
-        return utils.inplace_call('__sub__', '-=', this, other)
+        try {
+            return this.__sub__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for -=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __imul__(other) {
-        return utils.inplace_call('__mul__', '*=', this, other)
+        try {
+            return this.__mul__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for *=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __imod__(other) {
-        return utils.inplace_call('__mod__', '%=', this, other)
+        try {
+            return this.__mod__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for %=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __ipow__(other) {
@@ -855,23 +901,63 @@ export default class PyInt extends PyObject {
     }
 
     __ilshift__(other) {
-        return utils.inplace_call('__lshift__', '<<=', this, other)
+        try {
+            return this.__lshift__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for <<=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __irshift__(other) {
-        return utils.inplace_call('__rshift__', '>>=', this, other)
+        try {
+            return this.__rshift__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for >>=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __iand__(other) {
-        return utils.inplace_call('__and__', '&=', this, other)
+        try {
+            return this.__and__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for &=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __ixor__(other) {
-        return utils.inplace_call('__xor__', '^=', this, other)
+        try {
+            return this.__xor__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for ^=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     __ior__(other) {
-        return utils.inplace_call('__or__', '|=', this, other)
+        try {
+            return this.__or__(other)
+        } catch (e) {
+            if (e instanceof TypeError) {
+                throw new TypeError("unsupported operand type(s) for |=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            } else {
+                throw e
+            }
+        }
     }
 
     /**************************************************
