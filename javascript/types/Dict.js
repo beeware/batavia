@@ -564,7 +564,7 @@ export default class PyDict extends PyObject {
 
         if (i === null) {
             if (key === null) {
-                throw new KeyError('PyNone')
+                throw new KeyError('None')
             } else {
                 throw new KeyError(key)
             }
@@ -576,7 +576,7 @@ export default class PyDict extends PyObject {
         var i = this.$find_index(key)
         if (i === null) {
             if (key === null) {
-                throw new KeyError('PyNone')
+                throw new KeyError('None')
             } else {
                 throw new KeyError(key)
             }
