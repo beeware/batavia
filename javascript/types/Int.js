@@ -444,7 +444,7 @@ export default class PyInt extends PyObject {
             }
             result = new types.PyList()
             for (i = 0; i < this.valueOf(); i++) {
-                result.$extend(other)
+                result.extend(other)
             }
             return result
         } else if (types.isinstance(other, types.PyStr)) {
@@ -490,7 +490,7 @@ export default class PyInt extends PyObject {
                 throw new OverflowError("cannot fit 'int' into an index-sized integer")
             }
             if ((other.__len__() <= 0) || (this.valueOf() <= 0)) {
-                return new types.PyBytes('')
+                return new types.PyBytes()
             }
             if (this.valueOf() > 4294967295) {
                 throw new OverflowError('repeated bytes are too long')
@@ -501,16 +501,12 @@ export default class PyInt extends PyObject {
                 throw new OverflowError("cannot fit 'int' into an index-sized integer")
             }
             if ((other.length <= 0) || (this.valueOf() <= 0)) {
-                return new types.PyBytearray('')
+                return new types.PyBytearray()
             }
             if (this.valueOf() > 4294967295) {
                 throw new MemoryError('')
             }
-            result = new types.PyBytearray('')
-            for (i = 0; i < this.valueOf(); i++) {
-                result = new types.PyBytearray(result.valueOf() + other.valueOf())
-            }
-            return result
+            return other.__mul__(this)
         } else if (types.isinstance(other, types.PyComplex)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
                 throw new OverflowError('int too large to convert to float')
