@@ -1,6 +1,6 @@
+import JSDict from '../core/JSDict'
 import { create_pyclass } from '../core/types'
 
-import JSDict from './JSDict'
 
 /*************************************************************************
  * A Python module type

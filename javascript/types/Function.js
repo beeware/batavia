@@ -1,5 +1,6 @@
 /* eslint-disable no-extend-native */
 import { pyargs } from '../core/callables'
+import JSDict from '../core/JSDict'
 import { create_pyclass, PyObject } from '../core/types'
 
 import { inspect } from '../modules/inspect'
@@ -45,7 +46,7 @@ export default class PyFunction extends PyObject {
         let callargs = inspect.getcallargs(this, args, kwargs)
 
         if (locals === undefined) {
-            locals = new types.JSDict()
+            locals = new JSDict()
         }
 
         let frame = this.$vm.make_frame({

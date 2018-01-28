@@ -57,7 +57,7 @@ export default class JSDict {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
-                types.PyInt, types.JSDict, types.PyList,
+                types.PyInt, JSDict, types.PyList,
                 types.PyStr, types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
@@ -88,7 +88,7 @@ export default class JSDict {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
-                types.PyInt, types.JSDict, types.PyList,
+                types.PyInt, JSDict, types.PyList,
                 types.PyStr, types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
@@ -127,7 +127,7 @@ export default class JSDict {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
-                types.PyInt, types.JSDict, types.PyList,
+                types.PyInt, JSDict, types.PyList,
                 types.PySet, types.PyStr,
                 types.PyTuple
             ])) {
@@ -160,7 +160,7 @@ export default class JSDict {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyBool, types.PyDict, types.PyFloat,
-                types.PyInt, types.JSDict, types.PyList,
+                types.PyInt, JSDict, types.PyList,
                 types.PyStr, types.PyTuple
             ])) {
                 if (version.earlier('3.6')) {
@@ -235,7 +235,7 @@ export default class JSDict {
     __mul__(other) {
         if (types.isinstance(other, [
             types.PyBool, types.PyDict, types.PyFloat,
-            types.JSDict, types.PyInt, types.PyNoneType])) {
+            JSDict, types.PyInt, types.PyNoneType])) {
             throw new TypeError("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'")
         } else {
             throw new TypeError("can't multiply sequence by non-int of type 'jsdict'")

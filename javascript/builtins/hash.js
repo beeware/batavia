@@ -8,7 +8,7 @@ export default function hash(object) {
     if (object === null) {
         return 278918143
     }
-    if (types.isinstance(object, [types.PyBytearray, types.PyDict, types.JSDict, types.PyList, types.PySet, types.PySlice])) {
+    if (types.isinstance(object, [types.PyBytearray, types.PyDict, types.PyList, types.PySet, types.PySlice])) {
         throw new TypeError("unhashable type: '" + type_name(object) + "'")
     }
     if (object.__hash__ !== undefined) {

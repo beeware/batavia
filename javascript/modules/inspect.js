@@ -1,4 +1,5 @@
 import { RuntimeError, TypeError } from '../core/exceptions'
+import JSDict from '../core/JSDict'
 import * as types from '../types'
 
 export var inspect = {
@@ -393,7 +394,7 @@ inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, val
  * values from 'positional' and 'named'.
  */
 inspect.getcallargs = function(func, positional, named) {
-    var arg2value = new types.JSDict()
+    var arg2value = new JSDict()
 
     // if ismethod(func) and func.__self__ is not None:
     if (func.__self__) {

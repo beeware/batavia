@@ -1,5 +1,6 @@
 import { iter_for_each, pyargs } from '../core/callables'
 import { KeyError, TypeError, ValueError } from '../core/exceptions'
+import JSDict from '../core/JSDict'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
 
@@ -408,7 +409,7 @@ export default class PyDict extends PyObject {
     __mul__(other) {
         if (types.isinstance(other, [
             types.PyBool, types.PyDict, types.PyFloat,
-            types.JSDict, types.PyInt, types.PyNoneType,
+            types.PyInt, types.PyNoneType,
             types.PySlice, types.PySet, types.PyFrozenSet,
             types.PyNotImplementedType, types.PyComplex, types.PyRange,
             types.PyType])) {
@@ -605,7 +606,7 @@ export default class PyDict extends PyObject {
 
     update(values) {
         var updates
-        if (types.isinstance(values, [types.PyDict, types.JSDict])) {
+        if (types.isinstance(values, [types.PyDict, JSDict])) {
             updates = builtins.iter(values.items())
         } else {
             updates = builtins.iter(values)

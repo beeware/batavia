@@ -3,6 +3,7 @@
  *************************************************************************/
 import * as attrs from './core/attrs'
 import * as callables from './core/callables'
+import JSDict from './core/JSDict'
 import { BaseException, BataviaError, NameError, StopIteration, UnboundLocalError } from './core/exceptions'
 import { create_pyclass, PyNone, PyObject } from './core/types'
 import * as version from './core/version'
@@ -658,7 +659,7 @@ export default class VirtualMachine {
             var payload = this.loader(tag)
             var code = marshal.load_pyc(this, payload.bytecode)
 
-            var callargs = new types.JSDict()
+            var callargs = new JSDict()
             for (var i = 0, l = args.length; i < l; i++) {
                 callargs[code.co_varnames[i]] = args[i]
             }
@@ -771,7 +772,7 @@ export default class VirtualMachine {
 
     make_frame(kwargs) {
         var code = kwargs.code
-        var callargs = kwargs.callargs || new types.JSDict()
+        var callargs = kwargs.callargs || new JSDict()
         var f_globals = kwargs.f_globals || null
         var f_locals = kwargs.f_locals || null
 
@@ -787,9 +788,9 @@ export default class VirtualMachine {
             }
         } else if (this.frames.length > 0) {
             f_globals = this.frame.f_globals
-            f_locals = new types.JSDict()
+            f_locals = new JSDict()
         } else {
-            f_globals = f_locals = new types.JSDict({
+            f_globals = f_locals = new JSDict({
                 '__builtins__': builtins,
                 '__name__': '__main__',
                 '__doc__': null,
@@ -1956,7 +1957,7 @@ export default class VirtualMachine {
     byte_CALL_FUNCTION_KW(arg) {
         if (!version.earlier('3.6')) {
             var kw = this.pop()
-            var namedargs = new types.JSDict()
+            var namedargs = new JSDict()
             for (let i = kw.length - 1; i >= 0; i--) {
                 namedargs[kw[i]] = this.pop()
             }
@@ -1983,7 +1984,7 @@ export default class VirtualMachine {
 
     call_function(arg, args, kwargs) {
         if (!version.earlier('3.6')) {
-            let namedargs = new types.JSDict()
+            let namedargs = new JSDict()
             let lenPos = arg
             if (kwargs) {
                 for (let kv of kwargs.items()) {
@@ -2001,7 +2002,7 @@ export default class VirtualMachine {
             let retval = callables.call_function(this, func, posargs, namedargs)
             this.push(retval)
         } else {
-            let namedargs = new types.JSDict()
+            let namedargs = new JSDict()
             let lenKw = Math.floor(arg / 256)
             let lenPos = arg % 256
             for (var i = 0; i < lenKw; i++) {

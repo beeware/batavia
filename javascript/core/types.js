@@ -404,7 +404,9 @@ class PyType {
         return this.__mro__
     }
 }
-PyType.prototype.__doc__ = "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type"
+PyType.prototype.__doc__ = `type(object_or_name, bases, dict)
+type(object) -> the object's type
+type(name, bases, dict) -> a new type`
 
 /*************************************************************************
  * Method for adding types to Python class hierarchy

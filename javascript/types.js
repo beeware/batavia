@@ -1,7 +1,5 @@
 import { BataviaError } from './core/exceptions'
 
-import JSDict from './types/JSDict'
-
 import { PyType, PyNoneType } from './core/types'
 
 import PyNotImplementedType from './types/NotImplementedType'
@@ -67,7 +65,7 @@ export function isinstance(obj, type) {
 export function isbataviainstance(obj) {
     return isinstance(obj, [
         PyBool, PyDict, PyFloat,
-        PyInt, JSDict, PyList,
+        PyInt, PyList,
         PyNoneType, PyTuple, PySlice,
         PyBytes, PyBytearray, PyType,
         PyStr, PySet, PyRange,
@@ -157,8 +155,6 @@ export function js2py(arg) {
 }
 
 export {
-    JSDict,
-
     PyBool,
     PyBytearray,
     PyBytes,
