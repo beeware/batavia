@@ -234,7 +234,7 @@ export default class PySet extends PyObject {
         }
         if (version.earlier('3.6')) {
             throw new TypeError(
-                'unorderable types: set() < ' + type_name(other) + '()'
+                'unorderable types: ' + this.__class__.__name__ + '() < ' + type_name(other) + '()'
             )
         } else {
             throw new TypeError(
@@ -249,7 +249,7 @@ export default class PySet extends PyObject {
         }
         if (version.earlier('3.6')) {
             throw new TypeError(
-                'unorderable types: set() <= ' + type_name(other) + '()'
+                'unorderable types: ' + this.__class__.__name__ + '() <= ' + type_name(other) + '()'
             )
         } else {
             throw new TypeError(
@@ -284,7 +284,7 @@ export default class PySet extends PyObject {
         }
         if (version.earlier('3.6')) {
             throw new TypeError(
-                'unorderable types: set() > ' + type_name(other) + '()'
+                'unorderable types: ' + this.__class__.__name__ + '() > ' + type_name(other) + '()'
             )
         } else {
             throw new TypeError(
@@ -299,7 +299,7 @@ export default class PySet extends PyObject {
         }
         if (version.earlier('3.6')) {
             throw new TypeError(
-                'unorderable types: set() >= ' + type_name(other) + '()'
+                'unorderable types: ' + this.__class__.__name__ + '() >= ' + type_name(other) + '()'
             )
         } else {
             throw new TypeError(
@@ -387,7 +387,7 @@ export default class PySet extends PyObject {
                     both.push(val)
                 }
             })
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -396,8 +396,8 @@ export default class PySet extends PyObject {
         if (types.isinstance(other, [types.PyBool])) {
             throw new TypeError("'" + this.__class__.__name__ + "' object does not support indexing")
         } else if (types.isinstance(other, [types.PyInt])) {
-            if (other.val.gt(types.PyInt.prototype.MAX_INT.val) || other.val.lt(types.PyInt.prototype.MIN_INT.val)) {
-                throw new IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
+            if (other.val.gt(types.PyInt.MAX_INT.val) || other.val.lt(types.PyInt.MIN_INT.val)) {
+                throw new IndexError("cannot fit 'int' into an index-sized integer")
             } else {
                 throw new TypeError("'" + this.__class__.__name__ + "' object does not support indexing")
             }
@@ -422,7 +422,7 @@ export default class PySet extends PyObject {
                     both.push(val)
                 }
             })
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -442,7 +442,7 @@ export default class PySet extends PyObject {
                     both.push(val)
                 }
             }.bind(this))
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -458,7 +458,7 @@ export default class PySet extends PyObject {
             iter_for_each(iterobj2, function(val) {
                 both.push(val)
             })
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -493,7 +493,7 @@ export default class PySet extends PyObject {
                 }
             })
             this.update(both)
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -524,7 +524,7 @@ export default class PySet extends PyObject {
 
     __iand__(other) {
         if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            var intersection = new Set()
+            var intersection = new PySet()
             var iterobj = builtins.iter(this)
             iter_for_each(iterobj, function(val) {
                 if (other.__contains__(val).valueOf()) {
@@ -552,7 +552,7 @@ export default class PySet extends PyObject {
                 }
             }.bind(this))
             this.update(both)
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -569,7 +569,7 @@ export default class PySet extends PyObject {
                 both.push(val)
             })
             this.update(both)
-            return new Set(both)
+            return new PySet(both)
         }
         throw new TypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
@@ -614,7 +614,7 @@ export default class PySet extends PyObject {
     }
 
     copy() {
-        return new Set(this)
+        return new PySet(this)
     }
 
     difference() {

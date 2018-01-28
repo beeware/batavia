@@ -30,6 +30,39 @@ export default class PyFrozenSet extends PyObject {
     }
 
     /**************************************************
+     * Javascript compatibility methods
+     **************************************************/
+
+    toString() {
+        return this.__str__()
+    }
+
+    /**************************************************
+     * Type conversions
+     **************************************************/
+
+    __str__() {
+        let result
+        if (this.$size === 0) {
+            result = 'frozenset()'
+        } else {
+            result = 'frozenset({'
+            let strings = []
+            for (let i = 0; i < this.$data_keys.length; i++) {
+                let key = this.$data_keys[i]
+                // ignore deleted or empty
+                if (this.$isEmpty(key) || this.$isDeleted(key)) {
+                    continue
+                }
+                strings.push(builtins.repr(key))
+            }
+            result += strings.join(', ')
+            result += '})'
+        }
+        return result
+    }
+
+    /**************************************************
      * Inplace operators
      **************************************************/
     __isub__(other) {
@@ -63,12 +96,6 @@ PyFrozenSet.prototype.$add = PySet.prototype.add
 PyFrozenSet.prototype.$find_index = PySet.prototype.$find_index
 
 /**************************************************
- * Javascript compatibility methods
- **************************************************/
-
-PyFrozenSet.prototype.toString = PySet.prototype.toString
-
-/**************************************************
  * Type conversions
  **************************************************/
 
@@ -76,7 +103,6 @@ PyFrozenSet.prototype.__len__ = PySet.prototype.__len__
 PyFrozenSet.prototype.__bool__ = PySet.prototype.__bool__
 PyFrozenSet.prototype.__iter__ = PySet.prototype.__iter__
 PyFrozenSet.prototype.__repr__ = PySet.prototype.__repr__
-PyFrozenSet.prototype.__str__ = PySet.prototype.__str__
 
 /**************************************************
  * Comparison operators
