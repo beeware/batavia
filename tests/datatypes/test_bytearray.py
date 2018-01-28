@@ -177,9 +177,6 @@ class BinaryBytearrayOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_str',
         'test_modulo_tuple',
 
-        'test_multiply_bool',
-        'test_multiply_int',
-
         'test_ne_bytearray',
 
         'test_or_bool',
