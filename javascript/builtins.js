@@ -13,7 +13,6 @@ import PyFrozenset from './types/Frozenset'
 import PyInt from './types/Int'
 import PyList from './types/List'
 import PyNotImplementedType from './types/NotImplementedType'
-import PyProperty from './types/Property'
 import PyRange from './types/Range'
 import PySet from './types/Set'
 import PySlice from './types/Slice'
@@ -65,6 +64,7 @@ import open from './builtins/open'
 import ord from './builtins/ord'
 import pow from './builtins/pow'
 import print from './builtins/print'
+import property from './builtins/property'
 import repr from './builtins/repr'
 import reversed from './builtins/reversed'
 import round from './builtins/round'
@@ -156,7 +156,6 @@ var frozenset = PyFrozenset.__class__
 var int = PyInt.__class__
 var list = PyList.__class__
 var object = PyObject.__class__
-var property = PyProperty.__class__
 var range = PyRange.__class__
 var set = PySet.__class__
 var slice = PySlice.__class__

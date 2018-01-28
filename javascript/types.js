@@ -9,8 +9,6 @@ import PyNotImplementedType from './types/NotImplementedType'
 import PyCode from './types/Code'
 import PyModule from './types/Module'
 
-import PyProperty from './types/Property'
-
 import PyBool from './types/Bool'
 import PyFloat from './types/Float'
 import PyInt from './types/Int'
@@ -179,7 +177,6 @@ export {
     PyModule,
     PyNoneType,
     PyNotImplementedType,
-    PyProperty,
     PyRange,
     PySet,
     PySlice,

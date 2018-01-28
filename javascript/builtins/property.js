@@ -3,10 +3,10 @@ import { AttributeError, TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
 /*************************************************************************
- * A Python float type
+ * A Python property
  *************************************************************************/
 
-export default class Property extends PyObject {
+class PyProperty extends PyObject {
     @pyargs({
         default_args: ['fget', 'fset', 'fdel', 'doc']
     })
@@ -95,12 +95,42 @@ export default class Property extends PyObject {
 
     setter(fn) {
         // Duplicate the property, substituting the new setter.
-        return new Property(this.fget, fn, this.fdel, this.doc)
+        return new PyProperty(this.fget, fn, this.fdel, this.doc)
     }
 
     deleter(fn) {
         // Duplicate the property, substituting the new deleter.
-        return new Property(this.fget, this.fset, fn, this.doc)
+        return new PyProperty(this.fget, this.fset, fn, this.doc)
     }
 }
-create_pyclass(Property, 'property')
+PyProperty.prototype.__doc__ = `property(fget=None, fset=None, fdel=None, doc=None) -> property attribute
+
+fget is a function to be used for getting an attribute value, and likewise
+fset is a function for setting, and fdel a function for del'ing, an
+attribute.  Typical use is to define a managed attribute x:
+
+class C(object):
+    def getx(self): return self._x
+    def setx(self, value): self._x = value
+    def delx(self): del self._x
+    x = property(getx, setx, delx, "I'm the 'x' property.")
+
+Decorators make defining new properties or modifying existing ones easy:
+
+class C(object):
+    @property
+    def x(self):
+        "I am the 'x' property."
+        return self._x
+    @x.setter
+    def x(self, value):
+        self._x = value
+    @x.deleter
+    def x(self):
+        del self._x
+`
+create_pyclass(PyProperty, 'property')
+
+var property = PyProperty.__class__
+
+export default property
