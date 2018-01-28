@@ -108,7 +108,7 @@ export var KeyError = class extends PyObject {
                 msg = key.toString()
             }
         }
-        call_super(this, '__init__', msg)
+        call_super(this, '__init__', [msg])
     }
 }
 create_pyclass(KeyError, 'KeyError', [Exception])
