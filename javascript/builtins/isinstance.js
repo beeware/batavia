@@ -13,5 +13,5 @@ The form using a tuple, isinstance(x, (A, B, ...)), is a shortcut for
 isinstance(x, A) or isinstance(x, B) or ... (etc.).`
 isinstance.$pyargs = {
     args: ['object', 'class_or_type_or_tuple'],
-    missing_error: (e) => `isinstance expected ${e.nargs} arguments, got ${e.given}`
+    missing_args_error: (e) => `isinstance expected ${e.nargs} arguments, got ${e.given}`
 }
