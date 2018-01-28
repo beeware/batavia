@@ -55,5 +55,5 @@ sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list'
 sorted.$pyargs = {
     args: ['iterable'],
     default_args: ['key', 'reverse'],
-    missing_args_error: (e) => `Function takes at least 1 positional arguments (${e.given} given)`
+    missing_args_error: (e) => "Required argument 'iterable' (pos 1) not found"
 }

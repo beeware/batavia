@@ -1,4 +1,4 @@
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 import { NotImplementedError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
@@ -169,7 +169,7 @@ function complex__sub__(x, y, inplace) {
 }
 
 export default class PyComplex extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['re', 'im']
     })
     __init__(re, im) {

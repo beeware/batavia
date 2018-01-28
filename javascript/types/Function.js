@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 import { create_pyclass, PyObject } from '../core/types'
 
 import { inspect } from '../modules/inspect'
@@ -39,7 +39,7 @@ export default class PyFunction extends PyObject {
         this.argspec = inspect.getfullargspec(this)
     }
 
-    @python(null)
+    @pyargs(null)
     __call__(args, kwargs, locals) {
         let retval
         let callargs = inspect.getcallargs(this, args, kwargs)

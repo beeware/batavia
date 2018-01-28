@@ -1,4 +1,4 @@
-import { call_function, call_method, python } from '../core/callables'
+import { call_function, call_method, pyargs } from '../core/callables'
 import { TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
@@ -9,7 +9,7 @@ import * as builtins from '../builtins'
  *************************************************************************/
 
 class PyFilter extends PyObject {
-    @python({
+    @pyargs({
         args: ['fn', 'iterable']
     })
     __init__(fn, iterable) {

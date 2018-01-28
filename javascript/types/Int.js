@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 import {
     AttributeError,
     IndexError,
@@ -27,7 +27,7 @@ function can_float(num) {
 }
 
 export default class PyInt extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['x', 'base']
     })
     __init__(x, base) {

@@ -1,4 +1,4 @@
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 import { OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
@@ -14,7 +14,7 @@ function python_modulo(n, m) {
 }
 
 export default class PyFloat extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['x']
     })
     __init__(x = 0.0) {

@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js'
 
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 import { IndexError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
@@ -39,7 +39,7 @@ create_pyclass(PyRangeIterator, 'range_iterator')
  *************************************************************************/
 
 export default class PyRange extends PyObject {
-    @python({
+    @pyargs({
         args: ['start'],
         default_args: ['stop', 'step']
     })

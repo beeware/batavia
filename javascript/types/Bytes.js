@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 
-import { iter_for_each, python } from '../core/callables'
+import { iter_for_each, pyargs } from '../core/callables'
 import { TEXT_ENCODINGS } from '../core/constants'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 import { NotImplementedError, OverflowError, StopIteration, TypeError, ValueError } from '../core/exceptions'
@@ -44,7 +44,7 @@ create_pyclass(PyBytesIterator, 'bytes_iterator')
  *************************************************************************/
 
 export default class PyBytes extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['data', 'encoding', 'errors']
     })
     __init__(data, encoding, errors) {

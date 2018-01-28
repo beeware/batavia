@@ -1,5 +1,5 @@
+import { call_function, call_method, pyargs } from '../core/callables'
 import { TypeError } from '../core/exceptions'
-import { call_function, call_method, python } from '../core/callables'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -9,7 +9,7 @@ import * as builtins from '../builtins'
  *************************************************************************/
 
 class PyMap extends PyObject {
-    @python({
+    @pyargs({
         args: ['fn', 'iterable']
     })
     __init__(fn, iterable) {

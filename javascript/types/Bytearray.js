@@ -1,4 +1,4 @@
-import { iter_for_each, python } from '../core/callables'
+import { iter_for_each, pyargs } from '../core/callables'
 import { MemoryError, NotImplementedError, OverflowError, StopIteration, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
@@ -40,7 +40,7 @@ create_pyclass(PyBytearrayIterator, 'bytearray_iterator')
  *************************************************************************/
 
 export default class PyBytearray extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['data', 'encoding', 'errors']
     })
     __init__(data, encoding, errors) {

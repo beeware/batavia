@@ -1,4 +1,4 @@
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 import { TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
@@ -10,7 +10,7 @@ import * as types from '../types'
  *************************************************************************/
 
 export default class PySlice extends PyObject {
-    @python({
+    @pyargs({
         args: ['start_or_stop'],
         default_args: ['stop', 'step'],
         missing_args_error: (e) => `slice expected at least 1 arguments, got ${e.given}`,

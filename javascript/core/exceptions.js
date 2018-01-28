@@ -1,12 +1,12 @@
 /* eslint-disable no-extend-native */
-import { call_super, python } from './callables'
+import { call_super, pyargs } from './callables'
 import { create_pyclass, PyObject } from './types'
 
 /*****************************************************************
  * Root exception
  *****************************************************************/
 export var BaseException = class extends PyObject {
-    @python({
+    @pyargs({
         args: ['msg']
     })
     __init__(msg) {

@@ -56,5 +56,5 @@ min.$pyargs = {
     args: ['iterable'],
     varargs: ['args'],
     kwonlyargs: ['default', 'key'],
-    missing_args_error: (e) => `min expected 1 arguments, got 0`
+    missing_args_error: (e) => `min expected 1 arguments, got ${e.given}`
 }

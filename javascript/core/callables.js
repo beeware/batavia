@@ -1,5 +1,5 @@
-import { PolyglotError, StopIteration, TypeError } from './exceptions'
 import * as attrs from './attrs'
+import { PolyglotError, StopIteration, TypeError } from './exceptions'
 import { PyType } from './types'
 
 /*************************************************************************
@@ -8,7 +8,7 @@ import { PyType } from './types'
  * A "raw" function is a function that follows the internal Python
  * format for arguments:
  *
- *     @python(null)
+ *     @pyargs(null)
  *     function(args, kwargs) {}
  *
  * A "Python" function is a normal javascript function, but with extra
@@ -16,7 +16,7 @@ import { PyType } from './types'
  * with their position in Javascript. It allows you to define a Javascript
  * function:
  *
- *     @python({
+ *     @pyargs({
  *         args: ['myarg1', 'myarg2'],
  *         defaultargs: ['myarg3']
  *         varargs: myargs,
@@ -31,7 +31,7 @@ import { PyType } from './types'
  *
  *************************************************************************/
 
-export function python(pyargs) {
+export function pyargs(pyargs) {
     return function(target, key, descriptor) {
         descriptor.value.$pyargs = pyargs
         return descriptor

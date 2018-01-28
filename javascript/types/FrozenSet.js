@@ -1,5 +1,5 @@
 /* eslint-disable no-extend-native */
-import { iter_for_each, python } from '../core/callables'
+import { iter_for_each, pyargs } from '../core/callables'
 import { TypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
@@ -12,7 +12,7 @@ import PySet from './Set'
  *************************************************************************/
 
 export default class PyFrozenSet extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['iterable']
     })
     __init__(iterable) {

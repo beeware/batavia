@@ -1,4 +1,4 @@
-import { python } from '../core/callables'
+import { pyargs } from '../core/callables'
 
 export var sys = {
     '__doc__': '',
@@ -16,7 +16,7 @@ var IOBuffer = class IOBuffer {
         this.console = console
     }
 
-    @python({
+    @pyargs({
         args: ['text']
     })
     write(text) {

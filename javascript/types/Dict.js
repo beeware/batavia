@@ -1,4 +1,4 @@
-import { iter_for_each, python } from '../core/callables'
+import { iter_for_each, pyargs } from '../core/callables'
 import { KeyError, TypeError, ValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
@@ -40,7 +40,7 @@ var DELETED = {
 }
 
 export default class PyDict extends PyObject {
-    @python({
+    @pyargs({
         default_args: ['iterable'],
         kwargs: ['kwargs']
     })

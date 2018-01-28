@@ -1,4 +1,4 @@
-import { call_method, python } from '../core/callables'
+import { call_method, pyargs } from '../core/callables'
 import { StopIteration, TypeError } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
@@ -11,7 +11,7 @@ import PyTuple from '../types/Tuple'
  *************************************************************************/
 
 class PyZip extends PyObject {
-    @python({
+    @pyargs({
         varargs: ['iterables']
     })
     __init__(iterables) {

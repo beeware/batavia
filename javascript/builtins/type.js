@@ -26,5 +26,5 @@ type(name, bases, dict) -> a new type`
 type.$pyargs = {
     args: ['object_or_name'],
     default_args: ['bases', 'dict'],
-    missing_args_error: (e) => `type() takes 1 or 3 arguments`
+    missing_args_error: (e) => 'type() takes 1 or 3 arguments'
 }
