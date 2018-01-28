@@ -777,10 +777,13 @@ PyStr.prototype.capitalize = function() {
 }
 
 PyStr.prototype.format = function(args, kwargs) {
-    const types = require('../types')
     const positionalArguments = new types.PyTuple(types.js2py(args))
     const keywordArguments = types.js2py(kwargs)
     return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
+}
+PyStr.prototype.format.$pyargs = {
+    varargs: 'args',
+    kwargs: 'kwargs'
 }
 
 create_pyclass(PyStr, 'str')
