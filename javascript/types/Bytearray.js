@@ -243,7 +243,7 @@ export default class PyBytearray extends PyObject {
     }
 
     __mul__(other) {
-        throw new TypeError("can't multiply sequence by non-int of type '" + type_name(other) + "'")
+        return new PyBytearray(this.val.__mul__(other))
     }
 
     __mod__(other) {
