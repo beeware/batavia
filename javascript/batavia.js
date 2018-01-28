@@ -8,7 +8,7 @@ import VirtualMachine from './VirtualMachine'
 
 BigNumber.config({
     DECIMAL_PLACES: 324,
-    EXPONENTIAL_AT: 324,
+    EXPONENTIAL_AT: 2048,
     ROUNDING_MODE: BigNumber.ROUND_HALF_EVEN
 })
 
