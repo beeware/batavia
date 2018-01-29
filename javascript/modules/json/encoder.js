@@ -1,72 +1,38 @@
-import { create_pyclass, type_name, PyObject } from '../../core/types'
-import * as callables from '../../core/callables'
+import { call_function, call_method, pyargs } from '../../core/callables'
 import { TypeError, ValueError } from '../../core/exceptions'
+import { create_pyclass, type_name, PyNone, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
 import * as types from '../../types'
 import * as builtins from '../../builtins'
 
-import { validateParams } from './utils'
-
-const encoder_defaults = {
-    'skipkeys': false,
-    'ensure_ascii': true,
-    'check_circular': true,
-    'allow_nan': true,
-    'sort_keys': false,
-    'indent': 0,
-    'separators': [', ', ': '],
-    'default': null
-}
-
-function _JSONEncoder(args = [], kwargs = {}) {
-    var keywords = [
-        'skipkeys',
-        'ensure_ascii',
-        'check_circular',
-        'allow_nan',
-        'sort_keys',
-        'indent',
-        'separators',
-        'default'
-    ]
-    var enc = validateParams({
-        args: args,
-        kwargs: kwargs,
-        names: keywords,
-        defaults: encoder_defaults,
-        funcName: 'JSONEncoder'
+class PyJSONEncoder extends PyObject {
+    @pyargs({
+        kwonlyargs: ['skipkeys', 'ensure_ascii', 'check_circular', 'allow_nan', 'sort_keys', 'indent', 'separators', 'default']
     })
-
-    var len = enc.separators.length
-    if (len !== 2) {
-        throw new ValueError(
-            'JSONEncoder separators length must be 2 (got ' + len + ' instead)'
-        )
-    }
-
-    var ret = new JSONEncoder()
-    Object.assign(ret, enc)
-    ret.item_separator = ret.separators[0]
-    ret.key_separator = ret.separators[1]
-    delete ret.separators
-
-    if (keywords.indexOf('separators') &&
-            !kwargs.hasOwnProperty('separators')) {
-        if (!keywords.indexOf('indent') || kwargs.hasOwnProperty('indent')) {
-            ret.item_separator = ','
+    __init__(skipkeys = false, ensure_ascii = true, check_circular = true, allow_nan =  true,
+             sort_keys = false, indent = 0, separators, default_ = PyNone) {
+        this.skipkeys = skipkeys
+        this.ensure_ascii = ensure_ascii
+        this.check_circular = check_circular
+        this.allow_nan = allow_nan
+        this.sort_keys = sort_keys
+        this.indent = indent
+        if (separators === undefined) {
+            this.item_separator = ', '
+            this.key_separator = ': '
+        } else {
+            this.item_separator = separators.__getitem__(new types.PyInt(0))
+            this.key_separator = separators.__getitem__(new types.PyInt(1))
         }
+        this.default = default_
     }
 
-    return ret
-}
-
-_JSONEncoder.$pyargs = true
-
-export class JSONEncoder extends PyObject {
+    @pyargs({
+        args: ['obj']
+    })
     encode(obj) {
         // TODO use iterencode once it is implemented as an actual generator
-
         var seen
         if (this.check_circular) {
             seen = new Set()
@@ -83,10 +49,48 @@ export class JSONEncoder extends PyObject {
             seen
         )(obj, 1)
     }
-}
-create_pyclass(JSONEncoder, 'JSONEncoder')
 
-var make_encode = function(
+    @pyargs({
+        args: ['obj']
+    })
+    iterencode(obj) {
+        // TODO should return generator
+        return new types.PyList([this.encode(obj)])
+    }
+}
+
+PyJSONEncoder.__doc__ = `Extensible JSON <http://json.org> encoder for Python data structures.
+
+    Supports the following objects and types by default:
+
+    +-------------------+---------------+
+    | Python            | JSON          |
+    +===================+===============+
+    | dict              | object        |
+    +-------------------+---------------+
+    | list, tuple       | array         |
+    +-------------------+---------------+
+    | str               | string        |
+    +-------------------+---------------+
+    | int, float        | number        |
+    +-------------------+---------------+
+    | True              | true          |
+    +-------------------+---------------+
+    | False             | false         |
+    +-------------------+---------------+
+    | None              | null          |
+    +-------------------+---------------+
+
+    To extend this to recognize other objects, subclass and implement a
+    \`\`.default()\`\` method with another method that returns a serializable
+    object for \`\`o\`\` if possible, otherwise it should call the superclass
+    implementation (to raise \`\`TypeError\`\`).`
+create_pyclass(PyJSONEncoder, 'JSONEncoder')
+
+export var JSONEncoder = PyJSONEncoder.__class__
+
+
+function make_encode(
     skipkeys,
     ensure_ascii,
     allow_nan,
@@ -106,7 +110,7 @@ var make_encode = function(
         indentstr = function(lvl) { return '\n' + ' '.repeat(lvl * indent) }
     }
 
-    var encodeList = function(obj, indent_level) {
+    function encodeList(obj, indent_level) {
         var current_indent = indentstr(indent_level)
         var str_contents = []
         for (let elem of obj) {
@@ -124,12 +128,12 @@ var make_encode = function(
         }
     }
 
-    var encodeDict = function(obj, indent_level) {
+    function encodeDict(obj, indent_level) {
         var current_indent = indentstr(indent_level)
         var str_contents = []
-        var items = callables.call_method(obj, 'keys')
+        var items = call_method(obj, 'keys')
         if (sort_keys) {
-            items = callables.call_function(builtins.sorted, [items])
+            items = call_function(this, builtins.sorted, [items])
         }
         for (let kv of items) {
             var key = encodeKey(kv, ensure_ascii, allow_nan)
@@ -155,7 +159,7 @@ var make_encode = function(
         }
     }
 
-    var encode = function(obj, indent_level) {
+    function encode(obj, indent_level) {
         var ret = encodeBasicType(obj, ensure_ascii, allow_nan)
 
         if (ret === null) {
@@ -172,8 +176,8 @@ var make_encode = function(
                 ret = encodeList(obj, indent_level)
             } else if (types.isinstance(obj, types.PyDict)) {
                 ret = encodeDict(obj, indent_level)
-            } else if (default_) {
-                ret = encode(callables.call_function(default_, [obj]), indent_level)
+            } else if (default_ !== PyNone) {
+                ret = encode(call_function(this, default_, [obj]), indent_level)
             } else {
                 if (version.earlier('3.6')) {
                     throw new TypeError(
@@ -208,7 +212,7 @@ var toHexPad = function(n, width) {
     return ret.slice(-width)
 }
 
-var encode_ascii = function(s) {
+function encode_ascii(s) {
     function replacer(match, p) {
         var n = p.charCodeAt(0)
         if (n < 0x10000) {
@@ -225,7 +229,7 @@ var encode_ascii = function(s) {
     return s.replace(/([^\x00-~])/g, replacer) // eslint-disable-line no-control-regex
 }
 
-var encodeBasicType = function(o, ensure_ascii, allow_nan) {
+function encodeBasicType(o, ensure_ascii, allow_nan) {
     if (types.isinstance(o, types.PyStr)) {
         var ret = JSON.stringify(o)
         if (ensure_ascii) {
@@ -264,7 +268,7 @@ var encodeBasicType = function(o, ensure_ascii, allow_nan) {
     return null
 }
 
-var encodeKey = function(o, ensure_ascii, allow_nan) {
+function encodeKey(o, ensure_ascii, allow_nan) {
     var ret = encodeBasicType(o, ensure_ascii, allow_nan)
     if (ret !== null && !types.isinstance(o, types.PyStr)) {
         ret = '"' + ret + '"'
@@ -273,87 +277,112 @@ var encodeKey = function(o, ensure_ascii, allow_nan) {
     return ret
 }
 
-JSONEncoder.prototype.iterencode = function(obj) {
-    if (arguments.length !== 1) {
-        throw new TypeError(
-            'iterencode() expected 1 positional argument (got ' +
-            arguments.length + ')'
-        )
-    }
 
-    // TODO should return generator
-    return new types.PyList([this.encode(obj)])
-}
-
-export function dumps(args, kwargs) {
-    var keywords = [
-        'obj',
-        'skipkeys',
-        'ensure_ascii',
-        'check_circular',
-        'allow_nan',
-        'cls',
-        'indent',
-        'separators',
-        'default',
-        'sort_keys'
-    ]
-    var enc = validateParams({
-        args: args,
-        kwargs: kwargs,
-        names: keywords,
-        defaults: Object.assign({'cls': null}, encoder_defaults),
-        numRequired: 1,
-        funcName: 'dumps'
+export function dumps(obj, skipkeys = false, ensure_ascii = true, check_circular = true, allow_nan =  true,
+                      cls = JSONEncoder, indent = 0, separators, default_ = PyNone, sort_keys = false, kw) {
+    let enc = call_function(this, cls, [], {
+        'skipkeys': skipkeys,
+        'ensure_ascii': ensure_ascii,
+        'check_circular': check_circular,
+        'allow_nan': allow_nan,
+        'indent': indent,
+        'separators': separators,
+        'sort_keys': sort_keys,
+        'default': default_
     })
+    return call_method(enc, 'encode', [obj])
+}
+dumps.__doc__ = `Serialize \`\`obj\`\` to a JSON formatted \`\`str\`\`.
 
-    var obj = enc['obj']
-    delete enc['obj']
+    If \`\`skipkeys\`\` is true then \`\`dict\`\` keys that are not basic types
+    (\`\`str\`\`, \`\`int\`\`, \`\`float\`\`, \`\`bool\`\`, \`\`None\`\`) will be skipped
+    instead of raising a \`\`TypeError\`\`.
 
-    var cls = enc['cls']
-    delete enc['cls']
+    If \`\`ensure_ascii\`\` is false, then the return value can contain non-ASCII
+    characters if they appear in strings contained in \`\`obj\`\`. Otherwise, all
+    such characters are escaped in JSON strings.
 
-    if (cls === null || types.isinstance(cls, types.PyNoneType)) {
-        cls = _JSONEncoder
-    }
+    If \`\`check_circular\`\` is false, then the circular reference check
+    for container types will be skipped and a circular reference will
+    result in an \`\`OverflowError\`\` (or worse).
 
-    return callables.call_method(
-        callables.call_function(cls, [], enc),
-        'encode',
-        [obj]
-    )
+    If \`\`allow_nan\`\` is false, then it will be a \`\`ValueError\`\` to
+    serialize out of range \`\`float\`\` values (\`\`nan\`\`, \`\`inf\`\`, \`\`-inf\`\`) in
+    strict compliance of the JSON specification, instead of using the
+    JavaScript equivalents (\`\`NaN\`\`, \`\`Infinity\`\`, \`\`-Infinity\`\`).
+
+    If \`\`indent\`\` is a non-negative integer, then JSON array elements and
+    object members will be pretty-printed with that indent level. An indent
+    level of 0 will only insert newlines. \`\`None\`\` is the most compact
+    representation.
+
+    If specified, \`\`separators\`\` should be an \`\`(item_separator, key_separator)\`\`
+    tuple.  The default is \`\`(', ', ': ')\`\` if *indent* is \`\`None\`\` and
+    \`\`(',', ': ')\`\` otherwise.  To get the most compact JSON representation,
+    you should specify \`\`(',', ':')\`\` to eliminate whitespace.
+
+    \`\`default(obj)\`\` is a function that should return a serializable version
+    of obj or raise TypeError. The default simply raises TypeError.
+
+    If *sort_keys* is true (default: \`\`False\`\`), then the output of
+    dictionaries will be sorted by key.
+
+    To use a custom \`\`JSONEncoder\`\` subclass (e.g. one that overrides the
+    \`\`.default()\`\` method to serialize additional types), specify it with
+    the \`\`cls\`\` kwarg; otherwise \`\`JSONEncoder\`\` is used.`
+dumps.$pyargs = {
+    args: ['obj'],
+    kwonlyargs: ['skipkeys', 'ensure_ascii', 'check_circular', 'allow_nan', 'cls', 'indent', 'separators', 'default', 'sort_keys'],
+    kwargs: 'kw'
 }
 
-dumps.$pyargs = true
-
-export function dump(args, kwargs) {
-    var keywords = [
-        'obj',
-        'fp',
-        'skipkeys',
-        'ensure_ascii',
-        'check_circular',
-        'allow_nan',
-        'cls',
-        'indent',
-        'separators',
-        'default',
-        'sort_keys'
-    ]
-    var enc = validateParams({
-        args: args,
-        kwargs: kwargs,
-        names: keywords,
-        defaults: Object.assign({'cls': null}, encoder_defaults),
-        numRequired: 2,
-        funcName: 'dump'
-    })
-
-    var fp = enc['fp']
-    delete enc['fp']
-
-    var str = dumps([], enc)
-    callables.call_method(fp, 'write', [str])
+export function dump(obj, fp, skipkeys = false, ensure_ascii = true, check_circular = true, allow_nan =  true,
+                      cls = JSONEncoder, indent = 0, separators, sort_keys = false, default_ = PyNone, kw) {
+    let str = dumps(obj, skipkeys, ensure_ascii, check_circular, allow_nan, cls, indent, separators, default_, sort_keys, kw)
+    call_method(fp, 'write', [str])
 }
+dumps.__doc__ = `Serialize \`\`obj\`\` as a JSON formatted stream to \`\`fp\`\` (a
+\`\`.write()\`\`-supporting file-like object).
 
-dump.$pyargs = true
+If \`\`skipkeys\`\` is true then \`\`dict\`\` keys that are not basic types
+(\`\`str\`\`, \`\`int\`\`, \`\`float\`\`, \`\`bool\`\`, \`\`None\`\`) will be skipped
+instead of raising a \`\`TypeError\`\`.
+
+If \`\`ensure_ascii\`\` is false, then the strings written to \`\`fp\`\` can
+contain non-ASCII characters if they appear in strings contained in
+\`\`obj\`\`. Otherwise, all such characters are escaped in JSON strings.
+
+If \`\`check_circular\`\` is false, then the circular reference check
+for container types will be skipped and a circular reference will
+result in an \`\`OverflowError\`\` (or worse).
+
+If \`\`allow_nan\`\` is false, then it will be a \`\`ValueError\`\` to
+serialize out of range \`\`float\`\` values (\`\`nan\`\`, \`\`inf\`\`, \`\`-inf\`\`)
+in strict compliance of the JSON specification, instead of using the
+JavaScript equivalents (\`\`NaN\`\`, \`\`Infinity\`\`, \`\`-Infinity\`\`).
+
+If \`\`indent\`\` is a non-negative integer, then JSON array elements and
+object members will be pretty-printed with that indent level. An indent
+level of 0 will only insert newlines. \`\`None\`\` is the most compact
+representation.
+
+If specified, \`\`separators\`\` should be an \`\`(item_separator, key_separator)\`\`
+tuple.  The default is \`\`(', ', ': ')\`\` if *indent* is \`\`None\`\` and
+\`\`(',', ': ')\`\` otherwise.  To get the most compact JSON representation,
+you should specify \`\`(',', ':')\`\` to eliminate whitespace.
+
+\`\`default(obj)\`\` is a function that should return a serializable version
+of obj or raise TypeError. The default simply raises TypeError.
+
+If *sort_keys* is true (default: \`\`False\`\`), then the output of
+dictionaries will be sorted by key.
+
+To use a custom \`\`JSONEncoder\`\` subclass (e.g. one that overrides the
+\`\`.default()\`\` method to serialize additional types), specify it with
+the \`\`cls\`\` kwarg; otherwise \`\`JSONEncoder\`\` is used.
+`
+dump.$pyargs = {
+    args: ['obj', 'fp'],
+    kwonlyargs: ['skipkeys', 'ensure_ascii', 'check_circular', 'allow_nan', 'cls', 'indent', 'separators', 'sort_keys', 'default'],
+    kwargs: 'kw'
+}

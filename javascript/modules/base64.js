@@ -12,10 +12,10 @@ export var base64 = {
 
 base64.b64encode = function(data) {
     var encode = base64js.fromByteArray(data.val)
-    var bytes = []
+    var bytes = new Uint8Array(encode.length)
     for (var i = 0; i < encode.length; i++) {
         var code = encode.charCodeAt(i)
-        bytes = bytes.concat([code])
+        bytes[i] = code
     };
     return new types.PyBytes(bytes)
 }
@@ -73,10 +73,10 @@ base64.test = function() {}
 
 base64.urlsafe_b64encode = function(data) {
     var encode = base64js.fromByteArray(data.val)
-    var bytes = []
+    var bytes = new Uint8Array(encode.length)
     for (var i = 0; i < encode.length; i++) {
         var code = encode.charCodeAt(i)
-        bytes = bytes.concat([code])
+        bytes[i] = code
     };
     return new types.PyBytes(bytes)
 }

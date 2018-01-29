@@ -336,8 +336,8 @@ math.frexp = function(x) {
     }
     var buff = Buffer.alloc(8)
     buff.writeDoubleLE(x, 0)
-    var a = buff.readUPyInt32LE(0)
-    var b = buff.readUPyInt32LE(4)
+    var a = buff.readUInt32LE(0)
+    var b = buff.readUInt32LE(4)
     var exp = ((b >> 20) & 0x7ff) - 1022
     var num
     // check for denormal number
@@ -380,7 +380,7 @@ math.gamma = function(x) {
     var xx = x.__float__().val
 
     if (xx <= 0.0) {
-        if (Number.isPyInteger(xx)) {
+        if (Number.isInteger(xx)) {
             throw new ValueError('math domain error')
         }
         // analytic continuation using reflection formula
@@ -622,7 +622,7 @@ math.lgamma = function(x) {
     var xx = x.__float__().val
 
     if (xx <= 0.0) {
-        if (Number.isPyInteger(xx)) {
+        if (Number.isInteger(xx)) {
             throw new ValueError('math domain error')
         }
         // analytic continuation using reflection formula
@@ -727,7 +727,7 @@ math.log = function(x, base) {
         if (x.val.isZero() || x.val.isNeg()) {
             throw new ValueError('math domain error')
         }
-        if (x.__ge__(PyInt.prototype.MAX_FLOAT)) {
+        if (x.__ge__(PyInt.MAX_FLOAT)) {
             return _log2_int(x).__mul__(new PyFloat(0.6931471805599453))
         }
     }
@@ -741,7 +741,7 @@ math.log10 = function(x) {
         if (x.val.isZero() || x.val.isNeg()) {
             throw new ValueError('math domain error')
         }
-        if (x.__ge__(PyInt.prototype.MAX_FLOAT)) {
+        if (x.__ge__(PyInt.MAX_FLOAT)) {
             return _log2_int(x) * 0.30102999566398114
         }
     }
@@ -809,7 +809,7 @@ math.pow = function(x, y) {
     _checkPyFloat(x)
     var xx = x.__float__().val
     var result = Math.pow(x, y)
-    if (xx < 0 && !Number.isPyInteger(yy) && yy !== 0.0) {
+    if (xx < 0 && !Number.isInteger(yy) && yy !== 0.0) {
         throw new ValueError('math domain error')
     }
     if (xx === 0.0 && yy < 0.0) {

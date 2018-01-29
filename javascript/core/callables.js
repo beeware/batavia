@@ -200,7 +200,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         if (pyargs.kwargs) {
             js_args.push(kw)
         } else {
-            for (let arg in Object.getOwnPropertyNames(kw)) {
+            for (let arg of Object.getOwnPropertyNames(kw)) {
                 let err
                 if (pyargs.invalid_keyword_error) {
                     err = pyargs.invalid_keyword_error

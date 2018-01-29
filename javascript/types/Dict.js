@@ -110,16 +110,16 @@ export default class PyDict extends PyObject {
         for (let i = 0; i < new_keys.length; i++) {
             new_keys[i] = EMPTY
         }
-        let self = this
-        iter_for_each(builtins.iter(this.items()), function(key, value) {
-            var hash = builtins.hash(key)
-            var h = hash.int32() & new_mask
-            while (!self.$isEmpty(new_keys[h])) {
+        for (let i = 0; i < this.$data_keys.length; i++) {
+            let key = this.$data_keys[i]
+            let hash = builtins.hash(key)
+            let h = hash.int32() & new_mask
+            while (!this.$isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask
             }
             new_keys[h] = key
-            new_values[h] = value
-        })
+            new_values[h] = this.$data_values[i]
+        }
         this.$data_keys = new_keys
         this.$data_values = new_values
         this.$mask = new_mask

@@ -3,7 +3,7 @@
  */
 import { NotImplementedError } from '../../core/exceptions'
 
-import Int from '../../types/Int'
+import PyInt from '../../types/Int'
 
 import * as tokenizer from './tokenizer'
 
@@ -57,9 +57,9 @@ _compile.parsetok = function(tok, g, start, err_ret, flags) {
     throw new NotImplementedError('_compile.parsetok is not implemented yet')
 }
 
-_compile['Py_single_input'] = new Int(256)
-_compile['Py_file_input'] = new Int(257)
-_compile['Py_eval_input'] = new Int(258)
+_compile['Py_single_input'] = new PyInt(256)
+_compile['Py_file_input'] = new PyInt(257)
+_compile['Py_eval_input'] = new PyInt(258)
 
 _compile['EOF'] = tokenizer.EOF
 _compile['E_OK'] = tokenizer.E_OK

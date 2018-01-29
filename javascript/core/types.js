@@ -48,7 +48,7 @@ class PyObject {
 
         if (attr === undefined) {
             try {
-                // No attribte on this instance; look for a class attribute
+                // No attribute on this instance; look for a class attribute
                 attr = this.__class__.__getattribute__(name)
             } catch (e) {
                 // No class attribute either; use the descriptor protocol
@@ -314,6 +314,10 @@ class PyType {
     __getattribute__(name) {
         let attr = this[name]
 
+        if (attr === undefined && this.$pyclass !== undefined) {
+            attr = this.$pyclass.prototype[name]
+        }
+
         if (attr === undefined) {
             throw new AttributeError(
                 "type object '" + this.__name__ + "' has no attribute '" + name + "'"
@@ -350,7 +354,11 @@ class PyType {
             )
         }
 
-        this[name] = value
+        if (this.$pyclass) {
+            this.$pyclass.prototype[name] = value
+        } else {
+            this[name] = value
+        }
     }
 
     @pyargs({
@@ -366,11 +374,16 @@ class PyType {
         }
 
         var attr = this[name]
-        if (attr === undefined) {
-            throw new AttributeError(name)
+        if (attr !== undefined) {
+            delete this[name]
+        } else {
+            if (this.$pyclass && this.$pyclass !== undefined && this.$pyclass.prototype[name] !== undefined) {
+                delete this.$pyclass.prototype[name]
+            } else {
+                throw new AttributeError(name)
+            }
         }
 
-        delete this[name]
     }
 
     valueOf() {
@@ -453,8 +466,8 @@ function create_pyclass(PyClass, name, bases = [], attrs = undefined) {
         // as part of object construction.
         for (let attr in attrs) {
             if (attrs.hasOwnProperty(attr)) {
-                PyClass[attr] = attrs[attr]
                 PyClass.prototype[attr] = attrs[attr]
+                // PyClass[attr] = attrs[attr]
             }
         }
     }
