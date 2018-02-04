@@ -318,7 +318,7 @@ Int.prototype.__pow__ = function(other) {
             return new Int(1)
         }
     } else if (types.isinstance(other, Int)) {
-        if (other.val.isNegative()) {
+        if (isNeg(other)) {
             return this.__float__().__pow__(other)
         } else {
             var y = other.val.toString(2).split('')
@@ -358,7 +358,7 @@ Int.prototype.__floordiv__ = function(other) {
             }
             // we have a fraction leftover
             // check if it is too small for bignumber.js to detect
-            if (quo.isInt() && quo.isNegative()) {
+            if (quo.isInt() && (quo.isNegative() && !quo.isZero())) {
                 return new Int(quo.sub(1))
             }
             return new Int(quo_floor)
@@ -451,7 +451,7 @@ Int.prototype.__mul__ = function(other) {
         if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
             throw new exceptions.OverflowError.$pyclass("cannot fit 'int' into an index-sized integer")
         }
-        if (this.val.isNegative()) {
+        if (isNeg(this)) {
             return ''
         }
         var size = this.val.mul(other.length)
@@ -614,13 +614,18 @@ Int.prototype._bits = function() {
     return toArray(this)
 }
 
+// bignumber allows -0, which is sort of negative, but we don't want that
+var isNeg = function(n) {
+    return n.val.isNeg() && !n.val.isZero()
+}
+
 // convert a binary array back into an int
 var fromArray = function(arr) {
     return new Int(new BigNumber(arr.join('') || 0, 2))
 }
 // return j with the sign inverted if i is negative.
 var fixSign = function(i, j) {
-    if (i.val.isNeg()) {
+    if (isNeg(i)) {
         return j.__neg__()
     }
     return j
@@ -646,7 +651,7 @@ var plusOne = function(arr) {
 // twos complement representation
 var twos_complement = function(n) {
     var arr = toArray(n)
-    if (n.val.isNeg()) {
+    if (isNeg(n)) {
         arr = invert(arr)
         plusOne(arr)
     }
@@ -703,7 +708,7 @@ Int.prototype.__rshift__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, Int)) {
-        if (this.val.isNegative()) {
+        if (isNeg(this)) {
             return this.__invert__().__rshift__(other).__invert__()
         }
         // Anything beyond ~8192 bits is too inefficient to convert to a binary array
@@ -714,7 +719,7 @@ Int.prototype.__rshift__ = function(other) {
         if (other.val.gt(REASONABLE_SHIFT.val)) {
             throw new exceptions.ValueError.$pyclass('batavia: shift too large')
         }
-        if (other.val.isNegative()) {
+        if (isNeg(other)) {
             throw new exceptions.ValueError.$pyclass('negative shift count')
         }
         if (this.val.isZero()) {
@@ -741,8 +746,8 @@ Int.prototype.__and__ = function(other) {
     if (types.isinstance(other, Int)) {
         var a = twos_complement(this)
         var b = twos_complement(other)
-        extend(a, b, this.val.isNeg())
-        extend(b, a, other.val.isNeg())
+        extend(a, b, isNeg(this))
+        extend(b, a, isNeg(other))
         var i = a.length - 1
         var j = b.length - 1
         var arr = []
@@ -752,7 +757,7 @@ Int.prototype.__and__ = function(other) {
             j--
         }
         arr.reverse()
-        if (this.val.isNeg() && other.val.isNeg()) {
+        if (isNeg(this) && isNeg(other)) {
             arr = invert(arr)
             return fromArray(arr).__add__(new Int(1)).__neg__()
         }
@@ -771,10 +776,10 @@ Int.prototype.__xor__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, Int)) {
-        if (this.val.isNeg()) {
+        if (isNeg(this)) {
             return this.__invert__().__xor__(other).__invert__()
         }
-        if (other.val.isNeg()) {
+        if (isNeg(other)) {
             return this.__xor__(other.__invert__()).__invert__()
         }
         var a = twos_complement(this)
@@ -816,8 +821,8 @@ Int.prototype.__or__ = function(other) {
         }
         var a = twos_complement(this)
         var b = twos_complement(other)
-        extend(a, b, this.val.isNeg())
-        extend(b, a, other.val.isNeg())
+        extend(a, b, isNeg(this))
+        extend(b, a, isNeg(other))
         var i = a.length - 1
         var j = b.length - 1
         var arr = []
@@ -827,7 +832,7 @@ Int.prototype.__or__ = function(other) {
             j--
         }
         arr.reverse()
-        if (this.val.isNeg() || other.val.isNeg()) {
+        if (isNeg(this) || isNeg(other)) {
             arr = invert(arr)
             return fromArray(arr).__add__(new Int(1)).__neg__()
         }
