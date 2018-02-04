@@ -53,6 +53,11 @@ class IntTests(TranspileTestCase):
             print((2**1024)+1)
             """)
 
+    def test_comparisons_behave(self):
+        self.assertCodeExecution("""
+            print(((1 == 2) * -1) & ((1 == 2) * -1))
+        """)
+
 
 class UnaryIntOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'int'
