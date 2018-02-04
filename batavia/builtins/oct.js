@@ -9,7 +9,7 @@ function oct(args, kwargs) {
     }
     var value = args[0]
     if (types.isinstance(value, types.Int)) {
-        if (value.val.isNeg()) {
+        if (value.val.isNeg() && !value.val.isZero()) {
             return '-0o' + value.val.toString(8).substr(1)
         } else {
             return '0o' + value.val.toString(8)
