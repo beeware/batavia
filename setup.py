@@ -32,5 +32,11 @@ setup(
         'Topic :: Software Development',
         'Topic :: Utilities',
     ],
-    test_suite='tests'
+    test_suite='tests',
+    package_urls={
+        'Funding': 'https://pybee.org/contributing/membership/',
+        'Documentation': 'http://batavia.readthedocs.io/en/latest/',
+        'Tracker': data['bugs']['url'],
+        'Source': 'https://github.com/pybee/batavia',
+    },
 )
