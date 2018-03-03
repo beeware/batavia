@@ -51,14 +51,15 @@ Check the `Setting up your environment
 Downloading and Installing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1. Clone the code repositories
+1. Setup a pybee folder to store everything and Clone the code repositories
 ::
 
  $ mkdir pybee
  $ cd pybee
  $ git clone https://github.com/pybee/batavia
 
-2. Setup a virtualenv:
+2. Setup a virtualenv
+Now create a virtual environment, and install Batavia into it. 
 
 (for other environments, see `Getting Started <https://batavia.readthedocs.io/en/latest/tutorial/tutorial-0.html>`_).
 
