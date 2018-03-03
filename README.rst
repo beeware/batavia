@@ -102,9 +102,9 @@ You must have a recent version of Node; we do our testing using v6.9.1. Once you
 $ npm install
 
 
-4. Compile the Batavia library and bundle it’s dependencies
+4. Compile the Batavia library and bundle its dependencies
 
-Run the follwing command in the terminal ::
+Run the following command in the terminal ::
 
 $ npm run build
 
@@ -143,9 +143,9 @@ For more details see `Running Python code using Batavia from the command line
 Documentation
 -------------
 
-`Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on on `Read The Docs <https://readthedocs.org>`_, including:
+`Documentation for Batavia <http://batavia.readthedocs.io/en/latest/>`_ can be found on `Read The Docs <https://readthedocs.org>`_, including:
 
-* `Getting Started <http://batavia.readthedocs.io/en/latest/tutorial/index.html>`_
+* `Getting Started <https://batavia.readthedocs.io/en/latest/tutorial/index.html>`__
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/background/faq.html#why-batavia>`_
 * `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/background/faq.html>`_
 
