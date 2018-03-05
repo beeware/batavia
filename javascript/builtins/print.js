@@ -1,7 +1,8 @@
 import { call_method } from '../core/callables'
-import { AttributeError } from '../core/exceptions'
+import { PyAttributeError } from '../core/exceptions'
 
 import { sys } from '../modules'
+import * as types from '../types'
 
 export default function print(value, sep = ' ', end = '\n', file = sys.stdout, flush = false) {
     let elm
@@ -20,7 +21,7 @@ export default function print(value, sep = ' ', end = '\n', file = sys.stdout, f
                 try {
                     content = call_method(elm, '__str__')
                 } catch (e) {
-                    if (e instanceof AttributeError) {
+                    if (types.isinstance(e, PyAttributeError)) {
                         content = elm.toString()
                     } else {
                         throw e

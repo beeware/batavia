@@ -1,4 +1,4 @@
-import { StopIteration, TypeError } from '../core/exceptions'
+import { PyStopIteration, PyTypeError } from '../core/exceptions'
 import { call_function, call_method } from '../core/callables'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
@@ -16,13 +16,13 @@ class PyCallableIterator extends PyObject {
 
     __next__() {
         if (this.exhausted) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
 
         var item = call_function(this, this.callable)
         if (item.__eq__(this.sentinel)) {
             this.exhausted = true
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
         return item
     }
@@ -45,7 +45,7 @@ export default function iter(iterable, sentinel) {
         try {
             return call_method(iterable, '__iter__', [])
         } catch (e) {
-            throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
+            throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
         }
     }
 }

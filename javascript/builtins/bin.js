@@ -1,4 +1,4 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -6,7 +6,7 @@ import * as types from '../types'
 export default function bin(number) {
     if (!types.isinstance(number, types.PyInt) &&
         !types.isinstance(number, types.PyBool)) {
-        throw new TypeError("'" + type_name(number) + "' object cannot be interpreted as an integer")
+        throw new PyTypeError("'" + type_name(number) + "' object cannot be interpreted as an integer")
     }
 
     if (types.isinstance(number, types.PyBool)) {

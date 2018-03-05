@@ -11,7 +11,7 @@ export default function reversed(sequence) {
         return new types.PyList(new_sequence)
     }
 
-    throw new exceptions.NotImplementedError("Builtin Batavia function 'reversed' not implemented for objects")
+    throw new exceptions.PyNotImplementedError("Builtin Batavia function 'reversed' not implemented for objects")
 }
 
 reversed.__name__ = 'reversed'

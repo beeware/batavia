@@ -1,7 +1,8 @@
-import { StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { PyStopIteration, PyTypeError, PyValueError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import { tuple } from '../builtins'
+import * as types from '../types'
 
 export default function max(iterable, args, default_, key) {
     var iterobj
@@ -9,7 +10,7 @@ export default function max(iterable, args, default_, key) {
         iterobj = tuple(iterable, ...args).__iter__()
     } else {
         if (!iterable.__iter__) {
-            throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
+            throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
         }
         iterobj = iterable.__iter__()
     }
@@ -18,11 +19,11 @@ export default function max(iterable, args, default_, key) {
     try {
         var max = iterobj.__next__()
     } catch (err) {
-        if (err instanceof StopIteration) {
+        if (types.isinstance(err, PyStopIteration)) {
             if (default_ !== undefined) {
                 return default_
             } else {
-                throw new ValueError('max() arg is an empty sequence')
+                throw new PyValueError('max() arg is an empty sequence')
             }
         } else {
             throw err
@@ -37,7 +38,7 @@ export default function max(iterable, args, default_, key) {
             }
         }
     } catch (err) {
-        if (!(err instanceof StopIteration)) {
+        if (!(types.isinstance(err, PyStopIteration))) {
             throw err
         }
     }

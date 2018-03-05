@@ -1,4 +1,4 @@
-import { AttributeError, TypeError } from './exceptions'
+import { PyAttributeError, PyTypeError } from './exceptions'
 import { type_name } from './types'
 
 import { isinstance, PyStr } from '../types'
@@ -6,7 +6,7 @@ import { isinstance, PyStr } from '../types'
 export function getattr(obj, attr, default_) {
     let value
     if (!isinstance(attr, PyStr)) {
-        throw new TypeError('getattr(): attribute name must be string')
+        throw new PyTypeError('getattr(): attribute name must be string')
     }
 
     if (obj.__class__ === undefined) {
@@ -16,7 +16,7 @@ export function getattr(obj, attr, default_) {
             if (default_ !== undefined) {
                 return default_
             } else {
-                throw new AttributeError(
+                throw new PyAttributeError(
                     "'" + type_name(obj) + "' object has no attribute '" + attr + "'"
                 )
             }
@@ -34,7 +34,7 @@ export function getattr(obj, attr, default_) {
         try {
             value = obj.__getattribute__(attr)
         } catch (e) {
-            if (e instanceof AttributeError) {
+            if (e instanceof PyAttributeError) {
                 if (default_ !== undefined) {
                     return default_
                 } else {
@@ -59,7 +59,7 @@ getattr.$pyargs = {
 export function hasattr(obj, attr) {
     let val
     if (!isinstance(attr, PyStr)) {
-        throw new TypeError('hasattr(): attribute name must be string')
+        throw new PyTypeError('hasattr(): attribute name must be string')
     }
 
     if (obj.__class__ === undefined) {
@@ -80,14 +80,14 @@ export function hasattr(obj, attr) {
 }
 
 hasattr.__name__ = 'hasattr'
-hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching AttributeError.)'
+hasattr.__doc__ = 'hasattr(object, name) -> bool\n\nReturn whether the object has an attribute with the given name.\n(This is done by calling getattr(object, name) and catching PyAttributeError.)'
 hasattr.$pyargs = {
     args: ['obj', 'attr']
 }
 
 export function setattr(obj, attr, value) {
     if (!isinstance(attr, PyStr)) {
-        throw new TypeError('setattr(): attribute name must be string')
+        throw new PyTypeError('setattr(): attribute name must be string')
     }
 
     if (obj.__class__ === undefined) {
@@ -105,12 +105,12 @@ setattr.$pyargs = {
 
 export function delattr(obj, attr) {
     if (!isinstance(attr, PyStr)) {
-        throw new TypeError("attribute name must be string, not '" + type_name(attr) + "'")
+        throw new PyTypeError("attribute name must be string, not '" + type_name(attr) + "'")
     }
 
     if (obj.__class__ === undefined) {
         if (obj[attr] === undefined) {
-            throw new AttributeError("'" + type_name(obj) +
+            throw new PyAttributeError("'" + type_name(obj) +
                             "' object has no attribute '" + attr + "'"
             )
         } else {

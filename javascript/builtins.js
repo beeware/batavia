@@ -2,6 +2,11 @@ import { delattr, getattr, hasattr, setattr } from './core/attrs'
 
 import { PyNone, PyObject } from './core/types'
 
+// Types with special constructor handling
+import bool from './builtins/bool'
+import str from './builtins/str'
+import type from './builtins/type'
+
 // Types whose constructors double as functions
 import PyBytearray from './types/Bytearray'
 import PyBytes from './types/Bytes'
@@ -17,11 +22,6 @@ import PyRange from './types/Range'
 import PySet from './types/Set'
 import PySlice from './types/Slice'
 import PyTuple from './types/Tuple'
-
-// Types with special constructor handling
-import bool from './builtins/bool'
-import str from './builtins/str'
-import type from './builtins/type'
 
 // Other builtin functions
 import __import__ from './builtins/__import__'
@@ -79,71 +79,71 @@ import { dom } from './modules/dom'
 
 // Copy the exceptions into the builtin namespace.
 import {
-    ArithmeticError,
-    AssertionError,
-    AttributeError,
-    BaseException,
+    PyArithmeticError,
+    PyAssertionError,
+    PyAttributeError,
+    PyBaseException,
     // BlockingIOError
     // BrokenPipeError,
-    BufferError,
+    PyBufferError,
     // PyBytesWarning
     // ChildProcessError,
     // ConnectionAbortedError,
     // ConnectionError,
     // ConnectionRefusedError,
     // PyDeprecationWarning,
-    EOFError,
-    EnvironmentError,
-    Exception,
+    PyEOFError,
+    PyEnvironmentError,
+    PyException,
     // FileExistsError,
     // FileNotFoundError,
-    FloatingPointError,
+    PyFloatingPointError,
     // PyFutureWarning,
-    GeneratorExit,
-    IOError,
-    ImportError,
+    PyGeneratorExit,
+    PyIOError,
+    PyImportError,
     // PyImportWarning,
-    IndentationError,
-    IndexError,
+    PyIndentationError,
+    PyIndexError,
     // InterruptedError,
     // IsADirectoryError,
-    KeyError,
-    KeyboardInterrupt,
-    LookupError,
-    MemoryError,
-    NameError,
+    PyKeyError,
+    PyKeyboardInterrupt,
+    PyLookupError,
+    PyMemoryError,
+    PyNameError,
     // NotADirectoryError,
-    NotImplementedError,
-    OSError,
-    OverflowError,
+    PyNotImplementedError,
+    PyOSError,
+    PyOverflowError,
     // PyPendingDeprecationWarning,
     // PermissionError,
-    // ProcessLookupError,
-    ReferenceError,
+    // ProcessPyLookupError,
+    PyReferenceError,
     // PyResourceWarning,
-    RuntimeError,
+    PyRuntimeError,
     // PyRuntimeWarning,
-    StopIteration,
-    SyntaxError,
+    PyStopIteration,
+    PySyntaxError,
     // PySyntaxWarning
-    SystemError,
-    SystemExit,
-    TabError,
+    PySystemError,
+    PySystemExit,
+    PyTabError,
     // TimeoutError,
-    TypeError,
-    UnboundLocalError,
-    UnicodeDecodeError,
-    UnicodeEncodeError,
-    UnicodeError,
-    UnicodeTranslateError,
+    PyTypeError,
+    PyUnboundLocalError,
+    PyUnicodeDecodeError,
+    PyUnicodeEncodeError,
+    PyUnicodeError,
+    PyUnicodeTranslateError,
     // PyUnicodeWarning,
     // PyUserWarning,
-    ValueError,
+    PyValueError,
     // Warning,
-    ZeroDivisionError,
+    PyZeroDivisionError,
 
-    BataviaError,
-    PolyglotError
+    PyBataviaError,
+    PyPolyglotError
 } from './core/exceptions'
 
 // The builtin type constructors
@@ -163,6 +163,73 @@ var tuple = PyTuple.__class__
 
 // A singleton instance of NotImplementedType
 var NotImplemented = new PyNotImplementedType()
+
+// The builtin exception constructors
+var ArithmeticError = PyArithmeticError.__class__
+var AssertionError = PyAssertionError.__class__
+var AttributeError = PyAttributeError.__class__
+var BaseException = PyBaseException.__class__
+// var BlockingPyIOError = PyBlockingPyIOError.__class__
+// var BrokenPipeError = PyBrokenPipeError.__class__
+var BufferError = PyBufferError.__class__
+// var BytesWarning = PyBytesWarning.__class__
+// var ChildProcessError = PyChildProcessError.__class__
+// var ConnectionAbortedError = PyConnectionAbortedError.__class__
+// var ConnectionError = PyConnectionError.__class__
+// var ConnectionRefusedError = PyConnectionRefusedError.__class__
+// var DeprecationWarning = PyDeprecationWarning.__class__
+var EOFError = PyEOFError.__class__
+var EnvironmentError = PyEnvironmentError.__class__
+var Exception = PyException.__class__
+// var FileExistsError = PyFileExistsError.__class__
+// var FileNotFoundError = PyFileNotFoundError.__class__
+var FloatingPointError = PyFloatingPointError.__class__
+// var FutureWarning = PyFutureWarning.__class__
+var GeneratorExit = PyGeneratorExit.__class__
+var IOError = PyIOError.__class__
+var ImportError = PyImportError.__class__
+// var ImportWarning = PyImportWarning.__class__
+var IndentationError = PyIndentationError.__class__
+var IndexError = PyIndexError.__class__
+// var InterruptedError = PyInterruptedError.__class__
+// var IsADirectoryError = PyIsADirectoryError.__class__
+var KeyError = PyKeyError.__class__
+var KeyboardInterrupt = PyKeyboardInterrupt.__class__
+var LookupError = PyLookupError.__class__
+var MemoryError = PyMemoryError.__class__
+var NameError = PyNameError.__class__
+// var NotADirectoryError = PyNotADirectoryError.__class__
+var NotImplementedError = PyNotImplementedError.__class__
+var OSError = PyOSError.__class__
+var OverflowError = PyOverflowError.__class__
+// var PendingDeprecationWarning = PyPendingDeprecationWarning.__class__
+// var PermissionError = PyPermissionError.__class__
+// var ProcessPyLookupError = PyProcessPyLookupError.__class__
+var ReferenceError_ = PyReferenceError.__class__
+// var ResourceWarning = PyResourceWarning.__class__
+var RuntimeError = PyRuntimeError.__class__
+// var RuntimeWarning = PyRuntimeWarning.__class__
+var StopIteration = PyStopIteration.__class__
+var SyntaxError_ = PySyntaxError.__class__
+// PySyntaxWarning
+var SystemError = PySystemError.__class__
+var SystemExit = PySystemExit.__class__
+var TabError = PyTabError.__class__
+// var TimeoutError = PyTimeoutError.__class__
+var TypeError_ = PyTypeError.__class__
+var UnboundLocalError = PyUnboundLocalError.__class__
+var UnicodeDecodeError = PyUnicodeDecodeError.__class__
+var UnicodeEncodeError = PyUnicodeEncodeError.__class__
+var UnicodeError = PyUnicodeError.__class__
+var UnicodeTranslateError = PyUnicodeTranslateError.__class__
+// var UnicodeWarning = PyUnicodeWarning.__class__
+// var UserWarning = PyUserWarning.__class__
+var ValueError = PyValueError.__class__
+// var Warning = PyWarning.__class__
+var ZeroDivisionError = PyZeroDivisionError.__class__
+
+var BataviaError = PyBataviaError.__class__
+var PolyglotError = PyPolyglotError.__class__
 
 export {
     __import__,
@@ -246,10 +313,10 @@ export {
     AssertionError,
     AttributeError,
     BaseException,
-    // BlockingIOError
+    // BlockingPyIOError
     // BrokenPipeError,
     BufferError,
-    // PyBytesWarning
+    // BytesWarning
     // ChildProcessError,
     // ConnectionAbortedError,
     // ConnectionError,
@@ -261,11 +328,11 @@ export {
     // FileExistsError,
     // FileNotFoundError,
     FloatingPointError,
-    // PyFutureWarning,
+    // FutureWarning,
     GeneratorExit,
     IOError,
     ImportError,
-    // PyImportWarning,
+    // ImportWarning,
     IndentationError,
     IndexError,
     // InterruptedError,
@@ -279,28 +346,28 @@ export {
     NotImplementedError,
     OSError,
     OverflowError,
-    // PyPendingDeprecationWarning,
+    // PendingDeprecationWarning,
     // PermissionError,
-    // ProcessLookupError,
-    ReferenceError,
-    // PyResourceWarning,
+    // ProcessPyLookupError,
+    ReferenceError_ as ReferenceError,
+    // ResourceWarning,
     RuntimeError,
-    // PyRuntimeWarning,
+    // RuntimeWarning,
     StopIteration,
-    SyntaxError,
-    // PySyntaxWarning
+    SyntaxError_ as SyntaxError,
+    // SyntaxWarning
     SystemError,
     SystemExit,
     TabError,
     // TimeoutError,
-    TypeError,
+    TypeError_ as TypeError_,
     UnboundLocalError,
     UnicodeDecodeError,
     UnicodeEncodeError,
     UnicodeError,
     UnicodeTranslateError,
-    // PyUnicodeWarning,
-    // PyUserWarning,
+    // UnicodeWarning,
+    // UserWarning,
     ValueError,
     // Warning,
     ZeroDivisionError,

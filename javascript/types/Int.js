@@ -2,16 +2,18 @@ import BigNumber from 'bignumber.js'
 
 import { pyargs } from '../core/callables'
 import {
-    AttributeError,
-    IndexError,
-    MemoryError,
-    OverflowError,
-    TypeError,
-    ValueError,
-    ZeroDivisionError
+    PyAttributeError,
+    PyIndexError,
+    PyMemoryError,
+    PyOverflowError,
+    PyTypeError,
+    PyValueError,
+    PyZeroDivisionError
 } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
+
+import PyStr from './Str'
 
 import { repr } from '../builtins'
 import * as types from '../types'
@@ -47,14 +49,14 @@ export default class PyInt extends PyObject {
                     this.val = new BigNumber(x)
                 }
             } catch (e) {
-                throw new ValueError(
+                throw new PyValueError(
                     'invalid literal for int() with base 10: ' + repr(x)
                 )
             }
         } else {
             this.val = parseInt(x, base)
             if (isNaN(this.val)) {
-                throw new ValueError(
+                throw new PyValueError(
                     'invalid literal for int() with base ' + base + ': ' + repr(x)
                 )
             }
@@ -67,7 +69,7 @@ export default class PyInt extends PyObject {
 
     int32() {
         if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-            throw new IndexError("cannot fit 'int' into an index-sized integer")
+            throw new PyIndexError("cannot fit 'int' into an index-sized integer")
         }
         return parseInt(this.valueOf())
     }
@@ -102,7 +104,7 @@ export default class PyInt extends PyObject {
 
     __float__() {
         if (!can_float(this.val)) {
-            throw new OverflowError('int too large to convert to float')
+            throw new PyOverflowError('int too large to convert to float')
         }
         return new types.PyFloat(parseFloat(this.val))
     }
@@ -129,11 +131,11 @@ export default class PyInt extends PyObject {
                 return this.val.lt(other.valueOf())
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: int() < ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'<' not supported between instances of 'int' and '" +
                         type_name(other) + "'"
                     )
@@ -141,11 +143,11 @@ export default class PyInt extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: int() < NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'<' not supported between instances of 'int' and 'NoneType'"
                 )
             }
@@ -166,11 +168,11 @@ export default class PyInt extends PyObject {
                 return this.val.lte(other.valueOf())
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: int() <= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'<=' not supported between instances of 'int' and '" +
                         type_name(other) + "'"
                     )
@@ -178,11 +180,11 @@ export default class PyInt extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: int() <= NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'<=' not supported between instances of 'int' and 'NoneType'"
                 )
             }
@@ -221,11 +223,11 @@ export default class PyInt extends PyObject {
                 return this.val.gt(other.valueOf())
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: int() > ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'>' not supported between instances of 'int' and '" +
                         type_name(other) + "'"
                     )
@@ -233,11 +235,11 @@ export default class PyInt extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: int() > NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>' not supported between instances of 'int' and 'NoneType'"
                 )
             }
@@ -258,11 +260,11 @@ export default class PyInt extends PyObject {
                 return this.val.gte(other.valueOf())
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: int() >= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'>=' not supported between instances of 'int' and '" +
                         type_name(other) + "'"
                     )
@@ -270,11 +272,11 @@ export default class PyInt extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: int() >= NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>=' not supported between instances of 'int' and 'NoneType'"
                 )
             }
@@ -339,7 +341,7 @@ export default class PyInt extends PyObject {
         } else if (types.isinstance(other, types.PyFloat)) {
             return this.__float__().__pow__(other)
         } else {
-            throw new TypeError("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -364,25 +366,25 @@ export default class PyInt extends PyObject {
                 }
                 return new PyInt(quo_floor)
             } else {
-                throw new ZeroDivisionError('integer division or modulo by zero')
+                throw new PyZeroDivisionError('integer division or modulo by zero')
             }
         } else if (types.isinstance(other, types.PyFloat)) {
             var f = this.__float__()
             if (other.valueOf()) {
                 return f.__floordiv__(other)
             } else {
-                throw new ZeroDivisionError('float divmod()')
+                throw new PyZeroDivisionError('float divmod()')
             }
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return new PyInt(this.val.floor())
             } else {
-                throw new ZeroDivisionError('integer division or modulo by zero')
+                throw new PyZeroDivisionError('integer division or modulo by zero')
             }
         } else if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't take floor of complex number.")
+            throw new PyTypeError("can't take floor of complex number.")
         } else {
-            throw new TypeError("unsupported operand type(s) for //: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for //: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -390,11 +392,11 @@ export default class PyInt extends PyObject {
         // if it is dividing by another int, we can allow both to be bigger than floats
         if (types.isinstance(other, PyInt)) {
             if (other.val.isZero()) {
-                throw new ZeroDivisionError('division by zero')
+                throw new PyZeroDivisionError('division by zero')
             }
             var result = this.val.div(other.val)
             if (!can_float(result)) {
-                throw new OverflowError('integer division result too large for a float')
+                throw new PyOverflowError('integer division result too large for a float')
             }
             // check for negative 0
             if (other.val.lt(0) && result.isZero()) {
@@ -413,7 +415,7 @@ export default class PyInt extends PyObject {
             var castToComplex = new types.PyComplex(this.valueOf())
             return castToComplex.__truediv__(other.valueOf())
         } else {
-            throw new TypeError("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -432,35 +434,35 @@ export default class PyInt extends PyObject {
             }
         } else if (types.isinstance(other, types.PyList)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError("cannot fit 'int' into an index-sized integer")
+                throw new PyOverflowError("cannot fit 'int' into an index-sized integer")
             }
             if ((other.length === 0) || (this.valueOf() < 0)) {
                 return new types.PyList()
             }
             if (this.valueOf() > 4294967295) {
-                throw new MemoryError('')
+                throw new PyMemoryError('')
             }
             result = new types.PyList()
             for (i = 0; i < this.valueOf(); i++) {
                 result.extend(other)
             }
             return result
-        } else if (types.isinstance(other, types.PyStr)) {
+        } else if (types.isinstance(other, PyStr)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError("cannot fit 'int' into an index-sized integer")
+                throw new PyOverflowError("cannot fit 'int' into an index-sized integer")
             }
             if (this.val.isNegative()) {
                 return ''
             }
             var size = this.val.mul(other.length)
             if (size.gt(PyInt.MAX_INT.val)) {
-                throw new OverflowError('repeated string is too long')
+                throw new PyOverflowError('repeated string is too long')
             }
             if (other.length === 0) {
                 return ''
             }
             if ((this.valueOf() > 4294967295) || (this.valueOf() < -4294967296)) {
-                throw new MemoryError('')
+                throw new PyMemoryError('')
             }
 
             result = ''
@@ -470,13 +472,13 @@ export default class PyInt extends PyObject {
             return result
         } else if (types.isinstance(other, types.PyTuple)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError("cannot fit 'int' into an index-sized integer")
+                throw new PyOverflowError("cannot fit 'int' into an index-sized integer")
             }
             if ((other.length === 0) || (this.valueOf() < 0)) {
                 return new types.PyTuple()
             }
             if (this.valueOf() > 4294967295) {
-                throw new MemoryError('')
+                throw new PyMemoryError('')
             }
             result = new types.PyTuple()
             for (i = 0; i < this.valueOf(); i++) {
@@ -485,34 +487,34 @@ export default class PyInt extends PyObject {
             return result
         } else if (types.isinstance(other, types.PyBytes)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError("cannot fit 'int' into an index-sized integer")
+                throw new PyOverflowError("cannot fit 'int' into an index-sized integer")
             }
             if ((other.__len__() <= 0) || (this.valueOf() <= 0)) {
                 return new types.PyBytes()
             }
             if (this.valueOf() > 4294967295) {
-                throw new OverflowError('repeated bytes are too long')
+                throw new PyOverflowError('repeated bytes are too long')
             }
             return other.__mul__(this)
         } else if (types.isinstance(other, types.PyBytearray)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError("cannot fit 'int' into an index-sized integer")
+                throw new PyOverflowError("cannot fit 'int' into an index-sized integer")
             }
             if ((other.length <= 0) || (this.valueOf() <= 0)) {
                 return new types.PyBytearray()
             }
             if (this.valueOf() > 4294967295) {
-                throw new MemoryError('')
+                throw new PyMemoryError('')
             }
             return other.__mul__(this)
         } else if (types.isinstance(other, types.PyComplex)) {
             if (this.val.gt(PyInt.MAX_INT.val) || this.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError('int too large to convert to float')
+                throw new PyOverflowError('int too large to convert to float')
             } else {
                 return new types.PyComplex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber())
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for *: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -521,25 +523,25 @@ export default class PyInt extends PyObject {
             if (!other.val.isZero()) {
                 return new PyInt(this.val.mod(other.val).add(other.val).mod(other.val))
             } else {
-                throw new ZeroDivisionError('integer division or modulo by zero')
+                throw new PyZeroDivisionError('integer division or modulo by zero')
             }
         } else if (types.isinstance(other, types.PyFloat)) {
             var f = this.__float__()
             if (other.valueOf()) {
                 return f.__mod__(other)
             } else {
-                throw new ZeroDivisionError('float modulo')
+                throw new PyZeroDivisionError('float modulo')
             }
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return new PyInt(0)
             } else {
-                throw new ZeroDivisionError('integer division or modulo by zero')
+                throw new PyZeroDivisionError('integer division or modulo by zero')
             }
         } else if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't mod complex numbers.")
+            throw new PyTypeError("can't mod complex numbers.")
         } else {
-            throw new TypeError("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -556,12 +558,12 @@ export default class PyInt extends PyObject {
             }
         } else if (types.isinstance(other, types.PyComplex)) {
             if (this.__float__() > PyInt.MAX_FLOAT || this.__float__() < PyInt.MIN_FLOAT) {
-                throw new OverflowError('int too large to convert to float')
+                throw new PyOverflowError('int too large to convert to float')
             } else {
                 return new types.PyComplex(this.val.add(other.real).toNumber(), other.imag)
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for +: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for +: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -577,16 +579,16 @@ export default class PyInt extends PyObject {
                 return this
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")
         }
     }
 
     __getitem__(index) {
-        throw new TypeError("'int' object is not subscriptable")
+        throw new PyTypeError("'int' object is not subscriptable")
     }
 
     __setattr__(other) {
-        throw new AttributeError("'int' object has no attribute '" + other + "'")
+        throw new PyAttributeError("'int' object has no attribute '" + other + "'")
     }
     /**************************************************
      * Bitshift and logical ops
@@ -661,13 +663,13 @@ export default class PyInt extends PyObject {
             // Anything beyond ~8192 bits is too inefficient to convert to a binary array
             // due to Bignumber.js.
             if (other.val.gt(PyInt.REASONABLE_SHIFT.val)) {
-                throw new OverflowError('batavia: shift too large')
+                throw new PyOverflowError('batavia: shift too large')
             }
             if (other.val.gt(PyInt.MAX_SHIFT.val)) {
-                throw new OverflowError('Python int too large to convert to C ssize_t')
+                throw new PyOverflowError('Python int too large to convert to C ssize_t')
             }
             if (other.valueOf() < 0) {
-                throw new ValueError('negative shift count')
+                throw new PyValueError('negative shift count')
             }
             var arr = this.$toArray(this)
             for (var i = 0; i < other.valueOf(); i++) {
@@ -681,7 +683,7 @@ export default class PyInt extends PyObject {
                 return this
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for <<: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for <<: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -693,13 +695,13 @@ export default class PyInt extends PyObject {
             // Anything beyond ~8192 bits is too inefficient to convert to a binary array
             // due to Bignumber.js.
             if (other.val.gt(PyInt.MAX_INT.val) || other.val.lt(PyInt.MIN_INT.val)) {
-                throw new OverflowError('Python int too large to convert to C ssize_t')
+                throw new PyOverflowError('Python int too large to convert to C ssize_t')
             }
             if (other.val.gt(PyInt.REASONABLE_SHIFT.val)) {
-                throw new ValueError('batavia: shift too large')
+                throw new PyValueError('batavia: shift too large')
             }
             if (other.val.isNegative()) {
-                throw new ValueError('negative shift count')
+                throw new PyValueError('negative shift count')
             }
             if (this.val.isZero()) {
                 return this
@@ -715,7 +717,7 @@ export default class PyInt extends PyObject {
             }
             return this
         } else {
-            throw new TypeError("unsupported operand type(s) for >>: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for >>: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -745,7 +747,7 @@ export default class PyInt extends PyObject {
             }
             return new PyInt(0)
         } else {
-            throw new TypeError("unsupported operand type(s) for &: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for &: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -777,7 +779,7 @@ export default class PyInt extends PyObject {
             }
             return this
         } else {
-            throw new TypeError("unsupported operand type(s) for ^: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for ^: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -816,7 +818,7 @@ export default class PyInt extends PyObject {
             }
             return this
         } else {
-            throw new TypeError("unsupported operand type(s) for |: 'int' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for |: 'int' and '" + type_name(other) + "'")
         }
     }
 
@@ -828,8 +830,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__floordiv__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for //=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for //=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -840,8 +842,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__truediv__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for /=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for /=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -852,8 +854,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__add__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for +=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for +=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -864,8 +866,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__sub__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for -=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for -=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -876,8 +878,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__mul__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for *=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for *=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -888,8 +890,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__mod__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for %=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for %=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -904,8 +906,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__lshift__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for <<=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for <<=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -916,8 +918,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__rshift__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for >>=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for >>=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -928,8 +930,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__and__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for &=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for &=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -940,8 +942,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__xor__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for ^=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for ^=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }
@@ -952,8 +954,8 @@ export default class PyInt extends PyObject {
         try {
             return this.__or__(other)
         } catch (e) {
-            if (e instanceof TypeError) {
-                throw new TypeError("unsupported operand type(s) for |=: '" + type_name(this) + "' and '" + type_name(other) + "'")
+            if (types.isinstance(e, PyTypeError)) {
+                throw new PyTypeError("unsupported operand type(s) for |=: '" + type_name(this) + "' and '" + type_name(other) + "'")
             } else {
                 throw e
             }

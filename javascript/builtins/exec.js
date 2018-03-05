@@ -1,7 +1,7 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 
 export default function exec(object, globals, locals) {
-    throw new NotImplementedError("Builtin Batavia function 'exec' not implemented")
+    throw new PyNotImplementedError("Builtin Batavia function 'exec' not implemented")
 }
 
 exec.__name__ = 'exec'

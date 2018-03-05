@@ -1,4 +1,4 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 import { type_name, PyObject } from '../core/types'
 
 export default function classmethod(fn) {
@@ -11,7 +11,7 @@ export default function classmethod(fn) {
     obj.__class__ = 'classmethod'
     if (type_name(fn) === 'function') {
         obj.__call__ = function() {
-            throw new NotImplementedError('classmethod() can\'t get the parent class')
+            throw new PyNotImplementedError('classmethod() can\'t get the parent class')
         }
     }
     return obj

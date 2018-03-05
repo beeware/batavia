@@ -1,6 +1,8 @@
 import * as attrs from './attrs'
-import { PolyglotError, StopIteration, TypeError } from './exceptions'
+import { PyPolyglotError, PyStopIteration, PyTypeError } from './exceptions'
 import { PyType } from './types'
+
+import * as types from '../types'
 
 /*************************************************************************
  * Decorate the Python argument requirements of a function
@@ -133,7 +135,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
                         }
                     }
 
-                    throw new TypeError(
+                    throw new PyTypeError(
                         err({
                             'name': name,
                             'nargs': pyargs.args.length,
@@ -178,7 +180,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
                 }
             }
 
-            throw new TypeError(
+            throw new PyTypeError(
                 err({
                     'name': name,
                     'nargs': n_args,
@@ -208,7 +210,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
                     err = (e) => `${e.name}() got an unexpected keyword argument '${e.arg}'`
                 }
 
-                throw new TypeError(
+                throw new PyTypeError(
                     err({
                         'name': callable.__name__,
                         'nargs': n_args,
@@ -219,7 +221,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         }
     } else {
         if (kwargs && Object.getOwnPropertyNames(kwargs).length > 0) {
-            throw new PolyglotError("Can't pass kwargs to native Javascript function")
+            throw new PyPolyglotError("Can't pass kwargs to native Javascript function")
         }
         js_args = args
     }
@@ -264,7 +266,7 @@ export function iter_for_each(iterobj, callback) {
             callback(call_method(iterobj, '__next__'))
         }
     } catch (err) {
-        if (!(err instanceof StopIteration)) {
+        if (!(types.isinstance(err, PyStopIteration))) {
             throw err
         }
     }

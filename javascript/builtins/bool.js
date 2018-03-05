@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -15,7 +15,7 @@ export default function bool(x) {
         if (types.isinstance(output, types.PyBool)) {
             return output
         } else {
-            throw new TypeError('__bool__ should return bool, returned ' + type_name(output))
+            throw new PyTypeError('__bool__ should return bool, returned ' + type_name(output))
         }
     // Python bool() checks for __bool__ and then, if __bool__ is not defined,
     // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
@@ -29,7 +29,7 @@ export default function bool(x) {
             // output in the browser is an integer.
             return !!parseInt(output.valueOf())
         } else {
-            throw new TypeError("'" + output_type + "' object cannot be interpreted as an integer")
+            throw new PyTypeError("'" + output_type + "' object cannot be interpreted as an integer")
         }
     } else {
         return new types.PyBool((!!x.valueOf()))

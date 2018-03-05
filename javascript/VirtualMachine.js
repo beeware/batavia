@@ -4,7 +4,7 @@
 import * as attrs from './core/attrs'
 import * as callables from './core/callables'
 import JSDict from './core/JSDict'
-import { BaseException, BataviaError, NameError, StopIteration, UnboundLocalError } from './core/exceptions'
+import { PyBaseException, PyBataviaError, PyNameError, PyStopIteration, PyUnboundLocalError } from './core/exceptions'
 import { create_pyclass, PyNone, PyObject } from './core/types'
 import * as version from './core/version'
 
@@ -147,7 +147,7 @@ export default class VirtualMachine {
                             }
                         }
                     default:
-                        throw new BataviaError('Unknown unary operator ' + operator_name)
+                        throw new PyBataviaError('Unknown unary operator ' + operator_name)
                 }
             } else if (opcode in dis.binary_ops) {
                 operator_name = opname.slice(7)
@@ -348,7 +348,7 @@ export default class VirtualMachine {
                             }
                         }
                     default:
-                        throw new BataviaError('Unknown binary operator ' + operator_name)
+                        throw new PyBataviaError('Unknown binary operator ' + operator_name)
                 }
             } else if (opcode in dis.inplace_ops) {
                 operator_name = opname.slice(8)
@@ -606,7 +606,7 @@ export default class VirtualMachine {
                             this.push(result)
                         }
                     default:
-                        throw new BataviaError('Unknown inplace operator ' + operator_name)
+                        throw new PyBataviaError('Unknown inplace operator ' + operator_name)
                 }
             } else {
                 // dispatch
@@ -615,7 +615,7 @@ export default class VirtualMachine {
                     return bytecode_fn
                 } else {
                     return function() {
-                        throw new BataviaError('Unknown opcode ' + opcode + ' (' + opname + ')')
+                        throw new PyBataviaError('Unknown opcode ' + opcode + ' (' + opname + ')')
                     }
                 }
             }
@@ -641,7 +641,7 @@ export default class VirtualMachine {
             // Run the code
             return this.run_code({'code': code})
         } catch (e) {
-            if (e instanceof BataviaError) {
+            if (types.isinstance(e, builtins.BataviaError)) {
                 sys.stderr.write(e.msg + '\n')
             } else {
                 throw e
@@ -673,7 +673,7 @@ export default class VirtualMachine {
                 'f_globals': f_globals
             })
         } catch (e) {
-            if (e instanceof BataviaError) {
+            if (types.isinstance(e, builtins.BataviaError)) {
                 sys.stderr.write(e.msg + '\n')
             } else {
                 throw e
@@ -1013,15 +1013,15 @@ export default class VirtualMachine {
             // Check some invariants
             if (this.has_session) {
                 if (this.frames.length > 1) {
-                    throw new BataviaError('Frames left over in session!')
+                    throw new PyBataviaError('Frames left over in session!')
                 }
             } else {
                 if (this.frames.length > 0) {
-                    throw new BataviaError('Frames left over!')
+                    throw new PyBataviaError('Frames left over!')
                 }
             }
             if (this.frame && this.frame.stack.length > 0) {
-                throw new BataviaError('Data left on stack! ' + this.frame.stack)
+                throw new PyBataviaError('Data left on stack! ' + this.frame.stack)
             }
             return val
         } catch (e) {
@@ -1177,7 +1177,7 @@ export default class VirtualMachine {
                 why = operation.op_method.apply(this, operation.args)
             } catch (err) {
                 // deal with exceptions encountered while executing the op.
-                if (err instanceof BataviaError) {
+                if (types.isinstance(err, builtins.BataviaError)) {
                     // Batavia errors are a major problem; ABORT HARD
                     this.last_exception = null
                     throw err
@@ -1278,7 +1278,7 @@ export default class VirtualMachine {
         } else if (name in frame.f_builtins) {
             val = frame.f_builtins[name]
         } else {
-            throw new NameError("name '" + name + "' is not defined")
+            throw new PyNameError("name '" + name + "' is not defined")
         }
         this.push(val)
     }
@@ -1296,7 +1296,7 @@ export default class VirtualMachine {
         if (name in this.frame.f_locals) {
             val = this.frame.f_locals[name]
         } else {
-            throw new UnboundLocalError("local variable '" + name + "' referenced before assignment")
+            throw new PyUnboundLocalError("local variable '" + name + "' referenced before assignment")
         }
         this.push(val)
     }
@@ -1320,7 +1320,7 @@ export default class VirtualMachine {
         } else if (name in this.frame.f_builtins) {
             val = this.frame.f_builtins[name]
         } else {
-            throw new NameError("name '" + name + "' is not defined")
+            throw new PyNameError("name '" + name + "' is not defined")
         }
         this.push(val)
     }
@@ -1415,7 +1415,7 @@ export default class VirtualMachine {
                     result = items[1] === null
                     break
                 default:
-                    throw new BataviaError('Unknown operator ' + opnum)
+                    throw new PyBataviaError('Unknown operator ' + opnum)
             }
         } else {
             switch (opnum) {
@@ -1471,7 +1471,7 @@ export default class VirtualMachine {
                     result = types.issubclass(items[0], items[1])
                     break
                 default:
-                    throw new BataviaError('Unknown operator ' + opnum)
+                    throw new PyBataviaError('Unknown operator ' + opnum)
             }
         }
 
@@ -1555,7 +1555,7 @@ export default class VirtualMachine {
 
     byte_STORE_MAP() {
         if (version.later('3.5a0')) {
-            throw new BataviaError(
+            throw new PyBataviaError(
                 'STORE_MAP is unsupported with BATAVIA_MAGIC'
             )
         } else {
@@ -1594,7 +1594,7 @@ export default class VirtualMachine {
             var items = this.popn(count)
             this.push(new builtins.slice.$pyclass(...items))
         } else {
-            throw new BataviaError('Strange BUILD_SLICE count: ' + count)
+            throw new PyBataviaError('Strange BUILD_SLICE count: ' + count)
         }
     }
 
@@ -1724,7 +1724,7 @@ export default class VirtualMachine {
             var v = iterobj.__next__()
             this.push(v)
         } catch (err) {
-            if (err instanceof StopIteration) {
+            if (types.isinstance(err, builtins.StopIteration)) {
                 this.pop()
                 this.jump(jump)
             } else {
@@ -1767,7 +1767,7 @@ export default class VirtualMachine {
             return null
         } else {
             value = this.pop()
-            if (value instanceof BaseException) {
+            if (types.isinstance(value, builtins.BaseException)) {
                 traceback = this.pop()
                 this.last_exception = {
                     'exc_type': exc_type,
@@ -1776,7 +1776,7 @@ export default class VirtualMachine {
                 }
                 why = 'reraise'
             } else {
-                throw new BataviaError('Confused END_FINALLY: ' + value.toString())
+                throw new PyBataviaError('Confused END_FINALLY: ' + value.toString())
             }
         }
         return why
@@ -1805,12 +1805,12 @@ export default class VirtualMachine {
             } else {
                 return 'reraise'
             }
-        } else if (exc instanceof BaseException) {
-            // As in `throw ValueError('foo')`
+        } else if (types.isinstance(exc, builtins.BaseException)) {
+            // As in `throw PyValueError('foo')`
             exc_type = exc.__class__
             val = exc
-        } else if (exc.prototype instanceof BaseException ||
-                   exc === BaseException) {
+        } else if (exc instanceof PyBaseException ||
+                   exc === PyBaseException) {
             exc_type = exc
             val = new exc_type() // eslint-disable-line new-cap
         } else {
@@ -1821,7 +1821,7 @@ export default class VirtualMachine {
         // val is a valid exception instance and exc_type is its class.
         // Now do a similar thing for the cause, if present.
         if (cause) {
-            // if not isinstance(cause, BaseException):
+            // if not isinstance(cause, builtins.BaseException):
             //     return 'exception' // error
 
             val.__cause__ = cause
@@ -1838,7 +1838,7 @@ export default class VirtualMachine {
     byte_POP_EXCEPT() {
         var block = this.pop_block()
         if (block.type !== 'except-handler') {
-            throw new BataviaError('popped block is not an except handler')
+            throw new PyBataviaError('popped block is not an except handler')
         }
         this.unwind_block(block)
     }
@@ -1855,7 +1855,7 @@ export default class VirtualMachine {
         var mgr
         var val = PyNone
         var tb = PyNone
-        if (exc instanceof types.PyNoneType) {
+        if (exc === PyNone) {
             mgr = this.pop(1)
         } else if (exc instanceof String) {
             if (exc === 'return' || exc === 'continue') {
@@ -1864,7 +1864,7 @@ export default class VirtualMachine {
                 mgr = this.pop(1)
             }
             exc = PyNone
-        } else if (exc.prototype instanceof BaseException) {
+        } else if (types.isinstance(exc, builtins.BaseException)) {
             val = this.peek(2)
             tb = this.peek(3)
             mgr = this.pop(6)
@@ -1872,11 +1872,11 @@ export default class VirtualMachine {
             var block = this.pop_block()
             this.push_block(block.type, block.handler, block.level - 1)
         } else {
-            throw new BataviaError('Confused WITH_CLEANUP')
+            throw new PyBataviaError('Confused WITH_CLEANUP')
         }
         var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
         if (version.earlier('3.5a0')) {
-            if (!(exc instanceof types.PyNoneType) && ret.__bool__ !== undefined &&
+            if (!(exc === PyNone) && ret.__bool__ !== undefined &&
                     ret.__bool__().valueOf()) {
                 this.push('silenced')
             }
@@ -1889,14 +1889,14 @@ export default class VirtualMachine {
 
     byte_WITH_CLEANUP_FINISH() {
         if (version.earlier('3.5a0')) {
-            throw new BataviaError(
+            throw new PyBataviaError(
                 'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
             )
         }
         // Assuming Python 3.5
         var ret = this.pop()
         var exc = this.pop()
-        if (!(exc instanceof types.PyNoneType) && ret.__bool__ !== undefined &&
+        if (!(exc === PyNone) && ret.__bool__ !== undefined &&
                 ret.__bool__().valueOf()) {
             this.push('silenced')
         }
@@ -2053,14 +2053,14 @@ export default class VirtualMachine {
         var receiver = this.top()
 
         try {
-            if (types.isinstance(v, types.PyNoneType) ||
+            if (v === PyNone ||
                     !types.isinstance(receiver, types.PyGenerator)) {
                 this.return_value = callables.call_method(receiver, '__next__', [])
             } else {
                 this.return_value = receiver.send(v)
             }
         } catch (e) {
-            if (e instanceof StopIteration) {
+            if (types.isinstance(e, PyStopIteration)) {
                 this.pop()
                 this.push(e.value)
                 return

@@ -1,11 +1,11 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 
 export default function open() {
-    throw new NotImplementedError("Builtin Batavia function 'open' not implemented")
+    throw new PyNotImplementedError("Builtin Batavia function 'open' not implemented")
 }
 
 open.__name__ = 'open'
-open.__doc__ = `Open file and return a stream.  Raise IOError upon failure.
+open.__doc__ = `Open file and return a stream.  Raise PyIOError upon failure.
 
 file is either a text or byte string giving the name (and the path
 if the file isn't in the current working directory) of the file to
@@ -76,7 +76,7 @@ passed.  See the codecs module for the list of supported encodings.
 
 errors is an optional string that specifies how encoding errors are to
 be handled---this argument should not be used in binary mode. Pass
-'strict' to raise a ValueError exception if there is an encoding error
+'strict' to raise a PyValueError exception if there is an encoding error
 (the default of None has the same effect), or pass 'ignore' to ignore
 errors. (Note that ignoring encoding errors can lead to data loss.)
 See the documentation for codecs.register or run 'help(codecs.Codec)'

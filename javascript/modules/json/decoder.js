@@ -1,12 +1,13 @@
 import { call_function, call_method, pyargs } from '../../core/callables'
-import { Exception, ValueError } from '../../core/exceptions'
+import { PyException, PyValueError } from '../../core/exceptions'
 import { create_pyclass, PyNone, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
 import * as types from '../../types'
 
-export class JSONDecodeError extends PyObject {}
-create_pyclass(JSONDecodeError, 'JSONDecodeError', [Exception])
+class PyJSONDecodeError extends PyObject {}
+create_pyclass(PyJSONDecodeError, 'JSONDecodeError', [PyException])
+export var JSONDecodeError = PyJSONDecodeError.__class__
 
 class PyJSONDecoder extends PyObject {
     @pyargs({
@@ -42,9 +43,9 @@ class PyJSONDecoder extends PyObject {
             ret = JSON.parse(s, reviver)
         } catch (e) {
             if (version.earlier('3.5a0')) {
-                throw new ValueError(e.message)
+                throw new PyValueError(e.message)
             } else {
-                throw new JSONDecodeError(e.message)
+                throw new PyJSONDecodeError(e.message)
             }
         }
         return ret

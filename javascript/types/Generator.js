@@ -1,6 +1,6 @@
 import { call_function, call_method } from '../core/callables'
-import { AttributeError, BaseException, GeneratorExit, StopIteration, TypeError } from '../core/exceptions'
-import { create_pyclass, PyObject } from '../core/types'
+import { PyAttributeError, PyBaseException, PyGeneratorExit, PyStopIteration, PyTypeError } from '../core/exceptions'
+import { create_pyclass, PyObject, PyNone } from '../core/types'
 
 import { dis } from '../modules/dis'
 
@@ -42,16 +42,16 @@ export default class PyGenerator extends PyObject {
 
     send(value) {
         if (arguments.length !== 1) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'send() takes exactly one argument (' + arguments.length + ' given)'
             )
         }
 
         if (!this.started) {
             if (value !== null) {
-                if (!types.isinstance(value, types.PyNoneType)) {
+                if (value !== PyNone) {
                     // It's illegal to send a non-None value on first call.
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "can't send non-None value to a just-started generator"
                     )
                 }
@@ -59,7 +59,7 @@ export default class PyGenerator extends PyObject {
             this.started = true
         }
         if (this.finished) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
         this.gi_frame.stack.push(value)
         try {
@@ -69,7 +69,7 @@ export default class PyGenerator extends PyObject {
             throw e
         }
         if (this.finished) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
         return yieldval
     }
@@ -77,20 +77,20 @@ export default class PyGenerator extends PyObject {
     throw(ExcType, value, traceback) {
         var yf_gen = yf_subgenerator(this)
         if (yf_gen !== null) {
-            if (ExcType instanceof GeneratorExit ||
-                    value instanceof GeneratorExit) {
+            if (ExcType === PyGeneratorExit.__class__ ||
+                    types.isinstance(value, PyGeneratorExit)) {
                 call_method(yf_gen, 'close', [])
             } else {
                 try {
                     return call_method(yf_gen, 'throw', [ExcType, value, traceback])
                 } catch (e) {
-                    if (!(e instanceof AttributeError)) {
+                    if (!(e instanceof PyAttributeError)) {
                         throw e
                     }
                 }
             }
         }
-        if (ExcType instanceof BaseException) {
+        if (ExcType instanceof PyBaseException.__class__) {
             value = ExcType
             ExcType = ExcType.__class__
         } else {
@@ -108,16 +108,16 @@ export default class PyGenerator extends PyObject {
             throw e
         }
         if (this.finished) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
         return yieldval
     }
 
     close() {
         try {
-            return this['throw'](new GeneratorExit())
+            return this['throw'](new PyGeneratorExit())
         } catch (e) {
-            if (e instanceof GeneratorExit || e instanceof StopIteration) {
+            if (types.isinstance(e, PyGeneratorExit) || types.isinstance(e, PyStopIteration)) {
                 this.vm.last_exception = null
                 return null
             }

@@ -1,4 +1,4 @@
-import { RuntimeError, TypeError } from '../core/exceptions'
+import { PyRuntimeError, PyTypeError } from '../core/exceptions'
 import JSDict from '../core/JSDict'
 import * as types from '../types'
 
@@ -50,7 +50,7 @@ inspect.FullArgSpec = class {
 //     var params = sig.parameters.values()
 
 //     if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-//         throw new ValueError('invalid method signature')
+//         throw new PyValueError('invalid method signature')
 //     }
 
 //     var kind = params[0].kind
@@ -62,7 +62,7 @@ inspect.FullArgSpec = class {
 //         if (kind !== _VAR_POSITIONAL) {
 //             // Unless we add a new parameter type we never
 //             // get here
-//             throw new ValueError('invalid argument type')
+//             throw new PyValueError('invalid argument type')
 //         }
 //         // It's a var-positional parameter.
 //         // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
@@ -73,7 +73,7 @@ inspect.FullArgSpec = class {
 
 inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_arg) {
     // if (!callable(obj)) {
-    //     throw TypeError('{!r} is not a callable object'.format(obj));
+    //     throw PyTypeError('{!r} is not a callable object'.format(obj));
     // }
 
     // if (isinstance(obj, types.PyMethodType)) {
@@ -98,7 +98,7 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     // } else {
     //     if (sig !== null) {
     //         if (!isinstance(sig, Signature)) {
-    //             throw TypeError(
+    //             throw PyTypeError(
     //                 'unexpected object {!r} in __signature__ ' +
     //                 'attribute'.format(sig));
     //         }
@@ -183,7 +183,7 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //             # class with non-empty text signature.
     //             try:
     //                 text_sig = base.__text_signature__
-    //             except AttributeError:
+    //             except PyAttributeError:
     //                 pass
     //             else:
     //                 if text_sig:
@@ -212,9 +212,9 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //             sig = _signature_internal(call,
     //                                       follow_wrapper_chains,
     //                                       skip_bound_arg)
-    //         except ValueError as ex:
+    //         except PyValueError as ex:
     //             msg = 'no signature found for {!r}'.format(obj)
-    //             raise ValueError(msg) from ex
+    //             raise PyValueError(msg) from ex
 
     // if sig is not None:
     //     # For classes and objects we skip the first parameter of their
@@ -227,9 +227,9 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     // if isinstance(obj, types.PyBuiltinFunctionType):
     //     # Raise a nicer error message for builtins
     //     msg = 'no signature found for builtin function {!r}'.format(obj)
-    //     raise ValueError(msg)
+    //     raise PyValueError(msg)
 
-    // raise ValueError('callable {!r} is not supported by signature'.format(obj))
+    // raise PyValueError('callable {!r} is not supported by signature'.format(obj))
 }
 
 /*
@@ -327,12 +327,12 @@ inspect.getfullargspec = function(func) {
     )
 
     // } catch (ex) {
-    // Most of the times 'signature' will raise ValueError.
-    // But, it can also raise AttributeError, and, maybe something
+    // Most of the times 'signature' will raise PyValueError.
+    // But, it can also raise PyAttributeError, and, maybe something
     // else. So to be fully backwards compatible, we catch all
-    // possible exceptions here, and reraise a TypeError.
-    // raise TypeError('unsupported callable') from ex
-    // throw TypeError('unsupported callable');
+    // possible exceptions here, and reraise a PyTypeError.
+    // raise PyTypeError('unsupported callable') from ex
+    // throw PyTypeError('unsupported callable');
     // }
 }
 inspect.getfullargspec.$pyargs = {
@@ -340,7 +340,7 @@ inspect.getfullargspec.$pyargs = {
 }
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw new RuntimeError('Missing arguments')
+    throw new PyRuntimeError('Missing arguments')
     // var names = [];
     // for (var name in argnames) {
     //     if (!name in values) {
@@ -357,14 +357,14 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
     //     del names[-2:]
     //     s = ", ".join(names) + tail
     // }
-    // raise TypeError("%s() missing %i required %s argument%s: %s" %
+    // raise PyTypeError("%s() missing %i required %s argument%s: %s" %
     //                 (f_name, missing,
     //                   "positional" if pos else "keyword-only",
     //                   "" if missing === 1 else "s", s))
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw new RuntimeError('FIXME: Too many arguments')
+    throw new PyRuntimeError('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
@@ -381,7 +381,7 @@ inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, val
     //     msg = " positional argument%s (and %d keyword-only argument%s)"
     //     kwonly_sig = (msg % ("s" if given !== 1 else "", kwonly_given,
     //                          "s" if kwonly_given !== 1 else ""))
-    // raise TypeError("%s() takes %s positional argument%s but %d%s %s given" %
+    // raise PyTypeError("%s() takes %s positional argument%s but %d%s %s given" %
     //         (f_name, sig, "s" if plural else "", given, kwonly_sig,
     //          "was" if given === 1 and not kwonly_given else "were"))
 }
@@ -432,14 +432,14 @@ inspect.getcallargs = function(func, positional, named) {
         if (named.hasOwnProperty(kw)) {
             if (!possible_kwargs.__contains__(new types.PyStr(kw)).valueOf()) {
                 if (!func.argspec.varkw) {
-                    throw new TypeError('%s() got an unexpected keyword argument %r' %
+                    throw new PyTypeError('%s() got an unexpected keyword argument %r' %
                                 (func.__name__, kw))
                 }
                 arg2value[func.argspec.varkw][kw] = named[kw]
                 continue
             }
             if (kw in arg2value) {
-                throw new TypeError('%s() got multiple values for argument %r' %
+                throw new PyTypeError('%s() got multiple values for argument %r' %
                                 (func.__name__, kw))
             }
             arg2value[kw] = named[kw]
@@ -517,21 +517,21 @@ inspect.Parameter = function(kwargs) {
 
     // if kind not in (POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD,
     //                 _VAR_POSITIONAL, _KEYWORD_ONLY, _VAR_KEYWORD):
-    //     raise ValueError("invalid value for 'Parameter.kind' attribute")
+    //     raise PyValueError("invalid value for 'Parameter.kind' attribute")
 
     // if def is not _empty:
     //     if kind in (_VAR_POSITIONAL, _VAR_KEYWORD):
     //         msg = '{} parameters cannot have def values'.format(kind)
-    //         raise ValueError(msg)
+    //         raise PyValueError(msg)
 
     // if name is _empty:
-    //     raise ValueError('name is a required attribute for Parameter')
+    //     raise PyValueError('name is a required attribute for Parameter')
 
     // if not isinstance(name, str):
-    //     raise TypeError("name must be a str, not a {!r}".format(name))
+    //     raise PyTypeError("name must be a str, not a {!r}".format(name))
 
     // if not name.isidentifier():
-    //     raise ValueError('{!r} is not a valid parameter name'.format(name))
+    //     raise PyValueError('{!r} is not a valid parameter name'.format(name))
 }
 
 inspect.Parameter.POSITIONAL_ONLY = 0
@@ -617,7 +617,7 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 
 //             try:
 //                 arg = self.arguments[param_name]
-//             except KeyError:
+//             except PyKeyError:
 //                 # We're done here. Other arguments
 //                 # will be mapped in 'BoundArguments.kwargs'
 //                 break
@@ -649,7 +649,7 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 
 //             try:
 //                 arg = self.arguments[param_name]
-//             except KeyError:
+//             except PyKeyError:
 //                 pass
 //             else:
 //                 if param.kind === _VAR_KEYWORD:
@@ -709,7 +709,7 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
             //     if kind < top_kind:
             //         msg = 'wrong parameter order: {!r} before {!r}'
             //         msg = msg.format(top_kind, kind)
-            //         raise ValueError(msg)
+            //         raise PyValueError(msg)
             //     elif kind > top_kind:
             //         kind_defaults = false
             //         top_kind = kind
@@ -722,14 +722,14 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
             //                 # a default
             //                 msg = 'non-default argument follows default ' \
             //                       'argument'
-            //                 raise ValueError(msg)
+            //                 raise PyValueError(msg)
             //         else:
             //             # There is a default for this parameter.
             //             kind_defaults = True
 
             //     if name in params:
             //         msg = 'duplicate parameter name: {!r}'.format(name)
-            //         raise ValueError(msg)
+            //         raise PyValueError(msg)
 
             //     params[name] = param
         } else {
@@ -759,7 +759,7 @@ inspect.Signature.from_function = function(func) {
     //     } else {
     //         // If it's not a pure Python function, and not a duck type
     //         // of pure function:
-    //         throw TypeError('{!r} is not a Python function'.format(func));
+    //         throw PyTypeError('{!r} is not a Python function'.format(func));
     //     }
     // }
 
@@ -890,7 +890,7 @@ inspect.Signature.from_function = function(func) {
 //         if param.kind === _KEYWORD_ONLY:
 //             try:
 //                 other_param = other.parameters[param_name]
-//             except KeyError:
+//             except PyKeyError:
 //                 return false
 //             else:
 //                 if param !== other_param:
@@ -898,7 +898,7 @@ inspect.Signature.from_function = function(func) {
 //         else:
 //             try:
 //                 other_idx = other_positions[param_name]
-//             except KeyError:
+//             except PyKeyError:
 //                 return false
 //             else:
 //                 if (idx !== other_idx or
@@ -924,11 +924,11 @@ inspect.Signature.from_function = function(func) {
 //         # parameters
 //         try:
 //             arg_val = next(arg_vals)
-//         except StopIteration:
+//         except PyStopIteration:
 //             # No more positional arguments
 //             try:
 //                 param = next(parameters)
-//             except StopIteration:
+//             except PyStopIteration:
 //                 # No more parameters. That's it. Just need to check that
 //                 # we have no `kwargs` after this while loop
 //                 break
@@ -942,7 +942,7 @@ inspect.Signature.from_function = function(func) {
 //                         msg = '{arg!r} parameter is positional only, ' \
 //                               'but was passed as a keyword'
 //                         msg = msg.format(arg=param.name)
-//                         raise TypeError(msg) from None
+//                         raise PyTypeError(msg) from None
 //                     parameters_ex = (param,)
 //                     break
 //                 elif (param.kind === _VAR_KEYWORD or
@@ -961,18 +961,18 @@ inspect.Signature.from_function = function(func) {
 //                     else:
 //                         msg = '{arg!r} parameter lacking default value'
 //                         msg = msg.format(arg=param.name)
-//                         raise TypeError(msg) from None
+//                         raise PyTypeError(msg) from None
 //         else:
 //             # We have a positional argument to process
 //             try:
 //                 param = next(parameters)
-//             except StopIteration:
-//                 raise TypeError('too many positional arguments') from None
+//             except PyStopIteration:
+//                 raise PyTypeError('too many positional arguments') from None
 //             else:
 //                 if param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY):
 //                     # Looks like we have no parameter for this positional
 //                     # argument
-//                     raise TypeError('too many positional arguments')
+//                     raise PyTypeError('too many positional arguments')
 
 //                 if param.kind === _VAR_POSITIONAL:
 //                     # We have an '*args'-like argument, let's fill it with
@@ -984,7 +984,7 @@ inspect.Signature.from_function = function(func) {
 //                     break
 
 //                 if param.name in kwargs:
-//                     raise TypeError('multiple values for argument '
+//                     raise PyTypeError('multiple values for argument '
 //                                     '{arg!r}'.format(arg=param.name))
 
 //                 arguments[param.name] = arg_val
@@ -1007,14 +1007,14 @@ inspect.Signature.from_function = function(func) {
 //         param_name = param.name
 //         try:
 //             arg_val = kwargs.pop(param_name)
-//         except KeyError:
+//         except PyKeyError:
 //             # We have no value for this parameter.  It's fine though,
 //             # if it has a default value, or it is an '*args'-like
 //             # parameter, left alone by the processing of positional
 //             # arguments.
 //             if (not partial and param.kind !== _VAR_POSITIONAL and
 //                                                 param.default is _empty):
-//                 raise TypeError('{arg!r} parameter lacking default value'. \
+//                 raise PyTypeError('{arg!r} parameter lacking default value'. \
 //                                 format(arg=param_name)) from None
 
 //         else:
@@ -1022,7 +1022,7 @@ inspect.Signature.from_function = function(func) {
 //                 # This should never happen in case of a properly built
 //                 # Signature object (but let's have this check here
 //                 # to ensure correct behaviour just in case)
-//                 raise TypeError('{arg!r} parameter is positional only, '
+//                 raise PyTypeError('{arg!r} parameter is positional only, '
 //                                 'but was passed as a keyword'. \
 //                                 format(arg=param.name))
 
@@ -1033,13 +1033,13 @@ inspect.Signature.from_function = function(func) {
 //             // Process our '**kwargs'-like parameter
 //             arguments[kwargs_param.name] = kwargs
 //         else:
-//             raise TypeError('too many keyword arguments')
+//             raise PyTypeError('too many keyword arguments')
 
 //     return self._bound_arguments_cls(self, arguments)
 
 // def bind(*args, **kwargs):
 //     '''Get a BoundArguments object, that maps the passed `args`
-//     and `kwargs` to the function's signature.  Raises `TypeError`
+//     and `kwargs` to the function's signature.  Raises `PyTypeError`
 //     if the passed arguments can not be bound.
 //     '''
 //     return args[0]._bind(args[1:], kwargs)
@@ -1047,7 +1047,7 @@ inspect.Signature.from_function = function(func) {
 // def bind_partial(*args, **kwargs):
 //     '''Get a BoundArguments object, that partially maps the
 //     passed `args` and `kwargs` to the function's signature.
-//     Raises `TypeError` if the passed arguments can not be bound.
+//     Raises `PyTypeError` if the passed arguments can not be bound.
 //     '''
 //     return args[0]._bind(args[1:], kwargs, partial=True)
 

@@ -5,7 +5,7 @@ import { Buffer } from 'buffer'
 import BigNumber from 'bignumber.js'
 
 import { iter_for_each } from '../core/callables'
-import { OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
+import { PyOverflowError, PyTypeError, PyValueError, PyZeroDivisionError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -30,9 +30,9 @@ export var math = {
 
 var _checkPyFloat = function(x) {
     if (isinstance(x, PyComplex)) {
-        throw new TypeError("can't convert complex to float")
+        throw new PyTypeError("can't convert complex to float")
     } else if (!isinstance(x, [PyBool, PyFloat, PyInt])) {
-        throw new TypeError('a float is required')
+        throw new PyTypeError('a float is required')
     }
 }
 
@@ -46,7 +46,7 @@ math.acosh = function(x) {
     _checkPyFloat(x)
     var result = Math.acosh(x.__float__().val)
     if (!isFinite(result)) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(result)
 }
@@ -83,7 +83,7 @@ math.atanh = function(x) {
     _checkPyFloat(x)
     var result = Math.atanh(x.__float__().val)
     if (!isFinite(result)) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(Math.atanh(x.__float__().val))
 }
@@ -120,7 +120,7 @@ math.cosh = function(x) {
     _checkPyFloat(x)
     var result = Math.cosh(x.__float__().val)
     if (!isFinite(result)) {
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
     return new PyFloat(Math.cosh(x.__float__().val))
 }
@@ -226,7 +226,7 @@ math.exp = function(x) {
     _checkPyFloat(x)
     var result = Math.exp(x.__float__().val)
     if (!isFinite(result)) {
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
     return new PyFloat(result)
 }
@@ -236,7 +236,7 @@ math.expm1 = function(x) {
     _checkPyFloat(x)
     var result = Math.expm1(x.__float__().val)
     if (!isFinite(result)) {
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
     return new PyFloat(Math.expm1(x.__float__().val))
 }
@@ -275,21 +275,21 @@ math.factorial = function(x) {
         num = x.val
     } else if (isinstance(x, PyFloat)) {
         if (!x.is_integer().valueOf()) {
-            throw new ValueError('factorial() only accepts integral values')
+            throw new PyValueError('factorial() only accepts integral values')
         }
         num = new BigNumber(x.valueOf())
     } else if (isinstance(x, PyBool)) {
         return new PyInt(1)
     } else if (isinstance(x, PyComplex)) {
-        throw new TypeError("can't convert complex to int")
+        throw new PyTypeError("can't convert complex to int")
     } else if (x === null) {
-        throw new TypeError('an integer is required (got type NoneType)')
+        throw new PyTypeError('an integer is required (got type NoneType)')
     } else {
-        throw new TypeError('an integer is required (got type ' + x.__class__.__name__ + ')')
+        throw new PyTypeError('an integer is required (got type ' + x.__class__.__name__ + ')')
     }
 
     if (num.isNegative()) {
-        throw new ValueError('factorial() not defined for negative values')
+        throw new PyValueError('factorial() not defined for negative values')
     }
 
     if (num.isZero()) {
@@ -304,7 +304,7 @@ math.factorial = function(x) {
     }
     return new PyInt(_mul_list(nums, 0, nums.length - 1))
 }
-math.factorial.__doc__ = 'factorial(x) -> Integral\n\nFind x!. Raise a ValueError if x is negative or non-integral.'
+math.factorial.__doc__ = 'factorial(x) -> Integral\n\nFind x!. Raise a PyValueError if x is negative or non-integral.'
 
 math.floor = function(x) {
     if (isinstance(x, PyInt)) {
@@ -321,7 +321,7 @@ math.fmod = function(x, y) {
     _checkPyFloat(x)
     var xx = x.__float__().val
     if (yy === 0.0) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(xx % yy)
 }
@@ -365,7 +365,7 @@ math.fsum = function(iterable) {
     var sum = 0.0
     iter_for_each(iterobj, function(val) {
         if (!isinstance(val, [PyBool, PyFloat, PyInt])) {
-            throw new TypeError('a float is required')
+            throw new PyTypeError('a float is required')
         }
         sum += val.__float__().val
     })
@@ -381,7 +381,7 @@ math.gamma = function(x) {
 
     if (xx <= 0.0) {
         if (Number.isInteger(xx)) {
-            throw new ValueError('math domain error')
+            throw new PyValueError('math domain error')
         }
         // analytic continuation using reflection formula
         // gamma(z) * gamma(1-z) = pi / sin(pi * z)
@@ -481,7 +481,7 @@ math.gamma = function(x) {
 
     if (xx > 171.624) {
         // Correct answer too large to display.
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
 
     return math.exp(math.lgamma(x))
@@ -490,10 +490,10 @@ math.gamma.__doc__ = 'gamma(x)\n\nGamma function at x.'
 
 math.gcd = function(x, y) {
     if (!isinstance(x, [PyBool, PyInt])) {
-        throw new TypeError("'" + type_name(x) + "' object cannot be interpreted as an integer")
+        throw new PyTypeError("'" + type_name(x) + "' object cannot be interpreted as an integer")
     }
     if (!isinstance(y, [PyBool, PyInt])) {
-        throw new TypeError("'" + type_name(y) + "' object cannot be interpreted as an integer")
+        throw new PyTypeError("'" + type_name(y) + "' object cannot be interpreted as an integer")
     }
     var xx = x.__trunc__().val.abs()
     var yy = y.__trunc__().val.abs()
@@ -526,7 +526,7 @@ math.isclose = function(a, b, rel_tol, abs_tol) {
     let rtol, atol
     if (rel_tol !== undefined) {
         if (!isinstance(rel_tol, [PyBool, PyFloat, PyInt])) {
-            throw new TypeError('a float is required')
+            throw new PyTypeError('a float is required')
         }
         rtol = rel_tol.__float__().val
     } else {
@@ -534,7 +534,7 @@ math.isclose = function(a, b, rel_tol, abs_tol) {
     }
     if (abs_tol !== undefined) {
         if (!isinstance(abs_tol, [PyBool, PyFloat, PyInt])) {
-            throw new TypeError('a float is required')
+            throw new PyTypeError('a float is required')
         }
         atol = abs_tol.__float__().val
     } else {
@@ -542,7 +542,7 @@ math.isclose = function(a, b, rel_tol, abs_tol) {
     }
 
     if (atol < 0.0 || rtol < 0.0) {
-        throw new ValueError('tolerances must be non-negative')
+        throw new PyValueError('tolerances must be non-negative')
     }
 
     var aval = a.__float__().val
@@ -596,7 +596,7 @@ math.ldexp = function(x, i) {
     _checkPyFloat(x)
     var xx = x.__float__()
     if (!isinstance(i, [PyBool, PyInt])) {
-        throw new TypeError('Expected an int as second argument to ldexp.')
+        throw new PyTypeError('Expected an int as second argument to ldexp.')
     }
     if (xx.val === 0.0) {
         return xx
@@ -609,7 +609,7 @@ math.ldexp = function(x, i) {
     }
     var result = x.__float__().val * Math.pow(2, ii)
     if (!isFinite(result)) {
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
     return new PyFloat(result)
 }
@@ -623,7 +623,7 @@ math.lgamma = function(x) {
 
     if (xx <= 0.0) {
         if (Number.isInteger(xx)) {
-            throw new ValueError('math domain error')
+            throw new PyValueError('math domain error')
         }
         // analytic continuation using reflection formula
         // gamma(z) * gamma(1-z) = pi / sin(pi * z)
@@ -668,7 +668,7 @@ math.lgamma.__doc__ = 'lgamma(x)\n\nNatural logarithm of absolute value of Gamma
 
 math.log = function(x, base) {
     if (x === null) {
-        throw new TypeError('a float is required')
+        throw new PyTypeError('a float is required')
     }
 
     // special case if both arguments are very large integers
@@ -697,7 +697,7 @@ math.log = function(x, base) {
 
     _checkPyFloat(x)
     if (x.__le__(new PyFloat(0.0))) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     if (x.__eq__(new PyFloat(1.0)) && isinstance(base, PyInt) && base.val.gt(1)) {
         return new PyFloat(0.0)
@@ -705,7 +705,7 @@ math.log = function(x, base) {
     if (typeof base !== 'undefined') {
         _checkPyFloat(base)
         if (base.__le__(new PyFloat(0.0))) {
-            throw new ValueError('math domain error')
+            throw new PyValueError('math domain error')
         }
         var lg_base
         if (isinstance(base, PyInt)) {
@@ -713,19 +713,19 @@ math.log = function(x, base) {
         } else {
             var bb = base.__float__().val
             if (bb <= 0.0) {
-                throw new ValueError('math domain error')
+                throw new PyValueError('math domain error')
             }
             lg_base = Math.log2(bb)
         }
         if (lg_base === 0.0) {
-            throw new ZeroDivisionError('float division by zero')
+            throw new PyZeroDivisionError('float division by zero')
         }
         return new PyFloat(math.log2(x).val / lg_base)
     }
 
     if (isinstance(x, PyInt)) {
         if (x.val.isZero() || x.val.isNeg()) {
-            throw new ValueError('math domain error')
+            throw new PyValueError('math domain error')
         }
         if (x.__ge__(PyInt.MAX_FLOAT)) {
             return _log2_int(x).__mul__(new PyFloat(0.6931471805599453))
@@ -739,7 +739,7 @@ math.log10 = function(x) {
     _checkPyFloat(x)
     if (isinstance(x, PyInt)) {
         if (x.val.isZero() || x.val.isNeg()) {
-            throw new ValueError('math domain error')
+            throw new PyValueError('math domain error')
         }
         if (x.__ge__(PyInt.MAX_FLOAT)) {
             return _log2_int(x) * 0.30102999566398114
@@ -747,7 +747,7 @@ math.log10 = function(x) {
     }
     var xx = x.__float__().val
     if (xx <= 0.0) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(Math.log10(xx))
 }
@@ -757,7 +757,7 @@ math.log1p = function(x) {
     _checkPyFloat(x)
     var xx = x.__float__().val
     if (xx <= -1.0) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(Math.log1p(xx))
 }
@@ -766,7 +766,7 @@ math.log1p.__doc__ = 'log1p(x)\n\nReturn the natural logarithm of 1+x (base e).\
 // compute log2 of the (possibly large) integer argument
 var _log2_int = function(x) {
     if (x.val.isNeg() || x.val.isZero()) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     var bits = x.$bits()
     if (bits.length < 54) {
@@ -787,7 +787,7 @@ math.log2 = function(x) {
     }
     var result = Math.log2(x.__float__().val)
     if (!isFinite(result)) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(Math.log2(x.__float__().val))
 }
@@ -810,13 +810,13 @@ math.pow = function(x, y) {
     var xx = x.__float__().val
     var result = Math.pow(x, y)
     if (xx < 0 && !Number.isInteger(yy) && yy !== 0.0) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     if (xx === 0.0 && yy < 0.0) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     if (!isFinite(result)) {
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
     return new PyFloat(result)
 }
@@ -839,7 +839,7 @@ math.sinh = function(x) {
     _checkPyFloat(x)
     var result = Math.sinh(x.__float__().val)
     if (!isFinite(result)) {
-        throw new OverflowError('math range error')
+        throw new PyOverflowError('math range error')
     }
     return new PyFloat(result)
 }
@@ -849,7 +849,7 @@ math.sqrt = function(x) {
     _checkPyFloat(x)
     var result = Math.sqrt(x.__float__().val)
     if (!isFinite(result)) {
-        throw new ValueError('math domain error')
+        throw new PyValueError('math domain error')
     }
     return new PyFloat(result)
 }
@@ -869,9 +869,9 @@ math.tanh.__doc__ = 'tanh(x)\n\nReturn the hyperbolic tangent of x.'
 
 math.trunc = function(x) {
     if (x === null) {
-        throw new TypeError("type NoneType doesn't define __trunc__ method")
+        throw new PyTypeError("type NoneType doesn't define __trunc__ method")
     } else if (!x.__trunc__) {
-        throw new TypeError('type ' + type_name(x) + " doesn't define __trunc__ method")
+        throw new PyTypeError('type ' + type_name(x) + " doesn't define __trunc__ method")
     }
     return x.__trunc__()
 }

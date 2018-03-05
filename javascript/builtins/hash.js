@@ -1,4 +1,4 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -9,7 +9,7 @@ export default function hash(object) {
         return 278918143
     }
     if (types.isinstance(object, [types.PyBytearray, types.PyDict, types.PyList, types.PySet, types.PySlice])) {
-        throw new TypeError("unhashable type: '" + type_name(object) + "'")
+        throw new PyTypeError("unhashable type: '" + type_name(object) + "'")
     }
     if (object.__hash__ !== undefined) {
         return object.__hash__()

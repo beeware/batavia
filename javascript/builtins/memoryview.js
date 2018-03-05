@@ -1,7 +1,7 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 
 export default function memoryview(object) {
-    throw new NotImplementedError("Builtin Batavia function 'memoryview' not implemented")
+    throw new PyNotImplementedError("Builtin Batavia function 'memoryview' not implemented")
 }
 
 memoryview.__name__ = 'memoryview'

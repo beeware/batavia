@@ -1,5 +1,5 @@
 import { iter_for_each, pyargs } from '../core/callables'
-import { KeyError, TypeError, ValueError } from '../core/exceptions'
+import { PyKeyError, PyTypeError, PyValueError } from '../core/exceptions'
 import JSDict from '../core/JSDict'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
@@ -67,7 +67,7 @@ export default class PyDict extends PyObject {
                     try {
                         len = builtins.len(val)
                     } catch (e) {
-                        throw new TypeError('cannot convert dictionary update sequence element #' + i + ' to a sequence')
+                        throw new PyTypeError('cannot convert dictionary update sequence element #' + i + ' to a sequence')
                     }
 
                     if (len === 2) {
@@ -76,7 +76,7 @@ export default class PyDict extends PyObject {
                             val.__getitem__(new types.PyInt(1))
                         )
                     } else {
-                        throw new ValueError('dictionary update sequence element #' + i + ' has length ' + builtins.len(val) + '; 2 is required')
+                        throw new PyValueError('dictionary update sequence element #' + i + ' has length ' + builtins.len(val) + '; 2 is required')
                     }
 
                     i += 1
@@ -112,8 +112,8 @@ export default class PyDict extends PyObject {
         }
         for (let i = 0; i < this.$data_keys.length; i++) {
             let key = this.$data_keys[i]
-            let hash = builtins.hash(key)
-            let h = hash.int32() & new_mask
+            let hash = builtins.hash(key).int32()
+            let h = hash & new_mask
             while (!this.$isEmpty(new_keys[h])) {
                 h = (h + 1) & new_mask
             }
@@ -133,13 +133,13 @@ export default class PyDict extends PyObject {
 
     $isDeleted(x) {
         return x !== null &&
-            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
+            builtins.hash(x).int32() === 0 &&
             x.__eq__(DELETED).valueOf()
     }
 
     $isEmpty(x) {
         return x !== null &&
-            builtins.hash(x).__eq__(new types.PyInt(0)).valueOf() &&
+            builtins.hash(x).int32() === 0 &&
             x.__eq__(EMPTY).valueOf()
     }
 
@@ -147,8 +147,8 @@ export default class PyDict extends PyObject {
         if (this.$size === 0) {
             return null
         }
-        var hash = builtins.hash(other)
-        var h = hash.int32() & this.$mask
+        var hash = builtins.hash(other).int32()
+        var h = hash & this.$mask
         while (true) {
             var key = this.$data_keys[h]
             if (this.$isDeleted(key)) {
@@ -161,13 +161,13 @@ export default class PyDict extends PyObject {
             if (key === null && other === null) {
                 return h
             }
-            if (builtins.hash(key).__eq__(hash).valueOf() &&
+            if (builtins.hash(key).int32() === hash &&
                 ((key === null && other === null) || key.__eq__(other).valueOf())) {
                 return h
             }
             h = (h + 1) & this.$mask
 
-            if (h === (hash.int32() & this.$mask)) {
+            if (h === (hash & this.$mask)) {
                 // we have looped, definitely not here
                 return null
             }
@@ -222,11 +222,11 @@ export default class PyDict extends PyObject {
         if (other !== builtins.None) {
             if (types.isbataviainstance(other)) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: dict() < ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'<' not supported between instances of 'dict' and '" +
                         type_name(other) + "'"
                     )
@@ -236,11 +236,11 @@ export default class PyDict extends PyObject {
             }
         }
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: dict() < NoneType()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<' not supported between instances of 'dict' and 'NoneType'"
             )
         }
@@ -250,11 +250,11 @@ export default class PyDict extends PyObject {
         if (other !== builtins.None) {
             if (types.isbataviainstance(other)) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: dict() <= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'<=' not supported between instances of 'dict' and '" +
                         type_name(other) + "'"
                     )
@@ -264,11 +264,11 @@ export default class PyDict extends PyObject {
             }
         }
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: dict() <= NoneType()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<=' not supported between instances of 'dict' and 'NoneType'"
             )
         }
@@ -308,11 +308,11 @@ export default class PyDict extends PyObject {
         if (other !== builtins.None) {
             if (types.isbataviainstance(other)) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: dict() > ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'>' not supported between instances of 'dict' and '" +
                         type_name(other) + "'"
                     )
@@ -322,11 +322,11 @@ export default class PyDict extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: dict() > NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>' not supported between instances of 'dict' and 'NoneType'"
                 )
             }
@@ -337,11 +337,11 @@ export default class PyDict extends PyObject {
         if (other !== builtins.None) {
             if (types.isbataviainstance(other)) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: dict() >= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'>=' not supported between instances of 'dict' and '" +
                         type_name(other) + "'"
                     )
@@ -351,11 +351,11 @@ export default class PyDict extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: dict() >= NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>=' not supported between instances of 'dict' and 'NoneType'"
                 )
             }
@@ -367,11 +367,11 @@ export default class PyDict extends PyObject {
      **************************************************/
 
     __pos__() {
-        throw new TypeError("bad operand type for unary +: 'dict'")
+        throw new PyTypeError("bad operand type for unary +: 'dict'")
     }
 
     __neg__() {
-        throw new TypeError("bad operand type for unary -: 'dict'")
+        throw new PyTypeError("bad operand type for unary -: 'dict'")
     }
 
     __not__() {
@@ -379,7 +379,7 @@ export default class PyDict extends PyObject {
     }
 
     __invert__() {
-        throw new TypeError("bad operand type for unary ~: 'dict'")
+        throw new PyTypeError("bad operand type for unary ~: 'dict'")
     }
 
     /**************************************************
@@ -387,7 +387,7 @@ export default class PyDict extends PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
@@ -396,14 +396,14 @@ export default class PyDict extends PyObject {
 
     __floordiv__(other) {
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new TypeError("can't take floor of complex number.")
+            throw new PyTypeError("can't take floor of complex number.")
         }
 
-        throw new TypeError("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'")
     }
 
     __truediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for /: 'dict' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
@@ -413,53 +413,53 @@ export default class PyDict extends PyObject {
             types.PySlice, types.PySet, types.PyFrozenSet,
             types.PyNotImplementedType, types.PyComplex, types.PyRange,
             types.PyType])) {
-            throw new TypeError("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
         } else {
-            throw new TypeError("can't multiply sequence by non-int of type 'dict'")
+            throw new PyTypeError("can't multiply sequence by non-int of type 'dict'")
         }
     }
 
     __mod__(other) {
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new TypeError("can't mod complex numbers.")
+            throw new PyTypeError("can't mod complex numbers.")
         }
-        throw new TypeError("unsupported operand type(s) for %: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for %: 'dict' and '" + type_name(other) + "'")
     }
 
     __add__(other) {
-        throw new TypeError("unsupported operand type(s) for +: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for +: 'dict' and '" + type_name(other) + "'")
     }
 
     __sub__(other) {
-        throw new TypeError("unsupported operand type(s) for -: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -: 'dict' and '" + type_name(other) + "'")
     }
 
     __lshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for <<: 'dict' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for >>: 'dict' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        throw new TypeError("unsupported operand type(s) for &: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &: 'dict' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^: 'dict' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        throw new TypeError("unsupported operand type(s) for |: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |: 'dict' and '" + type_name(other) + "'")
     }
 
     __setitem__(key, value) {
         if (this.$size + 1 > this.$data_keys.length * MAX_LOAD_FACTOR) {
             this.$increase_size()
         }
-        var hash = builtins.hash(key)
-        var h = hash.int32() & this.$mask
+        let hash = builtins.hash(key).int32()
+        let h = hash & this.$mask
 
         while (true) {
             var current_key = this.$data_keys[h]
@@ -472,7 +472,7 @@ export default class PyDict extends PyObject {
                 this.$data_keys[h] = key
                 this.$data_values[h] = value
                 return
-            } else if (builtins.hash(current_key).__eq__(hash).valueOf() &&
+            } else if (builtins.hash(current_key).int32() == hash &&
                        current_key.__eq__(key).valueOf()) {
                 this.$data_keys[h] = key
                 this.$data_values[h] = value
@@ -480,10 +480,10 @@ export default class PyDict extends PyObject {
             }
 
             h = (h + 1) & this.$mask
-            if (h === (hash.int32() & this.$mask)) {
+            if (h === (hash & this.$mask)) {
                 // we have looped, we'll rehash (should be impossible)
                 this.$increase_size()
-                h = hash.int32() & this.$mask
+                h = hash & this.$mask
             }
         }
     }
@@ -494,58 +494,58 @@ export default class PyDict extends PyObject {
 
     __ifloordiv__(other) {
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new TypeError("can't take floor of complex number.")
+            throw new PyTypeError("can't take floor of complex number.")
         }
 
-        throw new TypeError("unsupported operand type(s) for //=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for //=: 'dict' and '" + type_name(other) + "'")
     }
 
     __itruediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for /=: 'dict' and '" + type_name(other) + "'")
     }
 
     __iadd__(other) {
-        throw new TypeError("unsupported operand type(s) for +=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for +=: 'dict' and '" + type_name(other) + "'")
     }
 
     __isub__(other) {
-        throw new TypeError("unsupported operand type(s) for -=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -=: 'dict' and '" + type_name(other) + "'")
     }
 
     __imul__(other) {
-        throw new TypeError("unsupported operand type(s) for *=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for *=: 'dict' and '" + type_name(other) + "'")
     }
 
     __imod__(other) {
         if (types.isinstance(other, [types.PyComplex])) {
-            throw new TypeError("can't mod complex numbers.")
+            throw new PyTypeError("can't mod complex numbers.")
         }
 
-        throw new TypeError("unsupported operand type(s) for %=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for %=: 'dict' and '" + type_name(other) + "'")
     }
 
     __ipow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'")
     }
 
     __ilshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for <<=: 'dict' and '" + type_name(other) + "'")
     }
 
     __irshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for >>=: 'dict' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new TypeError("unsupported operand type(s) for &=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &=: 'dict' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^=: 'dict' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new TypeError("unsupported operand type(s) for |=: 'dict' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |=: 'dict' and '" + type_name(other) + "'")
     }
 
     __contains__(key) {
@@ -558,16 +558,16 @@ export default class PyDict extends PyObject {
             types.PyFloat, types.PyRange, types.PyTuple,
             types.PyFrozenSet, types.PyNoneType, types.PyComplex,
             types.PyBytes])) {
-            throw new TypeError("unhashable type: '" + type_name(key) + "'")
+            throw new PyTypeError("unhashable type: '" + type_name(key) + "'")
         }
 
         var i = this.$find_index(key)
 
         if (i === null) {
             if (key === null) {
-                throw new KeyError('None')
+                throw new PyKeyError('None')
             } else {
-                throw new KeyError(key)
+                throw new PyKeyError(key)
             }
         }
         return this.$data_values[i]
@@ -577,9 +577,9 @@ export default class PyDict extends PyObject {
         var i = this.$find_index(key)
         if (i === null) {
             if (key === null) {
-                throw new KeyError('None')
+                throw new PyKeyError('None')
             } else {
-                throw new KeyError(key)
+                throw new PyKeyError(key)
             }
         }
         this.$deleteAt(i)
@@ -595,9 +595,9 @@ export default class PyDict extends PyObject {
             return this.$data_values[i]
         } else if (typeof backup === 'undefined') {
             if (key === null) {
-                throw new KeyError('PyNone')
+                throw new PyKeyError('PyNone')
             } else {
-                throw new KeyError(key)
+                throw new PyKeyError(key)
             }
         } else {
             return backup
@@ -616,7 +616,7 @@ export default class PyDict extends PyObject {
         iter_for_each(updates, function(val) {
             var pieces = new types.PyTuple(val)
             if (pieces.length !== 2) {
-                throw new ValueError('dictionary update sequence element #' + i + ' has length ' + pieces.length + '; 2 is required')
+                throw new PyValueError('dictionary update sequence element #' + i + ' has length ' + pieces.length + '; 2 is required')
             }
             var key = pieces[0]
             var value = pieces[1]
@@ -682,11 +682,11 @@ export default class PyDict extends PyObject {
 
     pop(key, def) {
         if (arguments.length < 1) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'pop expected at least 1 arguments, got 0'
             )
         } else if (arguments.length > 2) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'pop expected at most 2 arguments, got ' + arguments.length
             )
         }
@@ -694,7 +694,7 @@ export default class PyDict extends PyObject {
         var i = this.$find_index(key)
         if (i === null) {
             if (def === undefined) {
-                throw new KeyError(key)
+                throw new PyKeyError(key)
             }
             return def
         }
@@ -706,12 +706,12 @@ export default class PyDict extends PyObject {
 
     popitem() {
         if (arguments.length > 0) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'popitem() takes no arguments (' + arguments.length + ' given)'
             )
         }
         if (this.$size < 1) {
-            throw new KeyError(
+            throw new PyKeyError(
                 'popitem(): dictionary is empty'
             )
         }
@@ -727,18 +727,18 @@ export default class PyDict extends PyObject {
         }
 
         // just in case
-        throw new KeyError(
+        throw new PyKeyError(
             'popitem(): dictionary is empty'
         )
     }
 
     setdefault(key, def) {
         if (arguments.length < 1) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'setdefault expected at least 1 arguments, got 0'
             )
         } else if (arguments.length > 2) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'setdefault expected at most 2 arguments, got ' + arguments.length
             )
         }
@@ -757,11 +757,11 @@ export default class PyDict extends PyObject {
 
     fromkeys(iterable, value) {
         if (arguments.length < 1) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'fromkeys expected at least 1 arguments, got 0'
             )
         } else if (arguments.length > 2) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'fromkeys expected at most 2 arguments, got ' + arguments.length
             )
         }

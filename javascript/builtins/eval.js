@@ -1,7 +1,7 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 
 export default function eval_(source, globals, locals) {
-    throw new NotImplementedError("Builtin Batavia function 'eval' not implemented")
+    throw new PyNotImplementedError("Builtin Batavia function 'eval' not implemented")
 }
 
 eval_.__name__ = 'eval'

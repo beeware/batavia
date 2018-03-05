@@ -1,5 +1,5 @@
 import { pyargs } from '../core/callables'
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
 
@@ -91,18 +91,18 @@ export default class PySlice extends PyObject {
     }
 
     $unsupported_operand(sign, other) {
-        throw new TypeError(
+        throw new PyTypeError(
             'unsupported operand type(s) for ' + sign + ': \'slice\' and \'' + type_name(other) + '\''
         )
     }
 
     $unorderable_types(sign, other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: slice() ' + sign + ' ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 '\'' + sign + '\' not supported between instances of \'slice\' and \'' +
                 type_name(other) + '\''
             )
@@ -135,7 +135,7 @@ export default class PySlice extends PyObject {
 
     __floordiv__(other) {
         if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'can\'t take floor of complex number.'
             )
         } else {
@@ -177,7 +177,7 @@ export default class PySlice extends PyObject {
 
     __mod__(other) {
         if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'can\'t mod complex numbers.'
             )
         } else {
@@ -188,7 +188,7 @@ export default class PySlice extends PyObject {
     __mul__(other) {
         var is_sequence = types.isinstance(other, types.PyStr) || types.isinstance(other, types.PyBytes) || types.isinstance(other, types.PyBytearray) || types.isinstance(other, types.PyList) || types.isinstance(other, types.PyTuple)
         if (is_sequence) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'can\'t multiply sequence by non-int of type \'slice\''
             )
         } else {
@@ -197,7 +197,7 @@ export default class PySlice extends PyObject {
     }
 
     __getitem__(key) {
-        throw new TypeError(
+        throw new PyTypeError(
             '\'slice\' object is not subscriptable'
         )
     }

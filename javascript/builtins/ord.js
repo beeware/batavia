@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -14,10 +14,10 @@ export default function ord(c) {
                 return call_method(c, '__getitem__', [new types.PyInt(0)])
             }
         } else {
-            throw new TypeError('ord() expected a character, but string of length ' + charLength + ' found')
+            throw new PyTypeError('ord() expected a character, but string of length ' + charLength + ' found')
         }
     } else {
-        throw new TypeError('ord() expected string of length 1, but ' + type_name(c) + ' found')
+        throw new PyTypeError('ord() expected string of length 1, but ' + type_name(c) + ' found')
     }
 }
 

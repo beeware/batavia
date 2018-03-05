@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { StopIteration, TypeError } from '../core/exceptions'
+import { PyStopIteration, PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -16,8 +16,8 @@ export default function all(iterable) {
             }
         }
     } catch (err) {
-        if (!(err instanceof StopIteration)) {
-            throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
+        if (!(types.isinstance(err, PyStopIteration))) {
+            throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
         }
     }
 

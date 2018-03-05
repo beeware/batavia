@@ -1,5 +1,5 @@
 import * as constants from './constants'
-import { BataviaError } from './exceptions'
+import { PyBataviaError } from './exceptions'
 
 var magic_map = {}
 
@@ -14,7 +14,7 @@ var pattern = /^(\d+(\.\d+)*)((a|b|rc)(\d+))?$/
 export function version_id(str) {
     var match = pattern.exec(str)
     if (match === null) {
-        throw new BataviaError('Unexpected version identifier')
+        throw new PyBataviaError('Unexpected version identifier')
     }
     var version = match[1].split('.').map(Number)
     var pre

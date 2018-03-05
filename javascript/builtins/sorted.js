@@ -1,4 +1,4 @@
-import { NotImplementedError } from '../core/exceptions'
+import { PyNotImplementedError } from '../core/exceptions'
 import { PyNone } from '../core/types'
 
 import * as types from '../types'
@@ -23,7 +23,7 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
 
             // Order of conditions does matter here.
             // Because if we get unorderable types, CPython gives always '<' in Exception:
-            // TypeError: unorderable types: str() < int()
+            // PyTypeError: unorderable types: str() < int()
             if (a['key'].__lt__(b['key'])) {
                 if (reverse) {
                     return 1
@@ -47,7 +47,7 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
         }))
     }
 
-    throw new NotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
+    throw new PyNotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
 }
 
 sorted.__name__ = 'sorted'

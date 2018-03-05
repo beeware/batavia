@@ -1,4 +1,4 @@
-import { BataviaError } from './core/exceptions'
+import { PyBataviaError } from './core/exceptions'
 
 import { PyType, PyNoneType } from './core/types'
 
@@ -7,7 +7,10 @@ import PyNotImplementedType from './types/NotImplementedType'
 import PyCode from './types/Code'
 import PyModule from './types/Module'
 
+// Str and Bool are special, and need to be handled first.
+import PyStr from './types/Str'
 import PyBool from './types/Bool'
+
 import PyFloat from './types/Float'
 import PyInt from './types/Int'
 
@@ -17,7 +20,6 @@ import PySet from './types/Set'
 import PyTuple from './types/Tuple'
 import PyFrozenSet from './types/FrozenSet'
 
-import PyStr from './types/Str'
 import PyBytes from './types/Bytes'
 import PyBytearray from './types/Bytearray'
 
@@ -38,27 +40,44 @@ import PySlice from './types/Slice'
  * Type comparison defintions that match Python-like behavior.
  *************************************************************************/
 
+export function _isinstance(obj, type) {
+    switch (typeof obj) {
+        case 'boolean':
+            return type === PyBool
+        case 'number':
+            return type === PyInt
+        case 'string':
+            return type === PyStr
+        case 'object':
+            if (obj.__class__) {
+                for (let t of obj.__class__.mro()) {
+                    if (type instanceof Function) {
+                        if (t === type.__class__) {
+                            return true
+                        }
+                    } else {
+                        if (t === type) {
+                            return true
+                        }
+                    }
+                }
+            }
+            return false
+        default:
+            return false
+    }
+}
+
 export function isinstance(obj, type) {
     if (type instanceof Array) {
         for (let t in type) {
-            if (isinstance(obj, type[t])) {
+            if (_isinstance(obj, type[t])) {
                 return true
             }
         }
         return false
     } else {
-        switch (typeof obj) {
-            case 'boolean':
-                return type === PyBool
-            case 'number':
-                return type === PyInt
-            case 'string':
-                return type === PyStr
-            case 'object':
-                return obj instanceof type
-            default:
-                return false
-        }
+        return _isinstance(obj, type)
     }
 }
 
@@ -74,37 +93,40 @@ export function isbataviainstance(obj) {
     ])
 }
 
+export function _issubclass(cls, type) {
+    switch (typeof cls) {
+        case 'boolean':
+            return type === PyBool
+        case 'number':
+            return type === PyInt
+        case 'string':
+            return type === PyStr
+        case 'object':
+            if (type === null || type === PyNoneType) {
+                return cls === null
+            } else {
+                for (let t of cls.mro()) {
+                    if (t === type) {
+                        return true
+                    }
+                }
+            }
+            return false
+        default:
+            return false
+    }
+}
+
 export function issubclass(cls, type) {
     if (type instanceof Array) {
         for (let t in type) {
-            if (issubclass(cls, type[t])) {
+            if (_issubclass(cls, type[t])) {
                 return true
             }
         }
         return false
     } else {
-        switch (typeof cls) {
-            case 'boolean':
-                return type === PyBool
-            case 'number':
-                return type === PyInt
-            case 'string':
-                return type === PyStr
-            case 'object':
-                if (type === null || type === PyNoneType) {
-                    return cls === null
-                } else {
-                    let mro = cls.mro()
-                    for (let t in mro) {
-                        if (mro[t] === type.__class__) {
-                            return true
-                        }
-                    }
-                }
-                return false
-            default:
-                return false
-        }
+        return _issubclass(cls, type)
     }
 }
 
@@ -150,7 +172,7 @@ export function js2py(arg) {
                 return dict
             }
         default:
-            throw new BataviaError('Unknown type ' + (typeof arg))
+            throw new PyBataviaError('Unknown type ' + (typeof arg))
     }
 }
 

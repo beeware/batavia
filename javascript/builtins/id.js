@@ -1,7 +1,7 @@
-import { PolyglotError } from '../core/exceptions'
+import { PyPolyglotError } from '../core/exceptions'
 
 export default function id(object) {
-    throw new PolyglotError("'id' has no meaning here. See docs/internals/limitations#id")
+    throw new PyPolyglotError("'id' has no meaning here. See docs/internals/limitations#id")
 }
 
 id.__name__ = 'id'

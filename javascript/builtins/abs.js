@@ -1,5 +1,5 @@
 import { call_method } from '../core/callables'
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -10,7 +10,7 @@ export default function abs(x) {
     } else if (types.isinstance(x, [types.PyInt, types.PyFloat, types.PyComplex])) {
         return call_method(x, '__abs__')
     } else {
-        throw new TypeError("bad operand type for abs(): '" + type_name(x) + "'")
+        throw new PyTypeError("bad operand type for abs(): '" + type_name(x) + "'")
     }
 }
 

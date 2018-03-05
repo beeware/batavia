@@ -1,6 +1,6 @@
 /* eslint-disable no-extend-native */
 import { iter_for_each, pyargs } from '../core/callables'
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -66,19 +66,19 @@ export default class PyFrozenSet extends PyObject {
      * Inplace operators
      **************************************************/
     __isub__(other) {
-        throw new TypeError("unsupported operand type(s) for -=: 'frozenset' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new TypeError("unsupported operand type(s) for &=: 'frozenset' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^=: 'frozenset' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new TypeError("unsupported operand type(s) for |=: 'frozenset' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |=: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 

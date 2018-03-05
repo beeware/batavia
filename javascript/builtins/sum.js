@@ -1,11 +1,11 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function sum(iterable, start) {
     if (!iterable.__iter__) {
-        throw new TypeError("'" + type_name(iterable) + "' object is not iterable")
+        throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
     }
 
     try {
@@ -17,7 +17,7 @@ export default function sum(iterable, start) {
         // all of which would need to be reflected in this error message -
         // but we don't have to check for them here, because we've already
         // tested for them in __add__.
-        throw new TypeError(err.msg)
+        throw new PyTypeError(err.msg)
     }
 }
 

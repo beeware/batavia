@@ -1,8 +1,9 @@
 import { pyargs } from '../core/callables'
-import { OverflowError, TypeError, ValueError, ZeroDivisionError } from '../core/exceptions'
+import { PyOverflowError, PyTypeError, PyValueError, PyZeroDivisionError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 import * as version from '../core/version'
 
+import PyStr from './Str'
 import * as types from '../types'
 
 /*************************************************************************
@@ -20,9 +21,9 @@ export default class PyFloat extends PyObject {
     __init__(x = 0.0) {
         if (typeof x === 'number') {
             this.val = x
-        } else if (types.isinstance(x, types.PyStr)) {
+        } else if (types.isinstance(x, PyStr)) {
             if (x.length === 0) {
-                throw new ValueError('could not convert string to float: ')
+                throw new PyValueError('could not convert string to float: ')
             } else if (x.search(/[^-0-9.]/g) === -1) {
                 this.val = parseFloat(x)
             } else {
@@ -35,13 +36,13 @@ export default class PyFloat extends PyObject {
                 } else if (x === '-inf' || x === '-infinity' || x === '-Infinity') {
                     this.val = -Infinity
                 } else {
-                    throw new ValueError("could not convert string to float: '" + x + "'")
+                    throw new PyValueError("could not convert string to float: '" + x + "'")
                 }
             }
         } else if (types.isinstance(x, [types.PyInt, types.PyBool, types.PyFloat])) {
             this.val = x.__float__().val
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "float() argument must be a string, a bytes-like object or a number, not '" + type_name(x) + "'")
         }
     }
@@ -117,16 +118,16 @@ export default class PyFloat extends PyObject {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyDict, types.PyList, types.PyTuple,
-                types.PyNoneType, types.PyStr, types.PyNotImplementedType,
+                types.PyNoneType, PyStr, types.PyNotImplementedType,
                 types.PyRange, types.PySet, types.PySlice,
                 types.PyBytes, types.PyBytearray
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: float() < ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'<' not supported between instances of 'float' and '" +
                         type_name(other) + "'"
                     )
@@ -136,11 +137,11 @@ export default class PyFloat extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: float() < NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'<' not supported between instances of 'float' and 'NoneType'"
                 )
             }
@@ -151,15 +152,15 @@ export default class PyFloat extends PyObject {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyDict, types.PyList, types.PyTuple,
-                types.PyNoneType, types.PyStr, types.PyNotImplementedType,
+                types.PyNoneType, PyStr, types.PyNotImplementedType,
                 types.PyRange, types.PySet, types.PySlice
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: float() <= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'<=' not supported between instances of 'float' and '" +
                         type_name(other) + "'"
                     )
@@ -169,11 +170,11 @@ export default class PyFloat extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: float() <= NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'<=' not supported between instances of 'float' and 'NoneType'"
                 )
             }
@@ -181,7 +182,7 @@ export default class PyFloat extends PyObject {
     }
 
     __eq__(other) {
-        if (other !== null && !types.isinstance(other, types.PyStr)) {
+        if (other !== null && !types.isinstance(other, PyStr)) {
             var val
             if (types.isinstance(other, types.PyBool)) {
                 if (other.valueOf()) {
@@ -207,15 +208,15 @@ export default class PyFloat extends PyObject {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyDict, types.PyList, types.PyTuple,
-                types.PyNoneType, types.PyStr, types.PyNotImplementedType,
+                types.PyNoneType, PyStr, types.PyNotImplementedType,
                 types.PyRange, types.PySet, types.PySlice
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: float() > ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'>' not supported between instances of 'float' and '" +
                         type_name(other) + "'"
                     )
@@ -225,11 +226,11 @@ export default class PyFloat extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: float() > NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>' not supported between instances of 'float' and 'NoneType'"
                 )
             }
@@ -240,16 +241,16 @@ export default class PyFloat extends PyObject {
         if (other !== PyNone) {
             if (types.isinstance(other, [
                 types.PyDict, types.PyList, types.PyTuple,
-                types.PyNoneType, types.PyStr, types.PyNotImplementedType,
+                types.PyNoneType, PyStr, types.PyNotImplementedType,
                 types.PyRange, types.PySet, types.PySlice,
                 types.PyBytes, types.PyBytearray
             ])) {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         'unorderable types: float() >= ' + type_name(other) + '()'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "'>=' not supported between instances of 'float' and '" +
                         type_name(other) + "'"
                     )
@@ -259,11 +260,11 @@ export default class PyFloat extends PyObject {
             }
         } else {
             if (version.earlier('3.6')) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'unorderable types: float() >= NoneType()'
                 )
             } else {
-                throw new TypeError(
+                throw new PyTypeError(
                     "'>=' not supported between instances of 'float' and 'NoneType'"
                 )
             }
@@ -291,7 +292,7 @@ export default class PyFloat extends PyObject {
     }
 
     __invert__() {
-        throw new TypeError("bad operand type for unary ~: 'float'")
+        throw new PyTypeError("bad operand type for unary ~: 'float'")
     }
 
     __abs__() {
@@ -311,12 +312,12 @@ export default class PyFloat extends PyObject {
             }
         } else if (types.isinstance(other, [PyFloat, types.PyInt])) {
             if (this.valueOf() === 0 && other.valueOf() < 0) {
-                throw new ZeroDivisionError('0.0 cannot be raised to a negative power')
+                throw new PyZeroDivisionError('0.0 cannot be raised to a negative power')
             } else {
                 return new PyFloat(Math.pow(this.valueOf(), other.valueOf()))
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for ** or pow(): 'float' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for ** or pow(): 'float' and '" + type_name(other) + "'")
         }
     }
 
@@ -329,22 +330,22 @@ export default class PyFloat extends PyObject {
             if (!other.val.isZero()) {
                 return new PyFloat(Math.floor(this.valueOf() / other.valueOf()))
             } else {
-                throw new ZeroDivisionError('float divmod()')
+                throw new PyZeroDivisionError('float divmod()')
             }
         } else if (types.isinstance(other, PyFloat)) {
             if (other.valueOf()) {
                 return new PyFloat(Math.floor(this.valueOf() / other.valueOf()))
             } else {
-                throw new ZeroDivisionError('float divmod()')
+                throw new PyZeroDivisionError('float divmod()')
             }
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return new PyFloat(Math.floor(this.valueOf()))
             } else {
-                throw new ZeroDivisionError('float divmod()')
+                throw new PyZeroDivisionError('float divmod()')
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for //: 'float' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for //: 'float' and '" + type_name(other) + "'")
         }
     }
 
@@ -353,28 +354,28 @@ export default class PyFloat extends PyObject {
             if (!other.val.isZero()) {
                 return new PyFloat(this.valueOf() / other.valueOf())
             } else {
-                throw new ZeroDivisionError('float division by zero')
+                throw new PyZeroDivisionError('float division by zero')
             }
         } else if (types.isinstance(other, PyFloat)) {
             if (other.valueOf()) {
                 return new PyFloat(this.valueOf() / other.valueOf())
             } else {
-                throw new ZeroDivisionError('float division by zero')
+                throw new PyZeroDivisionError('float division by zero')
             }
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return new PyFloat(this.valueOf())
             } else {
-                throw new ZeroDivisionError('float division by zero')
+                throw new PyZeroDivisionError('float division by zero')
             }
         } else {
-            throw new TypeError("unsupported operand type(s) for /: 'float' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for /: 'float' and '" + type_name(other) + "'")
         }
     }
 
     __mul__(other) {
         if (other === null) {
-            throw new TypeError("unsupported operand type(s) for *: 'float' and 'NoneType'")
+            throw new PyTypeError("unsupported operand type(s) for *: 'float' and 'NoneType'")
         } else if (types.isinstance(other, types.PyBool)) {
             if (other.valueOf()) {
                 return new PyFloat(this.valueOf() * 1)
@@ -383,23 +384,23 @@ export default class PyFloat extends PyObject {
             }
         } else if (types.isinstance(other, [PyFloat, types.PyInt])) {
             return new PyFloat(this.valueOf() * other.valueOf())
-        } else if (types.isinstance(other, [types.PyList, types.PyStr, types.PyTuple, types.PyBytes, types.PyBytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'float'")
+        } else if (types.isinstance(other, [types.PyList, PyStr, types.PyTuple, types.PyBytes, types.PyBytearray])) {
+            throw new PyTypeError("can't multiply sequence by non-int of type 'float'")
         } else {
-            throw new TypeError("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'")
         }
     }
 
     __mod__(other) {
         if (types.isinstance(other, types.PyInt)) {
             if (other.val.isZero()) {
-                throw new ZeroDivisionError('float modulo')
+                throw new PyZeroDivisionError('float modulo')
             } else {
                 var thisNum = this.valueOf()
                 var otherNum = parseFloat(other.val)
                 var result = new PyFloat(python_modulo(thisNum, otherNum))
                 if (otherNum > PyFloat.MAX_FLOAT || otherNum < PyFloat.MIN_FLOAT || result.toString() === 'nan' || result.toString() === 'inf' || result.toString() === '-inf') {
-                    throw new OverflowError(
+                    throw new PyOverflowError(
                         'int too large to convert to float'
                     )
                 }
@@ -413,7 +414,7 @@ export default class PyFloat extends PyObject {
             }
         } else if (types.isinstance(other, PyFloat)) {
             if (other.valueOf() === 0) {
-                throw new ZeroDivisionError('float modulo')
+                throw new PyZeroDivisionError('float modulo')
             } else {
                 return new PyFloat(python_modulo(this.valueOf(), other.valueOf()))
             }
@@ -421,10 +422,10 @@ export default class PyFloat extends PyObject {
             if (other.valueOf()) {
                 return new PyFloat(python_modulo(this.valueOf(), other.valueOf()))
             } else {
-                throw new ZeroDivisionError('float modulo')
+                throw new PyZeroDivisionError('float modulo')
             }
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "unsupported operand type(s) for %: 'float' and '" + type_name(other) + "'"
             )
         }
@@ -434,7 +435,7 @@ export default class PyFloat extends PyObject {
         if (types.isinstance(other, [types.PyInt, PyFloat])) {
             var value = new PyFloat(this.valueOf() + parseFloat(other.valueOf()))
             if (value.toString() === 'inf' || value.toString() === '-inf') {
-                throw new OverflowError(
+                throw new PyOverflowError(
                     'int too large to convert to float'
                 )
             }
@@ -449,7 +450,7 @@ export default class PyFloat extends PyObject {
             var real = new PyFloat(this.valueOf() + other.real)
             return new types.PyComplex(real.valueOf(), other.imag.valueOf())
         } else {
-            throw new TypeError("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'")
         }
     }
 
@@ -457,7 +458,7 @@ export default class PyFloat extends PyObject {
         if (types.isinstance(other, [types.PyInt, PyFloat])) {
             var value = new PyFloat(this.valueOf() - other.valueOf())
             if (value.toString() === 'inf' || value.toString() === '-inf') {
-                throw new OverflowError(
+                throw new PyOverflowError(
                     'int too large to convert to float'
                 )
             }
@@ -472,40 +473,40 @@ export default class PyFloat extends PyObject {
             var real = new PyFloat(this.valueOf() - other.real)
             return new types.PyComplex(real.valueOf(), -other.imag.valueOf())
         } else {
-            throw new TypeError("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
         }
     }
 
     __getitem__(other) {
-        throw new TypeError("'float' object is not subscriptable")
+        throw new PyTypeError("'float' object is not subscriptable")
     }
 
     __lshift__(other) {
-        throw new TypeError(
+        throw new PyTypeError(
             "unsupported operand type(s) for <<: 'float' and '" + type_name(other) + "'"
         )
     }
 
     __rshift__(other) {
-        throw new TypeError(
+        throw new PyTypeError(
             "unsupported operand type(s) for >>: 'float' and '" + type_name(other) + "'"
         )
     }
 
     __and__(other) {
-        throw new TypeError(
+        throw new PyTypeError(
             "unsupported operand type(s) for &: 'float' and '" + type_name(other) + "'"
         )
     }
 
     __xor__(other) {
-        throw new TypeError(
+        throw new PyTypeError(
             "unsupported operand type(s) for ^: 'float' and '" + type_name(other) + "'"
         )
     }
 
     __or__(other) {
-        throw new TypeError(
+        throw new PyTypeError(
             "unsupported operand type(s) for |: 'float' and '" + type_name(other) + "'"
         )
     }
@@ -519,8 +520,8 @@ export default class PyFloat extends PyObject {
         try {
             return this[f](other)
         } catch (error) {
-            if (error instanceof TypeError) {
-                throw new TypeError(
+            if (error instanceof PyTypeError) {
+                throw new PyTypeError(
                     'unsupported operand type(s) for ' + operator_str + ": 'float' and '" + type_name(other) + "'")
             } else {
                 throw error
@@ -545,8 +546,8 @@ export default class PyFloat extends PyObject {
     }
 
     __imul__(other) {
-        if (types.isinstance(other, [types.PyList, types.PyStr, types.PyTuple])) {
-            throw new TypeError("can't multiply sequence by non-int of type 'float'")
+        if (types.isinstance(other, [types.PyList, PyStr, types.PyTuple])) {
+            throw new PyTypeError("can't multiply sequence by non-int of type 'float'")
         } else {
             return this.__call_binary_operator__('__mul__', '*=', other)
         }

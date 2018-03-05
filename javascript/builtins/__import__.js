@@ -1,4 +1,4 @@
-import { ImportError, SystemError } from '../core/exceptions'
+import { PyImportError, PySystemError } from '../core/exceptions'
 import { PyNone } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -34,7 +34,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
             }
 
             if (context.length < intlevel) {
-                throw new SystemError("Parent module '' not loaded, cannot perform relative import")
+                throw new PySystemError("Parent module '' not loaded, cannot perform relative import")
             } else {
                 context = context.slice(0, context.length - intlevel)
             }
@@ -70,7 +70,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
             if (root_module === undefined) {
                 payload = this.loader(name_part)
                 if (payload === null) {
-                    throw new ImportError("No module name '" + name_part + "'")
+                    throw new PyImportError("No module name '" + name_part + "'")
                 } else if (payload.javascript) {
                     root_module = payload.javascript
                     leaf_module = root_module
@@ -107,7 +107,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
             if (new_module === undefined) {
                 payload = this.loader(name_part)
                 if (payload === null) {
-                    throw new ImportError("No module name '" + name_part + "'")
+                    throw new PyImportError("No module name '" + name_part + "'")
                 } else if (payload.javascript) {
                     new_module = payload.javascript
                     leaf_module[path[n]] = new_module

@@ -1,5 +1,5 @@
 import { call_function, call_method, pyargs } from '../../core/callables'
-import { TypeError, ValueError } from '../../core/exceptions'
+import { PyTypeError, PyValueError } from '../../core/exceptions'
 import { create_pyclass, type_name, PyNone, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
@@ -84,7 +84,7 @@ PyJSONEncoder.__doc__ = `Extensible JSON <http://json.org> encoder for Python da
     To extend this to recognize other objects, subclass and implement a
     \`\`.default()\`\` method with another method that returns a serializable
     object for \`\`o\`\` if possible, otherwise it should call the superclass
-    implementation (to raise \`\`TypeError\`\`).`
+    implementation (to raise \`\`PyTypeError\`\`).`
 create_pyclass(PyJSONEncoder, 'JSONEncoder')
 
 export var JSONEncoder = PyJSONEncoder.__class__
@@ -142,7 +142,7 @@ function make_encode(
                     key + key_separator + encode(obj.get(kv), indent_level + 1)
                 )
             } else if (!skipkeys) {
-                throw new TypeError(
+                throw new PyTypeError(
                     'keys must be a string'
                 )
             }
@@ -165,7 +165,7 @@ function make_encode(
         if (ret === null) {
             if (seen !== undefined) {
                 if (seen.has(obj)) {
-                    throw new ValueError(
+                    throw new PyValueError(
                         'Circular reference detected'
                     )
                 }
@@ -180,11 +180,11 @@ function make_encode(
                 ret = encode(call_function(this, default_, [obj]), indent_level)
             } else {
                 if (version.earlier('3.6')) {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         obj.toString() + ' is not JSON serializable'
                     )
                 } else {
-                    throw new TypeError(
+                    throw new PyTypeError(
                         "Object of type '" + type_name(obj) + "' is not JSON serializable"
                     )
                 }
@@ -244,7 +244,7 @@ function encodeBasicType(o, ensure_ascii, allow_nan) {
             if (allow_nan) {
                 text = transFloat[text]
             } else {
-                throw new ValueError(
+                throw new PyValueError(
                     'Out of range float values are not JSON compliant'
                 )
             }
@@ -296,7 +296,7 @@ dumps.__doc__ = `Serialize \`\`obj\`\` to a JSON formatted \`\`str\`\`.
 
     If \`\`skipkeys\`\` is true then \`\`dict\`\` keys that are not basic types
     (\`\`str\`\`, \`\`int\`\`, \`\`float\`\`, \`\`bool\`\`, \`\`None\`\`) will be skipped
-    instead of raising a \`\`TypeError\`\`.
+    instead of raising a \`\`PyTypeError\`\`.
 
     If \`\`ensure_ascii\`\` is false, then the return value can contain non-ASCII
     characters if they appear in strings contained in \`\`obj\`\`. Otherwise, all
@@ -304,9 +304,9 @@ dumps.__doc__ = `Serialize \`\`obj\`\` to a JSON formatted \`\`str\`\`.
 
     If \`\`check_circular\`\` is false, then the circular reference check
     for container types will be skipped and a circular reference will
-    result in an \`\`OverflowError\`\` (or worse).
+    result in an \`\`PyOverflowError\`\` (or worse).
 
-    If \`\`allow_nan\`\` is false, then it will be a \`\`ValueError\`\` to
+    If \`\`allow_nan\`\` is false, then it will be a \`\`PyValueError\`\` to
     serialize out of range \`\`float\`\` values (\`\`nan\`\`, \`\`inf\`\`, \`\`-inf\`\`) in
     strict compliance of the JSON specification, instead of using the
     JavaScript equivalents (\`\`NaN\`\`, \`\`Infinity\`\`, \`\`-Infinity\`\`).
@@ -322,7 +322,7 @@ dumps.__doc__ = `Serialize \`\`obj\`\` to a JSON formatted \`\`str\`\`.
     you should specify \`\`(',', ':')\`\` to eliminate whitespace.
 
     \`\`default(obj)\`\` is a function that should return a serializable version
-    of obj or raise TypeError. The default simply raises TypeError.
+    of obj or raise PyTypeError. The default simply raises PyTypeError.
 
     If *sort_keys* is true (default: \`\`False\`\`), then the output of
     dictionaries will be sorted by key.
@@ -346,7 +346,7 @@ dumps.__doc__ = `Serialize \`\`obj\`\` as a JSON formatted stream to \`\`fp\`\` 
 
 If \`\`skipkeys\`\` is true then \`\`dict\`\` keys that are not basic types
 (\`\`str\`\`, \`\`int\`\`, \`\`float\`\`, \`\`bool\`\`, \`\`None\`\`) will be skipped
-instead of raising a \`\`TypeError\`\`.
+instead of raising a \`\`PyTypeError\`\`.
 
 If \`\`ensure_ascii\`\` is false, then the strings written to \`\`fp\`\` can
 contain non-ASCII characters if they appear in strings contained in
@@ -354,9 +354,9 @@ contain non-ASCII characters if they appear in strings contained in
 
 If \`\`check_circular\`\` is false, then the circular reference check
 for container types will be skipped and a circular reference will
-result in an \`\`OverflowError\`\` (or worse).
+result in an \`\`PyOverflowError\`\` (or worse).
 
-If \`\`allow_nan\`\` is false, then it will be a \`\`ValueError\`\` to
+If \`\`allow_nan\`\` is false, then it will be a \`\`PyValueError\`\` to
 serialize out of range \`\`float\`\` values (\`\`nan\`\`, \`\`inf\`\`, \`\`-inf\`\`)
 in strict compliance of the JSON specification, instead of using the
 JavaScript equivalents (\`\`NaN\`\`, \`\`Infinity\`\`, \`\`-Infinity\`\`).
@@ -372,7 +372,7 @@ tuple.  The default is \`\`(', ', ': ')\`\` if *indent* is \`\`None\`\` and
 you should specify \`\`(',', ':')\`\` to eliminate whitespace.
 
 \`\`default(obj)\`\` is a function that should return a serializable version
-of obj or raise TypeError. The default simply raises TypeError.
+of obj or raise PyTypeError. The default simply raises PyTypeError.
 
 If *sort_keys* is true (default: \`\`False\`\`), then the output of
 dictionaries will be sorted by key.

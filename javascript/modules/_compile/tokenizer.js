@@ -6,7 +6,7 @@
    the parser only returns E_EOF when it hits EOF immediately, and it
    never returns E_OK. */
 import { pyargs } from '../../core/callables'
-import { BataviaError } from '../../core/exceptions'
+import { PyBataviaError } from '../../core/exceptions'
 import { create_pyclass, PyNone, PyObject } from '../../core/types'
 
 import * as types from '../../types'
@@ -939,7 +939,7 @@ class PyTokenizer extends PyObject {
         var tok = this
         if (c !== EOF) {
             if (--tok.cur < 0) {
-                throw new BataviaError('tok_backup: beginning of buffer')
+                throw new PyBataviaError('tok_backup: beginning of buffer')
             }
             if (tok.buf[tok.cur] !== c) {
                 tok[tok.cur] = c

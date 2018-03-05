@@ -1,4 +1,4 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import * as types from '../types'
 
 export default function oct(number) {
@@ -16,7 +16,7 @@ export default function oct(number) {
         if (number.__index__) {
             number = number.__index__()
         } else {
-            throw new TypeError('__index__ method needed for non-integer inputs')
+            throw new PyTypeError('__index__ method needed for non-integer inputs')
         }
     }
     if (number < 0) {

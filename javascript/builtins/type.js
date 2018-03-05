@@ -1,4 +1,4 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 export default function type(object_or_name, bases, dict) {
@@ -15,7 +15,7 @@ export default function type(object_or_name, bases, dict) {
         }
         return new_type
     } else {
-        throw new TypeError('type() takes 1 or 3 arguments')
+        throw new PyTypeError('type() takes 1 or 3 arguments')
     }
 }
 

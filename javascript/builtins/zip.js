@@ -1,5 +1,5 @@
 import { call_method, pyargs } from '../core/callables'
-import { StopIteration, TypeError } from '../core/exceptions'
+import { PyStopIteration, PyTypeError } from '../core/exceptions'
 import { create_pyclass, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -21,8 +21,8 @@ class PyZip extends PyObject {
             try {
                 this._iterators.push(builtins.iter(iterables[i]))
             } catch (e) {
-                if (e instanceof TypeError) {
-                    throw new TypeError('zip argument #' + (i + 1) + ' must support iteration')
+                if (e instanceof PyTypeError) {
+                    throw new PyTypeError('zip argument #' + (i + 1) + ' must support iteration')
                 }
             }
         }
@@ -46,7 +46,7 @@ class PyZip extends PyObject {
 
     __next__() {
         if (this._iterators.length === 0) {
-            throw new StopIteration()
+            throw new PyStopIteration()
         }
 
         let values = []
@@ -65,7 +65,7 @@ PyZip.prototype.__doc__ = `zip(iter1 [,iter2 [...]]) --> zip object
 Return a zip object whose .__next__() method returns a tuple where
 the i-th element comes from the i-th iterable argument.  The .__next__()
 method continues until the shortest iterable in the argument sequence
-is exhausted and then it raises StopIteration.`
+is exhausted and then it raises PyStopIteration.`
 
 create_pyclass(PyZip, 'zip')
 

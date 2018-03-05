@@ -1,4 +1,4 @@
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 
 import * as types from '../types'
 
@@ -9,10 +9,10 @@ export default function pow(x, y, z) {
         if (!types.isinstance(x, types.PyInt) ||
             !types.isinstance(y, types.PyInt) ||
             !types.isinstance(z, types.PyInt)) {
-            throw new TypeError('pow() 3rd argument not allowed unless all arguments are integers')
+            throw new PyTypeError('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new TypeError('pow() 2nd argument cannot be negative when 3rd argument specified')
+            throw new PyTypeError('pow() 2nd argument cannot be negative when 3rd argument specified')
         }
         if (y === 0) {
             return 1

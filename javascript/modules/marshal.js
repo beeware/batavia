@@ -32,7 +32,7 @@ import * as base64js from 'base64-js'
 
 import * as types from '../types'
 import * as builtins from '../builtins'
-import { BataviaError, TypeError, ValueError } from '../core/exceptions'
+import { PyBataviaError, PyTypeError, PyValueError } from '../core/exceptions'
 import PYCFile from '../core/PYCFile'
 
 export var marshal = {
@@ -144,13 +144,13 @@ marshal.r_string = function(vm, n, p) {
 
     //     res = _PyObject_CallMethodId(p.readable, PyId_readinto, "N", mview);
     //     if (res !== null) {
-    //         read = PyNumber_AsSsize_t(res, ValueError);
+    //         read = PyNumber_AsSsize_t(res, PyValueError);
     //     }
     // }
     // if (read !== n) {
     //     if (!vm.PyErr_Occurred()) {
     //         if (read > n)
-    //             vm.PyErr_Format(ValueError,
+    //             vm.PyErr_Format(PyValueError,
     //                          "read() returned too much data: " +
     //                          "%zd bytes requested, %zd returned",
     //                          n, read);
@@ -276,7 +276,7 @@ marshal.r_ref_reserve = function(vm, flag, p) {
     if (flag) { /* currently only FLAG_REF is defined */
         var idx = p.refs.length
         if (idx >= 0x7ffffffe) {
-            vm.PyErr_SetString(ValueError, 'bad marshal data (index list too large)')
+            vm.PyErr_SetString(PyValueError, 'bad marshal data (index list too large)')
             return -1
         }
         if (p.refs.push(null) < 0) {
@@ -339,7 +339,7 @@ marshal.r_object = function(vm, p) {
 
     if (p.depth > marshal.MAX_MARSHAL_STACK_DEPTH) {
         p.depth--
-        vm.PyErr_SetString(ValueError, 'recursion limit exceeded')
+        vm.PyErr_SetString(PyValueError, 'recursion limit exceeded')
         return null
     }
 
@@ -509,7 +509,7 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(ValueError, 'bad marshal data (string size out of range)')
+                vm.PyErr_SetString(PyValueError, 'bad marshal data (string size out of range)')
                 break
             }
             //            retval = marshal.r_string(vm, n, p);
@@ -608,7 +608,7 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(ValueError, 'bad marshal data (tuple size out of range)')
+                vm.PyErr_SetString(PyValueError, 'bad marshal data (tuple size out of range)')
                 break
             }
             retval = new types.PyTuple(new Array(n))
@@ -629,7 +629,7 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(ValueError, 'bad marshal data (list size out of range)')
+                vm.PyErr_SetString(PyValueError, 'bad marshal data (list size out of range)')
                 break
             }
             retval = new types.PyList(new Array(n))
@@ -674,7 +674,7 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(ValueError, 'bad marshal data (set size out of range)')
+                vm.PyErr_SetString(PyValueError, 'bad marshal data (set size out of range)')
                 break
             }
             if (type === marshal.TYPE_SET) {
@@ -773,12 +773,12 @@ marshal.r_object = function(vm, p) {
                 if (n === -1 && vm.PyErr_Occurred()) {
                     break
                 }
-                vm.PyErr_SetString(ValueError, 'bad marshal data (invalid reference)')
+                vm.PyErr_SetString(PyValueError, 'bad marshal data (invalid reference)')
                 break
             }
             v = p.refs[n]
             if (v === null) {
-                vm.PyErr_SetString(ValueError, 'bad marshal data (invalid reference)')
+                vm.PyErr_SetString(PyValueError, 'bad marshal data (invalid reference)')
                 break
             }
             retval = v
@@ -788,7 +788,7 @@ marshal.r_object = function(vm, p) {
             /* Bogus data got written, which isn't ideal.
                This will let you keep working and recover. */
 
-            vm.PyErr_SetString(ValueError, "bad marshal data (unknown type code '" + type + "')")
+            vm.PyErr_SetString(PyValueError, "bad marshal data (unknown type code '" + type + "')")
             break
     }
     p.depth--
@@ -805,7 +805,7 @@ marshal.read_object = function(vm, p) {
     v = marshal.r_object(vm, p)
 
     if (v === null && !vm.PyErr_Occurred()) {
-        vm.PyErr_SetString(TypeError, 'null object in marshal data for object')
+        vm.PyErr_SetString(PyTypeError, 'null object in marshal data for object')
     }
     return v
 }
@@ -814,15 +814,15 @@ marshal.read_object = function(vm, p) {
  * load_pyc(bytes)
  *
  * Load a Base64 encoded Convert the bytes object to a value. If no valid value is found, raise\n\
- * EOFError, ValueError or TypeError. Extra characters in the input are\n\
+ * PyEOFError, PyValueError or PyTypeError. Extra characters in the input are\n\
  * ignored."
  */
 
 marshal.load_pyc = function(vm, payload) {
     if (payload === null || payload.length === 0) {
-        throw new BataviaError('Empty PYC payload')
+        throw new PyBataviaError('Empty PYC payload')
     } else if (payload.startswith('ERROR:')) {
-        throw new BataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'))
+        throw new PyBataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'))
     }
     return marshal.read_object(vm, new PYCFile(base64js.toByteArray(payload)))
 }

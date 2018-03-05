@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js'
 
 import { pyargs } from '../core/callables'
-import { IndexError, StopIteration, TypeError, ValueError } from '../core/exceptions'
+import { PyIndexError, PyStopIteration, PyTypeError, PyValueError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
 
 import * as types from '../types'
@@ -25,7 +25,7 @@ class PyRangeIterator extends PyObject {
             this.index = this.index.add(this.step)
             return new types.PyInt(retval)
         }
-        throw new StopIteration()
+        throw new PyStopIteration()
     }
 
     __str__() {
@@ -132,13 +132,13 @@ export default class PyRange extends PyObject {
             var idx = index.bigNumber()
             if (idx < 0) {
                 if (idx.neg().gt(this.length)) {
-                    throw new IndexError('range object index out of range')
+                    throw new PyIndexError('range object index out of range')
                 } else {
                     return new types.PyInt(this.$get_single_item(idx, this))
                 }
             } else {
                 if (idx.gte(this.length)) {
-                    throw new IndexError('range object index out of range')
+                    throw new PyIndexError('range object index out of range')
                 } else {
                     return new types.PyInt(this.$get_single_item(idx, this))
                 }
@@ -150,7 +150,7 @@ export default class PyRange extends PyObject {
                 start = index.start
             } else if (!types.isinstance(index.start, types.PyInt)) {
                 if (index.start.__index__ === undefined) {
-                    throw new TypeError('slice indices must be integers or None or have an __index__ method')
+                    throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
                 } else {
                     start = index.start.__index__()
                 }
@@ -162,7 +162,7 @@ export default class PyRange extends PyObject {
                 stop = index.stop
             } else if (!types.isinstance(index.stop, types.PyInt)) {
                 if (index.stop.__index__ === undefined) {
-                    throw new TypeError('slice indices must be integers or None or have an __index__ method')
+                    throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
                 } else {
                     stop = index.stop.__index__()
                 }
@@ -174,14 +174,14 @@ export default class PyRange extends PyObject {
                 step = 1
             } else if (!(types.isinstance(index.step, types.PyInt))) {
                 if (index.step.__index__ === undefined) {
-                    throw new TypeError('slice indices must be integers or None or have an __index__ method')
+                    throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
                 } else {
                     step = index.step.__index__()
                 }
             } else {
                 step = index.step.int32()
                 if (step === 0) {
-                    throw new ValueError('slice step cannot be zero')
+                    throw new PyValueError('slice step cannot be zero')
                 }
             }
 
@@ -219,14 +219,14 @@ export default class PyRange extends PyObject {
                 new types.PyInt(this.step.mul(step)))
         } else {
             var msg = 'range indices must be integers or slices, not '
-            throw new TypeError(msg + type_name(index))
+            throw new PyTypeError(msg + type_name(index))
         }
     }
 
     __add__(other) {
         if (types.isinstance(other, types.PyBool)) {
             var msg = 'unsupported operand type(s) for +: '
-            throw new TypeError(msg + '\'' + type_name(this) + '\' and \'' + type_name(other) + '\'')
+            throw new PyTypeError(msg + '\'' + type_name(this) + '\' and \'' + type_name(other) + '\'')
         }
     }
 }

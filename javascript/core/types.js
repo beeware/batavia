@@ -1,5 +1,5 @@
 import { call_method, call_super, pyargs } from './callables'
-import { AttributeError, TypeError } from './exceptions'
+import { PyAttributeError, PyTypeError } from './exceptions'
 import * as version from './version'
 
 import * as types from '../types'
@@ -35,7 +35,7 @@ class PyObject {
         args: ['name']
     })
     __getattr__(name) {
-        throw new AttributeError(
+        throw new PyAttributeError(
             "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
         )
     }
@@ -49,10 +49,10 @@ class PyObject {
         if (attr === undefined) {
             try {
                 // No attribute on this instance; look for a class attribute
-                attr = this.__class__.__getattribute__(name)
+                attr = this.__class__.__base__.__getattribute__(name)
             } catch (e) {
                 // No class attribute either; use the descriptor protocol
-                attr = this.__getattr__(name)
+                attr = call_method(this, '__getattr__', [name])
             }
         }
 
@@ -95,7 +95,7 @@ class PyObject {
         let attr = this[name]
 
         if (attr === undefined) {
-            throw new AttributeError(
+            throw new PyAttributeError(
                 "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
             )
         }
@@ -112,19 +112,19 @@ class PyObject {
      **************************************************/
 
     __pos__() {
-        throw new TypeError("bad operand type for unary +: '" + this.__class__.__name__ + "'")
+        throw new PyTypeError("bad operand type for unary +: '" + this.__class__.__name__ + "'")
     }
 
     __neg__() {
-        throw new TypeError("bad operand type for unary -: '" + this.__class__.__name__ + "'")
+        throw new PyTypeError("bad operand type for unary -: '" + this.__class__.__name__ + "'")
     }
 
     __not__() {
-        throw new TypeError("bad operand type for unary not: '" + this.__class__.__name__ + "'")
+        throw new PyTypeError("bad operand type for unary not: '" + this.__class__.__name__ + "'")
     }
 
     __invert__() {
-        throw new TypeError("bad operand type for unary ~: '" + this.__class__.__name__ + "'")
+        throw new PyTypeError("bad operand type for unary ~: '" + this.__class__.__name__ + "'")
     }
 
     /**************************************************
@@ -132,7 +132,7 @@ class PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
@@ -141,62 +141,62 @@ class PyObject {
 
     __floordiv__(other) {
         if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't take floor of complex number.")
+            throw new PyTypeError("can't take floor of complex number.")
         } else {
-            throw new TypeError("unsupported operand type(s) for //: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for //: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __truediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
         if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+            throw new PyTypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
         } else {
-            throw new TypeError("unsupported operand type(s) for *: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __mod__(other) {
         if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't mod complex numbers.")
+            throw new PyTypeError("can't mod complex numbers.")
         } else {
-            throw new TypeError("unsupported operand type(s) for %: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for %: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __add__(other) {
-        throw new TypeError("unsupported operand type(s) for +: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for +: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __sub__(other) {
-        throw new TypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __getitem__(other) {
-        throw new TypeError("'" + this.__class__.__name__ + "' object is not subscriptable")
+        throw new PyTypeError("'" + this.__class__.__name__ + "' object is not subscriptable")
     }
 
     __lshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for <<: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for >>: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        throw new TypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        throw new TypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -205,62 +205,62 @@ class PyObject {
 
     __ifloordiv__(other) {
         if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't take floor of complex number.")
+            throw new PyTypeError("can't take floor of complex number.")
         } else {
-            throw new TypeError("unsupported operand type(s) for //=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for //=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __itruediv__(other) {
-        throw new TypeError("unsupported operand type(s) for /=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for /=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __iadd__(other) {
-        throw new TypeError("unsupported operand type(s) for +=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for +=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __isub__(other) {
-        throw new TypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __imul__(other) {
         if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
-            throw new TypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+            throw new PyTypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
         } else {
-            throw new TypeError("unsupported operand type(s) for *=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for *=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __imod__(other) {
         if (types.isinstance(other, types.PyComplex)) {
-            throw new TypeError("can't mod complex numbers.")
+            throw new PyTypeError("can't mod complex numbers.")
         } else {
-            throw new TypeError("unsupported operand type(s) for %=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw new PyTypeError("unsupported operand type(s) for %=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __ipow__(other) {
-        throw new TypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __ilshift__(other) {
-        throw new TypeError("unsupported operand type(s) for <<=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for <<=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __irshift__(other) {
-        throw new TypeError("unsupported operand type(s) for >>=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for >>=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new TypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new TypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new TypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw new PyTypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 }
 
@@ -319,7 +319,7 @@ class PyType {
         }
 
         if (attr === undefined) {
-            throw new AttributeError(
+            throw new PyAttributeError(
                 "type object '" + this.__name__ + "' has no attribute '" + name + "'"
             )
         }
@@ -349,7 +349,7 @@ class PyType {
     })
     __setattr__(name, value) {
         if (this.$builtin) {
-            throw new TypeError(
+            throw new PyTypeError(
                 "can't set attributes of built-in/extension type '" + this.__name__ + "'"
             )
         }
@@ -366,11 +366,11 @@ class PyType {
     })
     __delattr__(name) {
         if (this.attrs) {
-            throw new AttributeError(name)
+            throw new PyAttributeError(name)
         }
 
         if (['int', 'str'].indexOf(this.__name__) > -1) {
-            throw new TypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
+            throw new PyTypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
         }
 
         var attr = this[name]
@@ -380,7 +380,7 @@ class PyType {
             if (this.$pyclass && this.$pyclass !== undefined && this.$pyclass.prototype[name] !== undefined) {
                 delete this.$pyclass.prototype[name]
             } else {
-                throw new AttributeError(name)
+                throw new PyAttributeError(name)
             }
         }
 
@@ -442,22 +442,22 @@ function create_pyclass(PyClass, name, bases = [], attrs = undefined) {
     }
     pytype.__doc__ = PyClass.prototype.__doc__
 
-    // Iterate over base classes, adding any methods from
-    // the bases that aren't natively defined on the class
-    // itself.
-    // console.log(PyClass.__class__.__name__)
-    for (var base of pytype.__bases__) {
-        // console.log('  ' + base.__name__)
-        for (var attr of Object.getOwnPropertyNames(base.$pyclass.prototype)) {
-            // console.log('    attr ' + attr)
-            if (!PyClass.prototype.hasOwnProperty(attr)) {
-                PyClass.prototype[attr] = base.$pyclass.prototype[attr]
-            //    console.log ('      copied from ' + base.__name__)
-            // } else {
-            //     console.log ('    already exists')
-            }
-        }
-    }
+    // // Iterate over base classes, adding any methods from
+    // // the bases that aren't natively defined on the class
+    // // itself.
+    // // console.log(PyClass.__class__.__name__)
+    // for (var base of pytype.__bases__) {
+    //     // console.log('  ' + base.__name__)
+    //     for (var attr of Object.getOwnPropertyNames(base.$pyclass.prototype)) {
+    //         // console.log('    attr ' + attr)
+    //         if (!PyClass.prototype.hasOwnProperty(attr)) {
+    //             PyClass.prototype[attr] = base.$pyclass.prototype[attr]
+    //         //    console.log ('      copied from ' + base.__name__)
+    //         // } else {
+    //         //     console.log ('    already exists')
+    //         }
+    //     }
+    // }
 
     // If attributes are specified, copy all the attributes
     // onto the newly constructed class.
@@ -529,9 +529,9 @@ class PyNoneType extends PyObject {
 
     __setattr__(attr, value) {
         if (Object.getPrototypeOf(this)[attr] === undefined) {
-            throw new AttributeError("'NoneType' object has no attribute '" + attr + "'")
+            throw new PyAttributeError("'NoneType' object has no attribute '" + attr + "'")
         } else {
-            throw new AttributeError("'NoneType' object attribute '" + attr + "' is read-only")
+            throw new PyAttributeError("'NoneType' object attribute '" + attr + "' is read-only")
         }
     }
 
@@ -541,11 +541,11 @@ class PyNoneType extends PyObject {
 
     __lt__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() < ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -554,11 +554,11 @@ class PyNoneType extends PyObject {
 
     __le__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'<=' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -575,11 +575,11 @@ class PyNoneType extends PyObject {
 
     __gt__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() > ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'>' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )
@@ -588,11 +588,11 @@ class PyNoneType extends PyObject {
 
     __ge__(other) {
         if (version.earlier('3.6')) {
-            throw new TypeError(
+            throw new PyTypeError(
                 'unorderable types: NoneType() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new TypeError(
+            throw new PyTypeError(
                 "'>=' not supported between instances of 'NoneType' and '" +
                 type_name(other) + "'"
             )

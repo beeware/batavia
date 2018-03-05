@@ -1,5 +1,5 @@
 import { call_function, call_method, pyargs } from '../core/callables'
-import { TypeError } from '../core/exceptions'
+import { PyTypeError } from '../core/exceptions'
 import { create_pyclass, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
@@ -16,7 +16,7 @@ class PyMap extends PyObject {
         if (builtins.callable(fn)) {
             this._func = fn
         } else {
-            throw new TypeError(type_name(fn) + "' object is not callable")
+            throw new PyTypeError(type_name(fn) + "' object is not callable")
         }
 
         this._iter = builtins.iter(iterable)
