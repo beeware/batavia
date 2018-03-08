@@ -341,7 +341,18 @@ List.prototype.__ge__ = function(other) {
 }
 
 List.prototype.__contains__ = function(other) {
-    return this.valueOf().index(other) !== -1
+    var types = require('../types')
+
+    try {
+        return new types.Bool(this.valueOf().index(other) !== -1)
+    }
+    catch(err) {
+      if (err.name === 'ValueError') {
+          return new types.Bool(false)
+      } else {
+          throw err
+      }
+    }
 }
 
 /**************************************************
