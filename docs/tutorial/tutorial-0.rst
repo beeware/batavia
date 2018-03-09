@@ -21,7 +21,16 @@ how to set this up are `on our Environment setup guide
 
 .. tabs::
 
-    .. group-tab:: For Linux, MacOS
+    .. group-tab:: Linux
+    
+        .. code-block:: bash
+        
+           $ python3.5 -m venv venv
+           $ . venv/bin/activate
+           $ cd batavia
+           $ pip install -e .
+           
+    .. group-tab:: MacOS
     
         .. code-block:: bash
         
@@ -30,14 +39,14 @@ how to set this up are `on our Environment setup guide
            $ cd batavia
            $ pip install -e .
 
-     .. group-tab:: For Windows
+     .. group-tab:: Windows
 
            > py -3.5 -m venv venv
            > venv\Scripts\activate
            > cd batavia
            > pip install -e .
 
-     .. group-tab:: For Windows (with only conda installed)
+     .. group-tab:: Windows (with only conda installed)
 
            > pip install virtualenvwrapper-win
            > mkvirtualenv venv
