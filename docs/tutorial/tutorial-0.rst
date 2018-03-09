@@ -19,27 +19,40 @@ how to set this up are `on our Environment setup guide
 
 3. We'll need to create a virtual environment, and install Batavia into it.
 
- * For Linux, MacOS::
+.. tabs::
 
-   $ python3.5 -m venv venv
-   $ . venv/bin/activate
-   $ cd batavia
-   $ pip install -e .
+    .. group-tab:: Linux
+    
+        .. code-block:: bash
+        
+           $ python3.5 -m venv venv
+           $ . venv/bin/activate
+           $ cd batavia
+           $ pip install -e .
+           
+    .. group-tab:: MacOS
+    
+        .. code-block:: bash
+        
+           $ python3.5 -m venv venv
+           $ . venv/bin/activate
+           $ cd batavia
+           $ pip install -e .
 
- * For Windows::
+     .. group-tab:: Windows
 
-   > py -3.5 -m venv venv
-   > venv\Scripts\activate
-   > cd batavia
-   > pip install -e .
+           > py -3.5 -m venv venv
+           > venv\Scripts\activate
+           > cd batavia
+           > pip install -e .
 
-* For Windows (with only conda installed)::
+     .. group-tab:: Windows (with only conda installed)
 
-   > pip install virtualenvwrapper-win
-   > mkvirtualenv venv
-   > workon venv
-   > cd batavia
-   > pip install -e .
+           > pip install virtualenvwrapper-win
+           > mkvirtualenv venv
+           > workon venv
+           > cd batavia
+           > pip install -e .
 
 4. In addition, you need to install `Node.js <https://nodejs.org>`_. You need
    to have a recent version of Node; we test using v6.9.1. It's possible you
