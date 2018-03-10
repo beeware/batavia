@@ -168,7 +168,7 @@ NotImplementedType.prototype.__sub__ = function(other) {
 }
 
 NotImplementedType.prototype.__getitem__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('NotImplementedType.__getitem__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("'NotImplementedType' object is not subscriptable")
 }
 
 NotImplementedType.prototype.__lshift__ = function(other) {
