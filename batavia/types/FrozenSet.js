@@ -353,6 +353,44 @@ FrozenSet.prototype._update = function(args) {
     }
 }
 
+FrozenSet.prototype.union = function(other) {
+    var types = require('../types')
+    var builtins = require('../builtins')
+    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
+        var union = []
+        var iterobj1 = builtins.iter([this], null)
+        callables.iter_for_each(iterobj1, function(val) { // add all elements from this
+            union.push(val)
+        })
+        var iterobj2 = builtins.iter([other], null)
+        callables.iter_for_each(iterobj2, function(val) { // if an element from other is in this, it is not added.
+            if (!(this.__contains__(val).valueOf())) {
+                union.push(val)
+            }
+        }.bind(this)) // should I use bing(this) ?
+        return new FrozenSet(union)
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
+    }
+}
+
+FrozenSet.prototype.intersection = function(other) {
+    var types = require('../types')
+    var builtins = require('../builtins')
+    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
+        var intersection = []
+        var iterobj = builtins.iter([this], null)
+        callables.iter_for_each(iterobj, function(val) {
+            if (other.__contains__(val).valueOf()) {
+                intersection.push(val)
+            }
+        })
+        return new FrozenSet(intersection)
+    } else {
+        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
+    }
+}
+
 /**************************************************
  * Module exports
  **************************************************/
