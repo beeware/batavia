@@ -15,6 +15,24 @@ class FrozensetTests(TranspileTestCase):
         print(len(frozenset([1, 2])))
         """)
 
+    def test_union(self):
+        self.assertCodeExecution("""
+        x = frozenset([2,4,5,6])
+        y = frozetset([3,4,7,9])
+        z = 5
+        print(x.union(y))
+        print(x.union(z))
+        """)
+
+    def test_intersection(self):
+        self.assertCodeExecution("""
+        x = frozenset([2,4,5,6])
+        y = frozetset([3,4,7,9])
+        z = 'dog'
+        print(x.intersection(y))
+        print(x.intersection(z))
+        """)
+
 
 class UnaryFrozensetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'frozenset'

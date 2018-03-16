@@ -367,7 +367,7 @@ FrozenSet.prototype.union = function(other) {
             if (!(this.__contains__(val).valueOf())) {
                 union.push(val)
             }
-        }.bind(this)) // should I use bing(this) ?
+        }.bind(this))
         return new FrozenSet(union)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
