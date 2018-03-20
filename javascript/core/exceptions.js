@@ -1,16 +1,15 @@
 /* eslint-disable no-extend-native */
-import { call_super, pyargs } from './callables'
-import { create_pyclass, PyObject } from './types'
+import { pyargs } from './callables'
+import { jstype, PyObject } from './types'
 
 /*****************************************************************
  * Root exception
  *****************************************************************/
-export var PyBaseException = class extends PyObject {
+let PyBaseException = class extends PyObject {
     @pyargs({
-        args: ['msg']
+        default_args: ['msg']
     })
     __init__(msg) {
-        super.__init__()
         this.msg = msg
     }
 
@@ -30,74 +29,83 @@ export var PyBaseException = class extends PyObject {
         }
     }
 }
-create_pyclass(PyBaseException, 'BaseException')
+export const pyBaseException = jstype(PyBaseException, 'BaseException')
 
-/*****************************************************************
- * Top level exceptions
+/************************************************************
+ Top level exceptions
  *****************************************************************/
 
-export var PySystemExit = class extends PyObject {}
-create_pyclass(PySystemExit, 'SystemExit', [PyBaseException])
+let PySystemExit = class extends PyObject {}
+export const pySystemExit = jstype(PySystemExit, 'SystemExit', [pyBaseException])
 
-export var PyKeyboardInterrupt = class extends PyObject {}
-create_pyclass(PyKeyboardInterrupt, 'KeyboardInterrupt', [PyBaseException])
+let PyKeyboardInterrupt = class extends PyObject {}
+export const pyKeyboardInterrupt = jstype(PyKeyboardInterrupt, 'KeyboardInterrupt', [pyBaseException])
 
-export var PyGeneratorExit = class extends PyObject {}
-create_pyclass(PyGeneratorExit, 'GeneratorExit', [PyBaseException])
+let PyGeneratorExit = class extends PyObject {}
+export const pyGeneratorExit = jstype(PyGeneratorExit, 'GeneratorExit', [pyBaseException])
 
-export var PyException = class extends PyObject {}
-create_pyclass(PyException, 'Exception', [PyBaseException])
+let PyException = class extends PyObject {}
+export const pyException = jstype(PyException, 'Exception', [pyBaseException])
 
 /*****************************************************************
  * All other exceptions
  *****************************************************************/
 
-export var PyArithmeticError = class extends PyObject {}
-create_pyclass(PyArithmeticError, 'ArithmeticError', [PyException])
+let PyStopIteration = class extends PyObject {}
+export const pyStopIteration = jstype(PyStopIteration, 'StopIteration', [pyException])
 
-export var PyAssertionError = class extends PyObject {}
-create_pyclass(PyAssertionError, 'AssertionError', [PyException])
+let PyStopAsyncIteration = class extends PyObject {}
+export const pyStopAsyncIteration = jstype(PyStopAsyncIteration, 'StopAsyncIteration', [pyException])
 
-export var PyAttributeError = class extends PyObject {}
-create_pyclass(PyAttributeError, 'AttributeError', [PyException])
+/*****************************************************************/
 
-export var PyBufferError = class extends PyObject {}
-create_pyclass(PyBufferError, 'BufferError', [PyException])
+let PyArithmeticError = class extends PyObject {}
+export const pyArithmeticError = jstype(PyArithmeticError, 'ArithmeticError', [pyException])
 
-// PyBytesWarning = undefined
+let PyFloatingPointError = class extends PyObject {}
+export const pyFloatingPointError = jstype(PyFloatingPointError, 'FloatingPointError', [pyArithmeticError])
 
-// PyDeprecationWarning = undefined
+let PypyOverflowError = class extends PyObject {}
+export const pyOverflowError = jstype(PypyOverflowError, 'OverflowError', [pyArithmeticError])
 
-export var PyEOFError = class extends PyObject {}
-create_pyclass(PyEOFError, 'EOFError', [PyException])
+let PyZeroDivisionError = class extends PyObject {}
+export const pyZeroDivisionError = jstype(PyZeroDivisionError, 'ZeroDivisionError', [pyArithmeticError])
 
-export var PyEnvironmentError = class extends PyObject {}
-create_pyclass(PyEnvironmentError, 'EnvironmentError', [PyException])
+/*****************************************************************/
 
-export var PyFloatingPointError = class extends PyObject {}
-create_pyclass(PyFloatingPointError, 'FloatingPointError', [PyException])
+let PyAssertionError = class extends PyObject {}
+export const pyAssertionError = jstype(PyAssertionError, 'AssertionError', [pyException])
 
-// PyFutureWarning = undefined
+let PyAttributeError = class extends PyObject {}
+export const pyAttributeError = jstype(PyAttributeError, 'AttributeError', [pyException])
 
-export var PyIOError = class extends PyObject {}
-create_pyclass(PyIOError, 'IOError', [PyException])
+let PyBufferError = class extends PyObject {}
+export const pyBufferError = jstype(PyBufferError, 'BufferError', [pyException])
 
-export var PyImportError = class extends PyObject {}
-create_pyclass(PyImportError, 'ImportError', [PyException])
+let PyEOFError = class extends PyObject {}
+export const pyEOFError = jstype(PyEOFError, 'EOFError', [pyException])
 
-// PyImportWarning = undefined
+/*****************************************************************/
 
-export var PyIndentationError = class extends PyObject {}
-create_pyclass(PyIndentationError, 'IndentationError', [PyException])
+let PyImportError = class extends PyObject {}
+export const pyImportError = jstype(PyImportError, 'ImportError', [pyException])
 
-export var PyIndexError = class extends PyObject {}
-create_pyclass(PyIndexError, 'IndexError', [PyException])
+let PyModuleNotFoundError = class extends PyObject {}
+export const pyModuleNotFoundError = jstype(PyModuleNotFoundError, 'ImportError', [pyImportError])
 
-export var PyKeyError = class extends PyObject {
+/*****************************************************************/
+
+let PyLookupError = class extends PyObject {}
+export const pyLookupError = jstype(PyLookupError, 'LookupError', [pyException])
+
+let PyIndexError = class extends PyObject {}
+export const pyIndexError = jstype(PyIndexError, 'IndexError', [pyLookupError])
+
+let PyKeyError = class extends PyObject {
     __init__(key) {
         var msg = ''
         if (key === null) {
-            msg = 'None'
+            msg = 'pyNone'
         } else if (key !== undefined) {
             if (key['__repr__'] && !key.hasOwnProperty('__repr__')) {
                 msg = key.__repr__()
@@ -105,92 +113,171 @@ export var PyKeyError = class extends PyObject {
                 msg = key.toString()
             }
         }
-        call_super(this, '__init__', [msg])
+        this.__init__(msg)
     }
 }
-create_pyclass(PyKeyError, 'KeyError', [PyException])
+export const pyKeyError = jstype(PyKeyError, 'KeyError', [pyLookupError])
 
-export var PyLookupError = class extends PyObject {}
-create_pyclass(PyLookupError, 'LookupError', [PyException])
+/*****************************************************************/
 
-export var PyMemoryError = class extends PyObject {}
-create_pyclass(PyMemoryError, 'MemoryError', [PyException])
+let PyMemoryError = class extends PyObject {}
+export const pyMemoryError = jstype(PyMemoryError, 'MemoryError', [pyException])
 
-export var PyNameError = class extends PyObject {}
-create_pyclass(PyNameError, 'NameError', [PyException])
+/*****************************************************************/
 
-export var PyNotImplementedError = class extends PyObject {}
-create_pyclass(PyNotImplementedError, 'NotImplementedError', [PyException])
+let PyNameError = class extends PyObject {}
+export const pyNameError = jstype(PyNameError, 'NameError', [pyException])
 
-export var PyOSError = class extends PyObject {}
-create_pyclass(PyOSError, 'OSError', [PyException])
+let PyUnboundLocalError = class extends PyObject {}
+export const pyUnboundLocalError = jstype(PyUnboundLocalError, 'UnboundLocalError', [pyNameError])
 
-export var PyOverflowError = class extends PyObject {}
-create_pyclass(PyOverflowError, 'OverflowError', [PyException])
+/*****************************************************************/
 
-// PyPendingDeprecationWarning = undefined
+let PyOSError = class extends PyObject {}
+export const pyOSError = jstype(PyOSError, 'OSError', [pyException])
 
-export var PyReferenceError = class extends PyObject {}
-create_pyclass(PyReferenceError, 'ReferenceError', [PyException])
+let PyBlockingIOError = class extends PyObject {}
+export const pyBlockingIOError = jstype(PyBlockingIOError, 'BlockingIOError', [pyOSError])
 
-export var PyRuntimeError = class extends PyObject {}
-create_pyclass(PyRuntimeError, 'RuntimeError', [PyException])
+let PyChildProcessError = class extends PyObject {}
+export const pyChildProcessError = jstype(PyChildProcessError, 'ChildProcessError', [pyOSError])
 
-// PyRuntimeWarning = undefined
+/* ------------------------------------------------------------- */
 
-export var PyStandardError = class extends PyObject {}
-create_pyclass(PyStandardError, 'StandardError', [PyException])
+let PyConnectionError = class extends PyObject {}
+export const pyConnectionError = jstype(PyConnectionError, 'ConnectionError', [pyOSError])
 
-export var PyStopIteration = class extends PyObject {}
-create_pyclass(PyStopIteration, 'StopIteration', [PyException])
+let PyBrokenPipeError = class extends PyObject {}
+export const pyBrokenPipeError = jstype(PyBrokenPipeError, 'BrokenPipeError', [pyConnectionError])
 
-export var PySyntaxError = class extends PyObject {}
-create_pyclass(PySyntaxError, 'SyntaxError', [PyException])
+let PyConnectionAbortedError = class extends PyObject {}
+export const pyConnectionAbortedError = jstype(PyConnectionAbortedError, 'ConnectionAbortedError', [pyConnectionError])
 
-// PySyntaxWarning = undefined
+let PyConnectionRefusedError = class extends PyObject {}
+export const pyConnectionRefusedError = jstype(PyConnectionRefusedError, 'ConnectionRefusedError', [pyConnectionError])
 
-export var PySystemError = class extends PyObject {}
-create_pyclass(PySystemError, 'SystemError', [PyException])
+let PyConnectionResetError = class extends PyObject {}
+export const pyConnectionResetError = jstype(PyConnectionResetError, 'ConnectionResetError', [pyConnectionError])
 
-export var PyTabError = class extends PyObject {}
-create_pyclass(PyTabError, 'TabError', [PyException])
+/* ------------------------------------------------------------- */
 
-export var PyTypeError = class extends PyObject {}
-create_pyclass(PyTypeError, 'TypeError', [PyException])
+let PyFileExists = class extends PyObject {}
+export const pyFileExists = jstype(PyFileExists, 'FileExists', [pyOSError])
 
-export var PyUnboundLocalError = class extends PyObject {}
-create_pyclass(PyUnboundLocalError, 'UnboundLocalError', [PyException])
+let PyFileNotFoundError = class extends PyObject {}
+export const pyFileNotFoundError = jstype(PyFileNotFoundError, 'FileNotFoundError', [pyOSError])
 
-export var PyUnicodeDecodeError = class extends PyObject {}
-create_pyclass(PyUnicodeDecodeError, 'UnicodeDecodeError', [PyException])
+let PyInterruptedError = class extends PyObject {}
+export const pyInterruptedError = jstype(PyInterruptedError, 'InterruptedError', [pyOSError])
 
-export var PyUnicodeEncodeError = class extends PyObject {}
-create_pyclass(PyUnicodeEncodeError, 'UnicodeEncodeError', [PyException])
+let PyIsADirectoryError = class extends PyObject {}
+export const pyIsADirectoryError = jstype(PyIsADirectoryError, 'IsADirectoryError', [pyOSError])
 
-export var PyUnicodeError = class extends PyObject {}
-create_pyclass(PyUnicodeError, 'UnicodeError', [PyException])
+let PyNotADirectoryError = class extends PyObject {}
+export const pyNotADirectoryError = jstype(PyNotADirectoryError, 'NotADirectoryError', [pyOSError])
 
-export var PyUnicodeTranslateError = class extends PyObject {}
-create_pyclass(PyUnicodeTranslateError, 'UnicodeTranslateError', [PyException])
+let PyPermissionError = class extends PyObject {}
+export const pyPermissionError = jstype(PyPermissionError, 'NotADirectoryError', [pyOSError])
 
-// PyUnicodeWarning = undefined
+let PyProcessLookupError = class extends PyObject {}
+export const pyProcessLookupError = jstype(PyProcessLookupError, 'ProcessLookupError', [pyOSError])
 
-// PyUserWarning = undefined
+let PyTimeoutError = class extends PyObject {}
+export const pyTimeoutError = jstype(PyTimeoutError, 'TimeoutError', [pyOSError])
 
-export var PyValueError = class extends PyObject {}
-create_pyclass(PyValueError, 'ValueError', [PyException])
+/*****************************************************************/
 
-// Warning = undefined
+let PyReferenceError = class extends PyObject {}
+export const pyReferenceError = jstype(PyReferenceError, 'ReferenceError', [pyException])
 
-export var PyZeroDivisionError = class extends PyObject {}
-create_pyclass(PyZeroDivisionError, 'ZeroDivisionError', [PyException])
+/*****************************************************************/
+
+let PyRuntimeError = class extends PyObject {}
+export const pyRuntimeError = jstype(PyRuntimeError, 'RuntimeError', [pyException])
+
+let PyNotImplementedError = class extends PyObject {}
+export const pyNotImplementedError = jstype(PyNotImplementedError, 'NotImplementedError', [pyRuntimeError])
+
+let PyRecursionError = class extends PyObject {}
+export const pyRecursionError = jstype(PyRecursionError, 'RecursionError', [pyRuntimeError])
+
+/*****************************************************************/
+
+let PySyntaxError = class extends PyObject {}
+export const pySyntaxError = jstype(PySyntaxError, 'SyntaxError', [pyException])
+
+let PyIndentationError = class extends PyObject {}
+export const pyIndentationError = jstype(PyIndentationError, 'IndentationError', [pySyntaxError])
+
+let PyTabError = class extends PyObject {}
+export const pyTabError = jstype(PyTabError, 'TabError', [pyIndentationError])
+
+/*****************************************************************/
+
+let PySystemError = class extends PyObject {}
+export const pySystemError = jstype(PySystemError, 'SystemError', [pyException])
+
+let PyTypeError = class extends PyObject {}
+export const pyTypeError = jstype(PyTypeError, 'TypeError', [pyException])
+
+/*****************************************************************/
+
+let PyValueError = class extends PyObject {}
+export const pyValueError = jstype(PyValueError, 'ValueError', [pyException])
+
+let PyUnicodeError = class extends PyObject {}
+export const pyUnicodeError = jstype(PyUnicodeError, 'UnicodeError', [pyValueError])
+
+let PyUnicodeDecodeError = class extends PyObject {}
+export const pyUnicodeDecodeError = jstype(PyUnicodeDecodeError, 'UnicodeDecodeError', [pyUnicodeError])
+
+let PyUnicodeEncodeError = class extends PyObject {}
+export const pyUnicodeEncodeError = jstype(PyUnicodeEncodeError, 'UnicodeEncodeError', [pyUnicodeError])
+
+let PyUnicodeTranslateError = class extends PyObject {}
+export const pyUnicodeTranslateError = jstype(PyUnicodeTranslateError, 'UnicodeTranslateError', [pyUnicodeError])
+
+/*****************************************************************/
+
+let PyWarning = class extends PyObject {}
+export const pyWarning = jstype(PyWarning, 'Warning', [pyException])
+
+let PyDeprecationWarning = class extends PyObject {}
+export const pyDeprecationWarning = jstype(PyDeprecationWarning, 'DeprecationWarning', [pyWarning])
+
+let PyPendingDeprecationWarning = class extends PyObject {}
+export const pyPendingDeprecationWarning = jstype(PyPendingDeprecationWarning, 'PendingDeprecationWarning', [pyWarning])
+
+let PyRuntimeWarning = class extends PyObject {}
+export const pyRuntimeWarning = jstype(PyRuntimeWarning, 'RuntimeWarning', [pyWarning])
+
+let PySyntaxWarning = class extends PyObject {}
+export const pySyntaxWarning = jstype(PySyntaxWarning, 'SyntaxWarning', [pyWarning])
+
+let PyUserWarning = class extends PyObject {}
+export const pyUserWarning = jstype(PyUserWarning, 'UserWarning', [pyWarning])
+
+let PyFutureWarning = class extends PyObject {}
+export const pyFutureWarning = jstype(PyFutureWarning, 'FutureWarning', [pyWarning])
+
+let PyImportWarning = class extends PyObject {}
+export const pyImportWarning = jstype(PyImportWarning, 'ImportWarning', [pyWarning])
+
+let PyUnicodeWarning = class extends PyObject {}
+export const pyUnicodeWarning = jstype(PyUnicodeWarning, 'UnicodeWarning', [pyWarning])
+
+let PyBytesWarning = class extends PyObject {}
+export const pyBytesWarning = jstype(PyBytesWarning, 'BytesWarning', [pyWarning])
+
+let PyResourceWarning = class extends PyObject {}
+export const pyResourceWarning = jstype(PyResourceWarning, 'ResourceWarning', [pyWarning])
 
 /*****************************************************************
  * Specialist Batavia exceptions
  *****************************************************************/
 
-export var PyBataviaError = class extends PyObject {}
-create_pyclass(PyBataviaError, 'BataviaError', [PyException])
+let PyBataviaError = class extends PyObject {}
+export const pyBataviaError = jstype(PyBataviaError, 'BataviaError', [pyException])
 
-export var PyPolyglotError = class extends PyObject {}
-create_pyclass(PyPolyglotError, 'PolyglotError', [PyException])
+let PyPolyglotError = class extends PyObject {}
+export const pyPolyglotError = jstype(PyPolyglotError, 'PolyglotError', [pyException])

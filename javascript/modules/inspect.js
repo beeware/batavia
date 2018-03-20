@@ -1,4 +1,4 @@
-import { PyRuntimeError, PyTypeError } from '../core/exceptions'
+import { pyRuntimeError, pyTypeError } from '../core/exceptions'
 import JSDict from '../core/JSDict'
 import * as types from '../types'
 
@@ -50,7 +50,7 @@ inspect.FullArgSpec = class {
 //     var params = sig.parameters.values()
 
 //     if (!params || params[0].kind in (_VAR_KEYWORD, _KEYWORD_ONLY)) {
-//         throw new PyValueError('invalid method signature')
+//         throw pyValueError('invalid method signature')
 //     }
 
 //     var kind = params[0].kind
@@ -62,7 +62,7 @@ inspect.FullArgSpec = class {
 //         if (kind !== _VAR_POSITIONAL) {
 //             // Unless we add a new parameter type we never
 //             // get here
-//             throw new PyValueError('invalid argument type')
+//             throw pyValueError('invalid argument type')
 //         }
 //         // It's a var-positional parameter.
 //         // Do nothing. '(*args[, ...])' -> '(*args[, ...])'
@@ -73,10 +73,10 @@ inspect.FullArgSpec = class {
 
 inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_arg) {
     // if (!callable(obj)) {
-    //     throw PyTypeError('{!r} is not a callable object'.format(obj));
+    //     throw pyTypeError('{!r} is not a callable object'.format(obj));
     // }
 
-    // if (isinstance(obj, types.PyMethodType)) {
+    // if (isinstance(obj, types.pymethodType)) {
     // In this case we skip the first parameter of the underlying
     // function (usually `self` or `cls`).
     // sig = inspect._signature_internal(obj.__func__, follow_wrapper_chains, skip_bound_arg);
@@ -98,7 +98,7 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     // } else {
     //     if (sig !== null) {
     //         if (!isinstance(sig, Signature)) {
-    //             throw PyTypeError(
+    //             throw pyTypeError(
     //                 'unexpected object {!r} in __signature__ ' +
     //                 'attribute'.format(sig));
     //         }
@@ -121,7 +121,7 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //         wrapped_sig = inspect._signature_internal(partialmethod.func,
     //                                           follow_wrapper_chains,
     //                                           skip_bound_arg)
-    //         sig = inspect._signature_get_partial(wrapped_sig, partialmethod, (None,))
+    //         sig = inspect._signature_get_partial(wrapped_sig, partialmethod, (pyNone,))
 
     //         first_wrapped_param = tuple(wrapped_sig.parameters.values())[0]
     //         new_params = (first_wrapped_param,) + tuple(sig.parameters.values())
@@ -143,33 +143,33 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //                                       skip_bound_arg)
     //     return inspect._signature_get_partial(wrapped_sig, obj)
 
-    // sig = None
+    // sig = pyNone
     // if isinstance(obj, type):
     //     // obj is a class or a metaclass
 
     //     // First, let's see if it has an overloaded __call__ defined
     //     // in its metaclass
     //     call = inspect._signature_get_user_defined_method(type(obj), '__call__')
-    //     if call is not None:
+    //     if call is not pyNone:
     //         sig = inspect._signature_internal(call,
     //                                   follow_wrapper_chains,
     //                                   skip_bound_arg)
     //     else:
     //         # Now we check if the 'obj' class has a '__new__' method
     //         new = _signature_get_user_defined_method(obj, '__new__')
-    //         if new is not None:
+    //         if new is not pyNone:
     //             sig = inspect._signature_internal(new,
     //                                       follow_wrapper_chains,
     //                                       skip_bound_arg)
     //         else:
     //             # Finally, we should have at least __init__ implemented
     //             init = _signature_get_user_defined_method(obj, '__init__')
-    //             if init is not None:
+    //             if init is not pyNone:
     //                 sig = inspect._signature_internal(init,
     //                                           follow_wrapper_chains,
     //                                           skip_bound_arg)
 
-    //     if sig is None:
+    //     if sig is pyNone:
     //         # At this point we know, that `obj` is a class, with no user-
     //         # defined '__init__', '__new__', or class-level '__call__'
 
@@ -177,13 +177,13 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //             # Since '__text_signature__' is implemented as a
     //             # descriptor that extracts text signature from the
     //             # class docstring, if 'obj' is derived from a builtin
-    //             # class, its own '__text_signature__' may be 'None'.
+    //             # class, its own '__text_signature__' may be 'pyNone'.
     //             # Therefore, we go through the MRO (except the last
     //             # class in there, which is 'object') to find the first
     //             # class with non-empty text signature.
     //             try:
     //                 text_sig = base.__text_signature__
-    //             except PyAttributeError:
+    //             except pyAttributeError:
     //                 pass
     //             else:
     //                 if text_sig:
@@ -207,16 +207,16 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //     # _WrapperDescriptor or _MethodWrapper to avoid
     //     # infinite recursion (and even potential segfault)
     //     call = _signature_get_user_defined_method(type(obj), '__call__')
-    //     if call is not None:
+    //     if call is not pyNone:
     //         try:
     //             sig = _signature_internal(call,
     //                                       follow_wrapper_chains,
     //                                       skip_bound_arg)
-    //         except PyValueError as ex:
+    //         except pyValueError as ex:
     //             msg = 'no signature found for {!r}'.format(obj)
-    //             raise PyValueError(msg) from ex
+    //             raise pyValueError(msg) from ex
 
-    // if sig is not None:
+    // if sig is not pyNone:
     //     # For classes and objects we skip the first parameter of their
     //     # __call__, __new__, or __init__ methods
     //     if skip_bound_arg:
@@ -224,12 +224,12 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
     //     else:
     //         return sig
 
-    // if isinstance(obj, types.PyBuiltinFunctionType):
+    // if isinstance(obj, types.BuiltinFunctionType):
     //     # Raise a nicer error message for builtins
     //     msg = 'no signature found for builtin function {!r}'.format(obj)
-    //     raise PyValueError(msg)
+    //     raise pyValueError(msg)
 
-    // raise PyValueError('callable {!r} is not supported by signature'.format(obj))
+    // raise pyValueError('callable {!r} is not supported by signature'.format(obj))
 }
 
 /*
@@ -238,7 +238,7 @@ inspect._signature_internal = function(obj, follow_wrapper_chains, skip_bound_ar
  * A tuple of seven things is returned:
  * (args, varargs, varkw, defaults, kwonlyargs, kwonlydefaults annotations).
  * 'args' is a list of the argument names.
- * 'varargs' and 'varkw' are the names of the * and ** arguments or None.
+ * 'varargs' and 'varkw' are the names of the * and ** arguments or pyNone.
  * 'defaults' is an n-tuple of the default values of the last n arguments.
  * 'kwonlyargs' is a list of keyword-only argument names.
  * 'kwonlydefaults' is a dictionary mapping names from kwonlyargs to defaults.
@@ -327,12 +327,12 @@ inspect.getfullargspec = function(func) {
     )
 
     // } catch (ex) {
-    // Most of the times 'signature' will raise PyValueError.
-    // But, it can also raise PyAttributeError, and, maybe something
+    // Most of the times 'signature' will raise pyValueError.
+    // But, it can also raise pyAttributeError, and, maybe something
     // else. So to be fully backwards compatible, we catch all
-    // possible exceptions here, and reraise a PyTypeError.
-    // raise PyTypeError('unsupported callable') from ex
-    // throw PyTypeError('unsupported callable');
+    // possible exceptions here, and reraise a pyTypeError.
+    // raise pyTypeError('unsupported callable') from ex
+    // throw pyTypeError('unsupported callable');
     // }
 }
 inspect.getfullargspec.$pyargs = {
@@ -340,7 +340,7 @@ inspect.getfullargspec.$pyargs = {
 }
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw new PyRuntimeError('Missing arguments')
+    throw pyRuntimeError('Missing arguments')
     // var names = [];
     // for (var name in argnames) {
     //     if (!name in values) {
@@ -357,14 +357,14 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
     //     del names[-2:]
     //     s = ", ".join(names) + tail
     // }
-    // raise PyTypeError("%s() missing %i required %s argument%s: %s" %
+    // raise pyTypeError("%s() missing %i required %s argument%s: %s" %
     //                 (f_name, missing,
     //                   "positional" if pos else "keyword-only",
     //                   "" if missing === 1 else "s", s))
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw new PyRuntimeError('FIXME: Too many arguments')
+    throw pyRuntimeError('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
@@ -381,7 +381,7 @@ inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, val
     //     msg = " positional argument%s (and %d keyword-only argument%s)"
     //     kwonly_sig = (msg % ("s" if given !== 1 else "", kwonly_given,
     //                          "s" if kwonly_given !== 1 else ""))
-    // raise PyTypeError("%s() takes %s positional argument%s but %d%s %s given" %
+    // raise pyTypeError("%s() takes %s positional argument%s but %d%s %s given" %
     //         (f_name, sig, "s" if plural else "", given, kwonly_sig,
     //          "was" if given === 1 and not kwonly_given else "were"))
 }
@@ -396,16 +396,16 @@ inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, val
 inspect.getcallargs = function(func, positional, named) {
     var arg2value = new JSDict()
 
-    // if ismethod(func) and func.__self__ is not None:
+    // if ismethod(func) and func.__self__ is not pyNone:
     if (func.__self__) {
         // implicit 'self' (or 'cls' for classmethods) argument
         positional = [func.__self__].concat(positional)
     }
     var num_pos = positional.length
-    var num_args = func.argspec.args.length
+    var num_args = func.$argspec.args.length
     var num_defaults
-    if (func.argspec.defaults) {
-        num_defaults = func.argspec.defaults.length
+    if (func.$argspec.defaults) {
+        num_defaults = func.$argspec.defaults.length
     } else {
         num_defaults = 0
     }
@@ -413,44 +413,44 @@ inspect.getcallargs = function(func, positional, named) {
     var i, arg
     var n = Math.min(num_pos, num_args)
     for (i = 0; i < n; i++) {
-        arg2value[func.argspec.args[i]] = positional[i]
+        arg2value[func.$argspec.args[i]] = positional[i]
     }
 
-    if (func.argspec.varargs) {
-        arg2value[func.argspec.varargs] = positional.slice(n)
+    if (func.$argspec.varargs) {
+        arg2value[func.$argspec.varargs] = positional.slice(n)
     }
 
-    var possible_kwargs = new types.PySet()
-    possible_kwargs.update(func.argspec.args)
-    possible_kwargs.update(func.argspec.kwonlyargs)
+    var possible_kwargs = types.pyset()
+    possible_kwargs.update(func.$argspec.args)
+    possible_kwargs.update(func.$argspec.kwonlyargs)
 
-    if (func.argspec.varkw) {
-        arg2value[func.argspec.varkw] = {}
+    if (func.$argspec.varkw) {
+        arg2value[func.$argspec.varkw] = {}
     }
 
     for (var kw in named) {
         if (named.hasOwnProperty(kw)) {
-            if (!possible_kwargs.__contains__(new types.PyStr(kw)).valueOf()) {
-                if (!func.argspec.varkw) {
-                    throw new PyTypeError('%s() got an unexpected keyword argument %r' %
+            if (!possible_kwargs.__contains__(types.pystr(kw)).valueOf()) {
+                if (!func.$argspec.varkw) {
+                    throw pyTypeError('%s() got an unexpected keyword argument %r' %
                                 (func.__name__, kw))
                 }
-                arg2value[func.argspec.varkw][kw] = named[kw]
+                arg2value[func.$argspec.varkw][kw] = named[kw]
                 continue
             }
             if (kw in arg2value) {
-                throw new PyTypeError('%s() got multiple values for argument %r' %
+                throw pyTypeError('%s() got multiple values for argument %r' %
                                 (func.__name__, kw))
             }
             arg2value[kw] = named[kw]
         }
     }
 
-    if (num_pos > num_args && (func.argspec.varargs === undefined || func.argspec.varargs.length === 0)) {
-        inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value)
+    if (num_pos > num_args && (func.$argspec.varargs === undefined || func.$argspec.varargs.length === 0)) {
+        inspect._too_many(func.__name__, func.$argspec.args, func.$argspec.kwonlyargs, func.$argspec.varargs, num_defaults, num_pos, arg2value)
     }
     if (num_pos < num_args) {
-        var req = func.argspec.args.slice(0, num_args - num_defaults)
+        var req = func.$argspec.args.slice(0, num_args - num_defaults)
         for (arg in req) {
             if (req.hasOwnProperty(arg)) {
                 if (!(req[arg] in arg2value)) {
@@ -458,19 +458,19 @@ inspect.getcallargs = function(func, positional, named) {
                 }
             }
         }
-        for (i = num_args - num_defaults; i < func.argspec.args.length; i++) {
-            arg = func.argspec.args[i]
+        for (i = num_args - num_defaults; i < func.$argspec.args.length; i++) {
+            arg = func.$argspec.args[i]
             if (!arg2value.hasOwnProperty(arg)) {
-                arg2value[arg] = func.argspec.defaults[i - num_pos]
+                arg2value[arg] = func.$argspec.defaults[i - num_pos]
             }
         }
     }
     var missing = 0
-    for (var kwarg in func.argspec.kwonlyargs) {
-        if (func.argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
+    for (var kwarg in func.$argspec.kwonlyargs) {
+        if (func.$argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
             if (!arg2value.hasOwnProperty(kwarg)) {
-                if (func.argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
-                    arg2value[kwarg] = func.argspec.kwonlydefaults[kwarg]
+                if (func.$argspec.kwonlydefaults.hasOwnProperty(kwarg)) {
+                    arg2value[kwarg] = func.$argspec.kwonlydefaults[kwarg]
                 } else {
                     missing += 1
                 }
@@ -478,7 +478,7 @@ inspect.getcallargs = function(func, positional, named) {
         }
     }
     if (missing) {
-        inspect._missing_arguments(func.__name__, func.argspec.kwonlyargs, false, arg2value)
+        inspect._missing_arguments(func.__name__, func.$argspec.kwonlyargs, false, arg2value)
     }
     return arg2value
 }
@@ -517,21 +517,21 @@ inspect.Parameter = function(kwargs) {
 
     // if kind not in (POSITIONAL_ONLY, _POSITIONAL_OR_KEYWORD,
     //                 _VAR_POSITIONAL, _KEYWORD_ONLY, _VAR_KEYWORD):
-    //     raise PyValueError("invalid value for 'Parameter.kind' attribute")
+    //     raise pyValueError("invalid value for 'Parameter.kind' attribute")
 
     // if def is not _empty:
     //     if kind in (_VAR_POSITIONAL, _VAR_KEYWORD):
     //         msg = '{} parameters cannot have def values'.format(kind)
-    //         raise PyValueError(msg)
+    //         raise pyValueError(msg)
 
     // if name is _empty:
-    //     raise PyValueError('name is a required attribute for Parameter')
+    //     raise pyValueError('name is a required attribute for Parameter')
 
     // if not isinstance(name, str):
-    //     raise PyTypeError("name must be a str, not a {!r}".format(name))
+    //     raise pyTypeError("name must be a str, not a {!r}".format(name))
 
     // if not name.isidentifier():
-    //     raise PyValueError('{!r} is not a valid parameter name'.format(name))
+    //     raise pyValueError('{!r} is not a valid parameter name'.format(name))
 }
 
 inspect.Parameter.POSITIONAL_ONLY = 0
@@ -617,7 +617,7 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 
 //             try:
 //                 arg = self.arguments[param_name]
-//             except PyKeyError:
+//             except pyKeyError:
 //                 # We're done here. Other arguments
 //                 # will be mapped in 'BoundArguments.kwargs'
 //                 break
@@ -649,7 +649,7 @@ inspect.Parameter.prototype.replace = function(kwargs) {
 
 //             try:
 //                 arg = self.arguments[param_name]
-//             except PyKeyError:
+//             except pyKeyError:
 //                 pass
 //             else:
 //                 if param.kind === _VAR_KEYWORD:
@@ -709,7 +709,7 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
             //     if kind < top_kind:
             //         msg = 'wrong parameter order: {!r} before {!r}'
             //         msg = msg.format(top_kind, kind)
-            //         raise PyValueError(msg)
+            //         raise pyValueError(msg)
             //     elif kind > top_kind:
             //         kind_defaults = false
             //         top_kind = kind
@@ -722,14 +722,14 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
             //                 # a default
             //                 msg = 'non-default argument follows default ' \
             //                       'argument'
-            //                 raise PyValueError(msg)
+            //                 raise pyValueError(msg)
             //         else:
             //             # There is a default for this parameter.
             //             kind_defaults = True
 
             //     if name in params:
             //         msg = 'duplicate parameter name: {!r}'.format(name)
-            //         raise PyValueError(msg)
+            //         raise pyValueError(msg)
 
             //     params[name] = param
         } else {
@@ -752,45 +752,45 @@ inspect.Signature = function(parameters, return_annotation, __validate_parameter
 * Constructs Signature for the given python function
 */
 inspect.Signature.from_function = function(func) {
-    var is_duck_function = false
+    let is_duck_function = false
     // if (!isfunction(func)) {
     //     if (_signature_is_functionlike(func)) {
     //         is_duck_function = true;
     //     } else {
     //         // If it's not a pure Python function, and not a duck type
     //         // of pure function:
-    //         throw PyTypeError('{!r} is not a Python function'.format(func));
+    //         throw pyTypeError('{!r} is not a Python function'.format(func));
     //     }
     // }
 
     // Parameter = cls._parameter_cls
 
     // Parameter information.
-    var func_code = func.__code__
-    var pos_count = func_code.co_argcount
-    var arg_names = func_code.co_varnames
-    var positional = arg_names.slice(0, pos_count)
-    var keyword_only_count = func_code.co_kwonlyargcount
-    var keyword_only = arg_names.slice(pos_count, pos_count + keyword_only_count)
-    var annotations = func.__annotations__
-    var defs = func.__defaults__
-    var kwdefaults = func.__kwdefaults__
+    let func_code = func.__code__
+    let pos_count = func_code.co_argcount
+    let arg_names = func_code.co_varnames
+    let positional = arg_names.slice(0, pos_count)
+    let keyword_only_count = func_code.co_kwonlyargcount
+    let keyword_only = arg_names.slice(pos_count, pos_count + keyword_only_count)
+    let annotations = func.__annotations__
+    let defs = func.__defaults__
+    let kwdefaults = func.__kwdefaults__
 
-    var pos_default_count
+    let pos_default_count
     if (defs) {
         pos_default_count = defs.length
     } else {
         pos_default_count = 0
     }
 
-    var parameters = []
-    var n, name, annotation, def, offset
+    let parameters = []
+    let n, name, annotation, def, offset
 
     // Non-keyword-only parameters w/o defaults.
-    var non_default_count = pos_count - pos_default_count
+    let non_default_count = pos_count - pos_default_count
     for (n = 0; n < non_default_count; n++) {
         name = positional[n]
-        annotation = annotations[name]
+        annotation = annotations.get(name)
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -801,7 +801,7 @@ inspect.Signature.from_function = function(func) {
     // ... w/ defaults.
     for (offset = 0, n = non_default_count; n < positional.length; offset++, n++) {
         name = positional[n]
-        annotation = annotations[name]
+        annotation = annotations.get(name)
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -813,7 +813,7 @@ inspect.Signature.from_function = function(func) {
     // *args
     if (func_code.co_flags & inspect.CO_VARARGS) {
         name = arg_names[pos_count + keyword_only_count]
-        annotation = annotations[name]
+        annotation = annotations.get(name)
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -828,7 +828,7 @@ inspect.Signature.from_function = function(func) {
             def = kwdefaults[name]
         }
 
-        annotation = annotations[name]
+        annotation = annotations.get(name)
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -839,13 +839,13 @@ inspect.Signature.from_function = function(func) {
 
     // **kwargs
     if (func_code.co_flags & inspect.CO_VARKEYWORDS) {
-        var index = pos_count + keyword_only_count
+        n = pos_count + keyword_only_count
         if (func_code.co_flags & inspect.CO_VARARGS) {
-            index += 1
+            n += 1
         }
 
-        name = arg_names[index]
-        annotation = annotations[name]
+        name = arg_names[n]
+        annotation = annotations.get(name)
         parameters.push(new inspect.Parameter({
             'name': name,
             'annotation': annotation,
@@ -855,7 +855,7 @@ inspect.Signature.from_function = function(func) {
 
     // Is 'func' is a pure Python function - don't validate the
     // parameters list (for correct order and defaults), it should be OK.
-    return new inspect.Signature(parameters, annotations['return'] || {}, is_duck_function)
+    return new inspect.Signature(parameters, annotations.get('return', {}), is_duck_function)
 }
 
 // @classmethod
@@ -890,7 +890,7 @@ inspect.Signature.from_function = function(func) {
 //         if param.kind === _KEYWORD_ONLY:
 //             try:
 //                 other_param = other.parameters[param_name]
-//             except PyKeyError:
+//             except pyKeyError:
 //                 return false
 //             else:
 //                 if param !== other_param:
@@ -898,7 +898,7 @@ inspect.Signature.from_function = function(func) {
 //         else:
 //             try:
 //                 other_idx = other_positions[param_name]
-//             except PyKeyError:
+//             except pyKeyError:
 //                 return false
 //             else:
 //                 if (idx !== other_idx or
@@ -924,11 +924,11 @@ inspect.Signature.from_function = function(func) {
 //         # parameters
 //         try:
 //             arg_val = next(arg_vals)
-//         except PyStopIteration:
+//         except pyStopIteration:
 //             # No more positional arguments
 //             try:
 //                 param = next(parameters)
-//             except PyStopIteration:
+//             except pyStopIteration:
 //                 # No more parameters. That's it. Just need to check that
 //                 # we have no `kwargs` after this while loop
 //                 break
@@ -942,7 +942,7 @@ inspect.Signature.from_function = function(func) {
 //                         msg = '{arg!r} parameter is positional only, ' \
 //                               'but was passed as a keyword'
 //                         msg = msg.format(arg=param.name)
-//                         raise PyTypeError(msg) from None
+//                         raise pyTypeError(msg) from pyNone
 //                     parameters_ex = (param,)
 //                     break
 //                 elif (param.kind === _VAR_KEYWORD or
@@ -961,18 +961,18 @@ inspect.Signature.from_function = function(func) {
 //                     else:
 //                         msg = '{arg!r} parameter lacking default value'
 //                         msg = msg.format(arg=param.name)
-//                         raise PyTypeError(msg) from None
+//                         raise pyTypeError(msg) from pyNone
 //         else:
 //             # We have a positional argument to process
 //             try:
 //                 param = next(parameters)
-//             except PyStopIteration:
-//                 raise PyTypeError('too many positional arguments') from None
+//             except pyStopIteration:
+//                 raise pyTypeError('too many positional arguments') from pyNone
 //             else:
 //                 if param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY):
 //                     # Looks like we have no parameter for this positional
 //                     # argument
-//                     raise PyTypeError('too many positional arguments')
+//                     raise pyTypeError('too many positional arguments')
 
 //                 if param.kind === _VAR_POSITIONAL:
 //                     # We have an '*args'-like argument, let's fill it with
@@ -984,14 +984,14 @@ inspect.Signature.from_function = function(func) {
 //                     break
 
 //                 if param.name in kwargs:
-//                     raise PyTypeError('multiple values for argument '
+//                     raise pyTypeError('multiple values for argument '
 //                                     '{arg!r}'.format(arg=param.name))
 
 //                 arguments[param.name] = arg_val
 
 //     # Now, we iterate through the remaining parameters to process
 //     # keyword arguments
-//     kwargs_param = None
+//     kwargs_param = pyNone
 //     for param in itertools.chain(parameters_ex, parameters):
 //         if param.kind === _VAR_KEYWORD:
 //             # Memorize that we have a '**kwargs'-like parameter
@@ -1007,39 +1007,39 @@ inspect.Signature.from_function = function(func) {
 //         param_name = param.name
 //         try:
 //             arg_val = kwargs.pop(param_name)
-//         except PyKeyError:
+//         except pyKeyError:
 //             # We have no value for this parameter.  It's fine though,
 //             # if it has a default value, or it is an '*args'-like
 //             # parameter, left alone by the processing of positional
 //             # arguments.
 //             if (not partial and param.kind !== _VAR_POSITIONAL and
 //                                                 param.default is _empty):
-//                 raise PyTypeError('{arg!r} parameter lacking default value'. \
-//                                 format(arg=param_name)) from None
+//                 raise pyTypeError('{arg!r} parameter lacking default value'. \
+//                                 format(arg=param_name)) from pyNone
 
 //         else:
 //             if param.kind === _POSITIONAL_ONLY:
 //                 # This should never happen in case of a properly built
 //                 # Signature object (but let's have this check here
 //                 # to ensure correct behaviour just in case)
-//                 raise PyTypeError('{arg!r} parameter is positional only, '
+//                 raise pyTypeError('{arg!r} parameter is positional only, '
 //                                 'but was passed as a keyword'. \
 //                                 format(arg=param.name))
 
 //             arguments[param_name] = arg_val
 
 //     if kwargs:
-//         if kwargs_param is not None:
+//         if kwargs_param is not pyNone:
 //             // Process our '**kwargs'-like parameter
 //             arguments[kwargs_param.name] = kwargs
 //         else:
-//             raise PyTypeError('too many keyword arguments')
+//             raise pyTypeError('too many keyword arguments')
 
 //     return self._bound_arguments_cls(self, arguments)
 
 // def bind(*args, **kwargs):
 //     '''Get a BoundArguments object, that maps the passed `args`
-//     and `kwargs` to the function's signature.  Raises `PyTypeError`
+//     and `kwargs` to the function's signature.  Raises `pyTypeError`
 //     if the passed arguments can not be bound.
 //     '''
 //     return args[0]._bind(args[1:], kwargs)
@@ -1047,7 +1047,7 @@ inspect.Signature.from_function = function(func) {
 // def bind_partial(*args, **kwargs):
 //     '''Get a BoundArguments object, that partially maps the
 //     passed `args` and `kwargs` to the function's signature.
-//     Raises `PyTypeError` if the passed arguments can not be bound.
+//     Raises `pyTypeError` if the passed arguments can not be bound.
 //     '''
 //     return args[0]._bind(args[1:], kwargs, partial=True)
 

@@ -1,9 +1,9 @@
-import { PyNotImplementedError } from '../core/exceptions'
-import { PyNone } from '../core/types'
+import { pyNotImplementedError } from '../core/exceptions'
+import { pyNone } from '../core/types'
 
 import * as types from '../types'
 
-export default function sorted(iterable, key = PyNone, reverse = false) {
+export default function sorted(iterable, key = pyNone, reverse = false) {
     function preparingFunction(value) {
         return {
             'key': value,
@@ -11,7 +11,7 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
         }
     }
 
-    if (types.isinstance(iterable, [types.PyList, types.PyTuple])) {
+    if (types.isinstance(iterable, [types.pylist, types.pytuple])) {
         iterable = iterable.map(preparingFunction)
         iterable.sort(function(a, b) {
             // TODO: Replace this with a better, guaranteed stable sort.
@@ -23,7 +23,7 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
 
             // Order of conditions does matter here.
             // Because if we get unorderable types, CPython gives always '<' in Exception:
-            // PyTypeError: unorderable types: str() < int()
+            // pyTypeError: unorderable types: str() < int()
             if (a['key'].__lt__(b['key'])) {
                 if (reverse) {
                     return 1
@@ -42,18 +42,19 @@ export default function sorted(iterable, key = PyNone, reverse = false) {
             return 0
         })
 
-        return new types.PyList(iterable.map(function(element) {
+        return types.pylist(iterable.map(function(element) {
             return element['value']
         }))
     }
 
-    throw new PyNotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
+    throw pyNotImplementedError("Builtin Batavia function 'sorted' not implemented for objects")
 }
 
 sorted.__name__ = 'sorted'
-sorted.__doc__ = 'sorted(iterable, key=None, reverse=False) --> new sorted list'
+sorted.__doc__ = 'sorted(iterable, key=pyNone, reverse=False) --> new sorted list'
 sorted.$pyargs = {
     args: ['iterable'],
     default_args: ['key', 'reverse'],
-    missing_args_error: (e) => "Required argument 'iterable' (pos 1) not found"
+    missing_args_error: (e) => `Function takes at least 1 positional arguments (${e.given} given)`
 }
+

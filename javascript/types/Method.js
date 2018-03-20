@@ -1,13 +1,15 @@
-import { create_pyclass, PyObject } from '../core/types'
-import Function from './Function'
+import { pyargs } from '../core/callables'
+import { jstype, PyObject } from '../core/types'
+import pyfunction from './Function'
 
 /*************************************************************************
  * A Python method type
  *************************************************************************/
 
-export default class Method extends PyObject {
-    constructor(instance, func) {
-        super(
+class Method extends PyObject {
+    __init__(instance, func) {
+        pyfunction.$pyclass.prototype.__init__.call(
+            this,
             func.__name__,
             func.__code__,
             func.__globals__,
@@ -17,7 +19,18 @@ export default class Method extends PyObject {
         )
         this.__self__ = instance
         this.__func__ = func
-        this.__class__ = instance.__class__
     }
+
+    @pyargs({})
+    __repr__() {
+        if (this.__self__) {
+            return `<bound method ${this.__name__} of ${this.__self__.__repr__()}>`
+        } else {
+            return `<${this.__class__.__name__} object at 0x99999999>`
+        }
+    }
+
 }
-create_pyclass(Method, 'method', [Function])
+
+const pymethod = jstype(Method, 'method', [pyfunction], {})
+export default pymethod

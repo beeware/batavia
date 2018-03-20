@@ -1,7 +1,7 @@
 /* eslint-disable no-extend-native */
 import { iter_for_each, pyargs } from '../core/callables'
-import { PyIndexError, PyNotImplementedError, PyStopIteration, PyTypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { pyIndexError, pyNotImplementedError, pyStopIteration, pyTypeError } from '../core/exceptions'
+import { jstype, type_name, PyObject } from '../core/types'
 import * as version from '../core/version'
 
 import * as builtins from '../builtins'
@@ -12,17 +12,16 @@ import * as types from '../types'
  **************************************************/
 
 class PySetIterator extends PyObject {
-    constructor(data) {
-        super()
-        this.index = 0
-        this.keys = []
+    __init__(data) {
+        this.$index = 0
+        this.$keys = []
         for (let i = 0; i < data.$data_keys.length; i++) {
             let key = data.$data_keys[i]
             // ignore deleted or empty
             if (data.$isEmpty(key) || data.$isDeleted(key)) {
                 continue
             }
-            this.keys.push(key)
+            this.$keys.push(key)
         }
     }
 
@@ -31,11 +30,11 @@ class PySetIterator extends PyObject {
     }
 
     __next__() {
-        var key = this.keys[this.index]
+        var key = this.$keys[this.$index]
         if (key === undefined) {
-            throw new PyStopIteration()
+            throw pyStopIteration()
         }
-        this.index++
+        this.$index++
         return key
     }
 
@@ -43,7 +42,7 @@ class PySetIterator extends PyObject {
         return '<set_iterator object at 0x99999999>'
     }
 }
-create_pyclass(PySetIterator, 'set_iterator')
+const set_iterator = jstype(PySetIterator, 'set_iterator', [], null)
 
 /*************************************************************************
  * A Python Set type
@@ -62,23 +61,23 @@ var INITIAL_SIZE = 8 // after size 0
  */
 var EMPTY = {
     __hash__: function() {
-        return new types.PyInt(0)
+        return types.pyint(0)
     },
     __eq__: function(other) {
-        return new types.PyBool(this === other)
+        return types.pybool(this === other)
     }
 }
 
 var DELETED = {
     __hash__: function() {
-        return new types.PyInt(0)
+        return types.pyint(0)
     },
     __eq__: function(other) {
-        return new types.PyBool(this === other)
+        return types.pybool(this === other)
     }
 }
 
-export default class PySet extends PyObject {
+class PySet extends PyObject {
     @pyargs({
         default_args: ['iterable']
     })
@@ -188,7 +187,7 @@ export default class PySet extends PyObject {
      **************************************************/
 
     __len__() {
-        return this.$size
+        return types.pyint(this.$size)
     }
 
     __bool__() {
@@ -196,7 +195,7 @@ export default class PySet extends PyObject {
     }
 
     __iter__() {
-        return new PySetIterator(this)
+        return set_iterator(this)
     }
 
     __repr__() {
@@ -229,41 +228,41 @@ export default class PySet extends PyObject {
      **************************************************/
 
     __lt__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.$size < other.$size)
+        if (types.isinstance(other, [types.pyset, types.pyfrozenset])) {
+            return types.pybool(this.$size < other.$size)
         }
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw pyTypeError(
                 'unorderable types: ' + this.__class__.__name__ + '() < ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw pyTypeError(
                 "'<' not supported between instances of '" + this.__class__.__name__ + "' and '" + type_name(other) + "'"
             )
         }
     }
 
     __le__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.$size <= other.$size)
+        if (types.isinstance(other, [types.pyset, types.pyfrozenset])) {
+            return types.pybool(this.$size <= other.$size)
         }
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw pyTypeError(
                 'unorderable types: ' + this.__class__.__name__ + '() <= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw pyTypeError(
                 "'<=' not supported between instances of '" + this.__class__.__name__ + "' and '" + type_name(other) + "'"
             )
         }
     }
 
     __eq__(other) {
-        if (!types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            return new types.PyBool(false)
+        if (!types.isinstance(other, [types.pyfrozenset, types.pyset])) {
+            return types.pybool(false)
         }
         if (this.$size !== other.$size) {
-            return new types.PyBool(false)
+            return types.pybool(false)
         }
         var iterobj = builtins.iter(this)
         var equal = true
@@ -271,7 +270,7 @@ export default class PySet extends PyObject {
             equal = equal && other.__contains__(val).valueOf()
         })
 
-        return new types.PyBool(equal)
+        return types.pybool(equal)
     }
 
     __ne__(other) {
@@ -279,48 +278,48 @@ export default class PySet extends PyObject {
     }
 
     __gt__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.$size > other.$size)
+        if (types.isinstance(other, [types.pyset, types.pyfrozenset])) {
+            return types.pybool(this.$size > other.$size)
         }
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw pyTypeError(
                 'unorderable types: ' + this.__class__.__name__ + '() > ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw pyTypeError(
                 "'>' not supported between instances of '" + this.__class__.__name__ + "' and '" + type_name(other) + "'"
             )
         }
     }
 
     __ge__(other) {
-        if (types.isinstance(other, [types.PySet, types.PyFrozenSet])) {
-            return new types.PyBool(this.$size >= other.$size)
+        if (types.isinstance(other, [types.pyset, types.pyfrozenset])) {
+            return types.pybool(this.$size >= other.$size)
         }
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
+            throw pyTypeError(
                 'unorderable types: ' + this.__class__.__name__ + '() >= ' + type_name(other) + '()'
             )
         } else {
-            throw new PyTypeError(
+            throw pyTypeError(
                 "'>=' not supported between instances of '" + this.__class__.__name__ + "' and '" + type_name(other) + "'"
             )
         }
     }
 
     __contains__(value) {
-        return new types.PyBool(this.$find_index(value) !== null)
+        return types.pybool(this.$find_index(value) !== null)
     }
 
     /**************************************************
      * Unary operators
      **************************************************/
     __pos__() {
-        throw new PyTypeError("bad operand type for unary +: '" + this.__class__.__name__ + "'")
+        throw pyTypeError("bad operand type for unary +: '" + this.__class__.__name__ + "'")
     }
 
     __neg__() {
-        throw new PyTypeError("bad operand type for unary -: '" + this.__class__.__name__ + "'")
+        throw pyTypeError("bad operand type for unary -: '" + this.__class__.__name__ + "'")
     }
 
     __not__() {
@@ -328,7 +327,7 @@ export default class PySet extends PyObject {
     }
 
     __invert__() {
-        throw new PyTypeError("bad operand type for unary ~: '" + this.__class__.__name__ + "'")
+        throw pyTypeError("bad operand type for unary ~: '" + this.__class__.__name__ + "'")
     }
 
     /**************************************************
@@ -336,50 +335,50 @@ export default class PySet extends PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __div__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __floordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't take floor of complex number.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't take floor of complex number.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for //: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError("unsupported operand type(s) for //: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __truediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __mul__(other) {
         if (types.isinstance(other, [
-            types.PyBytearray, types.PyBytes, types.PyList,
-            types.PyStr, types.PyTuple
+            types.pybytearray, types.pybytes, types.pylist,
+            types.pystr, types.pytuple
         ])) {
-            throw new PyTypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+            throw pyTypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for *: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError("unsupported operand type(s) for *: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __mod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't mod complex numbers.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't mod complex numbers.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for %: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError("unsupported operand type(s) for %: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __add__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for +: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __sub__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
@@ -387,34 +386,34 @@ export default class PySet extends PyObject {
                     both.push(val)
                 }
             })
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __getitem__(other) {
-        if (types.isinstance(other, [types.PyBool])) {
-            throw new PyTypeError("'" + this.__class__.__name__ + "' object does not support indexing")
-        } else if (types.isinstance(other, [types.PyInt])) {
-            if (other.val.gt(types.PyInt.MAX_INT.val) || other.val.lt(types.PyInt.MIN_INT.val)) {
-                throw new PyIndexError("cannot fit 'int' into an index-sized integer")
+        if (types.isinstance(other, [types.pybool])) {
+            throw pyTypeError("'" + this.__class__.__name__ + "' object does not support indexing")
+        } else if (types.isinstance(other, [types.pyint])) {
+            if (other.val.gt(types.pyint.MAX_INT.val) || other.val.lt(types.pyint.MIN_INT.val)) {
+                throw pyIndexError("cannot fit 'int' into an index-sized integer")
             } else {
-                throw new PyTypeError("'" + this.__class__.__name__ + "' object does not support indexing")
+                throw pyTypeError("'" + this.__class__.__name__ + "' object does not support indexing")
             }
         }
-        throw new PyTypeError("'" + this.__class__.__name__ + "' object is not subscriptable")
+        throw pyTypeError("'" + this.__class__.__name__ + "' object is not subscriptable")
     }
 
     __lshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for <<: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __rshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for >>: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __and__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj = builtins.iter(this)
             iter_for_each(iterobj, function(val) {
@@ -422,13 +421,13 @@ export default class PySet extends PyObject {
                     both.push(val)
                 }
             })
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __xor__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
@@ -442,13 +441,13 @@ export default class PySet extends PyObject {
                     both.push(val)
                 }
             }.bind(this))
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __or__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
@@ -458,9 +457,9 @@ export default class PySet extends PyObject {
             iter_for_each(iterobj2, function(val) {
                 both.push(val)
             })
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -468,23 +467,23 @@ export default class PySet extends PyObject {
      **************************************************/
 
     __ifloordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't take floor of complex number.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't take floor of complex number.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for //=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError("unsupported operand type(s) for //=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __itruediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for /=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __iadd__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for +=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __isub__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
@@ -493,38 +492,38 @@ export default class PySet extends PyObject {
                 }
             })
             this.update(both)
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __imul__(other) {
-        throw new PyTypeError("unsupported operand type(s) for *=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for *=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __imod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't mod complex numbers.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't mod complex numbers.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for %=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError("unsupported operand type(s) for %=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
         }
     }
 
     __ipow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __ilshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for <<=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __irshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for >>=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
-            var intersection = new PySet()
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
+            var intersection = pyset()
             var iterobj = builtins.iter(this)
             iter_for_each(iterobj, function(val) {
                 if (other.__contains__(val).valueOf()) {
@@ -533,11 +532,11 @@ export default class PySet extends PyObject {
             })
             return intersection
         }
-        throw new PyTypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
@@ -552,13 +551,13 @@ export default class PySet extends PyObject {
                 }
             }.bind(this))
             this.update(both)
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        if (types.isinstance(other, [types.PyFrozenSet, types.PySet])) {
+        if (types.isinstance(other, [types.pyfrozenset, types.pyset])) {
             var both = []
             var iterobj1 = builtins.iter(this)
             iter_for_each(iterobj1, function(val) {
@@ -569,9 +568,9 @@ export default class PySet extends PyObject {
                 both.push(val)
             })
             this.update(both)
-            return new PySet(both)
+            return pyset(both)
         }
-        throw new PyTypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
     }
 
     /**************************************************
@@ -610,47 +609,47 @@ export default class PySet extends PyObject {
     }
 
     clear() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     copy() {
-        return new PySet(this)
+        return pyset(this)
     }
 
     difference() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     difference_update() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     discard() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     intersection() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     intersection_update() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     isdisjoint() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     issubset() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     issuperset() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     pop() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     remove(v) {
@@ -658,15 +657,15 @@ export default class PySet extends PyObject {
     }
 
     symmetric_difference() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     symmetric_difference_update() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     union() {
-        throw new PyNotImplementedError()
+        throw pyNotImplementedError()
     }
 
     update(args) {
@@ -682,4 +681,6 @@ PySet.prototype.__doc__ = `set() -> new empty set object
 set(iterable) -> new set object
 
 Build an unordered collection of unique elements.`
-create_pyclass(PySet, 'set')
+
+const pyset = jstype(PySet, 'set', [], null)
+export default pyset

@@ -1,7 +1,7 @@
-import { PyNotImplementedError } from '../core/exceptions'
+import { pyNotImplementedError } from '../core/exceptions'
 
 export default function open() {
-    throw new PyNotImplementedError("Builtin Batavia function 'open' not implemented")
+    throw pyNotImplementedError("Builtin Batavia function 'open' not implemented")
 }
 
 open.__name__ = 'open'
@@ -76,19 +76,19 @@ passed.  See the codecs module for the list of supported encodings.
 
 errors is an optional string that specifies how encoding errors are to
 be handled---this argument should not be used in binary mode. Pass
-'strict' to raise a PyValueError exception if there is an encoding error
-(the default of None has the same effect), or pass 'ignore' to ignore
+'strict' to raise a pyValueError exception if there is an encoding error
+(the default of pyNone has the same effect), or pass 'ignore' to ignore
 errors. (Note that ignoring encoding errors can lead to data loss.)
 See the documentation for codecs.register or run 'help(codecs.Codec)'
 for a list of the permitted encoding error strings.
 
     newline controls how universal newlines works (it only applies to text
-mode). It can be None, '', '\
+mode). It can be pyNone, '', '\
 ', '\\r', and '\\r\
 '.  It works as
 follows:
 
-* On input, if newline is None, universal newlines mode is
+* On input, if newline is pyNone, universal newlines mode is
   enabled. Lines in the input can end in '\
   ', '\\r', or '\\r\
   ', and
@@ -99,7 +99,7 @@ follows:
   the other legal values, input lines are only terminated by the given
   string, and the line ending is returned to the caller untranslated.
 
-  * On output, if newline is None, any '\
+  * On output, if newline is pyNone, any '\
   ' characters written are
   translated to the system default line separator, os.linesep. If
   newline is '' or '\
@@ -116,7 +116,7 @@ A custom opener can be used by passing a callable as *opener*. The
 underlying file descriptor for the file object is then obtained by
 calling *opener* with (*file*, *flags*). *opener* must return an open
 file descriptor (passing os.open as *opener* results in functionality
-similar to passing None).
+similar to passing pyNone).
 
 open() returns a file object whose type depends on the mode, and
 through which the standard file operations such as reading and writing

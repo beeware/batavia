@@ -125,14 +125,15 @@ function PyConsole(element) {
 }
 
 PyConsole.prototype.write = function(buffer) {
-    var text = document.createTextNode(buffer);
+    // Put a (forced) string representation on the console
+    var text = document.createTextNode('' + buffer);
     this.element.appendChild(text);
 
     // Console scrollbar stays bottom.
     this.element.scrollTop = this.element.scrollHeight;
 
-    // Also echo to the console.
-    console.log(buffer)
+    // Also echo to the console, forcing a useful string representation
+    console.log('' + buffer)
 }
 
 PyConsole.prototype.flush = function() {}
@@ -142,15 +143,16 @@ function PyErrConsole(element) {
 }
 
 PyErrConsole.prototype.write = function(buffer) {
+    // Put a (forced) string representation on the console as an error
     var err = document.createElement('span');
     err.className = "error";
-    var text = document.createTextNode(buffer)
+    var text = document.createTextNode('' + buffer)
 
     err.appendChild(text)
     this.element.appendChild(err);
 
-    // Also echo to the console.
-    console.log(buffer)
+    // Also echo to the console, forcing a useful string representation
+    console.log('' + buffer)
 }
 
 PyErrConsole.prototype.flush = function() {}

@@ -1,4 +1,4 @@
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
@@ -8,15 +8,16 @@ export default function hash(object) {
     if (object === null) {
         return 278918143
     }
-    if (types.isinstance(object, [types.PyBytearray, types.PyDict, types.PyList, types.PySet, types.PySlice])) {
-        throw new PyTypeError("unhashable type: '" + type_name(object) + "'")
+    if (types.isinstance(object, [types.pybytearray, types.pydict, types.pylist, types.pyset, types.pyslice])) {
+        throw pyTypeError("unhashable type: '" + type_name(object) + "'")
     }
-    if (object.__hash__ !== undefined) {
+    try {
         return object.__hash__()
+    } catch (e) {
+        // Use JS toString() to do a simple default hash, for now.
+        // (This is similar to how JS objects work.)
+        return object.__str__().__hash__()
     }
-    // Use JS toString() to do a simple default hash, for now.
-    // (This is similar to how JS objects work.)
-    return new types.PyStr(object.toString()).__hash__()
 }
 
 hash.__name__ = 'hash'

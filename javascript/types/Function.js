@@ -1,7 +1,7 @@
 /* eslint-disable no-extend-native */
 import { pyargs } from '../core/callables'
 import JSDict from '../core/JSDict'
-import { create_pyclass, PyObject } from '../core/types'
+import { jstype, PyObject } from '../core/types'
 
 import { inspect } from '../modules/inspect'
 import { dis } from '../modules/dis'
@@ -12,9 +12,10 @@ import * as types from '../types'
  * A Python function type.
  *************************************************************************/
 
-export default class PyFunction extends PyObject {
+class PyFunction extends PyObject {
     __init__(name, code, globals, defaults, closure, vm) {
         this.$vm = vm
+        this.__self__ = null
         this.__code__ = code
         this.__globals__ = globals
         this.__defaults__ = defaults
@@ -26,8 +27,8 @@ export default class PyFunction extends PyObject {
             this.__doc__ = null
         }
         this.__name__ = name || code.co_name
-        this.__dict__ = new types.PyDict()
-        this.__annotations__ = new types.PyDict()
+        this.__dict__ = types.pydict()
+        this.__annotations__ = types.pydict()
         this.__qualname__ = this.__name__
 
         // let kw = {
@@ -37,7 +38,26 @@ export default class PyFunction extends PyObject {
         //     kw['closure'] = tuple(make_cell(0) for _ in closure)
         // }
 
-        this.argspec = inspect.getfullargspec(this)
+        this.$argspec = inspect.getfullargspec(this)
+    }
+
+    apply(self, args) {
+        let callargs = inspect.getcallargs(this, args)
+        let frame = this.$vm.make_frame({
+            'code': this.__code__,
+            'callargs': callargs,
+            'f_globals': this.__globals__,
+            'f_locals': new JSDict()
+        })
+
+        let retval
+        if (this.__code__.co_flags & dis.CO_GENERATOR) {
+            frame.generator = types.pygenerator(frame, self)
+            retval = frame.generator
+        } else {
+            retval = this.$vm.run_frame(frame)
+        }
+        return retval
     }
 
     @pyargs(null)
@@ -57,7 +77,7 @@ export default class PyFunction extends PyObject {
         })
 
         if (this.__code__.co_flags & dis.CO_GENERATOR) {
-            frame.generator = new types.PyGenerator(frame, this)
+            frame.generator = types.pygenerator(frame, this)
             retval = frame.generator
         } else {
             retval = this.$vm.run_frame(frame)
@@ -65,12 +85,17 @@ export default class PyFunction extends PyObject {
         return retval
     }
 
-    __get__(instance) {
+    __get__(obj) {
         // Module functions don't need to be bound to the instance as methods.
-        if (instance instanceof types.PyModule) {
-            return this
+        let bound
+        if (types.isinstance(obj, types.pymodule)) {
+            bound = this
+        } else {
+            bound = types.pymethod(obj, this)
         }
-        return new types.PyMethod(instance, this)
+        return bound
     }
 }
-create_pyclass(PyFunction, 'function')
+
+const pyfunction = jstype(PyFunction, 'function', [], {})
+export default pyfunction

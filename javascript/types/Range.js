@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js'
 
 import { pyargs } from '../core/callables'
-import { PyIndexError, PyStopIteration, PyTypeError, PyValueError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
+import { pyIndexError, pyStopIteration, pyTypeError, pyValueError } from '../core/exceptions'
+import { jstype, type_name, PyObject, pyNone } from '../core/types'
 
 import * as types from '../types'
 
@@ -11,34 +11,33 @@ import * as types from '../types'
  **************************************************/
 
 class PyRangeIterator extends PyObject {
-    constructor(data) {
-        super()
-        this.index = data.start
-        this.step = data.step
-        this.stop = data.stop
+    __init__(data) {
+        this.$index = data.start
+        this.$step = data.step
+        this.$stop = data.stop
     }
 
     __next__() {
-        var retval = new BigNumber(this.index)
-        if ((this.step.gt(0) && this.index.lt(this.stop)) ||
-            (this.step.lt(0) && this.index.gt(this.stop))) {
-            this.index = this.index.add(this.step)
-            return new types.PyInt(retval)
+        var retval = new BigNumber(this.$index)
+        if ((this.$step.gt(0) && this.$index.lt(this.$stop)) ||
+            (this.$step.lt(0) && this.$index.gt(this.$stop))) {
+            this.$index = this.$index.add(this.$step)
+            return types.pyint(retval)
         }
-        throw new PyStopIteration()
+        throw pyStopIteration()
     }
 
     __str__() {
         return '<range_iterator object at 0x99999999>'
     }
 }
-create_pyclass(PyRangeIterator, 'range_iterator')
+const range_iterator = jstype(PyRangeIterator, 'range_iterator', [], null)
 
 /*************************************************************************
  * An implementation of range
  *************************************************************************/
 
-export default class PyRange extends PyObject {
+class PyRange extends PyObject {
     @pyargs({
         args: ['start'],
         default_args: ['stop', 'step']
@@ -97,11 +96,11 @@ export default class PyRange extends PyObject {
      **************************************************/
 
     __len__() {
-        return new types.PyInt(this.length.toString())
+        return types.pyint(this.length.toString())
     }
 
     __iter__() {
-        return new PyRangeIterator(this)
+        return range_iterator(this)
     }
 
     __repr__() {
@@ -117,7 +116,7 @@ export default class PyRange extends PyObject {
     }
 
     __bool__() {
-        return new types.PyBool(!(this.start.eq(0) && this.stop.eq(0)))
+        return types.pybool(!(this.start.eq(0) && this.stop.eq(0)))
     }
 
     /**************************************************
@@ -125,32 +124,32 @@ export default class PyRange extends PyObject {
      **************************************************/
 
     __getitem__(index) {
-        if (types.isinstance(index, types.PyBool)) {
+        if (types.isinstance(index, types.pybool)) {
             index = index.__int__()
         }
-        if (types.isinstance(index, types.PyInt)) {
+        if (types.isinstance(index, types.pyint)) {
             var idx = index.bigNumber()
             if (idx < 0) {
                 if (idx.neg().gt(this.length)) {
-                    throw new PyIndexError('range object index out of range')
+                    throw pyIndexError('range object index out of range')
                 } else {
-                    return new types.PyInt(this.$get_single_item(idx, this))
+                    return types.pyint(this.$get_single_item(idx, this))
                 }
             } else {
                 if (idx.gte(this.length)) {
-                    throw new PyIndexError('range object index out of range')
+                    throw pyIndexError('range object index out of range')
                 } else {
-                    return new types.PyInt(this.$get_single_item(idx, this))
+                    return types.pyint(this.$get_single_item(idx, this))
                 }
             }
-        } else if (types.isinstance(index, types.PySlice)) {
+        } else if (types.isinstance(index, types.pyslice)) {
             var start, stop, step
 
-            if (index.start === PyNone) {
+            if (index.start === pyNone) {
                 start = index.start
-            } else if (!types.isinstance(index.start, types.PyInt)) {
+            } else if (!types.isinstance(index.start, types.pyint)) {
                 if (index.start.__index__ === undefined) {
-                    throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
+                    throw pyTypeError('slice indices must be integers or pyNone or have an __index__ method')
                 } else {
                     start = index.start.__index__()
                 }
@@ -158,11 +157,11 @@ export default class PyRange extends PyObject {
                 start = index.start.int32()
             }
 
-            if (index.stop === PyNone) {
+            if (index.stop === pyNone) {
                 stop = index.stop
-            } else if (!types.isinstance(index.stop, types.PyInt)) {
+            } else if (!types.isinstance(index.stop, types.pyint)) {
                 if (index.stop.__index__ === undefined) {
-                    throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
+                    throw pyTypeError('slice indices must be integers or pyNone or have an __index__ method')
                 } else {
                     stop = index.stop.__index__()
                 }
@@ -170,35 +169,35 @@ export default class PyRange extends PyObject {
                 stop = index.stop.int32()
             }
 
-            if (index.step === PyNone) {
+            if (index.step === pyNone) {
                 step = 1
-            } else if (!(types.isinstance(index.step, types.PyInt))) {
+            } else if (!(types.isinstance(index.step, types.pyint))) {
                 if (index.step.__index__ === undefined) {
-                    throw new PyTypeError('slice indices must be integers or None or have an __index__ method')
+                    throw pyTypeError('slice indices must be integers or pyNone or have an __index__ method')
                 } else {
                     step = index.step.__index__()
                 }
             } else {
                 step = index.step.int32()
                 if (step === 0) {
-                    throw new PyValueError('slice step cannot be zero')
+                    throw pyValueError('slice step cannot be zero')
                 }
             }
 
             var newStart, newStop
             if (step > 0) {
-                if (start !== PyNone) {
+                if (start !== pyNone) {
                     newStart = this.$get_single_item(start, this)
                 } else {
                     newStart = this.$get_single_item(0, this)
                 }
-                if (stop !== PyNone) {
+                if (stop !== pyNone) {
                     newStop = this.$get_single_item(stop, this)
                 } else {
                     newStop = this.$get_single_item(this.length, this)
                 }
             } else {
-                if (start === PyNone) {
+                if (start === pyNone) {
                     newStart = this.$get_single_item(this.length, this).sub(this.step)
                 } else if (this.length.lte(-start) || this.length.lt(start)) {
                     newStart = this.$get_single_item(start, this).sub(this.step)
@@ -206,7 +205,7 @@ export default class PyRange extends PyObject {
                     newStart = this.$get_single_item(start, this)
                 }
 
-                if (stop === PyNone) {
+                if (stop === pyNone) {
                     newStop = this.$get_single_item(0, this).sub(this.step)
                 } else if (this.length.lte(-stop) || this.length.lt(stop)) {
                     newStop = this.$get_single_item(stop, this).sub(this.step)
@@ -214,20 +213,24 @@ export default class PyRange extends PyObject {
                     newStop = this.$get_single_item(stop, this)
                 }
             }
-            return new PyRange(new types.PyInt(newStart),
-                new types.PyInt(newStop),
-                new types.PyInt(this.step.mul(step)))
+            return pyrange(
+                types.pyint(newStart),
+                types.pyint(newStop),
+                types.pyint(this.step.mul(step))
+            )
         } else {
             var msg = 'range indices must be integers or slices, not '
-            throw new PyTypeError(msg + type_name(index))
+            throw pyTypeError(msg + type_name(index))
         }
     }
 
     __add__(other) {
-        if (types.isinstance(other, types.PyBool)) {
+        if (types.isinstance(other, types.pybool)) {
             var msg = 'unsupported operand type(s) for +: '
-            throw new PyTypeError(msg + '\'' + type_name(this) + '\' and \'' + type_name(other) + '\'')
+            throw pyTypeError(msg + '\'' + type_name(this) + '\' and \'' + type_name(other) + '\'')
         }
     }
 }
-create_pyclass(PyRange, 'range')
+
+const pyrange = jstype(PyRange, 'range')
+export default pyrange

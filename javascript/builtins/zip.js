@@ -1,10 +1,9 @@
-import { call_method, pyargs } from '../core/callables'
-import { PyStopIteration, PyTypeError } from '../core/exceptions'
-import { create_pyclass, PyObject } from '../core/types'
+import { pyargs } from '../core/callables'
+import { pyStopIteration, pyTypeError } from '../core/exceptions'
+import { jstype, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
-
-import PyTuple from '../types/Tuple'
+import * as types from '../types'
 
 /*************************************************************************
  * A Python zip builtin is a type
@@ -15,14 +14,14 @@ class PyZip extends PyObject {
         varargs: ['iterables']
     })
     __init__(iterables) {
-        this._iterators = []
+        this.$iterators = []
 
         for (let i = 0; i < iterables.length; i++) {
             try {
-                this._iterators.push(builtins.iter(iterables[i]))
+                this.$iterators.push(builtins.iter(iterables[i]))
             } catch (e) {
-                if (e instanceof PyTypeError) {
-                    throw new PyTypeError('zip argument #' + (i + 1) + ' must support iteration')
+                if (types.isinstance(e, pyTypeError)) {
+                    throw pyTypeError(`zip argument #${i + 1} must support iteration`)
                 }
             }
         }
@@ -45,15 +44,15 @@ class PyZip extends PyObject {
     }
 
     __next__() {
-        if (this._iterators.length === 0) {
-            throw new PyStopIteration()
+        if (this.$iterators.length === 0) {
+            throw pyStopIteration()
         }
 
         let values = []
-        for (let i = 0; i < this._iterators.length; i++) {
-            values.push(call_method(this._iterators[i], '__next__'))
+        for (let i = 0; i < this.$iterators.length; i++) {
+            values.push(this.$iterators[i].__next__())
         }
-        return new PyTuple(values)
+        return types.pytuple(values)
     }
 
     __str__() {
@@ -65,10 +64,7 @@ PyZip.prototype.__doc__ = `zip(iter1 [,iter2 [...]]) --> zip object
 Return a zip object whose .__next__() method returns a tuple where
 the i-th element comes from the i-th iterable argument.  The .__next__()
 method continues until the shortest iterable in the argument sequence
-is exhausted and then it raises PyStopIteration.`
+is exhausted and then it raises pyStopIteration.`
 
-create_pyclass(PyZip, 'zip')
-
-var zip = PyZip.__class__
-
+const zip = jstype(PyZip, 'zip')
 export default zip

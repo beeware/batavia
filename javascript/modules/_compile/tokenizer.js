@@ -6,10 +6,8 @@
    the parser only returns E_EOF when it hits EOF immediately, and it
    never returns E_OK. */
 import { pyargs } from '../../core/callables'
-import { PyBataviaError } from '../../core/exceptions'
-import { create_pyclass, PyNone, PyObject } from '../../core/types'
-
-import * as types from '../../types'
+import { pyBataviaError } from '../../core/exceptions'
+import { jstype, pyNone, PyObject } from '../../core/types'
 
 export const EOF = -1
 export const E_OK = 10 /* No error */
@@ -343,10 +341,9 @@ function preprocess_string(str) {
     return str
 }
 
-
 class PyTokenizer extends PyObject {
     @pyargs({
-        args: ['str'],
+        args: ['str']
     })
     __init__(str) {
         /* Input state; buf <= cur <= inp <= end */
@@ -401,7 +398,7 @@ class PyTokenizer extends PyObject {
 
         // nothing left to process
         if (tok.cur >= tok.buf.length) {
-            return PyNone
+            return pyNone
         }
 
         var process_line = function() {
@@ -545,7 +542,7 @@ class PyTokenizer extends PyObject {
             } else {
                 marker = ERRORTOKEN
             }
-            return [marker, PyNone, PyNone, 5]
+            return [marker, pyNone, pyNone, 5]
         }
 
         // Identifier (most frequent token!)
@@ -559,7 +556,7 @@ class PyTokenizer extends PyObject {
             if (tok.level > 0) {
                 // process next line
                 tok.continue_processing = true
-                return PyNone
+                return pyNone
             }
             tok.cont_line = 0
             if (tok.async_def) {
@@ -672,7 +669,7 @@ class PyTokenizer extends PyObject {
         }
 
         var result = tok.letter_quote(c)
-        if (result !== PyNone) {
+        if (result !== pyNone) {
             return result
         }
 
@@ -857,7 +854,7 @@ class PyTokenizer extends PyObject {
             p_end = tok.cur
             return [STRING, p_start, p_end]
         }
-        return PyNone
+        return pyNone
     }
 
     fraction(c) {
@@ -939,7 +936,7 @@ class PyTokenizer extends PyObject {
         var tok = this
         if (c !== EOF) {
             if (--tok.cur < 0) {
-                throw new PyBataviaError('tok_backup: beginning of buffer')
+                throw pyBataviaError('tok_backup: beginning of buffer')
             }
             if (tok.buf[tok.cur] !== c) {
                 tok[tok.cur] = c
@@ -960,6 +957,5 @@ class PyTokenizer extends PyObject {
         return 0
     }
 }
-create_pyclass(PyTokenizer, 'Tokenizer')
 
-export var Tokenizer = PyTokenizer.__class__
+export const Tokenizer = jstype(PyTokenizer, 'Tokenizer')

@@ -1,38 +1,41 @@
-import { call_method } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
+import { getattr } from '../builtins'
 import * as types from '../types'
 
 export default function bool(x) {
     if (x === undefined) {
-        return new types.PyBool()
-    } else if (x.__bool__) {
-        // x.__bool__, if it exists, is a batavia.types.PyFunction.js,
-        // *not* a native Javascript function. Therefore we can't call it in
-        // the seemingly obvious way, with __bool__().
-        var output = call_method(x, '__bool__', [])
-        if (types.isinstance(output, types.PyBool)) {
-            return output
+        return types.pybool()
+    } else if (x.__class__) {
+        let output
+        if (getattr(x, '__bool__', null)) {
+            output = x.__bool__()
+            if (types.isinstance(output, types.pybool)) {
+                return output
+            } else {
+                throw pyTypeError(`__bool__ should return bool, returned ${type_name(output)}`)
+            }
         } else {
-            throw new PyTypeError('__bool__ should return bool, returned ' + type_name(output))
-        }
-    // Python bool() checks for __bool__ and then, if __bool__ is not defined,
-    // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
-    } else if (x.__len__) {
-        output = call_method(x, '__len__', [])
-        var output_type = type_name(output)
+            // Python bool() checks for __bool__ and then, if __bool__ is not defined,
+            // for __len__. See https://docs.python.org/3.4/library/stdtypes.html#truth.
+            if (getattr(x, '__len__', null)) {
+                output = x.__len__()
 
-        if (types.isinstance(output, types.PyInt)) {
-            // Yes, the value under the hood can have been cast to string
-            // even if the output type is int and the value __len__ appears to
-            // output in the browser is an integer.
-            return !!parseInt(output.valueOf())
-        } else {
-            throw new PyTypeError("'" + output_type + "' object cannot be interpreted as an integer")
+                if (types.isinstance(output, types.pyint)) {
+                    // Yes, the value under the hood can have been cast to string
+                    // even if the output type is int and the value __len__ appears to
+                    // output in the browser is an integer.
+                    return !!parseInt(output.valueOf())
+                } else {
+                    throw pyTypeError(`'${type_name(output)}' object cannot be interpreted as an integer`)
+                }
+            } else {
+                return true
+            }
         }
     } else {
-        return new types.PyBool((!!x.valueOf()))
+        return types.pybool((!!x.valueOf()))
     }
 }
 

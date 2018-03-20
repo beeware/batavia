@@ -1,40 +1,39 @@
-import { PyBataviaError } from './core/exceptions'
+import { pyBataviaError } from './core/exceptions'
 
-import { PyType, PyNoneType } from './core/types'
+import { pytype, pyNoneType } from './core/types'
 
-import PyNotImplementedType from './types/NotImplementedType'
+import { pyNotImplementedType } from './types/NotImplementedType'
 
-import PyCode from './types/Code'
-import PyModule from './types/Module'
+import pycode from './types/Code'
+import pymodule from './types/Module'
 
 // Str and Bool are special, and need to be handled first.
-import PyStr from './types/Str'
-import PyBool from './types/Bool'
+import pystr from './types/Str'
+import pybool from './types/Bool'
 
-import PyFloat from './types/Float'
-import PyInt from './types/Int'
+import pyfloat from './types/Float'
+import pyint from './types/Int'
 
-import PyDict from './types/Dict'
-import PyList from './types/List'
-import PySet from './types/Set'
-import PyTuple from './types/Tuple'
-import PyFrozenSet from './types/FrozenSet'
+import pydict from './types/Dict'
+import pylist from './types/List'
+import pyset from './types/Set'
+import pytuple from './types/Tuple'
+import pyfrozenset from './types/FrozenSet'
 
-import PyBytes from './types/Bytes'
-import PyBytearray from './types/Bytearray'
+import pybytes from './types/Bytes'
+import pybytearray from './types/Bytearray'
 
-import PyComplex from './types/Complex'
+import pycomplex from './types/Complex'
 
-import PyDictView from './types/DictView'
-import PyEllipsis from './types/Ellipsis'
+import pyellipsis from './types/Ellipsis'
 
-import PyFunction from './types/Function'
-import PyMethod from './types/Method'
+import pyfunction from './types/Function'
+import pymethod from './types/Method'
 
-import PyGenerator from './types/Generator'
+import pygenerator from './types/Generator'
 
-import PyRange from './types/Range'
-import PySlice from './types/Slice'
+import pyrange from './types/Range'
+import pyslice from './types/Slice'
 
 /*************************************************************************
  * Type comparison defintions that match Python-like behavior.
@@ -43,22 +42,17 @@ import PySlice from './types/Slice'
 export function _isinstance(obj, type) {
     switch (typeof obj) {
         case 'boolean':
-            return type === PyBool
+            return type === pybool
         case 'number':
-            return type === PyInt
+            return type === pyint
         case 'string':
-            return type === PyStr
+            return type === pystr
+        case 'function':
         case 'object':
             if (obj.__class__) {
                 for (let t of obj.__class__.mro()) {
-                    if (type instanceof Function) {
-                        if (t === type.__class__) {
-                            return true
-                        }
-                    } else {
-                        if (t === type) {
-                            return true
-                        }
+                    if (t === type) {
+                        return true
                     }
                 }
             }
@@ -83,26 +77,27 @@ export function isinstance(obj, type) {
 
 export function isbataviainstance(obj) {
     return isinstance(obj, [
-        PyBool, PyDict, PyFloat,
-        PyInt, PyList,
-        PyNoneType, PyTuple, PySlice,
-        PyBytes, PyBytearray, PyType,
-        PyStr, PySet, PyRange,
-        PyFrozenSet, PyComplex,
-        PyNotImplementedType
+        pybool, pydict, pyfloat,
+        pyint, pylist,
+        pyNoneType, pytuple, pyslice,
+        pybytes, pybytearray, pytype,
+        pystr, pyset, pyrange,
+        pyfrozenset, pycomplex,
+        pyNotImplementedType
     ])
 }
 
 export function _issubclass(cls, type) {
     switch (typeof cls) {
         case 'boolean':
-            return type === PyBool
+            return type === pybool
         case 'number':
-            return type === PyInt
+            return type === pyint
         case 'string':
-            return type === PyStr
+            return type === pystr
+        case 'function':
         case 'object':
-            if (type === null || type === PyNoneType) {
+            if (type === null || type === pyNoneType) {
                 return cls === null
             } else {
                 for (let t of cls.mro()) {
@@ -133,7 +128,7 @@ export function issubclass(cls, type) {
 export function js2py(arg) {
     if (Array.isArray(arg)) {
         // recurse
-        let arr = new PyList()
+        let arr = pylist()
         for (let i = 0; i < arg.length; i++) {
             arr.append(js2py(arg[i]))
         }
@@ -145,14 +140,15 @@ export function js2py(arg) {
             return arg
         case 'number':
             if (Number.isInteger(arg)) {
-                return new PyInt(arg)
+                return pyint(arg)
             } else {
-                return new PyFloat(arg)
+                return pyfloat(arg)
             }
         case 'string':
-            return new PyStr(arg)
+            return pystr(arg)
+        case 'function':
         case 'object':
-            if (arg === null || arg === PyNoneType) {
+            if (arg === null || arg === pyNoneType) {
                 return null
             } else if (
                 arg.__class__ !== undefined &&
@@ -163,42 +159,41 @@ export function js2py(arg) {
                 return arg
             } else {
                 // this is a generic object; turn it into a dictionary
-                let dict = new PyDict()
+                let d = pydict()
                 for (let k in arg) {
                     if (arg.hasOwnProperty(k)) {
-                        dict.__setitem__(js2py(k), js2py(arg[k]))
+                        d.__setitem__(js2py(k), js2py(arg[k]))
                     }
                 }
-                return dict
+                return d
             }
         default:
-            throw new PyBataviaError('Unknown type ' + (typeof arg))
+            throw pyBataviaError('Unknown type ' + (typeof arg))
     }
 }
 
 export {
-    PyBool,
-    PyBytearray,
-    PyBytes,
-    PyCode,
-    PyComplex,
-    PyDict,
-    PyDictView,
-    PyEllipsis,
-    PyFloat,
-    PyFrozenSet,
-    PyFunction,
-    PyGenerator,
-    PyInt,
-    PyList,
-    PyMethod,
-    PyModule,
-    PyNoneType,
-    PyNotImplementedType,
-    PyRange,
-    PySet,
-    PySlice,
-    PyStr,
-    PyTuple,
-    PyType
+    pybool,
+    pybytearray,
+    pybytes,
+    pycode,
+    pycomplex,
+    pydict,
+    pyellipsis,
+    pyfloat,
+    pyfrozenset,
+    pyfunction,
+    pygenerator,
+    pyint,
+    pylist,
+    pymethod,
+    pymodule,
+    pyNoneType,
+    pyNotImplementedType,
+    pyrange,
+    pyset,
+    pyslice,
+    pystr,
+    pytuple,
+    pytype
 }

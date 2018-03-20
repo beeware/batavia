@@ -1,7 +1,7 @@
 
 export default function str(object = '') {
     if (object === null) {
-        return 'None'
+        return 'pyNone'
     } else if (object.__str__) {
         return object.__str__()
     } else {

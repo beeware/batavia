@@ -2,9 +2,9 @@ import * as types from '../types'
 
 export default function list(iterable) {
     if (iterable === undefined) {
-        return new types.PyList()
+        return types.pylist()
     }
-    return new types.PyList(iterable)
+    return types.pylist(iterable)
 }
 
 list.__name__ = 'list'

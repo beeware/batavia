@@ -1,9 +1,9 @@
-import { PyImportError, PySystemError } from '../core/exceptions'
-import { PyNone } from '../core/types'
+import { pyImportError, pyStopIteration } from '../core/exceptions'
+import { pyNone } from '../core/types'
 
 import * as builtins from '../builtins'
 import * as modules from '../modules'
-import { PyInt, PyModule } from '../types'
+import { pyint, pymodule } from '../types'
 
 export default function __import__(name, globals, locals, fromlist, level) {
     // console.log("IMPORT", name, globals, level);
@@ -12,8 +12,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
     // element in the dotted namespace. The leaf module is
     // the last element.
     let root_module, leaf_module
-    let code, frame, payload, n
-    let path
+    let code, frame, payload, n, path
 
     let intlevel = level.int32()
     // "import builtins" can be shortcut
@@ -34,7 +33,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
             }
 
             if (context.length < intlevel) {
-                throw new PySystemError("Parent module '' not loaded, cannot perform relative import")
+                throw pyStopIteration("Parent module '' not loaded, cannot perform relative import")
             } else {
                 context = context.slice(0, context.length - intlevel)
             }
@@ -70,7 +69,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
             if (root_module === undefined) {
                 payload = this.loader(name_part)
                 if (payload === null) {
-                    throw new PyImportError("No module name '" + name_part + "'")
+                    throw pyImportError("No module name '" + name_part + "'")
                 } else if (payload.javascript) {
                     root_module = payload.javascript
                     leaf_module = root_module
@@ -84,7 +83,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
                     // console.log('LOAD ' + name_part);
                     code = modules.marshal.load_pyc(this, payload.bytecode)
 
-                    root_module = new PyModule(name_part, payload.filename, '')
+                    root_module = pymodule(name_part, payload.filename, '')
                     leaf_module = root_module
                     modules.sys.modules[name_part] = root_module
 
@@ -107,7 +106,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
             if (new_module === undefined) {
                 payload = this.loader(name_part)
                 if (payload === null) {
-                    throw new PyImportError("No module name '" + name_part + "'")
+                    throw pyImportError("No module name '" + name_part + "'")
                 } else if (payload.javascript) {
                     new_module = payload.javascript
                     leaf_module[path[n]] = new_module
@@ -127,7 +126,7 @@ export default function __import__(name, globals, locals, fromlist, level) {
                         pkg = name_part
                     }
 
-                    new_module = new PyModule(name_part, payload.filename, pkg)
+                    new_module = pymodule(name_part, payload.filename, pkg)
                     leaf_module[path[n]] = new_module
                     leaf_module = new_module
                     modules.sys.modules[name_part] = leaf_module
@@ -150,12 +149,12 @@ export default function __import__(name, globals, locals, fromlist, level) {
     // is a "from ..." statement. This will yield the
     // final module to be imported.
     let module
-    if (fromlist === PyNone) {
+    if (fromlist === pyNone) {
         // import <mod>
         module = root_module
     } else if (fromlist[0] === '*') {
         // from <mod> import *
-        module = new PyModule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
+        module = pymodule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
         for (let name_part in leaf_module) {
             if (leaf_module.hasOwnProperty(name_part)) {
                 module[name_part] = leaf_module[name_part]
@@ -163,20 +162,20 @@ export default function __import__(name, globals, locals, fromlist, level) {
         }
     } else {
         // from <mod> import <name>, <name>
-        module = new PyModule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
+        module = pymodule(leaf_module.__name__, leaf_module.__file__, leaf_module.__package__)
         for (let sn = 0; sn < fromlist.length; sn++) {
-            let name_part = fromlist[sn]
-            if (leaf_module[name_part] === undefined) {
-                __import__.call(this, path.join('.') + '.' + name_part, this.frame.f_globals, null, PyNone, new PyInt(0))
+            let sname_part = fromlist[sn]
+            if (leaf_module[sname_part] === undefined) {
+                __import__.call(this, path.join('.') + '.' + sname_part, this.frame.f_globals, null, pyNone, pyint(0))
             }
-            module[name_part] = leaf_module[name_part]
+            module[sname_part] = leaf_module[sname_part]
         }
     }
     return module
 }
 
 __import__.__name__ = '__import__'
-__import__.__doc__ = `__import__(name, globals=None, locals=None, fromlist=(), level=0) -> module
+__import__.__doc__ = `__import__(name, globals=pyNone, locals=pyNone, fromlist=(), level=0) -> module
 
 Import a module. Because this function is meant for use by the Python
 interpreter and not for general use it is better to use

@@ -1,17 +1,19 @@
 /* eslint-disable no-extend-native */
 import { iter_for_each, pyargs } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { pyTypeError } from '../core/exceptions'
+import { jstype, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
 
-import PySet from './Set'
+import set from './Set'
+
+const PySet = set.$pyclass
 
 /*************************************************************************
  * A Python FrozenSet type
  *************************************************************************/
 
-export default class PyFrozenSet extends PyObject {
+class PyFrozenSet extends PyObject {
     @pyargs({
         default_args: ['iterable']
     })
@@ -66,19 +68,19 @@ export default class PyFrozenSet extends PyObject {
      * Inplace operators
      **************************************************/
     __isub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -=: 'frozenset' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for -=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __iand__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &=: 'frozenset' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for &=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __ixor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^=: 'frozenset' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for ^=: 'frozenset' and '" + type_name(other) + "'")
     }
 
     __ior__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |=: 'frozenset' and '" + type_name(other) + "'")
+        throw pyTypeError("unsupported operand type(s) for |=: 'frozenset' and '" + type_name(other) + "'")
     }
 }
 
@@ -161,4 +163,6 @@ PyFrozenSet.prototype.__doc__ = `frozenset() -> empty frozenset object
 frozenset(iterable) -> frozenset object
 
 Build an immutable unordered collection of unique elements.`
-create_pyclass(PyFrozenSet, 'frozenset')
+
+const pyfrozenset = jstype(PyFrozenSet, 'frozenset', [], null)
+export default pyfrozenset

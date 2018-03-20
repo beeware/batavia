@@ -1,11 +1,10 @@
 /*************************************************************************
  * Virtual Machine
  *************************************************************************/
-import * as attrs from './core/attrs'
-import * as callables from './core/callables'
+import { call_function, pyargs } from './core/callables'
 import JSDict from './core/JSDict'
-import { PyBaseException, PyBataviaError, PyNameError, PyStopIteration, PyUnboundLocalError } from './core/exceptions'
-import { create_pyclass, PyNone, PyObject } from './core/types'
+import { pyBaseException, pyBataviaError, pyNameError, pyStopIteration, pyUnboundLocalError } from './core/exceptions'
+import { type, pyNone, PyObject } from './core/types'
 import * as version from './core/version'
 
 import PyBlock from './core/Block'
@@ -24,7 +23,7 @@ export default class VirtualMachine {
             this.loader = function(name) {
                 // Find the script element with the ID matching the
                 // fully qualified module name (e.g., batavia-foo.bar.whiz)
-                var element = document.getElementById('batavia-' + name)
+                let element = document.getElementById('batavia-' + name)
                 if (element === null) {
                     // If the element doesn't exist, look for a HTML element.
                     element = window[name]
@@ -39,7 +38,7 @@ export default class VirtualMachine {
 
                 // Look for the filename in the data-filename
                 // attribute of script tag.
-                var filename
+                let filename
                 if (element.dataset) {
                     filename = element.dataset['filename']
                 } else {
@@ -50,7 +49,7 @@ export default class VirtualMachine {
                 // the script tag.
                 return {
                     'bytecode': element.text.replace(/(\r\n|\n|\r)/gm, '').trim(),
-                    'filename': new types.PyStr(filename)
+                    'filename': types.pystr(filename)
                 }
             }
         } else {
@@ -78,7 +77,7 @@ export default class VirtualMachine {
             this.has_session = false
         } else if (args.frame === undefined) {
             // No frame stack requested; initialize one as a
-            var frame = this.make_frame({'code': null})
+            let frame = this.make_frame({'code': null})
             this.push_frame(frame)
             this.has_session = true
         } else {
@@ -93,9 +92,9 @@ export default class VirtualMachine {
      * Each such method will be invoked with apply(this, args).
      */
     build_dispatch_table() {
-        var vm = this
+        let vm = this
         this.dispatch_table = dis.opname.map(function(opname, opcode) {
-            var operator_name
+            let operator_name
 
             if (opcode === dis.NOP) {
                 return function() {}
@@ -104,9 +103,9 @@ export default class VirtualMachine {
                 switch (operator_name) {
                     case 'POSITIVE':
                         return function() {
-                            var x = this.pop()
+                            let x = this.pop()
                             if (x === null) {
-                                this.push(types.PyNoneType.__pos__())
+                                this.push(types.pyNoneType.__pos__())
                             } else if (x.__pos__) {
                                 this.push(x.__pos__())
                             } else {
@@ -115,9 +114,9 @@ export default class VirtualMachine {
                         }
                     case 'NEGATIVE':
                         return function() {
-                            var x = this.pop()
+                            let x = this.pop()
                             if (x === null) {
-                                this.push(types.PyNoneType.__neg__())
+                                this.push(types.pyNoneType.__neg__())
                             } else if (x.__neg__) {
                                 this.push(x.__neg__())
                             } else {
@@ -126,9 +125,9 @@ export default class VirtualMachine {
                         }
                     case 'NOT':
                         return function() {
-                            var x = this.pop()
+                            let x = this.pop()
                             if (x === null) {
-                                this.push(types.PyNoneType.__not__())
+                                this.push(types.pyNoneType.__not__())
                             } else if (x.__not__) {
                                 this.push(x.__not__())
                             } else {
@@ -137,9 +136,9 @@ export default class VirtualMachine {
                         }
                     case 'INVERT':
                         return function() {
-                            var x = this.pop()
+                            let x = this.pop()
                             if (x === null) {
-                                this.push(types.PyNoneType.__invert__())
+                                this.push(types.pyNoneType.__invert__())
                             } else if (x.__invert__) {
                                 this.push(x.__invert__())
                             } else {
@@ -147,16 +146,16 @@ export default class VirtualMachine {
                             }
                         }
                     default:
-                        throw new PyBataviaError('Unknown unary operator ' + operator_name)
+                        throw pyBataviaError('Unknown unary operator ' + operator_name)
                 }
             } else if (opcode in dis.binary_ops) {
                 operator_name = opname.slice(7)
                 switch (operator_name) {
                     case 'POWER':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__pow__(items[1]))
+                                this.push(types.pyNoneType.__pow__(items[1]))
                             } else if (items[0].__pow__) {
                                 if (items[0].__pow__.__call__) {
                                     this.push(items[0].__pow__.__call__(items))
@@ -169,9 +168,9 @@ export default class VirtualMachine {
                         }
                     case 'MULTIPLY':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__mul__(items[1]))
+                                this.push(types.pyNoneType.__mul__(items[1]))
                             } else if (items[0].__mul__) {
                                 if (items[0].__mul__.__call__) {
                                     this.push(items[0].__mul__.__call__(items))
@@ -184,9 +183,9 @@ export default class VirtualMachine {
                         }
                     case 'MODULO':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__mod__(items[1]))
+                                this.push(types.pyNoneType.__mod__(items[1]))
                             } else if (items[0].__mod__) {
                                 if (items[0].__mod__.__call__) {
                                     this.push(items[0].__mod__.__call__(items))
@@ -199,9 +198,9 @@ export default class VirtualMachine {
                         }
                     case 'ADD':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__add__(items[1]))
+                                this.push(types.pyNoneType.__add__(items[1]))
                             } else if (items[0].__add__) {
                                 if (items[0].__add__.__call__) {
                                     this.push(items[0].__add__.__call__(items))
@@ -214,9 +213,9 @@ export default class VirtualMachine {
                         }
                     case 'SUBTRACT':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__sub__(items[1]))
+                                this.push(types.pyNoneType.__sub__(items[1]))
                             } else if (items[0].__sub__) {
                                 if (items[0].__sub__.__call__) {
                                     this.push(items[0].__sub__.__call__(items))
@@ -229,9 +228,9 @@ export default class VirtualMachine {
                         }
                     case 'SUBSCR':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__getitem__(items[1]))
+                                this.push(types.pyNoneType.__getitem__(items[1]))
                             } else if (items[0].__getitem__) {
                                 if (items[0].__getitem__.__call__) {
                                     this.push(items[0].__getitem__.__call__(items))
@@ -244,9 +243,9 @@ export default class VirtualMachine {
                         }
                     case 'FLOOR_DIVIDE':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__floordiv__(items[1]))
+                                this.push(types.pyNoneType.__floordiv__(items[1]))
                             } else if (items[0].__floordiv__) {
                                 if (items[0].__floordiv__.__call__) {
                                     this.push(items[0].__floordiv__.__call__(items))
@@ -259,9 +258,9 @@ export default class VirtualMachine {
                         }
                     case 'TRUE_DIVIDE':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__truediv__(items[1]))
+                                this.push(types.pyNoneType.__truediv__(items[1]))
                             } else if (items[0].__truediv__) {
                                 if (items[0].__truediv__.__call__) {
                                     this.push(items[0].__truediv__.__call__(items))
@@ -274,9 +273,9 @@ export default class VirtualMachine {
                         }
                     case 'LSHIFT':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__lshift__(items[1]))
+                                this.push(types.pyNoneType.__lshift__(items[1]))
                             } else if (items[0].__lshift__) {
                                 if (items[0].__lshift__.__call__) {
                                     this.push(items[0].__lshift__.__call__(items))
@@ -289,9 +288,9 @@ export default class VirtualMachine {
                         }
                     case 'RSHIFT':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__rshift__(items[1]))
+                                this.push(types.pyNoneType.__rshift__(items[1]))
                             } else if (items[0].__rshift__) {
                                 if (items[0].__rshift__.__call__) {
                                     this.push(items[0].__rshift__.__call__(items))
@@ -304,9 +303,9 @@ export default class VirtualMachine {
                         }
                     case 'AND':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__and__(items[1]))
+                                this.push(types.pyNoneType.__and__(items[1]))
                             } else if (items[0].__and__) {
                                 if (items[0].__and__.__call__) {
                                     this.push(items[0].__and__.__call__(items))
@@ -319,9 +318,9 @@ export default class VirtualMachine {
                         }
                     case 'XOR':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__xor__(items[1]))
+                                this.push(types.pyNoneType.__xor__(items[1]))
                             } else if (items[0].__xor__) {
                                 if (items[0].__xor__.__call__) {
                                     this.push(items[0].__xor__.__call__(items))
@@ -334,9 +333,9 @@ export default class VirtualMachine {
                         }
                     case 'OR':
                         return function() {
-                            var items = this.popn(2)
+                            let items = this.popn(2)
                             if (items[0] === null) {
-                                this.push(types.PyNoneType.__or__(items[1]))
+                                this.push(types.pyNoneType.__or__(items[1]))
                             } else if (items[0].__or__) {
                                 if (items[0].__or__.__call__) {
                                     this.push(items[0].__or__.__call__(items))
@@ -348,17 +347,17 @@ export default class VirtualMachine {
                             }
                         }
                     default:
-                        throw new PyBataviaError('Unknown binary operator ' + operator_name)
+                        throw pyBataviaError('Unknown binary operator ' + operator_name)
                 }
             } else if (opcode in dis.inplace_ops) {
                 operator_name = opname.slice(8)
                 switch (operator_name) {
                     case 'FLOOR_DIVIDE':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__ifloordiv__(items[1])
+                                result = types.pyNoneType.__ifloordiv__(items[1])
                             } else if (items[0].__ifloordiv__) {
                                 if (items[0].__ifloordiv__.__call__) {
                                     result = items[0].__ifloordiv__.__call__(items)
@@ -376,10 +375,10 @@ export default class VirtualMachine {
                         }
                     case 'TRUE_DIVIDE':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__itruediv__(items[1])
+                                result = types.pyNoneType.__itruediv__(items[1])
                             } else if (items[0].__itruediv__) {
                                 if (items[0].__itruediv__.__call__) {
                                     result = items[0].__itruediv__.__call__(items)
@@ -397,10 +396,10 @@ export default class VirtualMachine {
                         }
                     case 'ADD':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__iadd__(items[1])
+                                result = types.pyNoneType.__iadd__(items[1])
                             } else if (items[0].__iadd__) {
                                 if (items[0].__iadd__.__call__) {
                                     result = items[0].__iadd__.__call__(items)
@@ -418,10 +417,10 @@ export default class VirtualMachine {
                         }
                     case 'SUBTRACT':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__isub__(items[1])
+                                result = types.pyNoneType.__isub__(items[1])
                             } else if (items[0].__isub__) {
                                 if (items[0].__isub__.__call__) {
                                     result = items[0].__isub__.__call__(items)
@@ -439,10 +438,10 @@ export default class VirtualMachine {
                         }
                     case 'MULTIPLY':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__imul__(items[1])
+                                result = types.pyNoneType.__imul__(items[1])
                             } else if (items[0].__imul__) {
                                 if (items[0].__imul__.__call__) {
                                     result = items[0].__imul__.__call__(items)
@@ -460,10 +459,10 @@ export default class VirtualMachine {
                         }
                     case 'MODULO':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__imod__(items[1])
+                                result = types.pyNoneType.__imod__(items[1])
                             } else if (items[0].__imod__) {
                                 if (items[0].__imod__.__call__) {
                                     result = items[0].__imod__.__call__(items)
@@ -481,10 +480,10 @@ export default class VirtualMachine {
                         }
                     case 'POWER':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__ipow__(items[1])
+                                result = types.pyNoneType.__ipow__(items[1])
                             } else if (items[0].__ipow__) {
                                 if (items[0].__ipow__.__call__) {
                                     result = items[0].__ipow__.__call__(items)
@@ -502,10 +501,10 @@ export default class VirtualMachine {
                         }
                     case 'LSHIFT':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__ilshift__(items[1])
+                                result = types.pyNoneType.__ilshift__(items[1])
                             } else if (items[0].__ilshift__) {
                                 if (items[0].__ilshift__.__call__) {
                                     result = items[0].__ilshift__.__call__(items)
@@ -523,10 +522,10 @@ export default class VirtualMachine {
                         }
                     case 'RSHIFT':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__irshift__(items[1])
+                                result = types.pyNoneType.__irshift__(items[1])
                             } else if (items[0].__irshift__) {
                                 if (items[0].__irshift__.__call__) {
                                     result = items[0].__irshift__.__call__(items)
@@ -544,10 +543,10 @@ export default class VirtualMachine {
                         }
                     case 'AND':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__iand__(items[1])
+                                result = types.pyNoneType.__iand__(items[1])
                             } else if (items[0].__iand__) {
                                 if (items[0].__iand__.__call__) {
                                     result = items[0].__iand__.__call__(items)
@@ -565,10 +564,10 @@ export default class VirtualMachine {
                         }
                     case 'XOR':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__ixor__(items[1])
+                                result = types.pyNoneType.__ixor__(items[1])
                             } else if (items[0].__ixor__) {
                                 if (items[0].__ixor__.__call__) {
                                     result = items[0].__ixor__.__call__(items)
@@ -586,10 +585,10 @@ export default class VirtualMachine {
                         }
                     case 'OR':
                         return function() {
-                            var items = this.popn(2)
-                            var result
+                            let items = this.popn(2)
+                            let result
                             if (items[0] === null) {
-                                result = types.PyNoneType.__ior__(items[1])
+                                result = types.pyNoneType.__ior__(items[1])
                             } else if (items[0].__ior__) {
                                 if (items[0].__ior__.__call__) {
                                     result = items[0].__ior__.__call__(items)
@@ -606,16 +605,16 @@ export default class VirtualMachine {
                             this.push(result)
                         }
                     default:
-                        throw new PyBataviaError('Unknown inplace operator ' + operator_name)
+                        throw pyBataviaError('Unknown inplace operator ' + operator_name)
                 }
             } else {
                 // dispatch
-                var bytecode_fn = vm['byte_' + opname]
+                let bytecode_fn = vm['byte_' + opname]
                 if (bytecode_fn) {
                     return bytecode_fn
                 } else {
                     return function() {
-                        throw new PyBataviaError('Unknown opcode ' + opcode + ' (' + opname + ')')
+                        throw pyBataviaError('Unknown opcode ' + opcode + ' (' + opname + ')')
                     }
                 }
             }
@@ -629,11 +628,11 @@ export default class VirtualMachine {
      */
     run(tag, args) {
         try {
-            var payload = this.loader(tag)
-            var code = marshal.load_pyc(this, payload.bytecode)
+            let payload = this.loader(tag)
+            let code = marshal.load_pyc(this, payload.bytecode)
 
             // Set up sys.argv
-            sys.argv = new types.PyList(['batavia'])
+            sys.argv = types.pylist(['batavia'])
             if (args) {
                 sys.argv.extend(args)
             }
@@ -641,8 +640,8 @@ export default class VirtualMachine {
             // Run the code
             return this.run_code({'code': code})
         } catch (e) {
-            if (types.isinstance(e, builtins.BataviaError)) {
-                sys.stderr.write(e.msg + '\n')
+            if (types.isinstance(e, pyBataviaError)) {
+                sys.stderr.write(`${e.__class__.__name__}: ${e.msg}\n`)
             } else {
                 throw e
             }
@@ -656,11 +655,11 @@ export default class VirtualMachine {
      */
     run_method(tag, args, kwargs, f_locals, f_globals) {
         try {
-            var payload = this.loader(tag)
-            var code = marshal.load_pyc(this, payload.bytecode)
+            let payload = this.loader(tag)
+            let code = marshal.load_pyc(this, payload.bytecode)
 
-            var callargs = new JSDict()
-            for (var i = 0, l = args.length; i < l; i++) {
+            let callargs = new JSDict()
+            for (let i = 0, l = args.length; i < l; i++) {
                 callargs[code.co_varnames[i]] = args[i]
             }
             callargs.update(kwargs)
@@ -673,8 +672,8 @@ export default class VirtualMachine {
                 'f_globals': f_globals
             })
         } catch (e) {
-            if (types.isinstance(e, builtins.BataviaError)) {
-                sys.stderr.write(e.msg + '\n')
+            if (types.isinstance(e, pyBataviaError)) {
+                sys.stderr.write(`${e.__class__.__name__}: ${e.msg}\n`)
             } else {
                 throw e
             }
@@ -688,7 +687,7 @@ export default class VirtualMachine {
     }
 
     PyErr_SetString(Exception, message) {
-        var exception = new Exception(message)
+        let exception = new Exception(message)
         this.last_exception = {
             'exc_type': exception.__class__,
             'value': exception,
@@ -771,12 +770,12 @@ export default class VirtualMachine {
     }
 
     make_frame(kwargs) {
-        var code = kwargs.code
-        var callargs = kwargs.callargs || new JSDict()
-        var f_globals = kwargs.f_globals || null
-        var f_locals = kwargs.f_locals || null
+        let code = kwargs.code
+        let callargs = kwargs.callargs || new JSDict()
+        let f_globals = kwargs.f_globals || null
+        let f_locals = kwargs.f_locals || null
 
-        if (code && !code.co_unpacked_code) {
+        if (!code.hasOwnProperty('co_unpacked_code')) {
             this.unpack_code(code)
         }
 
@@ -822,10 +821,10 @@ export default class VirtualMachine {
     }
 
     create_traceback() {
-        var tb = []
-        var frame, mod_name, filename
+        let tb = []
+        let frame, mod_name, filename, line_num
 
-        for (var f in this.frames) {
+        for (let f in this.frames) {
             frame = this.frames[f]
 
             // Work out the current source line by taking the
@@ -833,11 +832,11 @@ export default class VirtualMachine {
             // and adding the line offsets from the line
             // number table.
             if (frame.f_code) {
-                var lnotab = frame.f_code.co_lnotab.val
-                var byte_num = 0
-                var line_num = frame.f_code.co_firstlineno
+                let lnotab = frame.f_code.co_lnotab.$val
+                let byte_num = 0
+                line_num = frame.f_code.co_firstlineno
 
-                for (var idx = 1; idx < lnotab.length && byte_num < frame.f_lasti; idx += 2) {
+                for (let idx = 1; idx < lnotab.length && byte_num < frame.f_lasti; idx += 2) {
                     byte_num += lnotab[idx - 1]
                     if (byte_num < frame.f_lasti) {
                         line_num += lnotab[idx]
@@ -845,6 +844,8 @@ export default class VirtualMachine {
                 }
                 mod_name = frame.f_code.co_name
                 filename = frame.f_code.co_filename
+            } else {
+                line_num = '???'
             }
             tb.push({
                 'module': mod_name,
@@ -868,14 +869,14 @@ export default class VirtualMachine {
             let args = []
             let extra = 0
 
-            while (pos < code.co_code.val.length) {
+            while (pos < code.co_code.$val.length) {
                 let opcode_start_pos = pos
 
-                let opcode = code.co_code.val[pos++]
+                let opcode = code.co_code.$val[pos++]
 
                 // next opcode has 4-byte argument effectively.
                 if (opcode === dis.EXTENDED_ARG) {
-                    extra = code.co_code.val[pos++] << 8
+                    extra = code.co_code.$val[pos++] << 8
                     unpacked_code[opcode_start_pos] = {
                         'opoffset': opcode_start_pos,
                         'opcode': dis.NOP,
@@ -886,7 +887,7 @@ export default class VirtualMachine {
                     continue
                 }
 
-                let intArg = code.co_code.val[pos++] | extra
+                let intArg = code.co_code.$val[pos++] | extra
                 extra = 0
 
                 if (opcode >= dis.HAVE_ARGUMENT) {
@@ -921,7 +922,7 @@ export default class VirtualMachine {
                 }
             }
 
-            code.co_unpacked_code = unpacked_code
+            code.$raw.co_unpacked_code = unpacked_code
         } else {
             // Until 3.6 Python had variable width opcodes
 
@@ -932,15 +933,15 @@ export default class VirtualMachine {
             let lo
             let hi
 
-            while (pos < code.co_code.val.length) {
+            while (pos < code.co_code.$val.length) {
                 let opcode_start_pos = pos
 
-                let opcode = code.co_code.val[pos++]
+                let opcode = code.co_code.$val[pos++]
 
                 // next opcode has 4-byte argument effectively.
                 if (opcode === dis.EXTENDED_ARG) {
-                    lo = code.co_code.val[pos++]
-                    hi = code.co_code.val[pos++]
+                    lo = code.co_code.$val[pos++]
+                    hi = code.co_code.$val[pos++]
                     extra = (lo << 16) | (hi << 24)
                     // emulate NOP
                     unpacked_code[opcode_start_pos] = {
@@ -956,8 +957,8 @@ export default class VirtualMachine {
                 if (opcode < dis.HAVE_ARGUMENT) {
                     args = []
                 } else {
-                    lo = code.co_code.val[pos++]
-                    hi = code.co_code.val[pos++]
+                    lo = code.co_code.$val[pos++]
+                    hi = code.co_code.$val[pos++]
                     let intArg = lo | (hi << 8) | extra
                     extra = 0 // use extended arg if present
 
@@ -997,43 +998,43 @@ export default class VirtualMachine {
     }
 
     run_code(kwargs) {
-        var code = kwargs.code
-        var f_globals = kwargs.f_globals || null
-        var f_locals = kwargs.f_locals || null
-        var callargs = kwargs.callargs || null
-        var frame = this.make_frame({
+        let code = kwargs.code
+        let f_globals = kwargs.f_globals || null
+        let f_locals = kwargs.f_locals || null
+        let callargs = kwargs.callargs || null
+        let frame = this.make_frame({
             'code': code,
             'f_globals': f_globals,
             'f_locals': f_locals,
             'callargs': callargs
         })
         try {
-            var val = this.run_frame(frame)
+            let val = this.run_frame(frame)
 
             // Check some invariants
             if (this.has_session) {
                 if (this.frames.length > 1) {
-                    throw new PyBataviaError('Frames left over in session!')
+                    throw pyBataviaError('Frames left over in session!')
                 }
             } else {
                 if (this.frames.length > 0) {
-                    throw new PyBataviaError('Frames left over!')
+                    throw pyBataviaError('Frames left over!')
                 }
             }
             if (this.frame && this.frame.stack.length > 0) {
-                throw new PyBataviaError('Data left on stack! ' + this.frame.stack)
+                throw pyBataviaError('Data left on stack! ' + this.frame.stack)
             }
             return val
         } catch (e) {
             if (this.last_exception) {
-                var trace = ['Traceback (most recent call last):']
-                for (var t in this.last_exception.traceback) {
+                let trace = ['Traceback (most recent call last):']
+                for (let t in this.last_exception.traceback) {
                     frame = this.last_exception.traceback[t]
                     trace.push('  File "' + frame.filename + '", line ' + frame.line + ', in ' + frame.module)
                 }
                 if (this.last_exception.value.__class__) {
-                    if (this.last_exception.value.toString().length > 0) {
-                        trace.push(this.last_exception.value.__class__.__name__ + ': ' + this.last_exception.value.toString())
+                    if (this.last_exception.value.__str__().length > 0) {
+                        trace.push(`${this.last_exception.value.__class__.__name__}: ${this.last_exception.value.__str__()}`)
                     } else {
                         trace.push(this.last_exception.value.__class__.__name__)
                     }
@@ -1045,14 +1046,13 @@ export default class VirtualMachine {
             } else {
                 throw e
             }
-            // throw e;
         }
         sys.stdout.flush()
         sys.stderr.flush()
     }
 
     unwind_block(block) {
-        var offset
+        let offset
 
         if (block.type === 'except-handler') {
             offset = 3
@@ -1074,11 +1074,11 @@ export default class VirtualMachine {
      * Log arguments, block stack, and data stack for each opcode.
      */
     log(opcode) {
-        var op = opcode.opoffset + ': ' + opcode.byteName
-        for (var arg in opcode.args) {
+        let op = opcode.opoffset + ': ' + opcode.byteName
+        for (let arg in opcode.args) {
             op += ' ' + opcode.args[arg]
         }
-        var indent = '    ' * (this.frames.length - 1)
+        let indent = '    ' * (this.frames.length - 1)
 
         console.log('  ' + indent + 'data: ' + this.frame.stack)
         console.log('  ' + indent + 'blks: ' + this.frame.block_stack)
@@ -1091,7 +1091,7 @@ export default class VirtualMachine {
      * exception handling, or returning.
      */
     manage_block_stack(why) {
-        var block = this.frame.block_stack[this.frame.block_stack.length - 1]
+        let block = this.frame.block_stack[this.frame.block_stack.length - 1]
         if (block.type === 'loop' && why === 'continue') {
             this.jump(this.return_value)
             why = null
@@ -1110,7 +1110,7 @@ export default class VirtualMachine {
         if (why === 'exception' &&
                 (block.type === 'setup-except' || block.type === 'finally')) {
             this.push_block('except-handler')
-            var exc = this.last_exception
+            let exc = this.last_exception
             // clear the last_exception so that we know it is handled
             this.last_exception = null
             this.push(exc.traceback)
@@ -1147,7 +1147,7 @@ export default class VirtualMachine {
      *
      */
     run_frame(frame) {
-        var why, operation
+        let why, operation
 
         this.push_frame(frame)
 
@@ -1163,7 +1163,7 @@ export default class VirtualMachine {
 
         while (!why) {
             operation = this.frame.f_code.co_unpacked_code[this.frame.f_lasti]
-            var opname = dis.opname[operation.opcode] // eslint-disable-line no-unused-vars
+            let opname = dis.opname[operation.opcode] // eslint-disable-line no-unused-vars
 
             // advance f_lasti to next operation. If the operation is a jump, then this
             // pointer will be overwritten during the operation's execution.
@@ -1177,7 +1177,7 @@ export default class VirtualMachine {
                 why = operation.op_method.apply(this, operation.args)
             } catch (err) {
                 // deal with exceptions encountered while executing the op.
-                if (types.isinstance(err, builtins.BataviaError)) {
+                if (types.isinstance(err, pyBataviaError)) {
                     // Batavia errors are a major problem; ABORT HARD
                     this.last_exception = null
                     throw err
@@ -1231,16 +1231,16 @@ export default class VirtualMachine {
     }
 
     byte_DUP_TOPX(count) {
-        var items = this.popn(count)
-        for (var n = 0; n < 2; n++) {
-            for (var i = 0; i < count; i++) {
+        let items = this.popn(count)
+        for (let n = 0; n < 2; n++) {
+            for (let i = 0; i < count; i++) {
                 this.push(items[i])
             }
         }
     }
 
     byte_DUP_TOP_TWO() {
-        var items = this.popn(2)
+        let items = this.popn(2)
         this.push(items[0])
         this.push(items[1])
         this.push(items[0])
@@ -1248,20 +1248,20 @@ export default class VirtualMachine {
     }
 
     byte_ROT_TWO() {
-        var items = this.popn(2)
+        let items = this.popn(2)
         this.push(items[1])
         this.push(items[0])
     }
 
     byte_ROT_THREE() {
-        var items = this.popn(3)
+        let items = this.popn(3)
         this.push(items[2])
         this.push(items[0])
         this.push(items[1])
     }
 
     byte_ROT_FOUR() {
-        var items = this.popn(4)
+        let items = this.popn(4)
         this.push(items[3])
         this.push(items[0])
         this.push(items[1])
@@ -1269,58 +1269,60 @@ export default class VirtualMachine {
     }
 
     byte_LOAD_NAME(name) {
-        var frame = this.frame
-        var val
-        if (name in frame.f_locals) {
-            val = frame.f_locals[name]
-        } else if (name in frame.f_globals) {
-            val = frame.f_globals[name]
-        } else if (name in frame.f_builtins) {
-            val = frame.f_builtins[name]
-        } else {
-            throw new PyNameError("name '" + name + "' is not defined")
+        let val = this.frame.f_locals.get(name, null)
+        if (val === null) {
+            val = this.frame.f_globals.get(name, null)
+        }
+        if (val === null) {
+            val = this.frame.f_builtins[name]
+            if (val === undefined) {
+                val = null
+            }
+        }
+        if (val === null) {
+            throw pyNameError(`name '${name}' is not defined`)
         }
         this.push(val)
     }
 
     byte_STORE_NAME(name) {
-        this.frame.f_locals[name] = this.pop()
+        this.frame.f_locals.__setitem__(name, this.pop())
     }
 
     byte_DELETE_NAME(name) {
-        delete this.frame.f_locals[name]
+        this.frame.f_locals.pop(name)
     }
 
     byte_LOAD_FAST(name) {
-        var val
-        if (name in this.frame.f_locals) {
-            val = this.frame.f_locals[name]
-        } else {
-            throw new PyUnboundLocalError("local variable '" + name + "' referenced before assignment")
+        let val = this.frame.f_locals.get(name, null)
+        if (val === null) {
+            throw pyUnboundLocalError(`local variable '${name}' referenced before assignment`)
         }
         this.push(val)
     }
 
     byte_STORE_FAST(name) {
-        this.frame.f_locals[name] = this.pop()
+        this.frame.f_locals.__setitem__(name, this.pop())
     }
 
     byte_DELETE_FAST(name) {
-        delete this.frame.f_locals[name]
+        this.frame.f_locals.pop(name)
     }
 
     byte_STORE_GLOBAL(name) {
-        this.frame.f_globals[name] = this.pop()
+        this.frame.f_globals.__setitem__(name, this.pop())
     }
 
     byte_LOAD_GLOBAL(name) {
-        let val
-        if (name in this.frame.f_globals) {
-            val = this.frame.f_globals[name]
-        } else if (name in this.frame.f_builtins) {
+        let val = this.frame.f_globals.get(name, null)
+        if (val === null) {
             val = this.frame.f_builtins[name]
-        } else {
-            throw new PyNameError("name '" + name + "' is not defined")
+            if (val === undefined) {
+                val = null
+            }
+        }
+        if (val === null) {
+            throw pyNameError(`name '${name}' is not defined`)
         }
         this.push(val)
     }
@@ -1360,26 +1362,26 @@ export default class VirtualMachine {
     // };
 
     byte_COMPARE_OP(opnum) {
-        var items = this.popn(2)
-        var result
+        let items = this.popn(2)
+        let result
 
         // "in" and "not in" operators (opnum 6 and 7) have reversed
         // operand order, so they're handled separately.
-        // If the first operand is None, then we need to invoke
+        // If the first operand is pyNone, then we need to invoke
         // the comparison method in a different way, because we can't
         // bind the operator methods to the null instance.
 
-        if (opnum === 6) { // x in None
+        if (opnum === 6) { // x in pyNone
             if (items[1] === null) {
-                result = types.PyNoneType.__contains__(items[0])
+                result = types.pyNoneType.__contains__(items[0])
             } if (items[1].__contains__) {
                 result = items[1].__contains__(items[0])
             } else {
                 result = (items[0] in items[1])
             }
         } else if (opnum === 7) {
-            if (items[1] === null) { // x not in None
-                result = types.PyNoneType.__contains__(items[0]).__not__()
+            if (items[1] === null) { // x not in pyNone
+                result = types.pyNoneType.__contains__(items[0]).__not__()
             } else if (items[1].__contains__) {
                 result = items[1].__contains__(items[0]).__not__()
             } else {
@@ -1388,22 +1390,22 @@ export default class VirtualMachine {
         } else if (items[0] === null) {
             switch (opnum) {
                 case 0: // <
-                    result = types.PyNoneType.__lt__(items[1])
+                    result = types.pyNoneType.__lt__(items[1])
                     break
                 case 1: // <=
-                    result = types.PyNoneType.__le__(items[1])
+                    result = types.pyNoneType.__le__(items[1])
                     break
                 case 2: // ==
-                    result = types.PyNoneType.__eq__(items[1])
+                    result = types.pyNoneType.__eq__(items[1])
                     break
                 case 3: // !=
-                    result = types.PyNoneType.__ne__(items[1])
+                    result = types.pyNoneType.__ne__(items[1])
                     break
                 case 4: // >
-                    result = types.PyNoneType.__gt__(items[1])
+                    result = types.pyNoneType.__gt__(items[1])
                     break
                 case 5: // >=
-                    result = types.PyNoneType.__ge__(items[1])
+                    result = types.pyNoneType.__ge__(items[1])
                     break
                 case 8: // is
                     result = items[1] === null
@@ -1415,7 +1417,7 @@ export default class VirtualMachine {
                     result = items[1] === null
                     break
                 default:
-                    throw new PyBataviaError('Unknown operator ' + opnum)
+                    throw pyBataviaError('Unknown operator ' + opnum)
             }
         } else {
             switch (opnum) {
@@ -1471,7 +1473,7 @@ export default class VirtualMachine {
                     result = types.issubclass(items[0], items[1])
                     break
                 default:
-                    throw new PyBataviaError('Unknown operator ' + opnum)
+                    throw pyBataviaError('Unknown operator ' + opnum)
             }
         }
 
@@ -1480,22 +1482,30 @@ export default class VirtualMachine {
 
     byte_LOAD_ATTR(attr) {
         let obj = this.pop()
-        let val = attrs.getattr(obj, attr)
+        let val = obj[attr]
+
+        // Methods retrieved from an actual Javascript object, that are
+        // actual Javascript methods, need to be bound to the object.
+        if (val instanceof Function) {
+            if (!val.$raw) {
+                val = val.bind(obj)
+            }
+        }
         this.push(val)
     }
 
     byte_STORE_ATTR(name) {
         let items = this.popn(2)
-        attrs.setattr(items[1], name, items[0])
+        items[1][name] = items[0]
     }
 
     byte_DELETE_ATTR(name) {
         let obj = this.pop()
-        attrs.delattr(obj, name)
+        delete obj[name]
     }
 
     byte_STORE_SUBSCR() {
-        var items = this.popn(3)
+        let items = this.popn(3)
         if (items[1].__setitem__) {
             items[1].__setitem__(items[2], items[0])
         } else {
@@ -1504,7 +1514,7 @@ export default class VirtualMachine {
     }
 
     byte_DELETE_SUBSCR() {
-        var items = this.popn(2)
+        let items = this.popn(2)
         if (items[0].__delitem__) {
             items[0].__delitem__(items[1])
         } else {
@@ -1513,41 +1523,41 @@ export default class VirtualMachine {
     }
 
     byte_BUILD_TUPLE(count) {
-        var items = this.popn(count)
-        this.push(new types.PyTuple(items))
+        let items = this.popn(count)
+        this.push(types.pytuple(items))
     }
 
     byte_BUILD_LIST(count) {
-        var items = this.popn(count)
-        this.push(new types.PyList(items))
+        let items = this.popn(count)
+        this.push(types.pylist(items))
     }
 
     byte_BUILD_SET(count) {
-        var items = this.popn(count)
-        this.push(new types.PySet(items))
+        let items = this.popn(count)
+        this.push(types.pyset(items))
     }
 
     byte_BUILD_MAP(size) {
         if (version.later('3.5a0')) {
-            var items = this.popn(size * 2)
-            var dict = new types.PyDict()
+            let items = this.popn(size * 2)
+            let dict = types.pydict()
 
-            for (var i = 0; i < items.length; i += 2) {
+            for (let i = 0; i < items.length; i += 2) {
                 dict.__setitem__(items[i], items[i + 1])
             }
 
             this.push(dict)
         } else {
-            this.push(new types.PyDict())
+            this.push(types.pydict())
         }
     }
 
     byte_BUILD_CONST_KEY_MAP(size) {
-        var keys = this.pop()
-        var values = this.popn(size)
-        var dict = new types.PyDict()
+        let keys = this.pop()
+        let values = this.popn(size)
+        let dict = types.pydict()
 
-        for (var i = 0; i < values.length; i += 1) {
+        for (let i = 0; i < values.length; i += 1) {
             dict.__setitem__(keys[i], values[i])
         }
         this.push(dict)
@@ -1555,11 +1565,11 @@ export default class VirtualMachine {
 
     byte_STORE_MAP() {
         if (version.later('3.5a0')) {
-            throw new PyBataviaError(
+            throw pyBataviaError(
                 'STORE_MAP is unsupported with BATAVIA_MAGIC'
             )
         } else {
-            var items = this.popn(3)
+            let items = this.popn(3)
             if (items[0].__setitem__) {
                 items[0].__setitem__(items[2], items[1])
             } else {
@@ -1570,13 +1580,13 @@ export default class VirtualMachine {
     }
 
     byte_UNPACK_SEQUENCE(count) {
-        var seq = this.pop()
+        let seq = this.pop()
 
         // If the sequence item on top of the stack is iterable,
         // expand it into an array.
         if (seq.__iter__) {
             try {
-                var iter = seq.__iter__()
+                let iter = seq.__iter__()
                 seq = []
                 while (true) {
                     seq.push(iter.__next__())
@@ -1584,35 +1594,35 @@ export default class VirtualMachine {
             } catch (err) {}
         }
 
-        for (var i = seq.length; i > 0; i--) {
+        for (let i = seq.length; i > 0; i--) {
             this.push(seq[i - 1])
         }
     }
 
     byte_BUILD_SLICE(count) {
         if (count === 2 || count === 3) {
-            var items = this.popn(count)
+            let items = this.popn(count)
             this.push(new builtins.slice.$pyclass(...items))
         } else {
-            throw new PyBataviaError('Strange BUILD_SLICE count: ' + count)
+            throw pyBataviaError('Strange BUILD_SLICE count: ' + count)
         }
     }
 
     byte_LIST_APPEND(count) {
-        var val = this.pop()
-        var the_list = this.peek(count)
+        let val = this.pop()
+        let the_list = this.peek(count)
         the_list.push(val)
     }
 
     byte_SET_ADD(count) {
-        var val = this.pop()
-        var the_set = this.peek(count)
+        let val = this.pop()
+        let the_set = this.peek(count)
         the_set.add(val)
     }
 
     byte_MAP_ADD(count) {
-        var items = this.popn(2)
-        var the_map = this.peek(count)
+        let items = this.popn(2)
+        let the_map = this.peek(count)
         the_map[items[1]] = items[0]
     }
 
@@ -1621,13 +1631,13 @@ export default class VirtualMachine {
     }
 
     byte_PRINT_ITEM() {
-        var item = this.pop()
+        let item = this.pop()
         this.print_item(item)
     }
 
     byte_PRINT_ITEM_TO() {
         this.pop() // FIXME - the to value is ignored.
-        var item = this.pop()
+        let item = this.pop()
         this.print_item(item)
     }
 
@@ -1636,7 +1646,7 @@ export default class VirtualMachine {
     }
 
     byte_PRINT_NEWLINE_TO() {
-        var to = this.pop() // FIXME - this is ignored.
+        let to = this.pop() // FIXME - this is ignored.
         this.print_newline(to)
     }
 
@@ -1663,7 +1673,7 @@ export default class VirtualMachine {
     }
 
     byte_POP_JUMP_IF_TRUE(jump) {
-        var val = this.pop()
+        let val = this.pop()
         if (val.__bool__ !== undefined) {
             val = val.__bool__().valueOf()
         }
@@ -1674,7 +1684,7 @@ export default class VirtualMachine {
     }
 
     byte_POP_JUMP_IF_FALSE(jump) {
-        var val = this.pop()
+        let val = this.pop()
         if (val.__bool__ !== undefined) {
             val = val.__bool__().valueOf()
         }
@@ -1685,7 +1695,7 @@ export default class VirtualMachine {
     }
 
     byte_JUMP_IF_TRUE_OR_POP(jump) {
-        var val = this.top()
+        let val = this.top()
         if (val.__bool__ !== undefined) {
             val = val.__bool__().valueOf()
         }
@@ -1698,7 +1708,7 @@ export default class VirtualMachine {
     }
 
     byte_JUMP_IF_FALSE_OR_POP(jump) {
-        var val = this.top()
+        let val = this.top()
         if (val.__bool__ !== undefined) {
             val = val.__bool__().valueOf()
         }
@@ -1719,12 +1729,12 @@ export default class VirtualMachine {
     }
 
     byte_FOR_ITER(jump) {
-        var iterobj = this.top()
+        let iterobj = this.top()
         try {
-            var v = iterobj.__next__()
+            let v = iterobj.__next__()
             this.push(v)
         } catch (err) {
-            if (types.isinstance(err, builtins.StopIteration)) {
+            if (types.isinstance(err, pyStopIteration)) {
                 this.pop()
                 this.jump(jump)
             } else {
@@ -1757,17 +1767,17 @@ export default class VirtualMachine {
     }
 
     byte_END_FINALLY() {
-        var why, value, traceback
-        var exc_type = this.pop()
-        if (exc_type === PyNone) {
+        let why, value, traceback
+        let exc_type = this.pop()
+        if (exc_type === pyNone) {
             why = null
         } else if (exc_type === 'silenced') {
-            var block = this.pop_block() // should be except-handler
+            let block = this.pop_block() // should be except-handler
             this.unwind_block(block)
             return null
         } else {
             value = this.pop()
-            if (types.isinstance(value, builtins.BaseException)) {
+            if (types.isinstance(value, pyBaseException)) {
                 traceback = this.pop()
                 this.last_exception = {
                     'exc_type': exc_type,
@@ -1776,7 +1786,7 @@ export default class VirtualMachine {
                 }
                 why = 'reraise'
             } else {
-                throw new PyBataviaError('Confused END_FINALLY: ' + value.toString())
+                throw pyBataviaError('Confused END_FINALLY: ' + value.toString())
             }
         }
         return why
@@ -1787,7 +1797,7 @@ export default class VirtualMachine {
     }
 
     byte_RAISE_VARARGS(argc) {
-        var cause, exc
+        let cause, exc
         if (argc === 2) {
             cause = this.pop()
             exc = this.pop()
@@ -1798,19 +1808,19 @@ export default class VirtualMachine {
     }
 
     do_raise(exc, cause) {
-        var exc_type, val
+        let exc_type, val
         if (exc === undefined) { // reraise
             if (this.last_exception.exc_type === undefined) {
                 return 'exception' // error
             } else {
                 return 'reraise'
             }
-        } else if (types.isinstance(exc, builtins.BaseException)) {
-            // As in `throw PyValueError('foo')`
+        } else if (types.isinstance(exc, pyBaseException)) {
+            // As in `throw pyValueError('foo')`
             exc_type = exc.__class__
             val = exc
-        } else if (exc instanceof PyBaseException ||
-                   exc === PyBaseException) {
+        } else if (exc instanceof pyBaseException ||
+                   exc === pyBaseException) {
             exc_type = exc
             val = new exc_type() // eslint-disable-line new-cap
         } else {
@@ -1821,7 +1831,7 @@ export default class VirtualMachine {
         // val is a valid exception instance and exc_type is its class.
         // Now do a similar thing for the cause, if present.
         if (cause) {
-            // if not isinstance(cause, builtins.BaseException):
+            // if not isinstance(cause, pyBaseException):
             //     return 'exception' // error
 
             val.__cause__ = cause
@@ -1836,26 +1846,26 @@ export default class VirtualMachine {
     }
 
     byte_POP_EXCEPT() {
-        var block = this.pop_block()
+        let block = this.pop_block()
         if (block.type !== 'except-handler') {
-            throw new PyBataviaError('popped block is not an except handler')
+            throw pyBataviaError('popped block is not an except handler')
         }
         this.unwind_block(block)
     }
 
     byte_SETUP_WITH(dest) {
-        var mgr = this.top()
-        var res = callables.call_method(mgr, '__enter__', [])
+        let mgr = this.top()
+        let res = mgr.__enter__()
         this.push_block('finally', dest)
         this.push(res)
     }
 
     byte_WITH_CLEANUP() {
-        var exc = this.top()
-        var mgr
-        var val = PyNone
-        var tb = PyNone
-        if (exc === PyNone) {
+        let exc = this.top()
+        let mgr
+        let val = pyNone
+        let tb = pyNone
+        if (exc === pyNone) {
             mgr = this.pop(1)
         } else if (exc instanceof String) {
             if (exc === 'return' || exc === 'continue') {
@@ -1863,20 +1873,20 @@ export default class VirtualMachine {
             } else {
                 mgr = this.pop(1)
             }
-            exc = PyNone
-        } else if (types.isinstance(exc, builtins.BaseException)) {
+            exc = pyNone
+        } else if (types.isinstance(exc, pyBaseException)) {
             val = this.peek(2)
             tb = this.peek(3)
             mgr = this.pop(6)
-            this.push_at(PyNone, 3)
-            var block = this.pop_block()
+            this.push_at(pyNone, 3)
+            let block = this.pop_block()
             this.push_block(block.type, block.handler, block.level - 1)
         } else {
-            throw new PyBataviaError('Confused WITH_CLEANUP')
+            throw pyBataviaError('Confused WITH_CLEANUP')
         }
-        var ret = callables.call_method(mgr, '__exit__', [exc, val, tb])
+        let ret = mgr.__exit__(exc, val, tb)
         if (version.earlier('3.5a0')) {
-            if (!(exc === PyNone) && ret.__bool__ !== undefined &&
+            if (!(exc === pyNone) && ret.__bool__ !== undefined &&
                     ret.__bool__().valueOf()) {
                 this.push('silenced')
             }
@@ -1889,26 +1899,26 @@ export default class VirtualMachine {
 
     byte_WITH_CLEANUP_FINISH() {
         if (version.earlier('3.5a0')) {
-            throw new PyBataviaError(
+            throw pyBataviaError(
                 'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
             )
         }
         // Assuming Python 3.5
-        var ret = this.pop()
-        var exc = this.pop()
-        if (!(exc === PyNone) && ret.__bool__ !== undefined &&
+        let ret = this.pop()
+        let exc = this.pop()
+        if (!(exc === pyNone) && ret.__bool__ !== undefined &&
                 ret.__bool__().valueOf()) {
             this.push('silenced')
         }
     }
 
     byte_MAKE_FUNCTION(arg) {
-        var name = this.pop()
-        var code = this.pop()
-        var closure = null
-        var annotations = null // eslint-disable-line no-unused-vars
-        var kwdefaults = null // eslint-disable-line no-unused-vars
-        var defaults = null
+        let name = this.pop()
+        let code = this.pop()
+        let closure = null
+        let annotations = null // eslint-disable-line no-unused-vars
+        let kwdefaults = null // eslint-disable-line no-unused-vars
+        let defaults = null
 
         if (!version.earlier('3.6')) {
             if (arg & 8) {
@@ -1929,7 +1939,7 @@ export default class VirtualMachine {
             defaults = this.popn(arg)
         }
 
-        var fn = new types.PyFunction(name, code, this.frame.f_globals, defaults, closure, this)
+        let fn = types.pyfunction(name, code, this.frame.f_globals, defaults, closure, this)
         this.push(fn)
     }
 
@@ -1938,10 +1948,10 @@ export default class VirtualMachine {
     }
 
     byte_MAKE_CLOSURE(argc) {
-        var name = this.pop()
-        var items = this.popn(2)
-        var defaults = this.popn(argc)
-        var fn = new types.PyFunction(name, items[1], this.frame.f_globals, defaults, items[0], this)
+        let name = this.pop()
+        let items = this.popn(2)
+        let defaults = this.popn(argc)
+        let fn = types.pyfunction(name, items[1], this.frame.f_globals, defaults, items[0], this)
         this.push(fn)
     }
 
@@ -1950,34 +1960,34 @@ export default class VirtualMachine {
     }
 
     byte_CALL_FUNCTION_VAR(arg) {
-        var args = this.pop()
+        let args = this.pop()
         return this.call_function(arg, args, null)
     }
 
     byte_CALL_FUNCTION_KW(arg) {
         if (!version.earlier('3.6')) {
-            var kw = this.pop()
-            var namedargs = new JSDict()
+            let kw = this.pop()
+            let namedargs = new JSDict()
             for (let i = kw.length - 1; i >= 0; i--) {
                 namedargs[kw[i]] = this.pop()
             }
             return this.call_function(arg - kw.length, null, namedargs)
         }
-        var kwargs = this.pop()
+        let kwargs = this.pop()
         return this.call_function(arg, null, kwargs)
     }
 
     byte_CALL_FUNCTION_VAR_KW(arg) {
         if (!version.earlier('3.6')) {
             // opcode: CALL_FUNCTION_EX
-            var kwargs
+            let kwargs
             if (arg & 1) {
                 kwargs = this.pop()
             }
-            var args = this.pop()
+            let args = this.pop()
             return this.call_function(0, args, kwargs)
         } else {
-            var items = this.popn(2)
+            let items = this.popn(2)
             return this.call_function(arg, items[0], items[1])
         }
     }
@@ -1999,14 +2009,14 @@ export default class VirtualMachine {
             }
             let func = this.pop()
 
-            let retval = callables.call_function(this, func, posargs, namedargs)
+            let retval = call_function(this, func, posargs, namedargs)
             this.push(retval)
         } else {
             let namedargs = new JSDict()
             let lenKw = Math.floor(arg / 256)
             let lenPos = arg % 256
-            for (var i = 0; i < lenKw; i++) {
-                var items = this.popn(2)
+            for (let i = 0; i < lenKw; i++) {
+                let items = this.popn(2)
                 namedargs[items[0]] = items[1]
             }
             if (kwargs) {
@@ -2022,7 +2032,7 @@ export default class VirtualMachine {
             }
             let func = this.pop()
 
-            let retval = callables.call_function(this, func, posargs, namedargs)
+            let retval = call_function(this, func, posargs, namedargs)
             this.push(retval)
         }
     }
@@ -2049,18 +2059,18 @@ export default class VirtualMachine {
     }
 
     byte_YIELD_FROM() {
-        var v = this.pop()
-        var receiver = this.top()
+        let v = this.pop()
+        let receiver = this.top()
 
         try {
-            if (v === PyNone ||
-                    !types.isinstance(receiver, types.PyGenerator)) {
-                this.return_value = callables.call_method(receiver, '__next__', [])
+            if (v === pyNone ||
+                    !types.isinstance(receiver, types.pygenerator)) {
+                this.return_value = receiver.__next__()
             } else {
                 this.return_value = receiver.send(v)
             }
         } catch (e) {
-            if (types.isinstance(e, PyStopIteration)) {
+            if (types.isinstance(e, pyStopIteration)) {
                 this.pop()
                 this.push(e.value)
                 return
@@ -2077,7 +2087,7 @@ export default class VirtualMachine {
     }
 
     byte_IMPORT_NAME(name) {
-        var items = this.popn(2)
+        let items = this.popn(2)
         this.push(
             builtins.__import__.call(this, name, this.frame.f_globals, this.frame.f_locals, items[1], items[0])
         )
@@ -2085,25 +2095,25 @@ export default class VirtualMachine {
 
     byte_IMPORT_STAR() {
         // TODO: this doesn't use __all__ properly.
-        var mod = this.pop()
-        var name
+        let mod = this.pop()
+        let name
         if ('__all__' in mod) {
-            for (var n = 0; n < mod.__all__.length; n++) {
+            for (let n = 0; n < mod.__all__.length; n++) {
                 name = mod.__all__[n]
-                this.frame.f_locals[name] = attrs.getattr(mod, name)
+                this.frame.f_locals[name] = mod[name]
             }
         } else {
             for (name in mod) {
                 if (name[0] !== '_') {
-                    this.frame.f_locals[name] = attrs.getattr(mod, name)
+                    this.frame.f_locals[name] = mod[name]
                 }
             }
         }
     }
 
     byte_IMPORT_FROM(name) {
-        var mod = this.top()
-        var val = attrs.getattr(mod, name)
+        let mod = this.top()
+        let val = mod[name]
         this.push(val)
     }
 
@@ -2112,34 +2122,21 @@ export default class VirtualMachine {
     //     six.exec_(stmt, globs, locs) f
     // };
 
-    make_type() {
-        var pytype = function(build_attrs, name, bases) {
-            // Create a attrs context, and run the class function in it.
-            let attrs = new types.PyDict()
-            build_attrs.__call__([], {}, attrs)
+    @pyargs({
+        args: ['build_attrs', 'name'],
+        varargs: ['bases']
+    })
+    make_type(build_attrs, name, bases) {
+        // Create a attrs context, and run the class function in it.
+        let attrs = types.pydict()
+        build_attrs.__call__([], {}, attrs)
 
-            // Now construct the class, based on the constructed local context.
-            // The *Javascript* constructor isn't the same as the *Python*
-            // constructor. The Javascript constructor just sets up the object.
-            // The Python __init__ invocation is done outside the constructor, as part
-            // of the __call__ that invokes the constructor.
-
-            let pyclass = class extends PyObject {}
-            create_pyclass(pyclass, name, bases, attrs)
-
-            // Return the class. Calling the type will construct instances.
-            return pyclass.__class__
-        }
-        pytype.$pyargs = {
-            args: ['build_attrs', 'name'],
-            varargs: ['bases']
-        }
-        return pytype
+        // Return the new type. Calling the type will construct instances.
+        return type(name, bases, attrs)
     }
 
     byte_LOAD_BUILD_CLASS() {
-        var pytype = this.make_type.apply(this)
-        this.push(pytype)
+        this.push(this.make_type)
     }
 
     byte_STORE_LOCALS() {

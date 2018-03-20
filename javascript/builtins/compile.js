@@ -1,4 +1,4 @@
-import { PyValueError } from '../core/exceptions'
+import { pyValueError } from '../core/exceptions'
 import { _compile } from '../modules'
 
 export default function compile(source, filename, mode, flags, dont_inherit) {
@@ -17,7 +17,7 @@ export default function compile(source, filename, mode, flags, dont_inherit) {
     } else if (mode === 'single') {
         compile_mode = 2
     } else {
-        throw new PyValueError("compile() mode must be 'exec', 'eval' or 'single'")
+        throw pyValueError("compile() mode must be 'exec', 'eval' or 'single'")
     }
 
     var ast_check = _compile.ast_check(source)

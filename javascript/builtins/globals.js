@@ -14,9 +14,9 @@ export default function globals() {
             if (k === 'items') {
                 continue
             }
-            l.push(new types.PyTuple([k, gbl[k]]))
+            l.push(types.pytuple([k, gbl[k]]))
         }
-        l = new types.PyList(l)
+        l = types.pylist(l)
         return l
     }
     return gbl

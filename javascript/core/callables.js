@@ -1,6 +1,4 @@
-import * as attrs from './attrs'
-import { PyPolyglotError, PyStopIteration, PyTypeError } from './exceptions'
-import { PyType } from './types'
+import { pyAttributeError, pyPolyglotError, pyStopIteration, pyTypeError } from './exceptions'
 
 import * as types from '../types'
 
@@ -20,8 +18,8 @@ import * as types from '../types'
  *
  *     @pyargs({
  *         args: ['myarg1', 'myarg2'],
- *         defaultargs: ['myarg3']
- *         varargs: myargs,
+ *         default_args: ['myarg3']
+ *         varargs: 'myargs',
  *         kwonlyargs: ['mykw1', 'mykw2'],
  *         kwargs: 'mykws'
  *     })
@@ -45,65 +43,32 @@ export function pyargs(pyargs) {
  *************************************************************************/
 
 export function call_function(vm, func, args = [], kwargs = {}) {
-    let callable, pyargs, name
-    let self = vm
-    if (func instanceof PyType) {
-        // The function is a type.
-        // The constructor will be an annotated javascript function if it is
-        // a builtin; otherwise, it will be defined in bytecode, and require
-        // raw python arguments.
+    let self, callable, name, pyargs, arg, index, err
+
+    // This is really a call to getattr, but circular dependencies...
+    try {
         callable = func.__call__
+    } catch (e) {
+        if (!types.isinstance(e, pyAttributeError)) {
+            throw e
+        }
+    }
+
+    // If the function has a __call__ method, use it;
+    // otherwise, treat the object as a function as-is.
+    if (callable) {
         self = func
-        if (func.$builtin) {
-            pyargs = func.$pyclass.prototype.__init__.$pyargs
-        } else {
-            pyargs = null
-        }
-
-        // Make sure every callable has a name
-        // Use the name of the class
-        name = func.__name__
-    } else if (func.$pytype) {
-        callable = (function(Type) {
-            let pytype = function() {
-                return new Type(...arguments)
-            }
-
-            Type.__class__ = pytype
-
-            // Use the name of the function if a name hasn't been
-            // explicitly provided
-            if (Type.__name__ === undefined) {
-                pytype.__name__ = Type.name
-            } else {
-                pytype.name = Type.__name__
-            }
-            return pytype
-        })(func)
-        name = callable.name
-    } else if (func.__call__) {
-        // The function is a callable object. Get the call method.
-        callable = attrs.getattr(func, '__call__')
-        pyargs = callable.$pyargs
-
-        // Make sure every callable has a name
-        // Use the name of the callable, not the call method
-        if (callable.__name__ === undefined) {
-            name = func.name
-        } else {
-            name = func.__name__
-        }
     } else {
-        // The function is a function. Call it as-is.
         callable = func
-        pyargs = callable.$pyargs
+        self = vm
+    }
 
-        // Make sure every callable has a name
-        if (callable.__name__ === undefined) {
-            name = callable.name
-        } else {
-            name = callable.__name__
-        }
+    pyargs = callable.$pyargs
+    // Make sure every callable has a name
+    if (func.__name__ === undefined) {
+        name = func.name
+    } else {
+        name = func.__name__
     }
 
     let js_args = []
@@ -115,10 +80,9 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         let kw = Object.assign({}, kwargs)
         // Positional arguments
         if (pyargs.args) {
-            for (let index in pyargs.args) {
-                let arg = args[index]
+            for (index in pyargs.args) {
+                arg = args[index]
                 if (arg === undefined) {
-                    let err
                     if (pyargs.missing_args_error) {
                         err = pyargs.missing_args_error
                     } else if (pyargs.args.length === 1) {
@@ -135,7 +99,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
                         }
                     }
 
-                    throw new PyTypeError(
+                    throw pyTypeError(
                         err({
                             'name': name,
                             'nargs': pyargs.args.length,
@@ -153,7 +117,7 @@ export function call_function(vm, func, args = [], kwargs = {}) {
 
         // Positional arguments with default values
         if (pyargs.default_args) {
-            for (let index in pyargs.default_args) {
+            for (index in pyargs.default_args) {
                 js_args.push(args[parseInt(index) + n_args])
             }
             n_args += pyargs.default_args.length
@@ -163,7 +127,6 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         if (pyargs.varargs) {
             js_args.push(args.slice(js_args.length))
         } else if (args.length > n_args) {
-            let err
             if (pyargs.surplus_args_error) {
                 err = pyargs.surplus_args_error
             } else if (pyargs.args) {
@@ -176,11 +139,11 @@ export function call_function(vm, func, args = [], kwargs = {}) {
                 if (pyargs.default_args) {
                     err = (e) => `${e.name}() expects at most ${e.nargs} arguments (${e.given} given)`
                 } else {
-                    err = (e) => `${e.name}() takes no arguments (${e.given})`
+                    err = (e) => `${e.name}() takes no arguments (${e.given} given)`
                 }
             }
 
-            throw new PyTypeError(
+            throw pyTypeError(
                 err({
                     'name': name,
                     'nargs': n_args,
@@ -191,8 +154,8 @@ export function call_function(vm, func, args = [], kwargs = {}) {
 
         // kwonly arguments
         if (pyargs.kwonlyargs) {
-            for (let index in pyargs.kwonlyargs) {
-                let arg = pyargs.kwonlyargs[index]
+            for (index in pyargs.kwonlyargs) {
+                arg = pyargs.kwonlyargs[index]
                 js_args.push(kw[arg])
                 delete kw[arg]
             }
@@ -202,15 +165,14 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         if (pyargs.kwargs) {
             js_args.push(kw)
         } else {
-            for (let arg of Object.getOwnPropertyNames(kw)) {
-                let err
+            for (arg of Object.getOwnPropertyNames(kw)) {
                 if (pyargs.invalid_keyword_error) {
                     err = pyargs.invalid_keyword_error
                 } else {
                     err = (e) => `${e.name}() got an unexpected keyword argument '${e.arg}'`
                 }
 
-                throw new PyTypeError(
+                throw pyTypeError(
                     err({
                         'name': callable.__name__,
                         'nargs': n_args,
@@ -221,37 +183,12 @@ export function call_function(vm, func, args = [], kwargs = {}) {
         }
     } else {
         if (kwargs && Object.getOwnPropertyNames(kwargs).length > 0) {
-            throw new PyPolyglotError("Can't pass kwargs to native Javascript function")
+            throw pyPolyglotError("Can't pass kwargs to native Javascript function")
         }
         js_args = args
     }
 
-    let retval = callable.apply(self, js_args)
-    return retval
-}
-
-/*************************************************************************
- * Invoking methods
- *************************************************************************/
-
-export function call_method(obj, method_name, args, kwargs) {
-    let method = attrs.getattr(obj, method_name)
-    let retval = call_function(obj, method, args, kwargs)
-    return retval
-}
-
-/*************************************************************************
- * Invoking methods on super
- *************************************************************************/
-
-export function call_super(obj, method_name, args, kwargs) {
-    for (let base of obj.__class__.mro().slice(1)) {
-        let super_method = base.$pyclass.prototype[method_name]
-        if (super_method) {
-            let retval = call_function(obj, super_method, args, kwargs)
-            return retval
-        }
-    }
+    return callable.apply(self, js_args)
 }
 
 /*************************************************************************
@@ -263,10 +200,10 @@ export function call_super(obj, method_name, args, kwargs) {
 export function iter_for_each(iterobj, callback) {
     try {
         while (true) {
-            callback(call_method(iterobj, '__next__'))
+            callback(iterobj.__next__())
         }
     } catch (err) {
-        if (!(types.isinstance(err, PyStopIteration))) {
+        if (!(types.isinstance(err, pyStopIteration))) {
             throw err
         }
     }

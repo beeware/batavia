@@ -1,20 +1,24 @@
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function divmod(x, y) {
-    var notAllowedTypes = [types.PyBytearray, types.PyBytes, types.PyDict, types.PyFrozenSet, types.PyList, types.PyNoneType, types.PyNotImplementedType, types.PyRange, types.PySet, types.PySlice, types.PyStr, types.PyTuple, types.PyType]
-    if (types.isinstance(x, types.PyComplex) || types.isinstance(y, types.PyComplex)) {
-        throw new PyTypeError("can't take floor or mod of complex number.")
+    var notAllowedTypes = [
+        types.pybytearray, types.pybytes, types.pydict, types.pyfrozenset,
+        types.pylist, types.pyNoneType, types.pyNotImplementedType, types.pyrange,
+        types.pyset, types.pyslice, types.pystr, types.pytuple, types.pytype
+    ]
+    if (types.isinstance(x, types.pycomplex) || types.isinstance(y, types.pycomplex)) {
+        throw pyTypeError("can't take floor or mod of complex number.")
     }
     if (types.isinstance(x, notAllowedTypes) || types.isinstance(y, notAllowedTypes)) {
-        throw new PyTypeError("unsupported operand type(s) for divmod(): '" + type_name(x) + "' and '" + type_name(y) + "'")
+        throw pyTypeError("unsupported operand type(s) for divmod(): '" + type_name(x) + "' and '" + type_name(y) + "'")
     }
 
     var div = Math.floor(x / y)
     var rem = x % y
-    return new types.PyTuple([new types.PyInt(div), new types.PyInt(rem)])
+    return types.pytuple([types.pyint(div), types.pyint(rem)])
 }
 
 divmod.__name__ = 'divmod'

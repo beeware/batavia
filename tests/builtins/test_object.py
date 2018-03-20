@@ -9,7 +9,6 @@ class BuiltinObjectFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "object"
 
     not_implemented = [
-        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',

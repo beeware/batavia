@@ -4,16 +4,16 @@ import * as types from '../types'
 
 export default function round(number, ndigits = 0) {
     var result = 0
-    if (types.isinstance(number, types.PyBool)) {
+    if (types.isinstance(number, types.pybool)) {
         result = number.__int__()
     } else {
         result = new BigNumber(number).round(ndigits)
     }
 
     if (ndigits === 0) {
-        return new types.PyInt(result)
+        return types.pyint(result)
     }
-    return types.PyFloat(result.valueOf())
+    return types.pyfloat(result.valueOf())
 }
 
 round.__name__ = 'round'

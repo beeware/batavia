@@ -1,7 +1,7 @@
-import { PyNotImplementedError } from '../core/exceptions'
+import { pyNotImplementedError } from '../core/exceptions'
 
 export default function staticmethod(fn) {
-    throw new PyNotImplementedError("Builtin Batavia function 'staticmethod' not implemented")
+    throw pyNotImplementedError("Builtin Batavia function 'staticmethod' not implemented")
 }
 
 staticmethod.__name__ = 'staticmethod'

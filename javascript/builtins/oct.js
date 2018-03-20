@@ -1,22 +1,22 @@
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import * as types from '../types'
 
 export default function oct(number) {
-    if (types.isinstance(number, types.PyInt)) {
-        if (number.val.isNeg()) {
-            return '-0o' + number.val.toString(8).substr(1)
+    if (types.isinstance(number, types.pyint)) {
+        if (number.$val.isNeg()) {
+            return '-0o' + number.$val.toString(8).substr(1)
         } else {
-            return '0o' + number.val.toString(8)
+            return '0o' + number.$val.toString(8)
         }
-    } else if (types.isinstance(number, types.PyBool)) {
+    } else if (types.isinstance(number, types.pybool)) {
         return '0o' + number.__int__().toString(8)
     }
 
-    if (!types.isinstance(number, types.PyInt)) {
+    if (!types.isinstance(number, types.pyint)) {
         if (number.__index__) {
             number = number.__index__()
         } else {
-            throw new PyTypeError('__index__ method needed for non-integer inputs')
+            throw pyTypeError('__index__ method needed for non-integer inputs')
         }
     }
     if (number < 0) {

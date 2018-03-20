@@ -7,7 +7,7 @@
  * Not all Python object types are supported; in general, only objects
  * whose value is independent from a particular invocation of Python can be
  * written and read by this module. The following types are supported:
- * None, integers, floating point numbers, strings, bytes, bytearrays,
+ * pyNone, integers, floating point numbers, strings, bytes, bytearrays,
  * tuples, lists, sets, dictionaries, and code objects, where it
  * should be understood that tuples, lists and dictionaries are only
  * supported as long as the values contained therein are themselves
@@ -30,10 +30,11 @@ import { Buffer } from 'buffer'
 import BigNumber from 'bignumber.js'
 import * as base64js from 'base64-js'
 
-import * as types from '../types'
-import * as builtins from '../builtins'
-import { PyBataviaError, PyTypeError, PyValueError } from '../core/exceptions'
+import { pyNone } from '../core/types'
 import PYCFile from '../core/PYCFile'
+
+import * as types from '../types'
+import { pyBataviaError, pyEOFError, pyRuntimeError, pyStopIteration, pyTypeError, pyValueError } from '../core/exceptions'
 
 export var marshal = {
     '__doc__': '',
@@ -103,7 +104,7 @@ marshal.r_string = function(vm, n, p) {
     //     res = p.ptr;
     //     var left = p.end - p.ptr;
     //     if (left < n) {
-    //         vm.PyErr_SetString(builtins.EOFError,
+    //         vm.PyErr_SetString(pyEOFError,
     //                         "marshal data too short");
     //         return null;
     //     }
@@ -144,18 +145,18 @@ marshal.r_string = function(vm, n, p) {
 
     //     res = _PyObject_CallMethodId(p.readable, PyId_readinto, "N", mview);
     //     if (res !== null) {
-    //         read = PyNumber_AsSsize_t(res, PyValueError);
+    //         read = PyNumber_AsSsize_t(res, pyValueError);
     //     }
     // }
     // if (read !== n) {
     //     if (!vm.PyErr_Occurred()) {
     //         if (read > n)
-    //             vm.PyErr_Format(PyValueError,
+    //             vm.PyErr_Format(pyValueError,
     //                          "read() returned too much data: " +
     //                          "%zd bytes requested, %zd returned",
     //                          n, read);
     //         else
-    //             vm.PyErr_SetString(builtins.EOFError,
+    //             vm.PyErr_SetString(pyEOFError,
     //                             "EOF read where not expected");
     //     }
     //     return null;
@@ -173,7 +174,7 @@ marshal.r_short = function(vm, p) {
 
     /* Sign-extension, in case short greater than 16 bits */
     x |= -(x & 0x8000)
-    return new types.PyInt(x)
+    return types.pyint(x)
 }
 
 marshal.read_int32 = function(vm, p) {
@@ -189,13 +190,13 @@ marshal.read_int32 = function(vm, p) {
 }
 
 marshal.r_int = function(vm, p) {
-    return new types.PyInt(this.read_int32(vm, p))
+    return types.pyint(this.read_int32(vm, p))
 }
 
 marshal.r_long = function(vm, p) {
     var n = marshal.read_int32(vm, p)
     if (n === 0) {
-        return new types.PyInt(0)
+        return types.pyint(0)
     }
     var negative = false
     if (n < 0) {
@@ -212,7 +213,7 @@ marshal.r_long = function(vm, p) {
     if (negative) {
         num = num.neg()
     }
-    return new types.PyInt(num)
+    return types.pyint(num)
 }
 
 marshal.r_float = function(vm, p) {
@@ -232,7 +233,7 @@ marshal.r_float = function(vm, p) {
     fhi = (buf[6] & 0xF) << 24
 
     if (e === 2047) {
-        throw builtins.RuntimeError("can't unpack IEEE 754 special value on non-IEEE platform")
+        throw pyRuntimeError("can't unpack IEEE 754 special value on non-IEEE platform")
     }
 
     /* Third byte */
@@ -268,7 +269,7 @@ marshal.r_float = function(vm, p) {
         retval = -retval
     }
 
-    return new types.PyFloat(retval)
+    return types.pyfloat(retval)
 }
 
 /* allocate the reflist index for a new object. Return -1 on failure */
@@ -276,7 +277,7 @@ marshal.r_ref_reserve = function(vm, flag, p) {
     if (flag) { /* currently only FLAG_REF is defined */
         var idx = p.refs.length
         if (idx >= 0x7ffffffe) {
-            vm.PyErr_SetString(PyValueError, 'bad marshal data (index list too large)')
+            vm.PyErr_SetString(pyValueError, 'bad marshal data (index list too large)')
             return -1
         }
         if (p.refs.push(null) < 0) {
@@ -330,7 +331,7 @@ marshal.r_object = function(vm, p) {
     var flag = 0
 
     if (code === PYCFile.EOF) {
-        vm.PyErr_SetString(builtins.EOFError,
+        vm.PyErr_SetString(pyEOFError,
             'EOF read where object expected')
         return null
     }
@@ -339,7 +340,7 @@ marshal.r_object = function(vm, p) {
 
     if (p.depth > marshal.MAX_MARSHAL_STACK_DEPTH) {
         p.depth--
-        vm.PyErr_SetString(PyValueError, 'recursion limit exceeded')
+        vm.PyErr_SetString(pyValueError, 'recursion limit exceeded')
         return null
     }
 
@@ -354,17 +355,17 @@ marshal.r_object = function(vm, p) {
             break
 
         case marshal.TYPE_NONE:
-            retval = builtins.None
+            retval = pyNone
             // console.log.info('TYPE_NONE ' + retval);
             break
 
         case marshal.TYPE_STOPITER:
-            retval = builtins.StopIteration
+            retval = pyStopIteration
             // console.log.info('TYPE_STOPITER');
             break
 
         case marshal.TYPE_ELLIPSIS:
-            retval = new types.PyEllipsis()
+            retval = types.pyellipsis()
             // console.log.info('TYPE_ELLIPSIS');
             break
 
@@ -400,7 +401,7 @@ marshal.r_object = function(vm, p) {
         case marshal.TYPE_FLOAT:
             n = marshal.r_byte(vm, p)
             buf = marshal.r_string(vm, p, n)
-            retval = new types.PyFloat(parseFloat(buf))
+            retval = types.pyfloat(parseFloat(buf))
             // console.log.info('TYPE_FLOAT ' + retval);
             if (flag) {
                 marshal.r_ref(vm, retval, flag, p)
@@ -423,7 +424,7 @@ marshal.r_object = function(vm, p) {
             fhi = (buf[6] & 0xF) << 24
 
             if (e === 2047) {
-                throw builtins.RuntimeError("can't unpack IEEE 754 special value on non-IEEE platform")
+                throw pyRuntimeError("can't unpack IEEE 754 special value on non-IEEE platform")
             }
 
             /* Third byte */
@@ -461,7 +462,7 @@ marshal.r_object = function(vm, p) {
 
             // console.log.info('TYPE_BINARY_FLOAT ' + retval);
 
-            retval = new types.PyFloat(retval)
+            retval = types.pyfloat(retval)
 
             if (flag) {
                 marshal.r_ref(vm, retval, flag, p)
@@ -471,21 +472,21 @@ marshal.r_object = function(vm, p) {
         case marshal.TYPE_COMPLEX:
             n = marshal.r_byte(vm, p)
             if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(builtins.EOFError,
+                vm.PyErr_SetString(pyEOFError,
                     'EOF read where object expected')
                 break
             }
             buf = marshal.r_string(vm, p, n)
-            real = new types.PyFloat(parseFloat(buf))
+            real = types.pyfloat(parseFloat(buf))
             n = marshal.r_byte(vm, p)
             if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(builtins.EOFError,
+                vm.PyErr_SetString(pyEOFError,
                     'EOF read where object expected')
                 break
             }
             buf = marshal.r_string(vm, p, n)
-            imag = new types.PyFloat(parseFloat(buf))
-            retval = new types.PyComplex(real, imag)
+            imag = types.pyfloat(parseFloat(buf))
+            retval = types.pycomplex(real, imag)
             // console.log.info('TYPE_COMPLEX ' + retval);
             if (flag) {
                 marshal.r_ref(vm, retval, flag, p)
@@ -495,7 +496,7 @@ marshal.r_object = function(vm, p) {
         case marshal.TYPE_BINARY_COMPLEX:
             real = marshal.r_float(vm, p)
             imag = marshal.r_float(vm, p)
-            retval = new types.PyComplex(real, imag)
+            retval = types.pycomplex(real, imag)
             // console.log.info('TYPE_BINARY_COMPLEX ' + retval);
             if (flag) {
                 marshal.r_ref(vm, retval, flag, p)
@@ -509,12 +510,12 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(PyValueError, 'bad marshal data (string size out of range)')
+                vm.PyErr_SetString(pyValueError, 'bad marshal data (string size out of range)')
                 break
             }
             //            retval = marshal.r_string(vm, n, p);
             var contents = marshal.r_string(vm, n, p)
-            retval = new types.PyBytes(Buffer.from(contents))
+            retval = types.pybytes(Buffer.from(contents))
 
             if (flag) {
                 marshal.r_ref(vm, retval, flag, p)
@@ -526,7 +527,7 @@ marshal.r_object = function(vm, p) {
             n = marshal.read_int32(vm, p)
             // console.log.info('TYPE_ASCII ' + n);
             if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(builtins.EOFError,
+                vm.PyErr_SetString(pyEOFError,
                     'EOF read where object expected')
                 break
             }
@@ -546,7 +547,7 @@ marshal.r_object = function(vm, p) {
             n = marshal.r_byte(vm, p)
             // console.log.info('TYPE_SHORT_ASCII ' + n);
             if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(builtins.EOFError,
+                vm.PyErr_SetString(pyEOFError,
                     'EOF read where object expected')
                 break
             }
@@ -566,7 +567,7 @@ marshal.r_object = function(vm, p) {
             n = marshal.read_int32(vm, p)
             // console.log.info('TYPE_UNICODE ' + n);
             if (n === PYCFile.EOF) {
-                vm.PyErr_SetString(builtins.EOFError,
+                vm.PyErr_SetString(pyEOFError,
                     'EOF read where object expected')
                 break
             }
@@ -590,7 +591,7 @@ marshal.r_object = function(vm, p) {
             if (vm.PyErr_Occurred()) {
                 break
             }
-            retval = new types.PyTuple(new Array(n))
+            retval = types.pytuple(new Array(n))
 
             for (i = 0; i < n; i++) {
                 retval[i] = marshal.r_object(vm, p)
@@ -608,10 +609,10 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(PyValueError, 'bad marshal data (tuple size out of range)')
+                vm.PyErr_SetString(pyValueError, 'bad marshal data (tuple size out of range)')
                 break
             }
-            retval = new types.PyTuple(new Array(n))
+            retval = types.pytuple(new Array(n))
 
             for (i = 0; i < n; i++) {
                 retval[i] = marshal.r_object(vm, p)
@@ -629,10 +630,10 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(PyValueError, 'bad marshal data (list size out of range)')
+                vm.PyErr_SetString(pyValueError, 'bad marshal data (list size out of range)')
                 break
             }
-            retval = new types.PyList(new Array(n))
+            retval = types.pylist(new Array(n))
             for (i = 0; i < n; i++) {
                 retval[n] = marshal.r_object(vm, p)
             }
@@ -644,7 +645,7 @@ marshal.r_object = function(vm, p) {
 
         case marshal.TYPE_DICT:
             // console.log.info('TYPE_DICT ' + n);
-            retval = new types.PyDict()
+            retval = types.pydict()
             for (;;) {
                 var key, val
                 key = marshal.r_object(p)
@@ -674,16 +675,16 @@ marshal.r_object = function(vm, p) {
                 break
             }
             if (n < 0 || n > marshal.SIZE32_MAX) {
-                vm.PyErr_SetString(PyValueError, 'bad marshal data (set size out of range)')
+                vm.PyErr_SetString(pyValueError, 'bad marshal data (set size out of range)')
                 break
             }
             if (type === marshal.TYPE_SET) {
-                retval = new types.PySet(null)
+                retval = types.pyset(null)
                 if (flag) {
                     marshal.r_ref(vm, retval, flag, p)
                 }
             } else {
-                retval = new types.PyFrozenSet(null)
+                retval = types.pyfrozenset(null)
                 /* must use delayed registration of frozensets because they must
                  * be init with a refcount of 1
                  */
@@ -745,23 +746,23 @@ marshal.r_object = function(vm, p) {
                 p.current_filename = filename
             }
 
-            v = new types.PyCode({
-                argcount: argcount,
-                kwonlyargcount: kwonlyargcount,
-                nlocals: nlocals,
-                stacksize: stacksize,
-                flags: flags,
-                code: code,
-                consts: consts,
-                names: names,
-                varnames: varnames,
-                freevars: freevars,
-                cellvars: cellvars,
-                filename: filename,
-                name: name,
-                firstlineno: firstlineno,
-                lnotab: lnotab
-            })
+            v = types.pycode(
+                argcount,
+                kwonlyargcount,
+                nlocals,
+                stacksize,
+                flags,
+                code,
+                consts,
+                names,
+                varnames,
+                freevars,
+                cellvars,
+                filename,
+                name,
+                firstlineno,
+                lnotab
+            )
             v = marshal.r_ref_insert(vm, v, idx, flag, p)
 
             retval = v
@@ -773,12 +774,12 @@ marshal.r_object = function(vm, p) {
                 if (n === -1 && vm.PyErr_Occurred()) {
                     break
                 }
-                vm.PyErr_SetString(PyValueError, 'bad marshal data (invalid reference)')
+                vm.PyErr_SetString(pyValueError, 'bad marshal data (invalid reference)')
                 break
             }
             v = p.refs[n]
             if (v === null) {
-                vm.PyErr_SetString(PyValueError, 'bad marshal data (invalid reference)')
+                vm.PyErr_SetString(pyValueError, 'bad marshal data (invalid reference)')
                 break
             }
             retval = v
@@ -788,7 +789,7 @@ marshal.r_object = function(vm, p) {
             /* Bogus data got written, which isn't ideal.
                This will let you keep working and recover. */
 
-            vm.PyErr_SetString(PyValueError, "bad marshal data (unknown type code '" + type + "')")
+            vm.PyErr_SetString(pyValueError, "bad marshal data (unknown type code '" + type + "')")
             break
     }
     p.depth--
@@ -805,7 +806,7 @@ marshal.read_object = function(vm, p) {
     v = marshal.r_object(vm, p)
 
     if (v === null && !vm.PyErr_Occurred()) {
-        vm.PyErr_SetString(PyTypeError, 'null object in marshal data for object')
+        vm.PyErr_SetString(pyTypeError, 'null object in marshal data for object')
     }
     return v
 }
@@ -814,15 +815,15 @@ marshal.read_object = function(vm, p) {
  * load_pyc(bytes)
  *
  * Load a Base64 encoded Convert the bytes object to a value. If no valid value is found, raise\n\
- * PyEOFError, PyValueError or PyTypeError. Extra characters in the input are\n\
+ * PyEOFError, pyValueError or pyTypeError. Extra characters in the input are\n\
  * ignored."
  */
 
 marshal.load_pyc = function(vm, payload) {
     if (payload === null || payload.length === 0) {
-        throw new PyBataviaError('Empty PYC payload')
+        throw pyBataviaError('Empty PYC payload')
     } else if (payload.startswith('ERROR:')) {
-        throw new PyBataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'))
+        throw pyBataviaError('Traceback (most recent call last):\n' + payload.slice(6).split('\\n').join('\n'))
     }
     return marshal.read_object(vm, new PYCFile(base64js.toByteArray(payload)))
 }

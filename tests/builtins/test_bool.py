@@ -55,11 +55,30 @@ class BoolTests(TranspileTestCase):
                 def __bool__(self):
                     return self.val
 
-            print(bool(BoolHate("zero")))
-            print(bool(BoolHate([1, 2, 3])))
-            print(bool(BoolHate({1: 2})))
-            print(bool(BoolHate(1.2)))
-            print(bool(BoolHate("👿")))
+            try:
+                print(bool(BoolHate("zero")))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(BoolHate([1, 2, 3])))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(BoolHate({1: 2})))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(BoolHate(1.2)))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(BoolHate("👿")))
+            except Exception as e:
+                print(type(e), ':', e)
         """)
 
     def test_len_malicious(self):
@@ -71,11 +90,30 @@ class BoolTests(TranspileTestCase):
                 def __len__(self):
                     return self.val
 
-            print(bool(LenHate("zero")))
-            print(bool(LenHate([1, 2, 3])))
-            print(bool(LenHate({1: 2})))
-            print(bool(LenHate(1.2)))
-            print(bool(BoolHate("👿")))
+            try:
+                print(bool(LenHate("zero")))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(LenHate([1, 2, 3])))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(LenHate({1: 2})))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(LenHate(1.2)))
+            except Exception as e:
+                print(type(e), ':', e)
+
+            try:
+                print(bool(LenHate("👿")))
+            except Exception as e:
+                print(type(e), ':', e)
         """)
 
 

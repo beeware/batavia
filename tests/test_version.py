@@ -15,7 +15,7 @@ class TestVersionID(TranspileTestCase):
                     testfunc: function() {{
                         let x = batavia.version.version_id('{0}')
                         let y = batavia.version.version_id('{1}')
-                        return new batavia.types.PyBool(x {2} y)
+                        return batavia.types.pybool(x {2} y)
                     }}
                 }};
                 """.format(v1, v2, op)),

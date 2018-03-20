@@ -1,13 +1,14 @@
-import { call_method } from '../core/callables'
 import { type_name } from '../core/types'
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
+
+import { getattr } from '../builtins'
 
 export default function len(object) {
-    if (object.__len__) {
-        return call_method(object, '__len__', [])
+    if (getattr(object, '__len__', null)) {
+        return object.__len__()
     }
 
-    throw new PyTypeError("object of type '" + type_name(object) + "' has no len()")
+    throw pyTypeError(`object of type '${type_name(object)}' has no len()`)
 }
 
 len.__name__ = 'len'

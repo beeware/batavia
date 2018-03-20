@@ -1,4 +1,4 @@
-from .. utils import TranspileTestCase
+from .. utils import TranspileTestCase, BuiltinTwoargFunctionTestCase
 
 
 class SetattrTests(TranspileTestCase):
@@ -26,3 +26,13 @@ class SetattrTests(TranspileTestCase):
 
             print('Done.')
             """, run_in_function=False)
+
+
+class BuiltinSetattrFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
+    function = "setattr"
+
+    not_implemented = [
+        # 'test_list_str',
+        # 'test_str_str',
+        # 'test_tuple_str',
+    ]

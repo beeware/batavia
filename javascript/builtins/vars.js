@@ -1,7 +1,7 @@
-import { PyNotImplementedError } from '../core/exceptions'
+import { pyNotImplementedError } from '../core/exceptions'
 
 export default function vars(object) {
-    throw new PyNotImplementedError("Builtin Batavia function 'vars' not implemented")
+    throw pyNotImplementedError("Builtin Batavia function 'vars' not implemented")
 }
 
 vars.__name__ = 'vars'

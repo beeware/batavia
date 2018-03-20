@@ -1,19 +1,20 @@
-import { call_function, call_method, pyargs } from '../../core/callables'
-import { PyException, PyValueError } from '../../core/exceptions'
-import { create_pyclass, PyNone, PyObject } from '../../core/types'
+import { call_function, pyargs } from '../../core/callables'
+import { pyException, pyValueError } from '../../core/exceptions'
+import { jstype, pyNone, PyObject } from '../../core/types'
 import * as version from '../../core/version'
 
 import * as types from '../../types'
 
 class PyJSONDecodeError extends PyObject {}
-create_pyclass(PyJSONDecodeError, 'JSONDecodeError', [PyException])
+jstype(PyJSONDecodeError, 'JSONDecodeError', [pyException])
 export var JSONDecodeError = PyJSONDecodeError.__class__
 
 class PyJSONDecoder extends PyObject {
     @pyargs({
         kwonlyargs: ['object_hook', 'parse_float', 'parse_int', 'parse_constant', 'strict', 'object_pairs_hook']
     })
-    __init__(object_hook=PyNone, parse_float=PyNone, parse_int=PyNone, parse_constant=PyNone, strict=true, object_pairs_hook=PyNone) {
+    __init__(object_hook = pyNone, parse_float = pyNone, parse_int = pyNone, parse_constant = pyNone,
+             strict = true, object_pairs_hook = pyNone) { // eslint-disable-line indent
         this.object_hook = object_hook
         this.parse_float = parse_float
         this.parse_int = parse_int
@@ -27,12 +28,12 @@ class PyJSONDecoder extends PyObject {
     })
     decode(s) {
         var reviver = (k, v) => types.js2py(v)
-        if (this.object_hook !== PyNone) {
+        if (this.object_hook !== pyNone) {
             let hook = this.object_hook
             reviver = function(k, v) {
                 var o = types.js2py(v)
-                if (types.isinstance(o, types.PyDict)) {
-                    o = call_function(hook.$vm, hook, [o])
+                if (types.isinstance(o, types.pydict)) {
+                    o = hook.call(hook.$vm, o)
                 }
                 return o
             }
@@ -43,7 +44,7 @@ class PyJSONDecoder extends PyObject {
             ret = JSON.parse(s, reviver)
         } catch (e) {
             if (version.earlier('3.5a0')) {
-                throw new PyValueError(e.message)
+                throw pyValueError(e.message)
             } else {
                 throw new PyJSONDecodeError(e.message)
             }
@@ -73,17 +74,19 @@ Performs the following translations in decoding by default:
 +---------------+-------------------+
 | false         | False             |
 +---------------+-------------------+
-| null          | None              |
+| null          | pyNone              |
 +---------------+-------------------+
 
 It also understands \`\`NaN\`\`, \`\`Infinity\`\`, and \`\`-Infinity\`\` as
 their corresponding \`\`float\`\` values, which is outside the JSON spec.
 `
-create_pyclass(PyJSONDecoder, 'JSONDecoder')
+jstype(PyJSONDecoder, 'JSONDecoder')
 
 export var JSONDecoder = PyJSONDecoder.__class__
 
-export function loads(s, encoding=PyNone, cls=JSONDecoder, object_hook=PyNone, parse_float=PyNone, parse_int=PyNone, parse_constant=PyNone, object_pairs_hook=PyNone, kw) {
+export function loads(s, encoding = pyNone, cls = JSONDecoder, object_hook = pyNone,
+                      parse_float = pyNone, parse_int = pyNone, parse_constant = pyNone, // eslint-disable-line indent
+                      object_pairs_hook = pyNone, kw) { // eslint-disable-line indent
     let dec = call_function(this, cls, [], {
         'object_hook': object_hook,
         'parse_float': parse_float,
@@ -92,7 +95,7 @@ export function loads(s, encoding=PyNone, cls=JSONDecoder, object_hook=PyNone, p
         'strict': true,
         'object_pairs_hook': object_pairs_hook
     })
-    return call_method(dec, 'decode', [s])
+    return dec.decode(s)
 }
 loads.__doc__ = `Deserialize \`\`s\`\` (a \`\`str\`\`, \`\`bytes\`\` or \`\`bytearray\`\` instance
 containing a JSON document) to a Python object.
@@ -136,10 +139,9 @@ loads.$pyargs = {
     kwargs: 'kw'
 }
 
-
 export function load(fp, cls, object_hook, parse_float, parse_int, parse_constant, object_pairs_hook, kw) {
-    let s = call_method(fp, 'read')
-    return loads(s, PyNone, cls, object_hook, parse_float, parse_int, parse_constant, object_pairs_hook)
+    let s = fp.read()
+    return loads(s, pyNone, cls, object_hook, parse_float, parse_int, parse_constant, object_pairs_hook)
 }
 
 load.__doc__ = `Deserialize \`\`fp\`\` (a \`\`.read()\`\`-supporting file-like object containing

@@ -1,6 +1,5 @@
-import { call_function, call_method } from '../core/callables'
-import { PyAttributeError, PyBaseException, PyGeneratorExit, PyStopIteration, PyTypeError } from '../core/exceptions'
-import { create_pyclass, PyObject, PyNone } from '../core/types'
+import { pyAttributeError, pyBaseException, pyGeneratorExit, pyStopIteration, pyTypeError } from '../core/exceptions'
+import { jstype, PyObject, pyNone } from '../core/types'
 
 import { dis } from '../modules/dis'
 
@@ -22,7 +21,7 @@ function yf_subgenerator(gen) {
  * A Python generator type.
  *************************************************************************/
 
-export default class PyGenerator extends PyObject {
+class PyGenerator extends PyObject {
     constructor(frame, vm) {
         super()
 
@@ -42,24 +41,24 @@ export default class PyGenerator extends PyObject {
 
     send(value) {
         if (arguments.length !== 1) {
-            throw new PyTypeError(
+            throw pyTypeError(
                 'send() takes exactly one argument (' + arguments.length + ' given)'
             )
         }
 
         if (!this.started) {
             if (value !== null) {
-                if (value !== PyNone) {
-                    // It's illegal to send a non-None value on first call.
-                    throw new PyTypeError(
-                        "can't send non-None value to a just-started generator"
+                if (value !== pyNone) {
+                    // It's illegal to send a non-pyNone value on first call.
+                    throw pyTypeError(
+                        "can't send non-pyNone value to a just-started generator"
                     )
                 }
             }
             this.started = true
         }
         if (this.finished) {
-            throw new PyStopIteration()
+            throw pyStopIteration()
         }
         this.gi_frame.stack.push(value)
         try {
@@ -69,7 +68,7 @@ export default class PyGenerator extends PyObject {
             throw e
         }
         if (this.finished) {
-            throw new PyStopIteration()
+            throw pyStopIteration()
         }
         return yieldval
     }
@@ -77,24 +76,24 @@ export default class PyGenerator extends PyObject {
     throw(ExcType, value, traceback) {
         var yf_gen = yf_subgenerator(this)
         if (yf_gen !== null) {
-            if (ExcType === PyGeneratorExit.__class__ ||
-                    types.isinstance(value, PyGeneratorExit)) {
-                call_method(yf_gen, 'close', [])
+            if (ExcType === pyGeneratorExit.__class__ ||
+                    types.isinstance(value, pyGeneratorExit)) {
+                yf_gen.close()
             } else {
                 try {
-                    return call_method(yf_gen, 'throw', [ExcType, value, traceback])
+                    yf_gen.throw(ExcType, value, traceback)
                 } catch (e) {
-                    if (!(e instanceof PyAttributeError)) {
+                    if (!(e instanceof pyAttributeError)) {
                         throw e
                     }
                 }
             }
         }
-        if (ExcType instanceof PyBaseException.__class__) {
+        if (ExcType instanceof pyBaseException.__class__) {
             value = ExcType
             ExcType = ExcType.__class__
         } else {
-            value = call_function(ExcType, [value], null)
+            value = ExcType(value)
         }
         this.vm.last_exception = {
             'exc_type': ExcType,
@@ -108,16 +107,16 @@ export default class PyGenerator extends PyObject {
             throw e
         }
         if (this.finished) {
-            throw new PyStopIteration()
+            throw pyStopIteration()
         }
         return yieldval
     }
 
     close() {
         try {
-            return this['throw'](new PyGeneratorExit())
+            return this['throw'](pyGeneratorExit())
         } catch (e) {
-            if (types.isinstance(e, PyGeneratorExit) || types.isinstance(e, PyStopIteration)) {
+            if (types.isinstance(e, pyGeneratorExit) || types.isinstance(e, pyStopIteration)) {
                 this.vm.last_exception = null
                 return null
             }
@@ -125,4 +124,6 @@ export default class PyGenerator extends PyObject {
         }
     }
 }
-create_pyclass(PyGenerator, 'generator')
+
+const pygenerator = jstype(PyGenerator, 'generator', [], null)
+export default pygenerator

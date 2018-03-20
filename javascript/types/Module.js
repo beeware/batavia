@@ -1,12 +1,11 @@
 import JSDict from '../core/JSDict'
-import { create_pyclass } from '../core/types'
-
+import { jstype } from '../core/types'
 
 /*************************************************************************
  * A Python module type
  *************************************************************************/
 
-export default class Module extends JSDict {
+class Module extends JSDict {
     constructor(name, filename, pkg) {
         super()
 
@@ -15,4 +14,7 @@ export default class Module extends JSDict {
         this.__package__ = pkg
     }
 }
-create_pyclass(Module, 'module')
+
+export default function pymodule(name, filename, pkg) {
+    return new Module(name, filename, pkg)
+}

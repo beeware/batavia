@@ -1,6 +1,6 @@
-import { call_function, call_method, pyargs } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { pyargs } from '../core/callables'
+import { pyTypeError } from '../core/exceptions'
+import { jstype, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
 
@@ -14,12 +14,12 @@ class PyFilter extends PyObject {
     })
     __init__(fn, iterable) {
         if (builtins.callable(fn)) {
-            this._func = fn
+            this.$func = fn
         } else {
-            throw new PyTypeError(type_name(fn) + "' object is not callable")
+            throw pyTypeError(`${type_name(fn)}' object is not callable`)
         }
 
-        this._iter = builtins.iter(iterable)
+        this.$iter = builtins.iter(iterable)
     }
 
     /**************************************************
@@ -35,14 +35,14 @@ class PyFilter extends PyObject {
      **************************************************/
 
     __iter__() {
-        return this._iter
+        return this.$iter
     }
 
     __next__() {
         let val, pass
         do {
-            val = call_method(this._iter, '__next__', [])
-            pass = call_function(this, this._func, [val], null)
+            val = this.$iter.__next__()
+            pass = this.$func(val)
         } while (!pass)
 
         return val
@@ -52,12 +52,10 @@ class PyFilter extends PyObject {
         return '<filter object at 0x99999999>'
     }
 }
-PyFilter.prototype.__doc__ = `filter(function or None, iterable) --> filter object
+PyFilter.prototype.__doc__ = `filter(function or pyNone, iterable) --> filter object
 
 Return an iterator yielding those items of iterable for which function(item)
-is true. If function is None, return the items that are true.`
-create_pyclass(PyFilter, 'filter')
+is true. If function is pyNone, return the items that are true.`
 
-var filter = PyFilter.__class__
-
+const filter = jstype(PyFilter, 'filter')
 export default filter

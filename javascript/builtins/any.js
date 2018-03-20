@@ -1,26 +1,23 @@
-import { call_method } from '../core/callables'
-import { PyStopIteration, PyTypeError } from '../core/exceptions'
+import { pyStopIteration, pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function any(iterable) {
-    if (!iterable.__iter__) {
-        throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
-    }
-
-    var iterobj = call_method(iterable, '__iter__', [])
     try {
+        let iterobj = iterable.__iter__()
+
+        let next, bool_next
         while (true) {
-            var next = call_method(iterobj, '__next__', [])
-            var bool_next = call_method(next, '__bool__', [])
+            next = iterobj.__next__()
+            bool_next = next.__bool__()
             if (bool_next) {
                 return true
             }
         }
     } catch (err) {
-        if (!(types.isinstance(err, PyStopIteration))) {
-            throw err
+        if (!(types.isinstance(err, pyStopIteration))) {
+            throw pyTypeError(`'${type_name(iterable)}' object is not iterable`)
         }
     }
     return false

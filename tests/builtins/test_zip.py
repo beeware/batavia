@@ -81,7 +81,5 @@ class ZipTests(TranspileTestCase):
         self.assertCodeExecution(code)
 
 
-class BuiltinFilterFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
+class BuiltinZipFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
     function = "zip"
-
-    not_implemented = []

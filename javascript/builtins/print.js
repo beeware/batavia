@@ -1,5 +1,4 @@
-import { call_method } from '../core/callables'
-import { PyAttributeError } from '../core/exceptions'
+import { pyAttributeError } from '../core/exceptions'
 
 import { sys } from '../modules'
 import * as types from '../types'
@@ -9,7 +8,7 @@ export default function print(value, sep = ' ', end = '\n', file = sys.stdout, f
     let content
 
     if (value.length === 0) {
-        call_method(file, 'write', [end], null)
+        file.write(end)
     } else {
         for (var i = 0; i < value.length; i++) {
             elm = value[i]
@@ -19,28 +18,28 @@ export default function print(value, sep = ' ', end = '\n', file = sys.stdout, f
                 content = 'None'
             } else {
                 try {
-                    content = call_method(elm, '__str__')
+                    content = elm.__str__()
                 } catch (e) {
-                    if (types.isinstance(e, PyAttributeError)) {
+                    if (types.isinstance(e, pyAttributeError)) {
                         content = elm.toString()
                     } else {
                         throw e
                     }
                 }
             }
-            call_method(file, 'write', [content])
+            file.write(content)
 
             // output the separator (or end marker if at the end of line)
             if (i === value.length - 1) {
-                call_method(file, 'write', [end])
+                file.write(end)
             } else {
-                call_method(file, 'write', [sep])
+                file.write(sep)
             }
         }
     }
 
     if (flush) {
-        call_method(file, 'flush', [])
+        file.flush()
     }
 }
 

@@ -1,5 +1,5 @@
 import { pyargs } from '../core/callables'
-import { create_pyclass, PyObject } from '../core/types'
+import { jstype, PyObject } from '../core/types'
 
 import * as types from '../types'
 
@@ -19,10 +19,10 @@ class PyEnumerate extends PyObject {
 
     __next__() {
         var item = this.iterator.__next__([])
-        var index = new types.PyInt(this.count)
+        var index = types.pyint(this.count)
         this.count += 1
 
-        return new types.PyTuple([index, item])
+        return types.pytuple([index, item])
     }
 
     __iter__() {
@@ -40,8 +40,6 @@ iteration.  The enumerate object yields pairs containing a count (from
 start, which defaults to zero) and a value yielded by the iterable argument.
 enumerate is useful for obtaining an indexed list:
     (0, seq[0]), (1, seq[1]), (2, seq[2]), ...`
-create_pyclass(PyEnumerate, 'enumerate')
 
-var enumerate = PyEnumerate.__class__
-
+const enumerate = jstype(PyEnumerate, 'enumerate')
 export default enumerate

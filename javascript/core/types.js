@@ -1,78 +1,349 @@
-import { call_method, call_super, pyargs } from './callables'
-import { PyAttributeError, PyTypeError } from './exceptions'
+import { call_function, pyargs } from './callables'
+import { pyAttributeError, pyBataviaError, pyTypeError } from './exceptions'
 import * as version from './version'
 
 import * as types from '../types'
 
 /*************************************************************************
- * A base Python object
+ * A proxy handler implementing the Python attribute access and
+ * function call protocols.
  *************************************************************************/
-class PyObject {
-    constructor() {
-        let init = this.__getattribute__('__init__')
-        if (init.__call__) {
-            init.__call__(...arguments)
-        } else {
-            init.apply(this, arguments)
+
+let pydescriptor = function(self) {
+    return {
+        get: function(facade, attr) {
+            let value
+            if (attr === Symbol.toPrimitive) {
+                value = self.__getattribute__.call(self.$proxy, '__repr__')
+            } else if (attr === '$raw') {
+                // object.$raw returns the native, unproxied instance
+                value = self
+            } else if (attr[0] === '$') {
+                // Any other attribute starting with $ is inspected directly
+                // on the object, rather than with __getattribute__
+                value = self[attr]
+            } else if (attr === 'valueOf') {
+                // valueOf is a special case; redirect to the javascript object directly
+                value = self.valueOf
+            } else if (attr === 'toString') {
+                // toString is a special case; redirect to the javascript object directly
+                value = self.toString
+            } else {
+                value = self.__getattribute__.call(self.$proxy, attr)
+            }
+            return value
+        },
+        set: function(facade, attr, value) {
+            // if (attr.match(/^-?\d+$/)) {
+            //     // Javascript uses [] for attribute access and for list access
+            //     // if the attribute name is a number, redirect to __setitem__,
+            //     // rather than __setattr__
+            //     self.__setitem__.call(self.$proxy, attr, value)
+            // } else
+            if (attr[0] === '$') {
+                // Any attribute starting with $ is set directly on the
+                // instance.
+                self[attr] = value
+            } else {
+                self.__setattr__.call(self.$proxy, attr, value)
+            }
+            return true
+        },
+        deleteProperty: function(facade, attr) {
+            // if (attr.match(/^-?\d+$/)) {
+            //     // Javascript uses [] for attribute access and for list access
+            //     // if the attribute name is a number, redirect to __delitem__,
+            //     // rather than __delattr__
+            //     self.__delitem__.call(self.$proxy, attr)
+            // } else
+            if (attr[0] === '$') {
+                // Any attribute starting with $ is set directly on the
+                // instance.
+                delete self[attr]
+            } else {
+                self.__delattr__.call(self.$proxy, attr)
+            }
+            return true
+        },
+        apply: function(facade, that, args) {
+            return call_function(self.$proxy, self.$proxy, args)
+
+            // let func = self.$proxy.__call__
+            // if (func) {
+            //     return call_function(self.$proxy, func, args)
+            // } else {
+                // throw pyTypeError(`${this.__class__.__name__} object is not callable`)
+            // }
+        },
+        construct: function(facade, args) {
+            throw pyBataviaError('Python objects should be constructed by invocation')
         }
+    }
+}
+
+/*************************************************************************
+ * A Python Type
+ *************************************************************************/
+class PyType {
+    constructor(name, bases, attrs) {
+        this.__name__ = name
+        this.__module__ = null
+        if (bases && Array.isArray(bases) && bases.length > 0) {
+            this.__base__ = bases[0]
+            this.__bases__ = bases.slice()
+        } else if (name === 'object' || name === 'type') {
+            this.__base__ = null
+            this.__bases__ = []
+        } else {
+            this.__base__ = pyobject
+            this.__bases__ = [pyobject]
+        }
+
+        if (attrs === null) {
+            this.$builtin = true
+            this.$attrs = {}
+        } else {
+            this.$builtin = false
+            this.$attrs = attrs
+        }
+    }
+
+    __call__() {
+        if (this.__name__ === 'str' || this.__name__ === 'bool' ||
+            this.__name__ === 'tuple' || this.__name__ === 'list') {
+            // Str, Bool, List and Tuple are unusual types, because they
+            // extend primitive objects, rather than PyObject.
+            // We have to treat the constructors a little differently.
+            // We have to use a named-based comparison to resolve circular
+            // dependencies.
+            return new this.$pyclass(...arguments)
+        } else {
+            function obj_facade() {} // eslint-disable-line no-inner-declarations
+            obj_facade.obj = new this.$pyclass()
+
+            obj_facade.obj.$pyclass = this.$pyclass
+            obj_facade.obj.__class__ = this
+
+            obj_facade.obj.$proxy = new Proxy(obj_facade, pydescriptor(obj_facade.obj))
+            call_function(obj_facade.obj.$proxy, obj_facade.obj.$proxy.__init__, Array.from(arguments))
+            return obj_facade.obj.$proxy
+        }
+    }
+
+    /**************************************************
+     * String representation
+     **************************************************/
+
+    __repr__() {
+        if (this.__module__ !== null) {
+            return `<class '${this.__module__}.${this.__name__}'>`
+        }
+        return `<class '${this.__name__}'>`
+    }
+
+    __str__() {
+        if (this.__module__ !== null) {
+            return `<class '${this.__module__}.${this.__name__}'>`
+        }
+        return `<class '${this.__name__}'>`
     }
 
     toString() {
         return this.__str__()
     }
 
-    __init__() {}
+    /**************************************************
+     * Type conversions
+     **************************************************/
 
-    __repr__() {
-        return '<' + this.__class__.__name__ + ' 0x...>'
+    __bool__() {
+        return true
     }
 
-    __str__() {
-        return '<' + this.__class__.__name__ + ' 0x...>'
+    /**************************************************
+     * Attribute access
+     **************************************************/
+
+    @pyargs({
+        args: ['name']
+    })
+    __getattribute__(name) {
+        let attr
+        let rawthis = this.$raw
+
+        // Inspect the type instance for the attribute
+        // This should only be __base__, __bases__, __name__ or __dict__
+        attr = rawthis[name]
+
+        // All other class attributes are stored on the $attrs
+        // of the type.
+        if (attr === undefined) {
+            attr = rawthis.$attrs[name]
+        }
+
+        if (attr === undefined) {
+            throw pyAttributeError(
+                `type object '${this.__name__}' has no attribute '${name}'`
+            )
+        }
+
+        return attr
+    }
+
+    @pyargs({
+        args: ['name', 'value']
+    })
+    __setattr__(name, value) {
+        if (this.$builtin) {
+            throw pyTypeError(
+                `can't set attributes of built-in/extension type '${this.__name__}'`
+            )
+        }
+
+        this.$attrs[name] = value
     }
 
     @pyargs({
         args: ['name']
     })
+    __delattr__(name) {
+        if (this.$builtin) {
+            throw pyTypeError(`can't set attributes of built-in/extension type '${this.__name__}'`)
+        }
+
+        if (name in this.$attrs) {
+            delete this.$attrs[name]
+        } else {
+            throw pyAttributeError(name)
+        }
+    }
+
+    mro() {
+        // Cache the MRO on the $mro attribute
+        if (this.$mro === undefined) {
+            // Self is always the first port of call for the MRO
+            this.$mro = [this]
+            let bases = this.__bases__
+            if (bases) {
+                // Now traverse and add the base classes.
+                for (let base of bases) {
+                    let submros = base.$raw.mro.call(base)
+                    for (let submro of submros) {
+                        // // If the base class is already in the MRO,
+                        // // push it to the end of the MRO list.
+                        // let index = this.$mro.indexOf(submro)
+                        // if (index == -1) {
+                        //     this.$mro.splice(index, 1)
+                        // }
+                        this.$mro.push(submro)
+                    }
+                }
+            } else {
+                // Primitives have no base class;
+                this.$mro = [this]
+            }
+        }
+        return this.$mro
+    }
+}
+PyType.prototype.__doc__ = `type(object_or_name, bases, dict)
+type(object) -> the object's type
+type(name, bases, dict) -> a new type`
+
+/*************************************************************************
+ * A base Python object
+ *
+ * Python objects should be constructed by calling them, *not* with
+ * the `new` operator. If you use `new`, the full constructor won't be
+ * invoked.
+ *************************************************************************/
+export class PyObject {
+    @pyargs({
+        surplus_args_error: 'object() takes no parameters'
+    })
+    __init__() {
+    }
+
+    /**************************************************
+     * String representation
+     **************************************************/
+
+    @pyargs({})
+    __repr__() {
+        return `<${this.__class__.__name__} object at 0x99999999>`
+    }
+
+    @pyargs({})
+    __str__() {
+        return this.__repr__()
+    }
+
+    toString() {
+        return this.__str__()
+    }
+
+    /**************************************************
+     * Attribute access
+     **************************************************/
+
+    @pyargs({
+        args: ['name']
+    })
     __getattr__(name) {
-        throw new PyAttributeError(
-            "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
-        )
+        throw pyAttributeError(`'${this.__class__.__name__}' object has no attribute '${name}'`)
     }
 
     @pyargs({
         args: ['name']
     })
     __getattribute__(name) {
-        let attr = this[name]
+        let attr
+        let rawthis = this.$raw
+        // Check if the object instance has an attribute of that name.
+        // The attribute must be *directly* on the instance to match.
+        if (rawthis.hasOwnProperty(name)) {
+            attr = rawthis[name]
+        } else {
+            // No attribute on the objet instance;
+            // Walk the inheritance chain looking for a class attribute.
+            let i = 0
+            let mro = rawthis.__class__.mro()
+            let base = mro[i]
+            while (attr === undefined && base) {
+                let rawbase = base.$raw
 
-        if (attr === undefined) {
-            try {
-                // No attribute on this instance; look for a class attribute
-                attr = this.__class__.__base__.__getattribute__(name)
-            } catch (e) {
-                // No class attribute either; use the descriptor protocol
-                attr = call_method(this, '__getattr__', [name])
+                // First option - Look for an attribute defined on the base type
+                attr = base.$attrs[name]
+
+                // Second option - Look for a method defined on the base type
+                if (attr === undefined) {
+                    if (rawbase.$pyclass.prototype.hasOwnProperty(name)) {
+                        attr = rawbase.$pyclass.prototype[name]
+                    }
+                }
+
+                i = i + 1
+                base = mro[i]
+            }
+
+            if (attr === undefined) {
+                throw pyAttributeError(
+                    `'${this.__class__.__name__}' object has no attribute '${name}'`
+                )
             }
         }
 
         let value
-        if (attr.__get__) {
-            value = attr.__get__(this, this.__class__)
+        let rawattr
+        if (attr) {
+            rawattr = attr.$raw
+        }
+
+        if (rawattr && rawattr.__get__) {
+            value = rawattr.__get__.call(attr, this)
         } else {
             value = attr
         }
-
-        // If attribute is a function, bind the function to the instance
-        // that we've retrieved it from.
-        if (value instanceof Function) {
-            let pyargs = value.$pyargs
-            let pytype = value.$pytype
-            value = value.bind(this)
-            value.$pyargs = pyargs
-            value.$pytype = pytype
-        }
-
         return value
     }
 
@@ -80,11 +351,26 @@ class PyObject {
         args: ['name', 'value']
     })
     __setattr__(name, value) {
-        let attr = this[name]
-        if (attr !== undefined && attr.__set__ !== undefined) {
-            call_method(this, '__set__', value)
+        let rawthis = this.$raw
+        if (rawthis.__class__.$builtin) {
+            throw pyTypeError(
+                `can't set attributes of built-in/extension type '${this.__class__.__name__}'`
+            )
+        }
+
+        let attr, rawattr
+        if (rawthis.hasOwnProperty(name)) {
+            attr = rawthis[name]
+            if (attr) {
+                rawattr = attr.$raw
+            }
+            if (rawattr && rawattr.hasOwnProperty('__set__')) {
+                rawattr.__set__.call(attr, this, value)
+            } else {
+                rawthis[name] = value
+            }
         } else {
-            this[name] = value
+            rawthis[name] = value
         }
     }
 
@@ -92,17 +378,27 @@ class PyObject {
         args: ['name']
     })
     __delattr__(name) {
-        let attr = this[name]
-
-        if (attr === undefined) {
-            throw new PyAttributeError(
-                "'" + this.__class__.__name__ + "' object has no attribute '" + name + "'"
+        let rawthis = this.$raw
+        let attr, rawattr
+        if (rawthis.hasOwnProperty(name)) {
+            attr = rawthis[name]
+            if (attr) {
+                rawattr = attr.$raw
+            }
+            if (rawattr && rawattr.hasOwnProperty('__set__')) {
+                rawattr.__del__.call(attr, this)
+            } else {
+                delete rawthis[name]
+            }
+        } else {
+            throw pyAttributeError(
+                `'${this.__class__.__name__}' object has no attribute '${name}'`
             )
         }
 
-        if (attr.__delete__ !== undefined) {
-            attr.__delete__(this)
-        } else {
+        try {
+            this[name].__del__(this)
+        } catch (e) {
             delete this[name]
         }
     }
@@ -112,19 +408,19 @@ class PyObject {
      **************************************************/
 
     __pos__() {
-        throw new PyTypeError("bad operand type for unary +: '" + this.__class__.__name__ + "'")
+        throw pyTypeError(`bad operand type for unary +: '${this.__class__.__name__}'`)
     }
 
     __neg__() {
-        throw new PyTypeError("bad operand type for unary -: '" + this.__class__.__name__ + "'")
+        throw pyTypeError(`bad operand type for unary -: '${this.__class__.__name__}'`)
     }
 
     __not__() {
-        throw new PyTypeError("bad operand type for unary not: '" + this.__class__.__name__ + "'")
+        throw pyTypeError(`bad operand type for unary not: '${this.__class__.__name__}'`)
     }
 
     __invert__() {
-        throw new PyTypeError("bad operand type for unary ~: '" + this.__class__.__name__ + "'")
+        throw pyTypeError(`bad operand type for unary ~: '${this.__class__.__name__}'`)
     }
 
     /**************************************************
@@ -132,71 +428,71 @@ class PyObject {
      **************************************************/
 
     __pow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for ** or pow(): '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __div__(other) {
-        return PyNoneType.__truediv__(other)
+        return pyNoneType.__truediv__(other)
     }
 
     __floordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't take floor of complex number.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't take floor of complex number.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for //: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError(`unsupported operand type(s) for //: '${this.__class__.__name__}' and '${type_name(other)}'`)
         }
     }
 
     __truediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for /: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __mul__(other) {
-        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
-            throw new PyTypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+        if (types.isinstance(other, [types.pylist, types.pytuple, types.pystr, types.pybytes, types.pybytearray])) {
+            throw pyTypeError(`can't multiply sequence by non-int of type '${this.__class__.__name__}'`)
         } else {
-            throw new PyTypeError("unsupported operand type(s) for *: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError(`unsupported operand type(s) for *: '${this.__class__.__name__}' and '${type_name(other)}'`)
         }
     }
 
     __mod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't mod complex numbers.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't mod complex numbers.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for %: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError(`unsupported operand type(s) for %: '${this.__class__.__name__}' and '${type_name(other)}'`)
         }
     }
 
     __add__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for +: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __sub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for -: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __getitem__(other) {
-        throw new PyTypeError("'" + this.__class__.__name__ + "' object is not subscriptable")
+        throw pyTypeError(`'${this.__class__.__name__}' object is not subscriptable`)
     }
 
     __lshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for <<: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __rshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for >>: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __and__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for &: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __xor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for ^: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __or__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for |: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     /**************************************************
@@ -204,286 +500,131 @@ class PyObject {
      **************************************************/
 
     __ifloordiv__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't take floor of complex number.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't take floor of complex number.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for //=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError(`unsupported operand type(s) for //=: '${this.__class__.__name__}' and '${type_name(other)}'`)
         }
     }
 
     __itruediv__(other) {
-        throw new PyTypeError("unsupported operand type(s) for /=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for /=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __iadd__(other) {
-        throw new PyTypeError("unsupported operand type(s) for +=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for +=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __isub__(other) {
-        throw new PyTypeError("unsupported operand type(s) for -=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for -=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __imul__(other) {
-        if (types.isinstance(other, [types.PyList, types.PyTuple, types.PyStr, types.PyBytes, types.PyBytearray])) {
-            throw new PyTypeError("can't multiply sequence by non-int of type '" + this.__class__.__name__ + "'")
+        if (types.isinstance(other, [types.pylist, types.pytuple, types.pystr, types.pybytes, types.pybytearray])) {
+            throw pyTypeError(`can't multiply sequence by non-int of type '${this.__class__.__name__}'`)
         } else {
-            throw new PyTypeError("unsupported operand type(s) for *=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError(`unsupported operand type(s) for *=: '${this.__class__.__name__}' and '${type_name(other)}'`)
         }
     }
 
     __imod__(other) {
-        if (types.isinstance(other, types.PyComplex)) {
-            throw new PyTypeError("can't mod complex numbers.")
+        if (types.isinstance(other, types.pycomplex)) {
+            throw pyTypeError("can't mod complex numbers.")
         } else {
-            throw new PyTypeError("unsupported operand type(s) for %=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+            throw pyTypeError(`unsupported operand type(s) for %=: '${this.__class__.__name__}' and '${type_name(other)}'`)
         }
     }
 
     __ipow__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ** or pow(): '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for ** or pow(): '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __ilshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for <<=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for <<=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __irshift__(other) {
-        throw new PyTypeError("unsupported operand type(s) for >>=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for >>=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __iand__(other) {
-        throw new PyTypeError("unsupported operand type(s) for &=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for &=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __ixor__(other) {
-        throw new PyTypeError("unsupported operand type(s) for ^=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for ^=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 
     __ior__(other) {
-        throw new PyTypeError("unsupported operand type(s) for |=: '" + this.__class__.__name__ + "' and '" + type_name(other) + "'")
+        throw pyTypeError(`unsupported operand type(s) for |=: '${this.__class__.__name__}' and '${type_name(other)}'`)
     }
 }
-
-// Set the type properties of the PyObject class
 PyObject.prototype.__doc__ = 'The most base type'
-
-/*************************************************************************
- * A Python Type
- *************************************************************************/
-class PyType {
-    constructor(name, bases, attrs) {
-        this.__name__ = name
-        if (bases && Array.isArray(bases) && bases.length > 0) {
-            this.__base__ = bases[0]
-            this.__bases__ = bases.slice()
-        } else if (name === 'object') {
-            this.__base__ = null
-            this.__bases__ = []
-        } else {
-            this.__base__ = PyObject.__class__
-            this.__bases__ = [PyObject.__class__]
-        }
-
-        if (attrs === undefined) {
-            this.$builtin = true
-        }
-    }
-
-    __repr__() {
-        if (this.$builtin) {
-            return "<class '" + this.__name__ + "'>"
-        }
-        return "<class '__main__." + this.__name__ + "'>"
-    }
-
-    __str__() {
-        return this.__repr__()
-    }
-
-    __bool__() {
-        return true
-    }
-
-    __call__() {
-        return new this.$pyclass(...arguments)
-    }
-
-    @pyargs({
-        args: ['name']
-    })
-    __getattribute__(name) {
-        let attr = this[name]
-
-        if (attr === undefined && this.$pyclass !== undefined) {
-            attr = this.$pyclass.prototype[name]
-        }
-
-        if (attr === undefined) {
-            throw new PyAttributeError(
-                "type object '" + this.__name__ + "' has no attribute '" + name + "'"
-            )
-        }
-
-        let value
-        if (attr.__get__) {
-            value = attr.__get__(this, this.__class__)
-        } else {
-            value = attr
-        }
-
-        // If attribute is a function, bind the function to the instance
-        // that we've retrieved it from.
-        if (value instanceof Function) {
-            let pyargs = value.$pyargs
-            let pytype = value.$pytype
-            value = value.bind(this)
-            value.$pyargs = pyargs
-            value.$pytype = pytype
-        }
-
-        return value
-    }
-
-    @pyargs({
-        args: ['name', 'value']
-    })
-    __setattr__(name, value) {
-        if (this.$builtin) {
-            throw new PyTypeError(
-                "can't set attributes of built-in/extension type '" + this.__name__ + "'"
-            )
-        }
-
-        if (this.$pyclass) {
-            this.$pyclass.prototype[name] = value
-        } else {
-            this[name] = value
-        }
-    }
-
-    @pyargs({
-        args: ['name']
-    })
-    __delattr__(name) {
-        if (this.attrs) {
-            throw new PyAttributeError(name)
-        }
-
-        if (['int', 'str'].indexOf(this.__name__) > -1) {
-            throw new PyTypeError("can't set attributes of built-in/extension type '" + this.__name__ + "'")
-        }
-
-        var attr = this[name]
-        if (attr !== undefined) {
-            delete this[name]
-        } else {
-            if (this.$pyclass && this.$pyclass !== undefined && this.$pyclass.prototype[name] !== undefined) {
-                delete this.$pyclass.prototype[name]
-            } else {
-                throw new PyAttributeError(name)
-            }
-        }
-
-    }
-
-    valueOf() {
-        return this.prototype
-    }
-
-    mro() {
-        // Cache the MRO on the __mro__ attribute
-        if (this.__mro__ === undefined) {
-            // Self is always the first port of call for the MRO
-            this.__mro__ = [this]
-            if (this.__bases__) {
-                // Now traverse and add the base classes.
-                for (let base of this.__bases__) {
-                    let submros = base.mro()
-                    for (let submro of submros) {
-                        // // If the base class is already in the MRO,
-                        // // push it to the end of the MRO list.
-                        // let index = this.__mro__.indexOf(submro)
-                        // if (index == -1) {
-                        //     this.__mro__.splice(index, 1)
-                        // }
-                        this.__mro__.push(submro)
-                    }
-                }
-            } else {
-                // Primitives have no base class;
-                this.__mro__ = [this]
-            }
-        }
-        return this.__mro__
-    }
-}
-PyType.prototype.__doc__ = `type(object_or_name, bases, dict)
-type(object) -> the object's type
-type(name, bases, dict) -> a new type`
 
 /*************************************************************************
  * Method for adding types to Python class hierarchy
  *************************************************************************/
 
-function create_pyclass(PyClass, name, bases = [], attrs = undefined) {
-    let py_bases = []
-    for (let base of bases) {
-        py_bases.push(base.__class__)
+// Method for types defined in Python code
+export function type(object_or_name, bases, dict) {
+    if (bases === undefined && dict === undefined) {
+        return object_or_name.__class__
+    } else {
+        function type_facade() {} // eslint-disable-line no-inner-declarations
+        type_facade.new_type = new PyType(object_or_name, bases, dict.$raw.valueOf())
+        type_facade.new_type.$proxy = new Proxy(type_facade, pydescriptor(type_facade.new_type))
+
+        class PyClass extends PyObject {}
+
+        type_facade.new_type.$pyclass = PyClass
+        type_facade.new_type.__class__ = pytype
+        type_facade.new_type.__module__ = '__main__'
+
+        return type_facade.new_type.$proxy
     }
-    let pytype = new PyType(name, py_bases, attrs)
+}
+type.__name__ = 'type'
+type.__doc__ = `type(object_or_name, bases, dict)
+type(object) -> the object's type
+type(name, bases, dict) -> a new type`
+type.$pyargs = {
+    args: ['object_or_name'],
+    default_args: ['bases', 'dict'],
+    missing_args_error: (e) => 'type() takes 1 or 3 arguments'
+}
 
-    pytype.$pyclass = PyClass
+// Method for types defined as Javascript classes
+export function jstype(PyClass, name, bases = [], attrs = {}) {
+    function jstype_facade() {}
+    jstype_facade.pytype = new PyType(name, bases, attrs)
+    jstype_facade.pytype.$proxy = new Proxy(jstype_facade, pydescriptor(jstype_facade.pytype))
 
-    PyClass.__class__ = pytype
-    PyClass.prototype.__class__ = pytype
+    jstype_facade.pytype.$pyclass = PyClass
+    if (pytype === undefined) {
+        jstype_facade.pytype.__class__ = jstype_facade.pytype.$proxy
+    } else {
+        jstype_facade.pytype.__class__ = pytype
+    }
 
     if (PyClass.prototype.__doc__ === undefined) {
         PyClass.prototype.__doc__ = ''
     }
-    pytype.__doc__ = PyClass.prototype.__doc__
 
-    // // Iterate over base classes, adding any methods from
-    // // the bases that aren't natively defined on the class
-    // // itself.
-    // // console.log(PyClass.__class__.__name__)
-    // for (var base of pytype.__bases__) {
-    //     // console.log('  ' + base.__name__)
-    //     for (var attr of Object.getOwnPropertyNames(base.$pyclass.prototype)) {
-    //         // console.log('    attr ' + attr)
-    //         if (!PyClass.prototype.hasOwnProperty(attr)) {
-    //             PyClass.prototype[attr] = base.$pyclass.prototype[attr]
-    //         //    console.log ('      copied from ' + base.__name__)
-    //         // } else {
-    //         //     console.log ('    already exists')
-    //         }
-    //     }
-    // }
-
-    // If attributes are specified, copy all the attributes
-    // onto the newly constructed class.
-    if (attrs) {
-        // Copy in all the attributes that were created
-        // as part of object construction.
-        for (let attr in attrs) {
-            if (attrs.hasOwnProperty(attr)) {
-                PyClass.prototype[attr] = attrs[attr]
-                // PyClass[attr] = attrs[attr]
-            }
-        }
-    }
-
-    return pytype
+    return jstype_facade.pytype.$proxy
 }
 
-// Now that we have PyType and PyObject, we can start setting them up
-create_pyclass(PyObject, 'object')
-create_pyclass(PyType, 'type')
+/*************************************************************************
+ * Complete the declaration for PyType and PyObject
+ *************************************************************************/
+
+export const pytype = jstype(PyType, 'type', [], null)
+export const pyobject = jstype(PyObject, 'object', [], null)
 
 /*************************************************************************
  * Method for outputting the type of a variable
  *************************************************************************/
 
-function type_name(arg) {
+export function type_name(arg) {
     switch (typeof arg) {
         case 'boolean':
             return 'bool'
@@ -493,7 +634,7 @@ function type_name(arg) {
             return 'str'
         case 'object':
         case 'function':
-            if (arg.__class__ && arg.__class__.__name__) {
+            if (arg.__class__) {
                 return arg.__class__.__name__
             }
     }
@@ -502,36 +643,35 @@ function type_name(arg) {
 }
 
 /*************************************************************************
- * An implementation of NoneType
+ * An implementation of pyNoneType
  *************************************************************************/
+
 class PyNoneType extends PyObject {
-    __init__() {
-        call_super(this, '__init__', arguments)
-    }
     /**************************************************
      * Type conversions
      **************************************************/
 
     __bool__() {
-        return new types.PyBool(false)
+        return false
     }
 
     __repr__() {
-        return new types.PyStr('None')
+        return 'None'
     }
 
     __str__() {
-        return new types.PyStr('None')
+        return 'None'
     }
+
     /**************************************************
      * Attribute manipulation
      **************************************************/
 
     __setattr__(attr, value) {
-        if (Object.getPrototypeOf(this)[attr] === undefined) {
-            throw new PyAttributeError("'NoneType' object has no attribute '" + attr + "'")
+        if (this.hasOwnProperty(attr)) {
+            throw pyAttributeError(`'NoneType' object attribute '${attr}' is read-only`)
         } else {
-            throw new PyAttributeError("'NoneType' object attribute '" + attr + "' is read-only")
+            throw pyAttributeError(`'NoneType' object has no attribute '${attr}'`)
         }
     }
 
@@ -541,26 +681,24 @@ class PyNoneType extends PyObject {
 
     __lt__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
-                'unorderable types: NoneType() < ' + type_name(other) + '()'
+            throw pyTypeError(
+                `unorderable types: NoneType() < '${type_name(other)}'()`
             )
         } else {
-            throw new PyTypeError(
-                "'<' not supported between instances of 'NoneType' and '" +
-                type_name(other) + "'"
+            throw pyTypeError(
+                `'<' not supported between instances of 'NoneType' and '${type_name(other)}'`
             )
         }
     }
 
     __le__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
-                'unorderable types: NoneType() <= ' + type_name(other) + '()'
+            throw pyTypeError(
+                `unorderable types: NoneType() <= '${type_name(other)}'()`
             )
         } else {
-            throw new PyTypeError(
-                "'<=' not supported between instances of 'NoneType' and '" +
-                type_name(other) + "'"
+            throw pyTypeError(
+                `'<=' not supported between instances of 'NoneType' and '${type_name(other)}'`
             )
         }
     }
@@ -575,26 +713,24 @@ class PyNoneType extends PyObject {
 
     __gt__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
-                'unorderable types: NoneType() > ' + type_name(other) + '()'
+            throw pyTypeError(
+                `unorderable types: NoneType() > '${type_name(other)}'()`
             )
         } else {
-            throw new PyTypeError(
-                "'>' not supported between instances of 'NoneType' and '" +
-                type_name(other) + "'"
+            throw pyTypeError(
+                `'>' not supported between instances of 'NoneType' and '${type_name(other)}'`
             )
         }
     }
 
     __ge__(other) {
         if (version.earlier('3.6')) {
-            throw new PyTypeError(
-                'unorderable types: NoneType() >= ' + type_name(other) + '()'
+            throw pyTypeError(
+                `unorderable types: NoneType() >= '${type_name(other)}'()`
             )
         } else {
-            throw new PyTypeError(
-                "'>=' not supported between instances of 'NoneType' and '" +
-                type_name(other) + "'"
+            throw pyTypeError(
+                `'>=' not supported between instances of 'NoneType' and '${type_name(other)}'`
             )
         }
     }
@@ -607,23 +743,10 @@ class PyNoneType extends PyObject {
         return true
     }
 }
-create_pyclass(PyNoneType, 'NoneType')
 
-/*************************************************************************
- * Resolve circular reference issues
- *************************************************************************/
+export const pyNoneType = jstype(PyNoneType, 'NoneType', [], undefined)
 
-// Create a singleton instance of None
-const PyNone = new PyNoneType()
+// Create a singleton instance of pyNone
+export const pyNone = pyNoneType()
 
-// Now that we have an instance of None, we can fill in the blanks where we needed it
-PyObject.prototype.__class__.__base__ = PyNone
-
-export {
-    PyObject,
-    PyType,
-    create_pyclass,
-    type_name,
-    PyNoneType,
-    PyNone
-}
+pyNoneType.__module__ = pyNone

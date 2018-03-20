@@ -1,9 +1,10 @@
 export default function repr(object) {
     if (object === null) {
         return 'None'
-    } else if (object.__repr__) {
+    }
+    try {
         return object.__repr__()
-    } else {
+    } catch (e) {
         return object.toString()
     }
 }

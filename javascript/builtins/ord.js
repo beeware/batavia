@@ -1,23 +1,22 @@
-import { call_method } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function ord(c) {
-    if (types.isinstance(c, [types.PyStr, types.PyBytes, types.PyBytearray])) {
-        var charLength = call_method(c, '__len__')
-        if (call_method(charLength, '__eq__', [new types.PyInt(1)])) {
-            if (types.isinstance(c, types.PyStr)) {
-                return new types.PyInt(c.charCodeAt(0))
+    if (types.isinstance(c, [types.pystr, types.pybytes, types.pybytearray])) {
+        let charLength = c.__len__()
+        if (charLength.__eq__(types.pyint(1))) {
+            if (types.isinstance(c, types.pystr)) {
+                return types.pyint(c.charCodeAt(0))
             } else {
-                return call_method(c, '__getitem__', [new types.PyInt(0)])
+                return c.__getitem__(types.pyint(0))
             }
         } else {
-            throw new PyTypeError('ord() expected a character, but string of length ' + charLength + ' found')
+            throw pyTypeError(`ord() expected a character, but string of length ${charLength} found`)
         }
     } else {
-        throw new PyTypeError('ord() expected string of length 1, but ' + type_name(c) + ' found')
+        throw pyTypeError(`ord() expected string of length 1, but ${type_name(c)} found`)
     }
 }
 

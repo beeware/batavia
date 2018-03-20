@@ -1,28 +1,26 @@
-import { PyStopIteration, PyTypeError } from '../core/exceptions'
-import { call_function, call_method } from '../core/callables'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { pyStopIteration, pyTypeError } from '../core/exceptions'
+import { jstype, type_name, PyObject } from '../core/types'
 
 /**************************************************
  * Callable Iterator
  **************************************************/
 
 class PyCallableIterator extends PyObject {
-    constructor(callable, sentinel) {
-        super()
-        this.callable = callable
-        this.sentinel = sentinel
-        this.exhausted = false
+    __init__(callable, sentinel) {
+        this.$callable = callable
+        this.$sentinel = sentinel
+        this.$exhausted = false
     }
 
     __next__() {
-        if (this.exhausted) {
-            throw new PyStopIteration()
+        if (this.$exhausted) {
+            throw pyStopIteration()
         }
 
-        var item = call_function(this, this.callable)
-        if (item.__eq__(this.sentinel)) {
-            this.exhausted = true
-            throw new PyStopIteration()
+        var item = this.$callable()
+        if (item.__eq__(this.$sentinel)) {
+            this.$exhausted = true
+            throw pyStopIteration()
         }
         return item
     }
@@ -35,17 +33,16 @@ class PyCallableIterator extends PyObject {
         return '<callable_iterator object at 0x99999999>'
     }
 }
-create_pyclass(PyCallableIterator, 'callable_iterator')
-
+const callable_iterator = jstype(PyCallableIterator, 'callable_iterator')
 
 export default function iter(iterable, sentinel) {
     if (sentinel !== undefined) {
-        return new PyCallableIterator(iterable, sentinel)
+        return callable_iterator(iterable, sentinel)
     } else {
         try {
-            return call_method(iterable, '__iter__', [])
+            return iterable.__iter__()
         } catch (e) {
-            throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
+            throw pyTypeError(`'${type_name(iterable)}' object is not iterable`)
         }
     }
 }

@@ -1,7 +1,7 @@
-import { PyNotImplementedError } from '../core/exceptions'
+import { pyNotImplementedError } from '../core/exceptions'
 
 export default function issubclass(C, B) {
-    throw new PyNotImplementedError("Builtin Batavia function 'issubclass' not implemented")
+    throw pyNotImplementedError("Builtin Batavia function 'issubclass' not implemented")
 }
 
 issubclass.__name__ = 'issubclass'

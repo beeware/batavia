@@ -1,6 +1,6 @@
-import { call_function, pyargs } from '../core/callables'
-import { PyAttributeError, PyTypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject, PyNone } from '../core/types'
+import { pyargs } from '../core/callables'
+import { pyAttributeError, pyTypeError } from '../core/exceptions'
+import { jstype, type_name, PyObject, pyNone } from '../core/types'
 
 /*************************************************************************
  * A Python property
@@ -26,7 +26,7 @@ class PyProperty extends PyObject {
     }
 
     valueOf() {
-        return this.val
+        return this.$val
     }
 
     /**************************************************
@@ -34,7 +34,7 @@ class PyProperty extends PyObject {
      **************************************************/
 
     __bool__() {
-        return this.val !== 0.0
+        return this.$val !== 0.0
     }
 
     __repr__() {
@@ -52,40 +52,40 @@ class PyProperty extends PyObject {
 
     __get__(instance, klass) {
         // console.log("Property __get__ on " + instance);
-        if (this.fget !== PyNone) {
+        if (this.fget !== pyNone) {
             try {
-                return call_function(this.fget, [instance], null)
+                return this.fget(instance)
             } catch (e) {
-                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
+                throw pyTypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new PyAttributeError("can't get attribute")
+            throw pyAttributeError("can't get attribute")
         }
     }
 
     __set__(instance, value) {
         // console.log("Property __set__ on " + instance);
-        if (this.fset !== PyNone) {
+        if (this.fset !== pyNone) {
             try {
-                call_function(this.fset, [instance, value], null)
+                this.fset(instance, value)
             } catch (e) {
-                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
+                throw pyTypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new PyAttributeError("can't set attribute")
+            throw pyAttributeError("can't set attribute")
         }
     }
 
     __delete__(instance) {
         // console.log("Property __delete__ on " + instance);
-        if (this.fdel !== PyNone) {
+        if (this.fdel !== pyNone) {
             try {
-                call_function(this.fdel, [instance], null)
+                this.fdel(instance)
             } catch (e) {
-                throw new PyTypeError("'" + type_name(this) + "' object is not callable")
+                throw pyTypeError("'" + type_name(this) + "' object is not callable")
             }
         } else {
-            throw new PyAttributeError("can't delete attribute")
+            throw pyAttributeError("can't delete attribute")
         }
     }
 
@@ -103,7 +103,7 @@ class PyProperty extends PyObject {
         return new PyProperty(this.fget, this.fset, fn, this.doc)
     }
 }
-PyProperty.prototype.__doc__ = `property(fget=None, fset=None, fdel=None, doc=None) -> property attribute
+PyProperty.prototype.__doc__ = `property(fget=pyNone, fset=pyNone, fdel=pyNone, doc=pyNone) -> property attribute
 
 fget is a function to be used for getting an attribute value, and likewise
 fset is a function for setting, and fdel a function for del'ing, an
@@ -129,8 +129,6 @@ class C(object):
     def x(self):
         del self._x
 `
-create_pyclass(PyProperty, 'property')
 
-var property = PyProperty.__class__
-
+const property = jstype(PyProperty, 'property')
 export default property

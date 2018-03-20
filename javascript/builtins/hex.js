@@ -1,6 +1,6 @@
 
 export default function hex(number) {
-    var int = number.val
+    var int = number.$val
     return '0x' + int.toString(16)
 }
 

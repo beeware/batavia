@@ -1,9 +1,9 @@
 /*
  * Python compiler internals.
  */
-import { PyNotImplementedError } from '../../core/exceptions'
+import { pyNotImplementedError } from '../../core/exceptions'
 
-import PyInt from '../../types/Int'
+import int from '../../types/Int'
 
 import * as tokenizer from './tokenizer'
 
@@ -15,51 +15,51 @@ export var _compile = {
 }
 
 _compile.file_input = function() {
-    throw new PyNotImplementedError('_compile.file_input is not implemented yet')
+    throw pyNotImplementedError('_compile.file_input is not implemented yet')
 }
 
 _compile.eval_input = function() {
-    throw new PyNotImplementedError('_compile.eval_input is not implemented yet')
+    throw pyNotImplementedError('_compile.eval_input is not implemented yet')
 }
 
 _compile.single_input = function() {
-    throw new PyNotImplementedError('_compile.single_input is not implemented yet')
+    throw pyNotImplementedError('_compile.single_input is not implemented yet')
 }
 
 _compile.ast_check = function(obj) {
-    throw new PyNotImplementedError('_compile.ast_check is not implemented yet')
+    throw pyNotImplementedError('_compile.ast_check is not implemented yet')
 }
 
 _compile.compile_string_object = function(str, filename, compile_mode, cf, optimize) {
-    throw new PyNotImplementedError('_compile.compile_string_object is not implemented yet')
+    throw pyNotImplementedError('_compile.compile_string_object is not implemented yet')
 }
 
 _compile.ast_obj2mod = function(source, compile_mode) {
-    throw new PyNotImplementedError('_compile.ast_obj2mod is not implemented yet')
+    throw pyNotImplementedError('_compile.ast_obj2mod is not implemented yet')
 }
 
 _compile.ast_validate = function(mod) {
-    throw new PyNotImplementedError('_compile.ast_validate is not implemented yet')
+    throw pyNotImplementedError('_compile.ast_validate is not implemented yet')
 }
 
 _compile.ast_compile_object = function(mod, filename, cf, optimize) {
-    throw new PyNotImplementedError('_compile.ast_compile_object is not implemented yet')
+    throw pyNotImplementedError('_compile.ast_compile_object is not implemented yet')
 }
 
 _compile.ast_from_string_object = function(str, filename, start, flags) {
-    throw new PyNotImplementedError('_compile.ast_compile_object is not implemented yet')
+    throw pyNotImplementedError('_compile.ast_compile_object is not implemented yet')
 }
 
 _compile.parse_string_object = function(s, filename, grammar, start, iflags) {
-    throw new PyNotImplementedError('_compile.parse_string_object is not implemented yet')
+    throw pyNotImplementedError('_compile.parse_string_object is not implemented yet')
 }
 _compile.parsetok = function(tok, g, start, err_ret, flags) {
-    throw new PyNotImplementedError('_compile.parsetok is not implemented yet')
+    throw pyNotImplementedError('_compile.parsetok is not implemented yet')
 }
 
-_compile['Py_single_input'] = new PyInt(256)
-_compile['Py_file_input'] = new PyInt(257)
-_compile['Py_eval_input'] = new PyInt(258)
+_compile['Py_single_input'] = int(256)
+_compile['Py_file_input'] = int(257)
+_compile['Py_eval_input'] = int(258)
 
 _compile['EOF'] = tokenizer.EOF
 _compile['E_OK'] = tokenizer.E_OK

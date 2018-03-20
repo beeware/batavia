@@ -1,10 +1,12 @@
 import * as types from '../types'
 
+import { getattr } from '../builtins'
+
 export default function callable(object) {
-    if ((object instanceof Function) || (object instanceof types.PyFunction) || (object instanceof types.PyType)) {
-        return new types.PyBool(true)
+    if (getattr(object, '__call__', null)) {
+        return types.pybool(true)
     } else {
-        return new types.PyBool(false)
+        return types.pybool(false)
     }
 }
 

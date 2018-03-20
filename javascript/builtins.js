@@ -1,27 +1,28 @@
-import { delattr, getattr, hasattr, setattr } from './core/attrs'
-
-import { PyNone, PyObject } from './core/types'
+// Import the type primitives
+// We use type, not pytype here, because we want the type *method*
+// that can be used to return the type of existing type objects,
+// as well as being a constructor for new type objects.
+import { pyNone, pyobject, type } from './core/types'
 
 // Types with special constructor handling
-import bool from './builtins/bool'
-import str from './builtins/str'
-import type from './builtins/type'
+import pybool from './builtins/bool'
+import pystr from './builtins/str'
 
 // Types whose constructors double as functions
-import PyBytearray from './types/Bytearray'
-import PyBytes from './types/Bytes'
-import PyComplex from './types/Complex'
-import PyDict from './types/Dict'
-import PyEllipsis from './types/Ellipsis'
-import PyFloat from './types/Float'
-import PyFrozenset from './types/Frozenset'
-import PyInt from './types/Int'
-import PyList from './types/List'
-import PyNotImplementedType from './types/NotImplementedType'
-import PyRange from './types/Range'
-import PySet from './types/Set'
-import PySlice from './types/Slice'
-import PyTuple from './types/Tuple'
+import pybytearray from './types/Bytearray'
+import pybytes from './types/Bytes'
+import pycomplex from './types/Complex'
+import pydict from './types/Dict'
+import pyellipsis from './types/Ellipsis'
+import pyfloat from './types/Float'
+import pyfrozenset from './types/Frozenset'
+import pyint from './types/Int'
+import pylist from './types/List'
+import { pyNotImplemented } from './types/NotImplementedType'
+import pyrange from './types/Range'
+import pyset from './types/Set'
+import pyslice from './types/Slice'
+import pytuple from './types/Tuple'
 
 // Other builtin functions
 import __import__ from './builtins/__import__'
@@ -36,13 +37,16 @@ import classmethod from './builtins/classmethod'
 import compile from './builtins/compile'
 import copyright from './builtins/copyright'
 import credits from './builtins/credits'
+import delattr from './builtins/delattr'
 import dir from './builtins/dir'
 import divmod from './builtins/divmod'
 import enumerate from './builtins/enumerate'
 // import * as eval from './builtins/eval'
 import exec from './builtins/exec'
 import filter from './builtins/filter'
+import getattr from './builtins/getattr'
 import globals from './builtins/globals'
+import hasattr from './builtins/hasattr'
 import hash from './builtins/hash'
 import help from './builtins/help'
 import hex from './builtins/hex'
@@ -68,6 +72,7 @@ import property from './builtins/property'
 import repr from './builtins/repr'
 import reversed from './builtins/reversed'
 import round from './builtins/round'
+import setattr from './builtins/setattr'
 import sorted from './builtins/sorted'
 import staticmethod from './builtins/staticmethod'
 import sum from './builtins/sum'
@@ -79,159 +84,83 @@ import { dom } from './modules/dom'
 
 // Copy the exceptions into the builtin namespace.
 import {
-    PyArithmeticError,
-    PyAssertionError,
-    PyAttributeError,
-    PyBaseException,
-    // BlockingIOError
-    // BrokenPipeError,
-    PyBufferError,
-    // PyBytesWarning
-    // ChildProcessError,
-    // ConnectionAbortedError,
-    // ConnectionError,
-    // ConnectionRefusedError,
-    // PyDeprecationWarning,
-    PyEOFError,
-    PyEnvironmentError,
-    PyException,
-    // FileExistsError,
-    // FileNotFoundError,
-    PyFloatingPointError,
-    // PyFutureWarning,
-    PyGeneratorExit,
-    PyIOError,
-    PyImportError,
-    // PyImportWarning,
-    PyIndentationError,
-    PyIndexError,
-    // InterruptedError,
-    // IsADirectoryError,
-    PyKeyError,
-    PyKeyboardInterrupt,
-    PyLookupError,
-    PyMemoryError,
-    PyNameError,
-    // NotADirectoryError,
-    PyNotImplementedError,
-    PyOSError,
-    PyOverflowError,
-    // PyPendingDeprecationWarning,
-    // PermissionError,
-    // ProcessPyLookupError,
-    PyReferenceError,
-    // PyResourceWarning,
-    PyRuntimeError,
-    // PyRuntimeWarning,
-    PyStopIteration,
-    PySyntaxError,
-    // PySyntaxWarning
-    PySystemError,
-    PySystemExit,
-    PyTabError,
-    // TimeoutError,
-    PyTypeError,
-    PyUnboundLocalError,
-    PyUnicodeDecodeError,
-    PyUnicodeEncodeError,
-    PyUnicodeError,
-    PyUnicodeTranslateError,
-    // PyUnicodeWarning,
-    // PyUserWarning,
-    PyValueError,
-    // Warning,
-    PyZeroDivisionError,
+    pyArithmeticError,
+    pyAssertionError,
+    pyAttributeError,
+    pyBaseException,
+    pyBlockingIOError,
+    pyBrokenPipeError,
+    pyBufferError,
+    pyBytesWarning,
+    pyChildProcessError,
+    pyConnectionAbortedError,
+    pyConnectionError,
+    pyConnectionRefusedError,
+    pyConnectionResetError,
+    pyDeprecationWarning,
+    pyEOFError,
+    pyException,
+    pyFileExists,
+    pyFileNotFoundError,
+    pyFloatingPointError,
+    pyFutureWarning,
+    pyGeneratorExit,
+    pyImportError,
+    pyImportWarning,
+    pyIndentationError,
+    pyIndexError,
+    pyInterruptedError,
+    pyIsADirectoryError,
+    pyKeyboardInterrupt,
+    pyKeyError,
+    pyLookupError,
+    pyMemoryError,
+    pyModuleNotFoundError,
+    pyNameError,
+    pyNotADirectoryError,
+    pyNotImplementedError,
+    pyOSError,
+    pyOverflowError,
+    pyPendingDeprecationWarning,
+    pyPermissionError,
+    pyProcessLookupError,
+    pyRecursionError,
+    pyReferenceError,
+    pyResourceWarning,
+    pyRuntimeError,
+    pyRuntimeWarning,
+    pyStopAsyncIteration,
+    pyStopIteration,
+    pySyntaxError,
+    pySyntaxWarning,
+    pySystemError,
+    pySystemExit,
+    pyTabError,
+    pyTimeoutError,
+    pyTypeError,
+    pyUnboundLocalError,
+    pyUnicodeDecodeError,
+    pyUnicodeEncodeError,
+    pyUnicodeError,
+    pyUnicodeTranslateError,
+    pyUnicodeWarning,
+    pyUserWarning,
+    pyValueError,
+    pyWarning,
+    pyZeroDivisionError,
 
-    PyBataviaError,
-    PyPolyglotError
+    pyBataviaError,
+    pyPolyglotError
 } from './core/exceptions'
 
-// The builtin type constructors
-var bytearray = PyBytearray.__class__
-var bytes = PyBytes.__class__
-var complex = PyComplex.__class__
-var dict = PyDict.__class__
-var float = PyFloat.__class__
-var frozenset = PyFrozenset.__class__
-var int = PyInt.__class__
-var list = PyList.__class__
-var object = PyObject.__class__
-var range = PyRange.__class__
-var set = PySet.__class__
-var slice = PySlice.__class__
-var tuple = PyTuple.__class__
-
-// A singleton instance of NotImplementedType
-var NotImplemented = new PyNotImplementedType()
-
-// The builtin exception constructors
-var ArithmeticError = PyArithmeticError.__class__
-var AssertionError = PyAssertionError.__class__
-var AttributeError = PyAttributeError.__class__
-var BaseException = PyBaseException.__class__
-// var BlockingPyIOError = PyBlockingPyIOError.__class__
-// var BrokenPipeError = PyBrokenPipeError.__class__
-var BufferError = PyBufferError.__class__
-// var BytesWarning = PyBytesWarning.__class__
-// var ChildProcessError = PyChildProcessError.__class__
-// var ConnectionAbortedError = PyConnectionAbortedError.__class__
-// var ConnectionError = PyConnectionError.__class__
-// var ConnectionRefusedError = PyConnectionRefusedError.__class__
-// var DeprecationWarning = PyDeprecationWarning.__class__
-var EOFError = PyEOFError.__class__
-var EnvironmentError = PyEnvironmentError.__class__
-var Exception = PyException.__class__
-// var FileExistsError = PyFileExistsError.__class__
-// var FileNotFoundError = PyFileNotFoundError.__class__
-var FloatingPointError = PyFloatingPointError.__class__
-// var FutureWarning = PyFutureWarning.__class__
-var GeneratorExit = PyGeneratorExit.__class__
-var IOError = PyIOError.__class__
-var ImportError = PyImportError.__class__
-// var ImportWarning = PyImportWarning.__class__
-var IndentationError = PyIndentationError.__class__
-var IndexError = PyIndexError.__class__
-// var InterruptedError = PyInterruptedError.__class__
-// var IsADirectoryError = PyIsADirectoryError.__class__
-var KeyError = PyKeyError.__class__
-var KeyboardInterrupt = PyKeyboardInterrupt.__class__
-var LookupError = PyLookupError.__class__
-var MemoryError = PyMemoryError.__class__
-var NameError = PyNameError.__class__
-// var NotADirectoryError = PyNotADirectoryError.__class__
-var NotImplementedError = PyNotImplementedError.__class__
-var OSError = PyOSError.__class__
-var OverflowError = PyOverflowError.__class__
-// var PendingDeprecationWarning = PyPendingDeprecationWarning.__class__
-// var PermissionError = PyPermissionError.__class__
-// var ProcessPyLookupError = PyProcessPyLookupError.__class__
-var ReferenceError_ = PyReferenceError.__class__
-// var ResourceWarning = PyResourceWarning.__class__
-var RuntimeError = PyRuntimeError.__class__
-// var RuntimeWarning = PyRuntimeWarning.__class__
-var StopIteration = PyStopIteration.__class__
-var SyntaxError_ = PySyntaxError.__class__
-// PySyntaxWarning
-var SystemError = PySystemError.__class__
-var SystemExit = PySystemExit.__class__
-var TabError = PyTabError.__class__
-// var TimeoutError = PyTimeoutError.__class__
-var TypeError_ = PyTypeError.__class__
-var UnboundLocalError = PyUnboundLocalError.__class__
-var UnicodeDecodeError = PyUnicodeDecodeError.__class__
-var UnicodeEncodeError = PyUnicodeEncodeError.__class__
-var UnicodeError = PyUnicodeError.__class__
-var UnicodeTranslateError = PyUnicodeTranslateError.__class__
-// var UnicodeWarning = PyUnicodeWarning.__class__
-// var UserWarning = PyUserWarning.__class__
-var ValueError = PyValueError.__class__
-// var Warning = PyWarning.__class__
-var ZeroDivisionError = PyZeroDivisionError.__class__
-
-var BataviaError = PyBataviaError.__class__
-var PolyglotError = PyPolyglotError.__class__
+let __name__ = 'builtins'
+let __package__ = ''
 
 export {
+    __name__,
+    __package__,
+
+
     __import__,
 
     abs,
@@ -239,18 +168,18 @@ export {
     any,
     ascii,
     bin,
-    bool,
-    bytearray,
-    bytes,
+    pybool as bool,
+    pybytearray as bytearray,
+    pybytes as bytes,
     callable,
     chr,
     classmethod,
     compile,
-    complex,
+    pycomplex as complex,
     copyright,
     credits,
     delattr,
-    dict,
+    pydict as dict,
     dir,
     // display,
     divmod,
@@ -258,8 +187,8 @@ export {
     // eval,
     exec,
     filter,
-    float,
-    frozenset,
+    pyfloat as float,
+    pyfrozenset as frozenset,
     getattr,
     globals,
     hasattr,
@@ -268,111 +197,113 @@ export {
     hex,
     id,
     input,
-    int,
+    pyint as int,
     isinstance,
     issubclass,
     iter,
     len,
     license,
-    list,
+    pylist as list,
     locals,
     map,
     max,
     memoryview,
     min,
     next,
-    object,
+    pyobject as object,
     oct,
     open,
     ord,
     pow,
     print,
     property,
-    range,
+    pyrange as range,
     repr,
     reversed,
     round,
-    set,
+    pyset as set,
     setattr,
-    slice,
+    pyslice as slice,
     sorted,
     staticmethod,
-    str,
+    pystr as str,
     sum,
     // super,
-    tuple,
+    pytuple as tuple,
     type,
     vars,
     zip,
 
-    PyNone as None,
-    PyEllipsis as Ellipsis,
-    NotImplemented,
+    pyNone as None,
+    pyellipsis as ellipsis,
+    pyNotImplemented as NotImplemented,
 
-    ArithmeticError,
-    AssertionError,
-    AttributeError,
-    BaseException,
-    // BlockingPyIOError
-    // BrokenPipeError,
-    BufferError,
-    // BytesWarning
-    // ChildProcessError,
-    // ConnectionAbortedError,
-    // ConnectionError,
-    // ConnectionRefusedError,
-    // PyDeprecationWarning,
-    EOFError,
-    EnvironmentError,
-    Exception,
-    // FileExistsError,
-    // FileNotFoundError,
-    FloatingPointError,
-    // FutureWarning,
-    GeneratorExit,
-    IOError,
-    ImportError,
-    // ImportWarning,
-    IndentationError,
-    IndexError,
-    // InterruptedError,
-    // IsADirectoryError,
-    KeyError,
-    KeyboardInterrupt,
-    LookupError,
-    MemoryError,
-    NameError,
-    // NotADirectoryError,
-    NotImplementedError,
-    OSError,
-    OverflowError,
-    // PendingDeprecationWarning,
-    // PermissionError,
-    // ProcessPyLookupError,
-    ReferenceError_ as ReferenceError,
-    // ResourceWarning,
-    RuntimeError,
-    // RuntimeWarning,
-    StopIteration,
-    SyntaxError_ as SyntaxError,
-    // SyntaxWarning
-    SystemError,
-    SystemExit,
-    TabError,
-    // TimeoutError,
-    TypeError_ as TypeError_,
-    UnboundLocalError,
-    UnicodeDecodeError,
-    UnicodeEncodeError,
-    UnicodeError,
-    UnicodeTranslateError,
-    // UnicodeWarning,
-    // UserWarning,
-    ValueError,
-    // Warning,
-    ZeroDivisionError,
+    pyArithmeticError as ArithmeticError,
+    pyAssertionError as AssertionError,
+    pyAttributeError as AttributeError,
+    pyBaseException as BaseException,
+    pyBlockingIOError as BlockingIOError,
+    pyBrokenPipeError as BrokenPipeError,
+    pyBufferError as BufferError,
+    pyBytesWarning as BytesWarning,
+    pyChildProcessError as ChildProcessError,
+    pyConnectionAbortedError as ConnectionAbortedError,
+    pyConnectionError as ConnectionError,
+    pyConnectionRefusedError as ConnectionRefusedError,
+    pyConnectionResetError as ConnectionResetError,
+    pyDeprecationWarning as DeprecationWarning,
+    pyEOFError as EOFError,
+    pyException as Exception,
+    pyFileExists as FileExists,
+    pyFileNotFoundError as FileNotFoundError,
+    pyFloatingPointError as FloatingPointError,
+    pyFutureWarning as FutureWarning,
+    pyGeneratorExit as GeneratorExit,
+    pyImportError as ImportError,
+    pyImportWarning as ImportWarning,
+    pyIndentationError as IndentationError,
+    pyIndexError as IndexError,
+    pyInterruptedError as InterruptedError,
+    pyIsADirectoryError as IsADirectoryError,
+    pyKeyboardInterrupt as KeyboardInterrupt,
+    pyKeyError as KeyError,
+    pyLookupError as LookupError,
+    pyMemoryError as MemoryError,
+    pyModuleNotFoundError as ModuleNotFoundError,
+    pyNameError as NameError,
+    pyNotADirectoryError as NotADirectoryError,
+    pyNotImplementedError as NotImplementedError,
+    pyOSError as OSError,
+    pyOverflowError as OverflowError,
+    pyPendingDeprecationWarning as PendingDeprecationWarning,
+    pyPermissionError as PermissionError,
+    pyProcessLookupError as ProcessLookupError,
+    pyRecursionError as RecursionError,
+    pyReferenceError as ReferenceError,
+    pyResourceWarning as ResourceWarning,
+    pyRuntimeError as RuntimeError,
+    pyRuntimeWarning as RuntimeWarning,
+    pyStopAsyncIteration as StopAsyncIteration,
+    pyStopIteration as StopIteration,
+    pySyntaxError as SyntaxError,
+    pySyntaxWarning as SyntaxWarning,
+    pySystemError as SystemError,
+    pySystemExit as SystemExit,
+    pyTabError as TabError,
+    pyTimeoutError as TimeoutError,
+    pyTypeError as TypeError,
+    pyUnboundLocalError as UnboundLocalError,
+    pyUnicodeDecodeError as UnicodeDecodeError,
+    pyUnicodeEncodeError as UnicodeEncodeError,
+    pyUnicodeError as UnicodeError,
+    pyUnicodeTranslateError as UnicodeTranslateError,
+    pyUnicodeWarning as UnicodeWarning,
+    pyUserWarning as UserWarning,
+    pyValueError as ValueError,
+    pyWarning as Warning,
+    pyZeroDivisionError as ZeroDivisionError,
 
-    BataviaError,
-    PolyglotError,
+    pyBataviaError as BataviaError,
+    pyPolyglotError as PolyglotError,
     dom
 }

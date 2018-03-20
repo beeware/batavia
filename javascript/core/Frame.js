@@ -1,9 +1,8 @@
-import { create_pyclass, PyObject } from './types'
-import * as PyCell from './Cell'
+import { jstype, PyObject } from './types'
+import PyCell from './Cell'
 
-export default class PyFrame extends PyObject {
+export default class PyFrame {
     constructor(kwargs) {
-        super()
         var v, i
 
         this.f_code = kwargs.f_code
@@ -98,4 +97,3 @@ export default class PyFrame extends PyObject {
         return line_num
     }
 }
-create_pyclass(PyFrame, 'frame')

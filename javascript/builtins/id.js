@@ -1,7 +1,7 @@
-import { PyPolyglotError } from '../core/exceptions'
+import { pyPolyglotError } from '../core/exceptions'
 
 export default function id(object) {
-    throw new PyPolyglotError("'id' has no meaning here. See docs/internals/limitations#id")
+    throw pyPolyglotError("'id' has no meaning here. See docs/internals/limitations#id")
 }
 
 id.__name__ = 'id'

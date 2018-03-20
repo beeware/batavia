@@ -1,23 +1,27 @@
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
+import { getattr } from '../builtins'
 import * as types from '../types'
 
 export default function sum(iterable, start) {
-    if (!iterable.__iter__) {
-        throw new PyTypeError("'" + type_name(iterable) + "' object is not iterable")
+    if (!getattr(iterable, '__iter__', null)) {
+        throw pyTypeError("'" + type_name(iterable) + "' object is not iterable")
     }
 
     try {
-        return iterable.reduce(function(a, b) {
-            return a.__add__(b)
-        }, new types.PyInt(0))
+        return iterable.reduce(
+            function(a, b) {
+                return a.__add__(b)
+            },
+            types.pyint(0)
+        )
     } catch (err) {
         // a and b could fail to add due to many possible type incompatibilities,
         // all of which would need to be reflected in this error message -
         // but we don't have to check for them here, because we've already
         // tested for them in __add__.
-        throw new PyTypeError(err.msg)
+        throw pyTypeError(err.msg)
     }
 }
 

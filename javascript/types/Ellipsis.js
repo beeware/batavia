@@ -1,12 +1,11 @@
-import { create_pyclass, PyObject } from '../core/types'
+import { jstype, PyObject } from '../core/types'
 
 /*************************************************************************
  * A Python ellipsis type
  *************************************************************************/
 
-export default class Ellipsis extends PyObject {
-    constructor(args, kwargs) {
-        super()
-    }
+class Ellipsis extends PyObject {
 }
-create_pyclass(Ellipsis, 'ellipsis')
+
+const pyellipsis = jstype(Ellipsis, 'ellipsis', [], null)
+export default pyellipsis

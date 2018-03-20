@@ -1,7 +1,7 @@
 import * as types from '../types'
 
 export default function isinstance(object, class_or_type_or_tuple) {
-    return new types.PyBool(types.isinstance(object, class_or_type_or_tuple))
+    return types.pybool(types.isinstance(object, class_or_type_or_tuple))
 }
 
 isinstance.__name__ = 'isinstance'

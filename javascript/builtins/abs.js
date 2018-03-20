@@ -1,16 +1,15 @@
-import { call_method } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
+import { pyTypeError } from '../core/exceptions'
 import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function abs(x) {
-    if (types.isinstance(x, types.PyBool)) {
-        return new types.PyInt(Math.abs(x.valueOf()))
-    } else if (types.isinstance(x, [types.PyInt, types.PyFloat, types.PyComplex])) {
-        return call_method(x, '__abs__')
+    if (types.isinstance(x, types.pybool)) {
+        return types.pyint(Math.abs(x.valueOf()))
+    } else if (types.isinstance(x, [types.pyint, types.pyfloat, types.pycomplex])) {
+        return x.__abs__()
     } else {
-        throw new PyTypeError("bad operand type for abs(): '" + type_name(x) + "'")
+        throw pyTypeError(`bad operand type for abs(): '${type_name(x)}'`)
     }
 }
 

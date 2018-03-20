@@ -1,18 +1,27 @@
-import { PyTypeError } from '../core/exceptions'
+import { pyAttributeError, pyTypeError, pyValueError } from '../core/exceptions'
+import { type_name } from '../core/types'
 
 import * as types from '../types'
 
 export default function pow(x, y, z) {
     if (z === undefined) {
-        return x.__pow__(y)
+        try {
+            return x.__pow__(y)
+        } catch (e) {
+            if (types.isinstance(e, pyAttributeError)) {
+                throw pyTypeError(`unsupported operand type(s) for ** or pow(): '${type_name(x)}' and '${type_name(y)}'`)
+            } else {
+                throw e
+            }
+        }
     } else {
-        if (!types.isinstance(x, types.PyInt) ||
-            !types.isinstance(y, types.PyInt) ||
-            !types.isinstance(z, types.PyInt)) {
-            throw new PyTypeError('pow() 3rd argument not allowed unless all arguments are integers')
+        if (!types.isinstance(x, types.pyint) ||
+            !types.isinstance(y, types.pyint) ||
+            !types.isinstance(z, types.pyint)) {
+            throw pyTypeError('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new PyTypeError('pow() 2nd argument cannot be negative when 3rd argument specified')
+            throw pyValueError('pow() 2nd argument cannot be negative when 3rd argument specified')
         }
         if (y === 0) {
             return 1
@@ -32,7 +41,7 @@ export default function pow(x, y, z) {
             y >>= 1
             base = (base * base) % z
         }
-        return result
+        return types.pyint(result)
     }
 }
 

@@ -1,6 +1,6 @@
-import { call_function, call_method, pyargs } from '../core/callables'
-import { PyTypeError } from '../core/exceptions'
-import { create_pyclass, type_name, PyObject } from '../core/types'
+import { pyargs } from '../core/callables'
+import { pyTypeError } from '../core/exceptions'
+import { jstype, type_name, PyObject } from '../core/types'
 
 import * as builtins from '../builtins'
 
@@ -14,12 +14,12 @@ class PyMap extends PyObject {
     })
     __init__(fn, iterable) {
         if (builtins.callable(fn)) {
-            this._func = fn
+            this.$func = fn
         } else {
-            throw new PyTypeError(type_name(fn) + "' object is not callable")
+            throw pyTypeError(`${type_name(fn)} object is not callable`)
         }
 
-        this._iter = builtins.iter(iterable)
+        this.$iter = builtins.iter(iterable)
     }
     /**************************************************
      * Javascript compatibility methods
@@ -38,8 +38,8 @@ class PyMap extends PyObject {
     }
 
     __next__() {
-        let val = call_method(this._iter, '__next__', [])
-        return call_function(this, this._func, [val], null)
+        let val = this.$iter.__next__()
+        return this.$func(val)
     }
 
     __str__() {
@@ -50,8 +50,6 @@ PyMap.prototype.__doc__ = `map(func, *iterables) --> map object
 
 Make an iterator that computes the function using arguments from
 each of the iterables.  Stops when the shortest iterable is exhausted.`
-create_pyclass(PyMap, 'map')
 
-var map = PyMap.__class__
-
+const map = jstype(PyMap, 'map')
 export default map
