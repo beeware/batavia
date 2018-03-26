@@ -20,7 +20,7 @@ function round(args, kwargs) {
     if (args.length === 1) {
         return new types.Int(result)
     }
-    return types.Float(result.valueOf())
+    return new types.Float(parseFloat(result))
 }
 round.__doc__ = 'round(number[, ndigits]) -> number\n\nRound a number to a given precision in decimal digits (default 0 digits).\nThis returns an int when called with one argument, otherwise the\nsame type as the number. ndigits may be negative.'
 
