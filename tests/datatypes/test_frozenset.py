@@ -18,19 +18,15 @@ class FrozensetTests(TranspileTestCase):
     def test_union(self):
         self.assertCodeExecution("""
         x = frozenset([2,4,5,6])
-        y = frozetset([3,4,7,9])
-        z = 5
+        y = frozenset([3,4,7,9])
         print(x.union(y))
-        print(x.union(z))
         """)
 
     def test_intersection(self):
         self.assertCodeExecution("""
-        x = frozenset([2,4,5,6])
-        y = frozetset([3,4,7,9])
-        z = 'dog'
+        x = frozenset([2,4,5,6,7])
+        y = frozenset([3,4,7,9])
         print(x.intersection(y))
-        print(x.intersection(z))
         """)
 
 
