@@ -21,7 +21,7 @@ function pow(args, kwargs) {
             throw new exceptions.TypeError.$pyclass('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new exceptions.TypeError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
+            throw new exceptions.ValueError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
         }
         if (y === 0) {
             return 1
