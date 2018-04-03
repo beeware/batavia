@@ -207,6 +207,14 @@ Range.prototype.__add__ = function(other) {
                                             type_name(other) + '\'')
 }
 
+Range.prototype.__and__ = function(other) {
+    var msg = 'unsupported operand type(s) for &: '
+    throw new exceptions.TypeError.$pyclass(msg +
+                                            '\'' + type_name(this) +
+                                            '\' and \'' +
+                                            type_name(other) + '\'')
+}
+
 /**************************************************
  * Module exports
  **************************************************/
