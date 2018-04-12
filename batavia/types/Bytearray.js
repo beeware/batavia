@@ -169,9 +169,48 @@ Bytearray.prototype.__mod__ = function(other) {
 
 Bytearray.prototype.__add__ = function(other) {
     var types = require('../types')
-    if (types.isinstance(other, types.Bool)) {
-        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
+    if (types.isinstance(other, types.Bytearray)) {
+        var byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
+
+        if (this.val.__len__() > 0) {
+            console.log(this.val.__len__())
+            console.log("x1: " + this.val.c)
+        }
+        
+        console.log("BA: " + this.valueOf().toString()) //BA: b'\x00\x00'
+        console.log("other: " + other.valueOf().toString()) // other: b'\x00\x01\x02\x03\x04'
+        console.log("adding: " + this.valueOf().toString() + other.valueOf().toString()) //adding: b'\x00\x00'b'\x00\x01\x02\x03\x04
+        console.log("BA-val: " + this.valueOf()) //BA-val: b'\x00\x00'
+        console.log("other-val: " + other.valueOf()) //other-val: b'\x00\x01\x02\x03\x04'
+        console.log("adding-val: " + this.valueOf() + other.valueOf()) //adding-val: b'\x00\x00'b'\x00\x01\x02\x03\x04'
+        byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
+        return new Bytearray(byteBuffer)
+
+        /*
+        let byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
+        byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
+        return new Bytes(byteBuffer)
+        */
+
+
+        // https://runkit.com/5acfc920e70cee00127a365c/5acfc920e70cee00127a365d
+        //the below prints: Buffer <68, 65, 6C, 6C, 6F>
+        /*
+        var byteBuffer = Buffer.alloc(5);
+        byteBuffer.write("hello");
+        console.log(byteBuffer);
+        */
+        var byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
+
     }
+    else if (types.isinstance(other, types.Bytes)) {
+        let byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().length)
+        byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
+        return new Bytearray(byteBuffer)
+    }
+    else {
+        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
+    }    
 }
 
 Bytearray.prototype.__sub__ = function(other) {
