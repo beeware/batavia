@@ -228,7 +228,7 @@ Bytearray.prototype.__itruediv__ = function(other) {
 }
 
 Bytearray.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__iadd__ has not been implemented')
+    return this['__add__'](other)
 }
 
 Bytearray.prototype.__isub__ = function(other) {
