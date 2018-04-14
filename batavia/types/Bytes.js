@@ -296,7 +296,9 @@ Bytes.prototype.__add__ = function(other) {
         byteBuffer.write(this.valueOf().toString() + other.valueOf().toString())
         return new Bytes(byteBuffer)
     } else if (types.isinstance(other, [types.Bytearray])) {
-        throw new exceptions.NotImplementedError.$pyclass('Bytes.__add__ has not been implemented')
+        let byteBuffer = Buffer.alloc(this.valueOf().length + other.valueOf().valueOf().length)
+        byteBuffer.write(this.valueOf().toString() + other.valueOf().valueOf().toString())
+        return new Bytes(byteBuffer)
     } else if (types.isinstance(other, [
         types.Bool,
         types.Dict,
