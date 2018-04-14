@@ -228,7 +228,21 @@ Bytearray.prototype.__itruediv__ = function(other) {
 }
 
 Bytearray.prototype.__iadd__ = function(other) {
-    return this['__add__'](other)
+    var Buffer = require('buffer').Buffer
+    var types = require('../types')
+    if (types.isinstance(other, types.Bytearray)) {
+        var combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
+        this.val = combined_bytes
+        return this
+    }
+    else if (types.isinstance(other, types.Bytes)) {
+        var combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
+        this.val = combined_bytes
+        return this
+    }
+    else {
+        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
+    } 
 }
 
 Bytearray.prototype.__isub__ = function(other) {
