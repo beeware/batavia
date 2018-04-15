@@ -379,7 +379,7 @@ Bytes.prototype.__itruediv__ = function(other) {
 }
 
 Bytes.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__iadd__ has not been implemented')
+    return this['__add__'](other)
 }
 
 Bytes.prototype.__isub__ = function(other) {
