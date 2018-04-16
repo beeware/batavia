@@ -168,19 +168,17 @@ Bytearray.prototype.__mod__ = function(other) {
 }
 
 Bytearray.prototype.__add__ = function(other) {
-    var Buffer = require('buffer').Buffer
-    var types = require('../types')
+    let Buffer = require('buffer').Buffer
+    let types = require('../types')
     if (types.isinstance(other, types.Bytearray)) {
-        var combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
         return new Bytearray(combined_bytes)
-    }
-    else if (types.isinstance(other, types.Bytes)) {
-        var combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
+    } else if (types.isinstance(other, types.Bytes)) {
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
         return new Bytearray(combined_bytes)
-    }
-    else {
+    } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
-    }    
+    }
 }
 
 Bytearray.prototype.__sub__ = function(other) {
@@ -228,21 +226,19 @@ Bytearray.prototype.__itruediv__ = function(other) {
 }
 
 Bytearray.prototype.__iadd__ = function(other) {
-    var Buffer = require('buffer').Buffer
-    var types = require('../types')
+    let Buffer = require('buffer').Buffer
+    let types = require('../types')
     if (types.isinstance(other, types.Bytearray)) {
-        var combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
         this.val = combined_bytes
         return this
-    }
-    else if (types.isinstance(other, types.Bytes)) {
-        var combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
+    } else if (types.isinstance(other, types.Bytes)) {
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
         this.val = combined_bytes
         return this
-    }
-    else {
+    } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
-    } 
+    }
 }
 
 Bytearray.prototype.__isub__ = function(other) {
