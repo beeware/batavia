@@ -78,6 +78,8 @@ def main(argv):
 
     print('Try some builtins...')
     try_builtins()
+
+    print('End of sample.py')
     return 0
 
 
