@@ -336,6 +336,9 @@ Int.prototype.__pow__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__pow__(other)
     } else if (types.isinstance(other, types.Complex)) {
+        if (!can_float(this.val))
+            throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
+
         var result_real, result_imag
 
         if (this.val == 0) {
@@ -352,6 +355,9 @@ Int.prototype.__pow__ = function(other) {
                 result_real = this.val * other.real
         } else {
             var len = Math.pow(this.val, other.real)
+            if (len > MAX_FLOAT.val || len < MIN_FLOAT.val)
+                throw new exceptions.OverflowError.$pyclass('complex exponentiation')
+
             var phase = other.imag*Math.log(this.val)
             result_real = len * Math.cos(phase)
             result_imag = len * Math.sin(phase)
