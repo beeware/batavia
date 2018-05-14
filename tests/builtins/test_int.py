@@ -12,8 +12,3 @@ class IntTests(TranspileTestCase):
 
 class BuiltinIntFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "int"
-
-    not_implemented = [
-        'test_bytearray',
-        'test_class',
-    ]
