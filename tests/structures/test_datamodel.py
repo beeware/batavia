@@ -21,7 +21,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p2 = Pair(9, 4)
 
-            print(p1 + p2)    
+            print(p1 + p2)
         """, run_in_function=False)
 
     def test_subtract(self):
@@ -42,7 +42,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p2 = Pair(9, 4)
 
-            print(p1 - p2)    
+            print(p1 - p2)
         """, run_in_function=False)
 
     def test_multiply(self):
@@ -63,7 +63,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 * num)    
+            print(p1 * num)
         """, run_in_function=False)
 
     def test_truedivision(self):
@@ -84,7 +84,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 / num)    
+            print(p1 / num)
         """, run_in_function=False)
 
     def test_floordivision(self):
@@ -105,7 +105,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 // num)    
+            print(p1 // num)
         """, run_in_function=False)
 
     def test_mod(self):
@@ -126,7 +126,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 % num)    
+            print(p1 % num)
         """, run_in_function=False)
 
     def test_pow(self):
@@ -147,7 +147,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 ** num)    
+            print(p1 ** num)
         """, run_in_function=False)
 
     def test_lshift(self):
@@ -168,7 +168,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 << num)    
+            print(p1 << num)
         """, run_in_function=False)
 
     def test_rshift(self):
@@ -189,7 +189,7 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             num = 4
 
-            print(p1 >> num)    
+            print(p1 >> num)
         """, run_in_function=False)
 
     def test_and(self):
@@ -209,8 +209,8 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p2 = Pair(6, 5)
-            
-            print(p1 & p2)    
+
+            print(p1 & p2)
         """, run_in_function=False)
 
     def test_xor(self):
@@ -230,8 +230,8 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p2 = Pair(6, 5)
-            
-            print(p1 ^ p2)    
+
+            print(p1 ^ p2)
         """, run_in_function=False)
 
     def test_or(self):
@@ -251,8 +251,8 @@ class ClassBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p2 = Pair(6, 5)
-            
-            print(p1 | p2)    
+
+            print(p1 | p2)
         """, run_in_function=False)
 
 
@@ -275,7 +275,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 += Pair(9, 4)
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_isubtract(self):
@@ -296,7 +296,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 -= Pair(9, 4)
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_imultiply(self):
@@ -316,8 +316,8 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p1 *= 4
-            
-            print(p1)    
+
+            print(p1)
         """, run_in_function=False)
 
     def test_itruedivision(self):
@@ -338,7 +338,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 /=4
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_ifloordivision(self):
@@ -359,7 +359,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 //= 4
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_imod(self):
@@ -380,7 +380,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 %= 4
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_ipow(self):
@@ -401,7 +401,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 **= 4
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_ilshift(self):
@@ -422,7 +422,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 <<= 2
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_irshift(self):
@@ -443,7 +443,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
             p1 = Pair(5, 6)
             p1 >>= 2
 
-            print(p1)    
+            print(p1)
         """, run_in_function=False)
 
     def test_iand(self):
@@ -463,8 +463,8 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p1 &= Pair(6, 5)
-            
-            print(p1)    
+
+            print(p1)
         """, run_in_function=False)
 
     def test_ixor(self):
@@ -484,8 +484,8 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p1 ^= Pair(6, 5)
-            
-            print(p1)    
+
+            print(p1)
         """, run_in_function=False)
 
     def test_ior(self):
@@ -505,8 +505,8 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
             p2 |= Pair(6, 5)
-            
-            print(p1)    
+
+            print(p1)
         """, run_in_function=False)
 
 @expectedFailure
@@ -517,17 +517,17 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
                 def __init__(self, x, y):
                     self.x = x
                     self.y = y
-            
+
                 def __str__(self):
                     return "({}, {})".format(self.x, self.y)
-            
+
                 def __radd__(self, other):
                     x = self.x + other
                     y = self.y + other
                     return Pair(x, y)
-            
+
             p1 = Pair(5, 6)
-            
+
             print(4 + p1)
         """, run_in_function=False)
 
@@ -537,17 +537,17 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
                 def __init__(self, x, y):
                     self.x = x
                     self.y = y
-            
+
                 def __str__(self):
                     return "({}, {})".format(self.x, self.y)
-            
+
                 def __rsub__(self, other):
-                    x = other - self.x 
-                    y = other - self.y 
+                    x = other - self.x
+                    y = other - self.y
                     return Pair(x, y)
-            
+
             p1 = Pair(5, 6)
-            
+
             print(4 - p1)
         """, run_in_function=False)
 
@@ -568,7 +568,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(3 * p1)    
+            print(3 * p1)
         """, run_in_function=False)
 
     def test_rtruedivision(self):
@@ -583,12 +583,12 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
                 def __rtruediv__(self, other):
                     x = other / self.x
-                    y = other / self.y 
+                    y = other / self.y
                     return Pair(x, y)
 
             p1 = Pair(5, 6)
 
-            print(4 / p1)    
+            print(4 / p1)
         """, run_in_function=False)
 
     def test_rfloordivision(self):
@@ -602,13 +602,13 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
                     return "({}, {})".format(self.x, self.y)
 
                 def __rfloordiv__(self, other):
-                    x = other // self.x 
+                    x = other // self.x
                     y = other // self.y
                     return Pair(x, y)
 
             p1 = Pair(5, 6)
 
-            print(4 // p1)    
+            print(4 // p1)
         """, run_in_function=False)
 
     def test_rmod(self):
@@ -622,13 +622,13 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
                     return "({}, {})".format(self.x, self.y)
 
                 def __rmod__(self, other):
-                    x = other % self.x 
-                    y = other % self.y 
+                    x = other % self.x
+                    y = other % self.y
                     return Pair(x, y)
 
             p1 = Pair(5, 6)
 
-            print(4 % p1)    
+            print(4 % p1)
         """, run_in_function=False)
 
     def test_rpow(self):
@@ -648,7 +648,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(4 ** p1)    
+            print(4 ** p1)
         """, run_in_function=False)
 
     def test_rlshift(self):
@@ -668,7 +668,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(4 << p1)    
+            print(4 << p1)
         """, run_in_function=False)
 
     def test_rrshift(self):
@@ -688,7 +688,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(4 >> p1)    
+            print(4 >> p1)
         """, run_in_function=False)
 
     def test_rand(self):
@@ -708,7 +708,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(4 & p1)    
+            print(4 & p1)
         """, run_in_function=False)
 
     def test_rxor(self):
@@ -728,7 +728,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(4 ^ p1)    
+            print(4 ^ p1)
         """, run_in_function=False)
 
     def test_ror(self):
@@ -748,7 +748,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
 
             p1 = Pair(5, 6)
 
-            print(4 | p1) 
+            print(4 | p1)
         """, run_in_function=False)
 
 
@@ -771,7 +771,7 @@ class ClassContainerDataModelTests(TranspileTestCase):
                     raise IndexError
 
             p = Pair(5, 6)
-            
+
             print('p[0] =', p[0])
             print('p[0] =', p[1])
             print('p["x"] =', p['x'])
@@ -799,10 +799,10 @@ class ClassContainerDataModelTests(TranspileTestCase):
                         raise IndexError
 
             p = Pair(5, 6)
-            
+
             print(p)
             p[1] = 11
             print(p)
             p['x'] = 2
-            print(p)            
+            print(p)
         """, run_in_function=False)
