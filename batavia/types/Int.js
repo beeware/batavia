@@ -351,8 +351,6 @@ Int.prototype.__pow__ = function(other) {
             else
                 result_real = this.val * other.real
         } else {
-            // Integers have an imag component of 0, so
-            // hypot(int.real, 0) == int.real and phase is 0
             var len = Math.pow(this.val, other.real)
             var phase = other.imag*Math.log(this.val)
             result_real = len * Math.cos(phase)
