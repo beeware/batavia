@@ -22,18 +22,18 @@ how to set this up are `on our Environment setup guide
 .. tabs::
 
     .. group-tab:: Linux
-    
+
         .. code-block:: bash
-        
+
            $ python3.5 -m venv venv
            $ . venv/bin/activate
            $ cd batavia
            $ pip install -e .
-           
+
     .. group-tab:: MacOS
-    
+
         .. code-block:: bash
-        
+
            $ python3.5 -m venv venv
            $ . venv/bin/activate
            $ cd batavia
