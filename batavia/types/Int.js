@@ -335,6 +335,31 @@ Int.prototype.__pow__ = function(other) {
         }
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__pow__(other)
+    } else if (types.isinstance(other, types.Complex)) {
+        var result_real, result_imag
+
+        if (this.val == 0) {
+            if (other.imag != 0 || other.real < 0)
+                throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative of complex power')
+
+            result_real = 0
+            result_imag = 0
+        } else if (other.imag == 0) {
+            result_imag = 0
+            if (other.real == 0)
+                result_real = 1
+            else
+                result_real = this.val * other.real
+        } else {
+            // Integers have an imag component of 0, so
+            // hypot(int.real, 0) == int.real and phase is 0
+            var len = Math.pow(this.val, other.real)
+            var phase = other.imag*Math.log(this.val)
+            result_real = len * Math.cos(phase)
+            result_imag = len * Math.sin(phase)
+        }
+
+        return new types.Complex(result_real, result_imag)
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
     }

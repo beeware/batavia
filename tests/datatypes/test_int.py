@@ -69,7 +69,6 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_multiply_complex',
 
-        'test_power_complex',
         'test_power_float',
 
         'test_subtract_complex',
@@ -89,7 +88,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_multiply_complex',
 
-        'test_power_complex',
         'test_power_float',
 
         'test_subtract_complex',
