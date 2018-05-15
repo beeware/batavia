@@ -67,6 +67,18 @@ class TupleTests(TranspileTestCase):
             print(x[-10])
             """)
 
+        # Existing element
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print('1' in x)
+            """)
+
+        # Non-existent element
+        self.assertCodeExecution("""
+            x = (1, 2, 3, 4, 5)
+            print('6' in x)
+            """)
+
     def test_count(self):
         self.assertCodeExecution("""
         x = (1, 2, 2, 3)
