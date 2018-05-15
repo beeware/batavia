@@ -23,7 +23,7 @@ function pow(args, kwargs) {
         if (y < 0) {
             const version = require('../core').version
             const error_message = 'pow() 2nd argument cannot be negative when 3rd argument specified'
-            if (version.earlier('3.4')) {
+            if (version.earlier('3.5')) {
                 throw new exceptions.TypeError.$pyclass(error_message)
             } else {
                 throw new exceptions.ValueError.$pyclass(error_message)
