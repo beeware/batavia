@@ -1,8 +1,8 @@
-var exceptions = require('../core').exceptions
-var types = require('../types')
+const exceptions = require('../core').exceptions
+const types = require('../types')
 
 function pow(args, kwargs) {
-    var x, y, z
+    let x, y, z
     if (!args) {
         throw new exceptions.TypeError.$pyclass('pow expected at least 2 arguments, got 0')
     }
@@ -21,7 +21,7 @@ function pow(args, kwargs) {
             throw new exceptions.TypeError.$pyclass('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new exceptions.TypeError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
+            throw new exceptions.ValueError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
         }
 
         // if z is 1 or -1 then answer is always 0
@@ -30,14 +30,14 @@ function pow(args, kwargs) {
         }
 
         // if y is 0 provided z is not 1 or -1, then answer is always 1
-        if (parseInt(y) == 0) {
+        if (parseInt(y) === 0) {
             return 1
         }
 
         // right-to-left exponentiation to reduce memory and time
         // See https://en.wikipedia.org/wiki/Modular_exponentiation#Right-to-left_binary_method
-        var result = 1
-        var base = x % z
+        let result = 1
+        let base = x % z
         while (y > 0) {
             if ((y & 1) === 1) {
                 result = (result * base) % z
