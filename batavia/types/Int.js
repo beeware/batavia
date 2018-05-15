@@ -341,24 +341,27 @@ Int.prototype.__pow__ = function(other) {
 
         var result_real, result_imag
 
-        if (this.val == 0) {
+        if (other.real == 0 && other.imag == 0) {
+            result_real = 1
+            result_imag = 0
+        } else if (this.val == 0) {
             if (other.imag != 0 || other.real < 0)
-                throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative of complex power')
+                throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
 
             result_real = 0
             result_imag = 0
-        } else if (other.imag == 0) {
-            result_imag = 0
-            if (other.real == 0)
-                result_real = 1
-            else
-                result_real = this.val * other.real
         } else {
-            var len = Math.pow(this.val, other.real)
+            var len = Math.pow(Math.abs(this.val), other.real)
             if (len > MAX_FLOAT.val || len < MIN_FLOAT.val)
                 throw new exceptions.OverflowError.$pyclass('complex exponentiation')
 
-            var phase = other.imag*Math.log(this.val)
+            var at = Math.atan2(0, this.val)
+            var phase = at * other.real
+            if (other.imag != 0) {
+                len /= Math.exp(at * other.imag)
+                phase += other.imag * Math.log(Math.abs(this.val))
+
+            }
             result_real = len * Math.cos(phase)
             result_imag = len * Math.sin(phase)
         }

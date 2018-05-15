@@ -30,7 +30,8 @@ function part_to_str(x) {
         if (abs_len >= 19) {
             // force conversion to scientific
             var new_str = x.valueOf().toExponential()
-            if (new_str.length < x_str.length) {
+            // Always use scientific notation for long integers, complex always uses floats
+            if (new_str.length < x_str.length || x_str.indexOf('.') == -1) {
                 x_str = new_str
             }
         }
@@ -40,6 +41,14 @@ function part_to_str(x) {
         x_str = '0'
     }
     return x_str
+}
+
+function under_js_precision(complex) {
+    // Operations on complex numbers in Javascript sometimes real and imaginary
+    // components extremely that are extremely different in magnitude order
+    // compared to available precision. Return true if it's the case.
+    return Math.abs(complex.imag) < 10 / 9 * Number.EPSILON &&
+           Math.abs(complex.imag/complex.real) > Number.EPSILON
 }
 
 function Complex(re, im) {
@@ -103,6 +112,10 @@ function Complex(re, im) {
 
 create_pyclass(Complex, 'complex')
 
+var COMPLEX_ROUND_DECIMALS = Math.floor(Math.abs(Math.log10(Number.EPSILON)))
+
+Complex.prototype.COMPLEX_ROUND_DECIMALS = COMPLEX_ROUND_DECIMALS
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
@@ -125,11 +138,14 @@ Complex.prototype.__repr__ = function() {
 
 Complex.prototype.__str__ = function() {
     if (this.real.valueOf() || Object.is(this.real, -0)) {
+        if (under_js_precision(this))
+            this.imag = parseFloat(this.imag.toFixed(this.COMPLEX_ROUND_DECIMALS))
+
         var sign
-        if (this.imag >= 0) {
-            sign = '+'
-        } else {
+        if (Object.is(this.imag, -0) || this.imag < 0) {
             sign = '-'
+        } else {
+            sign = '+'
         }
         return '(' + part_to_str(this.real) + sign + part_to_str(Math.abs(this.imag)) + 'j)'
     } else {
