@@ -21,7 +21,13 @@ function pow(args, kwargs) {
             throw new exceptions.TypeError.$pyclass('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new exceptions.ValueError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
+            const version = require('../core').version
+            const error_message = 'pow() 2nd argument cannot be negative when 3rd argument specified'
+            if (version.earlier('3.4')) {
+                throw new exceptions.TypeError.$pyclass(error_message)
+            } else {
+                throw new exceptions.ValueError.$pyclass(error_message)
+            }
         }
 
         // if z is 1 or -1 then answer is always 0
@@ -53,3 +59,4 @@ function pow(args, kwargs) {
 pow.__doc__ = 'pow(x, y[, z]) -> number\n\nWith two arguments, equivalent to x**y.  With three arguments,\nequivalent to (x**y) % z, but may be more efficient (e.g. for ints).'
 
 module.exports = pow
+
