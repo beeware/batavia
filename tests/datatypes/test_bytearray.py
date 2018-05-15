@@ -33,7 +33,6 @@ class BinaryBytearrayOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_add_dict',
         'test_add_float',
         'test_add_frozenset',
-        'test_add_int',
         'test_add_list',
         'test_add_None',
         'test_add_NotImplemented',

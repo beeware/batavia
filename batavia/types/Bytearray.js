@@ -169,6 +169,11 @@ Bytearray.prototype.__mod__ = function(other) {
 
 Bytearray.prototype.__add__ = function(other) {
     var types = require('../types')
+
+    if (types.isinstance(other, types.Int)) {
+        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
+    }
+
     if (types.isinstance(other, types.Bool)) {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
     }
