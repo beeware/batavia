@@ -174,6 +174,8 @@ Float.prototype.__eq__ = function(other) {
             }
         } else if (types.isinstance(other, types.Int)) {
             val = parseFloat(other.val)
+        } else if (types.isinstance(other, types.Complex)) {
+            return other.imag == 0 && this.valueOf() == other.real
         } else {
             val = other.valueOf()
         }

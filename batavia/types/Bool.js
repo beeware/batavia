@@ -65,6 +65,14 @@ Bool.prototype.__eq__ = function(other) {
         } else {
             return false
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var this_bool
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        return other.imag == 0 && this_bool == other.real
     } else {
         return false
     }
@@ -299,7 +307,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         } else {
             if (types.isinstance(other, types.Complex)) {
-                throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
+                return new types.Int(0).__pow__(other)
             } else if (other.__lt__(new types.Float(0.0))) {
                 throw new exceptions.ZeroDivisionError.$pyclass('0.0 cannot be raised to a negative power')
             } else if (types.isinstance(other, types.Int)) {

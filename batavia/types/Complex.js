@@ -198,7 +198,8 @@ Complex.prototype.__eq__ = function(other) {
         } else {
             val = other.valueOf()
         }
-        return this.real === val && this.imag === 0
+        // this.real == val instead of === because Int.valueOf() returns a string
+        return this.real == val && this.imag === 0
     }
     return false
 }
@@ -305,6 +306,8 @@ function __div__(x, y, inplace) {
         }
     } else if (types.isinstance(y, types.Complex)) {
         var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2)
+        if (den == 0)
+            throw new exceptions.ZeroDivisionError.$pyclass('complex division by zero')
         var num_real = x.real * y.real + x.imag * y.imag
         var num_imag = x.imag * y.real - x.real * y.imag
         var real = num_real / den
