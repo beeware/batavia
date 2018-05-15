@@ -168,13 +168,15 @@ Bytearray.prototype.__mod__ = function(other) {
 }
 
 Bytearray.prototype.__add__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Int)) {
-        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
-    }
-
-    if (types.isinstance(other, types.Bool)) {
+    let Buffer = require('buffer').Buffer
+    let types = require('../types')
+    if (types.isinstance(other, types.Bytearray)) {
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
+        return new Bytearray(combined_bytes)
+    } else if (types.isinstance(other, types.Bytes)) {
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
+        return new Bytearray(combined_bytes)
+    } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
     }
 }
@@ -224,7 +226,19 @@ Bytearray.prototype.__itruediv__ = function(other) {
 }
 
 Bytearray.prototype.__iadd__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__iadd__ has not been implemented')
+    let Buffer = require('buffer').Buffer
+    let types = require('../types')
+    if (types.isinstance(other, types.Bytearray)) {
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val.val]))
+        this.val = combined_bytes
+        return this
+    } else if (types.isinstance(other, types.Bytes)) {
+        let combined_bytes = new types.Bytes(Buffer.concat([this.val.val, other.val]))
+        this.val = combined_bytes
+        return this
+    } else {
+        throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
+    }
 }
 
 Bytearray.prototype.__isub__ = function(other) {
