@@ -19,7 +19,7 @@ Runs Python file in node JS using using the Batavia virtual machine in Node.
 
 positional arguments:
   file             Python file to run
-  
+
 optional arguments:
   -h, --help       show this help message and exit`.trim())
 }

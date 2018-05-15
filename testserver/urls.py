@@ -28,7 +28,7 @@ def bytecode(sourcefile):
         'compiled': payload,
         'filename': sourcefile
     }
-    
+
 def home(request):
     ctx = {
         'modules': {
@@ -50,7 +50,7 @@ def home(request):
                 }
             }
         }
-    } 
+    }
     if request.method.lower() == 'post' and request.POST['code']:
         tempfd, tempname = tempfile.mkstemp()
         with os.fdopen(tempfd, 'w+b') as f:
