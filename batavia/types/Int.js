@@ -188,6 +188,8 @@ Int.prototype.__eq__ = function(other) {
         } else {
             return this.val.eq(new Int(0))
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        return other.imag == 0 && this.val.eq(other.real)
     } else {
         return false
     }
