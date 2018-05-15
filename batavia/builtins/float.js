@@ -3,7 +3,6 @@ var str = require('./str')
 var type_name = require('../core').type_name
 var types = require('../types')
 
-
 function float(args, kwargs) {
     if (args.length > 1) {
         throw new exceptions.TypeError.$pyclass('float() takes at most 1 argument (' + args.length + ' given)')
