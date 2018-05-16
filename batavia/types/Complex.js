@@ -44,11 +44,13 @@ function part_to_str(x) {
 }
 
 function under_js_precision(complex) {
-    // Operations on complex numbers in Javascript sometimes real and imaginary
-    // components extremely that are extremely different in magnitude order
-    // compared to available precision. Return true if it's the case.
-    return Math.abs(complex.imag) < 10 / 9 * Number.EPSILON &&
-           Math.abs(complex.imag/complex.real) > Number.EPSILON
+    // With complex numbers, imaginary value may be off in JavaScript,
+    // due to JS imprecision (Epsilon) and/or too big difference between
+    // real and imaginary components, and may have to be rounded.
+    // Return True if it's the case.
+    return complex.real != 0 && Math.abs(complex.imag) < 10 / 9 * Number.EPSILON &&
+           Math.abs(complex.imag/complex.real) > Number.EPSILON &&
+           Math.abs(complex.imag/complex.real) < 1e-10
 }
 
 function Complex(re, im) {
@@ -195,11 +197,13 @@ Complex.prototype.__eq__ = function(other) {
             } else {
                 val = 0.0
             }
+        } else if (types.isinstance(other, types.Int)) {
+            // Int.valueOf() returns a string, convert it
+            val = parseInt(other.valueOf())
         } else {
             val = other.valueOf()
         }
-        // this.real == val instead of === because Int.valueOf() returns a string
-        return this.real == val && this.imag === 0
+        return this.real === val && this.imag === 0
     }
     return false
 }
