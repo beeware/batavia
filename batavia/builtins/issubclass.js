@@ -6,11 +6,11 @@ function issubclass(args, kwargs) {
         throw new exceptions.BataviaError.$pyclass("Batavia calling convention not used.")
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
-        throw new exceptions.TypeError.$pyclass("issubclass() doesn't accept keyword arguments.")
+        throw new exceptions.TypeError.$pyclass("issubclass() takes no keyword arguments")
     }
 
     if (!args || args.length !== 2) {
-        throw new exceptions.TypeError.$pyclass("issubclass() expected 2 arguments (" + args.length + " given)")
+        throw new exceptions.TypeError.$pyclass("issubclass expected 2 arguments, got " + args.length)
     }
 
     return new types.Bool(types.issubclass(args[0], args[1]))
