@@ -37,12 +37,7 @@ class BuiltinSumFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "sum"
 
     not_implemented = [
-        'test_noargs',
-        'test_bytearray',
-        'test_bytes',
-        'test_dict',
-        'test_frozenset',
-        'test_range',
-        'test_set',
-        'test_str',
+        'test_frozenset'  # This works, but python dict.keys() returns non-deterministically
+        'test_range',  # This has been implemented, but fails upstream on isinstance.
+        'test_set'  # This works, but python dict.keys() returns non-deterministically
     ]
