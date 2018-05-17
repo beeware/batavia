@@ -36,8 +36,16 @@ class SumTests(TranspileTestCase):
 class BuiltinSumFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "sum"
 
+    # these are implemented, but the exact exception thrown depends on the order
+    # that they are iterated on being the exact same in both CPython and batavia,
+    # which is not guaranteed. (if an unsupported string follows an int, the error
+    # will be different than if it followed a float)
+
+    is_flakey = [
+        'test_frozenset',  # This works, but python dict.keys() returns non-deterministically
+        'test_set',  # This works, but python dict.keys() returns non-deterministically.
+    ]
+
     not_implemented = [
-        'test_frozenset'  # This works, but python dict.keys() returns non-deterministically
         'test_range',  # This has been implemented, but fails upstream on isinstance.
-        'test_set'  # This works, but python dict.keys() returns non-deterministically
     ]
