@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var type_name = require('../core').type_name
 var types = require('../types')
 
 function oct(args, kwargs) {
@@ -16,20 +17,9 @@ function oct(args, kwargs) {
         }
     } else if (types.isinstance(value, types.Bool)) {
         return '0o' + value.__int__().toString(8)
+    } else {
+        throw new exceptions.TypeError.$pyclass("'" + type_name(value) + "' object cannot be interpreted as an integer")
     }
-
-    if (!types.isinstance(value, types.Int)) {
-        if (value.__index__) {
-            value = value.__index__()
-        } else {
-            throw new exceptions.TypeError.$pyclass('__index__ method needed for non-integer inputs')
-        }
-    }
-    if (value < 0) {
-        return '-0o' + (0 - value).toString(8)
-    }
-
-    return '0o' + value.toString(8)
 };
 oct.__doc__ = "oct(number) -> string\n\nReturn the octal representation of an integer.\n\n   >>> oct(342391)\n   '0o1234567'\n"
 
