@@ -25,9 +25,14 @@ function part_from_str(s) {
 function part_to_str(x) {
     var x_str
     if (x) {
-        // Reuse float's implementation of __str__
-        var types = require('../types')
-        x_str = (new types.Float(x)).__str__()
+        if (x === Math.round(x)) {
+            // Integer
+            x_str = x.toString()
+        } else {
+            // Reuse float's implementation of __str__
+            var types = require('../types')
+            x_str = (new types.Float(x)).__str__()
+        }
     } else if (Object.is(x, -0)) {
         x_str = '-0'
     } else {
