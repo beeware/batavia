@@ -41,9 +41,9 @@ function under_js_precision(complex) {
     // due to JS imprecision (Epsilon) and/or too big difference between
     // real and imaginary components, and may have to be rounded.
     // Return True if it's the case.
-    return complex.real != 0 && Math.abs(complex.imag) < 10 / 9 * Number.EPSILON &&
-           Math.abs(complex.imag/complex.real) > Number.EPSILON &&
-           Math.abs(complex.imag/complex.real) < 1e-10
+    return complex.real !== 0 && Math.abs(complex.imag) < 10 / 9 * Number.EPSILON &&
+           Math.abs(complex.imag / complex.real) > Number.EPSILON &&
+           Math.abs(complex.imag / complex.real) < 1e-10
 }
 
 function Complex(re, im) {
@@ -133,8 +133,9 @@ Complex.prototype.__repr__ = function() {
 
 Complex.prototype.__str__ = function() {
     if (this.real.valueOf() || Object.is(this.real, -0)) {
-        if (under_js_precision(this))
+        if (under_js_precision(this)) {
             this.imag = parseFloat(this.imag.toFixed(this.COMPLEX_ROUND_DECIMALS))
+        }
 
         var sign
         if (Object.is(this.imag, -0) || this.imag < 0) {
@@ -303,8 +304,9 @@ function __div__(x, y, inplace) {
         }
     } else if (types.isinstance(y, types.Complex)) {
         var den = Math.pow(y.real, 2) + Math.pow(y.imag, 2)
-        if (den == 0)
+        if (den === 0) {
             throw new exceptions.ZeroDivisionError.$pyclass('complex division by zero')
+        }
         var num_real = x.real * y.real + x.imag * y.imag
         var num_imag = x.imag * y.real - x.real * y.imag
         var real = num_real / den

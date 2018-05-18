@@ -189,7 +189,7 @@ Int.prototype.__eq__ = function(other) {
             return this.val.eq(new Int(0))
         }
     } else if (types.isinstance(other, types.Complex)) {
-        return other.imag == 0 && this.val.eq(other.real)
+        return other.imag === 0 && this.val.eq(other.real)
     } else {
         return false
     }
@@ -338,31 +338,31 @@ Int.prototype.__pow__ = function(other) {
     } else if (types.isinstance(other, types.Float)) {
         return this.__float__().__pow__(other)
     } else if (types.isinstance(other, types.Complex)) {
-        if (!can_float(this.val))
+        if (!can_float(this.val)) {
             throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
+        }
 
         var result_real, result_imag
-
-        if (other.real == 0 && other.imag == 0) {
+        if (other.real === 0 && other.imag === 0) {
             result_real = 1
             result_imag = 0
-        } else if (this.val == 0) {
-            if (other.imag != 0 || other.real < 0)
+        } else if (this.val.eq(0)) {
+            if (other.imag !== 0 || other.real < 0) {
                 throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
-
+            }
             result_real = 0
             result_imag = 0
         } else {
             var len = Math.pow(Math.abs(this.val), other.real)
-            if (len > MAX_FLOAT.val || len < MIN_FLOAT.val)
+            if (len > MAX_FLOAT.val || len < MIN_FLOAT.val) {
                 throw new exceptions.OverflowError.$pyclass('complex exponentiation')
+            }
 
             var at = Math.atan2(0, this.val)
             var phase = at * other.real
-            if (other.imag != 0) {
+            if (other.imag !== 0) {
                 len /= Math.exp(at * other.imag)
                 phase += other.imag * Math.log(Math.abs(this.val))
-
             }
             result_real = len * Math.cos(phase)
             result_imag = len * Math.sin(phase)

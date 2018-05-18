@@ -54,8 +54,9 @@ Float.prototype.__repr__ = function() {
 function scientific_notation_exponent_fix(exp) {
     // Python's negative exponent in scientific notation have a leading 0
     // Input is a float string (if not in scientific notation, nothing happens)
-    if (exp.split('e-')[1] < 10)
+    if (exp.split('e-')[1] < 10) {
         exp = exp.replace('e-', 'e-0')
+    }
     return exp
 }
 
@@ -69,6 +70,8 @@ Float.prototype.__str__ = function() {
         }
         return 'inf'
     }
+
+    var s
     if (this.val === 0) {
         if (1 / this.val === Infinity) {
             return '0.0'
@@ -77,21 +80,23 @@ Float.prototype.__str__ = function() {
         }
     } else if (this.val === Math.round(this.val)) {
         // Force scientific notation if abs(integer) > 1e16
-        if (Math.abs(this.val) >= 1e16)
+        if (Math.abs(this.val) >= 1e16) {
             return scientific_notation_exponent_fix(this.val.toExponential())
+        }
 
-        var s = this.val.toString()
-        if (s.indexOf('.') < 0)
+        s = this.val.toString()
+        if (s.indexOf('.') < 0) {
             return s + '.0'
+        }
 
         return s
-
     } else {
-        var s = this.val.toString()
+        s = this.val.toString()
         // Force conversion to scientific notation if dot is
         // located after 16 digits or if string starts with (-)0.0000
-        if (s.indexOf('.') >= 16 || s.startswith('0.0000') || s.startswith('-0.0000'))
+        if (s.indexOf('.') >= 16 || s.startswith('0.0000') || s.startswith('-0.0000')) {
             s = this.val.toExponential()
+        }
         return scientific_notation_exponent_fix(s)
     }
 }
@@ -189,7 +194,7 @@ Float.prototype.__eq__ = function(other) {
         } else if (types.isinstance(other, types.Int)) {
             val = parseFloat(other.val)
         } else if (types.isinstance(other, types.Complex)) {
-            return other.imag == 0 && this.valueOf() == other.real
+            return other.imag === 0 && this.valueOf() === other.real
         } else {
             val = other.valueOf()
         }
