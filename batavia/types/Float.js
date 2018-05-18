@@ -629,4 +629,7 @@ Float.prototype.__trunc__ = function() {
  * Module exports
  **************************************************/
 
-module.exports = Float
+module.exports = {
+    Float: Float,
+    scientific_notation_exponent_fix: scientific_notation_exponent_fix
+}

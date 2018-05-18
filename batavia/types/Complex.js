@@ -4,6 +4,9 @@ var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 
+// Helper function defined in Float.js
+var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
+
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
@@ -27,7 +30,11 @@ function part_to_str(x) {
     if (x) {
         if (x === Math.round(x)) {
             // Integer
-            x_str = x.toString()
+            if (Math.abs(x) >= 1e16) {
+                x_str = scientific_notation_exponent_fix(x.toExponential())
+            } else {
+                x_str = x.toString()
+            }
         } else {
             // Reuse float's implementation of __str__
             var types = require('../types')
