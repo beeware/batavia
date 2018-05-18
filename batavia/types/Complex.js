@@ -25,16 +25,9 @@ function part_from_str(s) {
 function part_to_str(x) {
     var x_str
     if (x) {
-        x_str = x.valueOf().toString()
-        var abs_len = Math.abs(x.valueOf()).toString().length
-        if (abs_len >= 19) {
-            // force conversion to scientific
-            var new_str = x.valueOf().toExponential()
-            // Always use scientific notation for long integers, complex always uses floats
-            if (new_str.length < x_str.length || x_str.indexOf('.') == -1) {
-                x_str = new_str
-            }
-        }
+        // Reuse float's implementation of __str__
+        var types = require('../types')
+        x_str = (new types.Float(x)).__str__()
     } else if (Object.is(x, -0)) {
         x_str = '-0'
     } else {
