@@ -51,6 +51,15 @@ Float.prototype.__repr__ = function() {
     return this.__str__()
 }
 
+function scientific_notation_exponent_fix(exp) {
+    // Python's negative exponent in scientific notation have a leading 0
+    // Input is a float string (if not in scientific notation, nothing happens)
+    if (exp.split('e-')[1] < 10) {
+        exp = exp.replace('e-', 'e-0')
+    }
+    return exp
+}
+
 Float.prototype.__str__ = function() {
     if (!isFinite(this.val)) {
         if (isNaN(this.val)) {
@@ -61,6 +70,8 @@ Float.prototype.__str__ = function() {
         }
         return 'inf'
     }
+
+    var s
     if (this.val === 0) {
         if (1 / this.val === Infinity) {
             return '0.0'
@@ -68,17 +79,25 @@ Float.prototype.__str__ = function() {
             return '-0.0'
         }
     } else if (this.val === Math.round(this.val)) {
-        var s = this.val.toString()
-        if (s.length >= 19) {
-          // force conversion to scientific
-            return this.val.toExponential()
+        // Force scientific notation if abs(integer) > 1e16
+        if (Math.abs(this.val) >= 1e16) {
+            return scientific_notation_exponent_fix(this.val.toExponential())
         }
+
+        s = this.val.toString()
         if (s.indexOf('.') < 0) {
             return s + '.0'
         }
+
         return s
     } else {
-        return this.val.toString()
+        s = this.val.toString()
+        // Force conversion to scientific notation if dot is
+        // located after 16 digits or if string starts with (-)0.0000
+        if (s.indexOf('.') >= 16 || s.startswith('0.0000') || s.startswith('-0.0000')) {
+            s = this.val.toExponential()
+        }
+        return scientific_notation_exponent_fix(s)
     }
 }
 
@@ -174,6 +193,8 @@ Float.prototype.__eq__ = function(other) {
             }
         } else if (types.isinstance(other, types.Int)) {
             val = parseFloat(other.val)
+        } else if (types.isinstance(other, types.Complex)) {
+            return other.imag === 0 && this.valueOf() === other.real
         } else {
             val = other.valueOf()
         }
@@ -608,4 +629,7 @@ Float.prototype.__trunc__ = function() {
  * Module exports
  **************************************************/
 
-module.exports = Float
+module.exports = {
+    Float: Float,
+    scientific_notation_exponent_fix: scientific_notation_exponent_fix
+}
