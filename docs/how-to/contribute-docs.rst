@@ -16,13 +16,18 @@ to do this, study the other index files for clues.
 To build locally on GNU/Linux and open it on the browser:
 ---------------------------------------------------------
 
-Install Sphinx: ::
+Go to the documentation folder: ::
 
-    $ pip install sphinx
+    $ cd docs
+
+Install Sphinx with the helpers and extensions we use: ::
+
+    $ pip install -r requirements_docs.txt
 
 Create the static files: ::
 
     $ make html
 
-The output of the file should be in the _build folder. Check for any errors and, if possible, fix them.
+Check for any errors and,if possible, fix them.
+The output of the file should be in the ``_build/html`` folder.
 Open the file you changed in the browser.
