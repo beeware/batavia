@@ -52,8 +52,17 @@ Install Node.JS
 ^^^^^^^^^^^^^^^
 
 Lastly, you'll need to install `Node.js`_. You need to have a recent version
-of Node; we test using v6.9.1. Once you've installed node, you can use it to
-install Batavia's JavaScript dependencies, and compile the Batavia library:
+of Node; we test using v6.9.1. One civilized way to get an isolated Node.js
+environment is using the `nodeenv`_ package -- this ties your Node.js
+environment into your Python virtual environment.
+
+.. code-block:: bash
+
+    $ pip install nodeenv
+    $ nodeenv -p
+
+Once you've installed node, you can use it to install Batavia's JavaScript
+dependencies, and compile the Batavia library:
 
 .. code-block:: bash
 
@@ -62,7 +71,7 @@ install Batavia's JavaScript dependencies, and compile the Batavia library:
     $ npm run build
 
 .. _Node.js: https://nodejs.org
-
+.. _nodeenv: http://ekalinin.github.io/nodeenv/
 
 Raspbian/Raspberry Pi
 """""""""""""""""""""""
