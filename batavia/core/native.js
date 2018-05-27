@@ -8,6 +8,7 @@ native.getattr_raw = function(obj, attr, attributes_only) {
         if (attributes_only) {
             return undefined
         }
+        
         // If this is a native Javascript function, wrap the function
         // so that the Python calling convention is used. If it's a
         // class constructor, wrap it in a method that uses the Python
