@@ -357,14 +357,17 @@ function powc(x, y) {
 }
 function powi(x, y) {
     var cn
-    if (x.real === 0 && x.imag === 0) {
-        return new Complex(0, 0)
+    if (Number(y) == 0) {
+	return new Complex(1, 0)
     }
     if (Number(y) >= MAX_INT) {
-        if (x.real === 0 && (x.imag === 1 || x.imag === -1)) {
-            return powc(x, new Complex(Number(y), 0))
-        }
         if (Number(y) <= MAX_FLOAT) {
+            if (x.real*x.real + x.imag*x.imag == 1) {
+		return powc(x, new Complex(Number(y), 0))
+            }
+	    else if (x.real === 0 && x.imag === 0) {
+		return new Complex(0, 0)
+	    }
             throw new exceptions.OverflowError.$pyclass(
                 'complex exponentiation'
             )
@@ -373,10 +376,19 @@ function powi(x, y) {
                 'int too large to convert to float'
             )
         }
-    } else if (Number(y) <= MIN_FLOAT) {
+    }
+    else if (Number(y) <= MIN_FLOAT) {
         throw new exceptions.OverflowError.$pyclass(
             'int too large to convert to float'
         )
+    }
+    else if (x.real === 0 && x.imag === 0) {
+	if (Number(y) < 0) {
+	    throw new exceptions.ZeroDivisionError.$pyclass(
+                '0.0 to a negative or complex power'
+            )
+	}
+	return new Complex(0, 0)
     } else {
         if (y > 100 || y < -100) {
             cn = new Complex(Number(y), 0)
