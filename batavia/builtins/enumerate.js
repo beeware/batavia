@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
+var type_name = require('../core').type_name
 
 function enumerate(args, kwargs) {
     if (arguments.length !== 2) {
@@ -7,6 +8,12 @@ function enumerate(args, kwargs) {
     }
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new exceptions.TypeError.$pyclass("enumerate() doesn't accept keyword arguments")
+    }
+    if (args.length < 1) {
+        throw new exceptions.TypeError.$pyclass('Required argument \'iterable\' (pos 1) not found')
+    }
+    if (!args[0].__iter__) {
+        throw new exceptions.TypeError.$pyclass('\'' + type_name(args[0]) + '\' object is not iterable')
     }
     return new types.Enumerate(args[0])
 }
