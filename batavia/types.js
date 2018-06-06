@@ -130,15 +130,42 @@ types.issubclass = function(cls, type) {
         }
         return false
     } else {
-        switch (typeof cls) {
-            case 'boolean':
-                return type === types.Bool
-            case 'number':
-                return type === types.Int
-            case 'string':
-                return type === types.Str
+		switch (typeof cls) {
+            case 'function':
+				var typeNames = [
+					'bool', 'dict', 'float', 'int', 'list',
+					'tuple', 'slice', 'bytes', 'bytearray', 
+					'type', 'str', 'set', 'range', 
+					'frozenset', 'complex'
+					]
+				var clsName = cls.name
+                if (clsName.startswith('bound ')) {
+                    clsName = clsName.substring(6)
+                }
+				if (!typeNames.includes(clsName)) {
+					throw new exceptions.TypeError.$pyclass("issubclass() arg 1 must be a class")
+				}
+				var typeName = type.name
+                if (typeName.startswith('bound ')) {
+                    typeName = typeName.substring(6)
+                }
+				if (!typeNames.includes(typeName)) {
+					throw new exceptions.TypeError.$pyclass("issubclass() arg 2 must be a class or tuple of classes")
+				}
+				if (clsName === 'bool') {// special case for boolean
+					switch (typeName) {
+						case 'bool':
+						case 'int':
+							return true
+						default:
+							return false
+					}
+				} else {
+					return clsName === typeName
+					// all other native types are only subclasses of themselves
+				} 
             case 'object':
-                if (type === null || type === types.NoneType) {
+				if (type === null || type === types.NoneType) {
                     return cls === null
                 } else {
                     var mro = cls.mro()
