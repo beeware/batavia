@@ -21,15 +21,3 @@ class EnumerateTests(TranspileTestCase):
 
 class BuiltinEnumerateFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "enumerate"
-
-    not_implemented = [
-        'test_noargs',
-        'test_bool',
-        'test_class',
-        'test_complex',
-        'test_float',
-        'test_int',
-        'test_None',
-        'test_NotImplemented',
-        'test_slice',
-    ]

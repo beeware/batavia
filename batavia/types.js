@@ -16,7 +16,7 @@ types['Property'] = require('./types/Property')
 types['SetIterator'] = require('./types/SetIterator')
 
 types['Bool'] = require('./types/Bool')
-types['Float'] = require('./types/Float')
+types['Float'] = require('./types/Float').Float
 types['Int'] = require('./types/Int')
 
 types['Dict'] = require('./types/Dict')

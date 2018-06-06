@@ -1,5 +1,7 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
+var type_name = require('../core').type_name
+var bytes = require('./bytes')
 var repr = require('./repr')
 
 function int(args, kwargs) {
@@ -12,12 +14,24 @@ function int(args, kwargs) {
 
     var base = 10
     var value = 0
+    var unsupported_numeric_types = [types.Complex]
+    var unsupported_nonnumeric_types = [types.Dict, types.FrozenSet, types.List, types.NoneType,
+        types.NotImplementedType, types.Range, types.Set, types.Slice, types.Tuple]
     if (!args || args.length === 0) {
         return new types.Int(0)
     } else if (args && args.length === 1) {
         value = args[0]
         if (types.isinstance(value, [types.Int, types.Bool])) {
             return value.__int__()
+        } else if (types.isinstance(value, unsupported_numeric_types)) {
+            throw new exceptions.TypeError.$pyclass(
+                "can't convert " + type_name(value) + ' to int'
+            )
+        // Check for non-numeric types and classes (type_name = 'type')
+        } else if (types.isinstance(value, unsupported_nonnumeric_types) || type_name(value) === 'type') {
+            throw new exceptions.TypeError.$pyclass(
+                "int() argument must be a string, a bytes-like object or a number, not '" + type_name(value) + "'"
+            )
         }
     } else if (args && args.length === 2) {
         value = args[0]
@@ -25,6 +39,10 @@ function int(args, kwargs) {
     } else {
         throw new exceptions.TypeError.$pyclass(
             'int() takes at most 2 arguments (' + args.length + ' given)')
+    }
+    // The CPython int() implementation appears to resolve bytearrays to bytes objects before reporting ValueErrors
+    if (types.isinstance(value, types.Bytearray)) {
+        value = bytes([value], null)
     }
     // TODO: this should be able to parse things longer than 53 bits
     var result = parseInt(value, base)

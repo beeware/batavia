@@ -65,6 +65,14 @@ Bool.prototype.__eq__ = function(other) {
         } else {
             return false
         }
+    } else if (types.isinstance(other, types.Complex)) {
+        var this_bool
+        if (this.valueOf()) {
+            this_bool = 1
+        } else {
+            this_bool = 0
+        }
+        return other.imag === 0 && this_bool === other.real
     } else {
         return false
     }
@@ -299,7 +307,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         } else {
             if (types.isinstance(other, types.Complex)) {
-                throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
+                return new types.Int(0).__pow__(other)
             } else if (other.__lt__(new types.Float(0.0))) {
                 throw new exceptions.ZeroDivisionError.$pyclass('0.0 cannot be raised to a negative power')
             } else if (types.isinstance(other, types.Int)) {
@@ -413,7 +421,8 @@ Bool.prototype.__mul__ = function(other) {
         }
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
-    } }
+    }
+}
 
 Bool.prototype.__mod__ = function(other) {
     var types = require('../types')
@@ -569,7 +578,8 @@ Bool.prototype.__lshift__ = function(other) {
         return new types.Int(this_bool << other.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'bool' and '" + type_name(other) + "'")
-    } }
+    }
+}
 
 Bool.prototype.__rshift__ = function(other) {
     var types = require('../types')
@@ -596,7 +606,8 @@ Bool.prototype.__rshift__ = function(other) {
         return new types.Int(this_bool >> other.valueOf())
     } else {
         throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'bool' and '" + type_name(other) + "'")
-    } }
+    }
+}
 
 Bool.prototype.__and__ = function(other) {
     var types = require('../types')

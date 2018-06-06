@@ -6,4 +6,4 @@ If a member of the BeeWare community has made you feel uncomfortable, we have me
 
 Changes to our behaviour documentation [are also documented](https://pybee.org/community/behavior/changes/)
 
-See the [Community Behaviour](https://pybee.org/community/behavior/) section of the PyBee.org website for more information. 
+See the [Community Behaviour](https://pybee.org/community/behavior/) section of the PyBee.org website for more information.

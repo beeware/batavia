@@ -34,7 +34,7 @@ def try_builtins():
     print('divmod(5,2)', divmod(5, 2))
     print('pow(2, 3)', pow(2, 3))
     print('pow(2, 3, 3)', pow(2, 3, 3))
-    
+
     try:
         print('abs(None)', abs(None))  # known failure
     except TypeError:
@@ -78,6 +78,8 @@ def main(argv):
 
     print('Try some builtins...')
     try_builtins()
+
+    print('End of sample.py')
     return 0
 
 

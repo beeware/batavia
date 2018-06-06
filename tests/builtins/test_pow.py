@@ -28,6 +28,22 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
+    def test_int_y_zero_z_one(self):
+        self.assertCodeExecution("""
+            x = 1
+            y = 0
+            z = 1
+            print(pow(x, y, z))
+        """)
+
+    def test_int_y_zero_z_neg_one(self):
+        self.assertCodeExecution("""
+            x = 1
+            y = 0
+            z = -1
+            print(pow(x, y, z))
+        """)
+
     def test_float_x_with_z(self):
         self.assertCodeExecution("""
             x = 3.3
@@ -147,7 +163,6 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
         'test_float_float',
         'test_float_int',
 
-        'test_int_complex',
         'test_int_float',
 
         'test_range_bool',
