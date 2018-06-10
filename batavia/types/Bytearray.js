@@ -144,7 +144,7 @@ Bytearray.prototype.__invert__ = function() {
  **************************************************/
 
 Bytearray.prototype.__pow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__pow__ has not been implemented')
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'bytearray' and '" + type_name(other) + "'")
 }
 
 Bytearray.prototype.__div__ = function(other) {
