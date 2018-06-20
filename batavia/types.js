@@ -130,35 +130,35 @@ types.issubclass = function(cls, type) {
         }
         return false
     } else {
-		switch (typeof cls) {
+        switch (typeof cls) {
             case 'function':
-				// check for native classes
-				if (!['bool', 'dict', 'float', 'int', 'list',
-					'tuple', 'slice', 'bytes', 'bytearray', 
-					'type', 'str', 'set', 'range', 
-					'frozenset', 'complex'].includes(cls.name.substring(6))) {
-					throw new exceptions.TypeError.$pyclass("issubclass() arg 1 must be a class")
-				}
-				if (!['bool', 'dict', 'float', 'int', 'list',
-					'tuple', 'slice', 'bytes', 'bytearray', 
-					'type', 'str', 'set', 'range', 
-					'frozenset', 'complex'].includes(type.name.substring(6))) {
-					throw new exceptions.TypeError.$pyclass("issubclass() arg 2 must be a class or tuple of classes")
-				}
-				if (cls.name.substring(6) === 'bool') {// special case for boolean
-					switch (type.name.substring(6)) {
-						case 'bool':
-						case 'int':
-							return true
-						default:
-							return false
-					}
-				} else {
-					return cls === type
-					// all other native types are only subclasses of themselves
-				} 
+                // check for native classes
+                if (!['bool', 'dict', 'float', 'int', 'list',
+                    'tuple', 'slice', 'bytes', 'bytearray', 
+                    'type', 'str', 'set', 'range', 
+                    'frozenset', 'complex'].includes(cls.name.substring(6))) {
+                    throw new exceptions.TypeError.$pyclass("issubclass() arg 1 must be a class")
+                }
+                if (!['bool', 'dict', 'float', 'int', 'list',
+                    'tuple', 'slice', 'bytes', 'bytearray', 
+                    'type', 'str', 'set', 'range', 
+                    'frozenset', 'complex'].includes(type.name.substring(6))) {
+                    throw new exceptions.TypeError.$pyclass("issubclass() arg 2 must be a class or tuple of classes")
+                }
+                if (cls.name.substring(6) === 'bool') {// special case for boolean
+                    switch (type.name.substring(6)) {
+                        case 'bool':
+                        case 'int':
+                            return true
+                        default:
+                            return false
+                    }
+                } else {
+                    return cls === type
+                    // all other native types are only subclasses of themselves
+                } 
             case 'object':
-				if (type === null || type === types.NoneType) {
+                if (type === null || type === types.NoneType) {
                     return cls === null
                 } else {
                     var mro = cls.mro()
