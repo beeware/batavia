@@ -156,7 +156,7 @@ types.issubclass = function(cls, type) {
                 } else {
                     return cls === type
                     // all other native types are only subclasses of themselves
-                } 
+                }
             case 'object':
                 if (type === null || type === types.NoneType) {
                     return cls === null
