@@ -145,7 +145,7 @@ types.issubclass = function(cls, type) {
                 if (!typesList.includes(type.name.substring(6))) {
                     throw new exceptions.TypeError.$pyclass('issubclass() arg 2 must be a class or tuple of classes')
                 }
-                if (cls.name.substring(6) === 'bool') {// special case for boolean
+                if (cls.name.substring(6) === 'bool') { // special case for boolean
                     switch (type.name.substring(6)) {
                         case 'bool':
                         case 'int':
