@@ -33,8 +33,14 @@ function chr(args, kwargs) {
     if (!types.isinstance(args[0], types.Int)) {
         throw new exceptions.TypeError.$pyclass('an integer is required (got type ' + type_name(args[0]) + ')')
     }
-    if (args[0].__ge__(new types.Int(0).MAX_INT) || args[0].__le__(new types.Int(0).MIN_INT.__add__(new types.Int(1)))) {
+    if (args[0].__ge__(new types.Int(0).MAX_INT.__add__(new types.Int(1))) || args[0].__le__(new types.Int(0).MIN_INT.__sub__(new types.Int(1)))) {
         throw new exceptions.OverflowError.$pyclass('Python int too large to convert to C long')
+    }
+    if (args[0].__ge__(new types.Int(0).MAX_INT)) {
+        throw new exceptions.OverflowError.$pyclass('signed integer is greater than maximum')
+    }
+    if (args[0].__le__(new types.Int(0).MIN_INT.__add__(new types.Int(1)))) {
+        throw new exceptions.OverflowError.$pyclass('signed integer is less than minimum')
     }
     if (args[0].__lt__(new types.Int(0))) {
         throw new exceptions.ValueError.$pyclass('chr() arg not in range(0xXXXXXXXX)')
