@@ -132,28 +132,21 @@ types.issubclass = function(cls, type) {
     } else {
 		switch (typeof cls) {
             case 'function':
-				var typeNames = [
-					'bool', 'dict', 'float', 'int', 'list',
+				// check for native classes
+				if (!['bool', 'dict', 'float', 'int', 'list',
 					'tuple', 'slice', 'bytes', 'bytearray', 
 					'type', 'str', 'set', 'range', 
-					'frozenset', 'complex'
-					]
-				var clsName = cls.name
-                if (clsName.startswith('bound ')) {
-                    clsName = clsName.substring(6)
-                }
-				if (!typeNames.includes(clsName)) {
+					'frozenset', 'complex'].includes(cls.name.substring(6))) {
 					throw new exceptions.TypeError.$pyclass("issubclass() arg 1 must be a class")
 				}
-				var typeName = type.name
-                if (typeName.startswith('bound ')) {
-                    typeName = typeName.substring(6)
-                }
-				if (!typeNames.includes(typeName)) {
+				if (!['bool', 'dict', 'float', 'int', 'list',
+					'tuple', 'slice', 'bytes', 'bytearray', 
+					'type', 'str', 'set', 'range', 
+					'frozenset', 'complex'].includes(type.name.substring(6))) {
 					throw new exceptions.TypeError.$pyclass("issubclass() arg 2 must be a class or tuple of classes")
 				}
-				if (clsName === 'bool') {// special case for boolean
-					switch (typeName) {
+				if (cls.name.substring(6) === 'bool') {// special case for boolean
+					switch (type.name.substring(6)) {
 						case 'bool':
 						case 'int':
 							return true
@@ -161,7 +154,7 @@ types.issubclass = function(cls, type) {
 							return false
 					}
 				} else {
-					return clsName === typeName
+					return cls === type
 					// all other native types are only subclasses of themselves
 				} 
             case 'object':

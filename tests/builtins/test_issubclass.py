@@ -16,13 +16,13 @@ class IssubclassTests(TranspileTestCase):
 	
 	def test_py_class(self):
 		self.assertCodeExecution("""
-		print(issubclass(bool, int))
-		print(issubclass(list, list))
-		print(issubclass(tuple, tuple))
-		print(issubclass(int, str))
-		print(issubclass(int, bool))
-		print(issubclass(tuple, frozenset))
-		print(issubclass(bool, (str, int)))
+		print("bool is subclass of int: " + issubclass(bool, int))
+		print("list is subclass of list: " + issubclass(list, list))
+		print("tuple is subclass of tuple: " + issubclass(tuple, tuple))
+		print("int is subclass of str: " + issubclass(int, str))
+		print("int is subclass of bool: " + issubclass(int, bool))
+		print("tuple is subclass of frozenset: " + issubclass(tuple, frozenset))
+		print("bool is subclass of str or int: " + issubclass(bool, (str, int)))
 		""")	
 
 
