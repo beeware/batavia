@@ -140,10 +140,10 @@ types.issubclass = function(cls, type) {
                     'frozenset', 'complex'
                 ]
                 if (!typesList.includes(cls.name.substring(6))) {
-                    throw new exceptions.TypeError.$pyclass("issubclass() arg 1 must be a class")
+                    throw new exceptions.TypeError.$pyclass('issubclass() arg 1 must be a class')
                 }
                 if (!typesList.includes(type.name.substring(6))) {
-                    throw new exceptions.TypeError.$pyclass("issubclass() arg 2 must be a class or tuple of classes")
+                    throw new exceptions.TypeError.$pyclass('issubclass() arg 2 must be a class or tuple of classes')
                 }
                 if (cls.name.substring(6) === 'bool') {// special case for boolean
                     switch (type.name.substring(6)) {
