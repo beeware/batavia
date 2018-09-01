@@ -30,7 +30,7 @@ function pow(args, kwargs) {
         }
 
         // if y is 0 provided z is not 1 or -1, then answer is always 1
-        if (parseInt(y) == 0) {
+        if (parseInt(y) === 0) {
             return 1
         }
 
