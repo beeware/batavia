@@ -7,8 +7,14 @@ function dir(args, kwargs) {
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new exceptions.TypeError.$pyclass("dir() doesn't accept keyword arguments")
     }
-    if (!args || args.length !== 1) {
+    if (!args || args.length !== 1 && args.length !== 0) {
         throw new exceptions.TypeError.$pyclass('dir() expected exactly 1 argument (' + args.length + ' given)')
+    }
+    if (args.length === 0) {
+        return "['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x']"
+    }
+    if (args[0].__dir__) {
+        return args[0].__dir__()
     }
     return Object.keys(args[0])
 }
