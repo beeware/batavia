@@ -48,6 +48,8 @@ Int.prototype.__dir__ = function() {
     }
 }
 
+Int.prototype.__format__ = PyObject.prototype.__format__
+
 /**************************************************
  * Javascript compatibility methods
  **************************************************/
