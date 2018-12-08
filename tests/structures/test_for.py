@@ -58,6 +58,34 @@ class ForLoopTests(TranspileTestCase):
             print('Done.')
             """)
 
+    def test_for_over_iterable_object(self):
+
+        self.assertCodeExecution("""
+            class Test:
+                class TestIterator:
+                    def __init__(self, l):
+                        self.l = l
+                        self.i = 0
+                    def __iter__(self):
+                        return self
+                    def __next__(self):
+                        if self.i >= len(self.l):
+                            raise StopIteration
+                        self.i += 1
+                        return self.l[self.i - 1]
+                def __init__(self, l):
+                    self.l = l
+                def __iter__(self):
+                    return self.TestIterator(self.l)
+            t = Test([1 ,2, 3, 5])
+
+            total = 0
+            for i in iter(t):
+                total = total + i
+                print(i, total)
+            print('Done.')
+            """)
+
         self.assertCodeExecution("""
             class Test:
                 def __init__(self, l):
@@ -66,7 +94,7 @@ class ForLoopTests(TranspileTestCase):
                     return len(self.l)
                 def __getitem__(self, index):
                     return self.l[index]
-            t = Test([1 ,2, 3, 5])
+            t = Test([1 ,2, 3, 6])
 
             total = 0
             for i in t:
