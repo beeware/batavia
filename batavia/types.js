@@ -14,6 +14,7 @@ types['JSDict'] = require('./types/JSDict')
 types['Property'] = require('./types/Property')
 
 types['SetIterator'] = require('./types/SetIterator')
+types['SequenceIterator'] = require('./types/SequenceIterator')
 
 types['Bool'] = require('./types/Bool')
 types['Float'] = require('./types/Float').Float
