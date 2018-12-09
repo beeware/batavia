@@ -6,7 +6,7 @@ var callables = require('../core').callables
 var Int = require('./Int')
 
 /**************************************************
- * List Iterator
+ * Sequence Iterator
  **************************************************/
 
 function SequenceIterator(data) {
@@ -18,7 +18,7 @@ function SequenceIterator(data) {
     this.length = len.valueOf()
 }
 
-create_pyclass(SequenceIterator, 'sequence_iterator')
+create_pyclass(SequenceIterator, 'iterator')
 
 SequenceIterator.prototype.__iter__ = function() {
     return this
@@ -36,7 +36,7 @@ SequenceIterator.prototype.__next__ = function() {
 }
 
 SequenceIterator.prototype.__str__ = function() {
-    return '<sequence_iterator object at 0x99999999>'
+    return '<iterator object at 0x99999999>'
 }
 
 /**************************************************
