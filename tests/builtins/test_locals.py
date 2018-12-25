@@ -9,7 +9,6 @@ class BuiltinLocalsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "locals"
 
     not_implemented = [
-        'test_noargs',
         'test_bool',
         'test_bytearray',
         'test_bytes',
@@ -20,7 +19,6 @@ class BuiltinLocalsFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_frozenset',
         'test_int',
         'test_list',
-        'test_None',
         'test_NotImplemented',
         'test_range',
         'test_set',
