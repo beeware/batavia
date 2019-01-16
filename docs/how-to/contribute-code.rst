@@ -39,14 +39,14 @@ Then create a virtual environment and install Batavia into it:
    $ python3 -m venv venv
    $ . venv/bin/activate
    $ cd batavia
-   $ pip install -e .
+   $ pip3 install -e .
 
  * For Windows (assuming Python 3.4)::
 
    > py -3.4 -m venv venv
    > venv\Scripts\activate
    > cd batavia
-   > pip install -e .
+   > pip3 install -e .
 
 Install Node.JS
 ^^^^^^^^^^^^^^^
