@@ -116,7 +116,7 @@ always use a text test runner by typing:
 
 .. code-block:: bash
 
-    $ python setup.py test
+    $ python3 setup.py test
 
 This will take at least several minutes, and can take upwards of 1.5hrs on most
 modern PCs/laptops. It will also generate around 10000 lines of console output -
