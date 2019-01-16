@@ -22,7 +22,7 @@ Go to the documentation folder: ::
 
 Install Sphinx with the helpers and extensions we use: ::
 
-    $ pip install -r requirements_docs.txt
+    $ pip3 install -r requirements_docs.txt
 
 Create the static files: ::
 
