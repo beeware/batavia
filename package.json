@@ -53,7 +53,7 @@
     "bignumber.js": "2.4.0",
     "buffer": "5.0.0",
     "moment": "~> 2.19.3",
-    "moment-timezone": "0.5.10"
+    "moment-timezone": "0.5.10",
     "webpack": "^4.28.4",
   }
 }
