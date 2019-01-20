@@ -29,24 +29,25 @@ def bytecode(sourcefile):
         'filename': sourcefile
     }
 
+
 def home(request):
     ctx = {
         'modules': {
-            'sample': bytecode('sample.py'),
-            'other': bytecode('other.py'),
+            'sample': bytecode('testserver/sample.py'),
+            'other': bytecode('testserver/other.py'),
             'pystone': bytecode(pystone.__file__),
             'submodule': {
-                'init': bytecode('submodule/__init__.py'),
-                'modulea': bytecode('submodule/modulea.py'),
-                'moduleb': bytecode('submodule/moduleb.py'),
-                'modulec': bytecode('submodule/modulec.py'),
+                'init': bytecode('testserver/submodule/__init__.py'),
+                'modulea': bytecode('testserver/submodule/modulea.py'),
+                'moduleb': bytecode('testserver/submodule/moduleb.py'),
+                'modulec': bytecode('testserver/submodule/modulec.py'),
                 'moduled': {
-                    'init': bytecode('submodule/moduled/__init__.py'),
-                    'submoduled': bytecode('submodule/moduled/submoduled.py'),
+                    'init': bytecode('testserver/submodule/moduled/__init__.py'),
+                    'submoduled': bytecode('testserver/submodule/moduled/submoduled.py'),
                 },
                 'subsubmodule': {
-                    'init': bytecode('submodule/subsubmodule/__init__.py'),
-                    'submodulea': bytecode('submodule/subsubmodule/submodulea.py'),
+                    'init': bytecode('testserver/submodule/subsubmodule/__init__.py'),
+                    'submodulea': bytecode('testserver/submodule/subsubmodule/submodulea.py'),
                 }
             }
         }
