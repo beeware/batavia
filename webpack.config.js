@@ -1,12 +1,14 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-var cachingDisabled = process.env.DISABLE_WEBPACK_CACHE !== undefined
+var cachingDisabled = process.env.DISABLE_WEBPACK_CACHE !== undefined;
 
-var javascriptLoaders = [{ loader: 'cache-loader' }, { loader: 'babel-loader' }]
+var javascriptLoaders = [{ loader: 'cache-loader' }, { loader: 'babel-loader' }];
+
 
 if (cachingDisabled) {
-    console.log('Caching is disabled.')
+    console.log('Caching is disabled.');
     javascriptLoaders.shift()
 } else {
     console.log('Caching is enabled.')
@@ -14,7 +16,12 @@ if (cachingDisabled) {
 
 module.exports = {
     entry: {
-        'batavia': './batavia/batavia.js'
+        'batavia': './batavia/batavia.js',
+        'codemirror': [
+            './node_modules/codemirror/lib/codemirror.js',
+            './node_modules/codemirror/lib/codemirror.css',
+            './node_modules/codemirror/mode/python/python.js'
+            ]
     },
     watchOptions: {
         aggregateTimeout: 300,
@@ -24,12 +31,17 @@ module.exports = {
         path: path.join(__dirname, './dist'),
         filename: '[name].js',
         library: 'batavia',
-        libraryTarget: 'umd'
+        libraryTarget: 'umd',
+        sourceMapFilename: "[name].js.map"
     },
+    devtool: "eval-source-map",
     target: 'web',
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoEmitOnErrorsPlugin()
+        new webpack.NoEmitOnErrorsPlugin(),
+        new MiniCssExtractPlugin({
+            filename: '[name].css'
+        })
     ],
     resolve: { symlinks: false },
     module: {
@@ -38,7 +50,16 @@ module.exports = {
                 test: /\.js$/,
                 use: javascriptLoaders,
                 exclude: '/node_modules/'
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    {
+                        loader: MiniCssExtractPlugin.loader
+                    },
+                    "css-loader"
+                    ]
             }
         ]
     }
-}
+};
