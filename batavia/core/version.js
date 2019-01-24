@@ -9,6 +9,8 @@ magic_map[String.fromCharCode(248, 12, 13, 10)] = [[3, 5], [0xA, 0]]
 magic_map[String.fromCharCode(22, 13, 13, 10)] = [[3, 5], [0xF]]
 magic_map[String.fromCharCode(23, 13, 13, 10)] = [[3, 5, 3], [0xF]]
 magic_map[String.fromCharCode(51, 13, 13, 10)] = [[3, 6, 2], [0xF]]
+magic_map[String.fromCharCode()] = [[3, 7], [0xF]]
+magic_map[String.fromCharCode()] = [[3, 8], [0xF]]
 
 var pattern = /^(\d+(\.\d+)*)((a|b|rc)(\d+))?$/
 
