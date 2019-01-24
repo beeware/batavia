@@ -19,7 +19,7 @@ setup(
     author_email='russell@keith-magee.com',
     url=data['homepage'],
     packages=find_packages(exclude=['docs', 'tests']),
-    python_requires='>=3.4, <3.7',
+    python_requires='>=3.5',
     license='New BSD',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
@@ -27,7 +27,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3 :: Only',

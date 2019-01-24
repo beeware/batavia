@@ -35,11 +35,11 @@ Quick Start
 Prerequisites
 ~~~~~~~~~~~~~~
 
-Batavia requires a Python 3.4 or Python 3.5 installation, and a virtualenv to
-run it all in.  Python 3.6 is not yet supported.
+Batavia requires a Python 3.5 or Python 3.6 installation, and a virtualenv to
+run it all in.  Python 3.7 runs but is less usable at this point.
 
 You also need to have a recent install of `Node.js <https://nodejs.org>`_
-(from the “stable” 6.X series), and a current version of npm. If
+(from the 10.x LTR series), and a current version of npm. If
 your version of npm is outdated, you can update it using the command::
 
 $ npm install npm@latest -g
@@ -66,7 +66,7 @@ Downloading and Installing
 Linux/Unix/Mac
 --------------
 Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command
-below with the path to your Python 3.4 or 3.5 installation. ::
+below with the path to your Python 3.5 or 3.6 installation. ::
 
 $ python3 --version
 $ python3 -m venv venv
@@ -97,7 +97,9 @@ Type in the following commands in your terminal ::
 
 3. Install `Node.js <https://nodejs.org>`_.
 
-You must have a recent version of Node; we do our testing using v6.9.1. Once you've installed Node, you can use it to install the JavaScript dependencies and compile the Batavia library::
+You must have a recent version of Node; we do our testing using v10.x. Once
+you've installed Node, you can use it to install the JavaScript dependencies
+and compile the Batavia library::
 
 $ npm install
 
