@@ -18,7 +18,7 @@ instead of using the official PyBee repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
-have Python 3 (currently supported versions are 3.4 to 3.6).
+have Python 3 (currently supported versions are 3.5 and 3.6).
 
 Batavia codebase
 ^^^^^^^^^^^^^^^^
@@ -52,7 +52,7 @@ Install Node.JS
 ^^^^^^^^^^^^^^^
 
 Lastly, you'll need to install `Node.js`_. You need to have a recent version
-of Node; we test using v6.9.1. Once you've installed node, you can use it to
+of Node; we test using v10.x. Once you've installed node, you can use it to
 install Batavia's JavaScript dependencies, and compile the Batavia library:
 
 .. code-block:: bash
@@ -70,17 +70,17 @@ Raspbian/Raspberry Pi
 This has been successfully tested on Raspbian GNU/Linux 7 (wheezy), based on
 instructions from `Procrastinative Ninja`_ and `aeberhardo`_.
 
-Raspbian for Raspberry Pi 1 does not come with Python 3.4.  (Ubuntu 16.04 for Raspberry
+Raspbian for Raspberry Pi 1 does not come with Python 3.6.  (Ubuntu 16.04 for Raspberry
 Pi is now available, and has new enough packages as described above.) To install Python
-3.4, download the source code and then build it:
+3.6, download the source code and then build it:
 
 .. code-block:: bash
 
 	$ cd /tmp
-	$ wget https://www.python.org/ftp/python/3.4.8/Python-3.4.8.tgz
-	$ tar xvzf Python-3.4.8.tgz
-	$ cd Python-3.4.8/
-	$ ./configure --prefix=/opt/python3.4
+	$ wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
+	$ tar xvzf Python-3.6.8.tgz
+	$ cd Python-3.6.8/
+	$ ./configure --prefix=/opt/python3.6
 	$ make
 	$ sudo make install
 
