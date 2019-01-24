@@ -5,7 +5,7 @@ import tempfile
 
 from django.conf.urls import url
 from django.shortcuts import render
-from test import pystone
+from testserver.test import pystone
 
 
 def bytecode(sourcefile):
