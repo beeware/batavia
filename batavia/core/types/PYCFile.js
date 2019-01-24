@@ -1,4 +1,5 @@
 var constants = require('../constants')
+var version = require('../version')
 
 /*************************************************************************
  * A C-FILE like object
@@ -11,10 +12,20 @@ var PYCFile = function(data) {
         })
     }
     Object.call(this)
-    this.magic = data.slice(0, 4)
-    this.modtime = data.slice(4, 8)
-    this.size = data.slice(8, 12)
-    this.data = data.slice(12)
+
+    // Support PEP 552 for 4 32-bt words in Python 3.7
+    if (!version.earlier('3.7')) {
+        this.magic = data.slice(0, 4);
+        this.bitfield = data.slice(4, 8);
+        this.modtime = data.slice(8, 12);
+        this.size = data.slice(12, 16);
+        this.data = data.slice(16);
+    } else {
+        this.magic = data.slice(0, 4);
+        this.modtime = data.slice(4, 8);
+        this.size = data.slice(8, 12);
+        this.data = data.slice(12);
+    }
 
     constants.BATAVIA_MAGIC = String.fromCharCode(
         this.magic[0],
