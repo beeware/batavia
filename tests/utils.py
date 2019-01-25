@@ -51,9 +51,9 @@ def setUpSuite():
     _output_dir = tempfile.mkdtemp(dir=TESTS_DIR)
 
     if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
-        print("building 'batavia.js'")
+        print("building 'batavia.js' for development")
         proc = subprocess.Popen(
-            [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail"],
+            [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail", "-d"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
