@@ -14,7 +14,7 @@ var PYCFile = function(data) {
     Object.call(this)
 
     // Support PEP 552 for 4 32-bt words in Python 3.7
-    if (!version.earlier('3.7')) {
+    if (!version.later('3.6')) {
         this.magic = data.slice(0, 4);
         this.bitfield = data.slice(4, 8);
         this.modtime = data.slice(8, 12);
