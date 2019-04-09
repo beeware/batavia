@@ -19,7 +19,7 @@ setup(
     author_email='russell@keith-magee.com',
     url=data['homepage'],
     packages=find_packages(exclude=['docs', 'tests']),
-    python_requires='>=3.4, <=3.6',
+    python_requires='>=3.4, <3.7',
     license='New BSD',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
