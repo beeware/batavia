@@ -10,11 +10,12 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "python compile_stdlib.py",
     "prepublishOnly": "pandoc --from=rst --to=markdown_github README.rst -o README.md",
-    "build": "node_modules/.bin/webpack --progress",
-    "build:noCache": "DISABLE_WEBPACK_CACHE=true node_modules/.bin/webpack --progress",
-    "watch": "node_modules/.bin/webpack --progress --watch",
-    "serve": "node_modules/.bin/webpack-dev-server --inline --hot --port 3000",
-    "lint": "node_modules/.bin/eslint batavia",
+    "dev": "webpack --progress -d",
+    "build": "webpack --progress -p",
+    "build:noCache": "DISABLE_WEBPACK_CACHE=true webpack --progress",
+    "watch": "webpack --progress --watch",
+    "serve": "webpack-dev-server --inline --hot --port 3000",
+    "lint": "eslint batavia",
     "python": "./run_in_batavia.js"
   },
   "repository": {
@@ -32,27 +33,32 @@
   "homepage": "http://pybee.org/batavia",
   "devDependencies": {
     "@pybee/ouroboros": "~3.4.1-dev.5",
-    "babel-core": "6.18.2",
-    "babel-loader": "6.2.8",
-    "babel-preset-env": "^1.4.0",
-    "cache-loader": "^1.0.3",
+    "codemirror": "^5.42.2",
+    "css-loader": "^2.1.0",
     "eslint": "3.9.1",
     "eslint-config-standard": "6.2.1",
     "eslint-loader": "1.6.1",
-    "eslint-plugin-import": "2.1.0",
+    "eslint-plugin-import": "^2.14.0",
     "eslint-plugin-jsx-a11y": "2.2.3",
     "eslint-plugin-promise": "3.4.2",
     "eslint-plugin-react": "6.6.0",
     "eslint-plugin-standard": "2.0.1",
-    "webpack-dev-server": "2.3.0"
+    "webpack-dev-server": "^3.1.14"
   },
-  "dev": "webpack-dev-server",
   "dependencies": {
-    "base64-js": "1.2.0",
+    "ajv": "^6.7.0",
+    "@babel/core": "^7.2.2",
+    "@babel/preset-env": "^7.0.0",
+    "base64-js": "^1.3.0",
     "bignumber.js": "2.4.0",
     "buffer": "5.0.0",
+    "babel-loader": "^8.0.5",
+    "cache-loader": "^1.0.3",
     "moment": "~> 2.19.3",
     "moment-timezone": "0.5.10",
-    "webpack": "2.2.1"
+    "webpack": "^4.28.4",
+    "webpack-cli": "^3.2.1",
+    "webpack-merge": "^4.2.1",
+    "mini-css-extract-plugin": "^0.5.0"
   }
 }

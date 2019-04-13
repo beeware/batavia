@@ -34,7 +34,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 )
 
-MIDDLEWARE_CLASSES = ()
+MIDDLEWARE = [
+]
 
 ROOT_URLCONF = 'urls'
 
