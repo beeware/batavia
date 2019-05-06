@@ -77,7 +77,7 @@ def_op('DUP_TOP', 4)
 def_op('DUP_TOP_TWO', 5)
 
 // Introduced in Python 3.8
-def_op('ROT_FOUR', 4)  // New in 3.8
+def_op('ROT_FOUR', 6)
 
 def_op('NOP', 9)
 dis.NOP = 9 // TODO why does this require special handling?
