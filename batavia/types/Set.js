@@ -373,6 +373,10 @@ Set.prototype.__iand__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'set' and '" + type_name(other) + "'")
 }
 
+Set.prototype.__imul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'set' and '" + type_name(other) + "'")
+}
+
 Set.prototype.__ixor__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')

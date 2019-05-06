@@ -45,4 +45,7 @@ class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'complex'
 
     not_implemented = [
+        'test_power_complex',
+        'test_power_float',
+        'test_power_int',
     ]
