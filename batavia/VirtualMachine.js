@@ -9,9 +9,51 @@ var version = require('./core').version
 var exceptions = require('./core').exceptions
 var native = require('./core').native
 var callables = require('./core').callables
+var type_name = require('./core').type_name
 var dis = require('./modules/dis')
 var marshal = require('./modules/marshal')
 var sys = require('./modules/sys')
+
+var inplace_operator = function(name, magic_method, fallback_magic_method, left, right, default_operation) {
+    var result
+    if (left === null) {
+        result = types.NoneType[magic_method](right)
+    } else if (left[magic_method]) {
+        if (left[magic_method].__call__) {
+            result = left[magic_method].__call__([left, right])
+        } else {
+            result = left[magic_method](right)
+        }
+        if (result === null) {
+            result = left
+        }
+    } else if (left[fallback_magic_method]) {
+        try {
+            if (left[fallback_magic_method].__call__) {
+                result = left[fallback_magic_method].__call__([left, right])
+            } else {
+                result = left[fallback_magic_method](right)
+            }
+            if (result === null) {
+                result = left
+            }
+        } catch (error) {
+            if (error instanceof exceptions.TypeError.$pyclass &&
+                error.msg.startswith('unsupported operand type(s) for ')) {
+                throw new exceptions.TypeError.$pyclass(
+                    error.msg.replace(
+                        /^(unsupported operand type\(s\) for )([^:]*)(:)/,
+                        '$1' + name + '$3'))
+            } else {
+                throw error
+            }
+        }
+    } else {
+        left = default_operation(left, right)
+        result = left
+    }
+    return result
+}
 
 var VirtualMachine = function(args) {
     if (args.loader === undefined) {
@@ -351,253 +393,85 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                 case 'FLOOR_DIVIDE':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__ifloordiv__(items[1])
-                        } else if (items[0].__ifloordiv__) {
-                            if (items[0].__ifloordiv__.__call__) {
-                                result = items[0].__ifloordiv__.__call__(items)
-                            } else {
-                                result = items[0].__ifloordiv__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] /= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '//=', '__ifloordiv__', '__floordiv__', items[0], items[1], (l, r) => l / r)
                         this.push(result)
                     }
                 case 'TRUE_DIVIDE':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__itruediv__(items[1])
-                        } else if (items[0].__itruediv__) {
-                            if (items[0].__itruediv__.__call__) {
-                                result = items[0].__itruediv__.__call__(items)
-                            } else {
-                                result = items[0].__itruediv__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] /= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '/=', '__itruediv__', '__truediv__', items[0], items[1], (l, r) => l / r)
                         this.push(result)
                     }
                 case 'ADD':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__iadd__(items[1])
-                        } else if (items[0].__iadd__) {
-                            if (items[0].__iadd__.__call__) {
-                                result = items[0].__iadd__.__call__(items)
-                            } else {
-                                result = items[0].__iadd__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] += items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '+=', '__iadd__', '__add__', items[0], items[1], (l, r) => l + r)
                         this.push(result)
                     }
                 case 'SUBTRACT':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__isub__(items[1])
-                        } else if (items[0].__isub__) {
-                            if (items[0].__isub__.__call__) {
-                                result = items[0].__isub__.__call__(items)
-                            } else {
-                                result = items[0].__isub__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] -= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '-=', '__isub__', '__sub__', items[0], items[1], (l, r) => l - r)
                         this.push(result)
                     }
                 case 'MULTIPLY':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__imul__(items[1])
-                        } else if (items[0].__imul__) {
-                            if (items[0].__imul__.__call__) {
-                                result = items[0].__imul__.__call__(items)
-                            } else {
-                                result = items[0].__imul__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] *= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '*=', '__imul__', '__mul__', items[0], items[1], (l, r) => l * r)
                         this.push(result)
                     }
                 case 'MODULO':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__imod__(items[1])
-                        } else if (items[0].__imod__) {
-                            if (items[0].__imod__.__call__) {
-                                result = items[0].__imod__.__call__(items)
-                            } else {
-                                result = items[0].__imod__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] %= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '%=', '__imod__', '__mod__', items[0], items[1], (l, r) => l % r)
                         this.push(result)
                     }
                 case 'POWER':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__ipow__(items[1])
-                        } else if (items[0].__ipow__) {
-                            if (items[0].__ipow__.__call__) {
-                                result = items[0].__ipow__.__call__(items)
-                            } else {
-                                result = items[0].__ipow__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] = Math.pow(items[0], items[1])
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '** or pow()', '__ipow__', '__pow__', items[0], items[1], (l, r) => Math.pow(l, r))
                         this.push(result)
                     }
                 case 'LSHIFT':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__ilshift__(items[1])
-                        } else if (items[0].__ilshift__) {
-                            if (items[0].__ilshift__.__call__) {
-                                result = items[0].__ilshift__.__call__(items)
-                            } else {
-                                result = items[0].__ilshift__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] <<= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '<<=', '__ilshift__', '__lshift__', items[0], items[1], (l, r) => l << r)
                         this.push(result)
                     }
                 case 'RSHIFT':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__irshift__(items[1])
-                        } else if (items[0].__irshift__) {
-                            if (items[0].__irshift__.__call__) {
-                                result = items[0].__irshift__.__call__(items)
-                            } else {
-                                result = items[0].__irshift__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] >>= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '>>=', '__irshift__', '__rshift__', items[0], items[1], (l, r) => l >> r)
                         this.push(result)
                     }
                 case 'AND':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__iand__(items[1])
-                        } else if (items[0].__iand__) {
-                            if (items[0].__iand__.__call__) {
-                                result = items[0].__iand__.__call__(items)
-                            } else {
-                                result = items[0].__iand__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] &= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '&=', '__iand__', '__and__', items[0], items[1], (l, r) => l & r)
                         this.push(result)
                     }
                 case 'XOR':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__ixor__(items[1])
-                        } else if (items[0].__ixor__) {
-                            if (items[0].__ixor__.__call__) {
-                                result = items[0].__ixor__.__call__(items)
-                            } else {
-                                result = items[0].__ixor__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] ^= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '^=', '__ixor__', '__xor__', items[0], items[1], (l, r) => l ^ r)
                         this.push(result)
                     }
                 case 'OR':
                     return function() {
                         var items = this.popn(2)
-                        var result
-                        if (items[0] === null) {
-                            result = types.NoneType.__ior__(items[1])
-                        } else if (items[0].__ior__) {
-                            if (items[0].__ior__.__call__) {
-                                result = items[0].__ior__.__call__(items)
-                            } else {
-                                result = items[0].__ior__(items[1])
-                            }
-                            if (result === null) {
-                                result = items[0]
-                            }
-                        } else {
-                            items[0] |= items[1]
-                            result = items[0]
-                        }
+                        var result = inplace_operator(
+                            '|=', '__ior__', '__or__', items[0], items[1], (l, r) => l | r)
                         this.push(result)
                     }
                 default:

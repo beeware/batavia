@@ -886,58 +886,6 @@ Int.prototype.__or__ = function(other) {
 }
 
 /**************************************************
- * Inplace operators
- **************************************************/
-
-Int.prototype.__ifloordiv__ = function(other) {
-    return utils.inplace_call('__floordiv__', '//=', this, other)
-}
-
-Int.prototype.__itruediv__ = function(other) {
-    return utils.inplace_call('__truediv__', '/=', this, other)
-}
-
-Int.prototype.__iadd__ = function(other) {
-    return utils.inplace_call('__add__', '+=', this, other)
-}
-
-Int.prototype.__isub__ = function(other) {
-    return utils.inplace_call('__sub__', '-=', this, other)
-}
-
-Int.prototype.__imul__ = function(other) {
-    return utils.inplace_call('__mul__', '*=', this, other)
-}
-
-Int.prototype.__imod__ = function(other) {
-    return utils.inplace_call('__mod__', '%=', this, other)
-}
-
-Int.prototype.__ipow__ = function(other) {
-    return this.__pow__(other)
-}
-
-Int.prototype.__ilshift__ = function(other) {
-    return utils.inplace_call('__lshift__', '<<=', this, other)
-}
-
-Int.prototype.__irshift__ = function(other) {
-    return utils.inplace_call('__rshift__', '>>=', this, other)
-}
-
-Int.prototype.__iand__ = function(other) {
-    return utils.inplace_call('__and__', '&=', this, other)
-}
-
-Int.prototype.__ixor__ = function(other) {
-    return utils.inplace_call('__xor__', '^=', this, other)
-}
-
-Int.prototype.__ior__ = function(other) {
-    return utils.inplace_call('__or__', '|=', this, other)
-}
-
-/**************************************************
  * Methods
  **************************************************/
 

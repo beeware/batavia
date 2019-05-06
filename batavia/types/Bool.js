@@ -683,68 +683,6 @@ Bool.prototype.__or__ = function(other) {
 }
 
 /**************************************************
- * Inplace operators
- **************************************************/
-
-Bool.prototype.__ifloordiv__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        return utils.inplace_call('__floordiv__', '//=', this, other)
-    }
-}
-
-Bool.prototype.__itruediv__ = function(other) {
-    return utils.inplace_call('__truediv__', '/=', this, other)
-}
-
-Bool.prototype.__iadd__ = function(other) {
-    return utils.inplace_call('__add__', '+=', this, other)
-}
-
-Bool.prototype.__isub__ = function(other) {
-    return utils.inplace_call('__sub__', '-=', this, other)
-}
-
-Bool.prototype.__imul__ = function(other) {
-    return utils.inplace_call('__mul__', '*=', this, other)
-}
-
-Bool.prototype.__imod__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        return utils.inplace_call('__mod__', '%=', this, other)
-    }
-}
-
-Bool.prototype.__ipow__ = function(other) {
-    return utils.inplace_call('__pow__', '** or pow()', this, other)
-}
-
-Bool.prototype.__ilshift__ = function(other) {
-    return utils.inplace_call('__lshift__', '<<=', this, other)
-}
-
-Bool.prototype.__irshift__ = function(other) {
-    return utils.inplace_call('__rshift__', '>>=', this, other)
-}
-
-Bool.prototype.__iand__ = function(other) {
-    return utils.inplace_call('__and__', '&=', this, other)
-}
-
-Bool.prototype.__ixor__ = function(other) {
-    return utils.inplace_call('__xor__', '^=', this, other)
-}
-
-Bool.prototype.__ior__ = function(other) {
-    return utils.inplace_call('__or__', '|=', this, other)
-}
-
-/**************************************************
  * Methods
  **************************************************/
 
