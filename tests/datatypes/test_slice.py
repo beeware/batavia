@@ -1,7 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
 
-import unittest
-
 
 class SliceTests(TranspileTestCase):
     def test_slice_list(self):
@@ -213,6 +211,7 @@ class UnarySliceOperationTests(UnaryOperationTestCase, TranspileTestCase):
 
 class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'slice'
+
 
 class InplaceSliceOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'slice'
