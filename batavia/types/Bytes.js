@@ -365,64 +365,6 @@ Bytes.prototype.__or__ = function(other) {
 }
 
 /**************************************************
- * Inplace operators
- **************************************************/
-
-Bytes.prototype.__ifloordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'bytes' and '" + type_name(other) + "'")
-    }
-}
-
-Bytes.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__itruediv__ has not been implemented')
-}
-
-Bytes.prototype.__iadd__ = function(other) {
-    return this['__add__'](other)
-}
-
-Bytes.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__isub__ has not been implemented')
-}
-
-Bytes.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__imul__ has not been implemented')
-}
-
-Bytes.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__imod__ has not been implemented')
-}
-
-Bytes.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ipow__ has not been implemented')
-}
-
-Bytes.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ilshift__ has not been implemented')
-}
-
-Bytes.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__irshift__ has not been implemented')
-}
-
-Bytes.prototype.__iand__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ixor__ has not been implemented')
-}
-
-Bytes.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytes.__ior__ has not been implemented')
-}
-
-/**************************************************
  * Methods
  **************************************************/
 

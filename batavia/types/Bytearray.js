@@ -217,18 +217,6 @@ Bytearray.prototype.__or__ = function(other) {
  * Inplace operators
  **************************************************/
 
-Bytearray.prototype.__idiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__idiv__ has not been implemented')
-}
-
-Bytearray.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__ifloordiv__ has not been implemented')
-}
-
-Bytearray.prototype.__itruediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__itruediv__ has not been implemented')
-}
-
 Bytearray.prototype.__iadd__ = function(other) {
     let Buffer = require('buffer').Buffer
     let types = require('../types')
@@ -243,42 +231,6 @@ Bytearray.prototype.__iadd__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
     }
-}
-
-Bytearray.prototype.__isub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__isub__ has not been implemented')
-}
-
-Bytearray.prototype.__imul__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__imul__ has not been implemented')
-}
-
-Bytearray.prototype.__imod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__imod__ has not been implemented')
-}
-
-Bytearray.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__ipow__ has not been implemented')
-}
-
-Bytearray.prototype.__ilshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__ilshift__ has not been implemented')
-}
-
-Bytearray.prototype.__irshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__irshift__ has not been implemented')
-}
-
-Bytearray.prototype.__iand__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__iand__ has not been implemented')
-}
-
-Bytearray.prototype.__ixor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__ixor__ has not been implemented')
-}
-
-Bytearray.prototype.__ior__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__ior__ has not been implemented')
 }
 
 /**************************************************

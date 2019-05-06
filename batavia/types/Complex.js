@@ -498,68 +498,6 @@ Complex.prototype.__or__ = function(other) {
 }
 
 /**************************************************
- * Inplace operators
- **************************************************/
-
-Complex.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-}
-
-Complex.prototype.__itruediv__ = function(other) {
-    return __div__(this, other, true)
-}
-
-Complex.prototype.__iadd__ = function(other) {
-    return __add__(this, other, true)
-}
-
-Complex.prototype.__isub__ = function(other) {
-    return __sub__(this, other, true)
-}
-
-Complex.prototype.__imul__ = function(other) {
-    return __mul__(this, other, true)
-}
-
-Complex.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-}
-
-Complex.prototype.__ipow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Complex.__ipow__ has not been implemented')
-}
-
-Complex.prototype.__ilshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for <<=: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__irshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for >>=: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__iand__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for &=: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__ixor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for ^=: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__ior__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for |=: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-/**************************************************
  * Methods
  **************************************************/
 
