@@ -1,6 +1,6 @@
-.. image:: http://pybee.org/project/projects/bridges/batavia/batavia.png
+.. image:: http://beeware.org/project/projects/bridges/batavia/batavia.png
     :width: 72px
-    :target: https://pybee.org/batavia
+    :target: https://beeware.org/batavia
 
 =======
 Batavia
@@ -14,11 +14,11 @@ Batavia
 .. |pypi-status| image:: https://img.shields.io/pypi/status/batavia.svg
     :target: https://pypi.python.org/pypi/batavia
 .. |license| image:: https://img.shields.io/pypi/l/batavia.svg
-    :target: https://github.com/pybee/batavia/blob/master/LICENSE
+    :target: https://github.com/beeware/batavia/blob/master/LICENSE
 .. |build-status| image:: https://beekeeper.beeware.org/projects/pybee/batavia/shield
     :target: https://beekeeper.beeware.org/projects/pybee/batavia
-.. |gitter| image:: https://badges.gitter.im/pybee/general.svg
-    :target: https://gitter.im/pybee/general
+.. |gitter| image:: https://badges.gitter.im/beeware/general.svg
+    :target: https://gitter.im/beeware/general
 
 
 **Batavia is an early alpha project. If it breaks, you get to keep all the shiny pieces.**
@@ -45,7 +45,7 @@ your version of npm is outdated, you can update it using the command::
 $ npm install npm@latest -g
 
 Check the `Setting up your environment
-<http://pybee.org/contributing/how/first-time/setup/>`_ for configuration help.
+<http://beeware.org/contributing/how/first-time/setup/>`_ for configuration help.
 
 
 Downloading and Installing
@@ -54,9 +54,9 @@ Downloading and Installing
 1. Clone the code repositories
 ::
 
- $ mkdir pybee
- $ cd pybee
- $ git clone https://github.com/pybee/batavia
+ $ mkdir beeware
+ $ cd beeware
+ $ git clone https://github.com/beeware/batavia
 
 2. Setup a virtualenv:
 
@@ -160,19 +160,19 @@ Documentation
 Contributing
 ------------
 
-If you'd like to contribute to Batavia development, our `guide for first time contributors <http://pybee.org/contributing/how/first-time/>`_ will help you get started.
+If you'd like to contribute to Batavia development, our `guide for first time contributors <http://beeware.org/contributing/how/first-time/>`_ will help you get started.
 
-If you experience problems with Batavia, `log them on GitHub <https://github.com/pybee/batavia/issues>`_.
+If you experience problems with Batavia, `log them on GitHub <https://github.com/beeware/batavia/issues>`_.
 
 
 Community
 ---------
 
-Batavia is part of the `BeeWare suite <http://pybee.org>`_. You can talk to the community through:
+Batavia is part of the `BeeWare suite <http://beeware.org>`_. You can talk to the community through:
 
 * `@pybeeware on Twitter <https://twitter.com/pybeeware>`_
 
-* The `pybee/general <https://gitter.im/pybee/general>`_ channel on Gitter.
+* The `beeware/general <https://gitter.im/beeware/general>`_ channel on Gitter.
 
 We foster a welcoming and respectful community as described in our
-`BeeWare Community Code of Conduct <http://pybee.org/community/behavior/>`_.
+`BeeWare Community Code of Conduct <http://beeware.org/community/behavior/>`_.

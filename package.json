@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/pybee/batavia.git"
+    "url": "git://github.com/beeware/batavia.git"
   },
   "keywords": [
     "python"
@@ -28,9 +28,9 @@
   "author": "Russell Keith-Magee",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/pybee/batavia/issues"
+    "url": "https://github.com/beeware/batavia/issues"
   },
-  "homepage": "http://pybee.org/batavia",
+  "homepage": "http://beeware.org/batavia",
   "devDependencies": {
     "@pybee/ouroboros": "~3.4.1-dev.5",
     "codemirror": "^5.42.2",

@@ -30,15 +30,15 @@ Contributing
 If you experience problems with Batavia, `log them on GitHub`_. If you
 want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _BeeWare suite: http://pybee.org
+.. _BeeWare suite: http://beeware.org
 .. _@pybeeware on Twitter: https://twitter.com/pybeeware
-.. _Getting Help: https://pybee.org/community/getting-help/
+.. _Getting Help: https://beeware.org/community/getting-help/
 .. _announcement: https://groups.google.com/forum/#!topic/beeware-users/iUm-EDgypTg
 .. _BeeWare Users: https://groups.google.com/forum/#!forum/beeware-users
 .. _BeeWare Developers: https://groups.google.com/forum/#!forum/beeware-developers
-.. _log them on Github: https://github.com/pybee/batavia/issues
-.. _fork the code: https://github.com/pybee/batavia
-.. _submit a pull request: https://github.com/pybee/batavia/pulls
+.. _log them on Github: https://github.com/beeware/batavia/issues
+.. _fork the code: https://github.com/beeware/batavia
+.. _submit a pull request: https://github.com/beeware/batavia/pulls
 
-.. _Code of Conduct: http://pybee.org/contributing/index.html
+.. _Code of Conduct: http://beeware.org/contributing/index.html
 .. _Russell Keith-Magee: mailto:russell@keith-magee.com
