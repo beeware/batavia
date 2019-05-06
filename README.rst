@@ -26,7 +26,7 @@ Batavia
 Batavia is an implementation of the Python virtual machine, written in
 JavaScript. With Batavia, you can run Python bytecode in your browser.
 
-It honors Python 3.4.4+ syntax and conventions, and allows you to
+It honors Python 3.5+ syntax and conventions, and allows you to
 reference objects and classes defined natively in JavaScript.
 
 Quick Start
