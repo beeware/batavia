@@ -372,25 +372,13 @@ List.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-List.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__div__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'list' and '" + type_name(other) + "'")
-}
-
 List.prototype.__floordiv__ = function(other) {
     var types = require('../types')
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'list' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-List.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'list' and '" + type_name(other) + "'")
 }
 
 List.prototype.__mul__ = function(other) {
@@ -422,7 +410,7 @@ List.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'list' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -444,10 +432,6 @@ List.prototype.__add__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass('can only concatenate list (not "' + type_name(other) + '") to list')
     }
-}
-
-List.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'list' and '" + type_name(other) + "'")
 }
 
 List.prototype.__delattr__ = function(attr) {
@@ -592,26 +576,6 @@ List.prototype.__delitem__ = function(index) {
     } else {
         throw new exceptions.TypeError.$pyclass('list indices must be integers, not ' + type_name(index))
     }
-}
-
-List.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'list' and '" + type_name(other) + "'")
 }
 
 /**************************************************

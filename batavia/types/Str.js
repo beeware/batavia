@@ -314,10 +314,6 @@ Str.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Str.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'str' and '" + type_name(other) + "'")
-}
-
 Str.prototype.__div__ = function(other) {
     return this.__truediv__(other)
 }
@@ -328,12 +324,8 @@ Str.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, [types.Complex])) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'str' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-Str.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__mul__ = function(other) {
@@ -381,10 +373,6 @@ Str.prototype.__add__ = function(other) {
             throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
         }
     }
-}
-
-Str.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'str' and '" + type_name(other) + "'")
 }
 
 Str.prototype.__getitem__ = function(index) {
@@ -485,36 +473,6 @@ Str.prototype.__getitem__ = function(index) {
     } else {
         throw new exceptions.TypeError.$pyclass('string indices must be integers')
     }
-}
-
-Str.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for <<: 'str' and '" + type_name(other) + "'"
-    )
-}
-
-Str.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for >>: 'str' and '" + type_name(other) + "'"
-    )
-}
-
-Str.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for &: 'str' and '" + type_name(other) + "'"
-    )
-}
-
-Str.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for ^: 'str' and '" + type_name(other) + "'"
-    )
-}
-
-Str.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for |: 'str' and '" + type_name(other) + "'"
-    )
 }
 
 /**************************************************

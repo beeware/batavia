@@ -1,6 +1,11 @@
+var operators = require('../operators')
 var exceptions = require('../core').exceptions
 var types = require('../types')
 var type_name = require('../core').type_name
+
+function add(left, right) {
+    return operators['__add__'].apply(left, right)
+}
 
 function sum(args, kwargs) {
     if (arguments.length !== 2) {
@@ -27,25 +32,25 @@ function sum(args, kwargs) {
             return new types.Int(0)
         } else if (types.isinstance(value, types.Str)) {
             // Reject all non-empty strings.
-            return new types.Int(0).__add__(value) // This will throw the correct TypeError.
+            return add(new types.Int(0), value) // This will throw the correct TypeError.
         }
     }
     // Sets need to be handled differently to other iterable types due to use of dict for data.
     if (types.isinstance(value, [types.Set, types.FrozenSet])) {
         return value.data.keys().reduce(function(a, b) {
-            return a.__add__(b)
+            return add(a, b)
         }, new types.Int(0))
     } else if (types.isinstance(value, types.Range)) {
         // This doesn't work yet due to upstream error.
         let retval = types.Int(0)
         for (let i = value.start; i < value.end; i += value.step) {
-            retval = retval.__add__(new types.Int(value.val[i]))
+            retval = add(retval, new types.Int(value.val[i]))
         }
         return retval
     } else if (types.isinstance(value, types.Dict)) {
         // Sum of dict is sum of keys.
         return value.keys().reduce(function(a, b) {
-            return a.__add__(b)
+            return add(a, b)
         }, new types.Int(0))
     } else if (types.isinstance(value, [types.Bytes, types.Bytearray])) {
         // Sum of bytearray is sum of internal value.
@@ -56,14 +61,12 @@ function sum(args, kwargs) {
         // Sum of non-empty byte-strings is the sum of ASCII values of each byte.
         if (value.__len__() > 0) {
             for (let i = 0; i < value.__len__(); i++) {
-                retval = retval.__add__(new types.Int(value.val[i]))
+                retval = add(retval, new types.Int(value.val[i]))
             }
         }
         return retval
     }
-    return value.reduce(function(a, b) {
-        return a.__add__(b)
-    }, new types.Int(0))
+    return value.reduce(add, new types.Int(0))
 }
 
 sum.__doc__ = "sum(iterable[, start]) -> value\n\nReturn the sum of an iterable of numbers (NOT strings) plus the value\nof parameter 'start' (which defaults to 0).  When the iterable is\nempty, return start."

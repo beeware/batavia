@@ -265,10 +265,6 @@ Tuple.prototype.__bool__ = function() {
  * Binary operators
  **************************************************/
 
-Tuple.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'tuple' and '" + type_name(other) + "'")
-}
-
 Tuple.prototype.__div__ = function(other) {
     return this.__truediv__(other)
 }
@@ -279,12 +275,8 @@ Tuple.prototype.__floordiv__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'tuple' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-Tuple.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__mul__ = function(other) {
@@ -315,7 +307,7 @@ Tuple.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'tuple' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -337,10 +329,6 @@ Tuple.prototype.__add__ = function(other) {
 
         return result
     }
-}
-
-Tuple.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'tuple' and '" + type_name(other) + "'")
 }
 
 Tuple.prototype.__delattr__ = function(attr) {
@@ -451,26 +439,6 @@ Tuple.prototype.__getitem__ = function(index) {
         }
         throw new exceptions.TypeError.$pyclass(msg + type_name(index))
     }
-}
-
-Tuple.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'tuple' and '" + type_name(other) + "'")
-}
-
-Tuple.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'tuple' and '" + type_name(other) + "'")
-}
-
-Tuple.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'tuple' and '" + type_name(other) + "'")
-}
-
-Tuple.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'tuple' and '" + type_name(other) + "'")
-}
-
-Tuple.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'tuple' and '" + type_name(other) + "'")
 }
 
 /**************************************************

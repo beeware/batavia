@@ -3,6 +3,7 @@ var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
+var NotImplementedType = require('../core').NotImplementedType
 
 // Helper function defined in Float.js
 var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
@@ -291,9 +292,7 @@ Complex.prototype.__pow__ = function(exponent) {
     // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
     // { do some stuff }
     } else {
-        throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
-        )
+        return new types.NotImplementedType()
     }
 }
 
@@ -329,15 +328,7 @@ function __div__(x, y, inplace) {
         var imag = num_imag / den
         return new Complex(real, imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return new types.NotImplementedType()
     }
 }
 
@@ -379,15 +370,7 @@ function __mul__(x, y, inplace) {
     } else if (types.isinstance(y, [types.List, types.Str, types.Tuple, types.Bytearray, types.Bytes])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'")
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return new types.NotImplementedType()
     }
 }
 
@@ -415,15 +398,7 @@ function __add__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real + y.real, x.imag + y.imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return new NotImplementedType()
     }
 }
 
@@ -447,15 +422,7 @@ function __sub__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real - y.real, x.imag - y.imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return new types.NotImplementedType()
     }
 }
 
@@ -465,36 +432,6 @@ Complex.prototype.__sub__ = function(other) {
 
 Complex.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'complex' object is not subscriptable")
-}
-
-Complex.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for <<: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for >>: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for &: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for ^: 'complex' and '" + type_name(other) + "'"
-    )
-}
-
-Complex.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for |: 'complex' and '" + type_name(other) + "'"
-    )
 }
 
 /**************************************************

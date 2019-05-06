@@ -186,26 +186,14 @@ Set.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Set.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__div__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'set' and '" + type_name(other) + "'")
-}
-
 Set.prototype.__floordiv__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'set' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-Set.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'set' and '" + type_name(other) + "'")
 }
 
 Set.prototype.__mul__ = function(other) {
@@ -217,7 +205,7 @@ Set.prototype.__mul__ = function(other) {
     ])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'set'")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'set' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -227,12 +215,8 @@ Set.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'set' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-Set.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'set' and '" + type_name(other) + "'")
 }
 
 Set.prototype.__sub__ = function(other) {
@@ -249,7 +233,7 @@ Set.prototype.__sub__ = function(other) {
         })
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 Set.prototype.__getitem__ = function(other) {
@@ -267,14 +251,6 @@ Set.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'set' object is not subscriptable")
 }
 
-Set.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'set' and '" + type_name(other) + "'")
-}
-
 Set.prototype.__and__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
@@ -289,7 +265,7 @@ Set.prototype.__and__ = function(other) {
         })
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 Set.prototype.__xor__ = function(other) {
@@ -312,7 +288,7 @@ Set.prototype.__xor__ = function(other) {
         }.bind(this))
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 Set.prototype.__or__ = function(other) {
@@ -331,7 +307,7 @@ Set.prototype.__or__ = function(other) {
         })
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 /**************************************************
@@ -353,7 +329,7 @@ Set.prototype.__isub__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 Set.prototype.__iand__ = function(other) {
@@ -370,7 +346,7 @@ Set.prototype.__iand__ = function(other) {
         })
         return intersection
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 Set.prototype.__imul__ = function(other) {
@@ -398,7 +374,7 @@ Set.prototype.__ixor__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 Set.prototype.__ior__ = function(other) {
@@ -418,7 +394,7 @@ Set.prototype.__ior__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'set' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 /**************************************************

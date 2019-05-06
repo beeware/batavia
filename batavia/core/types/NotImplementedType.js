@@ -134,10 +134,6 @@ NotImplementedType.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-NotImplementedType.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
 NotImplementedType.prototype.__div__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('NotImplementedType.__div__ has not been implemented')
 }
@@ -161,10 +157,6 @@ NotImplementedType.prototype.__mul__ = function(other) {
 
 NotImplementedType.prototype.__mod__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
 }
 
 NotImplementedType.prototype.__sub__ = function(other) {

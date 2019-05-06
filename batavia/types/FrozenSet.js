@@ -189,27 +189,16 @@ FrozenSet.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-FrozenSet.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'frozenset' and '" + type_name(other) + "'")
-}
-
-FrozenSet.prototype.__div__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
-}
-
 FrozenSet.prototype.__floordiv__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'frozenset' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
-FrozenSet.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'frozenset' and '" + type_name(other) + "'")
-}
 
 FrozenSet.prototype.__mul__ = function(other) {
     var types = require('../types')
@@ -220,7 +209,7 @@ FrozenSet.prototype.__mul__ = function(other) {
     ])) {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'frozenset'")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'frozenset' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -230,12 +219,8 @@ FrozenSet.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'frozenset' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-FrozenSet.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'frozenset' and '" + type_name(other) + "'")
 }
 
 FrozenSet.prototype.__sub__ = function(other) {
@@ -252,7 +237,7 @@ FrozenSet.prototype.__sub__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'frozenset' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 FrozenSet.prototype.__getitem__ = function(other) {
@@ -270,14 +255,6 @@ FrozenSet.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'frozenset' object is not subscriptable")
 }
 
-FrozenSet.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'frozenset' and '" + type_name(other) + "'")
-}
-
-FrozenSet.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'frozenset' and '" + type_name(other) + "'")
-}
-
 FrozenSet.prototype.__and__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
@@ -292,7 +269,7 @@ FrozenSet.prototype.__and__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'frozenset' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 FrozenSet.prototype.__xor__ = function(other) {
@@ -315,7 +292,7 @@ FrozenSet.prototype.__xor__ = function(other) {
         }.bind(this))
         return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'frozenset' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 FrozenSet.prototype.__or__ = function(other) {
@@ -334,7 +311,7 @@ FrozenSet.prototype.__or__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
+    return new types.NotImplementedType()
 }
 
 /**************************************************

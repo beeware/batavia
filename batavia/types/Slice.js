@@ -85,12 +85,6 @@ var strip_and_compare = function(a, b, comparison_function) {
     return new types.Tuple(a_list)[comparison_function](new types.Tuple(b_list))
 }
 
-var unsupported_operand = function(sign, other) {
-    throw new exceptions.TypeError.$pyclass(
-        'unsupported operand type(s) for ' + sign + ': \'slice\' and \'' + type_name(other) + '\''
-    )
-}
-
 var unorderable_types = function(sign, other) {
     if (version.earlier('3.6')) {
         throw new exceptions.TypeError.$pyclass(
@@ -120,16 +114,6 @@ Slice.prototype.__ne__ = function(other) {
     return !this.__eq__(other)
 }
 
-Slice.prototype.__add__ = unsupported_operand.bind(Slice.prototype, '+')
-Slice.prototype.__and__ = unsupported_operand.bind(Slice.prototype, '&')
-Slice.prototype.__lshift__ = unsupported_operand.bind(Slice.prototype, '<<')
-Slice.prototype.__or__ = unsupported_operand.bind(Slice.prototype, '|')
-Slice.prototype.__pow__ = unsupported_operand.bind(Slice.prototype, '** or pow()')
-Slice.prototype.__rshift__ = unsupported_operand.bind(Slice.prototype, '>>')
-Slice.prototype.__sub__ = unsupported_operand.bind(Slice.prototype, '-')
-Slice.prototype.__truediv__ = unsupported_operand.bind(Slice.prototype, '/')
-Slice.prototype.__xor__ = unsupported_operand.bind(Slice.prototype, '^')
-
 Slice.prototype.__floordiv__ = function(other) {
     var types = require('../types')
     if (types.isinstance(other, types.Complex)) {
@@ -137,7 +121,7 @@ Slice.prototype.__floordiv__ = function(other) {
             'can\'t take floor of complex number.'
         )
     } else {
-        unsupported_operand('//', other)
+        return new types.NotImplementedType()
     }
 }
 
@@ -184,7 +168,7 @@ Slice.prototype.__mod__ = function(other) {
             'can\'t mod complex numbers.'
         )
     } else {
-        unsupported_operand('%', other)
+        return new types.NotImplementedType()
     }
 }
 
@@ -196,7 +180,7 @@ Slice.prototype.__mul__ = function(other) {
             'can\'t multiply sequence by non-int of type \'slice\''
         )
     } else {
-        unsupported_operand('*', other)
+        return new types.NotImplementedType()
     }
 }
 

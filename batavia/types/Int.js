@@ -373,7 +373,7 @@ Int.prototype.__pow__ = function(other) {
 
         return new types.Complex(result_real, result_imag)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -418,7 +418,7 @@ Int.prototype.__floordiv__ = function(other) {
     } else if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -451,7 +451,7 @@ Int.prototype.__truediv__ = function(other) {
         var castToComplex = new types.Complex(this.valueOf())
         return castToComplex.__truediv__(other.valueOf())
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -555,7 +555,7 @@ Int.prototype.__mul__ = function(other) {
             return new types.Complex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber())
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -584,7 +584,7 @@ Int.prototype.__mod__ = function(other) {
     } else if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -608,7 +608,7 @@ Int.prototype.__add__ = function(other) {
             return new types.Complex(this.val.add(other.real).toNumber(), other.imag)
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -626,7 +626,7 @@ Int.prototype.__sub__ = function(other) {
             return this
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -737,7 +737,7 @@ Int.prototype.__lshift__ = function(other) {
             return this
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -773,7 +773,7 @@ Int.prototype.__rshift__ = function(other) {
         }
         return this
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -805,7 +805,7 @@ Int.prototype.__and__ = function(other) {
         }
         return new Int(0)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -839,7 +839,7 @@ Int.prototype.__xor__ = function(other) {
         }
         return this
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -880,7 +880,7 @@ Int.prototype.__or__ = function(other) {
         }
         return this
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'int' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 

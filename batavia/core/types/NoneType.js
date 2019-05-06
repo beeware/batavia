@@ -140,10 +140,6 @@ NoneType.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-NoneType.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'NoneType' and '" + basic_types.type_name(other) + "'")
-}
-
 NoneType.prototype.__div__ = function(other) {
     return NoneType.__truediv__(other)
 }

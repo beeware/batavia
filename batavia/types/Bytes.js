@@ -228,26 +228,14 @@ Bytes.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Bytes.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__div__ = function(other) {
-    return this.__truediv__(other)
-}
-
 Bytes.prototype.__floordiv__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Complex])) {
         throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
-}
-
-Bytes.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bytes' and '" + type_name(other) + "'")
 }
 
 Bytes.prototype.__mul__ = function(other) {
@@ -287,7 +275,7 @@ Bytes.prototype.__mod__ = function(other) {
     if (types.isinstance(other, [types.Complex])) {
         throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bytes' and '" + type_name(other) + "'")
+        return new types.NotImplementedType()
     }
 }
 
@@ -328,10 +316,6 @@ Bytes.prototype.__add__ = function(other) {
     }
 }
 
-Bytes.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bytes' and '" + type_name(other) + "'")
-}
-
 Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
 
@@ -342,26 +326,6 @@ Bytes.prototype.__getitem__ = function(other) {
         throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
     }
     return new types.Int(this.val[other.int32()])
-}
-
-Bytes.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bytes' and '" + type_name(other) + "'")
 }
 
 /**************************************************
