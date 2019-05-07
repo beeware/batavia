@@ -154,7 +154,7 @@ Documentation
 
 * `Getting Started <https://batavia.readthedocs.io/en/latest/tutorial/index.html>`__
 * `So, why is it called "Batavia"? <https://batavia.readthedocs.io/en/latest/background/faq.html#why-batavia>`_
-* `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/background/faq.html>`_
+* `More Frequently Asked Questions <https://batavia.readthedocs.io/en/latest/background/faq.html>`_.
 
 
 Contributing
