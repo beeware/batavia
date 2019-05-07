@@ -195,6 +195,10 @@ NotImplementedType.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
 }
 
+NotImplementedType.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -254,6 +258,10 @@ NotImplementedType.prototype.__ixor__ = function(other) {
 
 NotImplementedType.prototype.__ior__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
+}
+
+NotImplementedType.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
 }
 
 /**************************************************/
