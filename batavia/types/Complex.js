@@ -77,29 +77,15 @@ function Complex(re, im) {
             this.imag = -this.imag
         }
     } else if (!types.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
-        if (version.later('3.5')) {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() first argument must be a string, a bytes-like object or a number, not '" +
-                type_name(re) + "'"
-            )
-        } else {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() argument must be a string, a bytes-like object or a number, not '" +
-                type_name(re) + "'"
-            )
-        }
+        throw new exceptions.TypeError.$pyclass(
+            "complex() first argument must be a string or a number, not '" +
+            type_name(re) + "'"
+        )
     } else if (!types.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
-        if (version.later('3.5')) {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() first argument must be a string, a bytes-like object or a number, not '" +
-                type_name(im) + "'"
-            )
-        } else {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() argument must be a string, a bytes-like object or a number, not '" +
-                type_name(im) + "'"
-            )
-        }
+        throw new exceptions.TypeError.$pyclass(
+            "complex() first argument must be a string or a number, not '" +
+            type_name(im) + "'"
+        )
     } else if (typeof re === 'number' && typeof im === 'number') {
         this.real = re
         this.imag = im

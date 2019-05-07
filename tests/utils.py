@@ -360,12 +360,6 @@ class PYCleaner:
             # Replace references to the test script with something generic
             out = out.replace("'test.py'", '***EXECUTABLE***')
 
-        # Python 3.4.4 changed the message describing strings in exceptions
-        out = out.replace(
-            'argument must be a string or',
-            'argument must be a string, a bytes-like object or'
-        )
-
         if self.transforms['custom']:
             if substitutions:
                 for to_value, from_values in substitutions.items():
