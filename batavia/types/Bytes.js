@@ -364,6 +364,10 @@ Bytes.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bytes' and '" + type_name(other) + "'")
 }
 
+Bytes.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'bytes' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Methods
  **************************************************/

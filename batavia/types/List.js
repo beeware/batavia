@@ -614,6 +614,10 @@ List.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'list' and '" + type_name(other) + "'")
 }
 
+List.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'list' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -663,6 +667,10 @@ List.prototype.__imul__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
+}
+
+List.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'list' and '" + type_name(other) + "'")
 }
 
 /**************************************************

@@ -682,6 +682,10 @@ Bool.prototype.__or__ = function(other) {
     }
 }
 
+Bool.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'bool' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Methods
  **************************************************/

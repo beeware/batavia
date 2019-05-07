@@ -517,6 +517,10 @@ Str.prototype.__or__ = function(other) {
     )
 }
 
+Str.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'str' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Methods
  * https://docs.python.org/3.4/library/stdtypes.html#string-methods

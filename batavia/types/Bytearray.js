@@ -213,6 +213,10 @@ Bytearray.prototype.__or__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('Bytearray.__or__ has not been implemented')
 }
 
+Bytearray.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'Bytearray' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -231,6 +235,10 @@ Bytearray.prototype.__iadd__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
     }
+}
+
+Bytearray.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'Bytearray' and '" + type_name(other) + "'")
 }
 
 /**************************************************

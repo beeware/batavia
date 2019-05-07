@@ -483,6 +483,12 @@ Complex.prototype.__or__ = function(other) {
     )
 }
 
+Complex.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass(
+        "unsupported operand type(s) for @: 'complex' and '" + type_name(other) + "'"
+    )
+}
+
 /**************************************************
  * Methods
  **************************************************/

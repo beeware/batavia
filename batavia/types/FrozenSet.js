@@ -337,6 +337,10 @@ FrozenSet.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'frozenset' and '" + type_name(other) + "'")
 }
 
+FrozenSet.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'frozenset' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Methods
  **************************************************/

@@ -292,6 +292,10 @@ JSDict.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
 }
 
+JSDict.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'jsdict' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -365,6 +369,10 @@ JSDict.prototype.__delitem__ = function(key) {
         }
     }
     delete this[key]
+}
+
+JSDict.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 /**************************************************

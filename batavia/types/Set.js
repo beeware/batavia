@@ -334,6 +334,10 @@ Set.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'set' and '" + type_name(other) + "'")
 }
 
+Set.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'set' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -419,6 +423,10 @@ Set.prototype.__ior__ = function(other) {
         return new Set(both)
     }
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'set' and '" + type_name(other) + "'")
+}
+
+Set.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'set' and '" + type_name(other) + "'")
 }
 
 /**************************************************

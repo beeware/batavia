@@ -454,6 +454,10 @@ Dict.prototype.__setitem__ = function(key, value) {
     }
 }
 
+Dict.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'dict' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -532,6 +536,10 @@ Dict.prototype.__delitem__ = function(key) {
         }
     }
     deleteAt(this, i)
+}
+
+Dict.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'dict' and '" + type_name(other) + "'")
 }
 
 /**************************************************

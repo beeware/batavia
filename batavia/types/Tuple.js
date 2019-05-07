@@ -473,6 +473,10 @@ Tuple.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'tuple' and '" + type_name(other) + "'")
 }
 
+Tuple.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'tuple' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Methods
  **************************************************/
