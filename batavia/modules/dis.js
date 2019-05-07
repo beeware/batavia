@@ -89,7 +89,7 @@ def_unary_op('UNARY_INVERT', 15)
 
 // Introduced in Python 3.5
 def_binary_op('BINARY_MATRIX_MULTIPLY', 16)
-def_binary_op('INPLACE_MATRIX_MULTIPLY', 17)
+def_inplace_op('INPLACE_MATRIX_MULTIPLY', 17)
 
 def_binary_op('BINARY_POWER', 19)
 def_binary_op('BINARY_MULTIPLY', 20)

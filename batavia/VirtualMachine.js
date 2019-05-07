@@ -384,6 +384,21 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             this.push(items[0] | items[1])
                         }
                     }
+                case 'MATRIX_MULTIPLY':
+                    return function () {
+                        var items = this.popn(2)
+                        if (items[0] === null) {
+                            this.push(types.NoneType.__matmul__(items[1]))
+                        } else if (items[0].__matmul__) {
+                            if (items[0].__matmul__.__call__) {
+                                this.push(items[0].__matmul__.__call__(items))
+                            } else {
+                                this.push(items[0].__matmul__(items[1]))
+                            }
+                        } else {
+                            this.push(items[0] * items[1])
+                        }
+                    }
                 default:
                     throw new builtins.BataviaError.$pyclass('Unknown binary operator ' + operator_name)
             }
@@ -472,6 +487,13 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         var items = this.popn(2)
                         var result = inplace_operator(
                             '|=', '__ior__', '__or__', items[0], items[1], (l, r) => l | r)
+                        this.push(result)
+                    }
+                case 'MATRIX_MULTIPLY':
+                    return function() {
+                        var items = this.popn(2)
+                        var result = inplace_operator(
+                            '@=', '__imatmul__', '__matmul__', items[0], items[1], (l, r) => l * r)
                         this.push(result)
                     }
                 default:

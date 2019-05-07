@@ -214,6 +214,10 @@ NoneType.prototype.__or__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'NoneType' and '" + basic_types.type_name(other) + "'")
 }
 
+NoneType.prototype.__matmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'NoneType' and '" + basic_types.type_name(other) + "'")
+}
+
 /**************************************************
  * Inplace operators
  **************************************************/
@@ -282,6 +286,10 @@ NoneType.prototype.__ixor__ = function(other) {
 
 NoneType.prototype.__ior__ = function(other) {
     throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'NoneType' and '" + basic_types.type_name(other) + "'")
+}
+
+NoneType.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'NoneType' and '" + basic_types.type_name(other) + "'")
 }
 
 // Define the actual instance of None

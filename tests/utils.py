@@ -1091,6 +1091,9 @@ class BinaryOperationTestCase(NotImplementedToExpectedFailure):
         vars()['test_ne_%s' % datatype] = _binary_test(
             'test_ne_%s' % datatype, 'x != y', examples
         )
+        vars()['test_matmul_%s' % datatype] = _binary_test(
+            'test_matmul_%s' % datatype, 'x * y', examples
+        )
 
 
 def _inplace_test(test_name, operation, examples, small_ints=False):
@@ -1183,6 +1186,9 @@ class InplaceOperationTestCase(NotImplementedToExpectedFailure):
         )
         vars()['test_or_%s' % datatype] = _inplace_test(
             'test_or_%s' % datatype, 'x |= y', examples
+        )
+        vars()['test_matmul_%s' % datatype] = _inplace_test(
+            'test_matmul_%s' % datatype, 'x *= y', examples
         )
 
 
