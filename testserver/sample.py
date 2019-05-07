@@ -62,7 +62,7 @@ def main(argv):
 
     print('Manipulate the DOM...')
     print('Open a new web page...')
-    dom.window.open('http://pybee.org', '_blank')
+    dom.window.open('http://beeware.org', '_blank')
     print('Set the page title')
     dom.document.title = 'Hello world'
     print('Find an element on the page...')

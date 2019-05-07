@@ -618,19 +618,6 @@ List.prototype.__or__ = function(other) {
  * Inplace operators
  **************************************************/
 
-List.prototype.__ifloordiv__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'list' and '" + type_name(other) + "'")
-    }
-}
-
-List.prototype.__itruediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'list' and '" + type_name(other) + "'")
-}
-
 List.prototype.__iadd__ = function(other) {
     var types = require('../types')
 
@@ -648,10 +635,6 @@ List.prototype.__iadd__ = function(other) {
         throw new exceptions.TypeError.$pyclass("'" + type_name(other) + "' object is not iterable")
     }
     return this
-}
-
-List.prototype.__isub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'list' and '" + type_name(other) + "'")
 }
 
 List.prototype.__imul__ = function(other) {
@@ -680,39 +663,6 @@ List.prototype.__imul__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
-}
-
-List.prototype.__imod__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'list' and '" + type_name(other) + "'")
-    }
-}
-
-List.prototype.__ipow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__ilshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__irshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__iand__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__ixor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'list' and '" + type_name(other) + "'")
-}
-
-List.prototype.__ior__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'list' and '" + type_name(other) + "'")
 }
 
 /**************************************************

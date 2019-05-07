@@ -6,16 +6,16 @@ the Batavia code, and the ouroboros dependency within a virtual environment.
 
 You'll need to have Python 3.5 or 3.6 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
-<http://pybee.org/contributing/how/first-time/setup/>`_.
+<http://beeware.org/contributing/how/first-time/setup/>`_.
 
-1. Setup a `pybee` folder to store everything::
+1. Setup a `beeware` folder to store everything::
 
-   $ mkdir pybee
-   $ cd pybee
+   $ mkdir beeware
+   $ cd beeware
 
 2. Get a copy of the Batavia code by running a :code:`git clone`::
 
-   $ git clone https://github.com/pybee/batavia
+   $ git clone https://github.com/beeware/batavia
 
 3. We'll need to create a virtual environment, and install Batavia into it.
 
@@ -85,7 +85,7 @@ how to set this up are `on our Environment setup guide
 
 Your final setup should end up looking like this::
 
-  _ pybee
+  _ beeware
     \_ batavia
     \_ venv (if using virtualenv)
 

@@ -10,8 +10,8 @@ Prerequisites
 This tutorial assumes you've read and followed the instructions in
 :doc:`the previous tutorial <tutorial-0>`. If you've done this, you should have:
 
-* A ``pybee`` directory with a Batavia checkout,
-* An activated Python 3.5 or 3.6 virtual environment, and
+* A ``beeware`` directory with a Batavia checkout,
+* An activated Python 3.5 virtual environment, and
 * Batavia installed in that virtual environment
 
 Starting the test server
@@ -128,7 +128,7 @@ up a new window and load the `BeeWare website`_. If you close that window and
 go back to the Batavia testbed, you should see a lot of output in the console
 section of the screen.
 
-.. _BeeWare website: http://pybee.org
+.. _BeeWare website: http://beeware.org
 
 Inside the button
 ^^^^^^^^^^^^^^^^^
@@ -143,7 +143,7 @@ browser window:
 
 
     print('Open a new web page...')
-    dom.window.open('http://pybee.org', '_blank')
+    dom.window.open('http://beeware.org', '_blank')
 
     print('Set the page title')
     dom.document.title = 'Hello world'
@@ -162,7 +162,7 @@ Batavia.
 
 You can even use this code in the sample code window: copy and paste this code into the "run code" text box, click "Run your code!", and you get a popup window.
 
-.. _inspect the source code: https://github.com/pybee/batavia/blob/master/testserver/sample.py
+.. _inspect the source code: https://github.com/beeware/batavia/blob/master/testserver/sample.py
 
 Push the *other* button...
 --------------------------

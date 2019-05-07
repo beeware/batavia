@@ -3,10 +3,10 @@ Contributing to Batavia
 
 If you experience problems with Batavia, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
 
-.. _log them on Github: https://github.com/pybee/batavia/issues
+.. _log them on Github: https://github.com/beeware/batavia/issues
 .. _forking Batavia:
-.. _fork the code: https://github.com/pybee/batavia
-.. _submit a pull request: https://github.com/pybee/batavia/pulls
+.. _fork the code: https://github.com/beeware/batavia
+.. _submit a pull request: https://github.com/beeware/batavia/pulls
 
 
 Setting up your development environment
@@ -14,7 +14,7 @@ Setting up your development environment
 
 The process of setting up a development environment is very similar to
 the :doc:`/tutorial/tutorial-0` process. The biggest difference is that
-instead of using the official PyBee repository, you'll be using your own
+instead of using the official BeeWare repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
@@ -142,7 +142,7 @@ failures, errors, or unexpected successes, please check out the
 `troubleshooting section <#troubleshooting>`_ or get in touch, because you
 may have found a problem.
 
-.. _continuous integration: https://travis-ci.org/pybee/batavia
+.. _continuous integration: https://travis-ci.org/beeware/batavia
 
 If you just want to run a single test, or a single group of tests with the text runner, you can provide command-line arguments.
 
@@ -183,7 +183,7 @@ Troubleshooting
 
   - set your upstream remote::
 
-    $ git remote add upstream https://github.com/pybee/batavia.git
+    $ git remote add upstream https://github.com/beeware/batavia.git
 
   - make sure you have the latest changes from upstream::
 

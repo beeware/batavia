@@ -36,9 +36,9 @@ setup(
     ],
     test_suite='tests',
     package_urls={
-        'Funding': 'https://pybee.org/contributing/membership/',
+        'Funding': 'https://beeware.org/contributing/membership/',
         'Documentation': 'http://batavia.readthedocs.io/en/latest/',
         'Tracker': data['bugs']['url'],
-        'Source': 'https://github.com/pybee/batavia',
+        'Source': 'https://github.com/beeware/batavia',
     },
 )
