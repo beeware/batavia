@@ -1,5 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms, SAMPLE_DATA
+    adjust, transforms, SAMPLE_DATA, expected_failing_versions
 
 from itertools import product
 import unittest
@@ -728,6 +728,7 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """
 
+        @expected_failing_versions(['3.5', '3.6'])
         @transforms(
             js_bool = False,
             decimal = False,
@@ -841,6 +842,7 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+        @expected_failing_versions(['3.6'])
         @transforms(
             js_bool = False,
             decimal = False,
@@ -870,6 +872,7 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+        @expected_failing_versions(['3.6'])
         @transforms(
             js_bool = False,
             decimal = False,
@@ -898,6 +901,7 @@ class FormatTests(TranspileTestCase):
 
             self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
 
+        @expected_failing_versions(['3.6'])
         @transforms(
             js_bool = False,
             decimal = False,
@@ -1293,6 +1297,7 @@ class NewStyleFormatTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    @expected_failing_versions(['3.6'])
     @transforms(decimal = False,)
     def test_groupings(self, js_cleaner, py_cleaner):
         groupings = (',', '_')
@@ -1310,6 +1315,7 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str, js_cleaner=js_cleaner,
                                     py_cleaner=py_cleaner)
 
+    @expected_failing_versions(['3.6'])
     def test_groupings_with_str(self):
         """
         grouping with str shouldn't be allowed
