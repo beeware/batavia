@@ -1,4 +1,4 @@
-from ..utils import TranspileTestCase, expected_failing_versions
+from ..utils import TranspileTestCase
 
 # do basic tests for now
 # TODO: execute complete tests for each stdlib module
