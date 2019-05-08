@@ -15,23 +15,18 @@ class StdlibTests(TranspileTestCase):
     def test__weakref(self):
         _test_module(self, "_weakref")
 
-    @expected_failing_versions(['3.4', '3.5'])
     def test__weakrefset(self):
         _test_module(self, "_weakrefset")
 
-    @expected_failing_versions(['3.4', '3.5'])
     def test_abc(self):
         _test_module(self, "abc", exclude=['ref'])
 
-    @expected_failing_versions(['3.4', '3.5'])
     def test_bisect(self):
         _test_module(self, "bisect")
 
-    @expected_failing_versions(['3.4', '3.5'])
     def test_colorsys(self):
         _test_module(self, "colorsys")
 
-    @expected_failing_versions(['3.4', '3.5'])
     def test_copyreg(self):
         _test_module(self, "copyreg")
 
@@ -56,7 +51,6 @@ class StdlibTests(TranspileTestCase):
             print("Done")
             """)
 
-    @expected_failing_versions(['3.4', '3.5'])
     def test_this(self):
         self.assertCodeExecution("""
             import this
