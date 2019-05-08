@@ -152,8 +152,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_bool',
         'test_subscr_int',
         'test_subscr_slice',
-        'test_subscr_str',
-        'test_subscr_tuple',
     ]
 
 

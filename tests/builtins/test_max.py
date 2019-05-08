@@ -26,3 +26,7 @@ class BuiltinMaxFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
             print(max([], default="empty"))
             print(max([1, 2, 3], default="empty"))
             """)
+
+    is_flakey = [
+       'test_set',  # This depends on set ordering is non-deterministic
+    ]
