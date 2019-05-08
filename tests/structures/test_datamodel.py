@@ -2,6 +2,7 @@
 from ..utils import TranspileTestCase, expected_failing_versions
 from unittest import expectedFailure
 
+
 class ClassBinaryOpsDataModelTests(TranspileTestCase):
     def test_add(self):
         self.assertCodeExecution("""
@@ -508,6 +509,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
 
             print(p1)
         """, run_in_function=False)
+
 
 @expectedFailure
 class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):

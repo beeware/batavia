@@ -730,10 +730,10 @@ class FormatTests(TranspileTestCase):
 
         @expected_failing_versions(['3.5', '3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_basic(self, js_cleaner, py_cleaner):
             combinations = (product(self.alternate, self.conversion_flags, self.args))
@@ -840,14 +840,14 @@ class FormatTests(TranspileTestCase):
                 ]
             )
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
         @expected_failing_versions(['3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_left_adjust(self, js_cleaner, py_cleaner):
             """conversion flags for - and 0"""
@@ -870,14 +870,14 @@ class FormatTests(TranspileTestCase):
                 ]
             )
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
         @expected_failing_versions(['3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_plus_sign(self, js_cleaner, py_cleaner):
             flags = ('+', ' ')
@@ -899,14 +899,14 @@ class FormatTests(TranspileTestCase):
                 ]
             )
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
         @expected_failing_versions(['3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_literal_percent(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -1298,7 +1298,7 @@ class NewStyleFormatTests(TranspileTestCase):
         self.assertCodeExecution(test_str)
 
     @expected_failing_versions(['3.6'])
-    @transforms(decimal = False,)
+    @transforms(decimal=False,)
     def test_groupings(self, js_cleaner, py_cleaner):
         groupings = (',', '_')
         test_str = ''.join(

@@ -1,6 +1,5 @@
-from unittest import expectedFailure
-
-from ..utils import TranspileTestCase, BuiltinFunctionTestCase, BuiltinTwoargFunctionTestCase, expected_failing_versions
+from ..utils import (TranspileTestCase, BuiltinFunctionTestCase,
+                     BuiltinTwoargFunctionTestCase, expected_failing_versions)
 
 
 class PowTests(TranspileTestCase):
