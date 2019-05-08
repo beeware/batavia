@@ -891,15 +891,11 @@ class FormatTests(TranspileTestCase):
 
             combinations = product(flags, cases)
             tests = ''.join(
-                [adjust
-                    (self.template
-                        .format(spec = c[0] + c[1][0], arg = c[1][1]
-                        )
-                    ) for c in combinations
-                ]
-            )
+                [adjust(self.template.format(spec=c[0] + c[1][0], arg=c[1][1]))
+                 for c in combinations])
 
-            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner,
+                                     py_cleaner=py_cleaner)
 
         @expected_failing_versions(['3.6'])
         @transforms(
@@ -1313,7 +1309,7 @@ class NewStyleFormatTests(TranspileTestCase):
         )
 
         self.assertCodeExecution(test_str, js_cleaner=js_cleaner,
-                                    py_cleaner=py_cleaner)
+                                 py_cleaner=py_cleaner)
 
     @expected_failing_versions(['3.6'])
     def test_groupings_with_str(self):
