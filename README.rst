@@ -15,8 +15,8 @@ Batavia
     :target: https://pypi.python.org/pypi/batavia
 .. |license| image:: https://img.shields.io/pypi/l/batavia.svg
     :target: https://github.com/beeware/batavia/blob/master/LICENSE
-.. |build-status| image:: https://beekeeper.beeware.org/projects/pybee/batavia/shield
-    :target: https://beekeeper.beeware.org/projects/pybee/batavia
+.. |build-status| image:: https://beekeeper.beeware.org/projects/beeware/batavia/shield
+    :target: https://beekeeper.beeware.org/projects/beeware/batavia
 .. |gitter| image:: https://badges.gitter.im/beeware/general.svg
     :target: https://gitter.im/beeware/general
 
