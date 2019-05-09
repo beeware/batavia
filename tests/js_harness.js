@@ -38,11 +38,18 @@ server.listen(0, (err) => {
 function _execute_with_batavia(code) {
     const batavia = require(bataviaSource)
 
-    return _capture_stdout(() => vm.runInNewContext(code, {batavia}))
+    // This cache is global, instead of per batavia.VirtualMachine instance...
+    batavia.modules.sys.modules = {}
+
+    return _capture_stdout(() => {
+        // eslint-disable-next-line no-eval
+        eval(code)
+    })
 }
 
 /**
- * Run a function, capturing stdout and returning it.
+ * Run a function, capturing stdout and returning everything written to it.
+ *
  * @param {function()} f The function to run.
  * @return {string}
  * @private
