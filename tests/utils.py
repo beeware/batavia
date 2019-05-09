@@ -3,8 +3,10 @@
 import atexit
 import base64
 import contextlib
+import http.client
 from io import StringIO
 import importlib
+import json
 import os
 import py_compile
 import re
@@ -13,6 +15,7 @@ import sre_constants
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 import itertools
 import collections
@@ -20,6 +23,7 @@ from unittest import TestCase, expectedFailure
 
 # get path to `tests` directory
 TESTS_DIR = os.path.dirname(__file__)
+BATAVIA_DIR = os.path.dirname(TESTS_DIR)
 
 # A state variable to determine if the test environment has been configured.
 _suite_configured = False
@@ -28,12 +32,16 @@ _suite_configured = False
 # Set during setUpSuite()
 _output_dir = ''
 
+# JS execution server and port
+_js_harness_port = ''
+
 
 def setUpSuite():
     """Configure the entire test suite.
 
     This only needs to be run once, prior to the first test.
     """
+    global _js_harness_port
     global _output_dir
     global _suite_configured
     if _suite_configured:
@@ -50,10 +58,21 @@ def setUpSuite():
     atexit.register(remove_output_dir)
     _output_dir = tempfile.mkdtemp(dir=TESTS_DIR)
 
+    js_harness = subprocess.Popen(
+        ['node',
+         os.path.join(TESTS_DIR, 'js_harness.js'),
+         os.path.join(_output_dir, 'server.port'),
+         os.path.join(BATAVIA_DIR, 'dist', 'batavia.js'),
+         ],
+    )
+
+    atexit.register(lambda: js_harness and js_harness.kill())
+
     if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
         print("building 'batavia.js' for development")
         proc = subprocess.Popen(
-            [os.path.join(os.path.dirname(TESTS_DIR), "node_modules", ".bin", "webpack"), "--bail", "-d"],
+            [os.path.join(BATAVIA_DIR, "node_modules", ".bin", "webpack"),
+             "--bail", "-d"],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
@@ -68,9 +87,16 @@ def setUpSuite():
             raise
 
         if proc.returncode != 0:
-            raise Exception("Error compiling batavia sources: " + out.decode('ascii'))
+            raise Exception(
+                "Error compiling batavia sources: " + out.decode('ascii'))
     else:
         print("Not precompiling 'batavia.js' as part of test run")
+
+    while 'server.port' not in os.listdir(_output_dir):
+        time.sleep(1)
+
+    with open(os.path.join(_output_dir, 'server.port')) as f:
+        _js_harness_port = f.readline()
 
     _suite_configured = True
 
@@ -697,52 +723,44 @@ class TranspileTestCase(TestCase):
                     '    }'
                 )
 
-        with open(os.path.join(self.temp_dir, 'test.js'), 'w') as js_file:
-            js_file.write(adjust("""
-                var batavia = require('../../dist/batavia.js');
-                %s
-                var modules = {
-                %s
-                };
+        js_code = adjust("""
+            %s
+            var modules = {
+            %s
+            };
 
 
-                var vm = new batavia.VirtualMachine({
-                    loader: function(name) {
-                        var payload = modules[name];
-                        if (payload === undefined) {
-                            return null;
-                        }
-                        return payload;
-                    },
-                    frame: null
-                });
-                vm.run('test', []);
-                """) % (
-                    '\n'.join(
-                        adjust(code)
-                        for name, code in sorted(js.items())
-                    ) if js else '',
-                    ',\n'.join(payload)
-                )
-            )
+            var vm = new batavia.VirtualMachine({
+                loader: function(name) {
+                    var payload = modules[name];
+                    if (payload === undefined) {
+                        return null;
+                    }
+                    return payload;
+                },
+                frame: null
+            });
+            vm.run('test', []);
+            """) % ('\n'.join(adjust(code) for name, code in
+                              sorted(js.items())) if js else '',
+                    ',\n'.join(payload))
 
         # print("JS CODE:")
-        # with open(os.path.join(self.temp_dir, 'test.js')) as js_file:
-        #     print(js_file.read())
+        # print(js_code)
 
-        proc = subprocess.Popen(
-            ['node', 'test.js'] + args,
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            # cwd=self.temp_dir,
+        server = http.client.HTTPConnection('localhost:' + _js_harness_port)
+        server.request(
+            'POST',
+            '/',
+            body=json.dumps({'code': js_code}),
+            headers={'Content-type': 'application/json'},
         )
-        out = proc.communicate()
+        out = server.getresponse().read()
 
         # Move back to the old current working directory.
         os.chdir(cwd)
 
-        return out[0].decode('utf8')
+        return out.decode('utf8')
 
 
 class NotImplementedToExpectedFailure:
