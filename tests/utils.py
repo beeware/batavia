@@ -47,6 +47,29 @@ def setUpSuite():
     if _suite_configured:
         return
 
+    _output_dir = create_output_dir()
+
+    launch_js_harness(_output_dir)
+
+    if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
+        build_batavia_js()
+    else:
+        print("Not precompiling 'batavia.js' as part of test run")
+
+    _js_harness_port = read_js_harness_port(_output_dir)
+
+    _suite_configured = True
+
+
+def read_js_harness_port(_output_dir):
+    global _js_harness_port
+    while 'server.port' not in os.listdir(_output_dir):
+        time.sleep(1)
+    with open(os.path.join(_output_dir, 'server.port')) as f:
+        return f.readline()
+
+
+def create_output_dir():
     def remove_output_dir():
         global _output_dir
         if _output_dir != '':
@@ -56,8 +79,31 @@ def setUpSuite():
                 pass
 
     atexit.register(remove_output_dir)
-    _output_dir = tempfile.mkdtemp(dir=TESTS_DIR)
+    return tempfile.mkdtemp(dir=TESTS_DIR)
 
+
+def build_batavia_js():
+    print("building 'batavia.js' for development")
+    proc = subprocess.Popen(
+        [os.path.join(BATAVIA_DIR, "node_modules", ".bin", "webpack"),
+         "--bail", "-d"],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        shell=True,
+    )
+    try:
+        out, err = proc.communicate(timeout=60)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        out, err = proc.communicate()
+        raise
+    if proc.returncode != 0:
+        raise Exception(
+            "Error compiling batavia sources: " + out.decode('ascii'))
+
+
+def launch_js_harness(_output_dir):
     js_harness = subprocess.Popen(
         ['node',
          os.path.join(TESTS_DIR, 'js_harness.js'),
@@ -65,40 +111,7 @@ def setUpSuite():
          os.path.join(BATAVIA_DIR, 'dist', 'batavia.js'),
          ],
     )
-
     atexit.register(lambda: js_harness and js_harness.kill())
-
-    if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
-        print("building 'batavia.js' for development")
-        proc = subprocess.Popen(
-            [os.path.join(BATAVIA_DIR, "node_modules", ".bin", "webpack"),
-             "--bail", "-d"],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            shell=True,
-        )
-
-        try:
-            out, err = proc.communicate(timeout=60)
-        except subprocess.TimeoutExpired:
-            proc.kill()
-            out, err = proc.communicate()
-            raise
-
-        if proc.returncode != 0:
-            raise Exception(
-                "Error compiling batavia sources: " + out.decode('ascii'))
-    else:
-        print("Not precompiling 'batavia.js' as part of test run")
-
-    while 'server.port' not in os.listdir(_output_dir):
-        time.sleep(1)
-
-    with open(os.path.join(_output_dir, 'server.port')) as f:
-        _js_harness_port = f.readline()
-
-    _suite_configured = True
 
 
 @contextlib.contextmanager
