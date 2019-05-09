@@ -769,6 +769,7 @@ class TranspileTestCase(TestCase):
             headers={'Content-type': 'application/json'},
         )
         out = server.getresponse().read()
+        server.close()
 
         # Move back to the old current working directory.
         os.chdir(cwd)
