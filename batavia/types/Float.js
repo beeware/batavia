@@ -405,8 +405,6 @@ Float.prototype.__mul__ = function(other) {
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.valueOf())
-    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple, types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'")
     } else {
         return new types.NotImplementedType()
     }

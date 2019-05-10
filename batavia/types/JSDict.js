@@ -228,18 +228,6 @@ JSDict.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-JSDict.prototype.__mul__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [
-        types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType])) {
-        return new types.NotImplementedType()
-    } else {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'jsdict'")
-    }
-}
-
 JSDict.prototype.__mod__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('Dict.__mod__ has not been implemented')
 }

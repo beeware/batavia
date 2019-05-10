@@ -367,8 +367,6 @@ function __mul__(x, y, inplace) {
         }
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
-    } else if (types.isinstance(y, [types.List, types.Str, types.Tuple, types.Bytearray, types.Bytes])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'")
     } else {
         return new types.NotImplementedType()
     }
@@ -432,6 +430,18 @@ Complex.prototype.__sub__ = function(other) {
 
 Complex.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'complex' object is not subscriptable")
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Complex.prototype.__rfloordiv__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
+}
+
+Complex.prototype.__rmod__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
 }
 
 /**************************************************

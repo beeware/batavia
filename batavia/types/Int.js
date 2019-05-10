@@ -415,8 +415,6 @@ Int.prototype.__floordiv__ = function(other) {
         } else {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
-    } else if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
         return new types.NotImplementedType()
     }
@@ -581,8 +579,6 @@ Int.prototype.__mod__ = function(other) {
         } else {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
-    } else if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
     } else {
         return new types.NotImplementedType()
     }

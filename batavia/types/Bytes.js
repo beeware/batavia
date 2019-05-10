@@ -228,16 +228,6 @@ Bytes.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Bytes.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 Bytes.prototype.__mul__ = function(other) {
     var types = require('../types')
 
@@ -266,16 +256,6 @@ Bytes.prototype.__mul__ = function(other) {
         }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
-    }
-}
-
-Bytes.prototype.__mod__ = function(other) {
-    let types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        return new types.NotImplementedType()
     }
 }
 
@@ -326,6 +306,14 @@ Bytes.prototype.__getitem__ = function(other) {
         throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
     }
     return new types.Int(this.val[other.int32()])
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Bytes.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
 /**************************************************

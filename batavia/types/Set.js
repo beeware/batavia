@@ -186,39 +186,6 @@ Set.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Set.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
-Set.prototype.__mul__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [
-        types.Bytearray, types.Bytes, types.List,
-        types.Str, types.Tuple
-    ])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'set'")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
-Set.prototype.__mod__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 Set.prototype.__sub__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')

@@ -7,19 +7,16 @@ var type_name = require('./core').type_name
 var types = require('./types')
 
 class BinaryOperator {
-    constructor(name, magic_method, fallback = null) {
+    constructor(name, magic_method, fallback = null, fallback_reversed = false) {
         this.name = name
         this.magic_method = magic_method
         this.fallback = fallback
+        this.fallback_reversed = fallback_reversed
     }
 
-    apply(left, right, override_name = null) {
-        let name = this.name
-        if (override_name) {
-            name = override_name
-        }
+    apply_(left, right) {
         if (left === null) {
-            return types.NoneType[this.magic_method](right)
+            return this.apply_(new types.NoneType(), right)
         }
 
         let result = new types.NotImplementedType()
@@ -33,14 +30,22 @@ class BinaryOperator {
 
         if (types.isinstance(result, types.NotImplementedType)) {
             if (this.fallback) {
-                return this.fallback.apply(left, right, name)
+                if (this.fallback_reversed) {
+                    return this.fallback.apply_(right, left)
+                }
+                return this.fallback.apply_(left, right)
             }
+        }
+        return result
+    }
 
+    apply(left, right) {
+        const result = this.apply_(left, right)
+        if (types.isinstance(result, types.NotImplementedType)) {
             throw new exceptions.TypeError.$pyclass(
-                'unsupported operand type(s) for ' + name + ': \'' +
+                'unsupported operand type(s) for ' + this.name + ': \'' +
                 type_name(left) + '\' and \'' + type_name(right) + '\'')
         }
-
         return result
     }
 }
@@ -48,18 +53,33 @@ class BinaryOperator {
 var operators = {}
 
 Object.assign(operators, {
-    '__add__': new BinaryOperator('+', '__add__'),
-    '__and__': new BinaryOperator('&', '__and__'),
-    '__floordiv__': new BinaryOperator('//', '__floordiv__'),
-    '__lshift__': new BinaryOperator('<<', '__lshift__'),
-    '__mod__': new BinaryOperator('%', '__mod__'),
-    '__mul__': new BinaryOperator('*', '__mul__'),
-    '__or__': new BinaryOperator('|', '__or__'),
-    '__pow__': new BinaryOperator('** or pow()', '__pow__'),
-    '__rshift__': new BinaryOperator('>>', '__rshift__'),
-    '__sub__': new BinaryOperator('-', '__sub__'),
-    '__truediv__': new BinaryOperator('/', '__truediv__'),
-    '__xor__': new BinaryOperator('^', '__xor__')
+    '__radd__': new BinaryOperator('+', '__radd__'),
+    '__rand__': new BinaryOperator('&', '__rand__'),
+    '__rfloordiv__': new BinaryOperator('//', '__rfloordiv__'),
+    '__rlshift__': new BinaryOperator('<<', '__rlshift__'),
+    '__rmod__': new BinaryOperator('%', '__rmod__'),
+    '__rmul__': new BinaryOperator('*', '__rmul__'),
+    '__ror__': new BinaryOperator('|', '__ror__'),
+    '__rpow__': new BinaryOperator('** or pow()', '__rpow__'),
+    '__rrshift__': new BinaryOperator('>>', '__rrshift__'),
+    '__rsub__': new BinaryOperator('-', '__rsub__'),
+    '__rtruediv__': new BinaryOperator('/', '__rtruediv__'),
+    '__rxor__': new BinaryOperator('^', '__rxor__'),
+})
+
+Object.assign(operators, {
+    '__add__': new BinaryOperator('+', '__add__', operators['__radd__'], true),
+    '__and__': new BinaryOperator('&', '__and__', operators['__rand__'], true),
+    '__floordiv__': new BinaryOperator('//', '__floordiv__', operators['__rfloordiv__'], true),
+    '__lshift__': new BinaryOperator('<<', '__lshift__', operators['__rlshift__'], true),
+    '__mod__': new BinaryOperator('%', '__mod__', operators['__rmod__'], true),
+    '__mul__': new BinaryOperator('*', '__mul__', operators['__rmul__'], true),
+    '__or__': new BinaryOperator('|', '__or__', operators['__ror__'], true),
+    '__pow__': new BinaryOperator('** or pow()', '__pow__', operators['__rpow__'], true),
+    '__rshift__': new BinaryOperator('>>', '__rshift__', operators['__rrshift__'], true),
+    '__sub__': new BinaryOperator('-', '__sub__', operators['__rsub__'], true),
+    '__truediv__': new BinaryOperator('/', '__truediv__', operators['__rtruediv__'], true),
+    '__xor__': new BinaryOperator('^', '__xor__', operators['__rxor__'], true)
 })
 
 Object.assign(operators, {

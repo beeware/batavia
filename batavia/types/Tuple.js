@@ -269,16 +269,6 @@ Tuple.prototype.__div__ = function(other) {
     return this.__truediv__(other)
 }
 
-Tuple.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 Tuple.prototype.__mul__ = function(other) {
     var types = require('../types')
 
@@ -298,16 +288,6 @@ Tuple.prototype.__mul__ = function(other) {
         }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
-    }
-}
-
-Tuple.prototype.__mod__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        return new types.NotImplementedType()
     }
 }
 
@@ -439,6 +419,14 @@ Tuple.prototype.__getitem__ = function(index) {
         }
         throw new exceptions.TypeError.$pyclass(msg + type_name(index))
     }
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Tuple.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
 /**************************************************

@@ -348,40 +348,6 @@ Dict.prototype.__div__ = function(other) {
     return this.__truediv__(other)
 }
 
-Dict.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    }
-
-    return new types.NotImplementedType()
-}
-
-Dict.prototype.__mul__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [
-        types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType,
-        types.Slice, types.Set, types.FrozenSet,
-        types.NotImplementedType, types.Complex, types.Range,
-        types.Type])) {
-        return new types.NotImplementedType()
-    } else {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'dict'")
-    }
-}
-
-Dict.prototype.__mod__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    }
-    return new types.NotImplementedType()
-}
-
 Dict.prototype.__setitem__ = function(key, value) {
     var builtins = require('../builtins')
 

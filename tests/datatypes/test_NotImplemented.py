@@ -24,10 +24,6 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
     data_type = 'NotImplemented'
 
     not_implemented = [
-
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
     ]
 
 
@@ -35,8 +31,4 @@ class InplaceNotImplementedOperationTests(InplaceOperationTestCase, TranspileTes
     data_type = 'NotImplemented'
 
     not_implemented = [
-
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
     ]

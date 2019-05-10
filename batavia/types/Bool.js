@@ -342,8 +342,6 @@ Bool.prototype.__floordiv__ = function(other) {
             thisValue = new types.Int(0)
         }
         return thisValue.__floordiv__(other)
-    } else if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
         return new types.NotImplementedType()
     }
@@ -433,9 +431,7 @@ Bool.prototype.__mul__ = function(other) {
 Bool.prototype.__mod__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
+    if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
         throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
     } else if (this.valueOf() && (types.isinstance(other, types.Int) && other.valueOf() > 1)) {
         return new types.Bool(true)

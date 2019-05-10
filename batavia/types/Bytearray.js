@@ -234,6 +234,15 @@ Bytearray.prototype.__iadd__ = function(other) {
 }
 
 /**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Bytearray.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+
+/**************************************************
  * Methods
  **************************************************/
 

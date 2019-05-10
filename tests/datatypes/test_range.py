@@ -163,8 +163,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
     not_implemented = [
         'test_eq_range',
 
-        'test_floor_divide_complex',
-
         'test_ge_bool',
         'test_ge_bytearray',
         'test_ge_bytes',
@@ -237,14 +235,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_str',
         'test_lt_tuple',
 
-        'test_modulo_complex',
-
-        'test_multiply_bytearray',
-        'test_multiply_bytes',
-        'test_multiply_list',
-        'test_multiply_str',
-        'test_multiply_tuple',
-
         'test_ne_range',
     ]
 
@@ -253,6 +243,10 @@ class InplaceRangeOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'range'
 
     not_implemented = [
-        'test_floor_divide_complex',
-        'test_modulo_complex',
+        'test_multiply_bytearray',
+        'test_multiply_bytes',
+        'test_multiply_list',
+        'test_multiply_str',
+        'test_multiply_tuple',
+
     ]

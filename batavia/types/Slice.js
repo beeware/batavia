@@ -114,17 +114,6 @@ Slice.prototype.__ne__ = function(other) {
     return !this.__eq__(other)
 }
 
-Slice.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass(
-            'can\'t take floor of complex number.'
-        )
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 Slice.prototype.__ge__ = function(other) {
     var types = require('../types')
     if (types.isinstance(other, types.Slice)) {
@@ -166,18 +155,6 @@ Slice.prototype.__mod__ = function(other) {
     if (types.isinstance(other, types.Complex)) {
         throw new exceptions.TypeError.$pyclass(
             'can\'t mod complex numbers.'
-        )
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
-Slice.prototype.__mul__ = function(other) {
-    var types = require('../types')
-    var is_sequence = types.isinstance(other, types.Str) || types.isinstance(other, types.Bytes) || types.isinstance(other, types.Bytearray) || types.isinstance(other, types.List) || types.isinstance(other, types.Tuple)
-    if (is_sequence) {
-        throw new exceptions.TypeError.$pyclass(
-            'can\'t multiply sequence by non-int of type \'slice\''
         )
     } else {
         return new types.NotImplementedType()

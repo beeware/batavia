@@ -318,16 +318,6 @@ Str.prototype.__div__ = function(other) {
     return this.__truediv__(other)
 }
 
-Str.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 Str.prototype.__mul__ = function(other) {
     var types = require('../types')
 
@@ -473,6 +463,14 @@ Str.prototype.__getitem__ = function(index) {
     } else {
         throw new exceptions.TypeError.$pyclass('string indices must be integers')
     }
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Str.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
 /**************************************************

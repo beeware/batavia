@@ -372,15 +372,6 @@ List.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-List.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 List.prototype.__mul__ = function(other) {
     var types = require('../types')
 
@@ -402,15 +393,6 @@ List.prototype.__mul__ = function(other) {
         }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
-    }
-}
-
-List.prototype.__mod__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        return new types.NotImplementedType()
     }
 }
 
@@ -627,6 +609,14 @@ List.prototype.__imul__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+List.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
 /**************************************************
