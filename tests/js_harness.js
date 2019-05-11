@@ -42,8 +42,8 @@ function _execute_with_batavia(code) {
     batavia.modules.sys.modules = {}
 
     return _capture_stdout(() => {
-        // eslint-disable-next-line no-eval
-        eval(code)
+        const m = require('module')
+        vm.runInThisContext(m.wrap(code))(exports, require, module, __filename, __dirname)
     })
 }
 
