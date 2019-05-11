@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var version = require('../core').version
 var types = require('../types')
 
 function pow(args, kwargs) {
@@ -21,7 +22,12 @@ function pow(args, kwargs) {
             throw new exceptions.TypeError.$pyclass('pow() 3rd argument not allowed unless all arguments are integers')
         }
         if (y < 0) {
-            throw new exceptions.TypeError.$pyclass('pow() 2nd argument cannot be negative when 3rd argument specified')
+            let message = 'pow() 2nd argument cannot be negative when 3rd argument specified'
+            if (version.later('3.5')) {
+                throw new exceptions.ValueError.$pyclass(message)
+            } else {
+                throw new exceptions.TypeError.$pyclass(message)
+            }
         }
 
         // if z is 1 or -1 then answer is always 0
