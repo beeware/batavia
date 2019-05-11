@@ -85,16 +85,17 @@ def read_js_harness_port(_output_dir):
 
 
 def create_output_dir():
+    output_dir = tempfile.mkdtemp(dir=TESTS_DIR)
+
     def remove_output_dir():
-        global _output_dir
-        if _output_dir != '':
+        if output_dir != '':
             try:
-                shutil.rmtree(_output_dir)
+                shutil.rmtree(output_dir)
             except FileNotFoundError:
                 pass
-
     atexit.register(remove_output_dir)
-    return tempfile.mkdtemp(dir=TESTS_DIR)
+
+    return output_dir
 
 
 def build_batavia_js():
