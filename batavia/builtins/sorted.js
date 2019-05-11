@@ -1,5 +1,6 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
+var version = require('../core').version
 
 function _validateInput(args, kwargs) {
     var bigger = 1
@@ -35,7 +36,11 @@ function _validateInput(args, kwargs) {
     }
 
     if (args === undefined || args.length === 0) {
-        throw new exceptions.TypeError.$pyclass("Required argument 'iterable' (pos 1) not found")
+        if (version.later('3.6')) {
+            throw new exceptions.TypeError.$pyclass('Function takes at least 1 positional arguments (0 given)')
+        } else {
+            throw new exceptions.TypeError.$pyclass("Required argument 'iterable' (pos 1) not found")
+        }
     }
 
     return {
