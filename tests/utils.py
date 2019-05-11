@@ -34,6 +34,9 @@ _output_dir = ''
 # Set during setUpSuite(), emptied after the suite
 _suite_output_dir = ''
 
+# Location of compiled batavia.js file
+_batavia_js_dir = ''
+
 # JS execution server and port
 _js_harness_port = ''
 
@@ -47,15 +50,23 @@ def setUpSuite():
     global _output_dir
     global _suite_output_dir
     global _suite_configured
+    global _batavia_js_dir
     if _suite_configured:
         return
 
     _suite_output_dir = create_output_dir()
     _output_dir = create_output_dir()
 
+    precompile = os.environ.get('PRECOMPILE', 'true').lower() == 'true'
+
+    if precompile:
+        _batavia_js_dir = _suite_output_dir
+    else:
+        _batavia_js_dir = os.path.join(BATAVIA_DIR, 'dist')
+
     launch_js_harness(_output_dir)
 
-    if os.environ.get('PRECOMPILE', 'true').lower() == 'true':
+    if precompile:
         build_batavia_js()
     else:
         print("Not precompiling 'batavia.js' as part of test run")
@@ -114,7 +125,7 @@ def launch_js_harness(_output_dir):
         ['node',
          os.path.join(TESTS_DIR, 'js_harness.js'),
          os.path.join(_output_dir, 'server.port'),
-         os.path.join(_suite_output_dir, 'batavia.js'),
+         os.path.join(_batavia_js_dir, 'batavia.js'),
          ],
     )
     atexit.register(lambda: js_harness and js_harness.kill())
@@ -761,7 +772,7 @@ class TranspileTestCase(TestCase):
                 frame: null
             });
             vm.run('test', []);
-            """) % (os.path.join(_suite_output_dir, 'batavia.js'),
+            """) % (os.path.join(_batavia_js_dir, 'batavia.js'),
                     '\n'.join(adjust(code) for name, code in
                               sorted(js.items())) if js else '',
                     ',\n'.join(payload))
