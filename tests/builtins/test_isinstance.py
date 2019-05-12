@@ -4,6 +4,7 @@ import unittest
 
 
 class IsinstanceTests(TranspileTestCase):
+    @unittest.expectedFailure
     def test_not_str(self):
         self.assertCodeExecution("""
         class A:
