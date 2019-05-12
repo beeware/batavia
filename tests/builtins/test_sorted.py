@@ -8,6 +8,10 @@ class SortedTests(TranspileTestCase):
 class BuiltinSortedFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "sorted"
 
+    not_implemented_versions = {
+        'test_noargs': '3.6',
+    }
+
     not_implemented = [
         'test_bool',
         'test_bytearray',
