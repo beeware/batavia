@@ -10,6 +10,7 @@ class IsinstanceTests(TranspileTestCase):
         print(isinstance(A(), str))
         """)
 
+    @unittest.expectedFailure
     def test_common_types(self):
         self.assertCodeExecution("""
         print(isinstance(1, int))

@@ -1,15 +1,15 @@
 from ..utils import TranspileTestCase
 
-import unittest
-
 # do basic tests for now
 # TODO: execute complete tests for each stdlib module
+
 
 def _test_module(self, name, exclude=[]):
     self.assertCodeExecution("""
         import %s
         print(sorted([x for x in list(dir(%s)) if not x.startswith('_') and x not in set(%s)]))
         """ % (name, name, repr(exclude)), run_in_function=False)
+
 
 class StdlibTests(TranspileTestCase):
     def test__weakref(self):

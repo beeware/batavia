@@ -1,5 +1,5 @@
 from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms, SAMPLE_DATA
+    adjust, transforms, SAMPLE_DATA, expected_failing_versions
 
 from itertools import product
 import unittest
@@ -728,11 +728,12 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """
 
+        @expected_failing_versions(['3.5', '3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_basic(self, js_cleaner, py_cleaner):
             combinations = (product(self.alternate, self.conversion_flags, self.args))
@@ -839,13 +840,14 @@ class FormatTests(TranspileTestCase):
                 ]
             )
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
+        @expected_failing_versions(['3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_left_adjust(self, js_cleaner, py_cleaner):
             """conversion flags for - and 0"""
@@ -868,13 +870,14 @@ class FormatTests(TranspileTestCase):
                 ]
             )
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
+        @expected_failing_versions(['3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_plus_sign(self, js_cleaner, py_cleaner):
             flags = ('+', ' ')
@@ -888,21 +891,18 @@ class FormatTests(TranspileTestCase):
 
             combinations = product(flags, cases)
             tests = ''.join(
-                [adjust
-                    (self.template
-                        .format(spec = c[0] + c[1][0], arg = c[1][1]
-                        )
-                    ) for c in combinations
-                ]
-            )
+                [adjust(self.template.format(spec=c[0] + c[1][0], arg=c[1][1]))
+                 for c in combinations])
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner,
+                                     py_cleaner=py_cleaner)
 
+        @expected_failing_versions(['3.6'])
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_literal_percent(self, js_cleaner, py_cleaner):
             test = adjust("""
@@ -1293,7 +1293,8 @@ class NewStyleFormatTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
-    @transforms(decimal = False,)
+    @expected_failing_versions(['3.6'])
+    @transforms(decimal=False,)
     def test_groupings(self, js_cleaner, py_cleaner):
         groupings = (',', '_')
         test_str = ''.join(
@@ -1308,8 +1309,9 @@ class NewStyleFormatTests(TranspileTestCase):
         )
 
         self.assertCodeExecution(test_str, js_cleaner=js_cleaner,
-                                    py_cleaner=py_cleaner)
+                                 py_cleaner=py_cleaner)
 
+    @expected_failing_versions(['3.6'])
     def test_groupings_with_str(self):
         """
         grouping with str shouldn't be allowed

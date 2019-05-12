@@ -16,7 +16,7 @@ import tempfile
 import traceback
 import itertools
 import collections
-from unittest import TestCase
+from unittest import TestCase, expectedFailure
 
 # get path to `tests` directory
 TESTS_DIR = os.path.dirname(__file__)
@@ -1469,6 +1469,13 @@ def _one_arg_method_test(name, module, cls_, f, examples):
         )
 
     return func
+
+
+def expected_failing_versions(versions):
+    py_version = "%s.%s" % (sys.version_info.major, sys.version_info.minor)
+    if py_version in versions:
+        return expectedFailure
+    return lambda f: f
 
 
 class MethodTestCase(NotImplementedToExpectedFailure):
