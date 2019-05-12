@@ -4,11 +4,8 @@ var exceptions = require('./exceptions')
 var version = {}
 
 var magic_map = {}
-magic_map[String.fromCharCode(238, 12, 13, 10)] = [[3, 4], [0xF]]
-magic_map[String.fromCharCode(248, 12, 13, 10)] = [[3, 5], [0xA, 0]]
 magic_map[String.fromCharCode(22, 13, 13, 10)] = [[3, 5], [0xF]]
 magic_map[String.fromCharCode(23, 13, 13, 10)] = [[3, 5, 3], [0xF]]
-magic_map[String.fromCharCode(23, 13, 13, 10)] = [[3, 5], [0xF]]
 magic_map[String.fromCharCode(51, 13, 13, 10)] = [[3, 6], [0xF]]
 magic_map[String.fromCharCode(66, 13, 13, 10)] = [[3, 7], [0xF]]
 magic_map[String.fromCharCode(73, 13, 13, 10)] = [[3, 8], [0xF]]
