@@ -1,8 +1,10 @@
-from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+from ..utils import TranspileTestCase, BuiltinTwoargFunctionTestCase
 
 import unittest
 
+
 class IsinstanceTests(TranspileTestCase):
+    @unittest.expectedFailure
     def test_not_str(self):
         self.assertCodeExecution("""
         class A:
@@ -33,5 +35,10 @@ class IsinstanceTests(TranspileTestCase):
         """)
 
 
-class BuiltinIsinstanceFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
+class BuiltinIsinstanceFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
     function = "isinstance"
+
+    not_implemented = [
+        "test_bool_class",
+        "test_str_class",
+    ]
