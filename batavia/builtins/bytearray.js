@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
 var type_name = require('../core').type_name
+var version = require('../core').version
 
 function nonNumericFilter(value) {
     return /\D/.test(value)
@@ -8,6 +9,14 @@ function nonNumericFilter(value) {
 
 function asBytes(value) {
     return new types.Bytes(value)
+}
+
+function requiresInteger(value) {
+    if (version.later('3.6')) {
+        throw new exceptions.TypeError.$pyclass("'" + type_name(value) + "' object cannot be interpreted as an integer")
+    } else {
+        throw new exceptions.TypeError.$pyclass('an integer is required')
+    }
 }
 
 function bytearray(args, kwargs) {
@@ -52,14 +61,14 @@ function bytearray(args, kwargs) {
         var toConvert = args[0].keys()
         let nonDigits = toConvert.filter(nonNumericFilter)
         if (nonDigits.length > 0) {
-            throw new exceptions.TypeError.$pyclass('an integer is required')
+            requiresInteger(nonDigits[0])
         }
         return new types.Bytearray(toConvert.map(asBytes))
     } else if (types.isinstance(args[0], [types.FrozenSet, types.Set])) {
         var asList = new types.List(args[0].data.keys())
         let nonDigits = asList.filter(nonNumericFilter)
         if (nonDigits.length > 0) {
-            throw new exceptions.TypeError.$pyclass('an integer is required')
+            requiresInteger(nonDigits[0])
         }
         return new types.Bytearray(asList.map(function(value) {
             return asBytes([value])
@@ -98,7 +107,7 @@ function bytearray(args, kwargs) {
             return !types.isinstance(value, [types.Int, types.Bool])
         })
         if (nonDigits.length > 0) {
-            throw new exceptions.TypeError.$pyclass('an integer is required')
+            requiresInteger(nonDigits[0])
         }
         return new types.Bytearray(new types.Bytes(toConvert))
     } else if (types.isinstance(args[0], types.Str)) {

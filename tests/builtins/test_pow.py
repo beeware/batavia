@@ -11,7 +11,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expected_failing_versions(['3.5', '3.6'])
     def test_int_neg_y_pos_z(self):
         self.assertCodeExecution("""
             x = 3
@@ -20,7 +19,6 @@ class PowTests(TranspileTestCase):
             print(pow(x, y, z))
         """)
 
-    @expected_failing_versions(['3.5', '3.6'])
     def test_int_neg_y_neg_z(self):
         self.assertCodeExecution("""
             x = 3
