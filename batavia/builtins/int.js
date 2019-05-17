@@ -1,10 +1,13 @@
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var types = require('../types')
 var type_name = require('../core').type_name
 var bytes = require('./bytes')
 var repr = require('./repr')
 
-function int(args, kwargs) {
+var int = types.Int.prototype.__class__
+
+int.__call__ = function(args, kwargs) {
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }
@@ -42,7 +45,7 @@ function int(args, kwargs) {
     }
     // The CPython int() implementation appears to resolve bytearrays to bytes objects before reporting ValueErrors
     if (types.isinstance(value, types.Bytearray)) {
-        value = bytes([value], null)
+        value = callables.call_function(bytes, [value], {})
     }
     // TODO: this should be able to parse things longer than 53 bits
     var result = parseInt(value, base)

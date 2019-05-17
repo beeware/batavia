@@ -1,7 +1,9 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
-function frozenset(args, kwargs) {
+var frozenset = types.FrozenSet.prototype.__class__
+
+frozenset.__call__ = function(args, kwargs) {
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }

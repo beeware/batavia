@@ -1,9 +1,12 @@
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var str = require('./str')
 var type_name = require('../core').type_name
 var types = require('../types')
 
-function float(args, kwargs) {
+var float = types.Float.prototype.__class__
+
+float.__call__ = function(args, kwargs) {
     if (args.length > 1) {
         throw new exceptions.TypeError.$pyclass('float() takes at most 1 argument (' + args.length + ' given)')
     }
@@ -23,7 +26,7 @@ function float(args, kwargs) {
         var was_byte_object = false
         if (types.isinstance(value, [types.Bytes, types.Bytearray])) {
             was_byte_object = true
-            value = str([value], null)
+            value = callables.call_function(str, [value], null)
         }
         if (value.length === 0 || value === "b''" || value === "bytearray''") {
             throw new exceptions.ValueError.$pyclass('could not convert string to float: ')

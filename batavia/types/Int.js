@@ -6,7 +6,6 @@ var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
-var utils = require('./utils')
 
 /*************************************************************************
  * A Python int type

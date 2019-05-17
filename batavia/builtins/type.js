@@ -1,7 +1,9 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
-var type = function(args, kwargs) {
+var type = types.Type.prototype.__class__
+
+type.__call__ = function(args, kwargs) {
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }

@@ -1488,7 +1488,7 @@ VirtualMachine.prototype.byte_UNPACK_SEQUENCE = function(count) {
 VirtualMachine.prototype.byte_BUILD_SLICE = function(count) {
     if (count === 2 || count === 3) {
         var items = this.popn(count)
-        this.push(builtins.slice(items))
+        this.push(callables.call_function(builtins.slice, items, {}))
     } else {
         throw new builtins.BataviaError.$pyclass('Strange BUILD_SLICE count: ' + count)
     }

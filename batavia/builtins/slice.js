@@ -2,7 +2,9 @@ var exceptions = require('../core').exceptions
 var types = require('../types')
 var None = require('../core').None
 
-function slice(args, kwargs) {
+var slice = types.Slice.prototype.__class__
+
+slice.__call__ = function(args, kwargs) {
     if (!args || args.length === 0) {
         throw new exceptions.TypeError.$pyclass('slice expected at least 1 arguments, got 0')
     } else if (args.length === 1) {

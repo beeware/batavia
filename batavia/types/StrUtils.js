@@ -1,3 +1,4 @@
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
@@ -1163,7 +1164,7 @@ function _new_subsitute(str, args, kwargs) {
                 case '!a':
                     return builtins.ascii([rawValue], {})
                 default:
-                    return builtins.str([rawValue], {})
+                    return callables.call_function(builtins.str, [rawValue], {})
 
             } // end switch
         }
