@@ -262,3 +262,13 @@ class FunctionTests(TranspileTestCase):
                 print(e)
             print('Done.')
         """)
+
+    def test_varargs(self):
+        self.assertCodeExecution("""
+            def myfunc(*a):
+                print(a)
+                
+            myfunc(3,4,5,6,7)
+            print('Done.')
+        """)
+

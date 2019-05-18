@@ -1,3 +1,5 @@
+var builtins = require('../builtins')
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
@@ -18,7 +20,7 @@ var inspect = {
 
 inspect.FullArgSpec = function(kwargs) {
     this.args = kwargs.args || []
-    this.varargs = kwargs.getcallargs
+    this.varargs = kwargs.varargs
     this.varkw = kwargs.varkw
     this.defaults = kwargs.defaults || {}
     this.kwonlyargs = kwargs.kwonlyargs || []
@@ -422,7 +424,7 @@ inspect.getcallargs = function(func, positional, named) {
     }
 
     if (func.argspec.varargs) {
-        arg2value[func.argspec.varargs] = positional.slice(n)
+        arg2value[func.argspec.varargs] = callables.call_function(builtins.tuple, [positional.slice(n)], {})
     }
 
     var possible_kwargs = new types.Set()
@@ -823,6 +825,7 @@ inspect.Signature.from_function = function(func) {
 
     // Keyword-only parameters.
     for (n = 0; n < keyword_only.length; n++) {
+        name = arg_names[pos_count + n]
         def = null
         if (kwdefaults !== null) {
             def = kwdefaults[name]
