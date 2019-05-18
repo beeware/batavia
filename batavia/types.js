@@ -68,14 +68,14 @@ types.isinstance = function(obj, type) {
                 if (typeof type === 'function' && (type.name === 'bool' || type.name === 'bound bool')) {
                     return true
                 }
-                return type === types.Bool
+                return type === types.Bool || type === types.Bool.prototype.__class__
             case 'number':
-                return type === types.Int
+                return type === types.Int || type === types.Int.prototype.__class__
             case 'string':
                 if (typeof type === 'function' && (type.name === 'str' || type.name === 'bound str')) {
                     return true
                 }
-                return type === types.Str
+                return type === types.Str || type === types.Str.prototype.__class__
             case 'object':
                 if (typeof type === 'object' && obj && obj.__class__) {
                     var leftName = obj.__class__.__name__

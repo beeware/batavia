@@ -32,7 +32,6 @@ class StdlibTests(TranspileTestCase):
     def test_copyreg(self):
         _test_module(self, "copyreg")
 
-    @unittest.expectedFailure  # Token uses 'isinstance(value, int)' but 'int' isn't actually a type currently.
     def test_token(self):
         # our version doesn't quite sync up
         self.assertCodeExecution("""

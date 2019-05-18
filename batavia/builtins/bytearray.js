@@ -3,6 +3,8 @@ var types = require('../types')
 var type_name = require('../core').type_name
 var version = require('../core').version
 
+var bytearray = types.Bytearray.prototype.__class__
+
 function nonNumericFilter(value) {
     return /\D/.test(value)
 }
@@ -19,7 +21,7 @@ function requiresInteger(value) {
     }
 }
 
-function bytearray(args, kwargs) {
+bytearray.__call__ = function(args, kwargs) {
 //    bytearray(string, encoding[, errors]) -> bytearray
 //    bytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer
 //    bytearray(iterable_of_ints) -> bytearray

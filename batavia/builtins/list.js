@@ -1,6 +1,8 @@
 var types = require('../types')
 
-function list(args) {
+var list = types.List.prototype.__class__
+
+list.__call__ = function(args) {
     if (!args || args.length === 0) {
         return new types.List()
     }
