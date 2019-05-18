@@ -437,15 +437,15 @@ inspect.getcallargs = function(func, positional, named) {
         if (named.hasOwnProperty(kw)) {
             if (!possible_kwargs.__contains__(new types.Str(kw)).valueOf()) {
                 if (!func.argspec.varkw) {
-                    throw new exceptions.TypeError.$pyclass('%s() got an unexpected keyword argument %r' %
-                                (func.__name__, kw))
+                    throw new exceptions.TypeError.$pyclass(
+                        func.__name__ + '() got an unexpected keyword argument \'' + kw + '\'')
                 }
                 arg2value[func.argspec.varkw][kw] = named[kw]
                 continue
             }
-            if (kw in arg2value) {
-                throw new exceptions.TypeError.$pyclass('%s() got multiple values for argument %r' %
-                                (func.__name__, kw))
+            if (arg2value.hasOwnProperty(kw)) {
+                throw new exceptions.TypeError.$pyclass(
+                    func.__name__ + '() got multiple values for argument \'' + kw + '\'')
             }
             arg2value[kw] = named[kw]
         }

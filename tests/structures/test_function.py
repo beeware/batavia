@@ -240,3 +240,25 @@ class FunctionTests(TranspileTestCase):
             myfunc()
             print('Done.')
         """)
+
+    def test_unexpected_keyword_arg(self):
+        self.assertCodeExecution("""
+            def myfunc(x, a=1):
+                print(x, a)
+                
+            myfunc(1, b=2)
+            print('Done.')
+        """)
+
+    @unittest.expectedFailure
+    def test_repeated_keyword_arg(self):
+        self.assertCodeExecution("""
+            def myfunc(x, a=1):
+                print(x, a)
+                
+            try:
+                myfunc(1, a=2, **{'a': '1'})
+            except Exception as e:
+                print(e)
+            print('Done.')
+        """)

@@ -19,7 +19,6 @@ class LambdaTests(TranspileTestCase):
             print("Done.")
             """)
 
-    @unittest.expectedFailure
     def test_no_arguments_extra_keyword(self):
         self.assertCodeExecution("""
             x = lambda: x
@@ -57,7 +56,6 @@ class LambdaTests(TranspileTestCase):
             print("Done.")
             """)
 
-    @unittest.expectedFailure
     def test_one_argument_extra_keyword(self):
         self.assertCodeExecution("""
             x = lambda a: a + 7
