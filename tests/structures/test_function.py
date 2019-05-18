@@ -227,7 +227,7 @@ class FunctionTests(TranspileTestCase):
         self.assertCodeExecution("""
             def myfunc(x, *, z):
                 print(x, z)
-            
+
             myfunc(1)
             print('Done.')
         """)
@@ -236,7 +236,7 @@ class FunctionTests(TranspileTestCase):
         self.assertCodeExecution("""
             def myfunc(x, y, z):
                 print(x, y, z)
-            
+
             myfunc()
             print('Done.')
         """)
@@ -245,7 +245,7 @@ class FunctionTests(TranspileTestCase):
         self.assertCodeExecution("""
             def myfunc(x, a=1):
                 print(x, a)
-                
+
             myfunc(1, b=2)
             print('Done.')
         """)
@@ -255,7 +255,7 @@ class FunctionTests(TranspileTestCase):
         self.assertCodeExecution("""
             def myfunc(x, a=1):
                 print(x, a)
-                
+
             try:
                 myfunc(1, a=2, **{'a': '1'})
             except Exception as e:
@@ -267,7 +267,7 @@ class FunctionTests(TranspileTestCase):
         self.assertCodeExecution("""
             def myfunc(*a):
                 print(a)
-                
+
             myfunc(3,4,5,6,7)
             print('Done.')
         """)
@@ -276,8 +276,7 @@ class FunctionTests(TranspileTestCase):
         self.assertCodeExecution("""
             def myfunc(a):
                 print(a)
-                
+
             myfunc(3,4,5,6,7)
             print('Done.')
         """)
-

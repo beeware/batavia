@@ -209,11 +209,11 @@ class ClassTests(TranspileTestCase):
             class MyClass:
               def f(self, a):
                 print(a)
-                
+
             obj = MyClass()
-                
+
             obj.f(1, 2)
-            
+
             print("Done.")
         """)
 
@@ -222,11 +222,11 @@ class ClassTests(TranspileTestCase):
             class MyClass:
               def f(self, a):
                 print(a)
-                
+
             obj = MyClass()
-                
+
             obj.f(1, y=2)
-            
+
             print("Done.")
         """)
 
@@ -236,12 +236,12 @@ class ClassTests(TranspileTestCase):
             class MyClass:
               def f(self, a, y=None):
                 print(a, y)
-                
+
             obj = MyClass()
-                
+
             x = {'y': 1}
             obj.f(1, y=2, **x)
-            
+
             print("Done.")
         """)
 
@@ -250,10 +250,10 @@ class ClassTests(TranspileTestCase):
             class MyClass:
               def f(self, a, b, c):
                 print(a, b, c)
-                
+
             obj = MyClass()
-                
+
             obj.f(1)
-            
+
             print("Done.")
         """)
