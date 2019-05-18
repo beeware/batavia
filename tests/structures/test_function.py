@@ -272,3 +272,12 @@ class FunctionTests(TranspileTestCase):
             print('Done.')
         """)
 
+    def test_too_many_positional_args(self):
+        self.assertCodeExecution("""
+            def myfunc(a):
+                print(a)
+                
+            myfunc(3,4,5,6,7)
+            print('Done.')
+        """)
+

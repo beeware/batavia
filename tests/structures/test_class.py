@@ -203,3 +203,57 @@ class ClassTests(TranspileTestCase):
             print(obj.second())
             print('Done.')
             """)
+
+    def test_method_too_many_positional_args(self):
+        self.assertCodeExecution("""
+            class MyClass:
+              def f(self, a):
+                print(a)
+                
+            obj = MyClass()
+                
+            obj.f(1, 2)
+            
+            print("Done.")
+        """)
+
+    def test_method_unknown_keyword_args(self):
+        self.assertCodeExecution("""
+            class MyClass:
+              def f(self, a):
+                print(a)
+                
+            obj = MyClass()
+                
+            obj.f(1, y=2)
+            
+            print("Done.")
+        """)
+
+    @expectedFailure
+    def test_method_duplicated_keyword_args(self):
+        self.assertCodeExecution("""
+            class MyClass:
+              def f(self, a, y=None):
+                print(a, y)
+                
+            obj = MyClass()
+                
+            x = {'y': 1}
+            obj.f(1, y=2, **x)
+            
+            print("Done.")
+        """)
+
+    def test_method_missing_positional_args(self):
+        self.assertCodeExecution("""
+            class MyClass:
+              def f(self, a, b, c):
+                print(a, b, c)
+                
+            obj = MyClass()
+                
+            obj.f(1)
+            
+            print("Done.")
+        """)

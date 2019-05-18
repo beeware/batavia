@@ -336,6 +336,17 @@ inspect.getfullargspec = function(func) {
     // }
 }
 
+function select_word(expression, if_true, if_false) {
+    if (expression) {
+        return if_true
+    }
+    return if_false
+}
+
+function pluralize(count) {
+    return select_word(count === 1, '', 's')
+}
+
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
     const names = []
     for (const name of argnames) {
@@ -356,41 +367,42 @@ inspect._missing_arguments = function(f_name, argnames, pos, values) {
         missing_names = names[0]
     }
 
-    let plural = ''
-    if (missing !== 1) {
-        plural = 's'
-    }
-
-    let arg_type = 'keyword-only'
-    if (pos) {
-        arg_type = 'positional'
-    }
-
     throw new exceptions.TypeError.$pyclass(
-        f_name + '() missing ' + missing + ' required ' + arg_type + ' argument' + plural + ': ' + missing_names)
+        f_name + '() missing ' + missing + ' required ' + select_word(pos, 'positional', 'keyword-only') +
+        ' argument' + pluralize(missing) + ': ' + missing_names)
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw new exceptions.RuntimeError.$pyclass('FIXME: Too many arguments')
-    // atleast = len(args) - defcount
-    // kwonly_given = len([arg for arg in kwonly if arg in values])
-    // if varargs:
-    //     plural = atleast !== 1
-    //     sig = "at least %d" % (atleast,)
-    // elif defcount:
-    //     plural = True
-    //     sig = "from %d to %d" % (atleast, len(args))
-    // else:
-    //     plural = len(args) !== 1
-    //     sig = str(len(args))
-    // kwonly_sig = ""
-    // if kwonly_given:
-    //     msg = " positional argument%s (and %d keyword-only argument%s)"
-    //     kwonly_sig = (msg % ("s" if given !== 1 else "", kwonly_given,
-    //                          "s" if kwonly_given !== 1 else ""))
-    // raise TypeError("%s() takes %s positional argument%s but %d%s %s given" %
-    //         (f_name, sig, "s" if plural else "", given, kwonly_sig,
-    //          "was" if given === 1 and not kwonly_given else "were"))
+    const atleast = args.length - defcount
+    let kwonly_given = 0
+    for (const arg of kwonly) {
+        if (values.hasOwnProperty(arg)) {
+            kwonly_given += 1
+        }
+    }
+
+    let plural
+    let sig
+    if (varargs) {
+        plural = atleast !== 1
+        sig = 'at least ' + atleast
+    } else if (defcount) {
+        plural = true
+        sig = 'from ' + atleast + ' to ' + args.length
+    } else {
+        plural = args.length !== 1
+        sig = '' + args.length
+    }
+
+    let kwonly_sig = ''
+    if (kwonly_given) {
+        kwonly_sig = ' positional argument' + pluralize(given) + ' (and ' + kwonly_given + ' keyword-only argument' +
+            pluralize(kwonly_given) + ')'
+    }
+
+    throw new exceptions.TypeError.$pyclass(
+        f_name + '() takes ' + sig + ' positional argument' + select_word(plural, 's', '') + ' but ' + given +
+        kwonly_sig + ' ' + select_word(given === 1 && !kwonly_given, 'was', 'were') + ' given')
 }
 
 /*
@@ -453,7 +465,7 @@ inspect.getcallargs = function(func, positional, named) {
         }
     }
 
-    if (num_pos > num_args && (func.argspec.varargs === undefined || func.argspec.varargs.length === 0)) {
+    if (num_pos > num_args && (func.argspec.varargs == null || func.argspec.varargs.length === 0)) {
         inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value)
     }
     if (num_pos < num_args) {
