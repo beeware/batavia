@@ -335,31 +335,41 @@ inspect.getfullargspec = function(func) {
 }
 
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw exceptions.RuntimeError.$pyclass('Missing arguments')
-    // var names = [];
-    // for (var name in argnames) {
-    //     if (!name in values) {
-    //         names.push(name);
-    //     }
-    // }
-    // var missing = names.length;
-    // if (missing === 1) {
-    //     s = names[0];
-    // } else if (missing === 2) {
-    //     s = "{} and {}".format(*names)
-    // } else {
-    //     tail = ", {} and {}".format(*names[-2:])
-    //     del names[-2:]
-    //     s = ", ".join(names) + tail
-    // }
-    // raise TypeError("%s() missing %i required %s argument%s: %s" %
-    //                 (f_name, missing,
-    //                   "positional" if pos else "keyword-only",
-    //                   "" if missing === 1 else "s", s))
+    const names = []
+    for (const name of argnames) {
+        if (!values.hasOwnProperty(name)) {
+            names.push('\'' + name + '\'')
+        }
+    }
+
+    const missing = names.length
+
+    let missing_names
+    if (missing > 2) {
+        let last_name = names.pop()
+        missing_names = names.join(', ') + ', and ' + last_name
+    } else if (missing > 1) {
+        missing_names = names[0] + ' and ' + names[missing - 1]
+    } else {
+        missing_names = names[0]
+    }
+
+    let plural = ''
+    if (missing !== 1) {
+        plural = 's'
+    }
+
+    let arg_type = 'keyword-only'
+    if (pos) {
+        arg_type = 'positional'
+    }
+
+    throw new exceptions.TypeError.$pyclass(
+        f_name + '() missing ' + missing + ' required ' + arg_type + ' argument' + plural + ': ' + missing_names)
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw exceptions.RuntimeError.$pyclass('FIXME: Too many arguments')
+    throw new exceptions.RuntimeError.$pyclass('FIXME: Too many arguments')
     // atleast = len(args) - defcount
     // kwonly_given = len([arg for arg in kwonly if arg in values])
     // if varargs:
@@ -400,7 +410,7 @@ inspect.getcallargs = function(func, positional, named) {
     var num_args = func.argspec.args.length
     var num_defaults
     if (func.argspec.defaults) {
-        num_defaults = func.argspec.defaults.length
+        num_defaults = func.argspec.defaults.length || 0
     } else {
         num_defaults = 0
     }

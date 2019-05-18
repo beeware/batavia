@@ -221,3 +221,22 @@ class FunctionTests(TranspileTestCase):
             myfunc(**{'z': 4, 'x': 1, 'y': 2})
             print('Done.')
         """)
+
+    @unittest.expectedFailure
+    def test_missing_keyword_args(self):
+        self.assertCodeExecution("""
+            def myfunc(x, *, z):
+                print(x, z)
+            
+            myfunc(1)
+            print('Done.')
+        """)
+
+    def test_missing_positional_args(self):
+        self.assertCodeExecution("""
+            def myfunc(x, y, z):
+                print(x, y, z)
+            
+            myfunc()
+            print('Done.')
+        """)
