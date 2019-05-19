@@ -1,7 +1,9 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
-function map(args, kwargs) {
+var map = types.Map.prototype.__class__
+
+map.__call__ = function(args, kwargs) {
     if (arguments.length !== 2) {
         throw new exceptions.BataviaError.$pyclass('Batavia calling convention not used.')
     }

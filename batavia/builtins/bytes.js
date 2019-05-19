@@ -7,7 +7,9 @@ var version = require('../core').version
 var types = require('../types')
 var iter = require('./iter')
 
-function bytes(args, kwargs) {
+var bytes = types.Bytes.prototype.__class__
+
+bytes.__call__ = function(args, kwargs) {
 //    bytes(iterable_of_ints) -> bytes
 //    bytes(string, encoding[, errors]) -> bytes
 //    bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
@@ -65,7 +67,7 @@ function bytes(args, kwargs) {
             }
         } else if (types.isinstance(arg, types.Bool)) {
             // Python bool is subclassed from int, but Batavia's Boolean is a fake int:
-            return bytes([arg.__int__()], [])
+            return callables.call_function(bytes, [arg.__int__()], {})
         } else if (types.isinstance(arg, types.Bytes)) {
             // bytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer
             return new types.Bytes(Buffer.from(arg.val))
