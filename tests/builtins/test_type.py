@@ -10,7 +10,6 @@ class TypeTests(TranspileTestCase):
 class BuiltinTypeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "type"
 
-    @unittest.expectedFailure
     def test_type_equality(self):
         self.assertCodeExecution("""
         print(type(123))
