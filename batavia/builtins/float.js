@@ -48,7 +48,7 @@ function float(args, kwargs) {
         return args[0].__float__()
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "float() argument must be a string, a bytes-like object or a number, not '" + type_name(args[0]) + "'")
+            "float() argument must be a string or a number, not '" + type_name(args[0]) + "'")
     }
 }
 float.__doc__ = 'float([x]) -> Convert a string or a number to floating point.'
