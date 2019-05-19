@@ -36,6 +36,9 @@ npm-debug.log
 # Py.test
 .cache
 
+# Tox
+.tox
+
 # local environment configuration
 .env
 /.cache-loader/

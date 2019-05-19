@@ -3,6 +3,7 @@ include CONTRIBUTING.md
 include AUTHORS
 include LICENSE
 include Makefile
+include package.json
 include requirements*.txt
 include run_in_batavia.js
 include compile_module.py
