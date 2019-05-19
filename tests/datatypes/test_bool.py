@@ -27,6 +27,7 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
+        'test_matmul_int'
     ]
 
 
@@ -34,4 +35,5 @@ class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'bool'
 
     not_implemented = [
+        'test_matmul_int'
     ]
