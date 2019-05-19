@@ -70,7 +70,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_complex',
         'test_lt_frozenset',
 
-        'test_matmul_int',
         'test_matmul_complex',
 
         'test_modulo_complex',
@@ -101,7 +100,6 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_floor_divide_complex',
 
-        'test_matmul_int',
         'test_matmul_complex',
 
         'test_modulo_complex',
