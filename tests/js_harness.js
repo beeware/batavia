@@ -2,9 +2,11 @@ const bodyParser = require('body-parser')
 const express = require('express')
 const fs = require('fs')
 const http = require('http')
-const vm = require('vm')
+const cp = require('child_process')
 
 const app = express()
+
+const FOUR_SECOND_TIMEOUT = 4000
 
 const portNameFile = process.argv[2]
 const bataviaSource = process.argv[3]
@@ -12,7 +14,7 @@ const bataviaSource = process.argv[3]
 app.use(bodyParser.json({limit: '50mb'}))
 
 app.post('/', (request, response) => {
-    response.end(_execute_with_batavia(request.body.code))
+    _execute_with_batavia(request.body.code, (data) => response.end(data))
 })
 
 const server = http.createServer(app)
@@ -29,42 +31,26 @@ server.listen(0, (err) => {
     })
 })
 
+let child = cp.fork('tests/test_worker')
+
 /**
  * Execute JS code in a sandbox including the batavia.js runtime.
  *
  * @param {string} code Code snippet to execute.
+ * @param {function(string)} callback
  * @return {string}
  */
-function _execute_with_batavia(code) {
-    const batavia = require(bataviaSource)
+function _execute_with_batavia(code, callback) {
+    const reportTimeout = setTimeout(() => {
+        child.kill()
+        callback('********** JAVASCRIPT EXECUTION TIMED OUT **********')
+        child = cp.fork('tests/test_worker')
+    }, FOUR_SECOND_TIMEOUT)
 
-    // This cache is global, instead of per batavia.VirtualMachine instance...
-    batavia.modules.sys.modules = {}
-
-    return _capture_stdout(() => {
-        const m = require('module')
-        vm.runInThisContext(m.wrap(code))(exports, require, module, __filename, __dirname)
+    child.on('message', (output) => {
+        clearTimeout(reportTimeout)
+        callback(output)
     })
-}
 
-/**
- * Run a function, capturing stdout and returning everything written to it.
- *
- * @param {function()} f The function to run.
- * @return {string}
- * @private
- */
-function _capture_stdout(f) {
-    let output = ''
-    const old_write = process.stdout.write
-
-    process.stdout.write = (str, encoding, fd) => {
-        output += str
-    }
-
-    f()
-
-    process.stdout.write = old_write
-
-    return output
+    child.send({bataviaSource, code})
 }
