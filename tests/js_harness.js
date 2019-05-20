@@ -42,7 +42,7 @@ let child = cp.fork('tests/test_worker')
  */
 function _execute_with_batavia(code, callback) {
     const reportTimeout = setTimeout(() => {
-        child.kill()
+        child.kill('SIGHUP')
         callback('********** JAVASCRIPT EXECUTION TIMED OUT **********')
         child = cp.fork('tests/test_worker')
     }, FOUR_SECOND_TIMEOUT)
