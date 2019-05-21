@@ -36,3 +36,12 @@ class ExceptionTests(TranspileTestCase):
             except Exception as err:
                 print(type(err), err)
         """)
+
+    def test_raise_inside_loop(self):
+        self.assertCodeExecution("""
+            for x in ['a', 'b']:  # same for ['a']
+                try:
+                    raise Exception()
+                except:
+                    print(x)
+        """)
