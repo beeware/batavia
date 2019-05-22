@@ -404,7 +404,7 @@ Float.prototype.__mul__ = function(other) {
             return new Float(this.valueOf() * 0)
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
-        return new Float(this.valueOf() * other.valueOf())
+        return new Float(this.valueOf() * other.__float__().valueOf())
     } else {
         return new types.NotImplementedType()
     }
@@ -467,9 +467,6 @@ Float.prototype.__add__ = function(other) {
         } else {
             return new Float(this.valueOf())
         }
-    } else if (types.isinstance(other, types.Complex)) {
-        var real = new Float(this.valueOf() + other.real)
-        return new types.Complex(real.valueOf(), other.imag.valueOf())
     } else {
         return new NotImplementedType()
     }
@@ -502,6 +499,43 @@ Float.prototype.__sub__ = function(other) {
 
 Float.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'float' object is not subscriptable")
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Float.prototype.__radd__ = function(other) {
+    return this.__add__(other)
+}
+
+Float.prototype.__rfloordiv__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Float.prototype.__rmod__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Float.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+Float.prototype.__rpow__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Float.prototype.__rsub__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Float.prototype.__rtruediv__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
 }
 
 /**************************************************

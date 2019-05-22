@@ -3,8 +3,10 @@ var exceptions = require('../core').exceptions
 var types = require('../types')
 var type_name = require('../core').type_name
 
+const ADD_OPERATOR = operators['__add__']
+
 function add(left, right) {
-    return operators['__add__'].apply(left, right)
+    return ADD_OPERATOR.apply(left, right)
 }
 
 function sum(args, kwargs) {

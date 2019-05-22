@@ -459,8 +459,6 @@ Int.prototype.__mul__ = function(other) {
 
     if (types.isinstance(other, Int)) {
         return new Int(this.val.mul(other.val))
-    } else if (types.isinstance(other, types.Float)) {
-        return this.__float__().__mul__(other.val)
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return this
@@ -546,12 +544,6 @@ Int.prototype.__mul__ = function(other) {
             result = new types.Bytearray(result.valueOf() + other.valueOf())
         }
         return result
-    } else if (types.isinstance(other, types.Complex)) {
-        if (this.val.gt(MAX_INT.val) || this.val.lt(MIN_INT.val)) {
-            throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
-        } else {
-            return new types.Complex(this.val.mul(other.real).toNumber(), this.val.mul(other.imag).toNumber())
-        }
     } else {
         return new types.NotImplementedType()
     }
@@ -589,19 +581,11 @@ Int.prototype.__add__ = function(other) {
 
     if (types.isinstance(other, Int)) {
         return new Int(this.val.add(other.val))
-    } else if (types.isinstance(other, types.Float)) {
-        return this.__float__().__add__(other)
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Int(this.val.add(1))
         } else {
             return this
-        }
-    } else if (types.isinstance(other, types.Complex)) {
-        if (this.__float__() > MAX_FLOAT || this.__float__() < MIN_FLOAT) {
-            throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
-        } else {
-            return new types.Complex(this.val.add(other.real).toNumber(), other.imag)
         }
     } else {
         return new types.NotImplementedType()
@@ -878,6 +862,65 @@ Int.prototype.__or__ = function(other) {
     } else {
         return new types.NotImplementedType()
     }
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Int.prototype.__radd__ = function(other) {
+    return this.__add__(other)
+}
+
+Int.prototype.__rand__ = function(other) {
+    return this.__and__(other)
+}
+
+Int.prototype.__rfloordiv__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rlshift__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rmod__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+Int.prototype.__ror__ = function(other) {
+    return this.__or__(other)
+}
+
+Int.prototype.__rpow__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rrshift__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rsub__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rtruediv__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Int.prototype.__rxor__ = function(other) {
+    return this.__xor__(other)
 }
 
 /**************************************************

@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -178,6 +179,43 @@ class TupleTests(TranspileTestCase):
         print(type(len(tuple())))
         print(len((1,2,3)))
         """)
+
+
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'tuple'
+
+    not_implemented = [
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+        "test_multiply_class",
+        "test_multiply_complex",
+        "test_multiply_dict",
+        "test_multiply_float",
+        "test_multiply_frozenset",
+        "test_multiply_list",
+        "test_multiply_None",
+        "test_multiply_NotImplemented",
+        "test_multiply_range",
+        "test_multiply_set",
+        "test_multiply_slice",
+        "test_multiply_str",
+        "test_multiply_tuple",
+        "test_rmultiply_bytearray",
+        "test_rmultiply_bytes",
+        "test_rmultiply_class",
+        "test_rmultiply_complex",
+        "test_rmultiply_dict",
+        "test_rmultiply_float",
+        "test_rmultiply_frozenset",
+        "test_rmultiply_list",
+        "test_rmultiply_None",
+        "test_rmultiply_NotImplemented",
+        "test_rmultiply_range",
+        "test_rmultiply_set",
+        "test_rmultiply_slice",
+        "test_rmultiply_str",
+        "test_rmultiply_tuple",
+    ]
 
 
 class UnaryTupleOperationTests(UnaryOperationTestCase, TranspileTestCase):

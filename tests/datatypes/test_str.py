@@ -1,5 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms, SAMPLE_DATA, expected_failing_versions
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    adjust, transforms, SAMPLE_DATA, expected_failing_versions, MagicMethodFunctionTestCase
 
 from itertools import product
 import unittest
@@ -1394,6 +1394,61 @@ class NewStyleFormatTests(TranspileTestCase):
         )
 
         self.assertCodeExecution(test_str)
+
+
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'str'
+
+    not_implemented = [
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+        "test_multiply_class",
+        "test_multiply_complex",
+        "test_multiply_dict",
+        "test_multiply_float",
+        "test_multiply_frozenset",
+        "test_multiply_list",
+        "test_multiply_None",
+        "test_multiply_NotImplemented",
+        "test_multiply_range",
+        "test_multiply_set",
+        "test_multiply_slice",
+        "test_multiply_str",
+        "test_multiply_tuple",
+
+        "test_rmodulo_bool",
+        "test_rmodulo_bytearray",
+        "test_rmodulo_bytes",
+        "test_rmodulo_class",
+        "test_rmodulo_complex",
+        "test_rmodulo_dict",
+        "test_rmodulo_float",
+        "test_rmodulo_frozenset",
+        "test_rmodulo_int",
+        "test_rmodulo_list",
+        "test_rmodulo_None",
+        "test_rmodulo_NotImplemented",
+        "test_rmodulo_range",
+        "test_rmodulo_set",
+        "test_rmodulo_slice",
+        "test_rmodulo_str",
+        "test_rmodulo_tuple",
+        "test_rmultiply_bytearray",
+        "test_rmultiply_bytes",
+        "test_rmultiply_class",
+        "test_rmultiply_complex",
+        "test_rmultiply_dict",
+        "test_rmultiply_float",
+        "test_rmultiply_frozenset",
+        "test_rmultiply_list",
+        "test_rmultiply_None",
+        "test_rmultiply_NotImplemented",
+        "test_rmultiply_range",
+        "test_rmultiply_set",
+        "test_rmultiply_slice",
+        "test_rmultiply_str",
+        "test_rmultiply_tuple",
+    ]
 
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):

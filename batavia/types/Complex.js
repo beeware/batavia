@@ -436,12 +436,35 @@ Complex.prototype.__getitem__ = function(other) {
  * Right-hand operators
  **************************************************/
 
+Complex.prototype.__radd__ = function(other) {
+    return this.__add__(other)
+}
+
 Complex.prototype.__rfloordiv__ = function(other) {
     throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
 }
 
 Complex.prototype.__rmod__ = function(other) {
     throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
+}
+
+Complex.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+Complex.prototype.__rpow__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Complex.prototype.__rsub__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Complex.prototype.__rtruediv__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
 }
 
 /**************************************************

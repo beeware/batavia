@@ -681,6 +681,58 @@ Bool.prototype.__or__ = function(other) {
 }
 
 /**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Bool.prototype.__radd__ = function(other) {
+    return this.__add__(other)
+}
+
+Bool.prototype.__rand__ = function(other) {
+    return this.__and__(other)
+}
+
+Bool.prototype.__rfloordiv__ = function(other) {
+    return this.__floordiv__(other)
+}
+
+Bool.prototype.__rlshift__ = function(other) {
+    return this.__lshift__(other)
+}
+
+Bool.prototype.__rmod__ = function(other) {
+    return this.__mod__(other)
+}
+
+Bool.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+Bool.prototype.__ror__ = function(other) {
+    return this.__or__(other)
+}
+
+Bool.prototype.__rpow__ = function(other) {
+    return this.__pow__(other)
+}
+
+Bool.prototype.__rrshift__ = function(other) {
+    return this.__rshift__(other)
+}
+
+Bool.prototype.__rsub__ = function(other) {
+    return this.__sub__(other)
+}
+
+Bool.prototype.__rtruediv__ = function(other) {
+    return this.__truediv__(other)
+}
+
+Bool.prototype.__rxor__ = function(other) {
+    return this.__xor__(other)
+}
+
+/**************************************************
  * Methods
  **************************************************/
 

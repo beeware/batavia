@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 
 class NotImplementedTests(TranspileTestCase):
@@ -7,6 +8,10 @@ class NotImplementedTests(TranspileTestCase):
             x = NotImplemented
             print(x == True)
             """)
+
+
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'NotImplemented'
 
 
 class UnaryNotImplementedOperationTests(UnaryOperationTestCase, TranspileTestCase):
@@ -24,11 +29,16 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
     data_type = 'NotImplemented'
 
     not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
     ]
-
 
 class InplaceNotImplementedOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'NotImplemented'
 
     not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
     ]

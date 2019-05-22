@@ -984,6 +984,177 @@ SAMPLE_SUBSTITUTIONS = {
 }
 
 
+def _magic_method_test(test_name, magic_method, examples, small_ints=False):
+    def func(self):
+        # CPython will attempt to malloc itself to death for some operations,
+        # e.g., 1 << (2**32)
+        # so we have this dirty hack
+        actuals = examples
+        if small_ints and test_name.endswith('_int'):
+            actuals = [x for x in examples if abs(int(x)) < 8192]
+        self.assertMagicMethod(
+            x_values=SAMPLE_DATA[self.data_type][:2],
+            y_values=actuals,
+            magic_method=magic_method,
+            format=self.format,
+            substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
+        )
+
+    return func
+
+
+class MagicMethodFunctionTestCase(NotImplementedToExpectedFailure):
+    format = ''
+    y = 3
+
+    def assertMagicMethod(self, x_values, magic_method, y_values, format, substitutions):
+        data = []
+        for x in x_values:
+            for y in y_values:
+                data.append((x, y))
+
+        self.assertCodeExecution(
+            '##################################################\n'.join(
+                adjust("""
+                    try:
+                        print('>>> x = %(x)s')
+                        print('>>> y = %(y)s')
+                        print('>>> z = x.%(magic_method)s(y)')
+                        print('>>> %(format)sz')
+                        x = %(x)s
+                        y = %(y)s
+                        z = x.%(magic_method)s(y)
+                        print('|||', %(format)sz)
+                    except Exception as e:
+                        print('///', type(e), ':', e)
+                    print()
+                    """ % {
+                    'x': x,
+                    'y': y,
+                    'magic_method': magic_method,
+                    'format': format,
+                }
+                       )
+                for x, y in data
+            ),
+            "Error running %s" % magic_method,
+            substitutions=substitutions,
+            run_in_function=False,
+        )
+
+    for datatype, examples in SAMPLE_DATA.items():
+        vars()['test_add_%s' % datatype] = _magic_method_test(
+            'test_add_%s' % datatype, '__add__', examples[:2]
+        )
+        vars()['test_subtract_%s' % datatype] = _magic_method_test(
+            'test_subtract_%s' % datatype, '__sub__', examples[:2]
+        )
+        vars()['test_multiply_%s' % datatype] = _magic_method_test(
+            'test_multiply_%s' % datatype, '__mul__', examples[:2], small_ints=True
+        )
+        vars()['test_floor_divide_%s' % datatype] = _magic_method_test(
+            'test_floor_divide_%s' % datatype, '__floordiv__', examples[:2]
+        )
+        vars()['test_true_divide_%s' % datatype] = _magic_method_test(
+            'test_true_divide_%s' % datatype, '__truediv__', examples[:2]
+        )
+        vars()['test_modulo_%s' % datatype] = _magic_method_test(
+            'test_modulo_%s' % datatype, '__mod__', examples[:2]
+        )
+        vars()['test_power_%s' % datatype] = _magic_method_test(
+            'test_power_%s' % datatype, '__pow__', examples[:2], small_ints=True
+        )
+        vars()['test_lshift_%s' % datatype] = _magic_method_test(
+            'test_lshift_%s' % datatype, '__lshift__', examples[:2], small_ints=True
+        )
+        vars()['test_rshift_%s' % datatype] = _magic_method_test(
+            'test_rshift_%s' % datatype, '__rshift__', examples[:2], small_ints=True
+        )
+        vars()['test_and_%s' % datatype] = _magic_method_test(
+            'test_and_%s' % datatype, '__and__', examples[:2]
+        )
+        vars()['test_xor_%s' % datatype] = _magic_method_test(
+            'test_xor_%s' % datatype, '__xor__', examples[:2]
+        )
+        vars()['test_or_%s' % datatype] = _magic_method_test(
+            'test_or_%s' % datatype, '__or__', examples[:2]
+        )
+
+        vars()['test_iadd_%s' % datatype] = _magic_method_test(
+            'test_iadd_%s' % datatype, '__iadd__', examples[:2]
+        )
+        vars()['test_isubtract_%s' % datatype] = _magic_method_test(
+            'test_isubtract_%s' % datatype, '__isub__', examples[:2]
+        )
+        vars()['test_imultiply_%s' % datatype] = _magic_method_test(
+            'test_imultiply_%s' % datatype, '__imul__', examples[:2], small_ints=True
+        )
+        vars()['test_ifloor_divide_%s' % datatype] = _magic_method_test(
+            'test_ifloor_divide_%s' % datatype, '__ifloordiv__', examples[:2]
+        )
+        vars()['test_itrue_divide_%s' % datatype] = _magic_method_test(
+            'test_itrue_divide_%s' % datatype, '__itruediv__', examples[:2]
+        )
+        vars()['test_imodulo_%s' % datatype] = _magic_method_test(
+            'test_imodulo_%s' % datatype, '__imod__', examples[:2]
+        )
+        vars()['test_ipower_%s' % datatype] = _magic_method_test(
+            'test_ipower_%s' % datatype, '__ipow__', examples[:2], small_ints=True
+        )
+        vars()['test_ilshift_%s' % datatype] = _magic_method_test(
+            'test_ilshift_%s' % datatype, '__ilshift__', examples[:2], small_ints=True
+        )
+        vars()['test_irshift_%s' % datatype] = _magic_method_test(
+            'test_irshift_%s' % datatype, '__irshift__', examples[:2], small_ints=True
+        )
+        vars()['test_iand_%s' % datatype] = _magic_method_test(
+            'test_iand_%s' % datatype, '__iand__', examples[:2]
+        )
+        vars()['test_ixor_%s' % datatype] = _magic_method_test(
+            'test_ixor_%s' % datatype, '__ixor__', examples[:2]
+        )
+        vars()['test_ior_%s' % datatype] = _magic_method_test(
+            'test_ior_%s' % datatype, '__ior__', examples[:2]
+        )
+
+        vars()['test_radd_%s' % datatype] = _magic_method_test(
+            'test_radd_%s' % datatype, '__radd__', examples[:2]
+        )
+        vars()['test_rsubtract_%s' % datatype] = _magic_method_test(
+            'test_rsubtract_%s' % datatype, '__rsub__', examples[:2]
+        )
+        vars()['test_rmultiply_%s' % datatype] = _magic_method_test(
+            'test_rmultiply_%s' % datatype, '__rmul__', examples[:2], small_ints=True
+        )
+        vars()['test_rfloor_divide_%s' % datatype] = _magic_method_test(
+            'test_rfloor_divide_%s' % datatype, '__rfloordiv__', examples[:2]
+        )
+        vars()['test_rtrue_divide_%s' % datatype] = _magic_method_test(
+            'test_rtrue_divide_%s' % datatype, '__rtruediv__', examples[:2]
+        )
+        vars()['test_rmodulo_%s' % datatype] = _magic_method_test(
+            'test_rmodulo_%s' % datatype, '__rmod__', examples[:2]
+        )
+        vars()['test_rpower_%s' % datatype] = _magic_method_test(
+            'test_rpower_%s' % datatype, '__rpow__', examples[:2], small_ints=True
+        )
+        vars()['test_rlshift_%s' % datatype] = _magic_method_test(
+            'test_rlshift_%s' % datatype, '__rlshift__', examples[:2], small_ints=True
+        )
+        vars()['test_rrshift_%s' % datatype] = _magic_method_test(
+            'test_rrshift_%s' % datatype, '__rrshift__', examples[:2], small_ints=True
+        )
+        vars()['test_rand_%s' % datatype] = _magic_method_test(
+            'test_rand_%s' % datatype, '__rand__', examples[:2]
+        )
+        vars()['test_rxor_%s' % datatype] = _magic_method_test(
+            'test_rxor_%s' % datatype, '__rxor__', examples[:2]
+        )
+        vars()['test_ror_%s' % datatype] = _magic_method_test(
+            'test_ror_%s' % datatype, '__ror__', examples[:2]
+        )
+
+
 def _unary_test(test_name, operation):
     def func(self):
         self.assertUnaryOperation(

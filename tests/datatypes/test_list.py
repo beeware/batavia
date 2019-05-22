@@ -1,8 +1,8 @@
-from .. utils import TranspileTestCase,\
-    UnaryOperationTestCase,\
-    BinaryOperationTestCase,\
-    InplaceOperationTestCase,\
-    adjust
+from ..utils import TranspileTestCase, \
+    UnaryOperationTestCase, \
+    BinaryOperationTestCase, \
+    InplaceOperationTestCase, \
+    adjust, MagicMethodFunctionTestCase
 
 import unittest
 import itertools
@@ -464,11 +464,64 @@ class ListTests(TranspileTestCase):
         """)
 
 
-class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'list'
 
-    not_implemented = [
+    is_flakey = [
+        "test_iadd_set",  # Set ordering issues.
     ]
+
+    not_implemented = [
+        "test_imultiply_bytearray",
+        "test_imultiply_bytes",
+        "test_imultiply_class",
+        "test_imultiply_complex",
+        "test_imultiply_dict",
+        "test_imultiply_float",
+        "test_imultiply_frozenset",
+        "test_imultiply_list",
+        "test_imultiply_None",
+        "test_imultiply_NotImplemented",
+        "test_imultiply_range",
+        "test_imultiply_set",
+        "test_imultiply_slice",
+        "test_imultiply_str",
+        "test_imultiply_tuple",
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+        "test_multiply_class",
+        "test_multiply_complex",
+        "test_multiply_dict",
+        "test_multiply_float",
+        "test_multiply_frozenset",
+        "test_multiply_list",
+        "test_multiply_None",
+        "test_multiply_NotImplemented",
+        "test_multiply_range",
+        "test_multiply_set",
+        "test_multiply_slice",
+        "test_multiply_str",
+        "test_multiply_tuple",
+        "test_rmultiply_bytearray",
+        "test_rmultiply_bytes",
+        "test_rmultiply_class",
+        "test_rmultiply_complex",
+        "test_rmultiply_dict",
+        "test_rmultiply_float",
+        "test_rmultiply_frozenset",
+        "test_rmultiply_list",
+        "test_rmultiply_None",
+        "test_rmultiply_NotImplemented",
+        "test_rmultiply_range",
+        "test_rmultiply_set",
+        "test_rmultiply_slice",
+        "test_rmultiply_str",
+        "test_rmultiply_tuple",
+    ]
+
+
+class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'list'
 
 
 class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -477,9 +530,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
-
-    not_implemented = [
-    ]
 
     test_sets = [
         {1, 2.3456, 'another'},

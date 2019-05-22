@@ -316,10 +316,6 @@ Set.prototype.__iand__ = function(other) {
     return new types.NotImplementedType()
 }
 
-Set.prototype.__imul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'set' and '" + type_name(other) + "'")
-}
-
 Set.prototype.__ixor__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
@@ -362,6 +358,27 @@ Set.prototype.__ior__ = function(other) {
         return new Set(both)
     }
     return new types.NotImplementedType()
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Set.prototype.__rand__ = function(other) {
+    return this.__and__(other)
+}
+
+Set.prototype.__ror__ = function(other) {
+    return this.__or__(other)
+}
+
+Set.prototype.__rsub__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Set.prototype.__rxor__ = function(other) {
+    return this.__xor__(other)
 }
 
 /**************************************************

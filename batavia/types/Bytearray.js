@@ -197,6 +197,16 @@ Bytearray.prototype.__rmul__ = function(other) {
     return this.__mul__(other)
 }
 
+Bytearray.prototype.__rmod__ = function(other) {
+    let types = require('../types')
+    return new types.NotImplementedType()
+}
+
+Bytearray.prototype.__rmul__ = function(other) {
+    let types = require('../types')
+    return new types.NotImplementedType()
+}
+
 /**************************************************
  * Methods
  **************************************************/

@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -27,11 +28,32 @@ class FloatTests(TranspileTestCase):
             """)
 
 
-class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'float'
 
     not_implemented = [
+        "test_subtract_complex",
+
+        "test_rfloor_divide_bool",
+        "test_rfloor_divide_float",
+        "test_rfloor_divide_int",
+        "test_rmodulo_bool",
+        "test_rmodulo_float",
+        "test_rmodulo_int",
+        "test_rpower_bool",
+        "test_rpower_float",
+        "test_rpower_int",
+        "test_rsubtract_bool",
+        "test_rsubtract_float",
+        "test_rsubtract_int",
+        "test_rtrue_divide_bool",
+        "test_rtrue_divide_float",
+        "test_rtrue_divide_int",
     ]
+
+
+class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'float'
 
 
 class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -65,12 +87,14 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_complex',
         'test_lt_frozenset',
 
-        'test_multiply_complex',
-
         'test_power_complex',
         'test_power_float',
 
         'test_true_divide_complex',
+
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
     ]
 
 
@@ -78,14 +102,15 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'float'
 
     not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
 
         # these work, but print incorrectly
 
         'test_floor_divide_int',
 
         'test_true_divide_int',
-
-        'test_multiply_complex',
 
         'test_power_complex',
         'test_power_float',

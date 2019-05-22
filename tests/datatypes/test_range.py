@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -146,6 +147,10 @@ class RangeTests(TranspileTestCase):
             """)
 
 
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'range'
+
+
 class UnaryRangeOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'range'
 
@@ -236,14 +241,18 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_tuple',
 
         'test_ne_range',
+
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
     ]
+
 
 
 class InplaceRangeOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'range'
 
     not_implemented = [
-        'test_multiply_bytearray',
         'test_multiply_bytes',
         'test_multiply_list',
         'test_multiply_str',

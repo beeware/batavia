@@ -281,6 +281,30 @@ FrozenSet.prototype.__or__ = function(other) {
 }
 
 /**************************************************
+ * Right-hand operators
+ **************************************************/
+
+FrozenSet.prototype.__rand__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+FrozenSet.prototype.__ror__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+FrozenSet.prototype.__rsub__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+FrozenSet.prototype.__rxor__ = function(other) {
+    var types = require('../types')
+    return new types.NotImplementedType()
+}
+
+/**************************************************
  * Methods
  **************************************************/
 

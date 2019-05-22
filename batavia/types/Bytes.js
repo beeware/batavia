@@ -313,7 +313,16 @@ Bytes.prototype.__getitem__ = function(other) {
  **************************************************/
 
 Bytes.prototype.__rmul__ = function(other) {
-    return this.__mul__(other)
+    let types = require('../types')
+    if (types.isinstance(other, [types.Int, types.Bool])) {
+        return this.__mul__(other)
+    }
+    throw new exceptions.TypeError.$pyclass('\'' + type_name(other) + '\' object cannot be interpreted as an integer')
+}
+
+Bytes.prototype.__rmod__ = function(other) {
+    let types = require('../types')
+    return new types.NotImplementedType()
 }
 
 /**************************************************

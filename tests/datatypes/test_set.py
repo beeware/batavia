@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -69,17 +70,35 @@ class SetTests(TranspileTestCase):
             """)
 
 
-
-class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'set'
 
     not_implemented = [
+        "test_rsubtract_frozenset",
+        "test_rsubtract_set",
     ]
+
+
+class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'set'
 
 
 class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
+    not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+    ]
+
 
 class InplaceSetOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'set'
+
+    not_implemented = [
+        "test_multiply_list",
+        "test_multiply_str",
+        "test_multiply_tuple",
+        "test_multiply_bytes",
+    ]

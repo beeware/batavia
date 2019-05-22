@@ -150,17 +150,6 @@ Slice.prototype.__lt__ = function(other) {
     }
 }
 
-Slice.prototype.__mod__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass(
-            'can\'t mod complex numbers.'
-        )
-    } else {
-        return new types.NotImplementedType()
-    }
-}
-
 Slice.prototype.__getitem__ = function(key) {
     throw new exceptions.TypeError.$pyclass(
         '\'slice\' object is not subscriptable'
