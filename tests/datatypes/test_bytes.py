@@ -96,23 +96,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'bytes'
 
     not_implemented = [
-        "test_modulo_bool",
-        "test_modulo_bytearray",
-        "test_modulo_bytes",
-        "test_modulo_class",
-        "test_modulo_complex",
-        "test_modulo_dict",
-        "test_modulo_float",
-        "test_modulo_frozenset",
-        "test_modulo_int",
-        "test_modulo_list",
-        "test_modulo_None",
-        "test_modulo_NotImplemented",
-        "test_modulo_range",
-        "test_modulo_set",
-        "test_modulo_slice",
-        "test_modulo_str",
-        "test_modulo_tuple",
         "test_multiply_bytearray",
         "test_multiply_bytes",
         "test_multiply_class",
@@ -131,6 +114,45 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
 
         "test_rmodulo_bytes",
     ]
+
+    not_implemented_versions = {
+        "test_modulo_bool": ['3.5', '3.6'],
+        "test_modulo_bytearray": ['3.5', '3.6'],
+        "test_modulo_bytes": ['3.5', '3.6'],
+        "test_modulo_class": ['3.5', '3.6'],
+        "test_modulo_complex": ['3.5', '3.6'],
+        "test_modulo_dict": ['3.5', '3.6'],
+        "test_modulo_float": ['3.5', '3.6'],
+        "test_modulo_frozenset": ['3.5', '3.6'],
+        "test_modulo_int": ['3.5', '3.6'],
+        "test_modulo_list": ['3.5', '3.6'],
+        "test_modulo_None": ['3.5', '3.6'],
+        "test_modulo_NotImplemented": ['3.5', '3.6'],
+        "test_modulo_range": ['3.5', '3.6'],
+        "test_modulo_set": ['3.5', '3.6'],
+        "test_modulo_slice": ['3.5', '3.6'],
+        "test_modulo_str": ['3.5', '3.6'],
+        "test_modulo_tuple": ['3.5', '3.6'],
+
+        "test_rmodulo_bool": ['3.4'],
+        "test_rmodulo_bytearray": ['3.4'],
+        "test_rmodulo_bytes": ['3.4'],
+        "test_rmodulo_class": ['3.4'],
+        "test_rmodulo_complex": ['3.4'],
+        "test_rmodulo_dict": ['3.4'],
+        "test_rmodulo_float": ['3.4'],
+        "test_rmodulo_frozenset": ['3.4'],
+        "test_rmodulo_int": ['3.4'],
+        "test_rmodulo_list": ['3.4'],
+        "test_rmodulo_None": ['3.4'],
+        "test_rmodulo_NotImplemented": ['3.4'],
+        "test_rmodulo_range": ['3.4'],
+        "test_rmodulo_set": ['3.4'],
+        "test_rmodulo_slice": ['3.4'],
+        "test_rmodulo_str": ['3.4'],
+        "test_rmodulo_tuple": ['3.4'],
+    }
+
 
 
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):

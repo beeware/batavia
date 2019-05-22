@@ -469,6 +469,7 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
 
     is_flakey = [
         "test_iadd_set",  # Set ordering issues.
+        "test_iadd_dict",  # Set ordering issues.
     ]
 
     not_implemented = [
