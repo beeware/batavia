@@ -154,7 +154,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     }
 
 
-
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
