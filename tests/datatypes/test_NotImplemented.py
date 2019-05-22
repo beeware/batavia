@@ -34,6 +34,7 @@ class BinaryNotImplementedOperationTests(BinaryOperationTestCase, TranspileTestC
         "test_multiply_bytes",
     ]
 
+
 class InplaceNotImplementedOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'NotImplemented'
 

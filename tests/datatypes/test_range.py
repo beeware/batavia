@@ -1,8 +1,6 @@
 from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
     MagicMethodFunctionTestCase
 
-import unittest
-
 
 class RangeTests(TranspileTestCase):
     def test_lengths(self):
@@ -246,7 +244,6 @@ class BinaryRangeOperationTests(BinaryOperationTestCase, TranspileTestCase):
         "test_multiply_bytearray",
         "test_multiply_bytes",
     ]
-
 
 
 class InplaceRangeOperationTests(InplaceOperationTestCase, TranspileTestCase):

@@ -1,8 +1,6 @@
 from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
     MagicMethodFunctionTestCase
 
-import unittest
-
 
 class BoolTests(TranspileTestCase):
     def test_setattr(self):
@@ -88,4 +86,3 @@ class BinaryBoolOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 class InplaceBoolOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'bool'
-

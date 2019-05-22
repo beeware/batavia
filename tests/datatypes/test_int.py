@@ -1,8 +1,6 @@
 from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
     MagicMethodFunctionTestCase
 
-import unittest
-
 
 class IntTests(TranspileTestCase):
     def test_setattr(self):
