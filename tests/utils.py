@@ -206,7 +206,12 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
         cwd=test_dir,
         env=env_copy,
     )
-    out = proc.communicate()
+    try:
+        out = proc.communicate(timeout=4)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.communicate()
+        return "********** PYTHON EXECUTION TIMED OUT **********"
 
     return out[0].decode('utf8')
 

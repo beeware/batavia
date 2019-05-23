@@ -3,6 +3,14 @@ import unittest
 from .utils import adjust, JSCleaner, PYCleaner, TranspileTestCase
 
 
+class TimeoutTests(TranspileTestCase):
+    def test_infinite_loop(self):
+        self.assertCodeExecution("""
+            while True:
+              pass
+        """, substitutions={'RUNNER': ['PYTHON', 'JAVASCRIPT']})
+
+
 class AdjustTests(unittest.TestCase):
     def assertEqualOutput(self, actual, expected):
         self.assertEqual(adjust(actual), adjust(expected))
