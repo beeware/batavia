@@ -147,6 +147,7 @@ class RangeTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'range'
+    MagicMethodFunctionTestCase._add_tests(vars(), range)
 
 
 class UnaryRangeOperationTests(UnaryOperationTestCase, TranspileTestCase):

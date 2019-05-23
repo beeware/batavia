@@ -72,10 +72,11 @@ class SetTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'set'
+    MagicMethodFunctionTestCase._add_tests(vars(), set)
 
     not_implemented = [
-        "test_rsubtract_frozenset",
-        "test_rsubtract_set",
+        "test__rsub__frozenset",
+        "test__rsub__set",
     ]
 
 

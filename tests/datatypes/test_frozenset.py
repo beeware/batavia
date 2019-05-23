@@ -18,16 +18,17 @@ class FrozensetTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'frozenset'
+    MagicMethodFunctionTestCase._add_tests(vars(), frozenset)
 
     not_implemented = [
-        "test_rand_frozenset",
-        "test_rand_set",
-        "test_ror_frozenset",
-        "test_ror_set",
-        "test_rsubtract_frozenset",
-        "test_rsubtract_set",
-        "test_rxor_frozenset",
-        "test_rxor_set",
+        "test__rand__frozenset",
+        "test__rand__set",
+        "test__ror__frozenset",
+        "test__ror__set",
+        "test__rsub__frozenset",
+        "test__rsub__set",
+        "test__rxor__frozenset",
+        "test__rxor__set",
     ]
 
 

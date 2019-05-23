@@ -20,6 +20,7 @@ class NoneTypeTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'None'
+    MagicMethodFunctionTestCase._add_tests(vars(), None)
 
 
 class UnaryNoneTypeOperationTests(UnaryOperationTestCase, TranspileTestCase):

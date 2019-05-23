@@ -23,24 +23,25 @@ class ComplexTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'complex'
+    MagicMethodFunctionTestCase._add_tests(vars(), complex)
 
     not_implemented = [
-        "test_power_complex",
-        "test_power_float",
-        "test_power_int",
+        "test__pow__complex",
+        "test__pow__float",
+        "test__pow__int",
 
-        "test_rpower_bool",
-        "test_rpower_complex",
-        "test_rpower_float",
-        "test_rpower_int",
-        "test_rsubtract_bool",
-        "test_rsubtract_complex",
-        "test_rsubtract_float",
-        "test_rsubtract_int",
-        "test_rtrue_divide_bool",
-        "test_rtrue_divide_complex",
-        "test_rtrue_divide_float",
-        "test_rtrue_divide_int",
+        "test__rpow__bool",
+        "test__rpow__complex",
+        "test__rpow__float",
+        "test__rpow__int",
+        "test__rsub__bool",
+        "test__rsub__complex",
+        "test__rsub__float",
+        "test__rsub__int",
+        "test__rtruediv__bool",
+        "test__rtruediv__complex",
+        "test__rtruediv__float",
+        "test__rtruediv__int",
     ]
 
 

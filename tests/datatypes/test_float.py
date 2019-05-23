@@ -30,25 +30,26 @@ class FloatTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'float'
+    MagicMethodFunctionTestCase._add_tests(vars(), float)
 
     not_implemented = [
-        "test_subtract_complex",
+        "test__sub__complex",
 
-        "test_rfloor_divide_bool",
-        "test_rfloor_divide_float",
-        "test_rfloor_divide_int",
-        "test_rmodulo_bool",
-        "test_rmodulo_float",
-        "test_rmodulo_int",
-        "test_rpower_bool",
-        "test_rpower_float",
-        "test_rpower_int",
-        "test_rsubtract_bool",
-        "test_rsubtract_float",
-        "test_rsubtract_int",
-        "test_rtrue_divide_bool",
-        "test_rtrue_divide_float",
-        "test_rtrue_divide_int",
+        "test__rfloordiv__bool",
+        "test__rfloordiv__float",
+        "test__rfloordiv__int",
+        "test__rmod__bool",
+        "test__rmod__float",
+        "test__rmod__int",
+        "test__rpow__bool",
+        "test__rpow__float",
+        "test__rpow__int",
+        "test__rsub__bool",
+        "test__rsub__float",
+        "test__rsub__int",
+        "test__rtruediv__bool",
+        "test__rtruediv__float",
+        "test__rtruediv__int",
     ]
 
 

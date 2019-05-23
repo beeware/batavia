@@ -272,25 +272,26 @@ class DictTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'dict'
+    MagicMethodFunctionTestCase._add_tests(vars(), dict)
 
     not_implemented = [
-        "test_imultiply_bool",
-        "test_imultiply_bytearray",
-        "test_imultiply_bytes",
-        "test_imultiply_class",
-        "test_imultiply_complex",
-        "test_imultiply_dict",
-        "test_imultiply_float",
-        "test_imultiply_frozenset",
-        "test_imultiply_int",
-        "test_imultiply_list",
-        "test_imultiply_None",
-        "test_imultiply_NotImplemented",
-        "test_imultiply_range",
-        "test_imultiply_set",
-        "test_imultiply_slice",
-        "test_imultiply_str",
-        "test_imultiply_tuple",
+        "test__imul__bool",
+        "test__imul__bytearray",
+        "test__imul__bytes",
+        "test__imul__class",
+        "test__imul__complex",
+        "test__imul__dict",
+        "test__imul__float",
+        "test__imul__frozenset",
+        "test__imul__int",
+        "test__imul__list",
+        "test__imul__None",
+        "test__imul__NotImplemented",
+        "test__imul__range",
+        "test__imul__set",
+        "test__imul__slice",
+        "test__imul__str",
+        "test__imul__tuple",
     ]
 
 

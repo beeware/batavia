@@ -12,6 +12,7 @@ class NotImplementedTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'NotImplemented'
+    MagicMethodFunctionTestCase._add_tests(vars(), NotImplemented)
 
 
 class UnaryNotImplementedOperationTests(UnaryOperationTestCase, TranspileTestCase):

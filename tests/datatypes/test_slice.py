@@ -201,6 +201,7 @@ class SliceTests(TranspileTestCase):
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'slice'
+    MagicMethodFunctionTestCase._add_tests(vars(), slice)
 
 
 class UnarySliceOperationTests(UnaryOperationTestCase, TranspileTestCase):
