@@ -92,23 +92,7 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
         "test__mod__str": ['3.5', '3.6'],
         "test__mod__tuple": ['3.5', '3.6'],
 
-        "test__rmod__bool": ['3.4'],
-        "test__rmod__bytearray": ['3.4'],
-        "test__rmod__bytes": ['3.4'],
-        "test__rmod__class": ['3.4'],
-        "test__rmod__complex": ['3.4'],
-        "test__rmod__dict": ['3.4'],
-        "test__rmod__float": ['3.4'],
-        "test__rmod__frozenset": ['3.4'],
-        "test__rmod__int": ['3.4'],
-        "test__rmod__list": ['3.4'],
-        "test__rmod__None": ['3.4'],
-        "test__rmod__NotImplemented": ['3.4'],
-        "test__rmod__range": ['3.4'],
-        "test__rmod__set": ['3.4'],
-        "test__rmod__slice": ['3.4'],
-        "test__rmod__str": ['3.4'],
-        "test__rmod__tuple": ['3.4'],
+        "test__rmod__missing": ['3.4'],
     }
 
 

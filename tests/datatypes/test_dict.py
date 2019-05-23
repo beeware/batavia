@@ -274,26 +274,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'dict'
     MagicMethodFunctionTestCase._add_tests(vars(), dict)
 
-    not_implemented = [
-        "test__imul__bool",
-        "test__imul__bytearray",
-        "test__imul__bytes",
-        "test__imul__class",
-        "test__imul__complex",
-        "test__imul__dict",
-        "test__imul__float",
-        "test__imul__frozenset",
-        "test__imul__int",
-        "test__imul__list",
-        "test__imul__None",
-        "test__imul__NotImplemented",
-        "test__imul__range",
-        "test__imul__set",
-        "test__imul__slice",
-        "test__imul__str",
-        "test__imul__tuple",
-    ]
-
 
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
@@ -314,3 +294,11 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 class InplaceDictOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'dict'
+
+    not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytes",
+        "test_multiply_list",
+        "test_multiply_str",
+        "test_multiply_tuple",
+    ]

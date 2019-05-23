@@ -993,10 +993,12 @@ class MagicMethodFunctionTestCase(NotImplementedToExpectedFailure):
             '##################################################\n'.join(
                 adjust("""
                         try:
+                            print('>>> x = %(x)s')
                             print('>>> f = x.%(magic_method)s')
                             print('>>> %(format)sf')
-                            z = x.%(magic_method)s
-                            print('|||', %(format)sy)
+                            x = %(x)s
+                            f = x.%(magic_method)s
+                            print('|||', %(format)sf)
                         except Exception as e:
                             print('///', type(e), ':', e)
                         print()

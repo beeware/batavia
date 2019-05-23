@@ -388,10 +388,6 @@ Dict.prototype.__setitem__ = function(key, value) {
  * Inplace operators
  **************************************************/
 
-Dict.prototype.__imul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'dict' and '" + type_name(other) + "'")
-}
-
 Dict.prototype._find_index = function(other) {
     var builtins = require('../builtins')
 
