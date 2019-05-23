@@ -1,5 +1,5 @@
 from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    MagicMethodFunctionTestCase, SAMPLE_DATA
+    MagicMethodFunctionTestCase
 
 
 class BoolTests(TranspileTestCase):

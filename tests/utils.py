@@ -1090,9 +1090,11 @@ class MagicMethodFunctionTestCase(NotImplementedToExpectedFailure):
             if magic_method in dir(data_type_class):
                 for datatype, examples in SAMPLE_DATA.items():
                     test_name = 'test%s%s' % (magic_method, datatype)
-                    vars[test_name] = MagicMethodFunctionTestCase._magic_method_test(test_name, magic_method, examples[:2], small_ints=True)
+                    vars[test_name] = MagicMethodFunctionTestCase._magic_method_test(
+                        test_name, magic_method, examples[:2], small_ints=True)
             else:
-                vars['test%smissing' % magic_method] = MagicMethodFunctionTestCase._magic_method_missing_test(magic_method)
+                vars['test%smissing' % magic_method] = MagicMethodFunctionTestCase._magic_method_missing_test(
+                    magic_method)
 
 
 def _unary_test(test_name, operation):
