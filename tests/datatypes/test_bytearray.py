@@ -52,8 +52,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
         "test__mul__str",
         "test__mul__tuple",
 
-        "test__rmod__bytearray",
-
         "test__rmul__bool",
         "test__rmul__bytearray",
         "test__rmul__bytes",
@@ -91,6 +89,8 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
         "test__mod__slice": ['3.5', '3.6'],
         "test__mod__str": ['3.5', '3.6'],
         "test__mod__tuple": ['3.5', '3.6'],
+
+        "test__rmod__bytearray": ['3.5', '3.6'],
 
         "test__rmod__missing": ['3.4'],
     }

@@ -7,6 +7,7 @@ var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var BytesIterator = require('./BytesIterator')
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python bytes type
@@ -321,8 +322,7 @@ Bytes.prototype.__rmul__ = function(other) {
 }
 
 Bytes.prototype.__rmod__ = function(other) {
-    let types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************

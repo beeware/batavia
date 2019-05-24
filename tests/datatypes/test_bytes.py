@@ -135,6 +135,8 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
         "test__mod__str": ['3.5', '3.6'],
         "test__mod__tuple": ['3.5', '3.6'],
 
+        "test__rmod__bytes": ['3.5', '3.6'],
+
         "test__rmod__missing": ['3.4'],
     }
 

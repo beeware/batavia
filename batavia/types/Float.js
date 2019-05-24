@@ -4,7 +4,7 @@ var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
-var NotImplementedType = require('../core').NotImplementedType
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python float type
@@ -332,7 +332,7 @@ Float.prototype.__pow__ = function(other) {
             return new Float(Math.pow(this.valueOf(), other.valueOf()))
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -362,7 +362,7 @@ Float.prototype.__floordiv__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('float divmod()')
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -388,7 +388,7 @@ Float.prototype.__truediv__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('float division by zero')
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -396,7 +396,7 @@ Float.prototype.__mul__ = function(other) {
     var types = require('../types')
 
     if (other === null) {
-        return new types.NotImplementedType()
+        return NotImplemented
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() * 1)
@@ -406,7 +406,7 @@ Float.prototype.__mul__ = function(other) {
     } else if (types.isinstance(other, [Float, types.Int])) {
         return new Float(this.valueOf() * other.__float__().valueOf())
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -446,7 +446,7 @@ Float.prototype.__mod__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -468,7 +468,7 @@ Float.prototype.__add__ = function(other) {
             return new Float(this.valueOf())
         }
     } else {
-        return new NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -493,7 +493,7 @@ Float.prototype.__sub__ = function(other) {
         var real = new Float(this.valueOf() - other.real)
         return new types.Complex(real.valueOf(), -other.imag.valueOf())
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -510,13 +510,11 @@ Float.prototype.__radd__ = function(other) {
 }
 
 Float.prototype.__rfloordiv__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Float.prototype.__rmod__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Float.prototype.__rmul__ = function(other) {
@@ -524,18 +522,15 @@ Float.prototype.__rmul__ = function(other) {
 }
 
 Float.prototype.__rpow__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Float.prototype.__rsub__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Float.prototype.__rtruediv__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************

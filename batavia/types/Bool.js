@@ -2,8 +2,7 @@ var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
-var utils = require('./utils')
-var NotImplementedType = require('../core').NotImplementedType
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
@@ -124,7 +123,7 @@ Bool.prototype.__ge__ = function(other) {
             )
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -165,7 +164,7 @@ Bool.prototype.__gt__ = function(other) {
             )
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -206,7 +205,7 @@ Bool.prototype.__le__ = function(other) {
             )
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -247,7 +246,7 @@ Bool.prototype.__lt__ = function(other) {
             )
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -323,7 +322,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -343,7 +342,7 @@ Bool.prototype.__floordiv__ = function(other) {
         }
         return thisValue.__floordiv__(other)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -359,7 +358,7 @@ Bool.prototype.__truediv__ = function(other) {
         }
         return thisValue.__truediv__(other)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -424,7 +423,7 @@ Bool.prototype.__mul__ = function(other) {
             return new types.Bytearray(new types.Bytes(''))
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -461,7 +460,7 @@ Bool.prototype.__mod__ = function(other) {
             return new types.Float(result)
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -499,7 +498,7 @@ Bool.prototype.__add__ = function(other) {
         }
         return new types.Complex(this_bool + other.real, other.imag)
     } else {
-        return new NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -539,7 +538,7 @@ Bool.prototype.__sub__ = function(other) {
         }
         return new types.Complex(this_bool - other.real, 0 - other.imag)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -579,7 +578,7 @@ Bool.prototype.__lshift__ = function(other) {
         }
         return new types.Int(this_bool << other.valueOf())
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -607,7 +606,7 @@ Bool.prototype.__rshift__ = function(other) {
         }
         return new types.Int(this_bool >> other.valueOf())
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -630,7 +629,7 @@ Bool.prototype.__and__ = function(other) {
         }
         return new Bool(this_bool & other_bool)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -653,7 +652,7 @@ Bool.prototype.__xor__ = function(other) {
         }
         return new Bool(this_bool ^ other_bool)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -676,7 +675,7 @@ Bool.prototype.__or__ = function(other) {
         }
         return new Bool(this_bool | other_bool)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 

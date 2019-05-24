@@ -5,6 +5,7 @@ var version = require('../core').version
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var SetIterator = require('./SetIterator')
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python FrozenSet type, with an underlying Dict.
@@ -203,7 +204,7 @@ FrozenSet.prototype.__sub__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 FrozenSet.prototype.__getitem__ = function(other) {
@@ -235,7 +236,7 @@ FrozenSet.prototype.__and__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 FrozenSet.prototype.__xor__ = function(other) {
@@ -258,7 +259,7 @@ FrozenSet.prototype.__xor__ = function(other) {
         }.bind(this))
         return new FrozenSet(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 FrozenSet.prototype.__or__ = function(other) {
@@ -277,7 +278,7 @@ FrozenSet.prototype.__or__ = function(other) {
         })
         return new FrozenSet(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************
@@ -285,23 +286,19 @@ FrozenSet.prototype.__or__ = function(other) {
  **************************************************/
 
 FrozenSet.prototype.__rand__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 FrozenSet.prototype.__ror__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 FrozenSet.prototype.__rsub__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 FrozenSet.prototype.__rxor__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************

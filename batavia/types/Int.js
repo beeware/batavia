@@ -6,6 +6,7 @@ var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python int type
@@ -373,7 +374,7 @@ Int.prototype.__pow__ = function(other) {
 
         return new types.Complex(result_real, result_imag)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -416,7 +417,7 @@ Int.prototype.__floordiv__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -449,7 +450,7 @@ Int.prototype.__truediv__ = function(other) {
         var castToComplex = new types.Complex(this.valueOf())
         return castToComplex.__truediv__(other.valueOf())
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -545,7 +546,7 @@ Int.prototype.__mul__ = function(other) {
         }
         return result
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -572,7 +573,7 @@ Int.prototype.__mod__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -588,7 +589,7 @@ Int.prototype.__add__ = function(other) {
             return this
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -606,7 +607,7 @@ Int.prototype.__sub__ = function(other) {
             return this
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -717,7 +718,7 @@ Int.prototype.__lshift__ = function(other) {
             return this
         }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -753,7 +754,7 @@ Int.prototype.__rshift__ = function(other) {
         }
         return this
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -785,7 +786,7 @@ Int.prototype.__and__ = function(other) {
         }
         return new Int(0)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -819,7 +820,7 @@ Int.prototype.__xor__ = function(other) {
         }
         return this
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -860,7 +861,7 @@ Int.prototype.__or__ = function(other) {
         }
         return this
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -877,18 +878,15 @@ Int.prototype.__rand__ = function(other) {
 }
 
 Int.prototype.__rfloordiv__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rlshift__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rmod__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rmul__ = function(other) {
@@ -900,23 +898,19 @@ Int.prototype.__ror__ = function(other) {
 }
 
 Int.prototype.__rpow__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rrshift__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rsub__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rtruediv__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Int.prototype.__rxor__ = function(other) {

@@ -3,6 +3,7 @@ var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
+var NotImplemented = require('../core').NotImplemented
 var BytearrayIterator = require('./BytearrayIterator')
 
 /*************************************************************************
@@ -198,13 +199,11 @@ Bytearray.prototype.__rmul__ = function(other) {
 }
 
 Bytearray.prototype.__rmod__ = function(other) {
-    let types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Bytearray.prototype.__rmul__ = function(other) {
-    let types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************

@@ -48,8 +48,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
         "test__rfloordiv__bool",
         "test__rfloordiv__float",
         "test__rfloordiv__int",
-        "test__rlshift___bool",
-        "test__rlshift___int",
         "test__rmod__bool",
         "test__rmod__float",
         "test__rmod__int",

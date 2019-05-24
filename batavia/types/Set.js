@@ -5,6 +5,7 @@ var version = require('../core').version
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python Set type, with an underlying Dict.
@@ -200,7 +201,7 @@ Set.prototype.__sub__ = function(other) {
         })
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__getitem__ = function(other) {
@@ -232,7 +233,7 @@ Set.prototype.__and__ = function(other) {
         })
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__xor__ = function(other) {
@@ -255,7 +256,7 @@ Set.prototype.__xor__ = function(other) {
         }.bind(this))
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__or__ = function(other) {
@@ -274,7 +275,7 @@ Set.prototype.__or__ = function(other) {
         })
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************
@@ -296,7 +297,7 @@ Set.prototype.__isub__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__iand__ = function(other) {
@@ -313,7 +314,7 @@ Set.prototype.__iand__ = function(other) {
         })
         return intersection
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__ixor__ = function(other) {
@@ -337,7 +338,7 @@ Set.prototype.__ixor__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__ior__ = function(other) {
@@ -357,7 +358,7 @@ Set.prototype.__ior__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************
@@ -373,8 +374,7 @@ Set.prototype.__ror__ = function(other) {
 }
 
 Set.prototype.__rsub__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Set.prototype.__rxor__ = function(other) {

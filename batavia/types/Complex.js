@@ -3,7 +3,7 @@ var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
-var NotImplementedType = require('../core').NotImplementedType
+var NotImplemented = require('../core').NotImplemented
 
 // Helper function defined in Float.js
 var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
@@ -292,7 +292,7 @@ Complex.prototype.__pow__ = function(exponent) {
     // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
     // { do some stuff }
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -328,7 +328,7 @@ function __div__(x, y, inplace) {
         var imag = num_imag / den
         return new Complex(real, imag)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -368,7 +368,7 @@ function __mul__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -396,7 +396,7 @@ function __add__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real + y.real, x.imag + y.imag)
     } else {
-        return new NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -420,7 +420,7 @@ function __sub__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real - y.real, x.imag - y.imag)
     } else {
-        return new types.NotImplementedType()
+        return NotImplemented
     }
 }
 
@@ -453,18 +453,15 @@ Complex.prototype.__rmul__ = function(other) {
 }
 
 Complex.prototype.__rpow__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Complex.prototype.__rsub__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 Complex.prototype.__rtruediv__ = function(other) {
-    var types = require('../types')
-    return new types.NotImplementedType()
+    return NotImplemented
 }
 
 /**************************************************
