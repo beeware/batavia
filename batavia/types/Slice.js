@@ -85,12 +85,6 @@ var strip_and_compare = function(a, b, comparison_function) {
     return new types.Tuple(a_list)[comparison_function](new types.Tuple(b_list))
 }
 
-var unsupported_operand = function(sign, other) {
-    throw new exceptions.TypeError.$pyclass(
-        'unsupported operand type(s) for ' + sign + ': \'slice\' and \'' + type_name(other) + '\''
-    )
-}
-
 var unorderable_types = function(sign, other) {
     if (version.earlier('3.6')) {
         throw new exceptions.TypeError.$pyclass(
@@ -118,27 +112,6 @@ Slice.prototype.__ne__ = function(other) {
         return new types.Bool(true)
     }
     return !this.__eq__(other)
-}
-
-Slice.prototype.__add__ = unsupported_operand.bind(Slice.prototype, '+')
-Slice.prototype.__and__ = unsupported_operand.bind(Slice.prototype, '&')
-Slice.prototype.__lshift__ = unsupported_operand.bind(Slice.prototype, '<<')
-Slice.prototype.__or__ = unsupported_operand.bind(Slice.prototype, '|')
-Slice.prototype.__pow__ = unsupported_operand.bind(Slice.prototype, '** or pow()')
-Slice.prototype.__rshift__ = unsupported_operand.bind(Slice.prototype, '>>')
-Slice.prototype.__sub__ = unsupported_operand.bind(Slice.prototype, '-')
-Slice.prototype.__truediv__ = unsupported_operand.bind(Slice.prototype, '/')
-Slice.prototype.__xor__ = unsupported_operand.bind(Slice.prototype, '^')
-
-Slice.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass(
-            'can\'t take floor of complex number.'
-        )
-    } else {
-        unsupported_operand('//', other)
-    }
 }
 
 Slice.prototype.__ge__ = function(other) {
@@ -174,29 +147,6 @@ Slice.prototype.__lt__ = function(other) {
         return strip_and_compare(this, other, '__lt__')
     } else {
         unorderable_types('<', other)
-    }
-}
-
-Slice.prototype.__mod__ = function(other) {
-    var types = require('../types')
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass(
-            'can\'t mod complex numbers.'
-        )
-    } else {
-        unsupported_operand('%', other)
-    }
-}
-
-Slice.prototype.__mul__ = function(other) {
-    var types = require('../types')
-    var is_sequence = types.isinstance(other, types.Str) || types.isinstance(other, types.Bytes) || types.isinstance(other, types.Bytearray) || types.isinstance(other, types.List) || types.isinstance(other, types.Tuple)
-    if (is_sequence) {
-        throw new exceptions.TypeError.$pyclass(
-            'can\'t multiply sequence by non-int of type \'slice\''
-        )
-    } else {
-        unsupported_operand('*', other)
     }
 }
 

@@ -134,65 +134,12 @@ NotImplementedType.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-NotImplementedType.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
 NotImplementedType.prototype.__div__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('NotImplementedType.__div__ has not been implemented')
 }
 
-NotImplementedType.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__mul__ = function(other) {
-    var types = require('../../types')
-
-    if (types.isinstance(other, [types.Tuple, types.Str, types.List, types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'NotImplementedType'")
-    }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__mod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
 NotImplementedType.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'NotImplementedType' object is not subscriptable")
-}
-
-NotImplementedType.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
 }
 
 /**************************************************
@@ -201,59 +148,6 @@ NotImplementedType.prototype.__or__ = function(other) {
 
 NotImplementedType.prototype.__idiv__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('NotImplementedType.__idiv__ has not been implemented')
-}
-
-NotImplementedType.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__itruediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__iadd__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__isub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__imul__ = function(other) {
-    var types = require('../../types')
-
-    if (types.isinstance(other, [types.Tuple, types.Str, types.List, types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'NotImplementedType'")
-    }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__ipow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__ilshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__irshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__iand__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__ixor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
-}
-
-NotImplementedType.prototype.__ior__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'NotImplementedType' and '" + basic_types.type_name(other) + "'")
 }
 
 /**************************************************/

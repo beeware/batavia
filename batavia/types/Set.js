@@ -5,6 +5,7 @@ var version = require('../core').version
 var callables = require('../core').callables
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python Set type, with an underlying Dict.
@@ -186,55 +187,6 @@ Set.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Set.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__div__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'set' and '" + type_name(other) + "'")
-    }
-}
-
-Set.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__mul__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [
-        types.Bytearray, types.Bytes, types.List,
-        types.Str, types.Tuple
-    ])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'set'")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'set' and '" + type_name(other) + "'")
-    }
-}
-
-Set.prototype.__mod__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'set' and '" + type_name(other) + "'")
-    }
-}
-
-Set.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'set' and '" + type_name(other) + "'")
-}
-
 Set.prototype.__sub__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
@@ -249,7 +201,7 @@ Set.prototype.__sub__ = function(other) {
         })
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 Set.prototype.__getitem__ = function(other) {
@@ -267,14 +219,6 @@ Set.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'set' object is not subscriptable")
 }
 
-Set.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'set' and '" + type_name(other) + "'")
-}
-
 Set.prototype.__and__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
@@ -289,7 +233,7 @@ Set.prototype.__and__ = function(other) {
         })
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 Set.prototype.__xor__ = function(other) {
@@ -312,7 +256,7 @@ Set.prototype.__xor__ = function(other) {
         }.bind(this))
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 Set.prototype.__or__ = function(other) {
@@ -331,7 +275,7 @@ Set.prototype.__or__ = function(other) {
         })
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 /**************************************************
@@ -353,7 +297,7 @@ Set.prototype.__isub__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 Set.prototype.__iand__ = function(other) {
@@ -370,11 +314,7 @@ Set.prototype.__iand__ = function(other) {
         })
         return intersection
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'set' and '" + type_name(other) + "'")
-}
-
-Set.prototype.__imul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 Set.prototype.__ixor__ = function(other) {
@@ -398,7 +338,7 @@ Set.prototype.__ixor__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
 }
 
 Set.prototype.__ior__ = function(other) {
@@ -418,7 +358,27 @@ Set.prototype.__ior__ = function(other) {
         this.update(both)
         return new Set(both)
     }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'set' and '" + type_name(other) + "'")
+    return NotImplemented
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Set.prototype.__rand__ = function(other) {
+    return this.__and__(other)
+}
+
+Set.prototype.__ror__ = function(other) {
+    return this.__or__(other)
+}
+
+Set.prototype.__rsub__ = function(other) {
+    return NotImplemented
+}
+
+Set.prototype.__rxor__ = function(other) {
+    return this.__xor__(other)
 }
 
 /**************************************************

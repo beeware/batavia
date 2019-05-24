@@ -1,8 +1,8 @@
-from .. utils import TranspileTestCase,\
-    UnaryOperationTestCase,\
-    BinaryOperationTestCase,\
-    InplaceOperationTestCase,\
-    adjust
+from ..utils import TranspileTestCase, \
+    UnaryOperationTestCase, \
+    BinaryOperationTestCase, \
+    InplaceOperationTestCase, \
+    adjust, MagicMethodFunctionTestCase
 
 import unittest
 import itertools
@@ -464,11 +464,66 @@ class ListTests(TranspileTestCase):
         """)
 
 
-class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'list'
+    MagicMethodFunctionTestCase._add_tests(vars(), list)
+
+    is_flakey = [
+        "test__iadd__set",  # Set ordering issues.
+        "test__iadd__dict",  # Set ordering issues.
+    ]
 
     not_implemented = [
+        "test__imul__bytearray",
+        "test__imul__bytes",
+        "test__imul__class",
+        "test__imul__complex",
+        "test__imul__dict",
+        "test__imul__float",
+        "test__imul__frozenset",
+        "test__imul__list",
+        "test__imul__None",
+        "test__imul__NotImplemented",
+        "test__imul__range",
+        "test__imul__set",
+        "test__imul__slice",
+        "test__imul__str",
+        "test__imul__tuple",
+        "test__mul__bytearray",
+        "test__mul__bytes",
+        "test__mul__class",
+        "test__mul__complex",
+        "test__mul__dict",
+        "test__mul__float",
+        "test__mul__frozenset",
+        "test__mul__list",
+        "test__mul__None",
+        "test__mul__NotImplemented",
+        "test__mul__range",
+        "test__mul__set",
+        "test__mul__slice",
+        "test__mul__str",
+        "test__mul__tuple",
+        "test__rmul__bytearray",
+        "test__rmul__bytes",
+        "test__rmul__class",
+        "test__rmul__complex",
+        "test__rmul__dict",
+        "test__rmul__float",
+        "test__rmul__frozenset",
+        "test__rmul__list",
+        "test__rmul__None",
+        "test__rmul__NotImplemented",
+        "test__rmul__range",
+        "test__rmul__set",
+        "test__rmul__slice",
+        "test__rmul__str",
+        "test__rmul__tuple",
     ]
+
+
+class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'list'
 
 
 class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -477,9 +532,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
-
-    not_implemented = [
-    ]
 
     test_sets = [
         {1, 2.3456, 'another'},

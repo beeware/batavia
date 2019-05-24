@@ -3,6 +3,7 @@ var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var None = require('../core').None
+var NotImplemented = require('../core').NotImplemented
 var BytearrayIterator = require('./BytearrayIterator')
 
 /*************************************************************************
@@ -147,28 +148,8 @@ Bytearray.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Bytearray.prototype.__pow__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__pow__ has not been implemented')
-}
-
-Bytearray.prototype.__div__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__div__ has not been implemented')
-}
-
-Bytearray.prototype.__floordiv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__floordiv__ has not been implemented')
-}
-
-Bytearray.prototype.__truediv__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__truediv__ has not been implemented')
-}
-
 Bytearray.prototype.__mul__ = function(other) {
     throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
-}
-
-Bytearray.prototype.__mod__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__mod__ has not been implemented')
 }
 
 Bytearray.prototype.__add__ = function(other) {
@@ -185,32 +166,8 @@ Bytearray.prototype.__add__ = function(other) {
     }
 }
 
-Bytearray.prototype.__sub__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__sub__ has not been implemented')
-}
-
 Bytearray.prototype.__getitem__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('Bytearray.__getitem__ has not been implemented')
-}
-
-Bytearray.prototype.__lshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__lshift__ has not been implemented')
-}
-
-Bytearray.prototype.__rshift__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__rshift__ has not been implemented')
-}
-
-Bytearray.prototype.__and__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__and__ has not been implemented')
-}
-
-Bytearray.prototype.__xor__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__xor__ has not been implemented')
-}
-
-Bytearray.prototype.__or__ = function(other) {
-    throw new exceptions.NotImplementedError.$pyclass('Bytearray.__or__ has not been implemented')
 }
 
 /**************************************************
@@ -231,6 +188,22 @@ Bytearray.prototype.__iadd__ = function(other) {
     } else {
         throw new exceptions.TypeError.$pyclass("can't concat bytearray to " + type_name(other))
     }
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Bytearray.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+Bytearray.prototype.__rmod__ = function(other) {
+    return NotImplemented
+}
+
+Bytearray.prototype.__rmul__ = function(other) {
+    return NotImplemented
 }
 
 /**************************************************

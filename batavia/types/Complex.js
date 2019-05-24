@@ -3,6 +3,7 @@ var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
+var NotImplemented = require('../core').NotImplemented
 
 // Helper function defined in Float.js
 var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
@@ -291,9 +292,7 @@ Complex.prototype.__pow__ = function(exponent) {
     // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
     // { do some stuff }
     } else {
-        throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -329,15 +328,7 @@ function __div__(x, y, inplace) {
         var imag = num_imag / den
         return new Complex(real, imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -376,18 +367,8 @@ function __mul__(x, y, inplace) {
         }
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
-    } else if (types.isinstance(y, [types.List, types.Str, types.Tuple, types.Bytearray, types.Bytes])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'")
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -415,15 +396,7 @@ function __add__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real + y.real, x.imag + y.imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -447,15 +420,7 @@ function __sub__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real - y.real, x.imag - y.imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -467,34 +432,36 @@ Complex.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'complex' object is not subscriptable")
 }
 
-Complex.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for <<: 'complex' and '" + type_name(other) + "'"
-    )
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Complex.prototype.__radd__ = function(other) {
+    return this.__add__(other)
 }
 
-Complex.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for >>: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rfloordiv__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
 }
 
-Complex.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for &: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rmod__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
 }
 
-Complex.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for ^: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
-Complex.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for |: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rpow__ = function(other) {
+    return NotImplemented
+}
+
+Complex.prototype.__rsub__ = function(other) {
+    return NotImplemented
+}
+
+Complex.prototype.__rtruediv__ = function(other) {
+    return NotImplemented
 }
 
 /**************************************************

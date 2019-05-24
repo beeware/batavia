@@ -7,6 +7,7 @@ var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var BytesIterator = require('./BytesIterator')
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python bytes type
@@ -228,28 +229,6 @@ Bytes.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Bytes.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__div__ = function(other) {
-    return this.__truediv__(other)
-}
-
-Bytes.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bytes' and '" + type_name(other) + "'")
-    }
-}
-
-Bytes.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bytes' and '" + type_name(other) + "'")
-}
-
 Bytes.prototype.__mul__ = function(other) {
     var types = require('../types')
 
@@ -278,16 +257,6 @@ Bytes.prototype.__mul__ = function(other) {
         }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
-    }
-}
-
-Bytes.prototype.__mod__ = function(other) {
-    let types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bytes' and '" + type_name(other) + "'")
     }
 }
 
@@ -328,10 +297,6 @@ Bytes.prototype.__add__ = function(other) {
     }
 }
 
-Bytes.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bytes' and '" + type_name(other) + "'")
-}
-
 Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
 
@@ -344,24 +309,20 @@ Bytes.prototype.__getitem__ = function(other) {
     return new types.Int(this.val[other.int32()])
 }
 
-Bytes.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'bytes' and '" + type_name(other) + "'")
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Bytes.prototype.__rmul__ = function(other) {
+    let types = require('../types')
+    if (types.isinstance(other, [types.Int, types.Bool])) {
+        return this.__mul__(other)
+    }
+    throw new exceptions.TypeError.$pyclass('\'' + type_name(other) + '\' object cannot be interpreted as an integer')
 }
 
-Bytes.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'bytes' and '" + type_name(other) + "'")
-}
-
-Bytes.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bytes' and '" + type_name(other) + "'")
+Bytes.prototype.__rmod__ = function(other) {
+    return NotImplemented
 }
 
 /**************************************************

@@ -9,50 +9,39 @@ var version = require('./core').version
 var exceptions = require('./core').exceptions
 var native = require('./core').native
 var callables = require('./core').callables
-var type_name = require('./core').type_name
 var dis = require('./modules/dis')
 var marshal = require('./modules/marshal')
 var sys = require('./modules/sys')
+var operators = require('./operators')
 
-var inplace_operator = function(name, magic_method, fallback_magic_method, left, right, default_operation) {
-    var result
-    if (left === null) {
-        result = types.NoneType[magic_method](right)
-    } else if (left[magic_method]) {
-        if (left[magic_method].__call__) {
-            result = left[magic_method].__call__([left, right])
-        } else {
-            result = left[magic_method](right)
-        }
-        if (result === null) {
-            result = left
-        }
-    } else if (left[fallback_magic_method]) {
-        try {
-            if (left[fallback_magic_method].__call__) {
-                result = left[fallback_magic_method].__call__([left, right])
-            } else {
-                result = left[fallback_magic_method](right)
-            }
-            if (result === null) {
-                result = left
-            }
-        } catch (error) {
-            if (error instanceof exceptions.TypeError.$pyclass &&
-                error.msg.startswith('unsupported operand type(s) for ')) {
-                throw new exceptions.TypeError.$pyclass(
-                    error.msg.replace(
-                        /^(unsupported operand type\(s\) for )([^:]*)(:)/,
-                        '$1' + name + '$3'))
-            } else {
-                throw error
-            }
-        }
-    } else {
-        left = default_operation(left, right)
-        result = left
-    }
-    return result
+const BinaryOperators = {
+    'ADD': operators['__add__'],
+    'AND': operators['__and__'],
+    'FLOOR_DIVIDE': operators['__floordiv__'],
+    'LSHIFT': operators['__lshift__'],
+    'MODULO': operators['__mod__'],
+    'MULTIPLY': operators['__mul__'],
+    'OR': operators['__or__'],
+    'POWER': operators['__pow__'],
+    'RSHIFT': operators['__rshift__'],
+    'SUBTRACT': operators['__sub__'],
+    'TRUE_DIVIDE': operators['__truediv__'],
+    'XOR': operators['__xor__']
+}
+
+const InplaceOperators = {
+    'ADD': operators['__iadd__'],
+    'AND': operators['__iand__'],
+    'FLOOR_DIVIDE': operators['__ifloordiv__'],
+    'LSHIFT': operators['__ilshift__'],
+    'MODULO': operators['__imod__'],
+    'MULTIPLY': operators['__imul__'],
+    'OR': operators['__ior__'],
+    'POWER': operators['__ipow__'],
+    'RSHIFT': operators['__irshift__'],
+    'SUBTRACT': operators['__isub__'],
+    'TRUE_DIVIDE': operators['__itruediv__'],
+    'XOR': operators['__ixor__']
 }
 
 var VirtualMachine = function(args) {
@@ -135,7 +124,8 @@ VirtualMachine.prototype.build_dispatch_table = function() {
         var operator_name
 
         if (opcode === dis.NOP) {
-            return function() {}
+            return function() {
+            }
         } else if (opcode in dis.unary_ops) {
             operator_name = opname.slice(6)
             switch (operator_name) {
@@ -184,86 +174,18 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                         }
                     }
                 default:
-                    throw new builtins.BataviaError.$pyclass('Unknown unary operator ' + operator_name)
+                    throw new builtins.BataviaError.$pyclass(
+                        'Unknown unary operator ' + operator_name)
             }
         } else if (opcode in dis.binary_ops) {
             operator_name = opname.slice(7)
+            if (BinaryOperators.hasOwnProperty(operator_name)) {
+                return function() {
+                    this.push(
+                        BinaryOperators[operator_name].apply(...this.popn(2)))
+                }
+            }
             switch (operator_name) {
-                case 'POWER':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__pow__(items[1]))
-                        } else if (items[0].__pow__) {
-                            if (items[0].__pow__.__call__) {
-                                this.push(items[0].__pow__.__call__(items))
-                            } else {
-                                this.push(items[0].__pow__(items[1]))
-                            }
-                        } else {
-                            this.push(Math.pow(items[0], items[1]))
-                        }
-                    }
-                case 'MULTIPLY':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__mul__(items[1]))
-                        } else if (items[0].__mul__) {
-                            if (items[0].__mul__.__call__) {
-                                this.push(items[0].__mul__.__call__(items))
-                            } else {
-                                this.push(items[0].__mul__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] * items[1])
-                        }
-                    }
-                case 'MODULO':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__mod__(items[1]))
-                        } else if (items[0].__mod__) {
-                            if (items[0].__mod__.__call__) {
-                                this.push(items[0].__mod__.__call__(items))
-                            } else {
-                                this.push(items[0].__mod__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] % items[1])
-                        }
-                    }
-                case 'ADD':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__add__(items[1]))
-                        } else if (items[0].__add__) {
-                            if (items[0].__add__.__call__) {
-                                this.push(items[0].__add__.__call__(items))
-                            } else {
-                                this.push(items[0].__add__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] + items[1])
-                        }
-                    }
-                case 'SUBTRACT':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__sub__(items[1]))
-                        } else if (items[0].__sub__) {
-                            if (items[0].__sub__.__call__) {
-                                this.push(items[0].__sub__.__call__(items))
-                            } else {
-                                this.push(items[0].__sub__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] - items[1])
-                        }
-                    }
                 case 'SUBSCR':
                     return function() {
                         var items = this.popn(2)
@@ -279,204 +201,20 @@ VirtualMachine.prototype.build_dispatch_table = function() {
                             this.push(items[0][items[1]])
                         }
                     }
-                case 'FLOOR_DIVIDE':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__floordiv__(items[1]))
-                        } else if (items[0].__floordiv__) {
-                            if (items[0].__floordiv__.__call__) {
-                                this.push(items[0].__floordiv__.__call__(items))
-                            } else {
-                                this.push(items[0].__floordiv__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] / items[1])
-                        }
-                    }
-                case 'TRUE_DIVIDE':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__truediv__(items[1]))
-                        } else if (items[0].__truediv__) {
-                            if (items[0].__truediv__.__call__) {
-                                this.push(items[0].__truediv__.__call__(items))
-                            } else {
-                                this.push(items[0].__truediv__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] / items[1])
-                        }
-                    }
-                case 'LSHIFT':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__lshift__(items[1]))
-                        } else if (items[0].__lshift__) {
-                            if (items[0].__lshift__.__call__) {
-                                this.push(items[0].__lshift__.__call__(items))
-                            } else {
-                                this.push(items[0].__lshift__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] << items[1])
-                        }
-                    }
-                case 'RSHIFT':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__rshift__(items[1]))
-                        } else if (items[0].__rshift__) {
-                            if (items[0].__rshift__.__call__) {
-                                this.push(items[0].__rshift__.__call__(items))
-                            } else {
-                                this.push(items[0].__rshift__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] >> items[1])
-                        }
-                    }
-                case 'AND':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__and__(items[1]))
-                        } else if (items[0].__and__) {
-                            if (items[0].__and__.__call__) {
-                                this.push(items[0].__and__.__call__(items))
-                            } else {
-                                this.push(items[0].__and__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] & items[1])
-                        }
-                    }
-                case 'XOR':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__xor__(items[1]))
-                        } else if (items[0].__xor__) {
-                            if (items[0].__xor__.__call__) {
-                                this.push(items[0].__xor__.__call__(items))
-                            } else {
-                                this.push(items[0].__xor__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] ^ items[1])
-                        }
-                    }
-                case 'OR':
-                    return function() {
-                        var items = this.popn(2)
-                        if (items[0] === null) {
-                            this.push(types.NoneType.__or__(items[1]))
-                        } else if (items[0].__or__) {
-                            if (items[0].__or__.__call__) {
-                                this.push(items[0].__or__.__call__(items))
-                            } else {
-                                this.push(items[0].__or__(items[1]))
-                            }
-                        } else {
-                            this.push(items[0] | items[1])
-                        }
-                    }
                 default:
-                    throw new builtins.BataviaError.$pyclass('Unknown binary operator ' + operator_name)
+                    throw new builtins.BataviaError.$pyclass(
+                        'Unknown binary operator ' + operator_name)
             }
         } else if (opcode in dis.inplace_ops) {
             operator_name = opname.slice(8)
-            switch (operator_name) {
-                case 'FLOOR_DIVIDE':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '//=', '__ifloordiv__', '__floordiv__', items[0], items[1], (l, r) => l / r)
-                        this.push(result)
-                    }
-                case 'TRUE_DIVIDE':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '/=', '__itruediv__', '__truediv__', items[0], items[1], (l, r) => l / r)
-                        this.push(result)
-                    }
-                case 'ADD':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '+=', '__iadd__', '__add__', items[0], items[1], (l, r) => l + r)
-                        this.push(result)
-                    }
-                case 'SUBTRACT':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '-=', '__isub__', '__sub__', items[0], items[1], (l, r) => l - r)
-                        this.push(result)
-                    }
-                case 'MULTIPLY':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '*=', '__imul__', '__mul__', items[0], items[1], (l, r) => l * r)
-                        this.push(result)
-                    }
-                case 'MODULO':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '%=', '__imod__', '__mod__', items[0], items[1], (l, r) => l % r)
-                        this.push(result)
-                    }
-                case 'POWER':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '** or pow()', '__ipow__', '__pow__', items[0], items[1], (l, r) => Math.pow(l, r))
-                        this.push(result)
-                    }
-                case 'LSHIFT':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '<<=', '__ilshift__', '__lshift__', items[0], items[1], (l, r) => l << r)
-                        this.push(result)
-                    }
-                case 'RSHIFT':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '>>=', '__irshift__', '__rshift__', items[0], items[1], (l, r) => l >> r)
-                        this.push(result)
-                    }
-                case 'AND':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '&=', '__iand__', '__and__', items[0], items[1], (l, r) => l & r)
-                        this.push(result)
-                    }
-                case 'XOR':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '^=', '__ixor__', '__xor__', items[0], items[1], (l, r) => l ^ r)
-                        this.push(result)
-                    }
-                case 'OR':
-                    return function() {
-                        var items = this.popn(2)
-                        var result = inplace_operator(
-                            '|=', '__ior__', '__or__', items[0], items[1], (l, r) => l | r)
-                        this.push(result)
-                    }
-                default:
-                    throw new builtins.BataviaError.$pyclass('Unknown inplace operator ' + operator_name)
+            if (InplaceOperators.hasOwnProperty(operator_name)) {
+                return function() {
+                    this.push(
+                        InplaceOperators[operator_name].apply(...this.popn(2)))
+                }
             }
+            throw new builtins.BataviaError.$pyclass(
+                'Unknown inplace operator ' + operator_name)
         } else {
             // dispatch
             var bytecode_fn = vm['byte_' + opname]

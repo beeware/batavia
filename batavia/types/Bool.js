@@ -2,7 +2,8 @@ var create_pyclass = require('../core').create_pyclass
 var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
-var utils = require('./utils')
+var NotImplemented = require('../core').NotImplemented
+
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
  *************************************************************************/
@@ -122,7 +123,7 @@ Bool.prototype.__ge__ = function(other) {
             )
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >=: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -163,7 +164,7 @@ Bool.prototype.__gt__ = function(other) {
             )
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -204,7 +205,7 @@ Bool.prototype.__le__ = function(other) {
             )
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <=: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -245,7 +246,7 @@ Bool.prototype.__lt__ = function(other) {
             )
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -321,7 +322,7 @@ Bool.prototype.__pow__ = function(other) {
             }
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -340,10 +341,8 @@ Bool.prototype.__floordiv__ = function(other) {
             thisValue = new types.Int(0)
         }
         return thisValue.__floordiv__(other)
-    } else if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -359,7 +358,7 @@ Bool.prototype.__truediv__ = function(other) {
         }
         return thisValue.__truediv__(other)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -424,16 +423,14 @@ Bool.prototype.__mul__ = function(other) {
             return new types.Bytearray(new types.Bytes(''))
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
 Bool.prototype.__mod__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, types.Complex)) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    } else if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
+    if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
         throw new exceptions.ZeroDivisionError.$pyclass('integer division or modulo by zero')
     } else if (this.valueOf() && (types.isinstance(other, types.Int) && other.valueOf() > 1)) {
         return new types.Bool(true)
@@ -463,7 +460,7 @@ Bool.prototype.__mod__ = function(other) {
             return new types.Float(result)
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -501,7 +498,7 @@ Bool.prototype.__add__ = function(other) {
         }
         return new types.Complex(this_bool + other.real, other.imag)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -541,7 +538,7 @@ Bool.prototype.__sub__ = function(other) {
         }
         return new types.Complex(this_bool - other.real, 0 - other.imag)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -581,7 +578,7 @@ Bool.prototype.__lshift__ = function(other) {
         }
         return new types.Int(this_bool << other.valueOf())
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -609,7 +606,7 @@ Bool.prototype.__rshift__ = function(other) {
         }
         return new types.Int(this_bool >> other.valueOf())
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -632,7 +629,7 @@ Bool.prototype.__and__ = function(other) {
         }
         return new Bool(this_bool & other_bool)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -655,7 +652,7 @@ Bool.prototype.__xor__ = function(other) {
         }
         return new Bool(this_bool ^ other_bool)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -678,8 +675,60 @@ Bool.prototype.__or__ = function(other) {
         }
         return new Bool(this_bool | other_bool)
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'bool' and '" + type_name(other) + "'")
+        return NotImplemented
     }
+}
+
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Bool.prototype.__radd__ = function(other) {
+    return this.__add__(other)
+}
+
+Bool.prototype.__rand__ = function(other) {
+    return this.__and__(other)
+}
+
+Bool.prototype.__rfloordiv__ = function(other) {
+    return this.__floordiv__(other)
+}
+
+Bool.prototype.__rlshift__ = function(other) {
+    return this.__lshift__(other)
+}
+
+Bool.prototype.__rmod__ = function(other) {
+    return this.__mod__(other)
+}
+
+Bool.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
+}
+
+Bool.prototype.__ror__ = function(other) {
+    return this.__or__(other)
+}
+
+Bool.prototype.__rpow__ = function(other) {
+    return this.__pow__(other)
+}
+
+Bool.prototype.__rrshift__ = function(other) {
+    return this.__rshift__(other)
+}
+
+Bool.prototype.__rsub__ = function(other) {
+    return this.__sub__(other)
+}
+
+Bool.prototype.__rtruediv__ = function(other) {
+    return this.__truediv__(other)
+}
+
+Bool.prototype.__rxor__ = function(other) {
+    return this.__xor__(other)
 }
 
 /**************************************************

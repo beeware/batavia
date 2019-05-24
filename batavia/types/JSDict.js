@@ -228,120 +228,12 @@ JSDict.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-JSDict.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__div__ = function(other) {
-    return this.__truediv__(other)
-}
-
-JSDict.prototype.__floordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__mul__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [
-        types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType])) {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'jsdict' and '" + type_name(other) + "'")
-    } else {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'jsdict'")
-    }
-}
-
 JSDict.prototype.__mod__ = function(other) {
     throw new exceptions.NotImplementedError.$pyclass('Dict.__mod__ has not been implemented')
 }
 
-JSDict.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'jsdict' and '" + type_name(other) + "'")
-}
-
 JSDict.prototype.__setitem__ = function(key, value) {
     this[key] = value
-}
-
-JSDict.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'jsdict' and '" + type_name(other) + "'")
-}
-
-/**************************************************
- * Inplace operators
- **************************************************/
-
-JSDict.prototype.__ifloordiv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__itruediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__iadd__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__isub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__imul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__imod__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__ipow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for **=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__ilshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__irshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__iand__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__ixor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^=: 'jsdict' and '" + type_name(other) + "'")
-}
-
-JSDict.prototype.__ior__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |=: 'jsdict' and '" + type_name(other) + "'")
 }
 
 JSDict.prototype.__getitem__ = function(other) {

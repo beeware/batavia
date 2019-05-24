@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 
 class SliceTests(TranspileTestCase):
@@ -198,6 +199,11 @@ class SliceTests(TranspileTestCase):
         """)
 
 
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'slice'
+    MagicMethodFunctionTestCase._add_tests(vars(), slice)
+
+
 class UnarySliceOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'slice'
 
@@ -212,6 +218,18 @@ class UnarySliceOperationTests(UnaryOperationTestCase, TranspileTestCase):
 class BinarySliceOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'slice'
 
+    not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+    ]
+
 
 class InplaceSliceOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'slice'
+
+    not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+    ]

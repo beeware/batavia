@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -269,6 +270,10 @@ class DictTests(TranspileTestCase):
         """)
 
 
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'dict'
+    MagicMethodFunctionTestCase._add_tests(vars(), dict)
+
 
 class UnaryDictOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'dict'
@@ -279,11 +284,21 @@ class BinaryDictOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
     not_implemented = [
         'test_subscr_class',
-        'test_subscr_NotImplemented'
+        'test_subscr_NotImplemented',
+
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
     ]
 
 
 class InplaceDictOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'dict'
 
-    not_implemented = []
+    not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytes",
+        "test_multiply_list",
+        "test_multiply_str",
+        "test_multiply_tuple",
+    ]

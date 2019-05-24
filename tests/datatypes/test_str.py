@@ -1,5 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms, SAMPLE_DATA, expected_failing_versions
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    adjust, transforms, SAMPLE_DATA, expected_failing_versions, MagicMethodFunctionTestCase
 
 from itertools import product
 import unittest
@@ -1394,6 +1394,62 @@ class NewStyleFormatTests(TranspileTestCase):
         )
 
         self.assertCodeExecution(test_str)
+
+
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'str'
+    MagicMethodFunctionTestCase._add_tests(vars(), str)
+
+    not_implemented = [
+        "test__mul__bytearray",
+        "test__mul__bytes",
+        "test__mul__class",
+        "test__mul__complex",
+        "test__mul__dict",
+        "test__mul__float",
+        "test__mul__frozenset",
+        "test__mul__list",
+        "test__mul__None",
+        "test__mul__NotImplemented",
+        "test__mul__range",
+        "test__mul__set",
+        "test__mul__slice",
+        "test__mul__str",
+        "test__mul__tuple",
+
+        "test__rmod__bool",
+        "test__rmod__bytearray",
+        "test__rmod__bytes",
+        "test__rmod__class",
+        "test__rmod__complex",
+        "test__rmod__dict",
+        "test__rmod__float",
+        "test__rmod__frozenset",
+        "test__rmod__int",
+        "test__rmod__list",
+        "test__rmod__None",
+        "test__rmod__NotImplemented",
+        "test__rmod__range",
+        "test__rmod__set",
+        "test__rmod__slice",
+        "test__rmod__str",
+        "test__rmod__tuple",
+        "test__rmul__bytearray",
+        "test__rmul__bytes",
+        "test__rmul__class",
+        "test__rmul__complex",
+        "test__rmul__dict",
+        "test__rmul__float",
+        "test__rmul__frozenset",
+        "test__rmul__list",
+        "test__rmul__None",
+        "test__rmul__NotImplemented",
+        "test__rmul__range",
+        "test__rmul__set",
+        "test__rmul__slice",
+        "test__rmul__str",
+        "test__rmul__tuple",
+    ]
 
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):

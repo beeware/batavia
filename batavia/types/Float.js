@@ -4,6 +4,7 @@ var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var None = require('../core').None
+var NotImplemented = require('../core').NotImplemented
 
 /*************************************************************************
  * A Python float type
@@ -331,7 +332,7 @@ Float.prototype.__pow__ = function(other) {
             return new Float(Math.pow(this.valueOf(), other.valueOf()))
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'float' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -361,7 +362,7 @@ Float.prototype.__floordiv__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('float divmod()')
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'float' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -387,7 +388,7 @@ Float.prototype.__truediv__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('float division by zero')
         }
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'float' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -395,7 +396,7 @@ Float.prototype.__mul__ = function(other) {
     var types = require('../types')
 
     if (other === null) {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and 'NoneType'")
+        return NotImplemented
     } else if (types.isinstance(other, types.Bool)) {
         if (other.valueOf()) {
             return new Float(this.valueOf() * 1)
@@ -403,11 +404,9 @@ Float.prototype.__mul__ = function(other) {
             return new Float(this.valueOf() * 0)
         }
     } else if (types.isinstance(other, [Float, types.Int])) {
-        return new Float(this.valueOf() * other.valueOf())
-    } else if (types.isinstance(other, [types.List, types.Str, types.Tuple, types.Bytes, types.Bytearray])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'float'")
+        return new Float(this.valueOf() * other.__float__().valueOf())
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'float' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -447,9 +446,7 @@ Float.prototype.__mod__ = function(other) {
             throw new exceptions.ZeroDivisionError.$pyclass('float modulo')
         }
     } else {
-        throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for %: 'float' and '" + type_name(other) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -470,11 +467,8 @@ Float.prototype.__add__ = function(other) {
         } else {
             return new Float(this.valueOf())
         }
-    } else if (types.isinstance(other, types.Complex)) {
-        var real = new Float(this.valueOf() + other.real)
-        return new types.Complex(real.valueOf(), other.imag.valueOf())
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'float' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -499,7 +493,7 @@ Float.prototype.__sub__ = function(other) {
         var real = new Float(this.valueOf() - other.real)
         return new types.Complex(real.valueOf(), -other.imag.valueOf())
     } else {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'float' and '" + type_name(other) + "'")
+        return NotImplemented
     }
 }
 
@@ -507,34 +501,36 @@ Float.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'float' object is not subscriptable")
 }
 
-Float.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for <<: 'float' and '" + type_name(other) + "'"
-    )
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Float.prototype.__radd__ = function(other) {
+    return this.__add__(other)
 }
 
-Float.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for >>: 'float' and '" + type_name(other) + "'"
-    )
+Float.prototype.__rfloordiv__ = function(other) {
+    return NotImplemented
 }
 
-Float.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for &: 'float' and '" + type_name(other) + "'"
-    )
+Float.prototype.__rmod__ = function(other) {
+    return NotImplemented
 }
 
-Float.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for ^: 'float' and '" + type_name(other) + "'"
-    )
+Float.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
-Float.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for |: 'float' and '" + type_name(other) + "'"
-    )
+Float.prototype.__rpow__ = function(other) {
+    return NotImplemented
+}
+
+Float.prototype.__rsub__ = function(other) {
+    return NotImplemented
+}
+
+Float.prototype.__rtruediv__ = function(other) {
+    return NotImplemented
 }
 
 /**************************************************

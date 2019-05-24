@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -27,11 +28,33 @@ class FloatTests(TranspileTestCase):
             """)
 
 
-class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'float'
+    MagicMethodFunctionTestCase._add_tests(vars(), float)
 
     not_implemented = [
+        "test__sub__complex",
+
+        "test__rfloordiv__bool",
+        "test__rfloordiv__float",
+        "test__rfloordiv__int",
+        "test__rmod__bool",
+        "test__rmod__float",
+        "test__rmod__int",
+        "test__rpow__bool",
+        "test__rpow__float",
+        "test__rpow__int",
+        "test__rsub__bool",
+        "test__rsub__float",
+        "test__rsub__int",
+        "test__rtruediv__bool",
+        "test__rtruediv__float",
+        "test__rtruediv__int",
     ]
+
+
+class UnaryFloatOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'float'
 
 
 class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -44,11 +67,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_floor_divide_int',
 
         'test_true_divide_int',
-
-
-
-
-        'test_floor_divide_complex',
 
         'test_ge_class',
         'test_ge_complex',
@@ -70,16 +88,14 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_complex',
         'test_lt_frozenset',
 
-        'test_modulo_complex',
-
-        'test_multiply_complex',
-
         'test_power_complex',
         'test_power_float',
 
-
-
         'test_true_divide_complex',
+
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
     ]
 
 
@@ -87,6 +103,9 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'float'
 
     not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
 
         # these work, but print incorrectly
 
@@ -94,18 +113,8 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_true_divide_int',
 
-
-
-        'test_floor_divide_complex',
-
-        'test_modulo_complex',
-
-        'test_multiply_complex',
-
         'test_power_complex',
         'test_power_float',
-
-
 
         'test_true_divide_complex',
     ]

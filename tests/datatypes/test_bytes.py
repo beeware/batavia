@@ -1,5 +1,5 @@
 from ..utils import TranspileTestCase, UnaryOperationTestCase, \
-    BinaryOperationTestCase, InplaceOperationTestCase
+    BinaryOperationTestCase, InplaceOperationTestCase, MagicMethodFunctionTestCase
 
 import unittest
 
@@ -92,10 +92,57 @@ class BytesTests(TranspileTestCase):
             """)
 
 
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'bytes'
+    MagicMethodFunctionTestCase._add_tests(vars(), bytes)
+
+    not_implemented = [
+        "test__mul__bytearray",
+        "test__mul__bytes",
+        "test__mul__class",
+        "test__mul__complex",
+        "test__mul__dict",
+        "test__mul__float",
+        "test__mul__frozenset",
+        "test__mul__list",
+        "test__mul__None",
+        "test__mul__NotImplemented",
+        "test__mul__range",
+        "test__mul__set",
+        "test__mul__slice",
+        "test__mul__str",
+        "test__mul__tuple",
+
+        "test__rmod__bytes",
+    ]
+
+    not_implemented_versions = {
+        "test__mod__bool": ['3.5', '3.6'],
+        "test__mod__bytearray": ['3.5', '3.6'],
+        "test__mod__bytes": ['3.5', '3.6'],
+        "test__mod__class": ['3.5', '3.6'],
+        "test__mod__complex": ['3.5', '3.6'],
+        "test__mod__dict": ['3.5', '3.6'],
+        "test__mod__float": ['3.5', '3.6'],
+        "test__mod__frozenset": ['3.5', '3.6'],
+        "test__mod__int": ['3.5', '3.6'],
+        "test__mod__list": ['3.5', '3.6'],
+        "test__mod__None": ['3.5', '3.6'],
+        "test__mod__NotImplemented": ['3.5', '3.6'],
+        "test__mod__range": ['3.5', '3.6'],
+        "test__mod__set": ['3.5', '3.6'],
+        "test__mod__slice": ['3.5', '3.6'],
+        "test__mod__str": ['3.5', '3.6'],
+        "test__mod__tuple": ['3.5', '3.6'],
+
+        "test__rmod__bytes": ['3.5', '3.6'],
+
+        "test__rmod__missing": ['3.4'],
+    }
+
+
 class UnaryBytesOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
-
-    not_implemented = []
 
 
 class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -133,7 +180,6 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_modulo_slice': ['3.5', '3.6'],
         'test_modulo_str': ['3.5', '3.6'],
         'test_modulo_tuple': ['3.5', '3.6'],
-
     }
 
     not_implemented = [
@@ -177,6 +223,3 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_modulo_str': ['3.5', '3.6'],
         'test_modulo_tuple': ['3.5', '3.6'],
     }
-
-    not_implemented = [
-    ]
