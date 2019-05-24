@@ -120,13 +120,7 @@ After you have setup the local installation of Batavia, you can now run Python i
 $ cd testserver
 $ pip install -r requirements.txt
 
-On Linux/macOS:
-
-$ ./manage.py runserver
-
-On Windows:
-
-> python manage.py runserver
+$ python manage.py runserver
 
 then open a web browser at `http://localhost:8000 <http://localhost:8000>`_
 
