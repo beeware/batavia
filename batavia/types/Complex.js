@@ -4,17 +4,15 @@ var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var Int = require('./Int.js')
+var Float = require('./Float.js').Float
 var NotImplemented = require('../core').NotImplemented
 
 // Helper function defined in Float.js
 var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
+
 /*************************************************************************
  * A Python complex type
  *************************************************************************/
-
-var MAX_INT = new Int('9223372036854775807')
-var MAX_FLOAT = new Int('179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
-var MIN_FLOAT = new Int('-179769313486231580793728971405303415079934132710037826936173778980444968292764750946649017977587207096330286416692887910946555547851940402630657488671505820681908902000708383676273854845817711531764475730270069855571366959622842914819860834936475292719074168444365510704342711559699508093042880177904174497791')
 
 function part_from_str(s) {
     var types = require('../types')
@@ -344,8 +342,8 @@ function integral_exponent(base, exponent) {
         return new Complex(1, 0)
     }
 
-    if (Number(exponent) >= MAX_INT) {
-        if (Number(exponent) > MAX_FLOAT) {
+    if (Number(exponent) >= Int.prototype.MAX_INT) {
+        if (Number(exponent) > Float.prototype.MAX_FLOAT) {
             throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
         }
 
@@ -360,7 +358,7 @@ function integral_exponent(base, exponent) {
         throw new exceptions.OverflowError.$pyclass('complex exponentiation')
     }
 
-    if (Number(exponent) <= MIN_FLOAT) {
+    if (Number(exponent) <= Float.prototype.MIN_FLOAT) {
         throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
     }
 
