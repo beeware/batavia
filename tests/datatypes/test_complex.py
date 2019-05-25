@@ -26,14 +26,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     MagicMethodFunctionTestCase._add_tests(vars(), complex)
 
     not_implemented = [
-        "test__pow__complex",
-        "test__pow__float",
-        "test__pow__int",
-
-        "test__rpow__bool",
-        "test__rpow__complex",
-        "test__rpow__float",
-        "test__rpow__int",
         "test__rsub__bool",
         "test__rsub__complex",
         "test__rsub__float",

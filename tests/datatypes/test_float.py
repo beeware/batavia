@@ -88,7 +88,6 @@ class BinaryFloatOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_complex',
         'test_lt_frozenset',
 
-        'test_power_complex',
         'test_power_float',
 
         'test_true_divide_complex',
@@ -113,7 +112,6 @@ class InplaceFloatOperationTests(InplaceOperationTestCase, TranspileTestCase):
 
         'test_true_divide_int',
 
-        'test_power_complex',
         'test_power_float',
 
         'test_true_divide_complex',

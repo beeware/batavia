@@ -278,56 +278,32 @@ Complex.prototype.__abs__ = function() {
 /**************************************************
  * Binary operators
  **************************************************/
-function hyp(x, y) {
-    x = Math.abs(x)
-    y = Math.abs(y)
-    if (x < y) {
-        var temp = x
-        x = y
-        y = temp
-    }
-    if (x === 0) {
-        return 0
-    } else {
-        var yx = y / x
-        return x * Math.sqrt(1 + yx * yx)
-    }
-}
-function quot(a, b) {
-    var r = new Complex(0, 0)
-    var abs_bimag = 0
-    var abs_breal = 0
-    if (b.real < 0) {
-        abs_breal = -b.real
-    } else {
-        abs_breal = b.real
-    }
-    if (b.imag < 0) {
-        abs_bimag = -b.imag
-    } else {
-        abs_bimag = b.imag
-    }
+
+function quotient(a, b) {
+    const abs_bimag = Math.abs(b.imag)
+    const abs_breal = Math.abs(b.real)
     if (abs_breal >= abs_bimag) {
         if (abs_breal === 0) {
-            r = new Complex(0, 0)
-        } else {
-            const ratio = b.imag / b.real
-            const denom = b.real + b.imag * ratio
-            r = new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
+            return new Complex(0, 0)
         }
-    } else if (abs_bimag >= abs_breal) {
+        const ratio = b.imag / b.real
+        const denom = b.real + b.imag * ratio
+        return new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
+    }
+
+    if (abs_bimag >= abs_breal) {
         const ratio = b.real / b.imag
         const denom = b.real * ratio + b.imag
-        r = new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
-    } else {
-        r = new Complex(NaN, NaN)
+        return new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
     }
-    return r
+
+    return new Complex(NaN, NaN)
 }
-function powu(x, y) {
-    var mask = 1
-    var r = new Complex(1, 0)
-    var p = x
+
+function unsigned_exponent(x, y) {
+    let mask = 1
+    let r = new Complex(1, 0)
+    let p = x
     while (mask > 0 && y >= mask) {
         if (y & mask) {
             r = __mul__(r, p)
@@ -337,91 +313,95 @@ function powu(x, y) {
     }
     return r
 }
-function powc(x, y) {
-    if (y.real === 0 && y.imag === 0) {
+
+function complex_exponent(base, exponent) {
+    if (exponent.real === 0 && exponent.imag === 0) {
         return new Complex(1, 0)
-    } else if (x.real === 0 && x.imag === 0) {
-        if (y.imag !== 0 || y.real < 0) {
-            throw new exceptions.ZeroDivisionError.$pyclass(
-                '0.0 to a negative or complex power'
-                )
+    }
+
+    if (base.real === 0 && base.imag === 0) {
+        if (exponent.imag !== 0 || exponent.real < 0) {
+            throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
         }
         return new Complex(0, 0)
     }
-    var vabs = hyp(x.real, x.imag)
-    var l = Math.pow(vabs, y.real)
-    var at = Math.atan2(x.imag, x.real)
-    var phase = at * y.real
-    if (y.imag !== 0) {
-        l /= Math.exp(at * y.imag)
-        phase += y.imag * Math.log(vabs)
+
+    const vabs = Math.hypot(base.real, base.imag)
+    const at = Math.atan2(base.imag, base.real)
+
+    let l = Math.pow(vabs, exponent.real)
+    let phase = at * exponent.real
+    if (exponent.imag !== 0) {
+        l /= Math.exp(at * exponent.imag)
+        phase += exponent.imag * Math.log(vabs)
     }
-    var r = l * Math.cos(phase)
-    var im = l * Math.sin(phase)
-    return new Complex(r, im)
+
+    return new Complex(l * Math.cos(phase), l * Math.sin(phase))
 }
-function powi(x, y) {
-    var cn
-    if (Number(y) == 0) {
-	return new Complex(1, 0)
+
+function integral_exponent(base, exponent) {
+    if (Number(exponent) === 0) {
+        return new Complex(1, 0)
     }
-    if (Number(y) >= MAX_INT) {
-        if (Number(y) <= MAX_FLOAT) {
-            if (x.real*x.real + x.imag*x.imag == 1) {
-		return powc(x, new Complex(Number(y), 0))
-            }
-	    else if (x.real === 0 && x.imag === 0) {
-		return new Complex(0, 0)
-	    }
-            throw new exceptions.OverflowError.$pyclass(
-                'complex exponentiation'
-            )
-        } else {
-            throw new exceptions.OverflowError.$pyclass(
-                'int too large to convert to float'
-            )
+
+    if (Number(exponent) >= MAX_INT) {
+        if (Number(exponent) > MAX_FLOAT) {
+            throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
         }
+
+        if (base.real * base.real + base.imag * base.imag === 1) {
+            return complex_exponent(base, new Complex(Number(exponent), 0))
+        }
+
+        if (base.real === 0 && base.imag === 0) {
+            return new Complex(0, 0)
+        }
+
+        throw new exceptions.OverflowError.$pyclass('complex exponentiation')
     }
-    else if (Number(y) <= MIN_FLOAT) {
-        throw new exceptions.OverflowError.$pyclass(
-            'int too large to convert to float'
-        )
+
+    if (Number(exponent) <= MIN_FLOAT) {
+        throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
     }
-    else if (x.real === 0 && x.imag === 0) {
-	if (Number(y) < 0) {
-	    throw new exceptions.ZeroDivisionError.$pyclass(
-                '0.0 to a negative or complex power'
-            )
-	}
-	return new Complex(0, 0)
+
+    if (base.real === 0 && base.imag === 0) {
+        if (Number(exponent) < 0) {
+            throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
+        }
+        return new Complex(0, 0)
+    }
+
+    if (exponent > 100 || exponent < -100) {
+        return complex_exponent(base, new Complex(Number(exponent), 0))
+    } else if (exponent > 0) {
+        return unsigned_exponent(base, exponent)
     } else {
-        if (y > 100 || y < -100) {
-            cn = new Complex(Number(y), 0)
-            return powc(x, cn)
-        } else if (y > 0) {
-            return powu(x, y)
-        } else {
-            return quot(new Complex(1, 0), powu(x, -y))
-        }
+        return quotient(new Complex(1, 0), unsigned_exponent(base, -exponent))
     }
 }
+
 function __pow__(x, y, inplace) {
     var types = require('../types')
     if (types.isinstance(y, types.Int)) {
-        return powi(x, y.val)
-    } else if (types.isinstance(y, types.Bool)) {
+        return integral_exponent(x, y.val)
+    }
+
+    if (types.isinstance(y, types.Bool)) {
         if (y.valueOf()) {
             return new Complex(x.real, x.imag)
-        } else {
-            return new Complex(1, 0)
         }
-    } else if (types.isinstance(y, types.Complex)) {
-        return powc(x, y)
-    } else if (types.isinstance(y, types.Float)) {
-        return powc(x, new Complex(y.valueOf(), 0))
-    } else {
-        return NotImplemented
+        return new Complex(1, 0)
     }
+
+    if (types.isinstance(y, types.Complex)) {
+        return complex_exponent(x, y)
+    }
+
+    if (types.isinstance(y, types.Float)) {
+        return complex_exponent(x, new Complex(y.valueOf(), 0))
+    }
+
+    return NotImplemented
 }
 
 Complex.prototype.__pow__ = function(other) {
@@ -585,6 +565,27 @@ Complex.prototype.__rmul__ = function(other) {
 }
 
 Complex.prototype.__rpow__ = function(other) {
+    var types = require('../types')
+
+    if (types.isinstance(other, types.Bool)) {
+        if (other.valueOf()) {
+            return new Complex(1, 0)
+        }
+        return complex_exponent(new Complex(0, 0), this)
+    }
+
+    if (types.isinstance(other, types.Int)) {
+        return other.__pow__(this)
+    }
+
+    if (types.isinstance(other, types.Float)) {
+        return complex_exponent(new Complex(other.valueOf(), 0), this)
+    }
+
+    if (types.isinstance(other, types.Complex)) {
+        return complex_exponent(other, this)
+    }
+
     return NotImplemented
 }
 
