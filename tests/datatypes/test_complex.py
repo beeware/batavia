@@ -26,14 +26,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     MagicMethodFunctionTestCase._add_tests(vars(), complex)
 
     not_implemented = [
-        "test__pow__complex",
-        "test__pow__float",
-        "test__pow__int",
-
-        "test__rpow__bool",
-        "test__rpow__complex",
-        "test__rpow__float",
-        "test__rpow__int",
         "test__rsub__bool",
         "test__rsub__complex",
         "test__rsub__float",
@@ -53,14 +45,6 @@ class BinaryComplexOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'complex'
 
     not_implemented = [
-        # These two work, but print floats not *quite* right due to JS
-        # Python differences
-        # TODO: re-implement the Python float printing function.
-
-        'test_power_complex',
-        'test_power_float',
-        'test_power_int',
-
         # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
         "test_multiply_bytearray",
         "test_multiply_bytes",
@@ -74,8 +58,4 @@ class InplaceComplexOperationTests(InplaceOperationTestCase, TranspileTestCase):
         # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
         "test_multiply_bytearray",
         "test_multiply_bytes",
-
-        'test_power_complex',
-        'test_power_float',
-        'test_power_int',
     ]
