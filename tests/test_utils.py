@@ -1,6 +1,7 @@
 import unittest
 
-from .utils import adjust, JSCleaner, PYCleaner, TranspileTestCase
+from .utils import adjust, JSCleaner, PYCleaner, TranspileTestCase, remove_whitespace, wrap_in_exception_guard, \
+    wrap_in_function
 
 
 class TimeoutTests(TranspileTestCase):
@@ -12,6 +13,62 @@ class TimeoutTests(TranspileTestCase):
 
 
 class AdjustTests(unittest.TestCase):
+    def test_remove_whitespace(self):
+        """Test input is stripped and split into lines."""
+        self.assertEqual(
+            remove_whitespace(
+                """
+                while True:
+                    print('----')
+                """, indent=False),
+            [
+                "while True:",
+                "    print('----')",
+                ""
+            ])
+
+    def test_remove_whitespace_and_indent(self):
+        """Test input is stripped and split into lines and indented."""
+        self.assertEqual(
+            remove_whitespace(
+                """
+                while True:
+                    print('----')
+                """, indent=True),
+            [
+                "    while True:",
+                "        print('----')",
+                ""
+            ])
+
+    def test_wrap_in_exception_guard(self):
+        self.assertEqual(
+            wrap_in_exception_guard(
+                """
+                print("banana")
+                """
+            ),
+            """\
+try:
+    print("banana")
+
+except Exception as e:
+    print("Exception escaped test code in TEST_RUNNER_TARGET")
+    print(repr(e))""")
+
+    def test_wrap_in_function(self):
+        self.assertEqual(
+            wrap_in_function(
+                """
+                print("banana")
+                """
+            ),
+            """\
+def test_function():
+    print("banana")
+
+test_function()""")
+
     def assertEqualOutput(self, actual, expected):
         self.assertEqual(adjust(actual), adjust(expected))
 
