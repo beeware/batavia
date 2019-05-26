@@ -67,7 +67,7 @@ class TryExceptTests(TranspileTestCase):
             except NameError:
                 print("Got an error")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_except_named(self):
         # No exception
@@ -98,7 +98,7 @@ class TryExceptTests(TranspileTestCase):
             except NameError as e:
                 print("Got a NameError")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except(self):
         # No exception
@@ -147,7 +147,7 @@ class TryExceptTests(TranspileTestCase):
             except AttributeError:
                 print("Got an AttributeError")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_named(self):
         # No exception
@@ -196,7 +196,7 @@ class TryExceptTests(TranspileTestCase):
             except AttributeError as e:
                 print("Got an AttributeError")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_match_except_unnamed(self):
         # No exception
@@ -269,7 +269,7 @@ class TryExceptTests(TranspileTestCase):
             except AttributeError:
                 print("Got an AttributeError")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_match_except_named(self):
         # No exception
@@ -342,7 +342,7 @@ class TryExceptTests(TranspileTestCase):
             except AttributeError as e:
                 print("Got an AttributeError")
             print('Done 6.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_mixed1(self):
         # No exception
@@ -379,7 +379,7 @@ class TryExceptTests(TranspileTestCase):
             except AttributeError as e:
                 print("Got an AttributeError")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_mixed2(self):
         self.assertCodeExecution("""
@@ -413,7 +413,7 @@ class TryExceptTests(TranspileTestCase):
             except AttributeError:
                 print("Got an AttributeError")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_mixed3(self):
         # No exception
@@ -479,7 +479,7 @@ class TryExceptFinallyTests(TranspileTestCase):
             finally:
                 print("Do final cleanup")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_except_finally(self):
         # Caught Exception
@@ -541,7 +541,7 @@ class TryExceptFinallyTests(TranspileTestCase):
             finally:
                 print("Do final cleanup")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_except_named_finally(self):
         # No exception
@@ -578,7 +578,7 @@ class TryExceptFinallyTests(TranspileTestCase):
             finally:
                 print("Do final cleanup")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_finally(self):
         # No exception
@@ -635,7 +635,7 @@ class TryExceptFinallyTests(TranspileTestCase):
             finally:
                 print("Do final cleanup")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
 
 class TryExceptElseTests(TranspileTestCase):
@@ -699,7 +699,7 @@ class TryExceptElseTests(TranspileTestCase):
             else:
                 print("Do else handling")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_else(self):
         # No exception
@@ -742,7 +742,7 @@ class TryExceptElseTests(TranspileTestCase):
             else:
                 print("Do else handling")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
 
 class TryExceptElseFinallyTests(TranspileTestCase):
@@ -816,7 +816,7 @@ class TryExceptElseFinallyTests(TranspileTestCase):
             finally:
                 print("Do final cleanup")
             print('Done.')
-            """)
+            """, allow_exceptions=True)
 
     def test_try_multiple_except_else_finally(self):
         # No exception
@@ -865,4 +865,4 @@ class TryExceptElseFinallyTests(TranspileTestCase):
             finally:
                 print("Do final cleanup")
             print('Done.')
-            """)
+            """, allow_exceptions=True)

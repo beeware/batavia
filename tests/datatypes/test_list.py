@@ -43,14 +43,20 @@ class ListTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = [1, 2, 3]
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = [1, 2, 3]
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
@@ -114,13 +120,19 @@ class ListTests(TranspileTestCase):
         # Positive index out of range
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
-            print(x[10])
+            try:
+                print(x[10])
+            except IndexError as e:
+                print(e)
             """)
 
         # Negative index out of range
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
-            print(x[-10])
+            try:
+                print(x[-10])
+            except IndexError as e:
+                print(e)
             """)
 
     def test_index(self):
@@ -176,7 +188,11 @@ class ListTests(TranspileTestCase):
         # Slice with step 0 (error)
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
-            print(x[::0])
+            try:
+                print(x[::0])
+            except ValueError as e:
+                print(e)
+            print('Done.')
             """)
 
         # Slice with revese step
@@ -191,7 +207,7 @@ class ListTests(TranspileTestCase):
             print(x[-5:-1:-1])
             """)
 
-        # Slice -1 start with revese step
+        # Slice -1 start with reverse step
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
             print(x[-1:0:-1])
@@ -274,18 +290,27 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = []
-            l.insert()
+            try:
+                l.insert()
+            except TypeError as e:
+                print(e)
         """)
 
         self.assertCodeExecution("""
             l = []
-            l.insert("0", 1)
+            try:
+                l.insert("0", 1)
+            except TypeError as e:
+                print(e)
             print(l)
         """)
 
         self.assertCodeExecution("""
             l = []
-            l.insert(1.0, 1)
+            try:
+                l.insert(1.0, 1)
+            except TypeError as e:
+                print(e)
         """)
 
     @unittest.expectedFailure
@@ -315,12 +340,18 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = []
-            l.remove(1)
+            try:
+                l.remove(1)
+            except ValueError as e:
+                print(e)
         """)
 
         self.assertCodeExecution("""
             l = [1]
-            l.remove()
+            try:
+                l.remove()
+            except TypeError as e:
+                print(e)
         """)
 
     def test_pop_success(self):
@@ -344,18 +375,27 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = [1, 2]
-            l.pop(2)
+            try:
+                l.pop(2)
+            except IndexError as e:
+                print(e)
         """)
 
         self.assertCodeExecution("""
             l = []
-            l.pop(1, 2)
-        """)
+            try:
+                l.pop(1, 2)
+            except TypeError as e:
+                print(e)
+            """)
 
         self.assertCodeExecution("""
             l = [1]
-            l.pop("0")
-        """)
+            try:
+                l.pop("0")
+            except TypeError as e:
+                print(e)
+            """)
 
     @unittest.expectedFailure
     def test_pop_subclass_index(self):
@@ -384,7 +424,10 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = ["one", "two", 3]
-            l.clear("invalid")
+            try:
+                l.clear("invalid")
+            except TypeError as e:
+                print(e)
             print(l)
         """)
 

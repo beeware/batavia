@@ -9,14 +9,20 @@ class FloatTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = 3.14159
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = 3.14159
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 

@@ -10,14 +10,20 @@ class DictTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = {}
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = {}
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
@@ -42,7 +48,11 @@ class DictTests(TranspileTestCase):
         # keys with the same string representation
         self.assertCodeExecution("""
             x = {1: 2, '1': 1}
-            print(sorted(x.items()))
+            try:
+                print(sorted(x.items()))
+            except TypeError as e:
+                print(e)
+            print('Done.')
         """, substitutions=subst)
 
     def test_getitem(self):
@@ -60,7 +70,10 @@ class DictTests(TranspileTestCase):
             x = {'a': 1, 'b': 2}
             print('c' in x)
             print('c' not in x)
-            print(x['c'])
+            try:
+                print(x['c'])
+            except KeyError as e:
+                print(e)
             """, run_in_function=False)
 
         # Override key
@@ -125,7 +138,11 @@ class DictTests(TranspileTestCase):
     def test_builtin_non_2_tuples(self):
         # One of the elements isn't a 2-tuple
         self.assertCodeExecution("""
-            x = dict([('a', 1), ('b', 2, False)])
+            try:
+                x = dict([('a', 1), ('b', 2, False)])
+            except ValueError as e:
+                print(e)
+            print('Done.')
             """, run_in_function=False)
 
     def test_print_dict(self):
@@ -171,7 +188,11 @@ class DictTests(TranspileTestCase):
     def test_builtin_non_sequence(self):
         # One of the elements isn't a sequence
         self.assertCodeExecution("""
-            x = dict([('a', 1), False, ('b', 2)])
+            try:
+                x = dict([('a', 1), False, ('b', 2)])
+            except TypeError as e:
+                print(e)
+            print('Done.')
             """, run_in_function=False)
 
     def test_pop_success(self):
@@ -190,12 +211,20 @@ class DictTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             d = {'a': 1}
-            d.pop('b')
+            try:
+                d.pop('b')
+            except KeyError as e:
+                print(e)
+            print('Done')
         """)
 
         self.assertCodeExecution("""
             d = {}
-            d.pop(1, 2, 3)
+            try:
+                d.pop(1, 2, 3)
+            except TypeError as e:
+                print(e)
+            print('Done.')
         """)
 
     def test_popitem_success(self):
@@ -216,12 +245,20 @@ class DictTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             d = {}
-            d.popitem(1)
+            try:
+                d.popitem(1)
+            except TypeError as e:
+                print(e)
+            print('Done.')
         """)
 
         self.assertCodeExecution("""
             d = {}
-            d.popitem()
+            try:
+                d.popitem()
+            except KeyError as e:
+                print(e)
+            print('Done.')
         """)
 
     def test_setdefault_success(self):
@@ -240,7 +277,11 @@ class DictTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             d = {}
-            d.setdefault()
+            try:
+                d.setdefault()
+            except TypeError as e:
+                print(e)
+            print('Done.')
         """)
 
     def test_fromkeys_success(self):
@@ -259,7 +300,11 @@ class DictTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             d = {}
-            print(d.fromkeys([], None, None))
+            try:
+                print(d.fromkeys([], None, None))
+            except TypeError as e:
+                print(e)
+            print('Done.')
         """)
 
     def test_len(self):

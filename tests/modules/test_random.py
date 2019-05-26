@@ -8,7 +8,7 @@ class RandomTests(TranspileTestCase):
 
             numbers = [1, 2, 3, 4, 5, 6, 7, 8]
             random_number = random.choice(numbers)
-            self.assertIn(random_number, numbers)
+            print(random_number in numbers)
             """)
 
     def test_random(self):

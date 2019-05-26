@@ -18,7 +18,10 @@ class ScopeTests(TranspileTestCase):
             x = 1
 
             def foo():
-                print("1: x =", x)
+                try:
+                    print("1: x =", x)
+                except UnboundLocalError as e:
+                    print(e)
                 x = 2
                 print("2: x =", x)
 
@@ -52,7 +55,10 @@ class ScopeTests(TranspileTestCase):
 
             class Foo:
                 def __init__(self, y):
-                    print("1: x =", x)
+                    try:
+                        print("1: x =", x)
+                    except UnboundLocalError as e:
+                        print(e)
                     print("1: y =", y)
                     x = 2
                     print("2: x =", x)

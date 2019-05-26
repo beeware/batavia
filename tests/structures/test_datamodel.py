@@ -505,7 +505,7 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
                     return self
 
             p1 = Pair(5, 6)
-            p2 |= Pair(6, 5)
+            p1 |= Pair(6, 5)
 
             print(p1)
         """, run_in_function=False)

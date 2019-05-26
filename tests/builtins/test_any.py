@@ -16,7 +16,13 @@ class AnyTests(TranspileTestCase):
         self.assertCodeExecution("print(any([]))")
 
     def test_any_typeerror(self):
-        self.assertCodeExecution("print(any(None))")
+        self.assertCodeExecution("""
+            try:
+                print(any(None))
+            except TypeError as e:
+                print(e)
+                print('Done.')
+        """)
 
 
 class BuiltinAnyFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):

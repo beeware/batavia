@@ -27,7 +27,11 @@ class RangeTests(TranspileTestCase):
             print("x[1] =", x[1])
             print("x[3] =", x[3])
             print("x[-1] =", x[-1])
-            print("x[5] =", x[5])
+            try:
+                print("x[5] =", x[5])
+            except IndexError as e:
+                print(e)
+            print('Done.')
             """)
 
     def test_start_not_zero(self):
@@ -37,7 +41,10 @@ class RangeTests(TranspileTestCase):
             print("x[1] =", x[1])
             print("x[3] =", x[3])
             print("x[-1] =", x[-1])
-            print("x[5] =", x[5])
+            try:
+                print("x[5] =", x[5])
+            except IndexError as e:
+                print(e)
             """)
 
     def test_step(self):
@@ -45,9 +52,15 @@ class RangeTests(TranspileTestCase):
             x = range(0, 5, 2)
             print("x[0] =", x[0])
             print("x[1] =", x[1])
-            print("x[3] =", x[3])
+            try:
+                print("x[3] =", x[3])
+            except IndexError as e:
+                print(e)
             print("x[-1] =", x[-1])
-            print("x[5] =", x[5])
+            try:
+                print("x[5] =", x[5])
+            except IndexError as e:
+                print(e)
             """)
 
     def test_step_negative(self):
