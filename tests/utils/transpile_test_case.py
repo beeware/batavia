@@ -64,11 +64,10 @@ def _normalize_outputs(code1, code2, transform_output=None):
         line2, val2 = _normalize(line2)
         if transform_output(val1) == transform_output(val2):
             line2 = line1
-        elif (
-            type(val1) == type(val2) and
-            type(val1) in (float, complex) and
-            val1 + val2 != 0 and
-            abs(val1 - val2) / abs(val1 + val2) < 0.0001):
+        elif (type(val1) == type(val2)
+              and type(val1) in (float, complex)
+              and val1 + val2 != 0
+              and abs(val1 - val2) / abs(val1 + val2) < 0.0001):
             line2 = line1
 
         if line1 is not None:
@@ -124,9 +123,9 @@ class TranspileTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         suite_data = setUpSuite()
-        cls.temp_dir = suite_data['output_dir']
-        cls.batavia_js_dir = suite_data['batavia_js_dir']
-        cls.js_harness_port = suite_data['js_harness_port']
+        cls.temp_dir = suite_data.output_dir
+        cls.batavia_js_dir = suite_data.batavia_js_dir
+        cls.js_harness_port = suite_data.js_harness_port
 
     def assertCodeExecution(self, code, message=None, extra_code=None, run_in_global=True, run_in_function=True,
                             transform_output=None, allow_exceptions=False, args=None, substitutions=None,
