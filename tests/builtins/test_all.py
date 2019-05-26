@@ -16,7 +16,12 @@ class AllTests(TranspileTestCase):
         self.assertCodeExecution("print(all([]))")
 
     def test_all_typeerror(self):
-        self.assertCodeExecution("print(all(None))")
+        self.assertCodeExecution("""
+            try:
+                print(all(None))
+            except TypeError:
+                print("Done.")
+        """)
 
 
 class BuiltinAllFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):

@@ -50,9 +50,12 @@ class AssignmentTests(TranspileTestCase):
     def test_use_potentially_unassigned(self):
         self.assertCodeExecution("""
             x = 37
-            if y > 0:
-                print("Yes")
-            else:
-                print("No")
+            try:
+                if y > 0:
+                    print("Yes")
+                else:
+                    print("No")
+            except NameError as e:
+                print(e)
             print('Done.')
             """, run_in_function=False)

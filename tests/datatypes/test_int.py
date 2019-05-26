@@ -6,20 +6,30 @@ class IntTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = 37
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = 37
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_invalid_literal(self):
         self.assertCodeExecution("""
-            int('q', 16)
+            try:
+                int('q', 16)
+            except ValueError as e:
+                print(e)
+            print('Done.')
             """, run_in_function=False)
 
     def test_addition_promotes_past_32bits(self):

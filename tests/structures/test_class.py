@@ -74,15 +74,24 @@ class ClassTests(TranspileTestCase):
             obj3.__getattr__ = g
 
             print(obj1.foo)
-            print(obj1.fail)
+            try:
+                print(obj1.fail)
+            except AttributeError as e:
+                print(e)
             print(obj1.foo)
 
             print(obj2.x)
-            print(obj2.fail)
+            try:
+                print(obj2.fail)
+            except AttributeError as e:
+                print(e)
             print(obj2.x)
 
             print(obj3.x)
-            print(obj3.fail)
+            try:
+                print(obj3.fail)
+            except AttributeError as e:
+                print(e)
             print(obj3.x)
         """)
 
@@ -155,7 +164,10 @@ class ClassTests(TranspileTestCase):
 
             print(MyClass.foo)
             print(obj.a)
-            print(obj.fail)
+            try:
+                print(obj.fail)
+            except AttributeError as e:
+                print(e)
         """)
 
     def test_subclass(self):

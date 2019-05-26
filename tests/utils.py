@@ -152,34 +152,47 @@ def capture_output(redirect_stderr=True):
         sys.stdout, sys.stderr = oldout, olderr
 
 
-def adjust(text, run_in_function=False):
-    """Adjust a code sample to remove leading whitespace."""
-    lines = text.split('\n')
-    if len(lines) == 1:
-        return text
+def adjust(code_snippet, run_in_function=False, wrap_in_try_catch=False):
+    """Adjust a code sample to remove leading whitespace and add wrapping code."""
 
-    if lines[0].strip() == '':
-        lines = lines[1:]
-    first_line = lines[0].lstrip()
-    n_spaces = len(lines[0]) - len(first_line)
+    def remove_whitespace(text, indent=False):
+        lines = text.split('\n')
 
-    final_lines = [('    ' if run_in_function else '') + line[n_spaces:] for line in lines]
+        if lines[0].strip() == '':
+            lines = lines[1:]
+        first_line = lines[0].lstrip()
+        n_spaces = len(lines[0]) - len(first_line)
+
+        return [('    ' if indent else '') + line[n_spaces:] for line in lines]
+
+    def wrap_in_function(code_to_wrap):
+        return '\n'.join(
+            ["def test_function():"]
+            + remove_whitespace(code_to_wrap, indent=True)
+            + ["test_function()"])
+
+    def wrap_in_exception_guard(code_to_wrap):
+        return '\n'.join(
+            ["try:"]
+            + remove_whitespace(code_to_wrap, indent=True)
+            + ["except Exception as e:",
+               "    print(\"Exception escaped test code in TEST_RUNNER_TARGET\")",
+               "    print(repr(e))"])
 
     if run_in_function:
-        final_lines = [
-            "def test_function():",
-        ] + final_lines + [
-            "test_function()",
-        ]
+        code_snippet = wrap_in_function(code_snippet)
 
-    return '\n'.join(final_lines)
+    if wrap_in_try_catch:
+        return wrap_in_exception_guard(code_snippet)
+
+    return '\n'.join(remove_whitespace(code_snippet))
 
 
-def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
+def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, wrap_in_try_catch=False, args=None):
     """Run a block of Python code with the Python interpreter."""
     # Output source code into test directory
     with open(os.path.join(test_dir, 'test.py'), 'w', encoding='utf-8') as py_source:
-        py_source.write(adjust(main_code, run_in_function=run_in_function))
+        py_source.write(adjust(main_code, run_in_function=run_in_function, wrap_in_try_catch=wrap_in_try_catch))
 
     if extra_code:
         for name, code in extra_code.items():
@@ -512,9 +525,13 @@ class TranspileTestCase(TestCase):
             self, code,
             message=None,
             extra_code=None,
-            run_in_global=True, run_in_function=True, transform_output=None,
+            run_in_global=True, run_in_function=True, transform_output=None, allow_exceptions=False,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
+        js_substitutions = dict(substitutions or {})
+        js_substitutions['Javascript'] = ['TEST_RUNNER_TARGET']
+        py_substitutions = dict(substitutions or {})
+        py_substitutions['Python'] = ['TEST_RUNNER_TARGET']
         self.maxDiff = None
         # ==================================================
         # Pass 1 - run the code in the global context
@@ -529,12 +546,14 @@ class TranspileTestCase(TestCase):
                     code,
                     extra_code=extra_code,
                     run_in_function=False,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args
                 )
                 js_out = self.runAsJavaScript(
                     code,
                     extra_code=extra_code,
                     run_in_function=False,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args,
                     python_exists=True
                 )
@@ -546,8 +565,8 @@ class TranspileTestCase(TestCase):
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
             js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
-            js_out = js_cleaner.cleanse(js_out, substitutions)
-            py_out = py_cleaner.cleanse(py_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, js_substitutions)
+            py_out = py_cleaner.cleanse(py_out, py_substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -569,12 +588,14 @@ class TranspileTestCase(TestCase):
                     code,
                     extra_code=extra_code,
                     run_in_function=True,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args
                 )
                 js_out = self.runAsJavaScript(
                     code,
                     extra_code=extra_code,
                     run_in_function=True,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args,
                     python_exists=True
                 )
@@ -587,8 +608,8 @@ class TranspileTestCase(TestCase):
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
             js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
-            js_out = js_cleaner.cleanse(js_out, substitutions)
-            py_out = py_cleaner.cleanse(py_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, js_substitutions)
+            py_out = py_cleaner.cleanse(py_out, py_substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -681,10 +702,8 @@ class TranspileTestCase(TestCase):
         except FileExistsError:
             pass
 
-    def runAsJavaScript(
-                self, main_code, extra_code=None, js=None,
-                run_in_function=False, args=None, python_exists=False
-            ):
+    def runAsJavaScript(self, main_code, extra_code=None, js=None, run_in_function=False, wrap_in_try_catch=False,
+                        args=None, python_exists=False):
         # Output source code into test directory
         assert isinstance(main_code, (str, bytes)), (
             'I have no idea how to run tests for code of type {}'
@@ -698,7 +717,8 @@ class TranspileTestCase(TestCase):
             if isinstance(main_code, str):
                 py_filename = os.path.join(self.temp_dir, 'test.py')
                 with open(py_filename, 'w', encoding='utf-8') as py_source:
-                    py_source.write(adjust(main_code, run_in_function=run_in_function))
+                    py_source.write(
+                        adjust(main_code, run_in_function=run_in_function, wrap_in_try_catch=wrap_in_try_catch))
 
         modules = []
 
@@ -713,25 +733,7 @@ class TranspileTestCase(TestCase):
         elif isinstance(main_code, bytes):
             modules.append(('test', main_code, 'test.py'))
 
-        if extra_code:
-            for name, code in extra_code.items():
-                path = name.split('.')
-                path[-1] = path[-1] + '.py'
-                py_filename = os.path.join(*path)
-                if not python_exists:
-                    if len(path) != 1:
-                        try:
-                            os.makedirs(os.path.join(self.temp_dir, *path[:-1]))
-                        except FileExistsError:
-                            pass
-
-                    with open(py_filename, 'w') as py_source:
-                        py_source.write(adjust(code))
-
-                py_compile.compile(py_filename)
-
-                with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
-                    modules.append((name, base64.encodebytes(compiled.read()), py_filename))
+        self.add_extra_code(extra_code, modules, python_exists)
 
         if args is None:
             args = []
@@ -800,6 +802,27 @@ class TranspileTestCase(TestCase):
         os.chdir(cwd)
 
         return out.decode('utf8')
+
+    def add_extra_code(self, extra_code, modules, python_exists):
+        if extra_code:
+            for name, code in extra_code.items():
+                path = name.split('.')
+                path[-1] = path[-1] + '.py'
+                py_filename = os.path.join(*path)
+                if not python_exists:
+                    if len(path) != 1:
+                        try:
+                            os.makedirs(os.path.join(self.temp_dir, *path[:-1]))
+                        except FileExistsError:
+                            pass
+
+                    with open(py_filename, 'w') as py_source:
+                        py_source.write(adjust(code))
+
+                py_compile.compile(py_filename)
+
+                with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
+                    modules.append((name, base64.encodebytes(compiled.read()), py_filename))
 
 
 class NotImplementedToExpectedFailure:

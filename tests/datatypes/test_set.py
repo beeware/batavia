@@ -14,14 +14,20 @@ class SetTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = {1, 2, 3}
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = {1, 2, 3}
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
@@ -60,7 +66,10 @@ class SetTests(TranspileTestCase):
         # Simple non-existent key
         self.assertCodeExecution("""
             x = {'a', 'b'}
-            print('c' in x)
+            try:
+                print('c' in x)
+            except KeyError as e:
+                print(e)
             """)
 
     def test_iter(self):

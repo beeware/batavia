@@ -6,19 +6,27 @@ class SliceTests(TranspileTestCase):
     def test_slice_args(self):
         # no args
         self.assertCodeExecution("""
-            print("slice() = ", slice())
+            try:
+                print("slice() = ", slice())
+            except TypeError as e:
+                print(e)
+                print('Done')
         """)
 
         # too many args
         self.assertCodeExecution("""
-            print("slice(1, 2, 3, 4) = ", slice(1, 2, 3, 4))
+            try:
+                print("slice(1, 2, 3, 4) = ", slice(1, 2, 3, 4))
+            except TypeError as e:
+                print(e)
+                print('Done')
         """)
 
         # valid number of args
         self.assertCodeExecution("""
             print("slice(1) = ", slice(1, 2))
             print("slice(1, 2) = ", slice(1, 2, 3))
-            print("slice(1, 2, 3, 4) = ", slice(1, 2, 3))
+            print("slice(1, 2, 3) = ", slice(1, 2, 3))
         """)
 
     def test_slice_arg_types(self):

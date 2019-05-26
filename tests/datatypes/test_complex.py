@@ -9,14 +9,20 @@ class ComplexTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = b'hello, world'
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = b'hello, world'
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 

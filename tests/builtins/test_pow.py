@@ -16,7 +16,11 @@ class PowTests(TranspileTestCase):
             x = 3
             y = -4
             z = 5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except (ValueError, TypeError) as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_int_neg_y_neg_z(self):
@@ -24,7 +28,11 @@ class PowTests(TranspileTestCase):
             x = 3
             y = -4
             z = -5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except (ValueError, TypeError) as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_int_y_zero_z_one(self):
@@ -48,7 +56,11 @@ class PowTests(TranspileTestCase):
             x = 3.3
             y = 4
             z = 5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
             """)
 
     def test_float_y_with_z(self):
@@ -56,7 +68,11 @@ class PowTests(TranspileTestCase):
             x = 3
             y = 4.4
             z = 5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
             """)
 
     def test_float(self):
@@ -64,7 +80,11 @@ class PowTests(TranspileTestCase):
             x = 3.3
             y = 4.4
             z = 5.5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_float_neg_y_with_z(self):
@@ -72,7 +92,11 @@ class PowTests(TranspileTestCase):
             x = 3.3
             y = -4.4
             z = 5.5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_huge_y(self):

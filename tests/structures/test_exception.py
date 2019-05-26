@@ -7,7 +7,7 @@ class ExceptionTests(TranspileTestCase):
         # Caught exception
         self.assertCodeExecution("""
             raise KeyError("This is the name")
-            """)
+            """, allow_exceptions=True)
 
     def test_raise_catch(self):
         self.assertCodeExecution("""
