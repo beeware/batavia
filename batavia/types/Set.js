@@ -278,10 +278,6 @@ Set.prototype.__or__ = function(other) {
     return NotImplemented
 }
 
-Set.prototype.__matmul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'set' and '" + type_name(other) + "'")
-}
-
 /**************************************************
  * Inplace operators
  **************************************************/

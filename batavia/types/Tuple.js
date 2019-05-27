@@ -429,10 +429,6 @@ Tuple.prototype.__rmul__ = function(other) {
     return this.__mul__(other)
 }
 
-Tuple.prototype.__matmul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'tuple' and '" + type_name(other) + "'")
-}
-
 /**************************************************
  * Methods
  **************************************************/

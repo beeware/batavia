@@ -325,10 +325,6 @@ Bytes.prototype.__rmod__ = function(other) {
     return NotImplemented
 }
 
-Bytes.prototype.__matmul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'bytes' and '" + type_name(other) + "'")
-}
-
 /**************************************************
  * Methods
  **************************************************/

@@ -619,10 +619,6 @@ Int.prototype.__setattr__ = function(other) {
     throw new exceptions.AttributeError.$pyclass("'int' object has no attribute '" + other + "'")
 }
 
-Int.prototype.__matmul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'int' and '" + type_name(other) + "'")
-}
-
 /**************************************************
  * Bitshift and logical ops
  **************************************************/

@@ -384,10 +384,6 @@ Dict.prototype.__setitem__ = function(key, value) {
     }
 }
 
-Dict.prototype.__matmul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'dict' and '" + type_name(other) + "'")
-}
-
 /**************************************************
  * Inplace operators
  **************************************************/

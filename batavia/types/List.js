@@ -560,10 +560,6 @@ List.prototype.__delitem__ = function(index) {
     }
 }
 
-List.prototype.__matmul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @: 'list' and '" + type_name(other) + "'")
-}
-
 /**************************************************
  * Inplace operators
  **************************************************/
