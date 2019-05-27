@@ -121,59 +121,24 @@ types.isbataviainstance = function(obj) {
     ])
 }
 
-types.issubclass = function(cls, type) {
-    var t
-    if (type instanceof Array) {
-        for (t in type) {
-            if (types.issubclass(cls, type[t])) {
-                return true
-            }
-        }
-        return false
-    } else {
-        switch (typeof cls) {
-            case 'function':
-                // check for native classes
-                var typesList = [
-                    'bool', 'dict', 'float', 'int', 'list',
-                    'tuple', 'slice', 'bytes', 'bytearray',
-                    'type', 'str', 'set', 'range',
-                    'frozenset', 'complex'
-                ]
-                if (!typesList.includes(cls.name.substring(6))) {
-                    throw new exceptions.TypeError.$pyclass('issubclass() arg 1 must be a class')
-                }
-                if (!typesList.includes(type.name.substring(6))) {
-                    throw new exceptions.TypeError.$pyclass('issubclass() arg 2 must be a class or tuple of classes')
-                }
-                if (cls.name.substring(6) === 'bool') { // special case for boolean
-                    switch (type.name.substring(6)) {
-                        case 'bool':
-                        case 'int':
-                            return true
-                        default:
-                            return false
-                    }
-                } else {
-                    return cls === type
-                    // all other native types are only subclasses of themselves
-                }
-            case 'object':
-                if (type === null || type === types.NoneType) {
-                    return cls === null
-                } else {
-                    var mro = cls.mro()
-                    for (t in mro) {
-                        if (mro[t] === type) {
-                            return true
-                        }
-                    }
-                }
-                return false
-            default:
-                return false
-        }
+types.issubclass = function(cls, type_or_array) {
+    if (type_or_array instanceof Array) {
+        return type_or_array.some((type) => types.issubclass(cls, type))
     }
+
+    const type = type_or_array
+    if (typeof cls === 'object') {
+        if (type === null || type === types.NoneType.prototype.__class__) {
+            return cls === null
+        }
+
+        if (cls === types.Bool.prototype.__class__) {
+            return type === types.Bool.prototype.__class__ || type === types.Int.prototype.__class__
+        }
+
+        return cls.mro().includes(type)
+    }
+    return false
 }
 
 types.js2py = function(arg) {
