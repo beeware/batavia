@@ -1,3 +1,5 @@
+import unittest
+
 from ...utils import TranspileTestCase, ModuleFunctionTestCase, adjust
 from .JSON_data import pass_data, fail_data
 
@@ -22,13 +24,14 @@ class LoadsTests(ModuleFunctionTestCase, TranspileTestCase):
                 run_in_function=False,
             )
 
+    @unittest.expectedFailure
     def test_fail(self):
         for data in fail_data:
             self.assertCodeExecution(
                 adjust("""
                     import json
                     try:
-                       json.loads(r'''{}''')
+                       print(json.loads(r'''{}'''))
                     except Exception as e:
                        print(type(e))
                 """).format(data),
@@ -122,9 +125,9 @@ class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
     not_implemented_versions = {
     }
 
-    not_implemented = [
-        'test_fail',
-    ]
+    not_implemented = {
+        'test_fail'
+    }
 
     fp_def = """class fp:
     def __init__(self, doc):
@@ -139,10 +142,12 @@ class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
                     import json
                     {}
                     json.load(fp(r'''{}'''))
+                    print('No exception was thrown during decoding.')
                 """).format(self.fp_def, data),
                 run_in_function=False,
             )
 
+    @unittest.expectedFailure
     def test_fail(self):
         for data in fail_data:
             self.assertCodeExecution(
@@ -150,7 +155,7 @@ class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
                     import json
                     {}
                     try:
-                       json.load(fp(r'''{}'''))
+                       print(json.load(fp(r'''{}''')))
                     except Exception as e:
                        print(type(e))
                 """).format(self.fp_def, data),
@@ -289,6 +294,7 @@ class JSONDecoderTests(ModuleFunctionTestCase, TranspileTestCase):
                 adjust("""
                     import json
                     json.JSONDecoder().decode(r'''{}''')
+                    print("No exception was thrown.")
                 """).format(data),
                 run_in_function=False,
             )
@@ -299,7 +305,7 @@ class JSONDecoderTests(ModuleFunctionTestCase, TranspileTestCase):
                 adjust("""
                     import json
                     try:
-                       json.JSONDecoder().decode(r'''{}''')
+                       print(json.JSONDecoder().decode(r'''{}'''))
                     except Exception as e:
                        print(type(e))
                 """).format(data),
