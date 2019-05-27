@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions
 var version = require('../core').version
 var types = require('../types')
+var operators = require('../operators')
 
 function pow(args, kwargs) {
     var x, y, z
@@ -10,7 +11,8 @@ function pow(args, kwargs) {
     if (args.length === 2) {
         x = args[0]
         y = args[1]
-        return x.__pow__(y)
+        result = operators['__pow__'].apply(x, y)
+        return result
     } else if (args.length === 3) {
         x = args[0]
         y = args[1]

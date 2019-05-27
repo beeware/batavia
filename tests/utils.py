@@ -152,34 +152,50 @@ def capture_output(redirect_stderr=True):
         sys.stdout, sys.stderr = oldout, olderr
 
 
-def adjust(text, run_in_function=False):
-    """Adjust a code sample to remove leading whitespace."""
+def remove_whitespace(text, indent=False):
     lines = text.split('\n')
-    if len(lines) == 1:
-        return text
 
     if lines[0].strip() == '':
         lines = lines[1:]
     first_line = lines[0].lstrip()
     n_spaces = len(lines[0]) - len(first_line)
 
-    final_lines = [('    ' if run_in_function else '') + line[n_spaces:] for line in lines]
+    return [('    ' if indent and line[n_spaces:] else '') + line[n_spaces:] for line in lines]
+
+
+def wrap_in_function(code_to_wrap):
+    return '\n'.join(
+        ["def test_function():"]
+        + remove_whitespace(code_to_wrap, indent=True)
+        + ["test_function()"])
+
+
+def wrap_in_exception_guard(code_to_wrap):
+    return '\n'.join(
+        ["try:"]
+        + remove_whitespace(code_to_wrap, indent=True)
+        + ["except Exception as e:",
+           "    print(\"Exception escaped test code in TEST_RUNNER_TARGET\")",
+           "    print(repr(e))"])
+
+
+def adjust(code_snippet, run_in_function=False, wrap_in_try_catch=False):
+    """Adjust a code sample to remove leading whitespace and add wrapping code."""
 
     if run_in_function:
-        final_lines = [
-            "def test_function():",
-        ] + final_lines + [
-            "test_function()",
-        ]
+        code_snippet = wrap_in_function(code_snippet)
 
-    return '\n'.join(final_lines)
+    if wrap_in_try_catch:
+        return wrap_in_exception_guard(code_snippet)
+
+    return '\n'.join(remove_whitespace(code_snippet))
 
 
-def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, args=None):
+def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, wrap_in_try_catch=False, args=None):
     """Run a block of Python code with the Python interpreter."""
     # Output source code into test directory
     with open(os.path.join(test_dir, 'test.py'), 'w', encoding='utf-8') as py_source:
-        py_source.write(adjust(main_code, run_in_function=run_in_function))
+        py_source.write(adjust(main_code, run_in_function=run_in_function, wrap_in_try_catch=wrap_in_try_catch))
 
     if extra_code:
         for name, code in extra_code.items():
@@ -206,7 +222,12 @@ def runAsPython(test_dir, main_code, extra_code=None, run_in_function=False, arg
         cwd=test_dir,
         env=env_copy,
     )
-    out = proc.communicate()
+    try:
+        out = proc.communicate(timeout=4)
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        proc.communicate()
+        return "********** PYTHON EXECUTION TIMED OUT **********"
 
     return out[0].decode('utf8')
 
@@ -481,6 +502,13 @@ def _normalize_outputs(code1, code2, transform_output=None):
         line2, val2 = _normalize(line2)
         if transform_output(val1) == transform_output(val2):
             line2 = line1
+        elif (
+                type(val1) == type(val2) and
+                type(val1) in (float, complex) and
+                val1+val2 != 0 and
+                abs(val1-val2)/abs(val1+val2) < 0.0001
+        ):
+            line2 = line1
 
         if line1 is not None:
             processed_code1.append(line1)
@@ -501,9 +529,13 @@ class TranspileTestCase(TestCase):
             self, code,
             message=None,
             extra_code=None,
-            run_in_global=True, run_in_function=True, transform_output=None,
+            run_in_global=True, run_in_function=True, transform_output=None, allow_exceptions=False,
             args=None, substitutions=None, js_cleaner=JSCleaner(), py_cleaner=PYCleaner()):
         "Run code as native python, and under JavaScript and check the output is identical"
+        js_substitutions = dict(substitutions or {})
+        js_substitutions['Javascript'] = ['TEST_RUNNER_TARGET']
+        py_substitutions = dict(substitutions or {})
+        py_substitutions['Python'] = ['TEST_RUNNER_TARGET']
         self.maxDiff = None
         # ==================================================
         # Pass 1 - run the code in the global context
@@ -518,12 +550,14 @@ class TranspileTestCase(TestCase):
                     code,
                     extra_code=extra_code,
                     run_in_function=False,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args
                 )
                 js_out = self.runAsJavaScript(
                     code,
                     extra_code=extra_code,
                     run_in_function=False,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args,
                     python_exists=True
                 )
@@ -535,8 +569,8 @@ class TranspileTestCase(TestCase):
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
             js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
-            js_out = js_cleaner.cleanse(js_out, substitutions)
-            py_out = py_cleaner.cleanse(py_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, js_substitutions)
+            py_out = py_cleaner.cleanse(py_out, py_substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -558,12 +592,14 @@ class TranspileTestCase(TestCase):
                     code,
                     extra_code=extra_code,
                     run_in_function=True,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args
                 )
                 js_out = self.runAsJavaScript(
                     code,
                     extra_code=extra_code,
                     run_in_function=True,
+                    wrap_in_try_catch=not allow_exceptions,
                     args=args,
                     python_exists=True
                 )
@@ -576,8 +612,8 @@ class TranspileTestCase(TestCase):
             # Cleanse the Python and JavaScript output, producing a simple
             # normalized format for exceptions, floats etc.
             js_out, py_out = _normalize_outputs(js_out, py_out, transform_output=transform_output)
-            js_out = js_cleaner.cleanse(js_out, substitutions)
-            py_out = py_cleaner.cleanse(py_out, substitutions)
+            js_out = js_cleaner.cleanse(js_out, js_substitutions)
+            py_out = py_cleaner.cleanse(py_out, py_substitutions)
 
             # Confirm that the output of the JavaScript code is the same as the Python code.
             if message:
@@ -670,10 +706,8 @@ class TranspileTestCase(TestCase):
         except FileExistsError:
             pass
 
-    def runAsJavaScript(
-                self, main_code, extra_code=None, js=None,
-                run_in_function=False, args=None, python_exists=False
-            ):
+    def runAsJavaScript(self, main_code, extra_code=None, js=None, run_in_function=False, wrap_in_try_catch=False,
+                        args=None, python_exists=False):
         # Output source code into test directory
         assert isinstance(main_code, (str, bytes)), (
             'I have no idea how to run tests for code of type {}'
@@ -687,7 +721,8 @@ class TranspileTestCase(TestCase):
             if isinstance(main_code, str):
                 py_filename = os.path.join(self.temp_dir, 'test.py')
                 with open(py_filename, 'w', encoding='utf-8') as py_source:
-                    py_source.write(adjust(main_code, run_in_function=run_in_function))
+                    py_source.write(
+                        adjust(main_code, run_in_function=run_in_function, wrap_in_try_catch=wrap_in_try_catch))
 
         modules = []
 
@@ -702,25 +737,7 @@ class TranspileTestCase(TestCase):
         elif isinstance(main_code, bytes):
             modules.append(('test', main_code, 'test.py'))
 
-        if extra_code:
-            for name, code in extra_code.items():
-                path = name.split('.')
-                path[-1] = path[-1] + '.py'
-                py_filename = os.path.join(*path)
-                if not python_exists:
-                    if len(path) != 1:
-                        try:
-                            os.makedirs(os.path.join(self.temp_dir, *path[:-1]))
-                        except FileExistsError:
-                            pass
-
-                    with open(py_filename, 'w') as py_source:
-                        py_source.write(adjust(code))
-
-                py_compile.compile(py_filename)
-
-                with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
-                    modules.append((name, base64.encodebytes(compiled.read()), py_filename))
+        self.add_extra_code(extra_code, modules, python_exists)
 
         if args is None:
             args = []
@@ -789,6 +806,27 @@ class TranspileTestCase(TestCase):
         os.chdir(cwd)
 
         return out.decode('utf8')
+
+    def add_extra_code(self, extra_code, modules, python_exists):
+        if extra_code:
+            for name, code in extra_code.items():
+                path = name.split('.')
+                path[-1] = path[-1] + '.py'
+                py_filename = os.path.join(*path)
+                if not python_exists:
+                    if len(path) != 1:
+                        try:
+                            os.makedirs(os.path.join(self.temp_dir, *path[:-1]))
+                        except FileExistsError:
+                            pass
+
+                    with open(py_filename, 'w') as py_source:
+                        py_source.write(adjust(code))
+
+                py_compile.compile(py_filename)
+
+                with open(importlib.util.cache_from_source(py_filename), 'rb') as compiled:
+                    modules.append((name, base64.encodebytes(compiled.read()), py_filename))
 
 
 class NotImplementedToExpectedFailure:
@@ -866,6 +904,7 @@ SAMPLE_DATA = {
     'complex': [
             '0j',
             '1j',
+            '0.7071067811865476+0.7071067811865475j',  # sqrt(0.5)*(1+1j) -- magnitude 1, but not pure
             '3.14159265j',
             '-5j',
             '1+2j',
@@ -976,6 +1015,121 @@ SAMPLE_DATA = {
 SAMPLE_SUBSTITUTIONS = {
 
 }
+
+
+class MagicMethodFunctionTestCase(NotImplementedToExpectedFailure):
+    format = ''
+    expected_magic_methods = []
+
+    def assertMagicMethodMissing(self, x_values, magic_method, format, substitutions):
+        self.assertCodeExecution(
+            '##################################################\n'.join(
+                adjust("""
+                        try:
+                            print('>>> x = %(x)s')
+                            print('>>> f = x.%(magic_method)s')
+                            print('>>> %(format)sf')
+                            x = %(x)s
+                            f = x.%(magic_method)s
+                            print('|||', %(format)sf)
+                        except Exception as e:
+                            print('///', type(e), ':', e)
+                        print()
+                        """ % {
+                    'x': x,
+                    'magic_method': magic_method,
+                    'format': format,
+                }
+                       )
+                for x in x_values
+            ),
+            "Error running %s" % magic_method,
+            substitutions=substitutions,
+            run_in_function=False,
+        )
+
+    def assertMagicMethod(self, x_values, magic_method, y_values, format, substitutions):
+        data = []
+        for x in x_values:
+            for y in y_values:
+                data.append((x, y))
+
+        self.assertCodeExecution(
+            '##################################################\n'.join(
+                adjust("""
+                    try:
+                        print('>>> x = %(x)s')
+                        print('>>> y = %(y)s')
+                        print('>>> z = x.%(magic_method)s(y)')
+                        print('>>> %(format)sz')
+                        x = %(x)s
+                        y = %(y)s
+                        z = x.%(magic_method)s(y)
+                        print('|||', %(format)sz)
+                    except Exception as e:
+                        print('///', type(e), ':', e)
+                    print()
+                    """ % {
+                    'x': x,
+                    'y': y,
+                    'magic_method': magic_method,
+                    'format': format,
+                }
+                       )
+                for x, y in data
+            ),
+            "Error running %s" % magic_method,
+            substitutions=substitutions,
+            run_in_function=False,
+        )
+
+    ALL_MAGIC_METHODS = ['__add__', '__and__', '__floordiv__', '__iadd__', '__iand__', '__ifloordiv__', '__ilshift__',
+                         '__imod__', '__imul__', '__ior__', '__ipow__', '__irshift__', '__isub__', '__itruediv__',
+                         '__ixor__', '__lshift__', '__mod__', '__mul__', '__or__', '__pow__', '__radd__', '__rand__',
+                         '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__rpow__', '__rrshift__',
+                         '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__sub__', '__truediv__', '__xor__']
+
+    @staticmethod
+    def _magic_method_test(test_name, magic_method, examples, small_ints=False):
+        def func(self):
+            # CPython will attempt to malloc itself to death for some operations,
+            # e.g., 1 << (2**32)
+            # so we have this dirty hack
+            actuals = examples
+            if small_ints and test_name.endswith('_int'):
+                actuals = [x for x in examples if abs(int(x)) < 8192]
+            self.assertMagicMethod(
+                x_values=SAMPLE_DATA[self.data_type][:2],
+                y_values=actuals,
+                magic_method=magic_method,
+                format=self.format,
+                substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS)
+            )
+
+        return func
+
+    @staticmethod
+    def _magic_method_missing_test(magic_method):
+        def func(self):
+            self.assertMagicMethodMissing(
+                magic_method=magic_method,
+                x_values=SAMPLE_DATA[self.data_type][:2],
+                format=self.format,
+                substitutions=getattr(self, 'substitutions', SAMPLE_SUBSTITUTIONS))
+
+        return func
+
+    @staticmethod
+    def _add_tests(vars, data_type_class):
+        for magic_method in MagicMethodFunctionTestCase.ALL_MAGIC_METHODS:
+            if magic_method in dir(data_type_class):
+                for datatype, examples in SAMPLE_DATA.items():
+                    test_name = 'test%s%s' % (magic_method, datatype)
+                    vars[test_name] = MagicMethodFunctionTestCase._magic_method_test(
+                        test_name, magic_method, examples[:2], small_ints=True)
+            else:
+                vars['test%smissing' % magic_method] = MagicMethodFunctionTestCase._magic_method_missing_test(
+                    magic_method)
 
 
 def _unary_test(test_name, operation):

@@ -41,7 +41,10 @@ class GeneratorTests(TranspileTestCase):
                     x = (yield)
                     print('>>', x)
 
-            g().send(1)
+            try:
+                g().send(1)
+            except TypeError as e:
+                print(e)
         """)
 
     def test_simple_send(self):

@@ -1,5 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    adjust, transforms, SAMPLE_DATA, expected_failing_versions
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    adjust, transforms, SAMPLE_DATA, expected_failing_versions, MagicMethodFunctionTestCase
 
 from itertools import product
 import unittest
@@ -26,14 +26,20 @@ class StrTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = "Hello, world"
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = "Hello, world"
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
@@ -53,13 +59,19 @@ class StrTests(TranspileTestCase):
         # Positive index out of range
         self.assertCodeExecution("""
             x = 'abcde'
-            print(x[10])
+            try:
+                print(x[10])
+            except IndexError as e:
+                print(e)
             """)
 
         # Negative index out of range
         self.assertCodeExecution("""
             x = 'abcde'
-            print(x[-10])
+            try:
+                print(x[-10])
+            except IndexError as e:
+                print(e)
             """)
 
     def test_slice(self):
@@ -90,7 +102,10 @@ class StrTests(TranspileTestCase):
         # Slice with step 0 (error)
         self.assertCodeExecution("""
             x = 'abcde'
-            print(x[::0])
+            try:
+                print(x[::0])
+            except ValueError as e:
+                print(e)
             """)
 
         # Slice with revese step
@@ -695,7 +710,10 @@ class StrTests(TranspileTestCase):
         print("abc".index("b"))
         print("abc".index("c"))
         print("abc".index("bc"))
-        print("abc".index("d"))
+        try:
+            print("abc".index("d"))
+        except ValueError as e:
+            print(e)
         """)
 
     def test_contains_escapes_regular_expressions(self):
@@ -909,7 +927,10 @@ class FormatTests(TranspileTestCase):
                 print(">>> '%s %%' % 'spam'")
                 print('%s %%' % 'spam')
                 print(">>> '%%5.5d' % 5")
-                print('%%5.5d' % 5)
+                try:
+                    print('%%5.5d' % 5)
+                except TypeError as e:
+                    print(e)
                 print(">>> '%s %% %s' % ('spam', 'beans')")
                 print('%s %% %s' % ('spam', 'beans'))
                 """)
@@ -1004,13 +1025,14 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(test, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(test, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
+        @unittest.expectedFailure
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_with_kwargs(self, js_cleaner, py_cleaner):
 
@@ -1034,61 +1056,58 @@ class FormatTests(TranspileTestCase):
 
             tests = adjust("""
                 print(">>> 'format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'})")
-                print('format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'}))
+                try:
+                    print('format this: %(arg)s' % ({'arg':'spam'}, {'arg2':'eggs'}))
+                except TypeError as e:
+                    print(e)
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
-        )
-        def test_with_kwargs(self, js_cleaner, py_cleaner):
-
-            tests = adjust("""
-                print(">>> 'format this: %(arg' % {'arg':'spam'}")
-                print('format this: %(arg' % {'arg':'spam'})
-                print('Done.')
-                """)
-
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
-
-        @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_wildcard_with_kwargs(self, js_cleaner, py_cleaner):
 
             tests = adjust("""
                 print(">>> '%*(spam)s' % {'spam': 'eggs'}")
-                print('%*(spam)s' % {'spam': 'eggs'})
+                try:
+                    print('%*(spam)s' % {'spam': 'eggs'})
+                except TypeError as e:
+                    print(e)
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
         @transforms(
-            js_bool = False,
-            decimal = False,
-            float_exp = False,
-            memory_ref = False
+            js_bool=False,
+            decimal=False,
+            float_exp=False,
+            memory_ref=False
         )
         def test_kwargs_missing_key(self, js_cleaner, py_cleaner):
 
             tests = adjust("""
                 print(">>> 'format this: %(beans)s' % {'spam':'eggs'}")
-                print('format this: %(beans)s' % {'spam':'eggs'})
+                try:
+                    print('format this: %(beans)s' % {'spam':'eggs'})
+                except KeyError as e:
+                    print(e)
                 print(">>> 'format this: %(1)s' % {'spam':'eggs'}")
-                print('format this: %(1)s' % {'spam':'eggs'})
+                try:
+                    print('format this: %(1)s' % {'spam':'eggs'})
+                except KeyError as e:
+                    print(e)
                 print('Done.')
                 """)
 
-            self.assertCodeExecution(tests, js_cleaner = js_cleaner, py_cleaner = py_cleaner)
+            self.assertCodeExecution(tests, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+
 
 class NewStyleFormatTests(TranspileTestCase):
     """
@@ -1109,7 +1128,10 @@ class NewStyleFormatTests(TranspileTestCase):
         # should raise an index error
         test_str = adjust("""
         print(">>> 'one arg: {} {} great!'.format('really')")
-        print('one arg: {} {} great!'.format('really'))
+        try:
+            print('one arg: {} {} great!'.format('really'))
+        except IndexError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -1127,7 +1149,10 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_index_out_of_range(self):
         test_str = adjust("""
         print(">>> 'Some numbers: {0} {1} {5}'.format('one', 'two', 'three')")
-        print('Some numbers: {0} {1} {5}'.format('one', 'two', 'three'))
+        try:
+            print('Some numbers: {0} {1} {5}'.format('one', 'two', 'three'))
+        except IndexError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -1135,7 +1160,10 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_kwargs(self):
         test_str = adjust("""
         print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs')")
-        print('{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs'))
+        try:
+            print('{food}! Lovely {food}! Lovely {food}!'.format(food='spam', other='eggs'))
+        except KeyError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -1143,7 +1171,10 @@ class NewStyleFormatTests(TranspileTestCase):
     def test_kwargs_key_error(self):
         test_str = adjust("""
         print(">>> '{food}! Lovely {food}! Lovely {food}!'.format(other='eggs')")
-        print('{food}! Lovely {food}! Lovely {food}!'.format(other='eggs'))
+        try:
+            print('{food}! Lovely {food}! Lovely {food}!'.format(other='eggs'))
+        except KeyError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -1176,25 +1207,32 @@ class NewStyleFormatTests(TranspileTestCase):
         test_str = adjust("""
         coord = (3, 5)
         print(">>> 'X: {0[]}}'.format(coord)")
-        print('X: {0[]}'.format(coord))
+        try:
+            print('X: {0[]}'.format(coord))
+        except ValueError as e:
+            print(e)
         print(">>> 'X: {0[}}'.format(coord)")
-        print('X: {0[}'.format(coord))
+        try:
+            print('X: {0[}'.format(coord))
+        except ValueError as e:
+            print(e)
         """)
         self.assertCodeExecution(test_str)
 
+    @unittest.expectedFailure
     def test_name_with__getattr__(self):
         """
         name calls attribute on passed argument
         """
-
 
         test_str = adjust("""
         class Actor():
             name = 'John Cleese'
 
         print(">>> '{a.name}'.format(a=Actor())")
-        print('{a.name}'.format(a=Actor())')
+        print('{a.name}'.format(a=Actor()))
         """)
+        self.assertCodeExecution(test_str)
 
     def test__getattr__bad_formatting(self):
         """
@@ -1203,8 +1241,13 @@ class NewStyleFormatTests(TranspileTestCase):
         test_str = adjust("""
 
         print(">>> '{food.}'.format(food='spam')")
-        print('{food.}'.format(food='spam'))
+        try:
+            print('{food.}'.format(food='spam'))
+        except ValueError as e:
+            print(e)
         """)
+        self.assertCodeExecution(test_str)
+
     # conversion flags
     def test_conversion_flags(self):
         conversion_flags = ('!a', '!s', '!r', '!', '!ss', '!g')
@@ -1214,7 +1257,10 @@ class NewStyleFormatTests(TranspileTestCase):
                 adjust(
                     """
                     print(">>> 'one arg: {{{flag}:}}'.format('great')")
-                    print('one arg: {{{flag}:}}'.format('great'))
+                    try:
+                        print('one arg: {{{flag}:}}'.format('great'))
+                    except ValueError as e:
+                        print(e)
                     """.format(flag=flag)
                 ) for flag in conversion_flags
             ]
@@ -1222,23 +1268,34 @@ class NewStyleFormatTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    @unittest.expectedFailure
     def test_fills(self):
-        fills = ('*', '**', '{', '}') # only one character, no curly braces
-        test_str = ''.join(
-            [
-                adjust(
-                    """
-                    print(">>> 'one arg: {{:{fill}<10}}'.format('great')")
-                    print('one arg: {{:{fill}<10}}'.format('great'))
-                    """.format(fill=fill)
-                ) for fill in fills
-            ]
-        )
+        """only one character, no curly braces."""
+
+        test_str = """
+          print(">>> 'one arg: {:*<10}'.format('great')")
+          print('one arg: {:*<10}'.format('great'))
+          print(">>> 'one arg: {:**<10}'.format('great')")
+          try:
+              print('one arg: {:**<10}'.format('great'))
+          except ValueError as e:
+              print(e)
+          print(">>> 'one arg: {:{<10}'.format('great')")
+          try:
+              print('one arg: {:{<10}'.format('great'))
+          except ValueError as e:
+              print(e)
+          print(">>> 'one arg: {:}<10}'.format('great')")
+          try:
+              print('one arg: {:}<10}'.format('great'))
+          except ValueError as e:
+              print(e)
+        """
 
         self.assertCodeExecution(test_str)
 
     def test_alignments(self):
-        alignments = ['<', '^', '>', '=']
+        alignments = ['<', '^', '>']
         test_str = ''.join(
             [
                 adjust(
@@ -1251,14 +1308,37 @@ class NewStyleFormatTests(TranspileTestCase):
                 ) for align in alignments
             ]
         )
-
         self.assertCodeExecution(test_str)
+
+    @unittest.expectedFailure
+    def test_sign_alignment(self):
+        self.assertCodeExecution("""
+                    print(">>> 'one arg: {:=10}'.format(12)")
+                    print('one arg: {:=10}'.format(12))
+                    print(">>> 'one arg: {:*=10}'.format(12)")
+                    print('one arg: {:*=10}'.format(12))
+                    print(">>> 'one arg: {:*=+10}'.format(12)")
+                    print('one arg: {:*=+10}'.format(12))
+                    print(">>> 'one arg: {:*=-10}'.format(12)")
+                    print('one arg: {:*=-10}'.format(12))
+                    print(">>> 'one arg: {:=10}'.format(-12)")
+                    print('one arg: {:=10}'.format(-12))
+                    print(">>> 'one arg: {:*=10}'.format(-12)")
+                    print('one arg: {:*=10}'.format(-12))
+                    print(">>> 'one arg: {:*=+10}'.format(-12)")
+                    print('one arg: {:*=+10}'.format(-12))
+                    print(">>> 'one arg: {:*=-10}'.format(-12)")
+                    print('one arg: {:*=-10}'.format(-12))
+                    """)
 
     def test_fill_no_alignment(self):
 
         test_str = adjust("""
         print(">>> 'one arg: {:*10}'.format('great')")
-        print('one arg: {:*10}'.format('great'))
+        try:
+            print('one arg: {:*10}'.format('great'))
+        except ValueError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -1288,26 +1368,33 @@ class NewStyleFormatTests(TranspileTestCase):
 
         test_str = adjust("""
         print(">>> 'one arg: {:+}'.format('great')")
-        print('one arg: {:+}'.format('great'))
+        try:
+            print('one arg: {:+}'.format('great'))
+        except ValueError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
 
+    @transforms(decimal=False, )
+    def test_comma_grouping(self, js_cleaner, py_cleaner):
+        test_str = """
+          print(">>> 'one arg:: {:,}'.format(5000)")
+          print('one arg:: {:,}'.format(5000))
+        """
+        self.assertCodeExecution(test_str, js_cleaner=js_cleaner,
+                                 py_cleaner=py_cleaner)
+
     @expected_failing_versions(['3.6'])
     @transforms(decimal=False,)
-    def test_groupings(self, js_cleaner, py_cleaner):
-        groupings = (',', '_')
-        test_str = ''.join(
-            [
-                adjust(
-                    """
-                    print(">>> 'one arg:: {{:{g}}}'.format(5000)")
-                    print('one arg:: {{:{g}}}'.format(5000))
-                    """.format(g=g)
-                ) for g in groupings
-            ]
-        )
-
+    def test_underscore_grouping(self, js_cleaner, py_cleaner):
+        test_str = """
+          print(">>> 'one arg:: {:_}'.format(5000)")
+          try:
+              print('one arg:: {:_}'.format(5000))
+          except ValueError as e:
+              print(e)
+        """
         self.assertCodeExecution(test_str, js_cleaner=js_cleaner,
                                  py_cleaner=py_cleaner)
 
@@ -1319,29 +1406,32 @@ class NewStyleFormatTests(TranspileTestCase):
 
         test_str = adjust("""
         print(">>> 'one arg: {:,}'.format('great')")
-        print('one arg: {:,}'.format('great'))
+        try:
+            print('one arg: {:,}'.format('great'))
+        except ValueError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
 
     def test_zero_padding(self):
-
-        test_str = adjust("""
-        print(">>> 'one arg: {:05}'.format(5)")
-        print('one arg: {:05}'.format(5))
-        print(">>> 'one arg: {:05}'.format('spam')")
-        print('one arg: {:05}'.format('spam'))
+        self.assertCodeExecution("""
+            print(">>> 'one arg: {:05}'.format(5)")
+            print('one arg: {:05}'.format(5))
+            print(">>> 'one arg: {:05}'.format('spam')")
+            try:
+                print('one arg: {:05}'.format('spam'))
+            except ValueError as e:
+                print(e)
         """)
 
-        self.assertCodeExecution(test_str)
-
+    @unittest.expectedFailure
     def test_conversion_types(self):
         """
         test all conversion types and their alternate forms
         """
         alternate = ('#', '')
-        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X',
-                '%')
+        types = ('b', 'c', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', '%')
         args = ("'spam'", "'5'", 5, -5, 5.0, -5.0, 0.5, -0.5)
         combinations = product(alternate, types, args)
         test_str = ''.join(
@@ -1394,6 +1484,62 @@ class NewStyleFormatTests(TranspileTestCase):
         )
 
         self.assertCodeExecution(test_str)
+
+
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'str'
+    MagicMethodFunctionTestCase._add_tests(vars(), str)
+
+    not_implemented = [
+        "test__mul__bytearray",
+        "test__mul__bytes",
+        "test__mul__class",
+        "test__mul__complex",
+        "test__mul__dict",
+        "test__mul__float",
+        "test__mul__frozenset",
+        "test__mul__list",
+        "test__mul__None",
+        "test__mul__NotImplemented",
+        "test__mul__range",
+        "test__mul__set",
+        "test__mul__slice",
+        "test__mul__str",
+        "test__mul__tuple",
+
+        "test__rmod__bool",
+        "test__rmod__bytearray",
+        "test__rmod__bytes",
+        "test__rmod__class",
+        "test__rmod__complex",
+        "test__rmod__dict",
+        "test__rmod__float",
+        "test__rmod__frozenset",
+        "test__rmod__int",
+        "test__rmod__list",
+        "test__rmod__None",
+        "test__rmod__NotImplemented",
+        "test__rmod__range",
+        "test__rmod__set",
+        "test__rmod__slice",
+        "test__rmod__str",
+        "test__rmod__tuple",
+        "test__rmul__bytearray",
+        "test__rmul__bytes",
+        "test__rmul__class",
+        "test__rmul__complex",
+        "test__rmul__dict",
+        "test__rmul__float",
+        "test__rmul__frozenset",
+        "test__rmul__list",
+        "test__rmul__None",
+        "test__rmul__NotImplemented",
+        "test__rmul__range",
+        "test__rmul__set",
+        "test__rmul__slice",
+        "test__rmul__str",
+        "test__rmul__tuple",
+    ]
 
 
 class UnaryStrOperationTests(UnaryOperationTestCase, TranspileTestCase):

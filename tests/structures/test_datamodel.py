@@ -505,15 +505,13 @@ class ClassInPlaceOpsDataModelTests(TranspileTestCase):
                     return self
 
             p1 = Pair(5, 6)
-            p2 |= Pair(6, 5)
+            p1 |= Pair(6, 5)
 
             print(p1)
         """, run_in_function=False)
 
 
-@expectedFailure
 class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
-    @expected_failing_versions(['3.4'])
     def test_radd(self):
         self.assertCodeExecution("""
             class Pair:
@@ -534,7 +532,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 + p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rsubtract(self):
         self.assertCodeExecution("""
             class Pair:
@@ -555,7 +552,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 - p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rmultiply(self):
         self.assertCodeExecution("""
             class Pair:
@@ -576,7 +572,7 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(3 * p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
+    @expectedFailure
     def test_rtruedivision(self):
         self.assertCodeExecution("""
             class Pair:
@@ -597,7 +593,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 / p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rfloordivision(self):
         self.assertCodeExecution("""
             class Pair:
@@ -618,7 +613,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 // p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rmod(self):
         self.assertCodeExecution("""
             class Pair:
@@ -639,7 +633,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 % p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rpow(self):
         self.assertCodeExecution("""
             class Pair:
@@ -660,7 +653,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 ** p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rlshift(self):
         self.assertCodeExecution("""
             class Pair:
@@ -681,7 +673,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 << p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rrshift(self):
         self.assertCodeExecution("""
             class Pair:
@@ -702,7 +693,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 >> p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rand(self):
         self.assertCodeExecution("""
             class Pair:
@@ -723,7 +713,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 & p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_rxor(self):
         self.assertCodeExecution("""
             class Pair:
@@ -744,7 +733,6 @@ class ClassReverseBinaryOpsDataModelTests(TranspileTestCase):
             print(4 ^ p1)
         """, run_in_function=False)
 
-    @expected_failing_versions(['3.4'])
     def test_ror(self):
         self.assertCodeExecution("""
             class Pair:

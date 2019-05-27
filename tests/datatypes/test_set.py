@@ -1,4 +1,5 @@
-from .. utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase
+from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
+    MagicMethodFunctionTestCase
 
 import unittest
 
@@ -13,14 +14,20 @@ class SetTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = {1, 2, 3}
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = {1, 2, 3}
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
@@ -59,7 +66,10 @@ class SetTests(TranspileTestCase):
         # Simple non-existent key
         self.assertCodeExecution("""
             x = {'a', 'b'}
-            print('c' in x)
+            try:
+                print('c' in x)
+            except KeyError as e:
+                print(e)
             """)
 
     def test_iter(self):
@@ -69,17 +79,36 @@ class SetTests(TranspileTestCase):
             """)
 
 
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
+    data_type = 'set'
+    MagicMethodFunctionTestCase._add_tests(vars(), set)
+
+    not_implemented = [
+        "test__rsub__frozenset",
+        "test__rsub__set",
+    ]
+
 
 class UnarySetOperationTests(UnaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
-
-    not_implemented = [
-    ]
 
 
 class BinarySetOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'set'
 
+    not_implemented = [
+        # Incorrect error message shown (unsupported operands vs can't multiply sequence by non-int)
+        "test_multiply_bytearray",
+        "test_multiply_bytes",
+    ]
+
 
 class InplaceSetOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'set'
+
+    not_implemented = [
+        "test_multiply_list",
+        "test_multiply_str",
+        "test_multiply_tuple",
+        "test_multiply_bytes",
+    ]

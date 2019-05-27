@@ -9,7 +9,11 @@ class AbsTests(TranspileTestCase):
 
 
             x = NotAbsLike()
-            print(abs(x))
+            try:
+                print(abs(x))
+            except TypeError as e:
+                print(e)
+                print('Done.')
             """, run_in_function=False)
 
 

@@ -34,6 +34,7 @@ class TimeTests(TranspileTestCase):
             print('Done.')
             """)
 
+    @unittest.expectedFailure
     def test_struct_time_valid(self):
         """
         valid construction
@@ -102,7 +103,7 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         """)
-        sequence_tests = [struct_time_setup(seq) for seq in bad_types]
+        sequence_tests = [struct_time_setup_with_error(seq) for seq in bad_types]
         test_str = ''.join(sequence_tests)
         self.assertCodeExecution(test_str)
 
@@ -111,14 +112,15 @@ class TimeTests(TranspileTestCase):
         sequence less than length 9 is passed
         should raise an index error
         """
-        self.assertCodeExecution(struct_time_setup([1]*8))
+        self.assertCodeExecution(struct_time_setup_with_error([1] * 8))
 
     def test_struct_time_too_long(self):
         """
         sequence longer than length 9 is allowed
         """
-        self.assertCodeExecution(struct_time_setup([1]*12))
+        self.assertCodeExecution(struct_time_setup_with_error([1] * 12))
 
+    @unittest.expectedFailure
     def test_struct_time_attrs(self):
         """
         tests for struct_time attributes
@@ -143,8 +145,11 @@ class TimeTests(TranspileTestCase):
         setup = struct_time_setup([1] * 11)
         get_indecies = [adjust("""
         print('>>> st[{i}]')
-        print(st[{i}])
-        """)for i in range(-12, 13)]
+        try:
+            print(st[{i}])
+        except IndexError as e:
+            print(e)
+        """.format(i=i)) for i in range(-12, 13)]
 
         self.assertCodeExecution(setup + ''.join(get_indecies))
 
@@ -274,7 +279,7 @@ class TimeTests(TranspileTestCase):
         import time
         """)
 
-        tests = [mktime_setup(str(d)) for d in data]
+        tests = [mktime_setup_with_error(str(d)) for d in data]
         test_str += ''.join(tests)
 
         self.assertCodeExecution(test_str)
@@ -291,7 +296,7 @@ class TimeTests(TranspileTestCase):
 
         strange_types = [SAMPLE_DATA[type][0] for type in SAMPLE_DATA if type != 'int']
 
-        tests = [ mktime_setup(str((1970, t, 1, 2, 0, 0, 0, 0, 0))) for t in strange_types]
+        tests = [mktime_setup_with_error(str((1970, t, 1, 2, 0, 0, 0, 0, 0))) for t in strange_types]
         test_str += ''.join(tests)
 
         self.assertCodeExecution(test_str)
@@ -308,7 +313,7 @@ class TimeTests(TranspileTestCase):
         import time
         """)
 
-        test_str += mktime_setup(str(seq))
+        test_str += mktime_setup_with_error(str(seq))
         self.assertCodeExecution(test_str)
 
     def test_mktime_wrong_arg_count(self):
@@ -320,10 +325,16 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         print('>>> time.mktime()')
-        print(time.mktime())
+        try:
+            print(time.mktime())
+        except TypeError as e:
+            print(e)
         ############################
         print('>>> time.mktime(1,2)')
-        print(time.mktime(1,2))
+        try:
+            print(time.mktime(1,2))
+        except TypeError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -465,6 +476,7 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    @unittest.expectedFailure
     def test_gmtime_dst(self):
         """
         test all months to demonstrate dst is not messing with things
@@ -488,7 +500,10 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         print('>>> time.gmtime(1,2)')
-        print(time.gmtime(1,2))
+        try:
+            print(time.gmtime(1,2))
+        except TypeError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -504,7 +519,10 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         print('>>> time.gmtime({item})')
-        print(time.gmtime({item}))
+        try:
+            print(time.gmtime({item}))
+        except TypeError as e:
+            print(e)
         """.format(item=item)) for item in bad_types]
 
         for t_str in test_strs:
@@ -586,6 +604,7 @@ class TimeTests(TranspileTestCase):
 
         self.assertCodeExecution(test_str)
 
+    @unittest.expectedFailure
     def test_localtime_dst(self):
         """
         test all months to ensure dst works as expected
@@ -609,7 +628,10 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         print('>>> time.localtime(1,2)')
-        print(time.localtime(1,2))
+        try:
+            print(time.localtime(1,2))
+        except TypeError as e:
+            print(e)
         """)
 
         self.assertCodeExecution(test_str)
@@ -625,7 +647,10 @@ class TimeTests(TranspileTestCase):
         print('>>> import time')
         import time
         print('>>> time.localtime({item})')
-        print(time.localtime({item}))
+        try:
+            print(time.localtime({item}))
+        except TypeError as e:
+            print(e)
         """.format(item=item)) for item in bad_types]
 
         for t_str in test_strs:
@@ -669,9 +694,32 @@ def struct_time_setup(seq = [1] * 9):
     """
 
     test_str = adjust("""
+    import time
     print("constructing struct_time with {type_name}")
     print(">>> st = time.struct_time({seq})")
     st = time.struct_time({seq})
+    print('>>> st')
+    print(st)
+    """).format(type_name=type(seq), seq=seq)
+
+    return test_str
+
+
+def struct_time_setup_with_error(seq=[1] * 9):
+    """
+    returns a string to set up a struct_time with seq the struct_time constructor
+    :param seq: a valid sequence
+    """
+
+    test_str = adjust("""
+    import time
+    print("constructing struct_time with {type_name}")
+    print(">>> st = time.struct_time({seq})")
+    st = None
+    try:
+        st = time.struct_time({seq})
+    except TypeError as e:
+        print(e)
     print('>>> st')
     print(st)
     """).format(type_name=type(seq), seq=seq)
@@ -687,6 +735,22 @@ def mktime_setup(seq):
     test_str = adjust("""
     print('''>>> time.mktime({seq})''')
     print(time.mktime({seq}))
+    """).format(seq=seq)
+
+    return test_str
+
+
+def mktime_setup_with_error(seq):
+    """
+    :param seq: a string representation of a sequence
+    :return: a test_string to call mktime based on seq
+    """
+    test_str = adjust("""
+    print('''>>> time.mktime({seq})''')
+    try:
+        print(time.mktime({seq}))
+    except TypeError as e:
+        print(e)
     """).format(seq=seq)
 
     return test_str

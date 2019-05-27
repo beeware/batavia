@@ -55,11 +55,30 @@ class BoolTests(TranspileTestCase):
                 def __bool__(self):
                     return self.val
 
-            print(bool(BoolHate("zero")))
-            print(bool(BoolHate([1, 2, 3])))
-            print(bool(BoolHate({1: 2})))
-            print(bool(BoolHate(1.2)))
-            print(bool(BoolHate("👿")))
+            try:
+                print(bool(BoolHate("zero")))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(BoolHate([1, 2, 3])))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(BoolHate({1: 2})))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(BoolHate(1.2)))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(BoolHate("👿")))
+            except TypeError as e:
+                print(e)
         """)
 
     def test_len_malicious(self):
@@ -71,11 +90,30 @@ class BoolTests(TranspileTestCase):
                 def __len__(self):
                     return self.val
 
-            print(bool(LenHate("zero")))
-            print(bool(LenHate([1, 2, 3])))
-            print(bool(LenHate({1: 2})))
-            print(bool(LenHate(1.2)))
-            print(bool(BoolHate("👿")))
+            try:
+                print(bool(LenHate("zero")))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(LenHate([1, 2, 3])))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(LenHate({1: 2})))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(LenHate(1.2)))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print(bool(LenHate("👿")))
+            except TypeError as e:
+                print(e)
         """)
 
 

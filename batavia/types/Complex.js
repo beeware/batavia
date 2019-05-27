@@ -3,6 +3,9 @@ var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
+var Int = require('./Int.js')
+var Float = require('./Float.js').Float
+var NotImplemented = require('../core').NotImplemented
 
 // Helper function defined in Float.js
 var scientific_notation_exponent_fix = require('./Float').scientific_notation_exponent_fix
@@ -60,9 +63,7 @@ function under_js_precision(complex) {
 
 function Complex(re, im) {
     var types = require('../types')
-
     PyObject.call(this)
-
     // console.log(100000, re, im);
     if (types.isinstance(re, types.Str)) {
         // console.log(1000, re, im);
@@ -262,25 +263,133 @@ Complex.prototype.__abs__ = function() {
  * Binary operators
  **************************************************/
 
-Complex.prototype.__pow__ = function(exponent) {
-    var types = require('../types')
-
-    // types.Bool?? Yes, really; under the hood cpython checks to see if the
-    // exponent is a numeric type, and bool subclasses int.
-    // See cpython/Objects/abstract.c.
-    if (types.isinstance(exponent, types.Bool)) {
-        if (exponent.valueOf()) {
-            return this
-        } else {
-            return new Complex(1, 0)
+function quotient(a, b) {
+    const abs_bimag = Math.abs(b.imag)
+    const abs_breal = Math.abs(b.real)
+    if (abs_breal >= abs_bimag) {
+        if (abs_breal === 0) {
+            return new Complex(0, 0)
         }
-    // else if (types.isinstance(exponent, [types.Float, types.Int, types.Complex]) {
-    // { do some stuff }
-    } else {
-        throw new exceptions.TypeError.$pyclass(
-            "unsupported operand type(s) for ** or pow(): 'complex' and '" + type_name(exponent) + "'"
-        )
+        const ratio = b.imag / b.real
+        const denom = b.real + b.imag * ratio
+        return new Complex((a.real + a.imag * ratio) / denom, (a.imag - a.real * ratio) / denom)
     }
+
+    if (abs_bimag >= abs_breal) {
+        const ratio = b.real / b.imag
+        const denom = b.real * ratio + b.imag
+        return new Complex((a.real * ratio + a.imag) / denom, (a.imag * ratio - a.real) / denom)
+    }
+
+    return new Complex(NaN, NaN)
+}
+
+function unsigned_exponent(x, y) {
+    let mask = 1
+    let r = new Complex(1, 0)
+    let p = x
+    while (mask > 0 && y >= mask) {
+        if (y & mask) {
+            r = __mul__(r, p)
+        }
+        mask <<= 1
+        p = __mul__(p, p)
+    }
+    return r
+}
+
+function complex_exponent(base, exponent) {
+    if (exponent.real === 0 && exponent.imag === 0) {
+        return new Complex(1, 0)
+    }
+
+    if (base.real === 0 && base.imag === 0) {
+        if (exponent.imag !== 0 || exponent.real < 0) {
+            throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
+        }
+        return new Complex(0, 0)
+    }
+
+    const vabs = Math.hypot(base.real, base.imag)
+    const at = Math.atan2(base.imag, base.real)
+
+    let l = Math.pow(vabs, exponent.real)
+    let phase = at * exponent.real
+    if (exponent.imag !== 0) {
+        l /= Math.exp(at * exponent.imag)
+        phase += exponent.imag * Math.log(vabs)
+    }
+
+    return new Complex(l * Math.cos(phase), l * Math.sin(phase))
+}
+
+function integral_exponent(base, exponent) {
+    if (Number(exponent) === 0) {
+        return new Complex(1, 0)
+    }
+
+    if (Number(exponent) >= Int.prototype.MAX_INT) {
+        if (Number(exponent) > Float.prototype.MAX_FLOAT) {
+            throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
+        }
+
+        if (base.real * base.real + base.imag * base.imag === 1) {
+            return complex_exponent(base, new Complex(Number(exponent), 0))
+        }
+
+        if (base.real === 0 && base.imag === 0) {
+            return new Complex(0, 0)
+        }
+
+        throw new exceptions.OverflowError.$pyclass('complex exponentiation')
+    }
+
+    if (Number(exponent) <= Float.prototype.MIN_FLOAT) {
+        throw new exceptions.OverflowError.$pyclass('int too large to convert to float')
+    }
+
+    if (base.real === 0 && base.imag === 0) {
+        if (Number(exponent) < 0) {
+            throw new exceptions.ZeroDivisionError.$pyclass('0.0 to a negative or complex power')
+        }
+        return new Complex(0, 0)
+    }
+
+    if (exponent > 100 || exponent < -100) {
+        return complex_exponent(base, new Complex(Number(exponent), 0))
+    } else if (exponent > 0) {
+        return unsigned_exponent(base, exponent)
+    } else {
+        return quotient(new Complex(1, 0), unsigned_exponent(base, -exponent))
+    }
+}
+
+function __pow__(x, y, inplace) {
+    var types = require('../types')
+    if (types.isinstance(y, types.Int)) {
+        return integral_exponent(x, y.val)
+    }
+
+    if (types.isinstance(y, types.Bool)) {
+        if (y.valueOf()) {
+            return new Complex(x.real, x.imag)
+        }
+        return new Complex(1, 0)
+    }
+
+    if (types.isinstance(y, types.Complex)) {
+        return complex_exponent(x, y)
+    }
+
+    if (types.isinstance(y, types.Float)) {
+        return complex_exponent(x, new Complex(y.valueOf(), 0))
+    }
+
+    return NotImplemented
+}
+
+Complex.prototype.__pow__ = function(other) {
+    return __pow__(this, other)
 }
 
 function __div__(x, y, inplace) {
@@ -315,15 +424,7 @@ function __div__(x, y, inplace) {
         var imag = num_imag / den
         return new Complex(real, imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for /' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -362,18 +463,8 @@ function __mul__(x, y, inplace) {
         }
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real * y.real - x.imag * y.imag, x.real * y.imag + x.imag * y.real)
-    } else if (types.isinstance(y, [types.List, types.Str, types.Tuple, types.Bytearray, types.Bytes])) {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'complex'")
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for *' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -401,15 +492,7 @@ function __add__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real + y.real, x.imag + y.imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for +' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -433,15 +516,7 @@ function __sub__(x, y, inplace) {
     } else if (types.isinstance(y, types.Complex)) {
         return new Complex(x.real - y.real, x.imag - y.imag)
     } else {
-        var prefix
-        if (inplace) {
-            prefix = '='
-        } else {
-            prefix = ''
-        }
-        throw new exceptions.TypeError.$pyclass(
-            'unsupported operand type(s) for -' + prefix + ": 'complex' and '" + type_name(y) + "'"
-        )
+        return NotImplemented
     }
 }
 
@@ -453,34 +528,57 @@ Complex.prototype.__getitem__ = function(other) {
     throw new exceptions.TypeError.$pyclass("'complex' object is not subscriptable")
 }
 
-Complex.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for <<: 'complex' and '" + type_name(other) + "'"
-    )
+/**************************************************
+ * Right-hand operators
+ **************************************************/
+
+Complex.prototype.__radd__ = function(other) {
+    return this.__add__(other)
 }
 
-Complex.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for >>: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rfloordiv__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
 }
 
-Complex.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for &: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rmod__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
 }
 
-Complex.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for ^: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rmul__ = function(other) {
+    return this.__mul__(other)
 }
 
-Complex.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass(
-        "unsupported operand type(s) for |: 'complex' and '" + type_name(other) + "'"
-    )
+Complex.prototype.__rpow__ = function(other) {
+    var types = require('../types')
+
+    if (types.isinstance(other, types.Bool)) {
+        if (other.valueOf()) {
+            return new Complex(1, 0)
+        }
+        return complex_exponent(new Complex(0, 0), this)
+    }
+
+    if (types.isinstance(other, types.Int)) {
+        return other.__pow__(this)
+    }
+
+    if (types.isinstance(other, types.Float)) {
+        return complex_exponent(new Complex(other.valueOf(), 0), this)
+    }
+
+    if (types.isinstance(other, types.Complex)) {
+        return complex_exponent(other, this)
+    }
+
+    return NotImplemented
+}
+
+Complex.prototype.__rsub__ = function(other) {
+    return NotImplemented
+}
+
+Complex.prototype.__rtruediv__ = function(other) {
+    return NotImplemented
 }
 
 Complex.prototype.__matmul__ = function(other) {

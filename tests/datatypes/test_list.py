@@ -1,8 +1,8 @@
-from .. utils import TranspileTestCase,\
-    UnaryOperationTestCase,\
-    BinaryOperationTestCase,\
-    InplaceOperationTestCase,\
-    adjust
+from ..utils import TranspileTestCase, \
+    UnaryOperationTestCase, \
+    BinaryOperationTestCase, \
+    InplaceOperationTestCase, \
+    adjust, MagicMethodFunctionTestCase
 
 import unittest
 import itertools
@@ -43,14 +43,20 @@ class ListTests(TranspileTestCase):
     def test_setattr(self):
         self.assertCodeExecution("""
             x = [1, 2, 3]
-            x.attr = 42
+            try:
+                x.attr = 42
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
     def test_getattr(self):
         self.assertCodeExecution("""
             x = [1, 2, 3]
-            print(x.attr)
+            try:
+                print(x.attr)
+            except AttributeError as e:
+                print(e)
             print('Done.')
             """)
 
@@ -114,13 +120,19 @@ class ListTests(TranspileTestCase):
         # Positive index out of range
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
-            print(x[10])
+            try:
+                print(x[10])
+            except IndexError as e:
+                print(e)
             """)
 
         # Negative index out of range
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
-            print(x[-10])
+            try:
+                print(x[-10])
+            except IndexError as e:
+                print(e)
             """)
 
     def test_index(self):
@@ -176,7 +188,11 @@ class ListTests(TranspileTestCase):
         # Slice with step 0 (error)
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
-            print(x[::0])
+            try:
+                print(x[::0])
+            except ValueError as e:
+                print(e)
+            print('Done.')
             """)
 
         # Slice with revese step
@@ -191,7 +207,7 @@ class ListTests(TranspileTestCase):
             print(x[-5:-1:-1])
             """)
 
-        # Slice -1 start with revese step
+        # Slice -1 start with reverse step
         self.assertCodeExecution("""
             x = [1, 2, 3, 4, 5]
             print(x[-1:0:-1])
@@ -274,18 +290,27 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = []
-            l.insert()
+            try:
+                l.insert()
+            except TypeError as e:
+                print(e)
         """)
 
         self.assertCodeExecution("""
             l = []
-            l.insert("0", 1)
+            try:
+                l.insert("0", 1)
+            except TypeError as e:
+                print(e)
             print(l)
         """)
 
         self.assertCodeExecution("""
             l = []
-            l.insert(1.0, 1)
+            try:
+                l.insert(1.0, 1)
+            except TypeError as e:
+                print(e)
         """)
 
     @unittest.expectedFailure
@@ -315,12 +340,18 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = []
-            l.remove(1)
+            try:
+                l.remove(1)
+            except ValueError as e:
+                print(e)
         """)
 
         self.assertCodeExecution("""
             l = [1]
-            l.remove()
+            try:
+                l.remove()
+            except TypeError as e:
+                print(e)
         """)
 
     def test_pop_success(self):
@@ -344,18 +375,27 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = [1, 2]
-            l.pop(2)
+            try:
+                l.pop(2)
+            except IndexError as e:
+                print(e)
         """)
 
         self.assertCodeExecution("""
             l = []
-            l.pop(1, 2)
-        """)
+            try:
+                l.pop(1, 2)
+            except TypeError as e:
+                print(e)
+            """)
 
         self.assertCodeExecution("""
             l = [1]
-            l.pop("0")
-        """)
+            try:
+                l.pop("0")
+            except TypeError as e:
+                print(e)
+            """)
 
     @unittest.expectedFailure
     def test_pop_subclass_index(self):
@@ -384,7 +424,10 @@ class ListTests(TranspileTestCase):
 
         self.assertCodeExecution("""
             l = ["one", "two", 3]
-            l.clear("invalid")
+            try:
+                l.clear("invalid")
+            except TypeError as e:
+                print(e)
             print(l)
         """)
 
@@ -464,11 +507,66 @@ class ListTests(TranspileTestCase):
         """)
 
 
-class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
+class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'list'
+    MagicMethodFunctionTestCase._add_tests(vars(), list)
+
+    is_flakey = [
+        "test__iadd__set",  # Set ordering issues.
+        "test__iadd__dict",  # Set ordering issues.
+    ]
 
     not_implemented = [
+        "test__imul__bytearray",
+        "test__imul__bytes",
+        "test__imul__class",
+        "test__imul__complex",
+        "test__imul__dict",
+        "test__imul__float",
+        "test__imul__frozenset",
+        "test__imul__list",
+        "test__imul__None",
+        "test__imul__NotImplemented",
+        "test__imul__range",
+        "test__imul__set",
+        "test__imul__slice",
+        "test__imul__str",
+        "test__imul__tuple",
+        "test__mul__bytearray",
+        "test__mul__bytes",
+        "test__mul__class",
+        "test__mul__complex",
+        "test__mul__dict",
+        "test__mul__float",
+        "test__mul__frozenset",
+        "test__mul__list",
+        "test__mul__None",
+        "test__mul__NotImplemented",
+        "test__mul__range",
+        "test__mul__set",
+        "test__mul__slice",
+        "test__mul__str",
+        "test__mul__tuple",
+        "test__rmul__bytearray",
+        "test__rmul__bytes",
+        "test__rmul__class",
+        "test__rmul__complex",
+        "test__rmul__dict",
+        "test__rmul__float",
+        "test__rmul__frozenset",
+        "test__rmul__list",
+        "test__rmul__None",
+        "test__rmul__NotImplemented",
+        "test__rmul__range",
+        "test__rmul__set",
+        "test__rmul__slice",
+        "test__rmul__str",
+        "test__rmul__tuple",
     ]
+
+
+class UnaryListOperationTests(UnaryOperationTestCase, TranspileTestCase):
+    data_type = 'list'
 
 
 class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
@@ -477,9 +575,6 @@ class BinaryListOperationTests(BinaryOperationTestCase, TranspileTestCase):
 
 class InplaceListOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'list'
-
-    not_implemented = [
-    ]
 
     test_sets = [
         {1, 2.3456, 'another'},

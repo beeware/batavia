@@ -16,7 +16,11 @@ class PowTests(TranspileTestCase):
             x = 3
             y = -4
             z = 5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except (ValueError, TypeError) as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_int_neg_y_neg_z(self):
@@ -24,7 +28,11 @@ class PowTests(TranspileTestCase):
             x = 3
             y = -4
             z = -5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except (ValueError, TypeError) as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_int_y_zero_z_one(self):
@@ -48,7 +56,11 @@ class PowTests(TranspileTestCase):
             x = 3.3
             y = 4
             z = 5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
             """)
 
     def test_float_y_with_z(self):
@@ -56,7 +68,11 @@ class PowTests(TranspileTestCase):
             x = 3
             y = 4.4
             z = 5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
             """)
 
     def test_float(self):
@@ -64,7 +80,11 @@ class PowTests(TranspileTestCase):
             x = 3.3
             y = 4.4
             z = 5.5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_float_neg_y_with_z(self):
@@ -72,7 +92,11 @@ class PowTests(TranspileTestCase):
             x = 3.3
             y = -4.4
             z = 5.5
-            print(pow(x, y, z))
+            try:
+                print(pow(x, y, z))
+            except TypeError as e:
+                print(e)
+                print('Done.')
         """)
 
     def test_huge_y(self):
@@ -118,67 +142,8 @@ class BuiltinTwoargPowFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTest
     not_implemented = [
         'test_bool_int',
 
-        'test_bytearray_bool',
-        'test_bytearray_bytearray',
-        'test_bytearray_bytes',
-        'test_bytearray_class',
-        'test_bytearray_complex',
-        'test_bytearray_dict',
-        'test_bytearray_float',
-        'test_bytearray_frozenset',
-        'test_bytearray_int',
-        'test_bytearray_list',
-        'test_bytearray_None',
-        'test_bytearray_NotImplemented',
-        'test_bytearray_range',
-        'test_bytearray_set',
-        'test_bytearray_slice',
-        'test_bytearray_str',
-        'test_bytearray_tuple',
-
-        'test_class_bool',
-        'test_class_bytearray',
-        'test_class_bytes',
-        'test_class_class',
-        'test_class_complex',
-        'test_class_dict',
-        'test_class_float',
-        'test_class_frozenset',
-        'test_class_int',
-        'test_class_list',
-        'test_class_None',
-        'test_class_NotImplemented',
-        'test_class_range',
-        'test_class_set',
-        'test_class_slice',
-        'test_class_str',
-        'test_class_tuple',
-
-        'test_complex_complex',
-        'test_complex_float',
-        'test_complex_int',
-
-        'test_float_complex',
         'test_float_float',
         'test_float_int',
 
         'test_int_float',
-
-        'test_range_bool',
-        'test_range_bytearray',
-        'test_range_bytes',
-        'test_range_class',
-        'test_range_complex',
-        'test_range_dict',
-        'test_range_float',
-        'test_range_frozenset',
-        'test_range_int',
-        'test_range_list',
-        'test_range_None',
-        'test_range_NotImplemented',
-        'test_range_range',
-        'test_range_set',
-        'test_range_slice',
-        'test_range_str',
-        'test_range_tuple',
     ]

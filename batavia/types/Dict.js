@@ -344,78 +344,8 @@ Dict.prototype.__invert__ = function() {
  * Binary operators
  **************************************************/
 
-Dict.prototype.__pow__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ** or pow(): 'dict' and '" + type_name(other) + "'")
-}
-
 Dict.prototype.__div__ = function(other) {
     return this.__truediv__(other)
-}
-
-Dict.prototype.__floordiv__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't take floor of complex number.")
-    }
-
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for //: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__truediv__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for /: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__mul__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [
-        types.Bool, types.Dict, types.Float,
-        types.JSDict, types.Int, types.NoneType,
-        types.Slice, types.Set, types.FrozenSet,
-        types.NotImplementedType, types.Complex, types.Range,
-        types.Type])) {
-        throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *: 'dict' and '" + type_name(other) + "'")
-    } else {
-        throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type 'dict'")
-    }
-}
-
-Dict.prototype.__mod__ = function(other) {
-    var types = require('../types')
-
-    if (types.isinstance(other, [types.Complex])) {
-        throw new exceptions.TypeError.$pyclass("can't mod complex numbers.")
-    }
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for %: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__add__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for +: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__sub__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for -: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__lshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for <<: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__rshift__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for >>: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__and__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for &: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__xor__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for ^: 'dict' and '" + type_name(other) + "'")
-}
-
-Dict.prototype.__or__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for |: 'dict' and '" + type_name(other) + "'")
 }
 
 Dict.prototype.__setitem__ = function(key, value) {
@@ -461,10 +391,6 @@ Dict.prototype.__matmul__ = function(other) {
 /**************************************************
  * Inplace operators
  **************************************************/
-
-Dict.prototype.__imul__ = function(other) {
-    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for *=: 'dict' and '" + type_name(other) + "'")
-}
 
 Dict.prototype._find_index = function(other) {
     var builtins = require('../builtins')

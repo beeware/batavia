@@ -7,7 +7,7 @@ class ExceptionTests(TranspileTestCase):
         # Caught exception
         self.assertCodeExecution("""
             raise KeyError("This is the name")
-            """)
+            """, allow_exceptions=True)
 
     def test_raise_catch(self):
         self.assertCodeExecution("""
@@ -35,4 +35,13 @@ class ExceptionTests(TranspileTestCase):
                 raise Exception
             except Exception as err:
                 print(type(err), err)
+        """)
+
+    def test_raise_inside_loop(self):
+        self.assertCodeExecution("""
+            for x in ['a', 'b']:  # same for ['a']
+                try:
+                    raise Exception()
+                except:
+                    print(x)
         """)
