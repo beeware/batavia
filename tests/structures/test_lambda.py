@@ -14,14 +14,20 @@ class LambdaTests(TranspileTestCase):
     def test_no_arguments_extra_positional(self):
         self.assertCodeExecution("""
             x = lambda: x
-            print(x(1))
+            try:
+                print(x(1))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
     def test_no_arguments_extra_keyword(self):
         self.assertCodeExecution("""
             x = lambda: x
-            print(x(a=1))
+            try:
+                print(x(a=1))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
@@ -35,7 +41,10 @@ class LambdaTests(TranspileTestCase):
     def test_one_argument_missing_positional(self):
         self.assertCodeExecution("""
             x = lambda a: a + 7
-            print(x())
+            try:
+                print(x())
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
@@ -50,28 +59,40 @@ class LambdaTests(TranspileTestCase):
     def test_one_argument_extra_positional(self):
         self.assertCodeExecution("""
             x = lambda a: a + 7
-            print(x(1, 2))
+            try:
+                print(x(1, 2))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
     def test_one_argument_extra_keyword(self):
         self.assertCodeExecution("""
             x = lambda a: a + 7
-            print(x(1, a=3))
+            try:
+                print(x(1, a=3))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
     def test_two_arguments_missing_both(self):
         self.assertCodeExecution("""
             x = lambda a, b: a ** b
-            print(x())
+            try:
+                print(x())
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
     def test_two_arguments_missing_one(self):
         self.assertCodeExecution("""
             x = lambda a, b: a ** b
-            print(x(1))
+            try:
+                print(x(1))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
@@ -85,20 +106,29 @@ class LambdaTests(TranspileTestCase):
     def test_three_arguments_missing_all(self):
         self.assertCodeExecution("""
             x = lambda a, b, c: a ** b + c
-            print(x())
+            try:
+                print(x())
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
     def test_three_arguments_missing_two(self):
         self.assertCodeExecution("""
             x = lambda a, b, c: a ** b + c
-            print(x(1))
+            try:
+                print(x(1))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)
 
     def test_three_arguments_missing_one(self):
         self.assertCodeExecution("""
             x = lambda a, b, c: a ** b + c
-            print(x(1, 2))
+            try:
+                print(x(1, 2))
+            except TypeError as e:
+                print(e)
             print("Done.")
             """)

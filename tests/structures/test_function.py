@@ -237,7 +237,10 @@ class FunctionTests(TranspileTestCase):
             def myfunc(x, y, z):
                 print(x, y, z)
 
-            myfunc()
+            try:
+                myfunc()
+            except TypeError as e:
+                print(e)
             print('Done.')
         """)
 
@@ -246,7 +249,10 @@ class FunctionTests(TranspileTestCase):
             def myfunc(x, a=1):
                 print(x, a)
 
-            myfunc(1, b=2)
+            try:
+                myfunc(1, b=2)
+            except TypeError as e:
+                print(e)
             print('Done.')
         """)
 
@@ -277,6 +283,9 @@ class FunctionTests(TranspileTestCase):
             def myfunc(a):
                 print(a)
 
-            myfunc(3,4,5,6,7)
+            try:
+                myfunc(3,4,5,6,7)
+            except TypeError as e:
+                print(e)
             print('Done.')
         """)

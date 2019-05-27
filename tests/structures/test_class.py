@@ -212,7 +212,10 @@ class ClassTests(TranspileTestCase):
 
             obj = MyClass()
 
-            obj.f(1, 2)
+            try:
+                obj.f(1, 2)
+            except TypeError as e:
+                print(e)
 
             print("Done.")
         """)
@@ -225,7 +228,10 @@ class ClassTests(TranspileTestCase):
 
             obj = MyClass()
 
-            obj.f(1, y=2)
+            try:
+                obj.f(1, y=2)
+            except TypeError as e:
+                print(e)
 
             print("Done.")
         """)
@@ -253,7 +259,10 @@ class ClassTests(TranspileTestCase):
 
             obj = MyClass()
 
-            obj.f(1)
+            try:
+                obj.f(1)
+            except TypeError as e:
+                print(e)
 
             print("Done.")
         """)
