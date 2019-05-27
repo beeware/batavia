@@ -79,12 +79,12 @@ function Complex(re, im) {
         }
     } else if (!types.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
         throw new exceptions.TypeError.$pyclass(
-            "complex() first argument must be a string or a number, not '" +
+            "complex() first argument must be a string, a bytes-like object or a number, not '" +
             type_name(re) + "'"
         )
     } else if (!types.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
         throw new exceptions.TypeError.$pyclass(
-            "complex() first argument must be a string or a number, not '" +
+            "complex() first argument must be a string, a bytes-like object or a number, not '" +
             type_name(im) + "'"
         )
     } else if (typeof re === 'number' && typeof im === 'number') {
