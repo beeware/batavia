@@ -101,7 +101,7 @@ def build_batavia_js(suite_output_dir):
     proc = subprocess.Popen(
         ' '.join(
             [os.path.join(BATAVIA_DIR, "node_modules", ".bin", "webpack"),
-             "--bail", "-d", "--output-path='%s'" % suite_output_dir]),
+             "--bail", "-d", "--output-path=\"%s\"" % suite_output_dir]),
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,

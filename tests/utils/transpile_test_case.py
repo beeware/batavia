@@ -14,7 +14,7 @@ from unittest import TestCase
 
 from .set_up_suite import setUpSuite
 from .output_cleaners import JSCleaner, PYCleaner
-from .adjust import adjust
+from .adjust_code import adjust
 
 
 def _normalize(value):
@@ -381,7 +381,7 @@ class TranspileTestCase(TestCase):
                 frame: null
             });
             vm.run('test', []);
-            """) % (os.path.join(self.batavia_js_dir, 'batavia.js'),
+            """) % (os.path.join(self.batavia_js_dir, 'batavia.js').replace('\\', '\\\\'),
                     '\n'.join(adjust(code) for name, code in
                               sorted(js.items())) if js else '',
                     ',\n'.join(payload))
