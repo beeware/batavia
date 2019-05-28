@@ -221,3 +221,71 @@ class FunctionTests(TranspileTestCase):
             myfunc(**{'z': 4, 'x': 1, 'y': 2})
             print('Done.')
         """)
+
+    @unittest.expectedFailure
+    def test_missing_keyword_args(self):
+        self.assertCodeExecution("""
+            def myfunc(x, *, z):
+                print(x, z)
+
+            myfunc(1)
+            print('Done.')
+        """)
+
+    def test_missing_positional_args(self):
+        self.assertCodeExecution("""
+            def myfunc(x, y, z):
+                print(x, y, z)
+
+            try:
+                myfunc()
+            except TypeError as e:
+                print(e)
+            print('Done.')
+        """)
+
+    def test_unexpected_keyword_arg(self):
+        self.assertCodeExecution("""
+            def myfunc(x, a=1):
+                print(x, a)
+
+            try:
+                myfunc(1, b=2)
+            except TypeError as e:
+                print(e)
+            print('Done.')
+        """)
+
+    @unittest.expectedFailure
+    def test_repeated_keyword_arg(self):
+        self.assertCodeExecution("""
+            def myfunc(x, a=1):
+                print(x, a)
+
+            try:
+                myfunc(1, a=2, **{'a': '1'})
+            except Exception as e:
+                print(e)
+            print('Done.')
+        """)
+
+    def test_varargs(self):
+        self.assertCodeExecution("""
+            def myfunc(*a):
+                print(a)
+
+            myfunc(3,4,5,6,7)
+            print('Done.')
+        """)
+
+    def test_too_many_positional_args(self):
+        self.assertCodeExecution("""
+            def myfunc(a):
+                print(a)
+
+            try:
+                myfunc(3,4,5,6,7)
+            except TypeError as e:
+                print(e)
+            print('Done.')
+        """)

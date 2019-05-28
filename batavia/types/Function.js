@@ -56,10 +56,10 @@ function Function(name, code, globals, defaults, closure, vm) {
     } else {
         this.__doc__ = null
     }
-    this.__name__ = name || code.co_name
+    this.__qualname__ = name || code.co_name
+    this.__name__ = name.split('.').pop()
     this.__dict__ = new types.Dict()
     this.__annotations__ = new types.Dict()
-    this.__qualname__ = this.__name__
 
     // var kw = {
     //     'argdefs': this.__defaults__,

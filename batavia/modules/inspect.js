@@ -1,3 +1,5 @@
+var builtins = require('../builtins')
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var types = require('../types')
 
@@ -18,7 +20,7 @@ var inspect = {
 
 inspect.FullArgSpec = function(kwargs) {
     this.args = kwargs.args || []
-    this.varargs = kwargs.getcallargs
+    this.varargs = kwargs.varargs
     this.varkw = kwargs.varkw
     this.defaults = kwargs.defaults || {}
     this.kwonlyargs = kwargs.kwonlyargs || []
@@ -334,51 +336,73 @@ inspect.getfullargspec = function(func) {
     // }
 }
 
+function select_word(expression, if_true, if_false) {
+    if (expression) {
+        return if_true
+    }
+    return if_false
+}
+
+function pluralize(count) {
+    return select_word(count === 1, '', 's')
+}
+
 inspect._missing_arguments = function(f_name, argnames, pos, values) {
-    throw exceptions.RuntimeError.$pyclass('Missing arguments')
-    // var names = [];
-    // for (var name in argnames) {
-    //     if (!name in values) {
-    //         names.push(name);
-    //     }
-    // }
-    // var missing = names.length;
-    // if (missing === 1) {
-    //     s = names[0];
-    // } else if (missing === 2) {
-    //     s = "{} and {}".format(*names)
-    // } else {
-    //     tail = ", {} and {}".format(*names[-2:])
-    //     del names[-2:]
-    //     s = ", ".join(names) + tail
-    // }
-    // raise TypeError("%s() missing %i required %s argument%s: %s" %
-    //                 (f_name, missing,
-    //                   "positional" if pos else "keyword-only",
-    //                   "" if missing === 1 else "s", s))
+    const names = []
+    for (const name of argnames) {
+        if (!values.hasOwnProperty(name)) {
+            names.push('\'' + name + '\'')
+        }
+    }
+
+    const missing = names.length
+
+    let missing_names
+    if (missing > 2) {
+        let last_name = names.pop()
+        missing_names = names.join(', ') + ', and ' + last_name
+    } else if (missing > 1) {
+        missing_names = names[0] + ' and ' + names[missing - 1]
+    } else {
+        missing_names = names[0]
+    }
+
+    throw new exceptions.TypeError.$pyclass(
+        f_name + '() missing ' + missing + ' required ' + select_word(pos, 'positional', 'keyword-only') +
+        ' argument' + pluralize(missing) + ': ' + missing_names)
 }
 
 inspect._too_many = function(f_name, args, kwonly, varargs, defcount, given, values) {
-    throw exceptions.RuntimeError.$pyclass('FIXME: Too many arguments')
-    // atleast = len(args) - defcount
-    // kwonly_given = len([arg for arg in kwonly if arg in values])
-    // if varargs:
-    //     plural = atleast !== 1
-    //     sig = "at least %d" % (atleast,)
-    // elif defcount:
-    //     plural = True
-    //     sig = "from %d to %d" % (atleast, len(args))
-    // else:
-    //     plural = len(args) !== 1
-    //     sig = str(len(args))
-    // kwonly_sig = ""
-    // if kwonly_given:
-    //     msg = " positional argument%s (and %d keyword-only argument%s)"
-    //     kwonly_sig = (msg % ("s" if given !== 1 else "", kwonly_given,
-    //                          "s" if kwonly_given !== 1 else ""))
-    // raise TypeError("%s() takes %s positional argument%s but %d%s %s given" %
-    //         (f_name, sig, "s" if plural else "", given, kwonly_sig,
-    //          "was" if given === 1 and not kwonly_given else "were"))
+    const atleast = args.length - defcount
+    let kwonly_given = 0
+    for (const arg of kwonly) {
+        if (values.hasOwnProperty(arg)) {
+            kwonly_given += 1
+        }
+    }
+
+    let plural
+    let sig
+    if (varargs) {
+        plural = atleast !== 1
+        sig = 'at least ' + atleast
+    } else if (defcount) {
+        plural = true
+        sig = 'from ' + atleast + ' to ' + args.length
+    } else {
+        plural = args.length !== 1
+        sig = '' + args.length
+    }
+
+    let kwonly_sig = ''
+    if (kwonly_given) {
+        kwonly_sig = ' positional argument' + pluralize(given) + ' (and ' + kwonly_given + ' keyword-only argument' +
+            pluralize(kwonly_given) + ')'
+    }
+
+    throw new exceptions.TypeError.$pyclass(
+        f_name + '() takes ' + sig + ' positional argument' + select_word(plural, 's', '') + ' but ' + given +
+        kwonly_sig + ' ' + select_word(given === 1 && !kwonly_given, 'was', 'were') + ' given')
 }
 
 /*
@@ -400,7 +424,7 @@ inspect.getcallargs = function(func, positional, named) {
     var num_args = func.argspec.args.length
     var num_defaults
     if (func.argspec.defaults) {
-        num_defaults = func.argspec.defaults.length
+        num_defaults = func.argspec.defaults.length || 0
     } else {
         num_defaults = 0
     }
@@ -412,7 +436,7 @@ inspect.getcallargs = function(func, positional, named) {
     }
 
     if (func.argspec.varargs) {
-        arg2value[func.argspec.varargs] = positional.slice(n)
+        arg2value[func.argspec.varargs] = callables.call_function(builtins.tuple, [positional.slice(n)], {})
     }
 
     var possible_kwargs = new types.Set()
@@ -427,21 +451,21 @@ inspect.getcallargs = function(func, positional, named) {
         if (named.hasOwnProperty(kw)) {
             if (!possible_kwargs.__contains__(new types.Str(kw)).valueOf()) {
                 if (!func.argspec.varkw) {
-                    throw new exceptions.TypeError.$pyclass('%s() got an unexpected keyword argument %r' %
-                                (func.__name__, kw))
+                    throw new exceptions.TypeError.$pyclass(
+                        func.__name__ + '() got an unexpected keyword argument \'' + kw + '\'')
                 }
                 arg2value[func.argspec.varkw][kw] = named[kw]
                 continue
             }
-            if (kw in arg2value) {
-                throw new exceptions.TypeError.$pyclass('%s() got multiple values for argument %r' %
-                                (func.__name__, kw))
+            if (arg2value.hasOwnProperty(kw)) {
+                throw new exceptions.TypeError.$pyclass(
+                    func.__name__ + '() got multiple values for argument \'' + kw + '\'')
             }
             arg2value[kw] = named[kw]
         }
     }
 
-    if (num_pos > num_args && (func.argspec.varargs === undefined || func.argspec.varargs.length === 0)) {
+    if (num_pos > num_args && (func.argspec.varargs == null || func.argspec.varargs.length === 0)) {
         inspect._too_many(func.__name__, func.argspec.args, func.argspec.kwonlyargs, func.argspec.varargs, num_defaults, num_pos, arg2value)
     }
     if (num_pos < num_args) {
@@ -813,6 +837,7 @@ inspect.Signature.from_function = function(func) {
 
     // Keyword-only parameters.
     for (n = 0; n < keyword_only.length; n++) {
+        name = arg_names[pos_count + n]
         def = null
         if (kwdefaults !== null) {
             def = kwdefaults[name]
