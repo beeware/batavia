@@ -1,4 +1,6 @@
-from ..utils import TranspileTestCase, BuiltinFunctionTestCase, BuiltinTwoargFunctionTestCase
+import re
+
+from ..utils import TranspileTestCase, BuiltinFunctionTestCase, BuiltinTwoargFunctionTestCase, SAMPLE_SUBSTITUTIONS
 
 
 class SumTests(TranspileTestCase):
@@ -40,49 +42,25 @@ class SumTests(TranspileTestCase):
 
 class BuiltinSumFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "sum"
-
-    # these are implemented, but the exact exception thrown depends on the order
-    # that they are iterated on being the exact same in both CPython and batavia,
-    # which is not guaranteed. (if an unsupported string follows an int, the error
-    # will be different than if it followed a float)
-
-    is_flakey = [
-        'test_frozenset',  # This works, but python dict.keys() returns non-deterministically
-        'test_set',  # This works, but python dict.keys() returns non-deterministically.
-    ]
+    substitutions = SAMPLE_SUBSTITUTIONS.copy()
+    substitutions.update({
+        'Error\'> : unsupported operand type(s) for +: other type and one of float, str or int': [
+            re.compile(
+                r"'TypeError'> : unsupported operand type\(s\) for \+: '(float|str|int)' and '(float|str|int)'"),
+            re.compile("'OverflowError'> : int too large to convert to float"),
+        ],
+    })
 
 
 class BuiltinSumTwoArgFunctionTests(BuiltinTwoargFunctionTestCase, TranspileTestCase):
     function = "sum"
-
-    # these are implemented, but the exact exception thrown depends on the order
-    # that they are iterated on being the exact same in both CPython and batavia,
-    # which is not guaranteed. (if an unsupported string follows an int, the error
-    # will be different than if it followed a float)
-
-    is_flakey = [
-        "test_frozenset_None",
-        "test_frozenset_NotImplemented",
-        "test_frozenset_bool",
-        "test_frozenset_class",
-        "test_frozenset_dict",
-        "test_frozenset_frozenset",
-        "test_frozenset_int",
-        "test_frozenset_list",
-        "test_frozenset_range",
-        "test_frozenset_set",
-        "test_frozenset_slice",
-        "test_frozenset_tuple",
-        "test_set_None",
-        "test_set_NotImplemented",
-        "test_set_bool",
-        "test_set_class",
-        "test_set_dict",
-        "test_set_frozenset",
-        "test_set_int",
-        "test_set_list",
-        "test_set_range",
-        "test_set_set",
-        "test_set_slice",
-        "test_set_tuple",
-    ]
+    substitutions = SAMPLE_SUBSTITUTIONS.copy()
+    substitutions.update({
+        'unsupported operand type(s) for +: other type and one of float, str or int': [
+            re.compile(r"<class 'TypeError'> : unsupported operand type\(s\) for \+: '([^']+)' and '(float|str|int)'"),
+            re.compile("<class 'OverflowError'> : int too large to convert to float"),
+        ],
+        'can only concatenate list-type (not float, str or int) to the same list-type': [
+            re.compile(r"can only concatenate (tuple|list) \(not \"(float|str|int)\"\) to \1")
+        ]
+    })
