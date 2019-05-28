@@ -91,14 +91,14 @@ var strip_and_compare = function(a, b, comparison_function) {
 }
 
 var unorderable_types = function(sign, other) {
-    if (version.earlier('3.6')) {
-        throw new exceptions.TypeError.$pyclass(
-            'unorderable types: slice() ' + sign + ' ' + type_name(other) + '()'
-        )
-    } else {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
             '\'' + sign + '\' not supported between instances of \'slice\' and \'' +
             type_name(other) + '\''
+        )
+    } else {
+        throw new exceptions.TypeError.$pyclass(
+            'unorderable types: slice() ' + sign + ' ' + type_name(other) + '()'
         )
     }
 }

@@ -25,7 +25,7 @@ function pow(args, kwargs) {
         }
         if (y < 0) {
             let message = 'pow() 2nd argument cannot be negative when 3rd argument specified'
-            if (version.later('3.5')) {
+            if (version.at_least('3.5')) {
                 throw new exceptions.ValueError.$pyclass(message)
             } else {
                 throw new exceptions.TypeError.$pyclass(message)

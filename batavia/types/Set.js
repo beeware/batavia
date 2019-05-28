@@ -80,13 +80,13 @@ Set.prototype.__lt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: set() < ' + type_name(other) + '()'
+            '\'<\' not supported between instances of \'set\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<' not supported between instances of 'set' and '" + type_name(other) + "'"
+            'unorderable types: set() < ' + type_name(other) + '()'
         )
     }
 }
@@ -97,13 +97,13 @@ Set.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: set() <= ' + type_name(other) + '()'
+            '\'<=\' not supported between instances of \'set\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<=' not supported between instances of 'set' and '" + type_name(other) + "'"
+            'unorderable types: set() <= ' + type_name(other) + '()'
         )
     }
 }
@@ -137,13 +137,13 @@ Set.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: set() > ' + type_name(other) + '()'
+            '\'>\' not supported between instances of \'set\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>' not supported between instances of 'set' and '" + type_name(other) + "'"
+            'unorderable types: set() > ' + type_name(other) + '()'
         )
     }
 }
@@ -154,13 +154,13 @@ Set.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: set() >= ' + type_name(other) + '()'
+            '\'>=\' not supported between instances of \'set\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>=' not supported between instances of 'set' and '" + type_name(other) + "'"
+            'unorderable types: set() >= ' + type_name(other) + '()'
         )
     }
 }

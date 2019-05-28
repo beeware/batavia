@@ -29,14 +29,10 @@ bytes.__call__ = function(args, kwargs) {
     } else if (args.length === 1) {
         var arg = args[0]
         if (arg === null) {
-            if (version.earlier('3.6')) {
-                throw new exceptions.TypeError.$pyclass(
-                    "'NoneType' object is not iterable"
-                )
+            if (version.at_least('3.6')) {
+                throw new exceptions.TypeError.$pyclass('cannot convert \'NoneType\' object to bytes')
             } else {
-                throw new exceptions.TypeError.$pyclass(
-                    "cannot convert 'NoneType' object to bytes"
-                )
+                throw new exceptions.TypeError.$pyclass('\'NoneType\' object is not iterable')
             }
         } else if (types.isinstance(arg, types.Int)) {
             // bytes(int) -> bytes array of size given by the parameter initialized with null bytes
@@ -106,13 +102,13 @@ bytes.__call__ = function(args, kwargs) {
             return new types.Bytes(Buffer.from(buffer_args))
         } else {
             // the argument is not one of the special cases, and not an iterable, so...
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    "'" + type_name(arg) + "' object is not iterable"
+                    'cannot convert \'' + type_name(arg) + '\' object to bytes'
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "cannot convert '" + type_name(arg) + "' object to bytes"
+                    '\'' + type_name(arg) + '\' object is not iterable'
                 )
             }
         }

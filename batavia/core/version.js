@@ -36,11 +36,24 @@ version.version_id = function(str) {
 }
 
 version.earlier = function(str) {
+    if (constants.BATAVIA_MAGIC === undefined) {
+        throw new exceptions.BataviaError.$pyclass('Version test called before version defined.')
+    }
     return magic_map[constants.BATAVIA_MAGIC] < version.version_id(str)
 }
 
 version.later = function(str) {
+    if (constants.BATAVIA_MAGIC === undefined) {
+        throw new exceptions.BataviaError.$pyclass('Version test called before version defined.')
+    }
     return magic_map[constants.BATAVIA_MAGIC] > version.version_id(str)
+}
+
+version.at_least = function(str) {
+    if (constants.BATAVIA_MAGIC === undefined) {
+        throw new exceptions.BataviaError.$pyclass('Version test called before version defined.')
+    }
+    return magic_map[constants.BATAVIA_MAGIC] >= version.version_id(str)
 }
 
 module.exports = version

@@ -82,13 +82,13 @@ FrozenSet.prototype.__lt__ = function(other) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
 
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() < ' + type_name(other) + '()'
+            '\'<\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() < ' + type_name(other) + '()'
         )
     }
 }
@@ -99,13 +99,13 @@ FrozenSet.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() <= ' + type_name(other) + '()'
+            '\'<=\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() <= ' + type_name(other) + '()'
         )
     }
 }
@@ -139,13 +139,13 @@ FrozenSet.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() > ' + type_name(other) + '()'
+            '\'>\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() > ' + type_name(other) + '()'
         )
     }
 }
@@ -156,13 +156,13 @@ FrozenSet.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() >= ' + type_name(other) + '()'
+            '\'>=\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() >= ' + type_name(other) + '()'
         )
     }
 }

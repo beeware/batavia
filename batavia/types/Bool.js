@@ -118,13 +118,13 @@ Bool.prototype.__ge__ = function(other) {
         }
         return new Bool(this_bool >= other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() >= ' + type_name(other) + '()'
+                '\'>=\' not supported between instances of \'bool\' and \'' + type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'bool' and '" + type_name(other) + "'"
+                'unorderable types: bool() >= ' + type_name(other) + '()'
             )
         }
     } else {
@@ -158,14 +158,14 @@ Bool.prototype.__gt__ = function(other) {
         }
         return new Bool(this_bool > other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() > ' + type_name(other) + '()'
+                '\'>\' not supported between instances of \'bool\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'bool' and '" +
-                type_name(other) + "'"
+                'unorderable types: bool() > ' + type_name(other) + '()'
             )
         }
     } else {
@@ -240,14 +240,14 @@ Bool.prototype.__lt__ = function(other) {
         }
         return new Bool(this_bool < other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() < ' + type_name(other) + '()'
+                '\'<\' not supported between instances of \'bool\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'bool' and '" +
-                type_name(other) + "'"
+                'unorderable types: bool() < ' + type_name(other) + '()'
             )
         }
     } else {

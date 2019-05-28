@@ -132,27 +132,27 @@ Float.prototype.__lt__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.Bytes, types.Bytearray
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() < ' + type_name(other) + '()'
+                    '\'<\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() < ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() < other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() < NoneType()'
+                '\'<\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() < NoneType()'
             )
         }
     }
@@ -167,27 +167,27 @@ Float.prototype.__le__ = function(other) {
             types.NoneType, types.Str, types.NotImplementedType,
             types.Range, types.Set, types.Slice
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() <= ' + type_name(other) + '()'
+                    '\'<=\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() <= ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() <= other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() <= NoneType()'
+                '\'<=\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() <= NoneType()'
             )
         }
     }
@@ -229,27 +229,27 @@ Float.prototype.__gt__ = function(other) {
             types.NoneType, types.Str, types.NotImplementedType,
             types.Range, types.Set, types.Slice
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() > ' + type_name(other) + '()'
+                    '\'>\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() > ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() > NoneType()'
+                '\'>\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() > NoneType()'
             )
         }
     }
@@ -265,27 +265,27 @@ Float.prototype.__ge__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.Bytes, types.Bytearray
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() >= ' + type_name(other) + '()'
+                    '\'>=\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() >= ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() >= NoneType()'
+                '\'>=\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() >= NoneType()'
             )
         }
     }

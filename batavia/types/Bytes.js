@@ -103,14 +103,14 @@ Bytes.prototype.__lt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val < other.val
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bytes() < ' + type_name(other) + '()'
+                '\'<\' not supported between instances of \'bytes\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'bytes' and '" +
-                type_name(other) + "'"
+                'unorderable types: bytes() < ' + type_name(other) + '()'
             )
         }
     }
@@ -122,14 +122,14 @@ Bytes.prototype.__le__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val <= other.val
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bytes() <= ' + type_name(other) + '()'
+                '\'<=\' not supported between instances of \'bytes\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'bytes' and '" +
-                type_name(other) + "'"
+                'unorderable types: bytes() <= ' + type_name(other) + '()'
             )
         }
     }
@@ -159,14 +159,14 @@ Bytes.prototype.__gt__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val > other.val
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bytes() > ' + type_name(other) + '()'
+                '\'>\' not supported between instances of \'bytes\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'bytes' and '" +
-                type_name(other) + "'"
+                'unorderable types: bytes() > ' + type_name(other) + '()'
             )
         }
     }
@@ -178,14 +178,14 @@ Bytes.prototype.__ge__ = function(other) {
     if (types.isinstance(other, Bytes)) {
         return this.val >= other.val
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bytes() >= ' + type_name(other) + '()'
+                '\'>=\' not supported between instances of \'bytes\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'bytes' and '" +
-                type_name(other) + "'"
+                'unorderable types: bytes() >= ' + type_name(other) + '()'
             )
         }
     }
@@ -291,13 +291,13 @@ Bytes.prototype.__add__ = function(other) {
         types.Str,
         types.Tuple ])) {
         // does not concat with all these
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                "can't concat bytes to " + type_name(other)
+                'can\'t concat ' + type_name(other) + ' to bytes'
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "can't concat " + type_name(other) + ' to bytes'
+                'can\'t concat bytes to ' + type_name(other)
             )
         }
     } else {

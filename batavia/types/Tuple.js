@@ -97,13 +97,13 @@ Tuple.prototype.__lt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: tuple() < ' + type_name(other) + '()'
+                '\'<\' not supported between instances of \'tuple\' and \'' + type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                'unorderable types: tuple() < ' + type_name(other) + '()'
             )
         }
     }
@@ -129,13 +129,13 @@ Tuple.prototype.__le__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: tuple() <= ' + type_name(other) + '()'
+                '\'<=\' not supported between instances of \'tuple\' and \'' + type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                'unorderable types: tuple() <= ' + type_name(other) + '()'
             )
         }
     }
@@ -179,13 +179,13 @@ Tuple.prototype.__gt__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: tuple() > ' + type_name(other) + '()'
+                '\'>\' not supported between instances of \'tuple\' and \'' + type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                'unorderable types: tuple() > ' + type_name(other) + '()'
             )
         }
     }
@@ -212,13 +212,13 @@ Tuple.prototype.__ge__ = function(other) {
     var types = require('../types')
 
     if (!types.isinstance(other, types.Tuple)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: tuple() >= ' + type_name(other) + '()'
+                '\'>=\' not supported between instances of \'tuple\' and \'' + type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'tuple' and '" + type_name(other) + "'"
+                'unorderable types: tuple() >= ' + type_name(other) + '()'
             )
         }
     }
@@ -418,8 +418,7 @@ Tuple.prototype.__getitem__ = function(index) {
 
         return new Tuple(steppedArray)
     } else {
-        var msg = 'tuple indices must be integers or slices, not '
-        throw new exceptions.TypeError.$pyclass(msg + type_name(index))
+        throw new exceptions.TypeError.$pyclass('tuple indices must be integers or slices, not ' + type_name(index))
     }
 }
 

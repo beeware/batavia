@@ -52,27 +52,27 @@ NotImplementedType.prototype.__str__ = function() {
  **************************************************/
 
 NotImplementedType.prototype.__lt__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NotImplementedType() < ' + basic_types.type_name(other) + '()'
+            '\'<\' not supported between instances of \'NotImplementedType\' and \'' +
+            basic_types.type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<' not supported between instances of 'NotImplementedType' and '" +
-            basic_types.type_name(other) + "'"
+            'unorderable types: NotImplementedType() < ' + basic_types.type_name(other) + '()'
         )
     }
 }
 
 NotImplementedType.prototype.__le__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NotImplementedType() <= ' + basic_types.type_name(other) + '()'
+            '\'<=\' not supported between instances of \'NotImplementedType\' and \'' +
+            basic_types.type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<=' not supported between instances of 'NotImplementedType' and '" +
-            basic_types.type_name(other) + "'"
+            'unorderable types: NotImplementedType() <= ' + basic_types.type_name(other) + '()'
         )
     }
 }
@@ -86,27 +86,27 @@ NotImplementedType.prototype.__ne__ = function(other) {
 }
 
 NotImplementedType.prototype.__gt__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NotImplementedType() > ' + basic_types.type_name(other) + '()'
+            '\'>\' not supported between instances of \'NotImplementedType\' and \'' +
+            basic_types.type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>' not supported between instances of 'NotImplementedType' and '" +
-            basic_types.type_name(other) + "'"
+            'unorderable types: NotImplementedType() > ' + basic_types.type_name(other) + '()'
         )
     }
 }
 
 NotImplementedType.prototype.__ge__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NotImplementedType() >= ' + basic_types.type_name(other) + '()'
+            '\'>=\' not supported between instances of \'NotImplementedType\' and \'' +
+            basic_types.type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>=' not supported between instances of 'NotImplementedType' and '" +
-            basic_types.type_name(other) + "'"
+            'unorderable types: NotImplementedType() >= ' + basic_types.type_name(other) + '()'
         )
     }
 }
