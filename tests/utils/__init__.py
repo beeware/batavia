@@ -1,4 +1,4 @@
-from .adjust import adjust, remove_whitespace, wrap_in_function, wrap_in_exception_guard
+from .adjust_code import adjust, remove_whitespace, wrap_in_function, wrap_in_exception_guard
 from .binary_operation_test_case import BinaryOperationTestCase
 from .builtin_function_test_case import BuiltinFunctionTestCase
 from .builtin_two_arg_function_test_case import BuiltinTwoargFunctionTestCase

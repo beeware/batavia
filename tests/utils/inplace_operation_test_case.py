@@ -1,4 +1,4 @@
-from .adjust import adjust
+from .adjust_code import adjust
 from .expected_failure import NotImplementedToExpectedFailure
 from .samples import SAMPLE_SUBSTITUTIONS, SAMPLE_DATA
 
