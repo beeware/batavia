@@ -12,27 +12,27 @@ var PYCFile = function(data) {
         })
     }
     Object.call(this)
-
-    // Support PEP 552 for 4 32-bt words in Python 3.7
-    if (version.later('3.6')) {
-        this.magic = data.slice(0, 4);
-        this.bitfield = data.slice(4, 8);
-        this.modtime = data.slice(8, 12);
-        this.size = data.slice(12, 16);
-        this.data = data.slice(16);
-    } else {
-        this.magic = data.slice(0, 4);
-        this.modtime = data.slice(4, 8);
-        this.size = data.slice(8, 12);
-        this.data = data.slice(12);
-    }
-
+    
+    this.magic = data.slice(0, 4);
     constants.BATAVIA_MAGIC = String.fromCharCode(
         this.magic[0],
         this.magic[1],
         this.magic[2],
         this.magic[3]
     )
+    
+    // Support PEP 552 for 4 32-bt words in Python 3.7
+    if (version.later('3.7')) {
+        this.bitfield = data.slice(4, 8);
+        this.modtime = data.slice(8, 12);
+        this.size = data.slice(12, 16);
+        this.data = data.slice(16);
+    } else {
+        this.modtime = data.slice(4, 8);
+        this.size = data.slice(8, 12);
+        this.data = data.slice(12);
+    }
+
 
     // this.data = data;
     this.depth = 0
