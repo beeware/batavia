@@ -14,11 +14,7 @@ function asBytes(value) {
 }
 
 function requiresInteger(value) {
-    if (version.later('3.6')) {
-        throw new exceptions.TypeError.$pyclass("'" + type_name(value) + "' object cannot be interpreted as an integer")
-    } else {
-        throw new exceptions.TypeError.$pyclass('an integer is required')
-    }
+    throw new exceptions.TypeError.$pyclass('an integer is required')
 }
 
 bytearray.__call__ = function(args, kwargs) {
