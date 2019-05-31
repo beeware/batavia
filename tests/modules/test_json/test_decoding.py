@@ -6,8 +6,11 @@ from .JSON_data import pass_data, fail_data
 class LoadsTests(ModuleFunctionTestCase, TranspileTestCase):
 
     not_implemented_versions = {
-        'test_fail': ['3.5', '3.6']
     }
+
+    not_implemented = [
+        'test_fail',
+    ]
 
     def test_pass(self):
         for data in pass_data:
@@ -117,8 +120,11 @@ class LoadsTests(ModuleFunctionTestCase, TranspileTestCase):
 class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
 
     not_implemented_versions = {
-        'test_fail': ['3.5', '3.6']
     }
+
+    not_implemented = [
+        'test_fail',
+    ]
 
     fp_def = """class fp:
     def __init__(self, doc):
@@ -271,8 +277,11 @@ class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
 class JSONDecoderTests(ModuleFunctionTestCase, TranspileTestCase):
 
     not_implemented_versions = {
-        'test_fail': ['3.5', '3.6']
     }
+
+    not_implemented = [
+        'test_fail',
+    ]
 
     def test_pass(self):
         for data in pass_data:

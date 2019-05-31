@@ -103,6 +103,23 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     MagicMethodFunctionTestCase._add_tests(vars(), bytes)
 
     not_implemented = [
+        "test__mod__bool",
+        "test__mod__bytearray",
+        "test__mod__bytes",
+        "test__mod__class",
+        "test__mod__complex",
+        "test__mod__dict",
+        "test__mod__float",
+        "test__mod__frozenset",
+        "test__mod__int",
+        "test__mod__list",
+        "test__mod__None",
+        "test__mod__NotImplemented",
+        "test__mod__range",
+        "test__mod__set",
+        "test__mod__slice",
+        "test__mod__str",
+        "test__mod__tuple",
         "test__mul__bytearray",
         "test__mul__bytes",
         "test__mul__class",
@@ -123,27 +140,6 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     ]
 
     not_implemented_versions = {
-        "test__mod__bool": ['3.5', '3.6'],
-        "test__mod__bytearray": ['3.5', '3.6'],
-        "test__mod__bytes": ['3.5', '3.6'],
-        "test__mod__class": ['3.5', '3.6'],
-        "test__mod__complex": ['3.5', '3.6'],
-        "test__mod__dict": ['3.5', '3.6'],
-        "test__mod__float": ['3.5', '3.6'],
-        "test__mod__frozenset": ['3.5', '3.6'],
-        "test__mod__int": ['3.5', '3.6'],
-        "test__mod__list": ['3.5', '3.6'],
-        "test__mod__None": ['3.5', '3.6'],
-        "test__mod__NotImplemented": ['3.5', '3.6'],
-        "test__mod__range": ['3.5', '3.6'],
-        "test__mod__set": ['3.5', '3.6'],
-        "test__mod__slice": ['3.5', '3.6'],
-        "test__mod__str": ['3.5', '3.6'],
-        "test__mod__tuple": ['3.5', '3.6'],
-
-        "test__rmod__bytes": ['3.5', '3.6'],
-
-        "test__rmod__missing": ['3.4'],
     }
 
 
@@ -155,40 +151,27 @@ class BinaryBytesOperationTests(BinaryOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
     not_implemented_versions = {
-        'test_subscr_bytearray': ['3.4'],
-        'test_subscr_bytes': ['3.4'],
-        'test_subscr_class': ['3.4'],
-        'test_subscr_complex': ['3.4'],
-        'test_subscr_dict': ['3.4'],
-        'test_subscr_float': ['3.4'],
-        'test_subscr_frozenset': ['3.4'],
-        'test_subscr_list': ['3.4'],
-        'test_subscr_None': ['3.4'],
-        'test_subscr_NotImplemented': ['3.4'],
-        'test_subscr_range': ['3.4'],
-        'test_subscr_set': ['3.4'],
-        'test_subscr_str': ['3.4'],
-        'test_subscr_tuple': ['3.4'],
-        'test_modulo_None': ['3.5', '3.6'],
-        'test_modulo_NotImplemented': ['3.5', '3.6'],
-        'test_modulo_bool': ['3.5', '3.6'],
-        'test_modulo_bytearray': ['3.5', '3.6'],
-        'test_modulo_bytes': ['3.5', '3.6'],
-        'test_modulo_class': ['3.5', '3.6'],
-        'test_modulo_complex': ['3.5', '3.6'],
-        'test_modulo_dict': ['3.5', '3.6'],
-        'test_modulo_float': ['3.5', '3.6'],
-        'test_modulo_frozenset': ['3.5', '3.6'],
-        'test_modulo_int': ['3.5', '3.6'],
-        'test_modulo_list': ['3.5', '3.6'],
-        'test_modulo_range': ['3.5', '3.6'],
-        'test_modulo_set': ['3.5', '3.6'],
-        'test_modulo_slice': ['3.5', '3.6'],
-        'test_modulo_str': ['3.5', '3.6'],
-        'test_modulo_tuple': ['3.5', '3.6'],
     }
 
     not_implemented = [
+        'test_modulo_None',
+        'test_modulo_NotImplemented',
+        'test_modulo_bool',
+        'test_modulo_bytearray',
+        'test_modulo_bytes',
+        'test_modulo_class',
+        'test_modulo_complex',
+        'test_modulo_dict',
+        'test_modulo_float',
+        'test_modulo_frozenset',
+        'test_modulo_int',
+        'test_modulo_list',
+        'test_modulo_range',
+        'test_modulo_set',
+        'test_modulo_slice',
+        'test_modulo_str',
+        'test_modulo_tuple',
+
         'test_eq_bytearray',
 
         'test_ge_bytearray',
@@ -211,21 +194,24 @@ class InplaceBytesOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'bytes'
 
     not_implemented_versions = {
-        'test_modulo_None': ['3.5', '3.6'],
-        'test_modulo_NotImplemented': ['3.5', '3.6'],
-        'test_modulo_bool': ['3.5', '3.6'],
-        'test_modulo_bytearray': ['3.5', '3.6'],
-        'test_modulo_bytes': ['3.5', '3.6'],
-        'test_modulo_class': ['3.5', '3.6'],
-        'test_modulo_complex': ['3.5', '3.6'],
-        'test_modulo_dict': ['3.5', '3.6'],
-        'test_modulo_float': ['3.5', '3.6'],
-        'test_modulo_frozenset': ['3.5', '3.6'],
-        'test_modulo_int': ['3.5', '3.6'],
-        'test_modulo_list': ['3.5', '3.6'],
-        'test_modulo_range': ['3.5', '3.6'],
-        'test_modulo_set': ['3.5', '3.6'],
-        'test_modulo_slice': ['3.5', '3.6'],
-        'test_modulo_str': ['3.5', '3.6'],
-        'test_modulo_tuple': ['3.5', '3.6'],
     }
+
+    not_implemented = [
+        'test_modulo_None',
+        'test_modulo_NotImplemented',
+        'test_modulo_bool',
+        'test_modulo_bytearray',
+        'test_modulo_bytes',
+        'test_modulo_class',
+        'test_modulo_complex',
+        'test_modulo_dict',
+        'test_modulo_float',
+        'test_modulo_frozenset',
+        'test_modulo_int',
+        'test_modulo_list',
+        'test_modulo_range',
+        'test_modulo_set',
+        'test_modulo_slice',
+        'test_modulo_str',
+        'test_modulo_tuple',
+    ]

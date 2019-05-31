@@ -7,8 +7,11 @@ from ..utils import ModuleFunctionTestCase, TranspileTestCase
 class MathTests(ModuleFunctionTestCase, TranspileTestCase):
 
     not_implemented_versions = {
-        'test_docstrings': ['3.5', '3.6'],
     }
+
+    not_implemented = [
+        'test_docstrings',
+    ]
 
     substitutions = {
         # A
