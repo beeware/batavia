@@ -1522,11 +1522,6 @@ VirtualMachine.prototype.byte_WITH_CLEANUP = function() {
 }
 
 VirtualMachine.prototype.byte_WITH_CLEANUP_FINISH = function() {
-    if (version.earlier('3.5a0')) {
-        throw new builtins.BataviaError.$pyclass(
-            'Unknown opcode WITH_CLEANUP_FINISH in Python 3.4'
-        )
-    }
     // Assuming Python 3.5
     var ret = this.pop()
     var exc = this.pop()
