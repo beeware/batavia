@@ -1425,7 +1425,7 @@ class NewStyleFormatTests(TranspileTestCase):
                 print(e)
         """)
 
-    @unittest.expectedFailure
+    # @unittest.expectedFailure
     def test_conversion_types(self):
         """
         test all conversion types and their alternate forms
@@ -1438,13 +1438,18 @@ class NewStyleFormatTests(TranspileTestCase):
             [
                 adjust(
                     """
-                    print(">>> 'one arg: {{:{alter}{typ}}}'.format({arg})")
-                    print('one arg: {{:{alter}{typ}}}'.format({arg}))
+                    try:
+                        print(">>> 'one arg: {{:{alter}{typ}}}'.format({arg})")
+                        print('one arg: {{:{alter}{typ}}}'.format({arg}))
+                    except ValueError as err:
+                        print(err)
+                    except OverflowError as err:
+                        print(err)
                     """.format(alter=alter, typ=typ, arg=arg)
                 ) for alter, typ, arg in combinations
             ]
         )
-
+        
         self.assertCodeExecution(test_str)
 
     def test_precisions(self):

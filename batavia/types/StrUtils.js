@@ -1368,7 +1368,6 @@ function _new_subsitute(str, args, kwargs) {
                 break
             default:
                 throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
-
         } // switch
 
         // determine sign

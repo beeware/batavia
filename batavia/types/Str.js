@@ -731,9 +731,24 @@ Str.prototype.capitalize = function() {
 }
 
 Str.prototype.format = function(args, kwargs) {
+    if (arguments.length === 0) { // No arguments provided. Return string as is.
+        return this;
+    }
+
     const types = require('../types')
-    const positionalArguments = new types.Tuple(types.js2py(args))
-    const keywordArguments = types.js2py(kwargs)
+    var positionalArguments = undefined
+    if (args.__iter__ || args.__getitem__ && args.__len__) {
+        // We were passed an iterable.
+        positionalArguments = new types.Tuple(types.js2py(args))
+    } else {
+        // Make a tuple anyway.
+        positionalArguments = new types.Tuple([args])
+    }
+
+    var keywordArguments = undefined
+    if (kwargs !== undefined) {
+        keywordArguments = types.js2py(kwargs)
+    }
     return StrUtils._new_subsitute(this, positionalArguments, keywordArguments)
 }
 

@@ -31,7 +31,13 @@ BaseException.prototype.__str__ = function() {
 
 BaseException.prototype.__repr__ = function() {
     if (this.msg) {
-        return this.name + '(' + this.msg + ')'
+        // Add quotation marks to match Python 3.5/3.6 reprs
+        // Will need to be removed for Python 3.7
+        var quot = "'"
+        if (this.msg.includes("'")) { 
+            quot = '"'
+        }
+        return this.name + '(' + this.msg + ',)'
     } else {
         return this.name + '()'
     }
