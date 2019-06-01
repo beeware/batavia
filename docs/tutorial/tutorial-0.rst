@@ -4,7 +4,7 @@ Tutorial: Preparing your Environment for Batavia Development
 Getting a working local copy of Batavia requires a few steps: getting a copy of
 the Batavia code, and the ouroboros dependency within a virtual environment.
 
-You'll need to have Python 3.5 available for Batavia to work. Instructions on
+You'll need to have Python 3.5 or 3.6 available for Batavia to work. Instructions on
 how to set this up are `on our Environment setup guide
 <http://beeware.org/contributing/how/first-time/setup/>`_.
 
@@ -60,11 +60,11 @@ how to set this up are `on our Environment setup guide
 
    $ node --version
 
-   If you have an older version of Node.js, or a version from the 7.X or 8.X series,
-   you will need to download and install a version from the "stable" 6.X series.
+   If you have an older version of Node.js, or a version from the 11.x,
+   you will need to download and install a version from the "stable" 10.x series.
 
    Once you've installed node, you need to make sure you have a current version
-   of npm. Batavia requires npm v4.0 or greater; you can determine what version
+   of npm. Batavia requires npm v6.0 or greater; you can determine what version
    of npm you have by running::
 
    $ npm --version
@@ -101,7 +101,7 @@ command line <tutorial-2>`.
 Troubleshooting Tips
 --------------------
 
-After running "npm run build", if  you recieve the error::
+After running "npm run build", if  you receive the error::
 
    "Module not found: Error: Cannot resolve 'file' or 'directory' ./stdlib"
 

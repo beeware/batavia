@@ -475,7 +475,7 @@ Str.prototype.__rmul__ = function(other) {
 
 /**************************************************
  * Methods
- * https://docs.python.org/3.4/library/stdtypes.html#string-methods
+ * https://docs.python.org/3.6/library/stdtypes.html#string-methods
  **************************************************/
 
 Str.prototype.__len__ = function() {

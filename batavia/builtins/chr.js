@@ -11,15 +11,9 @@ function chr(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('chr() takes no keyword arguments')
     }
     if (!args || args.length !== 1) {
-        if (version.later('3.4')) {
-            throw new exceptions.TypeError.$pyclass(
-                'chr() takes exactly one argument (' + args.length + ' given)'
-            )
-        } else {
-            throw new exceptions.TypeError.$pyclass(
-                'chr() takes exactly 1 argument (' + args.length + ' given)'
-            )
-        }
+        throw new exceptions.TypeError.$pyclass(
+            'chr() takes exactly one argument (' + args.length + ' given)'
+        )
     }
     if (types.isinstance(args[0], types.Complex)) {
         throw new exceptions.TypeError.$pyclass('can\'t convert complex to int')
