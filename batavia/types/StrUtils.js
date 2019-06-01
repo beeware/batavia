@@ -1379,7 +1379,7 @@ function _new_subsitute(str, args, kwargs) {
                 signToUse = sign
             }
         } else {
-            // negative sign for negative numbers reguardless
+            // negative sign for negative numbers regardless
             signToUse = '-'
         }
 
@@ -1394,7 +1394,6 @@ function _new_subsitute(str, args, kwargs) {
             // modify base to handle grouping if needed
             base = this._handleGrouping(base, grouping)
         }
-
         this.content = `${signToUse}${alternate}${base}${percent}${expSign}${expToUse}`
     }
 
@@ -1403,8 +1402,8 @@ function _new_subsitute(str, args, kwargs) {
           alignment and padding
         */
 
+        
         // size of the containing field. will need to be filled in if larger than content
-
         const fieldWidth = this.width || this.content.length
         const spaceRemaining = fieldWidth - this.content.length
         // determine how extra space should be divided.
@@ -1440,7 +1439,6 @@ function _new_subsitute(str, args, kwargs) {
                     this.field = `${fillChar.repeat(spaceRemaining)}${this.content}`
                     break
                 case '<':
-
                     this.field = `${this.content}${fillChar.repeat(spaceRemaining)}`
                     break
                 case '=':

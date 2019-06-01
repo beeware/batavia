@@ -24,8 +24,29 @@ MEMORY_REFERENCE = re.compile('0x[\\dABCDEFabcdef]{4,16}')
 
 def transforms(**transform_args):
     """
-    injects a JSCleaner and PYCleaner object into the function
-    use this as a decorator to configure which transformations should be performed
+    Decorator which injects js_cleaner and py_cleaner objects into the function. Configures which
+    string transformations will be applied.
+
+    A common use for @transforms is to avoid false negative test results caused by the cleaner
+    formatting being applied incorrectly, for example when using string.format() or types.Float,
+    which should immitate Python formatting with no cleaning needed.
+
+    JS Native Type Reformatting
+
+        decimal: Replace floating point numbers in decimal form with the form used by python.
+        float_exp: Format floating point numbers using a lower case e, eg. -5.00000...e-01.
+        high_precision_float: Replace high precision floats with abbreviated forms.
+        js_bool: Normalize true and false to True and False.
+
+    General
+
+        err_msg: Test the specific error message.
+        memory_ref: Normalize memory references (0xA1234CC) from output.
+
+    Test-Specific
+
+        test_ref: Replace references to the test script with something generic.
+        custom: Enable/disable custom substitutions, which can be added later.
     """
 
     def _dec(function):
@@ -61,6 +82,8 @@ def transforms(**transform_args):
 
 
 class JSCleaner:
+    """Pairs with PYCleaner to normalize JavaScript native output to match Python native output.
+    Use @transform for configurations."""
     def __init__(self, err_msg=True, memory_ref=True, js_bool=False, decimal=True, float_exp=True, complex_num=True,
                  high_precision_float=True, test_ref=True, custom=True):
 
@@ -127,6 +150,8 @@ class JSCleaner:
 
 
 class PYCleaner:
+    """Pairs with JSCleaner to normalize JavaScript native output to match Python native output.
+    Use @transform for configurations."""
     def __init__(self, err_msg=True, memory_ref=True, float_exp=True, complex_num=True,
                  high_precision_float=True, test_ref=True, custom=True):
 
