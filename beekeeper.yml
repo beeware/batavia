@@ -18,10 +18,6 @@ pull_request:
                 name: Python 3.6 tests
                 task: batavia-py36
                 critical: False
-            - py3.7:
-                name: Python 3.7 tests
-                task: batavia-py37
-                critical: False
         profile: hi-cpu
 push:
     - smoke-test:
