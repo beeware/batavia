@@ -1235,12 +1235,9 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type 'float'`)
         }
 
-        if (this.type === 'c' && ) {
+        if (this.type === 'c') {
             if (this.sign) throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
             if (this.alternate) throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'")
-        }
-
-        if (this.type === 'c' && this.alternate) {
         }
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
