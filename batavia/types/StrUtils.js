@@ -1250,7 +1250,7 @@ function _new_subsitute(str, args, kwargs) {
         }
 
         if (type === 's') {
-            throw new exceptions.ValueError.$pyclass("Unknown format code 's' for object of type 'int'")
+            throw new exceptions.ValueError.$pyclass(`Unknown format code 's' for object of type '${type_name(this.arg)}'`)
         }
 
         let precision
@@ -1507,7 +1507,6 @@ function _new_subsitute(str, args, kwargs) {
 
             return an object of shape {base, expSign, exp}
         */
-
         const nBig = new BigNumber(n)
         const nExp = nBig.toExponential()
 

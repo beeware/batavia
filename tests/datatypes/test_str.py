@@ -1425,7 +1425,7 @@ class NewStyleFormatTests(TranspileTestCase):
                 print(e)
         """)
 
-    # @unittest.expectedFailure
+    @unittest.expectedFailure
     def test_conversion_types(self):
         """
         test all conversion types and their alternate forms
