@@ -1107,7 +1107,7 @@ function _new_subsitute(str, args, kwargs) {
         this.modeObj.checkMode(fieldParsed.name)
 
         let pulledArg
-
+        
         if (fieldParsed.name === '') {
             const key = new types.Int(this.specIndex)
             pulledArg = this.args.__getitem__(key)
@@ -1149,8 +1149,7 @@ function _new_subsitute(str, args, kwargs) {
         /*
           All real numbers should be kept as their python types.
           Everything else should be converted to a string
-       */
-
+        */
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
         } else if (types.isinstance(rawValue, [types.NoneType])) {
@@ -1233,11 +1232,15 @@ function _new_subsitute(str, args, kwargs) {
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
         if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
-            throw new types.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+            throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type 'float'`)
         }
 
-        if (this.type === 'c' && this.sign) {
-            throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
+        if (this.type === 'c' && ) {
+            if (this.sign) throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
+            if (this.alternate) throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'")
+        }
+
+        if (this.type === 'c' && this.alternate) {
         }
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
@@ -1549,8 +1552,8 @@ function _new_subsitute(str, args, kwargs) {
 
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value.
-
-        if (type_name(this.arg) === 'str') {
+        
+        if (type_name(this.arg) === 'str' && !types.isinstance(this.arg, [types.Float])) {
             this._convertStr()
         } else {
             this._convertNumber()
