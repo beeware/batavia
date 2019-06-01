@@ -49,7 +49,7 @@ class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
         "test__mod__range",
         "test__mod__set",
         "test__mod__slice",
-        "test__mod__str".
+        "test__mod__str",
         "test__mod__tuple",
 
         "test__mul__bool",
