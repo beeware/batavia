@@ -29,9 +29,14 @@ README.md
 node_modules/
 package/
 npm-debug.log
+test-py35-node10.xml
+test-py35-node6.xml
 
 # PyCharm settings
 .idea
+
+# VSCode settings
+.vscode
 
 # Py.test
 .cache
@@ -41,4 +46,5 @@ npm-debug.log
 
 # local environment configuration
 .env
+.venv
 /.cache-loader/
