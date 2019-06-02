@@ -6,6 +6,7 @@ var type_name = require('../core').type_name
 var create_pyclass = require('../core').create_pyclass
 var RangeIterator = require('./RangeIterator')
 var None = require('../core').None
+var version = require('../core').version
 
 /*************************************************************************
  * An implementation of range
@@ -39,7 +40,12 @@ function Range(start, stop, step) {
 create_pyclass(Range, 'range')
 
 Range.prototype.__dir__ = function() {
-    return "['__bool__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'count', 'index', 'start', 'step', 'stop']"
+    // Python 3.6 adds classmethod object.__init_subclass__
+    if (!version.earlier(3.6)) {
+        return "['__bool__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'count', 'index', 'start', 'step', 'stop']"
+    } else {
+        return "['__bool__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__reversed__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'count', 'index', 'start', 'step', 'stop']"
+    }
 }
 
 /**************************************************
