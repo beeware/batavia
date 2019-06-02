@@ -618,6 +618,7 @@ Int.prototype.__getitem__ = function(index) {
 Int.prototype.__setattr__ = function(other) {
     throw new exceptions.AttributeError.$pyclass("'int' object has no attribute '" + other + "'")
 }
+
 /**************************************************
  * Bitshift and logical ops
  **************************************************/

@@ -4,23 +4,27 @@ pull_request:
         subtasks:
             - eslint:
                 name: JavaScript lint checks
-                task: beefore-javascript
+                image: pybee/beefore-javascript
             - pycodestyle:
                 name: Python lint checks
-                task: beefore
+                image: pybee/beefore
     - smoke-test:
-        task: batavia-py35
+        image: pybee/batavia-py35
         name: Smoke build (Python 3.5)
         profile: hi-cpu
     - full-test:
         subtasks:
             - py3.6:
                 name: Python 3.6 tests
-                task: batavia-py36
+                image: pybee/batavia-py36
+                critical: False
+            - py3.7:
+                name: Python 3.7 tests
+                image: pybee/batavia-py37
                 critical: False
         profile: hi-cpu
 push:
     - smoke-test:
-        task: batavia-py35
+        image: pybee/batavia-py35
         name: Smoke build (Python 3.5)
         profile: hi-cpu

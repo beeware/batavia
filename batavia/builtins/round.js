@@ -3,10 +3,15 @@ var BigNumber = require('bignumber.js')
 var exceptions = require('../core').exceptions
 var types = require('../types')
 var type_name = require('../core').type_name
+var version = require('../core').version
 
 function round(args, kwargs) {
     if (!args || args.length === 0) {
-        throw new exceptions.TypeError.$pyclass("Required argument 'number' (pos 1) not found")
+        if (!version.earlier('3.7')) {
+            throw new exceptions.TypeError.$pyclass("round() missing required argument 'number' (pos 1)")
+        } else {
+            throw new exceptions.TypeError.$pyclass("Required argument 'number' (pos 1) not found")
+        }
     }
     if (!(types.isinstance(args[0], [ types.Float, types.Int, types.Bool ]))) {
         throw new exceptions.TypeError.$pyclass('type ' + type_name(args[0]) + " doesn't define __round__ method")

@@ -178,13 +178,17 @@ var make_encode = function(
             } else if (default_) {
                 ret = encode(callables.call_function(default_, [obj]), indent_level)
             } else {
-                if (version.earlier('3.6')) {
+                if (!version.earlier('3.7')) {
                     throw new exceptions.TypeError.$pyclass(
-                        obj.toString() + ' is not JSON serializable'
+                        'Object of type ' + type_name(obj) + ' is not JSON serializable'
+                    )
+                } else if (!version.earlier('3.6')) {
+                    throw new exceptions.TypeError.$pyclass(
+                        'Object of type \'' + type_name(obj) + '\' is not JSON serializable'
                     )
                 } else {
                     throw new exceptions.TypeError.$pyclass(
-                        "Object of type '" + type_name(obj) + "' is not JSON serializable"
+                        obj.toString() + ' is not JSON serializable'
                     )
                 }
             }

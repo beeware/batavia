@@ -608,6 +608,10 @@ List.prototype.__imul__ = function(other) {
     }
 }
 
+List.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'list' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Right-hand operators
  **************************************************/

@@ -122,6 +122,8 @@ class BinaryIntOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subtract_complex',
 
         'test_true_divide_complex',
+
+        'test_matmul_complex'
     ]
 
 
@@ -135,4 +137,6 @@ class InplaceIntOperationTests(InplaceOperationTestCase, TranspileTestCase):
         'test_subtract_complex',
 
         'test_true_divide_complex',
+
+        'test_matmul_complex'
     ]

@@ -36,7 +36,9 @@ function _validateInput(args, kwargs) {
     }
 
     if (args === undefined || args.length === 0) {
-        if (version.later('3.6')) {
+        if (!version.earlier('3.7')) {
+            throw new exceptions.TypeError.$pyclass('sorted expected 1 arguments, got 0')
+        } else if (!version.earlier('3.6')) {
             throw new exceptions.TypeError.$pyclass('Function takes at least 1 positional arguments (0 given)')
         } else {
             throw new exceptions.TypeError.$pyclass("Required argument 'iterable' (pos 1) not found")

@@ -381,6 +381,10 @@ Set.prototype.__rxor__ = function(other) {
     return this.__xor__(other)
 }
 
+Set.prototype.__imatmul__ = function(other) {
+    throw new exceptions.TypeError.$pyclass("unsupported operand type(s) for @=: 'set' and '" + type_name(other) + "'")
+}
+
 /**************************************************
  * Methods
  **************************************************/
