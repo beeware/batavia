@@ -574,7 +574,6 @@ function _substitute(format, args) {
                     // NOTE: in C Python there is an upper bound to what int or float can be provided
                     // and this is platform specific. currently, Batavia is not enforcing any
                     // kind of upper bound.
-
                     if (types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
                         conversionArg = String.fromCharCode(Number(conversionArgValue))
                     } else {
@@ -1237,6 +1236,9 @@ function _new_subsitute(str, args, kwargs) {
         if (this.type === 'c') {
             if (this.sign) throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
             if (this.alternate) throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'")
+            if (this.arg < 0) throw new exceptions.OverflowError.$pyclass('%c arg not in range(0x110000)')
+            // Upper limit on this.arg is platform-specific. Per comment above, batavia is not currently
+            // enforcing an upper bound.
         }
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
