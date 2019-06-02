@@ -580,14 +580,38 @@ function _substitute(format, args) {
                         conversionArg = conversionArgValue
                     }
                     break
+                
                 case ('r'):
-                    var builtins = require('../builtins')  
-                    conversionArg = builtins.repr([conversionArgRaw], {})
+                    if (types.isinstance(conversionArgRaw, types.Str)) {
+                        conversionArg = `'${conversionArgValue}'`
+                    } else {
+                        // handle as a number
+                        // if exponent would be < -4 use exponential
+
+                        asExp = Number(conversionArgValue).toExponential()
+
+                        if (Number(asExp.split('e')[1]) < -4) {
+                            conversionArg = zeroPadExp(asExp)
+                        } else {
+                            conversionArg = conversionArgValue
+                        }
+                    }
                     break
                 case ('s'):
-                    builtins = require('../builtins')
-                    conversionArg = callables.call_function(builtins.str, [conversionArgRaw], {})
-                    break
+                    if (types.isinstance(conversionArgRaw, types.Str)) {
+                        conversionArg = conversionArgValue
+                    } else {
+                        // handle as a number
+                        // if exponent would be < -4 use exponential
+
+                        asExp = Number(conversionArgValue).toExponential()
+
+                        if (Number(asExp.split('e')[1]) < -4) {
+                            conversionArg = zeroPadExp(asExp)
+                        } else {
+                            conversionArg = conversionArgValue
+                        }
+                    }
             } // end switch
 
             // only do the below for numbers
