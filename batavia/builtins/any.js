@@ -1,5 +1,4 @@
 var exceptions = require('../core').exceptions
-var callables = require('../core').callables
 var type_name = require('../core').type_name
 
 function any(args, kwargs) {
@@ -16,26 +15,21 @@ function any(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('any() takes exactly one argument (' + args.length + ' given)')
     }
 
-    if (!args[0].__iter__) {
-        throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
-    }
-
-    var iterobj = callables.call_method(args[0], '__iter__', [])
+    var builtins = require('../builtins')
+    const iterobj = builtins.iter(args, {})
     try {
-        while (true) {
-            var next = callables.call_method(iterobj, '__next__', [])
-            var bool_next = callables.call_method(next, '__bool__', [])
-            if (bool_next) {
-                return true
-            }
+        while (!builtins.bool.__call__([builtins.next([iterobj], {})], {})) {
         }
+        return true
     } catch (err) {
         if (!(err instanceof exceptions.StopIteration.$pyclass)) {
-            throw err
+            throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
         }
     }
+
     return false
 }
-any.__doc__ = 'any(iterable) -> bool\n\nReturn True if bool(x) is True for any x in the iterable.\nIf the iterable is empty, return False.'
+
+any.__doc__ = 'Return True if bool(x) is True for any x in the iterable.\n\nIf the iterable is empty, return False.'
 
 module.exports = any
