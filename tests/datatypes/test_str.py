@@ -1425,7 +1425,6 @@ class NewStyleFormatTests(TranspileTestCase):
                 print(e)
         """)
 
-    # @unittest.expectedFailure
     @transforms(
         # Disable all JS native type cleaners.
         # This test should match the Python expected output exactly.
