@@ -580,38 +580,13 @@ function _substitute(format, args) {
                         conversionArg = conversionArgValue
                     }
                     break
-
                 case ('r'):
-                    if (types.isinstance(conversionArgRaw, types.Str)) {
-                        conversionArg = String(conversionArgValue)
-                    } else {
-                        // handle as a number
-                        // if exponent would be < -4 use exponential
-
-                        asExp = Number(conversionArgValue).toExponential()
-
-                        if (Number(asExp.split('e')[1]) < -4) {
-                            conversionArg = zeroPadExp(asExp)
-                        } else {
-                            conversionArg = conversionArgValue
-                        }
-                    }
+                    var builtins = require('../builtins')  
+                    conversionArg = builtins.repr([conversionArgRaw], {})
                     break
                 case ('s'):
-                    if (types.isinstance(conversionArgRaw, types.Str)) {
-                        conversionArg = conversionArgValue
-                    } else {
-                        // handle as a number
-                        // if exponent would be < -4 use exponential
-
-                        asExp = Number(conversionArgValue).toExponential()
-
-                        if (Number(asExp.split('e')[1]) < -4) {
-                            conversionArg = zeroPadExp(asExp)
-                        } else {
-                            conversionArg = conversionArgValue
-                        }
-                    }
+                    builtins = require('../builtins')
+                    conversionArg = callables.call_function(builtins.str, [conversionArgRaw], {})
                     break
             } // end switch
 
@@ -1149,6 +1124,7 @@ function _new_subsitute(str, args, kwargs) {
           All real numbers should be kept as their python types.
           Everything else should be converted to a string
         */
+
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
         } else if (types.isinstance(rawValue, [types.NoneType])) {
@@ -1235,11 +1211,17 @@ function _new_subsitute(str, args, kwargs) {
         }
 
         if (this.type === 'c') {
-            if (this.sign) throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
-            if (this.alternate) throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'")
-            if (this.arg < 0) throw new exceptions.OverflowError.$pyclass('%c arg not in range(0x110000)')
-            // Upper limit on this.arg is platform-specific. Per comment above, batavia is not currently
-            // enforcing an upper bound.
+            if (this.sign) {
+                throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
+            }
+            if (this.alternate) {
+                throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'")
+            }
+            if (this.arg < 0) {
+                // Upper limit on this.arg is platform-specific. Per comment above, batavia is not currently
+                // enforcing an upper bound.
+                throw new exceptions.OverflowError.$pyclass('%c arg not in range(0x110000)')
+            }
         }
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
@@ -1257,7 +1239,9 @@ function _new_subsitute(str, args, kwargs) {
 
         let precision = 6
         if (this.precision) {
-            if (type === 'n') throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
+            if (type === 'n') {
+                throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
+            }
             precision = parseInt(this.precision.replace('.', ''))
         }
 
@@ -1327,16 +1311,12 @@ function _new_subsitute(str, args, kwargs) {
                 if (exp >= -4 && exp < precision) {
                     // use f
                     base = new BigNumber(this.argAbs).toFixed(precision - 1 - exp)
-                    // console.log("Path 1")
-                    // console.log(precision - 1 - exp)
                 } else {
                     // use e
                     const expObj = this._toExp(this.argAbs, precision - 1, type)
                     base = expObj.base
                     expSign = expObj.expSign
                     expToUse = expObj.exp
-                    // console.log("Path 1")
-
                 }
 
                 break
