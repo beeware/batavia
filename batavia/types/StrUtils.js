@@ -301,7 +301,7 @@ function _substitute(format, args) {
                         throw new exceptions.TypeError.$pyclass('%c requires int or char')
                     } else if (types.isinstance(arg, [types.Int, types.Float])) {
                         if (arg < 0) {
-                            throw new exceptions.OverflowError.$pyclass('%c arg not in range(0xXXXXXXXX)')
+                            throw new exceptions.OverflowError.$pyclass('%c arg not in range(0x110000)')
                         }
                     }
                 } // end outer if
@@ -1253,11 +1253,10 @@ function _new_subsitute(str, args, kwargs) {
             throw new exceptions.ValueError.$pyclass(`Unknown format code 's' for object of type '${type_name(this.arg)}'`)
         }
 
-        let precision
+        let precision = 6
         if (this.precision) {
+            if (type === 'n') throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
             precision = parseInt(this.precision.replace('.', ''))
-        } else {
-            precision = 6
         }
 
         /* components for final representation
@@ -1307,25 +1306,36 @@ function _new_subsitute(str, args, kwargs) {
             case 'g':
             case 'G':
             case 'n':
+                // Base precision is 1.
+                // Alternate forms have base precision 6, which is already set.
+                // 
+                if (!this.precision) {
+                    if (!this.alternate) {
+                        precision = 1
+                    } else if (type === 'n') { // alternate '#n' flag converts all to floats.
+                        this.argAbs = types.Float.$pyclass(this.argAbs)
+                    }
+                }
+
                 // if exp is the exponent and p is the precision
                 // if -4 <= exp < p -> use f and precison = p-1-exp
                 // else use e and p-1
-
-                if (type === 'n' && this.precision) {
-                    throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
-                }
 
                 num = new BigNumber(this.argAbs).toExponential()
                 exp = Number(num.split('e')[1]) // split the exponential into base and power
                 if (exp >= -4 && exp < precision) {
                     // use f
                     base = new BigNumber(this.argAbs).toFixed(precision - 1 - exp)
+                    // console.log("Path 1")
+                    // console.log(precision - 1 - exp)
                 } else {
                     // use e
                     const expObj = this._toExp(this.argAbs, precision - 1, type)
                     base = expObj.base
                     expSign = expObj.expSign
                     expToUse = expObj.exp
+                    // console.log("Path 1")
+
                 }
 
                 break

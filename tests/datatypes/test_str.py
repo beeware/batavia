@@ -1434,7 +1434,7 @@ class NewStyleFormatTests(TranspileTestCase):
         high_precision_float=False,
         js_bool=False,
         complex_num=False)
-    def test_conversion_types(self, py_cleaner, js_cleaner):
+    def test_conversion_types(self, js_cleaner, py_cleaner):
         """
         test all conversion types and their alternate forms
         """

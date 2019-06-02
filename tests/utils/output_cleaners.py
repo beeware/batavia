@@ -46,7 +46,7 @@ def transforms(**transform_args):
     Test-Specific
 
         test_ref: Replace references to the test script with something generic.
-        custom: Enable/disable custom substitutions, which can be added later.
+        custom: Enable/disable custom substitutions, whitespace cleaning, misc.
     """
 
     def _dec(function):
