@@ -12,8 +12,6 @@ class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_None': ['3.6'],
         'test_NotImplemented': ['3.6'],
         'test_bool': ['3.6'],
-        'test_bytearray': ['3.5', '3.6'],
-        'test_bytes': ['3.5', '3.6'],
         'test_complex': ['3.6'],
         'test_dict': ['3.6'],
         'test_float': ['3.6'],
@@ -21,7 +19,6 @@ class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
         'test_int': ['3.6'],
         'test_list': ['3.6'],
         'test_noargs': ['3.6'],
-        'test_range': ['3.5', '3.6'],
         'test_set': ['3.6'],
         'test_slice': ['3.6'],
         'test_str': ['3.6'],
@@ -29,5 +26,8 @@ class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     }
 
     not_implemented = [
+        'test_bytearray',
+        'test_bytes',
         'test_class',
+        'test_range',
     ]

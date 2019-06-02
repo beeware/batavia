@@ -9,15 +9,11 @@ pull_request:
                 name: Python lint checks
                 task: beefore
     - smoke-test:
-        task: batavia-py34
-        name: Smoke build (Python 3.4)
+        task: batavia-py35
+        name: Smoke build (Python 3.5)
         profile: hi-cpu
     - full-test:
         subtasks:
-            - py3.5:
-                name: Python 3.5 tests
-                task: batavia-py35
-                critical: False
             - py3.6:
                 name: Python 3.6 tests
                 task: batavia-py36
@@ -25,6 +21,6 @@ pull_request:
         profile: hi-cpu
 push:
     - smoke-test:
-        task: batavia-py34
-        name: Smoke build (Python 3.4)
+        task: batavia-py35
+        name: Smoke build (Python 3.5)
         profile: hi-cpu

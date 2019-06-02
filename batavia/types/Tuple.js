@@ -414,9 +414,6 @@ Tuple.prototype.__getitem__ = function(index) {
         return new Tuple(steppedArray)
     } else {
         var msg = 'tuple indices must be integers or slices, not '
-        if (!version.later('3.4')) {
-            msg = 'tuple indices must be integers, not '
-        }
         throw new exceptions.TypeError.$pyclass(msg + type_name(index))
     }
 }

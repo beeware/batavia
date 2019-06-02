@@ -89,7 +89,7 @@ math.ceil = function(x) {
     _checkFloat(x)
     return new types.Int(Math.ceil(x.__float__().val))
 }
-math.ceil.__doc__ = 'ceil(x)\n\nReturn the ceiling of x as an int.\nThis is the smallest integral value >= x.'
+math.ceil.__doc__ = 'ceil(x)\n\nReturn the ceiling of x as an Integral.\nThis is the smallest integer >= x.'
 
 math.copysign = function(x, y) {
     _checkFloat(y)
@@ -306,7 +306,7 @@ math.floor = function(x) {
     _checkFloat(x)
     return new types.Int(Math.floor(x.__float__().val))
 }
-math.floor.__doc__ = 'floor(x)\n\nReturn the floor of x as an int.\nThis is the largest integral value <= x.'
+math.floor.__doc__ = 'floor(x)\n\nReturn the floor of x as an Integral.\nThis is the largest integer <= x.'
 
 math.fmod = function(x, y) {
     _checkFloat(y)
