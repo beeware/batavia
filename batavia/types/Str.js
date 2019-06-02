@@ -734,7 +734,6 @@ Str.prototype.format = function(args, kwargs) {
     if (arguments.length === 0) { // No arguments provided. Return string as is.
         return this;
     }
-
     const types = require('../types')
     var positionalArguments = undefined
 

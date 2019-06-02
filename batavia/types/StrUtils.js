@@ -1105,9 +1105,8 @@ function _new_subsitute(str, args, kwargs) {
 
         const fieldParsed = parseFieldName(this.fieldName)
         this.modeObj.checkMode(fieldParsed.name)
-
         let pulledArg
-        
+
         if (fieldParsed.name === '') {
             const key = new types.Int(this.specIndex)
             pulledArg = this.args.__getitem__(key)
@@ -1308,12 +1307,11 @@ function _new_subsitute(str, args, kwargs) {
             case 'n':
                 // Base precision is 1.
                 // Alternate forms have base precision 6, which is already set.
-                // 
                 if (!this.precision) {
                     if (!this.alternate) {
                         precision = 1
-                    } else if (type === 'n') { // alternate '#n' flag converts all to floats.
-                        this.argAbs = types.Float.$pyclass(this.argAbs)
+                    } else if (type === 'n' && types.isinstance(this.arg, [types.Int])) {
+                        precision = 1
                     }
                 }
 

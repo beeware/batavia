@@ -62,7 +62,7 @@ def transforms(**transform_args):
             js_cleaner = JSCleaner(**js_params)
 
             # py_cleaner
-            py_excludes = ['js_bool', 'decimal', 'float_exp']
+            py_excludes = ['js_bool', 'decimal']
             py_params = {
                 pyk: pyv
                 for pyk, pyv
