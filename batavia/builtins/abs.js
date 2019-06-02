@@ -1,6 +1,6 @@
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
-var types = require('../types')
 
 function abs(args, kwargs) {
     if (arguments.length !== 2) {
@@ -13,18 +13,15 @@ function abs(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('abs() takes exactly one argument (' + args.length + ' given)')
     }
 
-    var value = args[0]
-    if (types.isinstance(value, types.Bool)) {
-        return new types.Int(Math.abs(value.valueOf()))
-    } else if (types.isinstance(value, [types.Int,
-        types.Float,
-        types.Complex])) {
-        return value.__abs__()
-    } else {
-        throw new exceptions.TypeError.$pyclass(
-            "bad operand type for abs(): '" + type_name(value) + "'")
+    const value = args[0]
+
+    if (value.__abs__) {
+        return callables.call_method(value, '__abs__', [], {})
     }
+
+    throw new exceptions.TypeError.$pyclass('bad operand type for abs(): \'' + type_name(value) + '\'')
 }
-abs.__doc__ = 'abs(number) -> number\n\nReturn the absolute value of the argument.'
+
+abs.__doc__ = 'Return the absolute value of the argument.'
 
 module.exports = abs
