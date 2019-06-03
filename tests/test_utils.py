@@ -1,4 +1,5 @@
 import unittest
+import sys
 
 from .utils import adjust, JSCleaner, PYCleaner, TranspileTestCase, remove_whitespace, wrap_in_exception_guard, \
     wrap_in_function
@@ -249,10 +250,17 @@ class PythonNormalizationTests(unittest.TestCase):
             """
         )
 
-    def test_float(self):
+    @unittest.skipUnless(sys.version_info < (3, 6), reason="Need CPython 3.5")
+    def test_float_35(self):
         self.assertNormalized('7.95089e-06', '7.95089e-6')
         self.assertNormalized('7.950899e-06', '7.95089...e-6')
         self.assertNormalized('7.950899459780156e-06', '7.95089...e-6')
+
+    @unittest.skipUnless(sys.version_info >= (3, 6), reason="Need CPython 3.6+")
+    def test_float(self):
+        self.assertNormalized('7.95089e-06', '7.95089e-06')
+        self.assertNormalized('7.950899e-06', '7.95089...e-06')
+        self.assertNormalized('7.950899459780156e-06', '7.95089...e-06')
 
     def test_memory_reference(self):
         self.assertNormalized(
@@ -355,6 +363,7 @@ class JSCleanerTests(TranspileTestCase):
 
         self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
 
+    @unittest.skipUnless(sys.version_info == (3, 5), reason="Need CPython 3.5")
     def test_cleanse_float_exp(self):
         js_in = adjust("""
         55e-5
@@ -435,6 +444,7 @@ class PYCleanerTests(TranspileTestCase):
 
         self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
 
+    @unittest.skipUnless(sys.version_info == (3, 5), reason="Need CPython 3.5")
     def test_cleanse_float_exp(self):
         py_in = adjust("""
         55e-5
