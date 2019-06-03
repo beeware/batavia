@@ -159,7 +159,9 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.frexp.__doc__)
         print(math.fsum.__doc__)
         print(math.gamma.__doc__)
+        print(math.gcd.__doc__)
         print(math.hypot.__doc__)
+        print(math.isclose.__doc__)
         print(math.isfinite.__doc__)
         print(math.isinf.__doc__)
         print(math.isnan.__doc__)
@@ -178,15 +180,6 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
         print(math.tan.__doc__)
         print(math.tanh.__doc__)
         print(math.trunc.__doc__)
-        """)
-
-    @expectedFailure
-    @skipUnless(sys.version_info >= (3, 5), reason="Need CPython 3.5")
-    def test_docstrings_35(self):
-        self.assertCodeExecution("""
-        import math
-        print(math.gcd.__doc__)
-        print(math.isclose.__doc__)
         """)
 
     def test_big_log(self):
