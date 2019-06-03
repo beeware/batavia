@@ -7,7 +7,7 @@ function repr(args, kwargs) {
     if (kwargs && Object.keys(kwargs).length > 0) {
         throw new exceptions.TypeError.$pyclass("repr() doesn't accept keyword arguments")
     }
-    if (!args || args.length !== 1) {
+    if (args === undefined || args.length !== 1) {
         throw new exceptions.TypeError.$pyclass('repr() takes exactly 1 argument (' + args.length + ' given)')
     }
 

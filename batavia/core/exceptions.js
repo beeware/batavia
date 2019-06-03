@@ -30,8 +30,59 @@ BaseException.prototype.__str__ = function() {
 }
 
 BaseException.prototype.__repr__ = function() {
-    if (this.msg) {
-        return this.name + '(' + this.msg + ',)'
+    if (this.msg != undefined) {
+        let result = ''
+        let count = 0
+        
+        if (this.msg.__iter__) {
+            // Avoid circular imports as javascript objects will never have __iter__.
+            const types = require('../types')
+            const builtins = require('../builtins')
+
+            if (types.isinstance(this.msg, [types.Str])) {
+                // Message is a string.
+                // Default behaviour: wrap in single quotes
+                // String has single quotes: wrap in double quotes
+                // String has both: wrap in single quotes & escape internal single quotes.
+                let wrap = "'"
+                let result = this.msg
+                if (this.msg.includes("'")) {
+                    if (this.msg.includes('"')) { // example: this.msg = '\'"'
+                        result = result.replace("'", "\\'")
+                    } else {
+                        wrap = '"'
+                    }
+                }
+                result = wrap + result + wrap
+                count = 1
+            } else {
+                // Message is an iterable. Consume it.
+                iter = builtins.iter([this.msg], {})
+
+                try {
+                    result += builtins.repr([builtins.next([iter], {})], {})
+                    count += 1
+                    while (true) {
+                        result += ', ' + builtins.repr([builtins.next([iter], {})], {})
+                        count += 1
+                    }
+                }
+                catch (err) {
+                    if (!types.isinstance(err, StopIteration)) {
+                        throw err
+                    }
+                } // Stop iteration.
+            }
+        } else {
+            // Javascript object
+            result = this.msg.toString()
+            count = 1
+        }
+        
+        if (count === 1) {
+            return this.name + '(' + result + ',)' // A wild comma appears for single items in Python 3.5 and 3.6
+        }
+        return this.name + '(' + result + ')'
     } else {
         return this.name + '()'
     }
