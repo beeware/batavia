@@ -1,3 +1,4 @@
+import sys
 from ..utils import TranspileTestCase
 
 import unittest
@@ -21,7 +22,11 @@ class StdlibTests(TranspileTestCase):
         _test_module(self, "_weakrefset")
 
     def test_abc(self):
-        _test_module(self, "abc", exclude=['ref'])
+        excludes = ['ref']
+        if sys.version_info >= (3, 7):
+            excludes.append('WeakSet')
+
+        _test_module(self, "abc", exclude=excludes)
 
     def test_bisect(self):
         _test_module(self, "bisect")
