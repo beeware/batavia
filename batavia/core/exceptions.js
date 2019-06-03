@@ -31,7 +31,7 @@ BaseException.prototype.__str__ = function() {
 
 BaseException.prototype.__repr__ = function() {
     if (this.msg) {
-        return this.name + '(' + this.msg + ')'
+        return this.name + '(' + this.msg + ',)'
     } else {
         return this.name + '()'
     }
