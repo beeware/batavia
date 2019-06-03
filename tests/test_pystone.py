@@ -1,5 +1,6 @@
 from .utils import TranspileTestCase
 
+
 class PystoneTest(TranspileTestCase):
     def test_pystone(self):
         self.assertCodeExecution('''
