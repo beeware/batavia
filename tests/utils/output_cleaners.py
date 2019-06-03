@@ -8,13 +8,13 @@ JS_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\\d+), in .*\r?\n')
 JS_BOOL_TRUE = re.compile('true')
 JS_BOOL_FALSE = re.compile('false')
 JS_FLOAT_DECIMAL = re.compile(r'''(?<!['\"])(\d+\.\d+)''')
-JS_FLOAT_EXP = re.compile('(\\d+)e(-)?0?(\\d+)')
+JS_FLOAT_EXP = re.compile('(\\d+)e(-)?(\\d+)')
 JS_LARGE_COMPLEX = re.compile('\\((\\d{15}\\d+)[-+]')
 
 PYTHON_EXCEPTION = re.compile(
     'Traceback \\(most recent call last\\):\r?\n(  File "(?P<file>.*)", line (?P<line>\\d+), in .*\r?\n    .*\r?\n)+(?P<exception>.*?): (?P<message>.*\r?\n)')  # NOQA
 PYTHON_STACK = re.compile('  File "(?P<file>.*)", line (?P<line>\\d+), in .*\r?\n    .*\r?\n')
-PYTHON_FLOAT_EXP = re.compile('(\\d+)e(-)?0?(\\d+)')
+PYTHON_FLOAT_EXP = re.compile('(\\d+)e(-)?(\\d+)')
 PYTHON_NEGATIVE_ZERO_J = re.compile('-0j\\)')
 
 # Prevent floating point discrepancies in very low significant digits from being an issue
@@ -144,6 +144,7 @@ class PYCleaner:
         """
         cleanse output from python
         """
+        print(py_input)
         out = py_input
         if self.transforms['err_msg']:
             # Test the specific message
