@@ -12,7 +12,7 @@ class AbsTests(TranspileTestCase):
             class AbsLike:
                 def __abs__(self):
                     return 4
-                    
+
             x = AbsLike()
             print(abs(x))
         """)

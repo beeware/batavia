@@ -37,7 +37,7 @@ class AllTests(TranspileTestCase):
                 return len(self.value)
               def __getitem__(self, idx):
                 return self.value[idx]
-                
+
             not_all_values = Sequence([1,2,0,1])
             print(all(not_all_values))
             all_values = Sequence([1,2,3,1])

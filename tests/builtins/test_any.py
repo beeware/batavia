@@ -38,7 +38,7 @@ class AnyTests(TranspileTestCase):
                 return len(self.value)
               def __getitem__(self, idx):
                 return self.value[idx]
-                
+
             not_all_values = Sequence([1,2,0,1])
             print(any(not_all_values))
             all_values = Sequence([1,2,3,1])
@@ -46,7 +46,6 @@ class AnyTests(TranspileTestCase):
             no_values = Sequence([0,0,0])
             print(any(no_values))
         """)
-
 
 
 class BuiltinAnyFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
