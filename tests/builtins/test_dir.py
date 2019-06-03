@@ -9,7 +9,6 @@ class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "dir"
 
     not_implemented_versions = {
-        'test_bool': ['3.6'],
         'test_noargs': ['3.6'],
     }
 
