@@ -363,7 +363,7 @@ class JSCleanerTests(TranspileTestCase):
 
         self.assertEqual(expected_out, self.cleaner.cleanse(js_in, {}))
 
-    @unittest.skipUnless(sys.version_info == (3, 5), reason="Need CPython 3.5")
+    @unittest.skipUnless(sys.version_info < (3, 6), reason="Need CPython 3.5")
     def test_cleanse_float_exp(self):
         js_in = adjust("""
         55e-5
@@ -444,7 +444,7 @@ class PYCleanerTests(TranspileTestCase):
 
         self.assertEqual(expected_out, self.cleaner.cleanse(py_in, {}))
 
-    @unittest.skipUnless(sys.version_info == (3, 5), reason="Need CPython 3.5")
+    @unittest.skipUnless(sys.version_info < (3, 6), reason="Need CPython 3.5")
     def test_cleanse_float_exp(self):
         py_in = adjust("""
         55e-5
