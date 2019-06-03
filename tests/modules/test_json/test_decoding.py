@@ -125,9 +125,9 @@ class LoadTests(ModuleFunctionTestCase, TranspileTestCase):
     not_implemented_versions = {
     }
 
-    not_implemented = {
-        'test_fail'
-    }
+    not_implemented = [
+        'test_fail',
+    ]
 
     fp_def = """class fp:
     def __init__(self, doc):
