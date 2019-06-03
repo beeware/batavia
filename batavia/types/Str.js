@@ -368,6 +368,9 @@ Str.prototype.__add__ = function(other) {
                 "Can't convert '" + type_name(other) + "' object to str implicitly"
             )
         } else {
+            if (!version.earlier('3.7')) {
+                throw new exceptions.TypeError.$pyclass('can only concatenate str (not "' + type_name(other) + '") to str')
+            }
             throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
         }
     }
