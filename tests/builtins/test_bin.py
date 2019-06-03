@@ -18,6 +18,23 @@ class BinTests(TranspileTestCase):
                 print('Done.')
             """, run_in_function=False)
 
+    def test_index(self):
+        self.assertCodeExecution("""
+            class IntLike:
+                def __init__(self, val):
+                    self.val = val
+                def __index__(self):
+                    return self.val
+
+            x = IntLike(5)
+            print(bin(x))
+            """, run_in_function=False)
+
+    def test_bin_doc(self):
+        self.assertCodeExecution("""
+            print(bin.__doc__)
+        """)
+
 
 class BuiltinBinFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "bin"

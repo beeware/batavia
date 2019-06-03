@@ -179,6 +179,7 @@ class TranspileTestCase(TestCase):
                 context = 'Global context'
 
             self.assertEqual(js_out, py_out, context)
+            self.assertNotEqual(js_out, '', msg="Test had no output. Nothing was tested. %s" % context)
 
         # ==================================================
         # Pass 2 - run the code in a function's context
@@ -222,6 +223,7 @@ class TranspileTestCase(TestCase):
                 context = 'Function context'
 
             self.assertEqual(js_out, py_out, context)
+            self.assertNotEqual(js_out, '', msg="Test had no output. Nothing was tested. %s" % context)
 
     def assertJavaScriptExecution(self, code, out, extra_code=None, js=None, run_in_global=True, run_in_function=True,
                                   args=None, substitutions=None, same=True, js_cleaner=JSCleaner()):

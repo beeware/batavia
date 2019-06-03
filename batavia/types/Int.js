@@ -104,6 +104,10 @@ Int.prototype.__int__ = function() {
     return this
 }
 
+Int.prototype.__index__ = function() {
+    return this
+}
+
 /**************************************************
  * Comparison operators
  **************************************************/

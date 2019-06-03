@@ -289,6 +289,14 @@ Bool.prototype.__int__ = function() {
     }
 }
 
+Bool.prototype.__index__ = function() {
+    return this.__int__()
+}
+
+Bool.prototype.__abs__ = function() {
+    return this.__int__()
+}
+
 /**************************************************
  * Binary operators
  **************************************************/

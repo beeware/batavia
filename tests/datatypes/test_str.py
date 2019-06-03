@@ -1420,8 +1420,15 @@ class NewStyleFormatTests(TranspileTestCase):
                 print(e)
         """)
 
-    @unittest.expectedFailure
-    def test_conversion_types(self):
+    @transforms(
+        # Disable all JS native type cleaners.
+        # This test should match the Python expected output exactly.
+        decimal=False,
+        float_exp=False,
+        high_precision_float=False,
+        js_bool=False,
+        complex_num=False)
+    def test_conversion_types(self, js_cleaner, py_cleaner):
         """
         test all conversion types and their alternate forms
         """
@@ -1433,14 +1440,25 @@ class NewStyleFormatTests(TranspileTestCase):
             [
                 adjust(
                     """
-                    print(">>> 'one arg: {{:{alter}{typ}}}'.format({arg})")
-                    print('one arg: {{:{alter}{typ}}}'.format({arg}))
+                    try:
+                        print(">>> 'one arg: {{:{alter}{typ}}}'.format({arg})")
+                        print('one arg: {{:{alter}{typ}}}'.format({arg}))
+                    except ValueError as err:
+                        print(err)
+                    except OverflowError as err:
+                        print(err)
                     """.format(alter=alter, typ=typ, arg=arg)
                 ) for alter, typ, arg in combinations
             ]
         )
 
-        self.assertCodeExecution(test_str)
+        # Add a case for empty string / no args format call.
+        test_str = test_str + adjust("""
+            print(">>> ''.format()")
+            print(''.format())
+            """)
+
+        self.assertCodeExecution(test_str, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
     def test_precisions(self):
         precisions = ('.1', '.5')

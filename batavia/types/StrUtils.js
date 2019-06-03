@@ -287,7 +287,7 @@ function _substitute(format, args) {
 
                 if (/[diu]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Int, types.Float])) {
-                        throw new exceptions.TypeError.$pyclass(`%${conversion} format: a number is required, not str`)
+                        throw new exceptions.TypeError.$pyclass(conversion + "format: a number is required, not str")
                     }
                 } else if (/[oxX]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Int])) {
@@ -309,7 +309,7 @@ function _substitute(format, args) {
                         throw new exceptions.TypeError.$pyclass('%c requires int or char')
                     } else if (types.isinstance(arg, [types.Int, types.Float])) {
                         if (arg < 0) {
-                            throw new exceptions.OverflowError.$pyclass('%c arg not in range(0xXXXXXXXX)')
+                            throw new exceptions.OverflowError.$pyclass('%c arg not in range(0x110000)')
                         }
                     }
                 } // end outer if
@@ -509,9 +509,9 @@ function _substitute(format, args) {
                             base = Number(base)
                         }
                         if (this.conversionType === 'g') {
-                            conversionArg = zeroPadExp(`${base}e${exp}`)
+                            conversionArg = zeroPadExp(base + 'e' + exp)
                         } else {
-                            conversionArg = zeroPadExp(`${base}e${exp}`).replace(/e/, 'E')
+                            conversionArg = zeroPadExp('base' + "e" + exp).replace(/e/, 'E')
                         }
                         break
                     } else {
@@ -558,7 +558,7 @@ function _substitute(format, args) {
                             }
 
                             if (isInt) {
-                                conversionArg = `${Number(conversionArgValue)}.${'0'.repeat(extraDigits)}`
+                                conversionArg = Number(conversionArgValue) + '0'.repeat(extraDigits)
                             } else {
                                 conversionArg = conversionArgValue + '0'.repeat(extraDigits)
                             }
@@ -582,7 +582,6 @@ function _substitute(format, args) {
                     // NOTE: in C Python there is an upper bound to what int or float can be provided
                     // and this is platform specific. currently, Batavia is not enforcing any
                     // kind of upper bound.
-
                     if (types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
                         conversionArg = String.fromCharCode(Number(conversionArgValue))
                     } else {
@@ -627,7 +626,6 @@ function _substitute(format, args) {
                             conversionArg = conversionArgValue
                         }
                     }
-                    break
             } // end switch
 
             // only do the below for numbers
@@ -677,7 +675,8 @@ function _substitute(format, args) {
             } catch (err) {
                 if (err.msg === 'illegal character') {
                     var charAsHex = nextChar.charCodeAt(0).toString(16)
-                    throw new exceptions.ValueError.$pyclass(`unsupported format character '${nextChar}' (0x${charAsHex}) at index ${charIndex + index + 1}`)
+                    throw new exceptions.ValueError.$pyclass(
+                        "unsupported format character '" + nextChar +"' (0x" + charAsHex + ") at index " + (charIndex + index + 1))
                 } else {
                   // its some other error
                     throw err
@@ -769,7 +768,7 @@ function _new_subsitute(str, args, kwargs) {
             this.mode = newMode
         } else if (this.mode !== newMode) {
             // mode has already been set. check if it conflicts with set mode
-            throw new exceptions.TypeError.$pyclass(`cannot switch from ${this.mode} to ${newMode}`)
+            throw new exceptions.TypeError.$pyclass("cannot switch from " + this.mode + "to " + newMode)
         }
     }
 
@@ -851,7 +850,7 @@ function _new_subsitute(str, args, kwargs) {
                                 // valid the conversion flag
                                 this.conversionFlag += char
                             } else {
-                                throw new exceptions.ValueError.$pyclass(`Unknown conversion specifier ${char}`)
+                                throw new exceptions.ValueError.$pyclass("Unknown conversion specifier " + char)
                             }
                             break
 
@@ -1126,7 +1125,6 @@ function _new_subsitute(str, args, kwargs) {
 
         const fieldParsed = parseFieldName(this.fieldName)
         this.modeObj.checkMode(fieldParsed.name)
-
         let pulledArg
 
         if (fieldParsed.name === '') {
@@ -1170,7 +1168,7 @@ function _new_subsitute(str, args, kwargs) {
         /*
           All real numbers should be kept as their python types.
           Everything else should be converted to a string
-       */
+        */
 
         if (types.isinstance(rawValue, [types.Int, types.Float])) {
             return rawValue
@@ -1197,7 +1195,7 @@ function _new_subsitute(str, args, kwargs) {
 
         const type = this.type || 's'
         if (!type.match(/[s ]/)) {
-            throw new exceptions.ValueError.$pyclass(`Unknown format code '${this.type}' for object of type 'str'`)
+            throw new exceptions.ValueError.$pyclass("Unknown format code '" + this.type + "' for object of type 'str'")
         }
 
         // things that aren't allowed with strings:
@@ -1250,11 +1248,21 @@ function _new_subsitute(str, args, kwargs) {
         // error for converting floats with improper presentation types
         // TODO: need to check for decimal once it is implemented
         if (types.isinstance(this.arg, [types.Float]) && /[bcdoxX]/.test(type)) {
-            throw new types.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
+            throw new exceptions.ValueError.$pyclass("Unknown format code '" + type + "' for object of type 'float'")
         }
 
-        if (this.type === 'c' && this.sign) {
-            throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
+        if (this.type === 'c') {
+            if (this.sign) {
+                throw new exceptions.ValueError.$pyclass("Sign not allowed with integer format specifier 'c'")
+            }
+            if (this.alternate) {
+                throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'")
+            }
+            if (this.arg < 0) {
+                // Upper limit on this.arg is platform-specific. Per comment above, batavia is not currently
+                // enforcing an upper bound.
+                throw new exceptions.OverflowError.$pyclass('%c arg not in range(0x110000)')
+            }
         }
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
@@ -1267,14 +1275,15 @@ function _new_subsitute(str, args, kwargs) {
         }
 
         if (type === 's') {
-            throw new exceptions.ValueError.$pyclass("Unknown format code 's' for object of type 'int'")
+            throw new exceptions.ValueError.$pyclass("Unknown format code 's' for object of type '" + type_name(this.arg) + "'")
         }
 
-        let precision
+        let precision = 6
         if (this.precision) {
+            if (type === 'n') {
+                throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
+            }
             precision = parseInt(this.precision.replace('.', ''))
-        } else {
-            precision = 6
         }
 
         /* components for final representation
@@ -1324,13 +1333,19 @@ function _new_subsitute(str, args, kwargs) {
             case 'g':
             case 'G':
             case 'n':
+                // Base precision is 1.
+                // Alternate forms have base precision 6, which is already set.
+                if (!this.precision) {
+                    if (!this.alternate) {
+                        precision = 1
+                    } else if (type === 'n' && types.isinstance(this.arg, [types.Int])) {
+                        precision = 1
+                    }
+                }
+
                 // if exp is the exponent and p is the precision
                 // if -4 <= exp < p -> use f and precison = p-1-exp
                 // else use e and p-1
-
-                if (type === 'n' && this.precision) {
-                    throw new exceptions.ValueError.$pyclass('Precision not allowed in integer format specifier')
-                }
 
                 num = new BigNumber(this.argAbs).toExponential()
                 exp = Number(num.split('e')[1]) // split the exponential into base and power
@@ -1384,8 +1399,8 @@ function _new_subsitute(str, args, kwargs) {
                 percent = '%'
                 break
             default:
-                throw new exceptions.ValueError.$pyclass(`Unknown format code '${type}' for object of type '${type_name(this.arg)}'`)
-
+                throw new exceptions.ValueError.$pyclass(
+                        "Unknown format code '" + type + "' for object of type '" + type_name(this.arg) + "'")
         } // switch
 
         // determine sign
@@ -1397,13 +1412,13 @@ function _new_subsitute(str, args, kwargs) {
                 signToUse = sign
             }
         } else {
-            // negative sign for negative numbers reguardless
+            // negative sign for negative numbers regardless
             signToUse = '-'
         }
 
         // determine alternate
         if (this.alternate && /[boxX]/.test(this.type)) {
-            alternate = `0${type}`
+            alternate = "0" + type
         }
 
         // determine grouping
@@ -1412,8 +1427,7 @@ function _new_subsitute(str, args, kwargs) {
             // modify base to handle grouping if needed
             base = this._handleGrouping(base, grouping)
         }
-
-        this.content = `${signToUse}${alternate}${base}${percent}${expSign}${expToUse}`
+        this.content = signToUse + alternate + base + percent + expSign + expToUse
     }
 
     Specifier.prototype._handleLayout = function() {
@@ -1421,8 +1435,8 @@ function _new_subsitute(str, args, kwargs) {
           alignment and padding
         */
 
-        // size of the containing field. will need to be filled in if larger than content
 
+        // size of the containing field. will need to be filled in if larger than content
         const fieldWidth = this.width || this.content.length
         const spaceRemaining = fieldWidth - this.content.length
         // determine how extra space should be divided.
@@ -1452,14 +1466,13 @@ function _new_subsitute(str, args, kwargs) {
                         leftSide = Math.floor(spaceRemaining / 2) + 1
                     }
 
-                    this.field = `${fillChar.repeat(rightSide)}${this.content}${fillChar.repeat(leftSide)}`
+                    this.field = fillChar.repeat(rightSide) + this.content + fillChar.repeat(leftSide)
                     break
                 case '>':
-                    this.field = `${fillChar.repeat(spaceRemaining)}${this.content}`
+                    this.field = fillChar.repeat(spaceRemaining) + this.content
                     break
                 case '<':
-
-                    this.field = `${this.content}${fillChar.repeat(spaceRemaining)}`
+                    this.field = this.content + fillChar.repeat(spaceRemaining)
                     break
                 case '=':
                     /*
@@ -1481,7 +1494,7 @@ function _new_subsitute(str, args, kwargs) {
                         sign = ''
                     }
 
-                    this.field = `${sign}${fillChar.repeat(spaceRemaining)}${this.content}`
+                    this.field = sign + fillChar.repeat(spaceRemaining) + this.content
             }
         } else {
             this.field = this.content
@@ -1513,7 +1526,7 @@ function _new_subsitute(str, args, kwargs) {
         } else {
             decimalToUse = ''
         }
-        return `${contentArr.join('')}${decimalToUse}${afterDec}`
+        return contentArr.join('') + decimalToUse + afterDec
     }
 
     Specifier.prototype._toExp = function(n, precision, conversionType) {
@@ -1525,7 +1538,6 @@ function _new_subsitute(str, args, kwargs) {
 
             return an object of shape {base, expSign, exp}
         */
-
         const nBig = new BigNumber(n)
         const nExp = nBig.toExponential()
 
@@ -1568,7 +1580,7 @@ function _new_subsitute(str, args, kwargs) {
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value.
 
-        if (type_name(this.arg) === 'str') {
+        if (type_name(this.arg) === 'str' && !types.isinstance(this.arg, [types.Float])) {
             this._convertStr()
         } else {
             this._convertNumber()

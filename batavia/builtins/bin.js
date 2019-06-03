@@ -1,3 +1,4 @@
+var callables = require('../core').callables
 var exceptions = require('../core').exceptions
 var type_name = require('../core').type_name
 var types = require('../types')
@@ -13,25 +14,19 @@ function bin(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('bin() takes exactly one argument (' + args.length + ' given)')
     }
 
-    var obj = args[0]
+    const obj = args[0]
 
-    if (!types.isinstance(obj, types.Int) &&
-        !types.isinstance(obj, types.Bool)) {
-        throw new exceptions.TypeError.$pyclass(
-            "'" + type_name(obj) + "' object cannot be interpreted as an integer")
+    if (!obj.__index__) {
+        throw new exceptions.TypeError.$pyclass("'" + type_name(obj) + "' object cannot be interpreted as an integer")
     }
 
-    if (types.isinstance(obj, types.Bool)) {
-        return new types.Str('0b' + obj.__int__().toString(2))
-    }
-    var binaryDigits = obj.toString(2)
-    var sign = ''
+    let binaryDigits = callables.call_method(obj, '__index__', []).toString(2)
     if (binaryDigits[0] === '-') {
-        sign = '-'
-        binaryDigits = binaryDigits.slice(1)
+        return new types.Str('-0b' + binaryDigits.slice(1))
     }
-    return new types.Str(sign + '0b' + binaryDigits)
+    return new types.Str('0b' + binaryDigits)
 }
-bin.__doc__ = 'bin(number) -> string\n\nReturn the binary representation of an integer.\n\n   '
+
+bin.__doc__ = "Return the binary representation of an integer.\n\n   >>> bin(2796202)\n   '0b1010101010101010101010'"
 
 module.exports = bin
