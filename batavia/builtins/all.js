@@ -1,7 +1,5 @@
 var exceptions = require('../core').exceptions
-var callables = require('../core').callables
 var type_name = require('../core').type_name
-var types = require('../types')
 
 function all(args, kwargs) {
     if (args[0] === null) {
@@ -17,24 +15,21 @@ function all(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('all() takes exactly one argument (' + args.length + ' given)')
     }
 
+    var builtins = require('../builtins')
+    const iterobj = builtins.iter(args, {})
     try {
-        var iterobj = callables.call_method(args[0], '__iter__', [])
-
-        while (true) {
-            var next = callables.call_method(iterobj, '__next__', [])
-            var bool_next = callables.call_method(next, '__bool__', [])
-            if (!bool_next) {
-                return false
-            }
+        while (builtins.bool.__call__([builtins.next([iterobj], {})], {})) {
         }
+        return false
     } catch (err) {
         if (!(err instanceof exceptions.StopIteration.$pyclass)) {
             throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
         }
     }
 
-    return new types.Bool(true)
+    return true
 }
-all.__doc__ = 'all(iterable) -> bool\n\nReturn True if bool(x) is True for all values x in the iterable.\nIf the iterable is empty, return True.'
+
+all.__doc__ = 'Return True if bool(x) is True for all values x in the iterable.\n\nIf the iterable is empty, return True.'
 
 module.exports = all

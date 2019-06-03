@@ -2,6 +2,21 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 
 class AbsTests(TranspileTestCase):
+    def test_abs_doc(self):
+        self.assertCodeExecution("""
+            print(abs.__doc__)
+        """)
+
+    def test_abs_implemented(self):
+        self.assertCodeExecution("""
+            class AbsLike:
+                def __abs__(self):
+                    return 4
+
+            x = AbsLike()
+            print(abs(x))
+        """)
+
     def test_abs_not_implemented(self):
         self.assertCodeExecution("""
             class NotAbsLike:
