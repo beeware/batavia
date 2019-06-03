@@ -55,9 +55,7 @@ base64.b85encode = function() {}
 base64.binascii = function() {}
 base64.bytes_types = function() {}
 base64.decode = function() {}
-base64.decodebytes = function() {}
-
-base64.decodestring = function(data) {
+base64.decodebytes = function(data) {
     return this.b64decode(data)
 }
 
