@@ -141,9 +141,10 @@ var make_encode = function(
                     key + key_separator + encode(obj.get(kv), indent_level + 1)
                 )
             } else if (!skipkeys) {
-                throw new exceptions.TypeError.$pyclass(
-                    'keys must be a string'
-                )
+                if (!version.earlier('3.7')) {
+                    throw new exceptions.TypeError.$pyclass('keys must be str, int, float, bool or None, not object')
+                }
+                throw new exceptions.TypeError.$pyclass('keys must be a string')
             }
         }
 

@@ -212,15 +212,18 @@ Set.prototype.__sub__ = function(other) {
 Set.prototype.__getitem__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.Bool])) {
-        throw new exceptions.TypeError.$pyclass("'set' object does not support indexing")
-    } else if (types.isinstance(other, [types.Int])) {
-        if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
-            throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
-        } else {
+    if (version.earlier('3.7')) {
+        if (types.isinstance(other, [types.Bool])) {
             throw new exceptions.TypeError.$pyclass("'set' object does not support indexing")
+        } else if (types.isinstance(other, [types.Int])) {
+            if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
+                throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
+            } else {
+                throw new exceptions.TypeError.$pyclass("'set' object does not support indexing")
+            }
         }
     }
+
     throw new exceptions.TypeError.$pyclass("'set' object is not subscriptable")
 }
 
