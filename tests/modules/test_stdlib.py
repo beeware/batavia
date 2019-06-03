@@ -1,8 +1,6 @@
 import sys
 from ..utils import TranspileTestCase
 
-import unittest
-
 # do basic tests for now
 # TODO: execute complete tests for each stdlib module
 
