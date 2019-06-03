@@ -45,3 +45,25 @@ class ExceptionTests(TranspileTestCase):
                 except:
                     print(x)
         """)
+
+    def test_repr(self):
+        def escape(s):
+            # escape all the things.
+            return s.replace("\\", "\\\\").replace("'", "\\'")
+
+        test_strs = [
+                '''print(repr(ValueError('')))''',
+                '''print(repr(ValueError('"')))''',
+                '''print(repr(ValueError("'")))''',
+                """print(repr(ValueError("\\"'")))""",
+        ]
+
+        # Join and add a debug line above the strings.
+        test_code = '\n'.join(
+                [
+                    "print('>>> " + escape(s) + "')\n" + s
+                    for s in test_strs
+                ]
+            )
+
+        self.assertCodeExecution(test_code)
