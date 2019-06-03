@@ -287,7 +287,7 @@ function _substitute(format, args) {
 
                 if (/[diu]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Int, types.Float])) {
-                        throw new exceptions.TypeError.$pyclass(conversion + "format: a number is required, not str")
+                        throw new exceptions.TypeError.$pyclass('%' + conversion + ' format: a number is required, not str')
                     }
                 } else if (/[oxX]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Int])) {
@@ -511,7 +511,7 @@ function _substitute(format, args) {
                         if (this.conversionType === 'g') {
                             conversionArg = zeroPadExp(base + 'e' + exp)
                         } else {
-                            conversionArg = zeroPadExp('base' + "e" + exp).replace(/e/, 'E')
+                            conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
                         }
                         break
                     } else {
@@ -558,7 +558,7 @@ function _substitute(format, args) {
                             }
 
                             if (isInt) {
-                                conversionArg = Number(conversionArgValue) + '0'.repeat(extraDigits)
+                                conversionArg = Number(conversionArgValue) + '.' + '0'.repeat(extraDigits)
                             } else {
                                 conversionArg = conversionArgValue + '0'.repeat(extraDigits)
                             }

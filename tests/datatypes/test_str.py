@@ -746,7 +746,6 @@ class FormatTests(TranspileTestCase):
                 print('Done.')
                 """
 
-        @expected_failing_versions(['3.5'])
         @transforms(
             js_bool=False,
             decimal=False,
