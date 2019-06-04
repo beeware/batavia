@@ -17,7 +17,6 @@ pull_request:
             - py3.6:
                 name: Python 3.6 tests
                 image: pybee/batavia-py36
-                critical: False
             - py3.7:
                 name: Python 3.7 tests
                 image: pybee/batavia-py37
