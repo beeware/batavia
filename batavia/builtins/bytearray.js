@@ -14,7 +14,7 @@ function asBytes(value) {
 }
 
 function requiresInteger(value) {
-    if (!version.earlier(3.7)) {
+    if (!version.earlier(3.6)) {
         throw new exceptions.TypeError.$pyclass(
             '\'' + type_name(value) + '\' object cannot be interpreted as an integer'
         )
