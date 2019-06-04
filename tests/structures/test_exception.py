@@ -56,6 +56,7 @@ class ExceptionTests(TranspileTestCase):
                 '''print(repr(ValueError('"')))''',
                 '''print(repr(ValueError("'")))''',
                 """print(repr(ValueError("\\"'")))""",
+                """print(repr(ValueError([1, 2, 3])))"""
         ]
 
         # Join and add a debug line above the strings.

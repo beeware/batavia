@@ -7,10 +7,10 @@ var exceptions = {}
 /*****************************************************************
  * Root exception
  *****************************************************************/
-var BaseException = function(name, msg) {
+var BaseException = function(name) {
     PyObject.call(this)
     this.name = name
-    this.msg = msg
+    this.args = Array.from(arguments).slice(1)
 }
 
 BaseException.prototype = Object.create(PyObject.prototype)
@@ -22,67 +22,63 @@ BaseException.prototype.toString = function() {
 }
 
 BaseException.prototype.__str__ = function() {
-    if (this.msg) {
-        return this.msg
+    if (this.args !== undefined) {
+        if (this.args.length == 1) {
+            return this.args[0].toString()
+        }
+        // Multiple args. Format like a tuple.
+        let result = '(' + arg.toString()
+        for (arg in this.args.slice(1)) {
+            result += ', ' + arg.toString()
+        }
+        return result = ')'
     } else {
         return ''
     }
 }
 
 BaseException.prototype.__repr__ = function() {
-    if (this.msg != undefined) {
-        let result = ''
+    if (this.args != undefined) {
+        let output = ''
         let count = 0
         
-        if (this.msg.__iter__) {
-            // Avoid circular imports as javascript objects will never have __iter__.
-            const types = require('../types')
-            const builtins = require('../builtins')
-
-            if (types.isinstance(this.msg, [types.Str])) {
-                // Message is a string.
-                // Default behaviour: wrap in single quotes
-                // String has single quotes: wrap in double quotes
-                // String has both: wrap in single quotes & escape internal single quotes.
-                let wrap = "'"
-                let result = this.msg
-                if (this.msg.includes("'")) {
-                    if (this.msg.includes('"')) { // example: this.msg = '\'"'
-                        result = result.replace("'", "\\'")
-                    } else {
-                        wrap = '"'
+        const parse = function(msg) {
+            if (msg.__repr__) {
+                if (typeof msg === "string") {
+                    // Message is probably a Python string.
+                    // Default behaviour: wrap in single quotes
+                    // String has single quotes: wrap in double quotes
+                    // String has both: wrap in single quotes & escape internal single quotes.
+                    let wrap = "'"
+                    if (msg.includes("'")) {
+                        if (msg.includes('"')) { // example: this.msg = '\'"'
+                            msg = msg.replace("'", "\\'")
+                        } else {
+                            wrap = '"'
+                        }
                     }
+                    return wrap + msg + wrap
+                } else {
+                    // Avoid circular import by calling repr directly.
+                    return msg.__repr__()
                 }
-                result = wrap + result + wrap
-                count = 1
             } else {
-                // Message is an iterable. Consume it.
-                iter = builtins.iter([this.msg], {})
-
-                try {
-                    result += builtins.repr([builtins.next([iter], {})], {})
-                    count += 1
-                    while (true) {
-                        result += ', ' + builtins.repr([builtins.next([iter], {})], {})
-                        count += 1
-                    }
-                }
-                catch (err) {
-                    if (!types.isinstance(err, StopIteration)) {
-                        throw err
-                    }
-                } // Stop iteration.
+                // No repr. Msg doesn't appear to be a Python object
+                return msg
             }
-        } else {
-            // Javascript object
-            result = this.msg.toString()
-            count = 1
         }
         
-        if (count === 1) {
-            return this.name + '(' + result + ',)' // A wild comma appears for single items in Python 3.5 and 3.6
+        if (this.args.length) {
+            output += parse(this.args[0])
+            if (this.args.length == 1) {
+                output += ',' // A wild comma shows up in Python 3.5 and 3.6. Removed in 3.7.
+            } else {
+                for (msg of this.args.slice(1)) {
+                    output += ', ' + parse(msg)
+                }
+            }
         }
-        return this.name + '(' + result + ')'
+        return this.name + '(' + output + ')'
     } else {
         return this.name + '()'
     }
