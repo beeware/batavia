@@ -178,9 +178,6 @@ class BinaryBytearrayOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_lt_str',
         'test_lt_tuple',
 
-        'test_matmul_bool',
-        'test_matmul_int',
-
         'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',
@@ -228,9 +225,6 @@ class InplaceBytearrayOperationTests(InplaceOperationTestCase, TranspileTestCase
     data_type = 'bytearray'
 
     not_implemented = [
-        'test_matmul_bool',
-        'test_matmul_int',
-
         'test_modulo_bool',
         'test_modulo_bytearray',
         'test_modulo_bytes',
