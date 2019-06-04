@@ -19,6 +19,7 @@ const BinaryOperators = {
     'AND': operators['__and__'],
     'FLOOR_DIVIDE': operators['__floordiv__'],
     'LSHIFT': operators['__lshift__'],
+    'MATRIX_MULTIPLY': operators['__matmul__'],
     'MODULO': operators['__mod__'],
     'MULTIPLY': operators['__mul__'],
     'OR': operators['__or__'],
@@ -34,6 +35,7 @@ const InplaceOperators = {
     'AND': operators['__iand__'],
     'FLOOR_DIVIDE': operators['__ifloordiv__'],
     'LSHIFT': operators['__ilshift__'],
+    'MATRIX_MULTIPLY': operators['__imatmul__'],
     'MODULO': operators['__imod__'],
     'MULTIPLY': operators['__imul__'],
     'OR': operators['__ior__'],
@@ -357,6 +359,13 @@ VirtualMachine.prototype.popn = function(n) {
  */
 VirtualMachine.prototype.peek = function(n) {
     return this.frame.stack[this.frame.stack.length - n]
+}
+
+/*
+ * Overwrite a value in the stack.
+ */
+VirtualMachine.prototype.set_stack_value = function(n, val) {
+    this.frame.stack[this.frame.stack.length - n] = val
 }
 
 /*
@@ -1572,6 +1581,39 @@ VirtualMachine.prototype.byte_MAKE_CLOSURE = function(argc) {
     var defaults = this.popn(argc)
     var fn = new types.Function(name, items[1], this.frame.f_globals, defaults, items[0], this)
     this.push(fn)
+}
+
+VirtualMachine.prototype.byte_LOAD_METHOD = function(name) {
+    const object = this.pop()
+
+    let method
+    if (object.__getattribute__ === undefined) {
+        // No __getattribute__(), so it's a native object.
+        method = native.getattr(object, name)
+    } else {
+        method = native.getattr_py(object, name)
+    }
+
+    if (method instanceof types.Method) {
+        this.push(method.__func__)
+        this.push(method.__self__)
+    } else {
+        this.push(method)
+        this.push(null)
+    }
+}
+
+VirtualMachine.prototype.byte_CALL_METHOD = function(arg) {
+    if (this.peek(arg + 1) === null) {
+        // If this isn't a method, copy the callable up one step in the stack for the call.
+        this.set_stack_value(arg + 1, this.peek(arg + 2))
+        this.call_function(arg, null, null)
+        const result = this.pop()
+        this.pop()  // Remove extra copy of function
+        this.push(result)
+    } else {
+        this.call_function(arg + 1, null, null)
+    }
 }
 
 VirtualMachine.prototype.byte_CALL_FUNCTION = function(arg) {

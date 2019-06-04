@@ -16,11 +16,11 @@ class Base64Tests(ModuleFunctionTestCase, TranspileTestCase):
             print(type(base64.b64decode(b'Zm9v')))
             """)
 
-    def test_decodestring(self):
+    def test_decodebytes(self):
         self.assertCodeExecution("""
             import base64
-            print(base64.decodestring(b'Zm9v'))
-            print(type(base64.decodestring(b'Zm9v')))
+            print(base64.decodebytes(b'Zm9v'))
+            print(type(base64.decodebytes(b'Zm9v')))
             """)
 
     def test_urlsafe_b64decode(self):

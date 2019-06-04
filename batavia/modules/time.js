@@ -3,6 +3,7 @@ var moment = require('moment-timezone')
 var type_name = require('../core').type_name
 var exceptions = require('../core').exceptions
 var types = require('../types')
+var version = require('../core').version
 
 var time = {
     __doc__: '',
@@ -124,6 +125,9 @@ time.mktime = function(sequence) {
     }
 
     if (sequence.length !== 9) {
+        if (!version.earlier('3.7')) {
+            throw new exceptions.TypeError.$pyclass('mktime(): illegal time tuple argument')
+        }
         throw new exceptions.TypeError.$pyclass('function takes exactly 9 arguments (' + sequence.length + ' given)')
     }
 

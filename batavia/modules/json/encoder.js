@@ -141,9 +141,10 @@ var make_encode = function(
                     key + key_separator + encode(obj.get(kv), indent_level + 1)
                 )
             } else if (!skipkeys) {
-                throw new exceptions.TypeError.$pyclass(
-                    'keys must be a string'
-                )
+                if (!version.earlier('3.7')) {
+                    throw new exceptions.TypeError.$pyclass('keys must be str, int, float, bool or None, not object')
+                }
+                throw new exceptions.TypeError.$pyclass('keys must be a string')
             }
         }
 
@@ -178,13 +179,17 @@ var make_encode = function(
             } else if (default_) {
                 ret = encode(callables.call_function(default_, [obj]), indent_level)
             } else {
-                if (version.earlier('3.6')) {
+                if (!version.earlier('3.7')) {
                     throw new exceptions.TypeError.$pyclass(
-                        obj.toString() + ' is not JSON serializable'
+                        'Object of type ' + type_name(obj) + ' is not JSON serializable'
+                    )
+                } else if (!version.earlier('3.6')) {
+                    throw new exceptions.TypeError.$pyclass(
+                        'Object of type \'' + type_name(obj) + '\' is not JSON serializable'
                     )
                 } else {
                     throw new exceptions.TypeError.$pyclass(
-                        "Object of type '" + type_name(obj) + "' is not JSON serializable"
+                        obj.toString() + ' is not JSON serializable'
                     )
                 }
             }

@@ -18,7 +18,7 @@ instead of using the official BeeWare repository, you'll be using your own
 Github fork.
 
 As with the getting started guide, these instructions will assume that you
-have Python 3 (currently supported versions are 3.5 and 3.6).
+have Python 3 (currently supported versions are 3.5, 3.6, and 3.7).
 
 Batavia codebase
 ^^^^^^^^^^^^^^^^

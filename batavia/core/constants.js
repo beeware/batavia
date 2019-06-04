@@ -12,7 +12,9 @@ var constants = {
     // set in PYCFile while parsing python bytecode
     'BATAVIA_MAGIC_35': String.fromCharCode(22, 13, 13, 10),
     'BATAVIA_MAGIC_353': String.fromCharCode(23, 13, 13, 10),
-    'BATAVIA_MAGIC_36': String.fromCharCode(51, 13, 13, 10)
+    'BATAVIA_MAGIC_36': String.fromCharCode(51, 13, 13, 10),
+    'BATAVIA_MAGIC_37': String.fromCharCode(66, 13, 13, 10),
+    'BATAVIA_MAGIC_38': String.fromCharCode(73, 13, 13, 10)
 }
 
 module.exports = constants

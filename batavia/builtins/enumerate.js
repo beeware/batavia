@@ -1,6 +1,7 @@
 var exceptions = require('../core').exceptions
 var types = require('../types')
 var type_name = require('../core').type_name
+var version = require('../core').version
 
 function enumerate(args, kwargs) {
     if (arguments.length !== 2) {
@@ -10,7 +11,11 @@ function enumerate(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("enumerate() doesn't accept keyword arguments")
     }
     if (args.length < 1) {
-        throw new exceptions.TypeError.$pyclass('Required argument \'iterable\' (pos 1) not found')
+        if (!version.earlier('3.7')) {
+            throw new exceptions.TypeError.$pyclass('enumerate() missing required argument \'iterable\' (pos 1)')
+        } else {
+            throw new exceptions.TypeError.$pyclass('Required argument \'iterable\' (pos 1) not found')
+        }
     }
     if (!args[0].__iter__) {
         throw new exceptions.TypeError.$pyclass('\'' + type_name(args[0]) + '\' object is not iterable')
