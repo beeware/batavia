@@ -22,14 +22,15 @@ BaseException.prototype.toString = function() {
 }
 
 BaseException.prototype.__str__ = function() {
-    if (!this.args.length) {
+    if (this.args.length) {
         if (this.args.length === 1) {
             return this.args[0].toString()
         }
         // Multiple args. Format like a tuple.
-        let result = '(' + args[0].toString()
-        for (arg in this.args.slice(1)) {
-            result += ', ' + arg.toString()
+        builtins = require('../builtins')
+        let result = '(' + this.args[0]
+        for (let arg in this.args.slice(1)) {
+            result += ', ' + arg
         }
         return result + ')'
     } else {

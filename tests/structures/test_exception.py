@@ -64,20 +64,21 @@ class ExceptionTests(TranspileTestCase):
             print(repr(ValueError([1], 1, '1')))
         """)
 
+    @expectedFailure
     def test_str(self):
         self.assertCodeExecution("""
             print('>>> print(str(ValueError()))')
-            print(repr(ValueError('')))
+            print(str(ValueError('')))
             print('>>> print(str(ValueError(\\'\\')))')
-            print(repr(ValueError('')))
+            print(str(ValueError('')))
             print('>>> print(str(ValueError(\\'"\\')))')
-            print(repr(ValueError('"')))
+            print(str(ValueError('"')))
             print('>>> print(str(ValueError("\\'")))')
-            print(repr(ValueError("'")))
+            print(str(ValueError("'")))
             print('>>> print(str(ValueError("\\"\\'")))')
-            print(repr(ValueError("\\"'")))
+            print(str(ValueError("\\"'")))
             print('>>> print(str(ValueError([1, 2, 3])))')
-            print(repr(ValueError([1, 2, 3])))
+            print(str(ValueError([1, 2, 3])))
             print('>>> print(str(ValueError([1], 1, \\'1\\')))')
-            print(repr(ValueError([1], 1, '1')))
+            print(str(ValueError([1], 1, '1')))
         """)
