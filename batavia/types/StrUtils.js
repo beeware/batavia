@@ -295,7 +295,7 @@ function _substitute(format, args) {
                     }
                 } else if (/[eEfFgG]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Float, types.Int])) {
-                        if (!version.earlier(3.6)) {
+                        if (version.at_least(3.6)) {
                             throw new exceptions.TypeError.$pyclass('must be real number, not ' + type_name(arg))
                         } else {
                             throw new exceptions.TypeError.$pyclass('a float is required')
@@ -921,7 +921,7 @@ function _new_subsitute(str, args, kwargs) {
             // return: nextStep(int): what step we should process nextChar
 
             let allowed_groupings
-            if (!version.earlier(3.6)) {
+            if (version.at_least(3.6)) {
                 allowed_groupings = /[,_]/
             } else {
                 allowed_groupings = /,/

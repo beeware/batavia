@@ -7,7 +7,7 @@ var version = require('../core').version
 
 function round(args, kwargs) {
     if (!args || args.length === 0) {
-        if (!version.earlier('3.7')) {
+        if (version.at_least('3.7')) {
             throw new exceptions.TypeError.$pyclass("round() missing required argument 'number' (pos 1)")
         } else {
             throw new exceptions.TypeError.$pyclass("Required argument 'number' (pos 1) not found")

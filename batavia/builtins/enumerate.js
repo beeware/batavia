@@ -11,7 +11,7 @@ function enumerate(args, kwargs) {
         throw new exceptions.TypeError.$pyclass("enumerate() doesn't accept keyword arguments")
     }
     if (args.length < 1) {
-        if (!version.earlier('3.7')) {
+        if (version.at_least('3.7')) {
             throw new exceptions.TypeError.$pyclass('enumerate() missing required argument \'iterable\' (pos 1)')
         } else {
             throw new exceptions.TypeError.$pyclass('Required argument \'iterable\' (pos 1) not found')

@@ -125,7 +125,7 @@ time.mktime = function(sequence) {
     }
 
     if (sequence.length !== 9) {
-        if (!version.earlier('3.7')) {
+        if (version.at_least('3.7')) {
             throw new exceptions.TypeError.$pyclass('mktime(): illegal time tuple argument')
         }
         throw new exceptions.TypeError.$pyclass('function takes exactly 9 arguments (' + sequence.length + ' given)')
