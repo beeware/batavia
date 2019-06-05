@@ -68,7 +68,7 @@ BaseException.prototype.__repr__ = function() {
         if (this.args.length) {
             output += parse(this.args[0])
             version = require('./version')
-            if (this.args.length === 1 && version.earlier(3.7)) {
+            if (this.args.length === 1 && !version.at_least(3.7)) {
                 output += ',' // A wild comma shows up in Python 3.5 and 3.6. Removed in 3.7.
             } else {
                 for (msg of this.args.slice(1)) {
