@@ -47,26 +47,19 @@ class ExceptionTests(TranspileTestCase):
         """)
 
     def test_repr(self):
-        def escape(s):
-            # escape all the things.
-            return s.replace("\\", "\\\\").replace("'", "\\'")
-
-        test_strs = [
-                '''print(repr(ValueError('')))''',
-                '''print(repr(ValueError('"')))''',
-                '''print(repr(ValueError("'")))''',
-                """print(repr(ValueError("\\"'")))""",
-                """print(repr(ValueError([1, 2, 3])))""",
-                """print(repr(ValueError([1], 1, '1')))"""
-
-        ]
-
-        # Join and add a debug line above the strings.
-        test_code = '\n'.join(
-                [
-                    "print('>>> " + escape(s) + "')\n" + s
-                    for s in test_strs
-                ]
-            )
-
-        self.assertCodeExecution(test_code)
+        self.assertCodeExecution("""
+            print('>>> print(repr(ValueError()))')
+            print(repr(ValueError('')))
+            print('>>> print(repr(ValueError(\\'\\')))')
+            print(repr(ValueError('')))
+            print('>>> print(repr(ValueError(\\'"\\')))')
+            print(repr(ValueError('"')))
+            print('>>> print(repr(ValueError("\\'")))')
+            print(repr(ValueError("'")))
+            print('>>> print(repr(ValueError("\\"\\'")))')
+            print(repr(ValueError("\\"'")))
+            print('>>> print(repr(ValueError([1, 2, 3])))')
+            print(repr(ValueError([1, 2, 3])))
+            print('>>> print(repr(ValueError([1], 1, \\'1\\')))')
+            print(repr(ValueError([1], 1, '1')))
+        """)
