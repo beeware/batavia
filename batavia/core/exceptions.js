@@ -31,7 +31,7 @@ BaseException.prototype.__str__ = function() {
         for (arg in this.args.slice(1)) {
             result += ', ' + arg.toString()
         }
-        return result = ')'
+        return result + ')'
     } else {
         return ''
     }
