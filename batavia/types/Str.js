@@ -20,10 +20,10 @@ create_pyclass(Str, 'str', true)
 
 Str.prototype.__dir__ = function() {
     // Python 3.7 adds isascii
-    if (!version.earlier(3.7)) {
+    if (version.at_least(3.7)) {
         return "['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isascii', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']"
     // Python 3.6 adds classmethod object.__init_subclass__
-    } else if (!version.earlier(3.6)) {
+    } else if (version.at_least(3.6)) {
         return "['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']"
     } else {
         return "['__add__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__getitem__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__mod__', '__mul__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__rmod__', '__rmul__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'capitalize', 'casefold', 'center', 'count', 'encode', 'endswith', 'expandtabs', 'find', 'format', 'format_map', 'index', 'isalnum', 'isalpha', 'isdecimal', 'isdigit', 'isidentifier', 'islower', 'isnumeric', 'isprintable', 'isspace', 'istitle', 'isupper', 'join', 'ljust', 'lower', 'lstrip', 'maketrans', 'partition', 'replace', 'rfind', 'rindex', 'rjust', 'rpartition', 'rsplit', 'rstrip', 'split', 'splitlines', 'startswith', 'strip', 'swapcase', 'title', 'translate', 'upper', 'zfill']"
@@ -107,27 +107,27 @@ Str.prototype.__lt__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.FrozenSet
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() < ' + type_name(other) + '()'
+                    '\'<\' not supported between instances of \'str\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'str' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: str() < ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() < other
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: str() < NoneType()'
+                '\'<\' not supported between instances of \'str\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'str' and 'NoneType'"
+                'unorderable types: str() < NoneType()'
             )
         }
     }
@@ -144,27 +144,27 @@ Str.prototype.__le__ = function(other) {
             types.Type, types.Complex, types.NotImplementedType,
             types.Range, types.Slice, types.FrozenSet
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() <= ' + type_name(other) + '()'
+                    '\'<=\' not supported between instances of \'str\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'str' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: str() <= ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() <= other
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: str() <= NoneType()'
+                '\'<=\' not supported between instances of \'str\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'str' and 'NoneType'"
+                'unorderable types: str() <= NoneType()'
             )
         }
     }
@@ -217,27 +217,27 @@ Str.prototype.__gt__ = function(other) {
             types.NotImplementedType, types.Range,
             types.Slice, types.FrozenSet
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() > ' + type_name(other) + '()'
+                    '\'>\' not supported between instances of \'str\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'str' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: str() > ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() > other
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: str() > NoneType()'
+                '\'>\' not supported between instances of \'str\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'str' and 'NoneType'"
+                'unorderable types: str() > NoneType()'
             )
         }
     }
@@ -255,27 +255,27 @@ Str.prototype.__ge__ = function(other) {
             types.Range, types.Slice, types.FrozenSet
 
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: str() >= ' + type_name(other) + '()'
+                    '\'>=\' not supported between instances of \'str\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'str' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: str() >= ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() >= other
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: str() >= NoneType()'
+                '\'>=\' not supported between instances of \'str\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'str' and 'NoneType'"
+                'unorderable types: str() >= NoneType()'
             )
         }
     }
@@ -362,18 +362,15 @@ Str.prototype.__add__ = function(other) {
 
     if (types.isinstance(other, Str)) {
         return this.valueOf() + other.valueOf()
-    } else {
-        if (version.earlier('3.6')) {
-            throw new exceptions.TypeError.$pyclass(
-                "Can't convert '" + type_name(other) + "' object to str implicitly"
-            )
-        } else {
-            if (!version.earlier('3.7')) {
-                throw new exceptions.TypeError.$pyclass('can only concatenate str (not "' + type_name(other) + '") to str')
-            }
-            throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
-        }
     }
+    if (version.at_least('3.7')) {
+        throw new exceptions.TypeError.$pyclass('can only concatenate str (not "' + type_name(other) + '") to str')
+    }
+    if (version.at_least('3.6')) {
+        throw new exceptions.TypeError.$pyclass('must be str, not ' + type_name(other))
+    }
+    throw new exceptions.TypeError.$pyclass(
+        "Can't convert '" + type_name(other) + "' object to str implicitly")
 }
 
 Str.prototype.__getitem__ = function(index) {

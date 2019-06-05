@@ -6,7 +6,7 @@ function compile(args, kwargs) {
 
     if (args.length < 3) {
         var argument_names = ['source', 'filename', 'mode']
-        if (!version.earlier('3.7')) {
+        if (version.at_least('3.7')) {
             throw new exceptions.TypeError.$pyclass('compile() missing required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ')')
         } else {
             throw new exceptions.TypeError.$pyclass('Required argument \'' + argument_names[args.length] + '\' (pos ' + (args.length + 1) + ') not found')

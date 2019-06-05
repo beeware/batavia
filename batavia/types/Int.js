@@ -41,7 +41,7 @@ Int.prototype.MIN_FLOAT = MIN_FLOAT
 
 Int.prototype.__dir__ = function() {
     // Python 3.6 adds classmethod object.__init_subclass__
-    if (!version.earlier(3.6)) {
+    if (version.at_least(3.6)) {
         return "['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__index__', '__init__', '__init_subclass__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes']"
     } else {
         return "['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__index__', '__init__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes']"
@@ -127,25 +127,25 @@ Int.prototype.__lt__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.lt(other.valueOf())
         } else {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: int() < ' + type_name(other) + '()'
+                    '\'<\' not supported between instances of \'int\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'int' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: int() < ' + type_name(other) + '()'
                 )
             }
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: int() < NoneType()'
+                '\'<\' not supported between instances of \'int\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'int' and 'NoneType'"
+                'unorderable types: int() < NoneType()'
             )
         }
     }
@@ -166,25 +166,25 @@ Int.prototype.__le__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.lte(other.valueOf())
         } else {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: int() <= ' + type_name(other) + '()'
+                    '\'<=\' not supported between instances of \'int\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'int' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: int() <= ' + type_name(other) + '()'
                 )
             }
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: int() <= NoneType()'
+                '\'<=\' not supported between instances of \'int\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'int' and 'NoneType'"
+                'unorderable types: int() <= NoneType()'
             )
         }
     }
@@ -227,25 +227,25 @@ Int.prototype.__gt__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.gt(other.valueOf())
         } else {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: int() > ' + type_name(other) + '()'
+                    '\'>\' not supported between instances of \'int\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'int' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: int() > ' + type_name(other) + '()'
                 )
             }
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: int() > NoneType()'
+                '\'>\' not supported between instances of \'int\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'int' and 'NoneType'"
+                'unorderable types: int() > NoneType()'
             )
         }
     }
@@ -266,25 +266,25 @@ Int.prototype.__ge__ = function(other) {
         } else if (types.isinstance(other, types.Float)) {
             return this.val.gte(other.valueOf())
         } else {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: int() >= ' + type_name(other) + '()'
+                    '\'>=\' not supported between instances of \'int\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'int' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: int() >= ' + type_name(other) + '()'
                 )
             }
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: int() >= NoneType()'
+                '\'>=\' not supported between instances of \'int\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'int' and 'NoneType'"
+                'unorderable types: int() >= NoneType()'
             )
         }
     }

@@ -13,7 +13,7 @@ function dir(args, kwargs) {
     }
     if (args.length === 0) {
         // Python 3.7 added __annotations__ for use with dataclass
-        if (!version.earlier(3.7)) {
+        if (version.at_least(3.7)) {
             return "['__annotations__', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x']"
         } else {
             return "['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x']"

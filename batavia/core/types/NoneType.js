@@ -16,7 +16,7 @@ NoneType.prototype.__name__ = 'NoneType'
 
 NoneType.prototype.__dir__ = function() {
     // Python 3.6 adds classmethod object.__init_subclass__
-    if (!version.earlier(3.6)) {
+    if (version.at_least(3.6)) {
         return "['__bool__', '__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']"
     } else {
         return "['__bool__', '__class__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__le__', '__lt__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']"
@@ -58,28 +58,22 @@ NoneType.prototype.__setattr__ = function(attr, value) {
  **************************************************/
 
 NoneType.prototype.__lt__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NoneType() < ' + basic_types.type_name(other) + '()'
-        )
+            '\'<\' not supported between instances of \'NoneType\' and \'' + basic_types.type_name(other) + '\'')
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<' not supported between instances of 'NoneType' and '" +
-            basic_types.type_name(other) + "'"
-        )
+            'unorderable types: NoneType() < ' + basic_types.type_name(other) + '()')
     }
 }
 
 NoneType.prototype.__le__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NoneType() <= ' + basic_types.type_name(other) + '()'
-        )
+            '\'<=\' not supported between instances of \'NoneType\' and \'' + basic_types.type_name(other) + '\'')
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<=' not supported between instances of 'NoneType' and '" +
-            basic_types.type_name(other) + "'"
-        )
+            'unorderable types: NoneType() <= ' + basic_types.type_name(other) + '()')
     }
 }
 
@@ -92,27 +86,27 @@ NoneType.prototype.__ne__ = function(other) {
 }
 
 NoneType.prototype.__gt__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NoneType() > ' + basic_types.type_name(other) + '()'
+            '\'>\' not supported between instances of \'NoneType\' and \'' +
+            basic_types.type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>' not supported between instances of 'NoneType' and '" +
-            basic_types.type_name(other) + "'"
+            'unorderable types: NoneType() > ' + basic_types.type_name(other) + '()'
         )
     }
 }
 
 NoneType.prototype.__ge__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: NoneType() >= ' + basic_types.type_name(other) + '()'
+            '\'>=\' not supported between instances of \'NoneType\' and \'' +
+            basic_types.type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>=' not supported between instances of 'NoneType' and '" +
-            basic_types.type_name(other) + "'"
+            'unorderable types: NoneType() >= ' + basic_types.type_name(other) + '()'
         )
     }
 }
