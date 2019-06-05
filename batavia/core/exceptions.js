@@ -23,11 +23,14 @@ BaseException.prototype.toString = function() {
 
 BaseException.prototype.__str__ = function() {
     if (this.args !== undefined) {
-        if (this.args.length == 1) {
+        if (this.args.length === 0) {
+            return ''
+        }
+        if (this.args.length === 1) {
             return this.args[0].toString()
         }
         // Multiple args. Format like a tuple.
-        let result = '(' + arg.toString()
+        let result = '(' + args[0].toString()
         for (arg in this.args.slice(1)) {
             result += ', ' + arg.toString()
         }
@@ -49,7 +52,7 @@ BaseException.prototype.__repr__ = function() {
                 // String has both: wrap in single quotes & escape internal single quotes.
                 let wrap = "'"
                 if (msg.includes("'")) {
-                    if (msg.includes('"')) { // example: this.msg = '\'"'
+                    if (msg.includes('"')) { // example: msg = '\'"'
                         msg = msg.replace("'", "\\'")
                     } else {
                         wrap = '"'
