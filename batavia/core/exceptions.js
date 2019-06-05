@@ -22,10 +22,7 @@ BaseException.prototype.toString = function() {
 }
 
 BaseException.prototype.__str__ = function() {
-    if (this.args !== undefined) {
-        if (this.args.length === 0) {
-            return ''
-        }
+    if (!this.args.length) {
         if (this.args.length === 1) {
             return this.args[0].toString()
         }
