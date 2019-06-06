@@ -54,6 +54,7 @@ var builtins = {
     'exec': require('./builtins/exec'),
     'filter': require('./builtins/filter'),
     'float': require('./builtins/float'),
+    'format': require('./builtins/format'),
     'frozenset': require('./builtins/frozenset'),
     'getattr': require('./builtins/getattr'),
     'globals': require('./builtins/globals'),
