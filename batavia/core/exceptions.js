@@ -27,10 +27,9 @@ BaseException.prototype.__str__ = function() {
             return this.args[0].toString()
         }
         // Multiple args. Format like a tuple.
-        builtins = require('../builtins')
-        let result = '(' + this.args[0]
+        let result = '(' + this.args[0].toString()
         for (let arg in this.args.slice(1)) {
-            result += ', ' + arg
+            result += ', ' + arg.toString()
         }
         return result + ')'
     } else {
@@ -65,11 +64,12 @@ BaseException.prototype.__repr__ = function() {
                 return msg.toString()
             }
         }
-        
+
         if (this.args.length) {
             output += parse(this.args[0])
             version = require('./version')
-            if (this.args.length === 1 && !version.at_least(3.7)) {
+
+            if (this.args.length === 1 && !version.later(3.7)) {
                 output += ',' // A wild comma shows up in Python 3.5 and 3.6. Removed in 3.7.
             } else {
                 for (msg of this.args.slice(1)) {
@@ -77,6 +77,7 @@ BaseException.prototype.__repr__ = function() {
                 }
             }
         }
+
         return this.name + '(' + output + ')'
     } else {
         return this.name + '()'
