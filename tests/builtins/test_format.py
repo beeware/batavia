@@ -2,10 +2,10 @@ from .. utils import TranspileTestCase, BuiltinFunctionTestCase
 
 class FormatTests(TranspileTestCase):
    
-    def test_format_can_format_a_float(self):
+    def test_format_can_buffer_strings_to_the_left(self):
             self.assertCodeExecution("""
-                print(format(0.0000010, "F"))
-                print(format(0.0000010, "f"))
+                print(format("PAD", "#<10"))
+                print(format("PAD", "?<10"))
             """, run_in_function=False)
 
     def test_given_only_a_value_it_returns_that_value(self):

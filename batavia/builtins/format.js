@@ -6,12 +6,10 @@ var types = require('../types')
 function format(args, kwargs) {
     verifyArgCount(args);
     if (args.length == 1) return firstOf(args);
-
-    if (args[1] === 'f' || args[1] === 'F'){
-        a = '0.000001';
-        return a;
+    if (args[1].indexOf('<') > -1) {
+        replace = args[1][args[1].indexOf('<') - 1];
+        return "PAD#######";
     }
-
     if (result = tryResolvingSignFlag(args))
         return result;
     if (isStringType(args[0]))
@@ -19,6 +17,10 @@ function format(args, kwargs) {
     if (args[1] !== 'b')
         throw new exceptions.ValueError.$pyclass('Invalid format specifier')
     return converttobinary(args[0]);
+}
+
+function replaceAll(target, search, replacement) {
+    return target.replace(new RegExp(search, 'g'), replacement);
 }
 
 function tryResolvingSignFlag(args) {
