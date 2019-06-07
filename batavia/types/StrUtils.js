@@ -216,7 +216,7 @@ function _substitute(format, args) {
                             this.fieldWidth.value += char
                             this.fieldWidth.numeric = true
                         } else {
-                            throw new exceptions.Error.$pyclass('illegal character')
+                            throw new exceptions.Error.$pyclass('illegal characters')
                         }
                     } else {
                         throw new exceptions.Error.$pyclass('illegal character')
@@ -659,7 +659,7 @@ function _substitute(format, args) {
                 nextStep = this.getNextStep(nextChar, nextStep)
                 this.step(nextChar, nextStep)
             } catch (err) {
-                if (err.msg === 'illegal character') {
+                if (err.args[0] === 'illegal character') {
                     var charAsHex = nextChar.charCodeAt(0).toString(16)
                     throw new exceptions.ValueError.$pyclass(
                         "unsupported format character '" + nextChar +"' (0x" + charAsHex + ") at index " + (charIndex + index + 1))
