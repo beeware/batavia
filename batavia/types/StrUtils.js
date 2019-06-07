@@ -216,7 +216,7 @@ function _substitute(format, args) {
                             this.fieldWidth.value += char
                             this.fieldWidth.numeric = true
                         } else {
-                            throw new exceptions.Error.$pyclass('illegal characters')
+                            throw new exceptions.Error.$pyclass('illegal character')
                         }
                     } else {
                         throw new exceptions.Error.$pyclass('illegal character')
