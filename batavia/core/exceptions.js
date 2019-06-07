@@ -119,13 +119,14 @@ GeneratorExit.prototype.__class__.$pyclass = GeneratorExit
 exceptions.GeneratorExit = GeneratorExit.prototype.__class__
 
 var Exception = function(name, args) {
-    if (arguments.length === 1) {
+    if (name === undefined) {
+        // This happens when someone raises 'Exception' with no parenthesis.
+        BaseException.call(this, 'Exception', [])
+    } else if (arguments.length === 1) {
         // If only one argument is provided, it will be the message.
         BaseException.call(this, 'Exception', [name])
-    } else if (arguments.length === 2) {
-        BaseException.call(this, name, args)
     } else {
-        BaseException.call(this, 'Exception', [])
+        BaseException.call(this, name, args)
     }
 }
 
