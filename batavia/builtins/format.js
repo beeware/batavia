@@ -6,10 +6,8 @@ var types = require('../types')
 function format(args, kwargs) {
     verifyArgCount(args);
     if (args.length == 1) return firstOf(args);
-    if (args[1].indexOf('<') > -1) {
-        replace = args[1][args[1].indexOf('<') - 1];
-        return "PAD#######";
-    }
+    if (result = tryResolvingAlignmentFlags(args))
+        return result;
     if (result = tryResolvingSignFlag(args))
         return result;
     if (isStringType(args[0]))
@@ -19,8 +17,61 @@ function format(args, kwargs) {
     return converttobinary(args[0]);
 }
 
-function replaceAll(target, search, replacement) {
-    return target.replace(new RegExp(search, 'g'), replacement);
+function spaceLeftToPad(end, args) {
+    return end - args[0].length;
+}
+
+function getPaddingColumnLength(pattern, alignmentFlag) {
+    return pattern.slice([pattern.indexOf(alignmentFlag) + 1]);
+}
+
+function padLeft(args) {
+    columnLength = getPaddingColumnLength(args[1], "<");
+    return paddingLeft(args[0], args[1][0], spaceLeftToPad(columnLength, args))
+}
+
+function padRight(args) {
+    columnLength = getPaddingColumnLength(args[1], ">");
+    return paddingRight(args[0], args[1][0], spaceLeftToPad(columnLength, args))
+}
+
+function paddingLeft(target, padCharacter, length) {
+    if(length < 0)
+        return target;
+    return target + padCharacter.repeat(length);
+}
+
+function paddingRight(target, padCharacter, length) {
+    if(length < 0)
+        return target;
+    return padCharacter.repeat(length) + target;
+}
+
+function tryResolvingAlignmentFlags(args) {
+    return makeFormattingAttempts(getAlignmentFormatObjects(args));
+}
+
+function getAlignmentFormatObjects(args) {
+    return [
+        formatterWrapper(() => hasAlignLeftFlag(args), () => padLeft(args)),
+        formatterWrapper(() => hasAlignRightFlag(args), () => padRight(args))
+    ];
+}
+
+function hasAlignLeftFlag(args) {
+    return args[1].indexOf('<') > -1;
+}
+
+function hasAlignRightFlag(args) {
+    return args[1].indexOf('>') > -1;
+}
+
+function getFormatObjects(args) {
+    return [
+        formatterWrapper(() => isPositiveSignFlag(args), () => appendCharToPositiveFronts(args[0], '+')),
+        formatterWrapper(() => isBlankSpace(args), () => appendCharToPositiveFronts(args[0], ' ')),
+        formatterWrapper(() => isNegativeSignFlag(args), () => formatNegativeSignFlag(args[0], '+'))
+    ];
 }
 
 function tryResolvingSignFlag(args) {
@@ -73,7 +124,6 @@ function isNegativeSignFlag(args) {
 function formatNegativeSignFlag(number) {
     return number;
 }
-
 
 function argsViolateStringSignCombo(args) {
     return isStringType(args[0]) && (

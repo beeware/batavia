@@ -5,7 +5,15 @@ class FormatTests(TranspileTestCase):
     def test_format_can_buffer_strings_to_the_left(self):
             self.assertCodeExecution("""
                 print(format("PAD", "#<10"))
-                print(format("PAD", "?<10"))
+                print(format("PAD", "?<7"))
+                print(format("PADDING", "?<2"))
+            """, run_in_function=False)
+    
+    def test_format_can_buffer_strings_to_the_right(self):
+            self.assertCodeExecution("""
+                print(format("PAD", "#>10"))
+                # print(format("PAD", "?<7"))
+                # print(format("PADDING", "?<2"))
             """, run_in_function=False)
 
     def test_given_only_a_value_it_returns_that_value(self):
@@ -100,7 +108,8 @@ class FormatTests(TranspileTestCase):
 #         """, run_in_function=False) 
 
 #     [[fill]align]
-#     [sign][#]
+#     [sign]
+#     [#]
 #     [0][width][,][.precision]
 #     [type]
 #     where, the options are
