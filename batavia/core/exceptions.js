@@ -31,6 +31,7 @@ BaseException.prototype.__str__ = function() {
         for (let arg in this.args.slice(1)) {
             result += ', ' + arg.toString()
         }
+
         return result + ')'
     } else {
         return ''
@@ -117,9 +118,12 @@ GeneratorExit.prototype.__class__.$pyclass = GeneratorExit
 
 exceptions.GeneratorExit = GeneratorExit.prototype.__class__
 
-var Exception = function(name, args) {
+var Exception = function(name, ...args) {
     if (arguments.length === 1) {
         // If only one argument is provided, it will be the message.
+        if (!name) {
+            var name = ''
+        }
         BaseException.call(this, 'Exception', [name])
     } else {
         BaseException.call(this, name, args)
