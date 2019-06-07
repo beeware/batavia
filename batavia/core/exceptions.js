@@ -118,17 +118,17 @@ GeneratorExit.prototype.__class__.$pyclass = GeneratorExit
 
 exceptions.GeneratorExit = GeneratorExit.prototype.__class__
 
-var Exception = function(name, ...args) {
+var Exception = function(name, args) {
     if (arguments.length === 1) {
         // If only one argument is provided, it will be the message.
-        if (!name) {
-            var name = ''
-        }
         BaseException.call(this, 'Exception', [name])
-    } else {
+    } else if (arguments.length === 2) {
         BaseException.call(this, name, args)
+    } else {
+        BaseException.call(this, 'Exception', [])
     }
 }
+
 Exception.prototype = Object.create(BaseException.prototype)
 Exception.prototype.__class__ = new Type('Exception', [BaseException.prototype.__class__])
 Exception.prototype.__class__.$pyclass = Exception
