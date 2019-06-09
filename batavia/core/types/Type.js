@@ -27,6 +27,7 @@ function Type(name, bases, dict) {
 
 Type.prototype.__class__ = new Type('type')
 Type.prototype.__class__.$pyclass = Type
+Type.prototype.__format__ = PyObject.prototype.__format__
 
 Type.prototype.toString = function() {
     return this.__repr__()
@@ -208,6 +209,7 @@ function extend_PyObject(type, name) {
 function make_python_class(type, name) {
     type.prototype.__class__ = new Type(name)
     type.prototype.__class__.$pyclass = type
+    type.prototype.__format__ = PyObject.prototype.__format__
 }
 
 /*************************************************************************
