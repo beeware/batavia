@@ -285,13 +285,21 @@ function _substitute(format, args) {
               // conversion(str): the type of conversion to perform
               // throws an error if the arg is an invalid type
 
-                if (/[diouxX]/.test(conversion)) {
+                if (/[diu]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Int, types.Float])) {
-                        throw new exceptions.TypeError.$pyclass(conversion + "format: a number is required, not str")
+                        throw new exceptions.TypeError.$pyclass('%' + conversion + ' format: a number is required, not str')
+                    }
+                } else if (/[oxX]/.test(conversion)) {
+                    if (!types.isinstance(arg, [types.Int])) {
+                        throw new exceptions.TypeError.$pyclass(`%${conversion} format: an integer is required, not ${type_name(arg)}`)
                     }
                 } else if (/[eEfFgG]/.test(conversion)) {
                     if (!types.isinstance(arg, [types.Float, types.Int])) {
-                        throw new exceptions.TypeError.$pyclass('a float is required')
+                        if (version.at_least(3.6)) {
+                            throw new exceptions.TypeError.$pyclass('must be real number, not ' + type_name(arg))
+                        } else {
+                            throw new exceptions.TypeError.$pyclass('a float is required')
+                        }
                     }
                 } else if (conversion === 'c') {
                     // there might be a problem with the error
@@ -503,7 +511,7 @@ function _substitute(format, args) {
                         if (this.conversionType === 'g') {
                             conversionArg = zeroPadExp(base + 'e' + exp)
                         } else {
-                            conversionArg = zeroPadExp('base' + "e" + exp).replace(/e/, 'E')
+                            conversionArg = zeroPadExp(base + 'e' + exp).replace(/e/, 'E')
                         }
                         break
                     } else {
@@ -550,7 +558,7 @@ function _substitute(format, args) {
                             }
 
                             if (isInt) {
-                                conversionArg = Number(conversionArgValue) + '0'.repeat(extraDigits)
+                                conversionArg = Number(conversionArgValue) + '.' + '0'.repeat(extraDigits)
                             } else {
                                 conversionArg = conversionArgValue + '0'.repeat(extraDigits)
                             }
@@ -579,8 +587,14 @@ function _substitute(format, args) {
                     } else {
                         conversionArg = conversionArgValue
                     }
+
+                    // The 'c' conversionType is only padded with spaces, not zeroes.
+                    if (this.conversionFlags['0']) {
+                        this.conversionFlags['0'] = false
+                        this.conversionFlags[' '] = true
+                    }
                     break
-                
+
                 case ('r'):
                     if (types.isinstance(conversionArgRaw, types.Str)) {
                         conversionArg = `'${conversionArgValue}'`
@@ -615,7 +629,7 @@ function _substitute(format, args) {
             } // end switch
 
             // only do the below for numbers
-            if (types.isinstance(conversionArgRaw, [types.Int, types.Float])) {
+            if (types.isinstance(conversionArgRaw, [types.Int, types.Float]) && this.conversionType !== 'c') {
                 if (this.conversionFlags[' ']) {
                     // A blank should be left before a positive number (or empty string)
                     // produced by a signed conversion.
@@ -906,12 +920,19 @@ function _new_subsitute(str, args, kwargs) {
             // currStep(int): the current step we are on.
             // return: nextStep(int): what step we should process nextChar
 
+            let allowed_groupings
+            if (version.at_least(3.6)) {
+                allowed_groupings = /[,_]/
+            } else {
+                allowed_groupings = /,/
+            }
+
             var steps = {
                 1: /[+\- ]/, // sign
                 2: /#/, // alternate form
                 3: /0/, // zero padding
                 4: /\d/, // width
-                5: /,/, // grouping
+                5: allowed_groupings, // grouping
                 6: /[.\d]/  // precision
             }
 
@@ -1181,12 +1202,8 @@ function _new_subsitute(str, args, kwargs) {
         // grouping
         // sign
         // alternate form
-        if (this.grouping === ',') {
-            if (version.earlier('3.6')) {
-                throw new exceptions.ValueError.$pyclass("Cannot specify ',' with 's'.")
-            } else {
-                throw new exceptions.ValueError.$pyclass("Cannot specify ',' or '_' with 's'.")
-            }
+        if (this.grouping === ',' || this.grouping === '_') {
+            throw new exceptions.ValueError.$pyclass("Cannot specify '" + this.grouping + "' with 's'.")
         }
 
         if (this.sign) {
@@ -1250,7 +1267,7 @@ function _new_subsitute(str, args, kwargs) {
 
         if (this.grouping && !type.match(/[deEfFgG%]/)) {
             // used a , with a bad conversion type:
-            throw new exceptions.ValueError.$pyclass("Cannot specify ',' with '" + type + "'.")
+            throw new exceptions.ValueError.$pyclass("Cannot specify '" + this.grouping + "' with " + type + '.')
         }
 
         if (this.precision && type.match(/[bcdoxXn]/)) {
@@ -1418,7 +1435,7 @@ function _new_subsitute(str, args, kwargs) {
           alignment and padding
         */
 
-        
+
         // size of the containing field. will need to be filled in if larger than content
         const fieldWidth = this.width || this.content.length
         const spaceRemaining = fieldWidth - this.content.length
@@ -1562,7 +1579,7 @@ function _new_subsitute(str, args, kwargs) {
 
     Specifier.prototype.convert = function() {
         // convert the spec to its proper value.
-        
+
         if (type_name(this.arg) === 'str' && !types.isinstance(this.arg, [types.Float])) {
             this._convertStr()
         } else {

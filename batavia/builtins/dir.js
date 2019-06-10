@@ -1,4 +1,6 @@
 var exceptions = require('../core').exceptions
+var types = require('../types')
+var version = require('../core').version
 
 function dir(args, kwargs) {
     if (arguments.length !== 2) {
@@ -11,8 +13,13 @@ function dir(args, kwargs) {
         throw new exceptions.TypeError.$pyclass('dir() expected exactly 1 argument (' + args.length + ' given)')
     }
     if (args.length === 0) {
-        return "['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x']"
+        if (version.at_least(3.6)) {
+            // Python 3.7 added __annotations__ for use with dataclass
+            return new types.List(['__annotations__', '__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x'])
+        }
+        return new types.List(['__builtins__', '__cached__', '__doc__', '__file__', '__loader__', '__name__', '__package__', '__spec__', 'f', 'x'])
     }
+
     if (args[0].__dir__) {
         return args[0].__dir__()
     }

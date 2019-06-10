@@ -64,10 +64,10 @@ JSONDecoder.prototype.decode = function(s) {
     try {
         ret = JSON.parse(s, reviver)
     } catch (e) {
-        if (version.earlier('3.5a0')) {
-            throw new exceptions.ValueError.$pyclass(e.message)
-        } else {
+        if (version.at_least('3.5a0')) {
             throw new exceptions.JSONDecodeError.$pyclass(e.message)
+        } else {
+            throw new exceptions.ValueError.$pyclass(e.message)
         }
     }
     return ret

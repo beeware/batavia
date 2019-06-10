@@ -13,7 +13,12 @@ var Bool = Boolean
 create_pyclass(Bool, 'bool', true)
 
 Bool.prototype.__dir__ = function() {
-    return "['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__index__', '__init__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes']"
+    var types = require('../types')
+    if (version.at_least(3.6)) {
+        // Python 3.6 adds classmethod object.__init_subclass__
+        return new types.List(['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__index__', '__init__', '__init_subclass__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes'])
+    }
+    return new types.List(['__abs__', '__add__', '__and__', '__bool__', '__ceil__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floor__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__index__', '__init__', '__int__', '__invert__', '__le__', '__lshift__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__or__', '__pos__', '__pow__', '__radd__', '__rand__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__round__', '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', '__xor__', 'bit_length', 'conjugate', 'denominator', 'from_bytes', 'imag', 'numerator', 'real', 'to_bytes'])
 }
 
 /**************************************************
@@ -113,13 +118,13 @@ Bool.prototype.__ge__ = function(other) {
         }
         return new Bool(this_bool >= other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() >= ' + type_name(other) + '()'
+                '\'>=\' not supported between instances of \'bool\' and \'' + type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'bool' and '" + type_name(other) + "'"
+                'unorderable types: bool() >= ' + type_name(other) + '()'
             )
         }
     } else {
@@ -153,14 +158,14 @@ Bool.prototype.__gt__ = function(other) {
         }
         return new Bool(this_bool > other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() > ' + type_name(other) + '()'
+                '\'>\' not supported between instances of \'bool\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'bool' and '" +
-                type_name(other) + "'"
+                'unorderable types: bool() > ' + type_name(other) + '()'
             )
         }
     } else {
@@ -194,15 +199,11 @@ Bool.prototype.__le__ = function(other) {
         }
         return new Bool(this_bool <= other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() <= ' + type_name(other) + '()'
-            )
+                '\'<=\' not supported between instances of \'bool\' and \'' + type_name(other) + '\'')
         } else {
-            throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'bool' and '" +
-                type_name(other) + "'"
-            )
+            throw new exceptions.TypeError.$pyclass('unorderable types: bool() <= ' + type_name(other) + '()')
         }
     } else {
         return NotImplemented
@@ -235,14 +236,14 @@ Bool.prototype.__lt__ = function(other) {
         }
         return new Bool(this_bool < other_bool)
     } else if (types.isbataviainstance(other)) {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: bool() < ' + type_name(other) + '()'
+                '\'<\' not supported between instances of \'bool\' and \'' +
+                type_name(other) + '\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'bool' and '" +
-                type_name(other) + "'"
+                'unorderable types: bool() < ' + type_name(other) + '()'
             )
         }
     } else {

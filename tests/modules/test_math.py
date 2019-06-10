@@ -1,7 +1,7 @@
 import sys
 from unittest import skipUnless, expectedFailure
 
-from ..utils import ModuleFunctionTestCase, TranspileTestCase
+from ..utils import ModuleFunctionTestCase, TranspileTestCase, expected_failing_versions
 
 
 class MathTests(ModuleFunctionTestCase, TranspileTestCase):
@@ -133,6 +133,7 @@ class MathTests(ModuleFunctionTestCase, TranspileTestCase):
             print(math.frexp(1.9**-1150)) # denormal
             """)
 
+    @expected_failing_versions(['3.7'])
     def test_docstrings(self):
         self.assertCodeExecution("""
         import math

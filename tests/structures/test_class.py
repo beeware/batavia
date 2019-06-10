@@ -266,3 +266,18 @@ class ClassTests(TranspileTestCase):
 
             print("Done.")
         """)
+
+    def test_matmul(self):
+        self.assertCodeExecution("""
+            class A:
+              def __init__(self, value):
+                self.value = list(value)
+
+              def __matmul__(self, other):
+                return A(x * y for x,y in zip(self.value, other.value))
+
+            x = A([1,2,3])
+            y = A([4,5,0])
+            z = x @ y
+            print(z.value)
+        """)

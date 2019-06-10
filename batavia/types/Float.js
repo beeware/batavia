@@ -29,7 +29,16 @@ Float.prototype.MAX_FLOAT = MAX_FLOAT
 Float.prototype.MIN_FLOAT = MIN_FLOAT
 
 Float.prototype.__dir__ = function() {
-    return "['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getformat__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__round__', '__rpow__', '__rsub__', '__rtruediv__', '__setattr__', '__setformat__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', 'as_integer_ratio', 'conjugate', 'fromhex', 'hex', 'imag', 'is_integer', 'real']"
+    var types = require('../types')
+    if (version.at_least(3.7)) {
+        // Python 3.7 renames __setformat__ to __set_format__
+        return new types.List(['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getformat__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__round__', '__rpow__', '__rsub__', '__rtruediv__', '__set_format__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', 'as_integer_ratio', 'conjugate', 'fromhex', 'hex', 'imag', 'is_integer', 'real'])
+    }
+    if (version.at_least(3.6)) {
+        // Python 3.6 adds classmethod object.__init_subclass__
+        return new types.List(['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getformat__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__round__', '__rpow__', '__rsub__', '__rtruediv__', '__setattr__', '__setformat__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', 'as_integer_ratio', 'conjugate', 'fromhex', 'hex', 'imag', 'is_integer', 'real'])
+    }
+    return new types.List(['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getformat__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__round__', '__rpow__', '__rsub__', '__rtruediv__', '__setattr__', '__setformat__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', '__trunc__', 'as_integer_ratio', 'conjugate', 'fromhex', 'hex', 'imag', 'is_integer', 'real'])
 }
 
 /**************************************************
@@ -124,27 +133,27 @@ Float.prototype.__lt__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.Bytes, types.Bytearray
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() < ' + type_name(other) + '()'
+                    '\'<\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() < ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() < other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() < NoneType()'
+                '\'<\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() < NoneType()'
             )
         }
     }
@@ -159,27 +168,27 @@ Float.prototype.__le__ = function(other) {
             types.NoneType, types.Str, types.NotImplementedType,
             types.Range, types.Set, types.Slice
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() <= ' + type_name(other) + '()'
+                    '\'<=\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'<=' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() <= ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() <= other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() <= NoneType()'
+                '\'<=\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'<=' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() <= NoneType()'
             )
         }
     }
@@ -221,27 +230,27 @@ Float.prototype.__gt__ = function(other) {
             types.NoneType, types.Str, types.NotImplementedType,
             types.Range, types.Set, types.Slice
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() > ' + type_name(other) + '()'
+                    '\'>\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() > ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() > other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() > NoneType()'
+                '\'>\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() > NoneType()'
             )
         }
     }
@@ -257,27 +266,27 @@ Float.prototype.__ge__ = function(other) {
             types.Range, types.Set, types.Slice,
             types.Bytes, types.Bytearray
         ])) {
-            if (version.earlier('3.6')) {
+            if (version.at_least('3.6')) {
                 throw new exceptions.TypeError.$pyclass(
-                    'unorderable types: float() >= ' + type_name(other) + '()'
+                    '\'>=\' not supported between instances of \'float\' and \'' +
+                    type_name(other) + '\''
                 )
             } else {
                 throw new exceptions.TypeError.$pyclass(
-                    "'>=' not supported between instances of 'float' and '" +
-                    type_name(other) + "'"
+                    'unorderable types: float() >= ' + type_name(other) + '()'
                 )
             }
         } else {
             return this.valueOf() >= other.valueOf()
         }
     } else {
-        if (version.earlier('3.6')) {
+        if (version.at_least('3.6')) {
             throw new exceptions.TypeError.$pyclass(
-                'unorderable types: float() >= NoneType()'
+                '\'>=\' not supported between instances of \'float\' and \'NoneType\''
             )
         } else {
             throw new exceptions.TypeError.$pyclass(
-                "'>=' not supported between instances of 'float' and 'NoneType'"
+                'unorderable types: float() >= NoneType()'
             )
         }
     }

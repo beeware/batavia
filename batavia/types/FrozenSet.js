@@ -25,7 +25,12 @@ function FrozenSet(args, kwargs) {
 create_pyclass(FrozenSet, 'frozenset')
 
 FrozenSet.prototype.__dir__ = function() {
-    return "['__and__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__or__', '__rand__', '__reduce__', '__reduce_ex__', '__repr__', '__ror__', '__rsub__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__xor__', 'copy', 'difference', 'intersection', 'isdisjoint', 'issubset', 'issuperset', 'symmetric_difference', 'union']"
+    var types = require('../types')
+    if (version.at_least(3.6)) {
+        // Python 3.6 adds classmethod object.__init_subclass__
+        return new types.List(['__and__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__iter__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__or__', '__rand__', '__reduce__', '__reduce_ex__', '__repr__', '__ror__', '__rsub__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__xor__', 'copy', 'difference', 'intersection', 'isdisjoint', 'issubset', 'issuperset', 'symmetric_difference', 'union'])
+    }
+    return new types.List(['__and__', '__class__', '__contains__', '__delattr__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__iter__', '__le__', '__len__', '__lt__', '__ne__', '__new__', '__or__', '__rand__', '__reduce__', '__reduce_ex__', '__repr__', '__ror__', '__rsub__', '__rxor__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__xor__', 'copy', 'difference', 'intersection', 'isdisjoint', 'issubset', 'issuperset', 'symmetric_difference', 'union'])
 }
 
 /**************************************************
@@ -77,13 +82,13 @@ FrozenSet.prototype.__lt__ = function(other) {
         return new types.Bool(this.data.keys().length < other.data.keys().length)
     }
 
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() < ' + type_name(other) + '()'
+            '\'<\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() < ' + type_name(other) + '()'
         )
     }
 }
@@ -94,13 +99,13 @@ FrozenSet.prototype.__le__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length <= other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() <= ' + type_name(other) + '()'
+            '\'<=\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() <= ' + type_name(other) + '()'
         )
     }
 }
@@ -134,13 +139,13 @@ FrozenSet.prototype.__gt__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length > other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() > ' + type_name(other) + '()'
+            '\'>\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() > ' + type_name(other) + '()'
         )
     }
 }
@@ -151,13 +156,13 @@ FrozenSet.prototype.__ge__ = function(other) {
     if (types.isinstance(other, [types.Set, types.FrozenSet])) {
         return new types.Bool(this.data.keys().length >= other.data.keys().length)
     }
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: frozenset() >= ' + type_name(other) + '()'
+            '\'>=\' not supported between instances of \'frozenset\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>=' not supported between instances of 'frozenset' and '" + type_name(other) + "'"
+            'unorderable types: frozenset() >= ' + type_name(other) + '()'
         )
     }
 }
@@ -210,15 +215,18 @@ FrozenSet.prototype.__sub__ = function(other) {
 FrozenSet.prototype.__getitem__ = function(other) {
     var types = require('../types')
 
-    if (types.isinstance(other, [types.Bool])) {
-        throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing")
-    } else if (types.isinstance(other, [types.Int])) {
-        if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
-            throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
-        } else {
+    if (!version.at_least('3.7')) {
+        if (types.isinstance(other, [types.Bool])) {
             throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing")
+        } else if (types.isinstance(other, [types.Int])) {
+            if (other.val.gt(types.Int.prototype.MAX_INT.val) || other.val.lt(types.Int.prototype.MIN_INT.val)) {
+                throw new exceptions.IndexError.$pyclass("cannot fit 'int' into an index-sized integer")
+            } else {
+                throw new exceptions.TypeError.$pyclass("'frozenset' object does not support indexing")
+            }
         }
     }
+
     throw new exceptions.TypeError.$pyclass("'frozenset' object is not subscriptable")
 }
 

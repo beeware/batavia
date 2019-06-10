@@ -78,29 +78,15 @@ function Complex(re, im) {
             this.imag = -this.imag
         }
     } else if (!types.isinstance(re, [types.Float, types.Int, types.Bool, types.Complex])) {
-        if (version.later('3.5')) {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() first argument must be a string, a bytes-like object or a number, not '" +
-                type_name(re) + "'"
-            )
-        } else {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() argument must be a string, a bytes-like object or a number, not '" +
-                type_name(re) + "'"
-            )
-        }
+        throw new exceptions.TypeError.$pyclass(
+            "complex() first argument must be a string, a bytes-like object or a number, not '" +
+            type_name(re) + "'"
+        )
     } else if (!types.isinstance(im, [types.Float, types.Int, types.Bool, types.Complex])) {
-        if (version.later('3.5')) {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() first argument must be a string, a bytes-like object or a number, not '" +
-                type_name(im) + "'"
-            )
-        } else {
-            throw new exceptions.TypeError.$pyclass(
-                "complex() argument must be a string, a bytes-like object or a number, not '" +
-                type_name(im) + "'"
-            )
-        }
+        throw new exceptions.TypeError.$pyclass(
+            "complex() first argument must be a string, a bytes-like object or a number, not '" +
+            type_name(im) + "'"
+        )
     } else if (typeof re === 'number' && typeof im === 'number') {
         this.real = re
         this.imag = im
@@ -125,7 +111,12 @@ var COMPLEX_ROUND_DECIMALS = Math.floor(Math.abs(Math.log10(Number.EPSILON)))
 Complex.prototype.COMPLEX_ROUND_DECIMALS = COMPLEX_ROUND_DECIMALS
 
 Complex.prototype.__dir__ = function() {
-    return "['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__rpow__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', 'conjugate', 'imag', 'real']"
+    var types = require('../types')
+    if (version.at_least(3.6)) {
+        // Python 3.6 adds classmethod object.__init_subclass__
+        return new types.List(['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__rpow__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', 'conjugate', 'imag', 'real'])
+    }
+    return new types.List(['__abs__', '__add__', '__bool__', '__class__', '__delattr__', '__dir__', '__divmod__', '__doc__', '__eq__', '__float__', '__floordiv__', '__format__', '__ge__', '__getattribute__', '__getnewargs__', '__gt__', '__hash__', '__init__', '__int__', '__le__', '__lt__', '__mod__', '__mul__', '__ne__', '__neg__', '__new__', '__pos__', '__pow__', '__radd__', '__rdivmod__', '__reduce__', '__reduce_ex__', '__repr__', '__rfloordiv__', '__rmod__', '__rmul__', '__rpow__', '__rsub__', '__rtruediv__', '__setattr__', '__sizeof__', '__str__', '__sub__', '__subclasshook__', '__truediv__', 'conjugate', 'imag', 'real'])
 }
 
 /**************************************************
@@ -171,25 +162,25 @@ Complex.prototype.__str__ = function() {
  **************************************************/
 
 Complex.prototype.__lt__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: complex() < ' + type_name(other) + '()'
+            '\'<\' not supported between instances of \'complex\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            'unorderable types: complex() < ' + type_name(other) + '()'
         )
     }
 }
 
 Complex.prototype.__le__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: complex() <= ' + type_name(other) + '()'
+            '\'<=\' not supported between instances of \'complex\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'<=' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            'unorderable types: complex() <= ' + type_name(other) + '()'
         )
     }
 }
@@ -224,25 +215,25 @@ Complex.prototype.__ne__ = function(other) {
 }
 
 Complex.prototype.__gt__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: complex() > ' + type_name(other) + '()'
+            '\'>\' not supported between instances of \'complex\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            'unorderable types: complex() > ' + type_name(other) + '()'
         )
     }
 }
 
 Complex.prototype.__ge__ = function(other) {
-    if (version.earlier('3.6')) {
+    if (version.at_least('3.6')) {
         throw new exceptions.TypeError.$pyclass(
-            'unorderable types: complex() >= ' + type_name(other) + '()'
+            '\'>=\' not supported between instances of \'complex\' and \'' + type_name(other) + '\''
         )
     } else {
         throw new exceptions.TypeError.$pyclass(
-            "'>=' not supported between instances of 'complex' and '" + type_name(other) + "'"
+            'unorderable types: complex() >= ' + type_name(other) + '()'
         )
     }
 }

@@ -3,10 +3,11 @@ from .expected_failure import NotImplementedToExpectedFailure
 from .samples import SAMPLE_SUBSTITUTIONS, SAMPLE_DATA
 
 ALL_MAGIC_METHODS = ['__add__', '__and__', '__floordiv__', '__iadd__', '__iand__', '__ifloordiv__', '__ilshift__',
-                     '__imod__', '__imul__', '__ior__', '__ipow__', '__irshift__', '__isub__', '__itruediv__',
-                     '__ixor__', '__lshift__', '__mod__', '__mul__', '__or__', '__pow__', '__radd__', '__rand__',
-                     '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__', '__rpow__', '__rrshift__',
-                     '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__sub__', '__truediv__', '__xor__']
+                     '__imatmul', '__imod__', '__imul__', '__ior__', '__ipow__', '__irshift__', '__isub__',
+                     '__itruediv__', '__ixor__', '__lshift__', '__matmul__', '__mod__', '__mul__', '__or__', '__pow__',
+                     '__radd__', '__rand__', '__rfloordiv__', '__rlshift__', '__rmod__', '__rmul__', '__ror__',
+                     '__rpow__', '__rrshift__', '__rshift__', '__rsub__', '__rtruediv__', '__rxor__', '__sub__',
+                     '__truediv__', '__xor__']
 
 
 class MagicMethodFunctionTestCase(NotImplementedToExpectedFailure):

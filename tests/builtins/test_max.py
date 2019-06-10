@@ -28,5 +28,6 @@ class BuiltinMaxFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
             """)
 
     is_flakey = [
-       'test_set',  # This depends on set ordering is non-deterministic
+        'test_set',  # This depends on set ordering is non-deterministic
+        'test_frozenset',
     ]

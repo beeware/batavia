@@ -8,26 +8,15 @@ class DirTests(TranspileTestCase):
 class BuiltinDirFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
     function = "dir"
 
-    not_implemented_versions = {
-        'test_None': ['3.6'],
-        'test_NotImplemented': ['3.6'],
-        'test_bool': ['3.6'],
-        'test_complex': ['3.6'],
-        'test_dict': ['3.6'],
-        'test_float': ['3.6'],
-        'test_frozenset': ['3.6'],
-        'test_int': ['3.6'],
-        'test_list': ['3.6'],
-        'test_noargs': ['3.6'],
-        'test_set': ['3.6'],
-        'test_slice': ['3.6'],
-        'test_str': ['3.6'],
-        'test_tuple': ['3.6'],
-    }
+    not_implemented = [
+        'test_class',
+    ]
+
+
+class BuiltinDirTypeFunctionTests(BuiltinFunctionTestCase, TranspileTestCase):
+    """Test suite that ensures that dir(x) returns the correct type."""
+    function = "lambda x: type(dir(x))"
 
     not_implemented = [
-        'test_bytearray',
-        'test_bytes',
         'test_class',
-        'test_range',
     ]

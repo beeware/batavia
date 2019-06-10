@@ -1,3 +1,4 @@
+var exceptions = require('../exceptions')
 
 /*************************************************************************
  * A base Python object
@@ -20,6 +21,15 @@ function PyObject() {
 }
 
 PyObject.prototype.__doc__ = 'The most base type'
+
+PyObject.prototype.__format__ = function(val, format_spec) {
+    if (typeof format_spec !== 'undefined') {
+        throw exceptions.TypeError.$pyclass(
+            'non-empty format string passed to object.__format__'
+        )
+    }
+    return val
+}
 
 PyObject.prototype.toString = function() {
     return '<' + this.__class__.__name__ + ' 0x...>'

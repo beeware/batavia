@@ -220,9 +220,6 @@ class BinaryBytearrayOperationTests(BinaryOperationTestCase, TranspileTestCase):
         'test_subscr_tuple',
     ]
 
-    not_implemented_versions = {
-    }
-
 
 class InplaceBytearrayOperationTests(InplaceOperationTestCase, TranspileTestCase):
     data_type = 'bytearray'
