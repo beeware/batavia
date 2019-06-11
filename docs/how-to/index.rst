@@ -10,7 +10,9 @@ How-to guides are recipes that take the user through steps in key subjects. They
    :maxdepth: 1
    :glob:
 
+   Tour of the Code <tour>
    Contribute to Batavia's code <contribute-code>
    Contribute to Batavia's documentation <contribute-docs>
+   Follow the Goat: Batavia's Test Suite <contribute-tests>
    Implementing Python Built-ins in JavaScript <builtins>
    Adding a module and testing it <modules-and-tests>
