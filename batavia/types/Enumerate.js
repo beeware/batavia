@@ -30,6 +30,10 @@ Enumerate.prototype.__str__ = function() {
     return '<enumerate object at 0x99999999>'
 }
 
+Enumerate.prototype.__format__ = function (value, formatSpecifier) {
+    throw new exceptions.NotImplementedError.$pyclass('dict.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

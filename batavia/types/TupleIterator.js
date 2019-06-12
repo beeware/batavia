@@ -27,7 +27,7 @@ TupleIterator.prototype.__str__ = function() {
     return '<tuple_iterator object at 0x99999999>'
 }
 
-TupleIterator.prototype.__format__ = function() {
+TupleIterator.prototype.__format__ = function(value, formatSpecifier) {
     throw new exceptions.NotImplementedError.$pyclass('tuple_iterator.__format__ has not been implemented')
 }
 

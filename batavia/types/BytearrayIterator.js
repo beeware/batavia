@@ -33,7 +33,7 @@ BytearrayIterator.prototype.__str__ = function() {
     return '<bytearray_iterator object at 0x99999999>'
 }
 
-BytearrayIterator.prototype.__format__ = function() {
+BytearrayIterator.prototype.__format__ = function(value, formatSpecifier) {
     throw new exceptions.NotImplementedError.$pyclass('bytearray.__format__ has not been implemented')
 }
 

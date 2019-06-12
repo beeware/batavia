@@ -36,6 +36,10 @@ CallableIterator.prototype.__str__ = function() {
     return '<callable_iterator object at 0x99999999>'
 }
 
+CallableIterator.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.NotImplementedError.$pyclass('callable_iterator.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

@@ -33,7 +33,7 @@ BytesIterator.prototype.__str__ = function() {
     return '<bytes_iterator object at 0x99999999>'
 }
 
-BytesIterator.prototype.__format__ = function() {
+BytesIterator.prototype.__format__ = function(value, formatSpecifier) {
     throw new exceptions.NotImplementedError.$pyclass('bytes_iterator.__format__ has not been implemented')
 }
 

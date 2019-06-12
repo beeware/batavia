@@ -39,7 +39,7 @@ SequenceIterator.prototype.__str__ = function() {
     return '<iterator object at 0x99999999>'
 }
 
-SequenceIterator.prototype.__format__ = function() {
+SequenceIterator.prototype.__format__ = function(value, formatSpecifier) {
     throw new exceptions.NotImplementedError.$pyclass('sequence_iterator.__format__ has not been implemented')
 }
 
