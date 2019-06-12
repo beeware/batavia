@@ -31,6 +31,10 @@ ListIterator.prototype.__str__ = function() {
     return '<list_iterator object at 0x99999999>'
 }
 
+ListIterator.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('list_iterator.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

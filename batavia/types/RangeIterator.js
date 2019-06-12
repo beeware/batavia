@@ -33,6 +33,10 @@ RangeIterator.prototype.__str__ = function() {
     return '<range_iterator object at 0x99999999>'
 }
 
+RangeIterator.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('range_iterator.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

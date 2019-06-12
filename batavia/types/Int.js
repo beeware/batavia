@@ -939,6 +939,10 @@ Int.prototype.__trunc__ = function() {
     return this
 }
 
+Int.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('int.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

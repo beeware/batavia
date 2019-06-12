@@ -425,6 +425,10 @@ Set.prototype.update = function(args) {
     }
 }
 
+Set.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('set.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

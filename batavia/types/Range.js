@@ -209,6 +209,10 @@ Range.prototype.__getitem__ = function(index) {
     }
 }
 
+Range.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('range.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

@@ -738,6 +738,10 @@ Str.prototype.capitalize = function() {
     }
 }
 
+Str.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('str.__format__ has not been implemented')
+}
+
 Str.prototype.format = function(args, kwargs) {
     const types = require('../types')
 

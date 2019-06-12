@@ -23,6 +23,10 @@ function Method(instance, func) {
 Method.prototype = Object.create(Function.prototype)
 create_pyclass(Method, 'method', true)
 
+Method.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('method.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

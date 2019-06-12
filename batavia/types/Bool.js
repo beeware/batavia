@@ -757,6 +757,10 @@ Bool.prototype.__trunc__ = function() {
     return new types.Int(0)
 }
 
+Bool.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('bool.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

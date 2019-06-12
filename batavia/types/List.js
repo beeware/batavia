@@ -747,6 +747,10 @@ function validateIndexType(index) {
     }
 }
 
+List.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('list.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

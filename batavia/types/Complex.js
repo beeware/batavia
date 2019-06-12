@@ -610,6 +610,10 @@ Complex.prototype.update = function(values) {
     }
 }
 
+Complex.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('complex.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

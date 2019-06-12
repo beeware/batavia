@@ -228,6 +228,10 @@ Bytearray.prototype.__len__ = function() {
     return this.val.__len__()
 }
 
+Bytearray.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('bytearray.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

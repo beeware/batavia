@@ -362,6 +362,10 @@ Bytes.prototype.decode = function(encoding, errors) {
     }
 }
 
+Bytes.prototype.__format__ = function() {
+    throw new exceptions.NotImplementedError.$pyclass('bytes.__format__ has not been implemented')
+}
+
 /**************************************************
  * Module exports
  **************************************************/
