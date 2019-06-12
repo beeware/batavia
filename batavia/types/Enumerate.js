@@ -31,7 +31,7 @@ Enumerate.prototype.__str__ = function() {
 }
 
 Enumerate.prototype.__format__ = function (value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('dict.__format__ has not been implemented')
+    throw new exceptions.NotImplementedError.$pyclass('enumerate.__format__ has not been implemented')
 }
 
 /**************************************************

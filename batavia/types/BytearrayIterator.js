@@ -5,6 +5,7 @@ var exceptions = require('../core').exceptions
 /**************************************************
  * Bytearray Iterator
  **************************************************/
+const className = 'bytearray_iterator';
 
 function BytearrayIterator(data) {
     PyObject.call(this)
@@ -12,7 +13,7 @@ function BytearrayIterator(data) {
     this.data = data
 };
 
-create_pyclass(BytearrayIterator, 'bytearray_iterator')
+create_pyclass(BytearrayIterator, className)
 
 BytearrayIterator.prototype.__iter__ = function() {
     return this
@@ -34,7 +35,10 @@ BytearrayIterator.prototype.__str__ = function() {
 }
 
 BytearrayIterator.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('bytearray.__format__ has not been implemented')
+    if(formatSpecifier === ""){
+        return value.__str__()
+    }
+    throw new exceptions.ValueError.$pyclass(`ValueError: Unknown format code ${formatSpecifier} for object of type '${className}'`)
 }
 
 /**************************************************

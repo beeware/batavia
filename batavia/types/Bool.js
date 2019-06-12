@@ -7,10 +7,11 @@ var NotImplemented = require('../core').NotImplemented
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
  *************************************************************************/
+const className = 'bool';
 
 var Bool = Boolean
 
-create_pyclass(Bool, 'bool', true)
+create_pyclass(Bool, className, true)
 
 Bool.prototype.__dir__ = function() {
     var types = require('../types')
@@ -758,6 +759,9 @@ Bool.prototype.__trunc__ = function() {
 }
 
 Bool.prototype.__format__ = function(value, formatSpecifier) {
+    if(formatSpecifier === ""){
+        return value.__str__()
+    }
     throw new exceptions.NotImplementedError.$pyclass('bool.__format__ has not been implemented')
 }
 

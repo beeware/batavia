@@ -12,6 +12,7 @@ var NotImplemented = require('../core').NotImplemented
 /*************************************************************************
  * A Python bytes type
  *************************************************************************/
+const className = 'bytes';
 
 function Bytes(val) {
     // the value is an instance of Feross's Buffer class
@@ -19,7 +20,7 @@ function Bytes(val) {
     this.val = val
 }
 
-create_pyclass(Bytes, 'bytes')
+create_pyclass(Bytes, className)
 
 Bytes.prototype.__dir__ = function() {
     var types = require('../types')
@@ -310,7 +311,7 @@ Bytes.prototype.__getitem__ = function(other) {
     var types = require('../types')
 
     if (types.isinstance(other, types.Slice)) {
-        throw new exceptions.NotImplementedError.$pyclass('Bytes.__getitem__ with slice has not been implemented')
+        throw new exceptions.NotImplementedError.$pyclass('bytes.__getitem__ with slice has not been implemented')
     }
     if (!types.isinstance(other, types.Int)) {
         throw new exceptions.TypeError.$pyclass('byte indices must be integers or slices, not ' + type_name(other))
@@ -364,7 +365,10 @@ Bytes.prototype.decode = function(encoding, errors) {
 }
 
 Bytes.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('bytes.__format__ has not been implemented')
+    if(formatSpecifier === ""){
+        return value.__str__()
+    }
+    throw new exceptions.ValueError.$pyclass(`ValueError: Unknown format code ${formatSpecifier} for object of type '${className}'`)
 }
 
 /**************************************************

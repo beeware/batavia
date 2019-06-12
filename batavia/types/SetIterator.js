@@ -33,7 +33,10 @@ SetIterator.prototype.__str__ = function() {
 }
 
 SetIterator.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('set_iterator.__format__ has not been implemented')
+    if(formatSpecifier === ""){
+        return value.__str__()
+    }
+    throw new exceptions.ValueError.$pyclass(`ValueError: Unknown format code ${formatSpecifier} for object of type '${className}'`)
 }
 
 /**************************************************
