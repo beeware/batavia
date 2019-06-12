@@ -747,8 +747,11 @@ function validateIndexType(index) {
     }
 }
 
-List.prototype.__format__ = function(...args) {
-    return args[0]; 
+List.prototype.__format__ = function(value, specifier) {
+    if(specifier && specifier !== ""){
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to list.__format__")
+    }
+    return value; 
 }
 
 /**************************************************

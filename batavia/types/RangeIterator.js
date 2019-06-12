@@ -33,8 +33,11 @@ RangeIterator.prototype.__str__ = function() {
     return '<range_iterator object at 0x99999999>'
 }
 
-RangeIterator.prototype.__format__ = function(...args) {
-    return args[0]; 
+RangeIterator.prototype.__format__ = function(value, specifier) {
+    if(specifier && specifier !== ""){
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to range_iterator.__format__")
+    }
+    return value; 
 }
 
 /**************************************************

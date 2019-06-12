@@ -329,8 +329,11 @@ FrozenSet.prototype._update = function(args) {
     }
 }
 
-FrozenSet.prototype.__format__ = function(...args) {
-    return args[0]; 
+FrozenSet.prototype.__format__ = function(value, specifier) {
+    if (specifier && specifier !== "") {
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to frozenset.__format__")
+    }
+    return value; 
 }
 
 /**************************************************

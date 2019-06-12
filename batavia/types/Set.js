@@ -425,8 +425,11 @@ Set.prototype.update = function(args) {
     }
 }
 
-Set.prototype.__format__ = function(...args) {
-    return args[0]; 
+Set.prototype.__format__ = function(value, specifier) {
+    if(specifier && specifier !== ""){
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to set.__format__")
+    }
+    return value; 
 }
 
 /**************************************************

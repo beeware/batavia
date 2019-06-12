@@ -229,17 +229,11 @@ Bytearray.prototype.__len__ = function() {
     return this.val.__len__()
 }
 
-Bytearray.prototype.__format__ = function(...args) {
-    if(args.length === 0){
-        throw new exceptions.TypeError.$pyclass("descriptor '__format__' of 'object' object needs an argument")
+Bytearray.prototype.__format__ = function(value, specifier) {
+    if(specifier && specifier !== ""){
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to bytearray.__format__")
     }
-    if(args.length !== 2){
-        throw new exceptions.TypeError.$pyclass('__format__() takes exactly one argument (' + args.length - 1 + ' given)')
-    }
-    if (args[1] === "") {
-       return args[0]; 
-    }
-    return args[0]; 
+    return value; 
 }
 
 /**************************************************

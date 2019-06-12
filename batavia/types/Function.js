@@ -75,6 +75,14 @@ function Function(name, code, globals, defaults, closure, vm) {
 
 create_pyclass(Function, 'function')
 
+Function.prototype.__str__ = function(){
+    return '<function <lambda> at 0x001A07C8>>'
+}
+
+Function.prototype.__format__ = function(value) {
+    return value; 
+}
+
 Function.prototype.__get__ = function(instance) {
     var types = require('../types')
 
@@ -83,10 +91,6 @@ Function.prototype.__get__ = function(instance) {
         return this
     }
     return new types.Method(instance, this)
-}
-
-Function.prototype.__format__ = function(...args) {
-    return args[0]; 
 }
 
 /**************************************************

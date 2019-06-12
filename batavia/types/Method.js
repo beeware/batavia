@@ -23,8 +23,8 @@ function Method(instance, func) {
 Method.prototype = Object.create(Function.prototype)
 create_pyclass(Method, 'method', true)
 
-Method.prototype.__format__ = function(...args) {
-    return args[0]; 
+Method.prototype.__format__ = function(value) {
+    return value; 
 }
 
 /**************************************************

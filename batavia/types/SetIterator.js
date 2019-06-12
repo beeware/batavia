@@ -32,8 +32,11 @@ SetIterator.prototype.__str__ = function() {
     return '<set_iterator object at 0x99999999>'
 }
 
-SetIterator.prototype.__format__ = function(...args) {
-    return args[0]; 
+SetIterator.prototype.__format__ = function(value, specifier) {
+    if(specifier && specifier !== ""){
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to set_iterator.__format__")
+    }
+    return value; 
 }
 
 /**************************************************

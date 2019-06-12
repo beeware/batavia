@@ -39,8 +39,8 @@ SequenceIterator.prototype.__str__ = function() {
     return '<iterator object at 0x99999999>'
 }
 
-SequenceIterator.prototype.__format__ = function(...args) {
-    return args[0]; 
+SequenceIterator.prototype.__format__ = function(value) {
+    return value; 
 }
 
 /**************************************************

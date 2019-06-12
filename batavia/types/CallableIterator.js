@@ -36,17 +36,8 @@ CallableIterator.prototype.__str__ = function() {
     return '<callable_iterator object at 0x99999999>'
 }
 
-CallableIterator.prototype.__format__ = function(...args) {
-    if(args.length === 0){
-        throw new exceptions.TypeError.$pyclass("descriptor '__format__' of 'object' object needs an argument")
-    }
-    if(args.length !== 2){
-        throw new exceptions.TypeError.$pyclass('__format__() takes exactly one argument (' + args.length - 1 + ' given)')
-    }
-    if (args[1] === "") {
-       return args[0]; 
-    }
-    return args[0]; 
+CallableIterator.prototype.__format__ = function(value) {
+    return value; 
 }
 
 

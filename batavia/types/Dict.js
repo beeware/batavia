@@ -672,17 +672,11 @@ Dict.prototype.fromkeys = function(iterable, value) {
     return d
 }
 
-Dict.prototype.__format__ = function(...args) {
-    if(args.length === 0){
-        return args[0];
+Dict.prototype.__format__ = function(value, specifier) {
+    if(specifier && specifier !== ""){
+        throw new exceptions.TypeError.$pyclass("unsupported format string passed to dict.__format__")
     }
-    if(args.length !== 2){
-        throw new exceptions.TypeError.$pyclass('__format__() takes exactly one argument (' + args.length - 1 + ' given)')
-    }
-    if (args[1] === "") {
-       return args[0]; 
-    }
-    return args[0]; 
+    return value; 
 }
 
 
