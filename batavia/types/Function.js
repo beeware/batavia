@@ -85,8 +85,8 @@ Function.prototype.__get__ = function(instance) {
     return new types.Method(instance, this)
 }
 
-Function.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('function.__format__ has not been implemented')
+Function.prototype.__format__ = function(...args) {
+    return args[0]; 
 }
 
 /**************************************************

@@ -329,8 +329,8 @@ FrozenSet.prototype._update = function(args) {
     }
 }
 
-FrozenSet.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('frozenset.__format__ has not been implemented')
+FrozenSet.prototype.__format__ = function(...args) {
+    return args[0]; 
 }
 
 /**************************************************

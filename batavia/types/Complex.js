@@ -610,9 +610,19 @@ Complex.prototype.update = function(values) {
     }
 }
 
-Complex.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('complex.__format__ has not been implemented')
+Complex.prototype.__format__ = function(...args) {
+    if(args.length === 0){
+        throw new exceptions.TypeError.$pyclass("descriptor '__format__' of 'object' object needs an argument")
+    }
+    if(args.length !== 2){
+        throw new exceptions.TypeError.$pyclass('__format__() takes exactly one argument (' + args.length - 1 + ' given)')
+    }
+    if (args[1] === "") {
+       return args[0]; 
+    }
+    return args[0]; 
 }
+
 
 /**************************************************
  * Module exports

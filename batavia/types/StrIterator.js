@@ -27,8 +27,8 @@ StrIterator.prototype.__str__ = function() {
     return '<str_iterator object at 0x99999999>'
 }
 
-StrIterator.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('str_iterator.__format__ has not been implemented')
+StrIterator.prototype.__format__ = function(...args) {
+    return args[0]; 
 }
 
 /**************************************************

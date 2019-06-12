@@ -209,8 +209,8 @@ Range.prototype.__getitem__ = function(index) {
     }
 }
 
-Range.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('range.__format__ has not been implemented')
+Range.prototype.__format__ = function(...args) {
+    return args[0]; 
 }
 
 /**************************************************

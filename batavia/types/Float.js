@@ -562,10 +562,6 @@ Float.prototype.__trunc__ = function() {
     return new types.Int(Math.trunc(this.valueOf()))
 }
 
-Float.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('float.__format__ has not been implemented')
-}
-
 /**************************************************
  * Module exports
  **************************************************/

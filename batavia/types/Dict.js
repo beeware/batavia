@@ -672,9 +672,19 @@ Dict.prototype.fromkeys = function(iterable, value) {
     return d
 }
 
-Dict.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('dict.__format__ has not been implemented')
+Dict.prototype.__format__ = function(...args) {
+    if(args.length === 0){
+        return args[0];
+    }
+    if(args.length !== 2){
+        throw new exceptions.TypeError.$pyclass('__format__() takes exactly one argument (' + args.length - 1 + ' given)')
+    }
+    if (args[1] === "") {
+       return args[0]; 
+    }
+    return args[0]; 
 }
+
 
 /**************************************************
  * Module exports

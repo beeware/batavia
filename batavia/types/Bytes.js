@@ -363,8 +363,18 @@ Bytes.prototype.decode = function(encoding, errors) {
     }
 }
 
-Bytes.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('bytes.__format__ has not been implemented')
+Bytes.prototype.__format__ = function(...args) {
+    if(args.length === 1){
+        throw new exceptions.TypeError.$pyclass("descriptor '__format__' of 'object' object needs an argument")
+    }
+    if(args.length !== 2){
+        throw new exceptions.TypeError.$pyclass('__format__() takes exactly one argument (' + args.length - 1 + ' given)')
+    }
+    if (args[1] === "") {
+       return args[0]; 
+    }
+    return args[0]; 
+    // throw new exceptions.TypeError.$pyclass('unsupported format string passed to bytearray_iterator.__format__')
 }
 
 /**************************************************

@@ -465,8 +465,8 @@ Tuple.prototype.index = function(value, start, stop) {
     throw new exceptions.ValueError.$pyclass('tuple.index(x): x not in tuple')
 }
 
-Tuple.prototype.__format__ = function(value, formatSpecifier) {
-    throw new exceptions.NotImplementedError.$pyclass('tuple.__format__ has not been implemented')
+Tuple.prototype.__format__ = function(...args) {
+    return args[0]; 
 }
 
 /**************************************************
