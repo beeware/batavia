@@ -589,9 +589,9 @@ List.prototype.__imul__ = function(other) {
 
     if (types.isinstance(other, types.Int)) {
         if (other <= 0) {
-            return new List()
+            this.length = 0
         } else {
-            // Need to cache the length beacuse it will change
+            // Need to cache the length because it will change
             // as a result of inline modification.
             var length = this.length
             for (var i = 1; i < other; i++) {
@@ -599,17 +599,15 @@ List.prototype.__imul__ = function(other) {
                     this.push(this[j])
                 }
             }
-            return this
         }
     } else if (types.isinstance(other, types.Bool)) {
-        if (other === true) {
-            return this
-        } else {
-            return new List()
+        if (other !== true) {
+            this.length = 0
         }
     } else {
         throw new exceptions.TypeError.$pyclass("can't multiply sequence by non-int of type '" + type_name(other) + "'")
     }
+    return this
 }
 
 List.prototype.__imatmul__ = function(other) {

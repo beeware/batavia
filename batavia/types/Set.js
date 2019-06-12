@@ -294,79 +294,72 @@ Set.prototype.__isub__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
-        var both = []
-        var iterobj1 = builtins.iter([this], null)
-        callables.iter_for_each(iterobj1, function(val) {
-            if (!(other.__contains__(val).valueOf())) {
-                both.push(val)
-            }
-        })
-        this.update(both)
-        return new Set(both)
+    if (!types.isinstance(other, [types.FrozenSet, types.Set])) {
+        return NotImplemented
     }
-    return NotImplemented
+
+    var iterobj1 = builtins.iter([other], null)
+    callables.iter_for_each(iterobj1, (val) => {
+        if ((this.__contains__(val).valueOf())) {
+            this.remove(val)
+        }
+    })
+    return this
 }
 
 Set.prototype.__iand__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
-        var intersection = new Set()
-        var iterobj = builtins.iter([this], null)
-        callables.iter_for_each(iterobj, function(val) {
-            if (other.__contains__(val).valueOf()) {
-                intersection.add(val)
-            }
-        })
-        return intersection
+    if (!types.isinstance(other, [types.FrozenSet, types.Set])) {
+        return NotImplemented
     }
-    return NotImplemented
+
+    var iterobj = builtins.iter([new Set(this)], null)
+    callables.iter_for_each(iterobj, (val) => {
+        if (!other.__contains__(val).valueOf()) {
+            this.remove(val)
+        }
+    })
+    return this
 }
 
 Set.prototype.__ixor__ = function(other) {
     var types = require('../types')
     var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
-        var both = []
-        var iterobj1 = builtins.iter([this], null)
-        callables.iter_for_each(iterobj1, function(val) {
-            if (!(other.__contains__(val).valueOf())) {
-                both.push(val)
-            }
-        })
-        var iterobj2 = builtins.iter([other], null)
-        callables.iter_for_each(iterobj2, function(val) {
-            if (!(this.__contains__(val).valueOf())) {
-                both.push(val)
-            }
-        }.bind(this))
-        this.update(both)
-        return new Set(both)
+    if (!types.isinstance(other, [types.FrozenSet, types.Set])) {
+        return NotImplemented
     }
-    return NotImplemented
+
+    var original = new Set(this)
+    this.clear()
+
+    var iterobj1 = builtins.iter([original], null)
+    callables.iter_for_each(iterobj1, (val) => {
+        if (!(other.__contains__(val).valueOf())) {
+            this.add(val)
+        }
+    })
+    var iterobj2 = builtins.iter([other], null)
+    callables.iter_for_each(iterobj2, (val) => {
+        if (!(original.__contains__(val).valueOf())) {
+            this.add(val)
+        }
+    })
+
+    return this
 }
 
 Set.prototype.__ior__ = function(other) {
     var types = require('../types')
-    var builtins = require('../builtins')
 
-    if (types.isinstance(other, [types.FrozenSet, types.Set])) {
-        var both = []
-        var iterobj1 = builtins.iter([this], null)
-        callables.iter_for_each(iterobj1, function(val) {
-            both.push(val)
-        })
-        var iterobj2 = builtins.iter([other], null)
-        callables.iter_for_each(iterobj2, function(val) {
-            both.push(val)
-        })
-        this.update(both)
-        return new Set(both)
+    if (!types.isinstance(other, [types.FrozenSet, types.Set])) {
+        return NotImplemented
     }
-    return NotImplemented
+
+    this.update(other)
+    return this
 }
 
 /**************************************************
@@ -399,6 +392,10 @@ Set.prototype.__imatmul__ = function(other) {
 
 Set.prototype.add = function(v) {
     this.data.__setitem__(v, v)
+}
+
+Set.prototype.clear = function() {
+    this.data.clear()
 }
 
 Set.prototype.copy = function() {

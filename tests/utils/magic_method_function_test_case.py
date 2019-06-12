@@ -52,12 +52,18 @@ class MagicMethodFunctionTestCase(NotImplementedToExpectedFailure):
                 adjust("""
                     try:
                         print('>>> x = %(x)s')
-                        print('>>> y = %(y)s')
-                        print('>>> z = x.%(magic_method)s(y)')
-                        print('>>> %(format)sz')
                         x = %(x)s
+                        print('>>> original_x = x')
+                        original_x = x
+                        print('>>> y = %(y)s')
                         y = %(y)s
+                        print('>>> z = x.%(magic_method)s(y)')
                         z = x.%(magic_method)s(y)
+                        print('>>> x')
+                        print(x)
+                        print('>>> original_x')
+                        print(original_x)
+                        print('>>> %(format)sz')
                         print('|||', %(format)sz)
                     except Exception as e:
                         print('///', type(e), ':', e)

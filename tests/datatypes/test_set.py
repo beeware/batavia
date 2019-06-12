@@ -82,6 +82,17 @@ class SetTests(TranspileTestCase):
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'set'
     MagicMethodFunctionTestCase._add_tests(vars(), set)
+    substitutions = {
+        "{2.3456, 1, 'another'}": [
+            "{2.3456, 'another', 1}",
+            "{1, 2.3456, 'another'}",
+            "{1, 'another', 2.3456}",
+            "{'another', 2.3456, 1}",
+            "{'another', 1, 2.3456}",
+            "{'another', 2.3456}",
+            "{2.3456, 'another'}",
+        ]
+    }
 
     not_implemented = [
         "test__rsub__frozenset",
