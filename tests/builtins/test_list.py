@@ -106,9 +106,6 @@ class ListTests(TranspileTestCase):
             print("a[-1:] -> ", a[-1:])
             print("a[:-1] -> ", a[:-1])
 
-            # a[len(a):] = [1]
-            # print("a[len(a):] = [1] -> ", a)
-
             del a[0]
             print("del a[0] -> ", a)
 
@@ -127,6 +124,23 @@ class ListTests(TranspileTestCase):
                 print(a[-1])
             except IndexError as e:
                 print(e)
+        """)
+
+    def test_insert_with_slice(self):
+        self.assertCodeExecution("""
+            a[len(a):] = [1]
+            print("a[len(a):] = [1] -> ", a)
+        """)
+
+    def test_sort_with_key(self):
+        self.assertCodeExecution("""
+        def key_func(a, b):
+            if a % 2:
+                return True
+            else:
+                return False
+
+        print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func))
         """)
 
     def test_comprehensions(self):
