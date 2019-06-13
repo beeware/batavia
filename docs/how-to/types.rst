@@ -108,6 +108,7 @@ Follow the format there to add a test for your issue or modify an existing test.
 Run it using the following command to check for errors.
 
 .. code-block:: bash
+
     $ python setup.py -s tests.path.to.your.test.TestClass.test_function
 
 Note: ``@expectedFailure`` indicates a test that's not passing yet. Your issue may be tested in one of those cases already.

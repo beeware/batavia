@@ -23,7 +23,7 @@ should be immediately familiar to a Python developer.
 Support
 *******
 You'll also notice folders for tests, docs, and a few other bits and bobs, like ``testserver``, which is
-a Django project that allows code execution. Contributions to the 
+a Django project that allows code execution from your browser. Contributions to the 
 tests and documentation are always welcome and are great ways to familiarize yourself with the
 code and meet the other contributors.
 
