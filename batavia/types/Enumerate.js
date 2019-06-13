@@ -30,16 +30,8 @@ Enumerate.prototype.__str__ = function() {
     return '<enumerate object at 0x99999999>'
 }
 
-<<<<<<< HEAD
-Enumerate.prototype.__format__ = function(value, specifier) {
-    if (specifier && specifier !== "") {
-        throw new exceptions.TypeError.$pyclass("unsupported format string passed to enumerate.__format__")
-    }
-    return value;
-=======
 Enumerate.prototype.__format__ = function (value, formatSpecifier) {
     throw new exceptions.NotImplementedError.$pyclass('enumerate.__format__ has not been implemented')
->>>>>>> 1cfab4f9e42af452917af7ba1b0317b68f0dc469
 }
 
 /**************************************************

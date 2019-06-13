@@ -13,7 +13,7 @@ const className = 'bool';
 var Bool = Boolean
 
 create_pyclass(Bool, className, true)
-
+ 
 Bool.prototype.__dir__ = function() {
     var types = require('../types')
     if (version.at_least(3.6)) {
@@ -26,15 +26,15 @@ Bool.prototype.__dir__ = function() {
 /**************************************************
  * Type conversions
  **************************************************/
-
+ 
 Bool.prototype.__bool__ = function() {
     return this.valueOf()
 }
-
+ 
 Bool.prototype.__repr__ = function(args, kwargs) {
     return this.__str__()
 }
-
+ 
 Bool.prototype.__str__ = function(args, kwargs) {
     if (this.valueOf()) {
         return 'True'
@@ -42,7 +42,7 @@ Bool.prototype.__str__ = function(args, kwargs) {
         return 'False'
     }
 }
-
+ 
 Bool.prototype.__float__ = function() {
     var types = require('../types')
     var this_bool
@@ -57,7 +57,7 @@ Bool.prototype.__float__ = function() {
 /**************************************************
  * Comparison operators
  **************************************************/
-
+ 
 Bool.prototype.__eq__ = function(other) {
     var types = require('../types')
 
@@ -817,9 +817,10 @@ function toInt(value) {
 }
 
 function simpleSpecifier(spec) {
-    check = 'bdgGnoxX'
-    if(spec.length === 1 && check.indexOf(spec) > -1)
+    check = 'bdgGnoxX';
+    if(spec.length === 1 && check.indexOf(spec) > -1){
         return true;
+    }
     return false;
 }
 
