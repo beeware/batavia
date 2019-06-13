@@ -717,7 +717,7 @@ List.prototype.index = function(value, start, stop) {
             return i
         }
     }
-    throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
+    throw new exceptions.ValueError.$pyclass(value.toString() + ' is not in list')
 }
 
 List.prototype.reverse = function() {
@@ -725,6 +725,27 @@ List.prototype.reverse = function() {
         throw new exceptions.TypeError.$pyclass('reverse() takes no arguments (' + arguments.length + ' given)')
     }
     Array.prototype.reverse.apply(this)
+}
+
+List.prototype.sort = function(key=None, reverse=false) {
+    if (key === None) {
+        Array.prototype.sort.call(this)
+    } else {
+        callable = require('../builtins.js').callable
+        if (callable(key)) {
+            // Call using batavia conventions
+            var keyfunc = function(a, b) {
+                return builtins.call(key, [a, b], {})
+            }
+            Array.prototype.sort.call(this, keyfunc)
+        } else {
+            throw new exceptions.TypeError.$pyclass("'" + type_name(key) + "' object is not callable")
+        }
+    }
+    if (reverse) {
+        Array.prototype.reverse.apply(this)
+    }
+    return None
 }
 
 function validateIndexType(index) {

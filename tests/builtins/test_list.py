@@ -9,19 +9,18 @@ class ListTests(TranspileTestCase):
             print(list())
             """)
 
-    @expectedFailure
-    def test_list_with_args(self):
+    def test_list_callable_with_args(self):
         self.assertCodeExecution("""
             print([1, 2, 3])
             print(list((1, 2, 3)))
             try:
+                print(">>> list(1, 2)")
                 list(1, 2)
             except TypeError as e:
                 print(e)
             """)
 
-    @expectedFailure
-    def test_list_with_kwargs(self):
+    def test_list_callable_with_kwargs(self):
         self.assertCodeExecution("""
             try:
                 print(list(a=1))
@@ -50,7 +49,6 @@ class ListTests(TranspileTestCase):
             assert y.copy()[0] is x
             """)
 
-    @expectedFailure
     def test_list_operations(self):
         # Print the result of the method to ensure it returns the correct output, even if None
         # Print the list after every operation to ensure it returns the correct output
@@ -69,12 +67,12 @@ class ListTests(TranspileTestCase):
             print(".reverse: ", a.reverse(), a)
             b = a.copy()
             print(".copy: ", b, a)
-            print(".clear: ".clear(), a)
+            print(".clear: ", a.clear(), a)
             print("Ensure copy is not still linked: ", b)
 
             try:
                 print(a.index(100))
-            except IndexError as e:
+            except ValueError as e:
                 print(e)
 
             print("Empty list tests.")
@@ -99,7 +97,6 @@ class ListTests(TranspileTestCase):
             print(a.copy(), a)
             """)
 
-    @expectedFailure
     def test_slice_operations(self):
         'Credit: https://docs.python.org/3/tutorial/datastructures.html'
 
