@@ -1,107 +1,125 @@
 Implementing Python Built-ins in JavaScript
 ===========================================
 
+Process
+-------
+
+The first thing to do when adding anything to Batavia is to play around a bit with it in the Python REPL::
+
+    >> list()
+    []
+    >> []
+    []
+    >> list(4)
+    Traceback (most recent call last):
+    File "<stdin>", line 1, in <module>
+    TypeError: 'int' object is not iterable
+
+Your goal is to find out how the function responds to various inputs and outputs. You may also
+want to consult the offical documentation. Once you're a little familiar, you can add your
+implementation to Batavia.
+
 General Structure
------------------
+*****************
 
 JavaScript versions of Python built-in functions can be found inside the ``batavia/builtins``
-directory in the Batavia code. Each built-in is placed inside its own file.
+directory in the Batavia code. Each built-in is placed inside its own file. These builtins are 
+designed to be used only inside Batavia, as such they need to ensure
+they are being used in a compatible manner.
+
+Each builtin function will receive arguments and keyword arguments and needs to handle them,
+even if the result is throwing an error. Args should be an array, and kwargs should be a 
+JavaScript object. The first thing to do is check that both were passed in.
 
 .. code-block:: javascript
 
     // Example: a function that accepts exactly one argument, and no keyword arguments
 
-    var <fn> = function(<args>, <kwargs>) {
-        // These builtins are designed to be used only inside Batavia, as such they need to ensure
-        // they are being used in a compatible manner.
-
-        // Batavia will only ever pass two arguments, args and kwargs. If more or fewer arguments
-        // are passed, then Batavia is being used in an incompatible way.
-        // See: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/arguments
+    var <fn> = function(args, kwargs) {
+        // Always add this code.
         if (arguments.length !== 2) {
             throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
         }
 
-        // We are now checking if a kwargs object is passed. If it isn't, kwargs will be null. Like
-        // obj.keys() in Python we can use Object.keys(obj) to get the keys of an object. If the
-        // function doesn't need support any kwargs we throw an error.
-        if (kwargs && Object.keys(kwargs).length > 0) {
-            throw new builtins.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
-        }
+Next, we need to validate the arguments are correct. We can use JavaScript's ``Object.keys()`` to
+get the keys of an object. If the function pass in the , we will check the Python REPL to see
+what kind of error and throw it.
 
-        // Now we can check if the function has the supported number of arguments. In this case a
-        // single required argument.
-        if (!args || args.length !== 1) {
-            throw new builtins.TypeError.$pyclass("<fn>() expected exactly 1 argument (" + args.length + " given)");
-        }
+.. tabs::
 
-        // If the function only works with a specific object type, add a test
-        var obj = args[0];
-        if (!types.isinstance(obj, types.<type>)) {
-            throw new builtins.TypeError.$pyclass(
-                "<fn>() expects a <type> (" + type_name(obj) + " given)");
-        }
+    .. group-tab:: Python REPL
 
-        // actual code goes here
-        Javascript.Function.Stuff();
+        .. code-block::
+
+            >> list(a=1)
+            TypeError: list() doesn't accept keyword arguments.
+            >> list(1, 2, 3)
+            TypeError: list() expected exactly 1 argument (3 given)
+
+    .. group-tab:: Batavia Code
+
+        .. code-block:: javascript
+
+                if (kwargs && Object.keys(kwargs).length > 0) {
+                    throw new exceptions.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
+                }
+
+                if (!args || args.length !== 1) {
+                    throw new exceptions.TypeError.$pyclass("<fn>() expected exactly 1 argument (" + args.length + " given)");
+                }
+
+                // If the function only works with a specific object type, add a test
+                var obj = args[0];
+                if (!types.isinstance(obj, types.<type>)) {
+                    throw new exceptions.TypeError.$pyclass(
+                        "<fn>() expects a <type> (" + type_name(obj) + " given)");
+                }
+
+        Useful functions are ``types.isinstance``, which checks for a match against a Batavia type or list,
+        of Batavia types, ``types.isbataviainstance``, which checks for a match against any Batavia instance,
+        ``Object.keys(kwargs)`` for dealing with kwargs, and JavaScript's ``for in``, ``for of``, and
+        ``Array.forEach`` loops for iterating over the JavaScript arrays and objects. 
+
+        Note also the format for errors: ``throw new exceptions.<Error>.$pyclass``.
+
+Returning a value
+*****************
+
+Builtins implement Python functions and should return a Python object.
+Batavia implementations of all Python types are located in ``/batavia/types.js``.
+JavaScript imports use the ``require`` keyword and can be imported inline or at 
+the top of the file. Inline imports can be preferable in some cases.
+
+.. code-block:: javascript
+
+    ...
+
+    Tuple = require('../types.js').Tuple
+    return new Tuple(my, results, here)
     }
+
+Documentation
+*************
+
+Finally, add the docstring to the function object. In JavaScript, like in Python, functions 
+are first-class objects and can have additional properties.
+
+.. code-block:: javascript
 
     <fn>.__doc__ = 'docstring from Python 3.x goes here, for documentation'
 
     modules.export = <fn>
 
-Building Blocks of Batavia
---------------------------
+Tests
+*****
 
-This section is a quick reference for things you'll see often in the codebase.
+No implemenation for a project like this is complete without tests. Check out the other sections for
+more details on test structure. Tests are located in ``/tests`` in a similar folder structure to the
+core code, and most test files have already been created. Some things that should almost always be
+tested:
 
-builtins.js
-***********
-
-This contains all of the native Python builtin functions, like ``str``, ``len``, and ``iter``.
-
-When dealing with Python types, many of the native JavaScript operations have been overriden to
-try to use these first. For instance, .toString() will often just call the object's __str__.
-
-Note again that *args* and *kwargs* are required for most builtins, even if empty.
-
-types.js
-********
-
-This contains all of the native Python types that have been implemented in Batavia. It also has some helper functions:
-
-* ``types.js2py`` Converts a native JavaScript type to a corresponding Batavia type.
-* ``types.isinstance`` checks to see if the object is a Python instance of the corresponding type.
-* ``types.isbataviainstance`` checks to see if the object is an instance of any Batavia type.
-* ``types.type_name`` get the name of the type.
-
-Where possible, use Python types from types.js instead of native JavaScript objects and types.
-This allows us to avoid things like comparing ``Object.prototype.constructor``. Instead, use these helpers!
-
-core/callables.js
-*****************
-
-These methods ensure that all Python code is executed using the proper __call__ procedure, which could occasionally
-have something special built in or be overriden or decorated by the programmer.
-
-* ``callables.call_function`` Invokes a function using its __call__ method if possible. If not, just call it normally.
-* ``callables.call_method`` Calls a class method using the call_function specification above.
-* ``callables.iter_for_each`` Exhausts an iterable using the call_function specification above.
-
-As a general rule, use the builtin where possible. If no builtin is available, use the appropriate version
-of ``call_function`` instead of calling Python functions and methods directly. An example:
-
-.. code-block:: javascript
-
-    // Avoid this
-    my_thing.__repr__()
-
-    // Better
-    const callables = require('./core/callables.js')
-    callables.call_method(my_thing, '__repr__', [], {})
-
-    // Best
-    const repr = require('./builtins.js').repr
-    repr(my_thing, [], {})
-
-Note the use of the Batavia calling convention in the two cases above!
+* Write a test or three to ensure your function returns the correct output with some normal inputs.
+* Think of a few weird inputs that could throw off your code (or future code). Test them.
+* If you are throwing an error (excluding ``BataviaError``) anywhere, write a test for that.
+* If you accounted for an edge case (look for an ``if`` statement), 
+* Check out the official documentation (https://docs.python.org/3/) for more edge cases
