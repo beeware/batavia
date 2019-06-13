@@ -1,22 +1,30 @@
 Implementing Python Built-ins in JavaScript
 ===========================================
 
+Pythons builtins are the absolute core of the language. If you're new to Python, read up on them here: https://docs.python.org/3/library/functions.html
+
+Most builtins have already been added to the project, but many do not follow the correct spec outlined below.
+Some may not handle certain types of inputs correctly. In addition, new builtins may of course arrive with the
+latest and greatest Python version. This guide should serve as your field manual for adding, updating, and
+navigating our implementations.
+
 Process
 -------
 
-The first thing to do when adding anything to Batavia is to play around a bit with it in the Python REPL::
+The first thing to do when adding anything to Batavia is to play around a bit with it in the Python REPL.
+Here's an example using ``list()``::
 
     >> list()
     []
-    >> []
-    []
+    >> list((1, 2, 3, 4))
+    [1, 2, 3, 4]
     >> list(4)
     Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
     TypeError: 'int' object is not iterable
 
 Your goal is to find out how the function responds to various inputs and outputs. You may also
-want to consult the offical documentation. Once you're a little familiar, you can add your
+want to consult the offical documentation. Once you're a little familiar, you can start to add your
 implementation to Batavia.
 
 General Structure
@@ -24,8 +32,8 @@ General Structure
 
 JavaScript versions of Python built-in functions can be found inside the ``batavia/builtins``
 directory in the Batavia code. Each built-in is placed inside its own file. These builtins are 
-designed to be used only inside Batavia, as such they need to ensure
-they are being used in a compatible manner.
+designed to be used only inside Batavia, as such they need to ensure they are being used in
+a compatible manner.
 
 Each builtin function will receive arguments and keyword arguments and needs to handle them,
 even if the result is throwing an error. Args should be an array, and kwargs should be a 
@@ -33,7 +41,7 @@ JavaScript object. The first thing to do is check that both were passed in.
 
 .. code-block:: javascript
 
-    // Example: a function that accepts exactly one argument, and no keyword arguments
+    // Example: <fn> accepts exactly one argument, and no keyword arguments
 
     var <fn> = function(args, kwargs) {
         // Always add this code.
@@ -120,6 +128,6 @@ tested:
 
 * Write a test or three to ensure your function returns the correct output with some normal inputs.
 * Think of a few weird inputs that could throw off your code (or future code). Test them.
-* If you are throwing an error (excluding ``BataviaError``) anywhere, write a test for that.
-* If you accounted for an edge case (look for an ``if`` statement), 
-* Check out the official documentation (https://docs.python.org/3/) for more edge cases
+* If you are throwing an error (excluding ``BataviaError``) anywhere, write a test that tries to throw it.
+* If you accounted for an edge case (look for an ``if`` statement), test it.
+* Check out the official documentation (https://docs.python.org/3/) for more edge cases.
