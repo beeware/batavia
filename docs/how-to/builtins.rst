@@ -50,7 +50,7 @@ JavaScript object. The first thing to do is check that both were passed in.
         }
 
 Next, we need to validate the arguments are correct. We can use JavaScript's ``Object.keys()`` to
-get the keys of an object. If the function pass in the , we will check the Python REPL to see
+get the keys of an object. If we can't accept certain args or kwargs, we will check the Python REPL to see
 what kind of error and throw it.
 
 .. tabs::
