@@ -4,7 +4,7 @@ Implementing Python Built-ins in JavaScript
 Pythons builtins give Python its trademark magical feel. If you're new to Python, read up on them here: https://docs.python.org/3/library/functions.html
 
 Most builtins have already been added to the project, but many do not follow the spec outlined below.
-Some may not handle certain types of inputs correctly. In addition, new builtins may of course arrive with the
+Some may not handle certain types of inputs correctly. In addition, new builtins may arrive with the
 latest and greatest Python version. This guide should serve as your field manual for adding, updating, and
 navigating our implementations.
 
