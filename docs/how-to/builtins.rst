@@ -131,3 +131,8 @@ tested:
 * If you are throwing an error (excluding ``BataviaError``) anywhere, write a test that tries to throw it.
 * If you accounted for an edge case (look for an ``if`` statement), test it.
 * Check out the official documentation (https://docs.python.org/3/) for more edge cases.
+
+Credit
+^^^^^^
+
+Thanks to Kshitij Sobti for the original document that this guide is based on. Most code examples are from his original.
