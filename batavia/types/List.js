@@ -552,7 +552,18 @@ List.prototype.__delitem__ = function(index) {
                 this.splice(idx, 1)
             }
         }
-    } else {
+    } else if (types.isinstance(index, types.Slice)) {
+        var start = index.start
+        var stop = index.stop
+        if (start = None) {
+            start = 0
+        }
+        if (stop = None) {
+            stop = this.length
+        }
+        this.splice(start, stop - start)
+    }
+    else {
         throw new exceptions.TypeError.$pyclass('list indices must be integers, not ' + type_name(index))
     }
 }

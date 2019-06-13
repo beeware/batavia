@@ -97,24 +97,23 @@ class ListTests(TranspileTestCase):
             print(a.copy(), a)
             """)
 
+    # Credit: https://docs.python.org/3/tutorial/datastructures.html
     def test_slice_operations(self):
-        'Credit: https://docs.python.org/3/tutorial/datastructures.html'
-
         self.assertCodeExecution("""
             a = [1, 5, 3]
 
-            print(a[-1])
-            print(a[-1:])
-            print(a[:-1])
+            print("a[-1] -> ", a[-1])
+            print("a[-1:] -> ", a[-1:])
+            print("a[:-1] -> ", a[:-1])
 
-            a[len(a):] = [1]
-            print("Insert: ", a)
+            # a[len(a):] = [1]
+            # print("a[len(a):] = [1] -> ", a)
 
             del a[0]
-            print("Del one item: ", a)
+            print("del a[0] -> ", a)
 
             del a[:]
-            print("Clear: ", a)
+            print("del a[:] -> ", a)
 
             a = [1, 5, 3]
             del a[1:]
