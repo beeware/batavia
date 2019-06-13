@@ -757,6 +757,97 @@ Bool.prototype.__trunc__ = function() {
     return new types.Int(0)
 }
 
+Bool.prototype.__format__ = function(value, specifier) {
+    if((specifier && specifier === "") || simpleSpecifier(specifier)){
+        return toIntString(value);
+    }
+    if(specifier === 'e')
+        return new types.Float(toInt(value));// + ".000000e+00";
+        // return toIntString(value) + ".000000e+00";
+    if(specifier === 'E')
+        return toIntString(value) + ".000000E+00";
+    if(specifier === 'f' || specifier === 'F')
+        return toIntString(value) + ".000000";
+    if(specifier === 'c')                
+        return '\\x0' + toIntString(value);
+    if(specifier === '%')                
+        return '100.000000%';
+    if(specContains(specifier, ['f', 'F', 'E', 'e', 'g','G']))
+        return types.Float.__format__(toFloat(value), specifier);
+    if(specContains(specifier, ['d', 'b', 'o', 'x','X']))
+        return types.Int.__format__(toInt(value), specifier);
+    if(specifier.length === 1)
+        throw new exceptions.ValueError.$pyclass("Unknown format code '" + specifier + "' for object of type 'bool'")
+    throw new exceptions.ValueError.$pyclass("Invalid format specifier")
+}
+
+function specContains(specifier, check) {
+    for (let i = 0; i < check.length; i++) {
+       if(specifier.indexOf(check[i]) > -1){
+           return true;
+       } 
+    }
+    return false;
+}
+
+function name(params) {
+    
+}
+
+function toIntString(value) {
+    return value ? "1" : "0"; 
+}
+
+function toFloat(value) {
+    return value ? 1.0 : 0.0; 
+}
+
+function toInt(value) {
+    return value ? 1 : 0; ;
+}
+
+function simpleSpecifier(spec) {
+    check = 'bdgGnoxX'
+    if(spec.length === 1 && check.indexOf(spec) > -1)
+        return true;
+    return false;
+}
+
+// function tryResolvingAlignmentFlags(args) {
+//     return makeFormattingAttempts(getAlignmentFormatObjects(args));
+// }
+
+// function makeFormattingAttempts(tryList) {
+//     for (let i = 0; i < tryList.length; i++) {
+//         if (tryList[i].formatApplies())
+//             return tryList[i].format();
+//     }
+// }
+
+// function getAlignmentFormatObjects(args) {
+//     return [
+//         formatterWrapper(() => hasAlignLeftFlag(args), () => pad(args, "<", padLeft)),
+//         formatterWrapper(() => hasAlignRightFlag(args), () => pad(args, ">", padRight))
+//     ];
+// }
+
+// function formatterWrapper(formatCheck, formatOperation) {
+//     return {
+//         formatApplies: formatCheck,
+//         format: formatOperation
+//     };
+// }
+
+
+// [[fill]align][sign][#][0][width][,][.precision][type]
+// where, the options are
+// fill        ::=  any character
+// align       ::=  "<" | ">" | "=" | "^"
+// sign        ::=  "+" | "-" | " "
+// width       ::=  integer
+// precision   ::=  integer
+// type        ::=  "b" | "c" | "d" | "e" | "E" | "f" | "F" | "g" | "G" | "n" | "o" | "s" | "x" | "X" | "%"
+
 /**************************************************
  * Module exports
  **************************************************/
