@@ -5,6 +5,7 @@ var exceptions = require('../core').exceptions
 /**************************************************
  * Bytearray Iterator
  **************************************************/
+const className = 'bytearray_iterator';
 
 function BytearrayIterator(data) {
     PyObject.call(this)
@@ -12,7 +13,7 @@ function BytearrayIterator(data) {
     this.data = data
 };
 
-create_pyclass(BytearrayIterator, 'bytearray_iterator')
+create_pyclass(BytearrayIterator, className)
 
 BytearrayIterator.prototype.__iter__ = function () {
     return this
@@ -33,11 +34,11 @@ BytearrayIterator.prototype.__str__ = function () {
     return '<bytearray_iterator object at 0x99999999>'
 }
 
-BytearrayIterator.prototype.__format__ = function (value, specifier) {
-    if (specifier && specifier !== "") {
-        throw new exceptions.TypeError.$pyclass("unsupported format string passed to bytearray_iterator.__format__")
+BytearrayIterator.prototype.__format__ = function(value, formatSpecifier) {
+    if(formatSpecifier === ""){
+        return value.__str__()
     }
-    return value;
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code' +  formatSpecifier + 'for object of type ' + className)
 }
 
 /**************************************************

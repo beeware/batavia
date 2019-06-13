@@ -465,11 +465,11 @@ Tuple.prototype.index = function(value, start, stop) {
     throw new exceptions.ValueError.$pyclass('tuple.index(x): x not in tuple')
 }
 
-Tuple.prototype.__format__ = function(value, specifier) {
-    if(specifier && specifier !== ""){
-        throw new exceptions.TypeError.$pyclass("unsupported format string passed to tuple.__format__")
+Tuple.prototype.__format__ = function(value, formatSpecifier) {
+    if(formatSpecifier === ""){
+        return value.__str__()
     }
-    return value; 
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code' +  formatSpecifier + 'for object of type tuple')
 }
 
 /**************************************************

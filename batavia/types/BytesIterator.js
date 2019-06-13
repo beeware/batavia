@@ -6,6 +6,7 @@ var types = require('../types')
 /**************************************************
  * Bytes Iterator
  **************************************************/
+const className = 'bytes_iterator';
 
 function BytesIterator(data) {
     PyObject.call(this)
@@ -13,7 +14,7 @@ function BytesIterator(data) {
     this.data = data
 };
 
-create_pyclass(BytesIterator, 'bytes_iterator')
+create_pyclass(BytesIterator, className)
 
 BytesIterator.prototype.__iter__ = function() {
     return this
@@ -35,12 +36,12 @@ BytesIterator.prototype.__str__ = function() {
     return '<bytearray_iterator object at 0x99999999>'
 }
 
-// BytesIterator.prototype.__format__ = function(value) {
-//     if(types.isinstance(args[0], types.Bytes)){
-//         return 
-//     }
-//     return args[0]; 
-// }
+BytesIterator.prototype.__format__ = function(value, formatSpecifier) {
+    if(formatSpecifier === ""){
+        return value.__str__()
+    }
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code' +  formatSpecifier + 'for object of type ' + className)
+}
 
 /**************************************************
  * Module exports

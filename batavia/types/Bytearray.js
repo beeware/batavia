@@ -10,13 +10,14 @@ var version = require('../core').version
 /*************************************************************************
  * A Python bytearray type
  *************************************************************************/
+const className = 'bytearray';
 
 function Bytearray(val) {
     PyObject.call(this)
     this.val = val
 }
 
-create_pyclass(Bytearray, 'bytearray')
+create_pyclass(Bytearray, className)
 
 Bytearray.prototype.__dir__ = function() {
     var types = require('../types')
@@ -229,11 +230,11 @@ Bytearray.prototype.__len__ = function() {
     return this.val.__len__()
 }
 
-Bytearray.prototype.__format__ = function(value, specifier) {
-    if(specifier && specifier !== ""){
-        throw new exceptions.TypeError.$pyclass("unsupported format string passed to bytearray.__format__")
+Bytearray.prototype.__format__ = function(value, formatSpecifier) {
+    if(formatSpecifier === ""){
+        return value.__str__()
     }
-    return value; 
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code' +  formatSpecifier + 'for object of type ' + className)
 }
 
 /**************************************************

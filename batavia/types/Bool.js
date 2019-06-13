@@ -8,10 +8,11 @@ var types = require('../types')
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
  *************************************************************************/
+const className = 'bool';
 
 var Bool = Boolean
 
-create_pyclass(Bool, 'bool', true)
+create_pyclass(Bool, className, true)
 
 Bool.prototype.__dir__ = function() {
     var types = require('../types')

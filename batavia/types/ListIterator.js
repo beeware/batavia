@@ -31,11 +31,11 @@ ListIterator.prototype.__str__ = function() {
     return '<list_iterator object at 0x99999999>'
 }
 
-ListIterator.prototype.__format__ = function(value, specifier) {
-    if(specifier && specifier !== ""){
-        throw new exceptions.TypeError.$pyclass("unsupported format string passed to list_iterator.__format__")
+ListIterator.prototype.__format__ = function(value, formatSpecifier) {
+    if(formatSpecifier === ""){
+        return value.__str__()
     }
-    return value; 
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code' +  formatSpecifier + 'for object of type list_iterator')
 }
 
 /**************************************************
