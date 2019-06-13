@@ -23,8 +23,8 @@ The tests corresponding to Batavia implementations of built-ins are available in
 ``tests/builtins``. The Batavia test infrastructure includes a system to check the compatibility of
 JavaScript implementation of Python with the reference CPython implementation.
 
-These all tests derive from ``TranspileTestCase``, which handles running your code in both interpreters
-and comparing outputs. For an example look at the ``test_bool.py`` file in ``tests/builtins``. You 
+These tests all derive from ``TranspileTestCase``, which handles running your code in both interpreters
+and comparing outputs. For an example, look at the ``test_bool.py`` file in ``tests/builtins``. You 
 will see two classes with test cases, ``BoolTests`` and ``BuiltinBoolFunctionTests``. Both derive 
 from ``TranspileTestCase``.
 
@@ -68,18 +68,18 @@ which can be very useful for debugging in test cases where a decent amount of co
 Testing for Errors
 ------------------
 
-Since we're compiling Python, we need to ensure that errors for all of the builtins are thrown correctly.
-We also want to ensure that we're not accepting the wrong errors in our tests. Simply include a try/except
+Since we're testing the compiler, we need to ensure that errors for all of the builtins are thrown correctly.
+We also want to ensure that we're not getting the wrong errors in our tests. Simply include a try/except
 block in your test.
 
 .. code-block:: python
 
     def test_some_error(self):
         code = """
-        try:
-            code_that_raises_a_ValueError()
-        except ValueError as err:
-            print(err)
+            try:
+                code_that_raises_a_ValueError()
+            except ValueError as err:
+                print(err)
         """
         self.assertCodeExecution(code)
 
