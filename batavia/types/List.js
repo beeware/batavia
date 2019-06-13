@@ -555,10 +555,10 @@ List.prototype.__delitem__ = function(index) {
     } else if (types.isinstance(index, types.Slice)) {
         var start = index.start
         var stop = index.stop
-        if (start = None) {
+        if (start === None) {
             start = 0
         }
-        if (stop = None) {
+        if (stop === None) {
             stop = this.length
         }
         this.splice(start, stop - start)

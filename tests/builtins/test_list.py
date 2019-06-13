@@ -117,7 +117,7 @@ class ListTests(TranspileTestCase):
 
             a = [1, 5, 3]
             del a[1:]
-            print("Del slice: ", a)
+            print("del a[1:] -> ", a)
 
             # empty lists
             a = []
