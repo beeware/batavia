@@ -745,8 +745,8 @@ List.prototype.sort = function(key=None, reverse=false) {
         callable = require('../builtins.js').callable
         if (callable(key)) {
             // Call using batavia conventions
-            var keyfunc = function(a, b) {
-                return builtins.call(key, [a, b], {})
+            var keyfunc = function(arg) {
+                return builtins.call(key, [arg], {})
             }
             Array.prototype.sort.call(this, keyfunc)
         } else {
@@ -754,7 +754,7 @@ List.prototype.sort = function(key=None, reverse=false) {
         }
     }
     if (reverse) {
-        Array.prototype.reverse.apply(this)
+        Array.prototype.reverse.call(this)
     }
     return None
 }

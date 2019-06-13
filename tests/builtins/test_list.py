@@ -126,21 +126,25 @@ class ListTests(TranspileTestCase):
                 print(e)
         """)
 
+    @expectedFailure
     def test_insert_with_slice(self):
         self.assertCodeExecution("""
-            a[len(a):] = [1]
+            a = [1, 2, 3]
+            a[len(a):] = [1]  # should append to the end
             print("a[len(a):] = [1] -> ", a)
         """)
 
     def test_sort_with_key(self):
         self.assertCodeExecution("""
-        def key_func(a, b):
-            if a % 2:
-                return True
-            else:
-                return False
+            def key_func(val):
+                return val % 4
 
-        print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func))
+            print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func))
+        """)
+
+    def test_sort_with_reverse(self):
+        self.assertCodeExecution("""
+            print([1, 2, 3].sort(reverse=True))
         """)
 
     def test_comprehensions(self):
