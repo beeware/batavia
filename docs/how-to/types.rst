@@ -1,9 +1,8 @@
 Implementing Python Types
 ===========================================
 
-Python native types are the building blocks for all code. Python's popularity is, in large part, due to the
-wonderful flexibility of its native types, like ``List`` and ``Dict``. This document will cover how to
-update the existing Batavia implementations.
+Python's popularity is, in large part, due to the wonderful flexibility of its native types, like ``List`` and ``Dict``. In Batavia, Python native types are the building blocks for all of our other code. 
+This document will cover the structure of Batavia types and guide you on how to update the existing Batavia implementations.
 
 Process
 -------
