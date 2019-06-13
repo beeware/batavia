@@ -9,12 +9,18 @@ class ListTests(TranspileTestCase):
             print(list())
             """)
 
+    @expectedFailure
     def test_list_with_args(self):
         self.assertCodeExecution("""
             print([1, 2, 3])
-            print(list([1, 2, 3], 5, 6))
+            print(list((1, 2, 3)))
+            try:
+                list(1, 2)
+            except TypeError as e:
+                print(e)
             """)
 
+    @expectedFailure
     def test_list_with_kwargs(self):
         self.assertCodeExecution("""
             try:
@@ -35,34 +41,43 @@ class ListTests(TranspileTestCase):
             b = a
             b.append(1)
             print(a)
-            if a != b or a !== b:
-                raise Exception("Test failed. a == b: ", a == b, "a === b", a === b)
+            if a != b or a is not b:
+                raise Exception("Test failed. a == b: ", a == b, "a is b", a is b)
+
+            print("Test shallow copy")
+            x = [1]
+            y = [x]
+            assert y.copy()[0] is x
             """)
 
     @expectedFailure
     def test_list_operations(self):
-
         # Print the result of the method to ensure it returns the correct output, even if None
         # Print the list after every operation to ensure it returns the correct output
         self.assertCodeExecution("""
             a = [5, 2, 4, 3, 1]
 
-            print(a.append(6), a)
-            print(a.extend([8, 9, 10]), a)
-            print(a.insert(2, 3.5), a)
-            print(a.remove(4), a)
-            print(a.pop(), a)
-            print(a.pop(2), a)
-            print(a.index(5))
-            print(a.count(2), a)
-            print(a.sort(key=None, reverse=True), a.sort(key=None, reverse=False), a)
-            print(a.reverse(), a)
+            print(".append: ", a.append(6), a)
+            print(".extend: ", a.extend([8, 9, 10]), a)
+            print(".insert: ", a.insert(2, 3.5), a)
+            print(".remove: ", a.remove(4), a)
+            print(".pop: ", a.pop(), a)
+            print(".pop(index): ", a.pop(2), a)
+            print(".index: ", a.index(5))
+            print(".count: ", [0, 2, 0, 2, 2].count(2))
+            print(".sort: ", a.sort(key=None, reverse=True), a.sort(key=None, reverse=False), a)
+            print(".reverse: ", a.reverse(), a)
             b = a.copy()
-            print(b, a)
-            print(a.clear(), a)
-            print(b)  # ensure b is not still linked to a
+            print(".copy: ", b, a)
+            print(".clear: ".clear(), a)
+            print("Ensure copy is not still linked: ", b)
 
-            # Test empty lists.
+            try:
+                print(a.index(100))
+            except IndexError as e:
+                print(e)
+
+            print("Empty list tests.")
             a = []
             print(a.append(1), a)
             a = []
@@ -84,8 +99,9 @@ class ListTests(TranspileTestCase):
             print(a.copy(), a)
             """)
 
+    @expectedFailure
     def test_slice_operations(self):
-        'Reference: https://docs.python.org/3/tutorial/datastructures.html'
+        'Credit: https://docs.python.org/3/tutorial/datastructures.html'
 
         self.assertCodeExecution("""
             a = [1, 5, 3]
@@ -118,7 +134,7 @@ class ListTests(TranspileTestCase):
         """)
 
     def test_comprehensions(self):
-        'Reference: https://docs.python.org/3/tutorial/datastructures.html'
+        'Credit: https://docs.python.org/3/tutorial/datastructures.html'
         self.assertCodeExecution("""
             matrix = [
                 [1, 2, 3, 4],
