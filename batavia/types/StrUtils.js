@@ -57,7 +57,6 @@ function _substitute(format, args) {
         // returns object containing the specifier object and the remaining unused arguments
 
         // reference: https://docs.python.org/2/library/stdtypes.html#string-formatting
-
         if (usesKwargs) {
             // try to parse the key from this spec
             var keyRe = /\((.+?)\)(.+)/
@@ -643,7 +642,6 @@ function _substitute(format, args) {
                 // example: '   0005'
                 retVal = ' '.repeat(padSize) + conversionArg
             }
-
             return retVal
         } // END TRANSFORM
 
@@ -652,6 +650,7 @@ function _substitute(format, args) {
         var nextStep = 1
         var charArray = this.fullText.slice(1).split('')
         var charIndex = 0
+
         while (charIndex < charArray.length && !this.literalPercent) {
             var nextChar = charArray[charIndex]
             this.parsedSpec += nextChar
@@ -700,6 +699,10 @@ function _substitute(format, args) {
         }
 
         lastStop = match.index + specObj.parsedSpec.length
+        if (specObj.myKey) {
+            // Add kwarg + parenthesis
+            lastStop = lastStop + 2 + specObj.myKey.length
+        }
         match = re.exec(format)
     }
 
