@@ -67,7 +67,7 @@ Template
         self.assertCodeExecution(code)
 
 This code block provides a printout of the code being run as well as the output of the code,
-which can be very useful for debugging in test cases where a decent amount of code is being run.
+which can be very useful for debugging in test cases where more than a few lines of code are being run.
 
 Testing for Errors
 ------------------
@@ -84,7 +84,7 @@ block in your test.
                 code_that_raises_a_ValueError()
             except ValueError as err:
                 print(err)
-        print("Test complete!")
+            print("Test complete!")
         """
         self.assertCodeExecution(code)
 
