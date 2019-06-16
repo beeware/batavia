@@ -80,11 +80,12 @@ block in your test.
                 code_that_raises_a_ValueError()
             except ValueError as err:
                 print(err)
+        print("Test complete!")
         """
         self.assertCodeExecution(code)
 
-Remember to catch the specific error you want, and then print the error. **Code that is not being printed
-is not being tested.**
+Remember to catch the specific error you want, and then print the error. Then, print a success message to
+validate that your except block didn't crash as well. **Code that is not being printed is not being tested.**
 
 Output Cleaners
 ---------------

@@ -117,9 +117,9 @@ are first-class objects and can have additional properties.
 
 .. code-block:: javascript
 
-    <fn>.__doc__ = 'docstring from Python 3.x goes here, for documentation'
+    list.__doc__ = 'docstring from Python 3.x goes here, for documentation'
 
-    modules.export = <fn>
+    module.exports = list
 
 Tests
 *****
