@@ -49,6 +49,10 @@ The ``assertCodeExecution`` method will run the code provided to it in both impl
 code needs to generate some output so that the output can be compared, hence the need to print the
 values. **Code that is not being printed is not being tested.**
 
+Finally, ``print()`` is an imperfect creature for tests. Some things in Python aren't guaranteed to
+print out in the same order or way, like sets dictionaries. Tests should be structured to compensate,
+for instance by converting to a sorted list. See also the output cleaners section below.
+
 Template
 --------
 
@@ -113,7 +117,7 @@ Node/Python Crashes
 If the CPython or JavaScript code crashes outright, UnitTest struggles. For instance,
 ``confused END_FINALLY`` in the middle of your test output tends to mean that the JavaScript code threw an
 uncaught exception, causing Node to stop. It's hard for UnitTest to pull the details out of this type of thing
-since that error occurred in the virtual machine.
+since that error occurred in Node, not Python.
 
 These types of errors will often appear above the test case as a crash report instead of in the usual section for the 
 output of your test's print() statements. Look there for clues.

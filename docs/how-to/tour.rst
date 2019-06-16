@@ -12,7 +12,8 @@ General Structure
 Core Code
 *********
 
-Batavia implements the Python native types, builtins, and standard library partially in JavaScript.
+Batavia implements the core language (types, builtins and the core interpreter) are all javascript, as well those
+portions of the standard library that depend on system services.
 This ensures quick execution and less compiling of the compiler. These are orgainzed into the
 ``builtins``, ``core``, ``modules``, ``stdlib``, and ``types`` files of the main ``/batavia`` directory, with
 corresponding subdirectories. Alongside the virtual machine and test suite, this code makes 
@@ -23,7 +24,7 @@ should be immediately familiar to a Python developer.
 Support
 *******
 You'll also notice folders for tests, docs, and a few other sections, like ``testserver``, which is
-a sample deployment via Django that allows code execution in your browser. Contributions to the 
+a sample deployment with Django that allows you to test code in the browser. Contributions to the 
 tests and documentation are always welcome and are great ways to familiarize yourself with the
 code and meet the other contributors.
 
