@@ -50,7 +50,7 @@ code needs to generate some output so that the output can be compared, hence the
 values. **Code that is not being printed is not being tested.**
 
 Finally, ``print()`` is an imperfect creature for tests. Some things in Python aren't guaranteed to
-print out in the same order or way, like sets dictionaries. Tests should be structured to compensate,
+print out in the same order every time, like sets dictionaries. Tests should be structured to compensate,
 for instance by converting to a sorted list. See also the output cleaners section below.
 
 Template
