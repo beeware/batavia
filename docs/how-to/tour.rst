@@ -22,8 +22,8 @@ should be immediately familiar to a Python developer.
 
 Support
 *******
-You'll also notice folders for tests, docs, and a few other bits and bobs, like ``testserver``, which is
-a Django project that allows code execution from your browser. Contributions to the 
+You'll also notice folders for tests, docs, and a few other sections, like ``testserver``, which is
+a sample deployment via Django that allows code execution in your browser. Contributions to the 
 tests and documentation are always welcome and are great ways to familiarize yourself with the
 code and meet the other contributors.
 
@@ -65,7 +65,7 @@ builtins.js
 This contains all of the native Python builtin functions, like ``str``, ``len``, and ``iter``.
 
 When dealing with Python types, many of the native JavaScript operations have been modified to
-try to use builtins first. For instance, .toString() will often just call the object's __str__ if
+try to use builtins first. For instance, ``.toString()`` will often just call the object's ``__str__`` if
 possible. Still, the best practice is to use the builtins and types wherever possible.
 
 types.js
@@ -91,10 +91,10 @@ instance. That doesn't make sense! (It may even pass some tests, which is danger
 core/callables.js
 ^^^^^^^^^^^^^^^^^
 
-These methods ensure that all Python code is executed using the proper __call__ procedure, which could be
+These methods ensure that all Python code is executed using the proper ``__call__`` procedure, which could be
 overriden or decorated by the programmer.
 
-* ``callables.call_function`` Invokes a function using its __call__ method if possible. If not, just call it normally.
+* ``callables.call_function`` Invokes a function using its ``__call__`` method if possible. If not, just call it normally.
 * ``callables.call_method`` Calls a class method using the call_function specification above.
 * ``callables.iter_for_each`` Exhausts an iterable using the call_function specification above.
 
@@ -104,15 +104,15 @@ of ``call_function`` instead of calling Python functions and methods directly. A
 .. code-block:: javascript
 
     // Avoid this
-    my_thing.__repr__()
+    my_thing.__len__()
 
     // Better
     var callables = require('./core/callables.js')
-    callables.call_method(my_thing, '__repr__', [], {})
+    callables.call_method(my_thing, '__len__', [], {})
 
     // Best
-    var repr = require('./builtins.js').repr
-    repr(my_thing, [], {})
+    var len = require('./builtins.js').len
+    len(my_thing, [], {})
 
 Note the use of the Batavia calling convention in the two cases above!
 
