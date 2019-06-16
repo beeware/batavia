@@ -12,5 +12,8 @@ How-to guides are recipes that take the user through steps in key subjects. They
 
    Contribute to Batavia's code <contribute-code>
    Contribute to Batavia's documentation <contribute-docs>
+   Tour of the Code <tour>
+   Batavia's Test Suite <contribute-tests>
    Implementing Python Built-ins in JavaScript <builtins>
+   Implementing Python Types in JavaScript <types>
    Adding a module and testing it <modules-and-tests>
