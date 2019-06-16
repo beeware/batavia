@@ -1,12 +1,13 @@
 Implementing Python Built-ins in JavaScript
 ===========================================
 
-Python's builtins give Python its trademark magical feel. If you're new to Python, read up on them here: https://docs.python.org/3/library/functions.html
+Python's builtins give Python its trademark magical feel. If you're new to Python, read up on `<them here . 
+https://docs.python.org/3/library/functions.html>`_
 
-Most builtins have already been added to the project, but many do not follow the spec outlined below.
-Some may not handle certain types of inputs correctly. In addition, new builtins may arrive with the
-latest and greatest Python version. This guide should serve as your field manual for adding, updating, and
-navigating our implementations.
+Most builtins have already been added to the project, but many are do not quite match the original
+implementation exactly. Some may not handle certain types of inputs correctly. In addition, new builtins
+may arrive with the latest and greatest Python version. This guide should serve as your field manual for
+adding, updating, and navigating our implementations.
 
 Process
 -------
@@ -39,19 +40,21 @@ Each builtin function will receive arguments and keyword arguments and needs to 
 even if the result is throwing an error. Args should be an array, and kwargs should be a 
 JavaScript object. The first thing to do is check that both were passed in.
 
+Let's take a look at an example using the ``list()`` builtin
+
 .. code-block:: javascript
 
-    // Example: <fn> accepts exactly one argument, and no keyword arguments
+    // List accepts exactly one argument and no keyword arguments
 
-    var <fn> = function(args, kwargs) {
+    var list = function(args, kwargs) {
         // Always add this code.
         if (arguments.length !== 2) {
             throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
         }
 
-Next, we need to validate the arguments are correct. We can use JavaScript's ``Object.keys()`` to
-get the keys of an object. If we can't accept certain args or kwargs, we will check the Python REPL to see
-what kind of error and throw it.
+This code ensures that the function can handle keyword arguments. Next, we need to validate the arguments are
+correct. We can use JavaScript's ``Object.keys()`` to get the keys of an object. If we can't accept certain 
+args or kwargs, we will check the Python REPL to see what kind of error should be thrown and throw it.
 
 .. tabs::
 
@@ -130,9 +133,4 @@ tested:
 * Think of a few weird inputs that could throw off your code (or future code). Test them.
 * If you are throwing an error (excluding ``BataviaError``) anywhere, write a test that tries to throw it.
 * If you accounted for an edge case (look for an ``if`` statement), test it.
-* Check out the official documentation (https://docs.python.org/3/) for more edge cases.
-
-Credit
-^^^^^^
-
-Thanks to Kshitij Sobti for the original document that this guide is based on. Most code examples are from his original.
+* Check out the `official documentation <https://docs.python.org/3/>`_ for more edge cases.
