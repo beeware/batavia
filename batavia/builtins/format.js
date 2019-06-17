@@ -1,4 +1,5 @@
 var exceptions = require('../core').exceptions
+var callables = require('../core').callables
 
 function format(args, kwargs) {
     if (arguments.length !== 2) {
@@ -18,9 +19,18 @@ function format(args, kwargs) {
         return args[0];
     }
     if (!args[0].__format__) {
-        throw new exceptions.BataviaError.$pyclass(
-            '__format__ not implemented for this type.'
-        )
+        return callables.call_method('{:' + args[1] + '}', 'format', [args[0]], {});
+        // throw new exceptions.BataviaError.$pyclass(
+        //     '__format__ not implemented for this type.'
+        // )
+
+        // const StrUtils = require('../types/StrUtils')
+        // const callables = require('../core').callables
+
+        // let b = new types.Bool(value);
+        // // return StrUtils._new_subsitute("{:" + specifier + "}", [b], {})
+        // return ("{:" + specifier + "}").format([true]);
+        // // return callables.call_method('{:' + specifier + '}', 'format', [new types.Bool(value)], {});
     }
     return args[0].__format__(args[0], args[1]) // TODO: Implement the __format__ function for types like int and string, where it actually can do something
 }

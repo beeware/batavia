@@ -3,7 +3,6 @@ var exceptions = require('../core').exceptions
 var version = require('../core').version
 var type_name = require('../core').type_name
 var NotImplemented = require('../core').NotImplemented
-var types = require('../types')
 
 /*************************************************************************
  * Modify Javascript Boolean to behave like a Python bool
@@ -13,8 +12,8 @@ const className = 'bool';
 var Bool = Boolean
 
 create_pyclass(Bool, className, true)
- 
-Bool.prototype.__dir__ = function() {
+
+Bool.prototype.__dir__ = function () {
     var types = require('../types')
     if (version.at_least(3.6)) {
         // Python 3.6 adds classmethod object.__init_subclass__
@@ -26,24 +25,24 @@ Bool.prototype.__dir__ = function() {
 /**************************************************
  * Type conversions
  **************************************************/
- 
-Bool.prototype.__bool__ = function() {
+
+Bool.prototype.__bool__ = function () {
     return this.valueOf()
 }
- 
-Bool.prototype.__repr__ = function(args, kwargs) {
+
+Bool.prototype.__repr__ = function (args, kwargs) {
     return this.__str__()
 }
- 
-Bool.prototype.__str__ = function(args, kwargs) {
+
+Bool.prototype.__str__ = function (args, kwargs) {
     if (this.valueOf()) {
         return 'True'
     } else {
         return 'False'
     }
 }
- 
-Bool.prototype.__float__ = function() {
+
+Bool.prototype.__float__ = function () {
     var types = require('../types')
     var this_bool
     if (this.valueOf()) {
@@ -57,8 +56,8 @@ Bool.prototype.__float__ = function() {
 /**************************************************
  * Comparison operators
  **************************************************/
- 
-Bool.prototype.__eq__ = function(other) {
+
+Bool.prototype.__eq__ = function (other) {
     var types = require('../types')
 
     if (types.isinstance(other, Bool)) {
@@ -90,11 +89,11 @@ Bool.prototype.__eq__ = function(other) {
     }
 }
 
-Bool.prototype.__ne__ = function(other) {
+Bool.prototype.__ne__ = function (other) {
     return this.__eq__(other).__not__()
 }
 
-Bool.prototype.__ge__ = function(other) {
+Bool.prototype.__ge__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -134,7 +133,7 @@ Bool.prototype.__ge__ = function(other) {
     }
 }
 
-Bool.prototype.__gt__ = function(other) {
+Bool.prototype.__gt__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -175,7 +174,7 @@ Bool.prototype.__gt__ = function(other) {
     }
 }
 
-Bool.prototype.__le__ = function(other) {
+Bool.prototype.__le__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -212,7 +211,7 @@ Bool.prototype.__le__ = function(other) {
     }
 }
 
-Bool.prototype.__lt__ = function(other) {
+Bool.prototype.__lt__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -253,7 +252,7 @@ Bool.prototype.__lt__ = function(other) {
     }
 }
 
-Bool.prototype.__contains__ = function(other) {
+Bool.prototype.__contains__ = function (other) {
     return false
 }
 
@@ -261,23 +260,23 @@ Bool.prototype.__contains__ = function(other) {
  * Unary operators
  **************************************************/
 
-Bool.prototype.__pos__ = function() {
+Bool.prototype.__pos__ = function () {
     return +this.valueOf()
 }
 
-Bool.prototype.__neg__ = function() {
+Bool.prototype.__neg__ = function () {
     return -this.valueOf()
 }
 
-Bool.prototype.__not__ = function() {
+Bool.prototype.__not__ = function () {
     return Bool(!this.valueOf())
 }
 
-Bool.prototype.__invert__ = function() {
+Bool.prototype.__invert__ = function () {
     return ~this.valueOf()
 }
 
-Bool.prototype.__int__ = function() {
+Bool.prototype.__int__ = function () {
     var types = require('../types')
 
     if (this.valueOf()) {
@@ -287,11 +286,11 @@ Bool.prototype.__int__ = function() {
     }
 }
 
-Bool.prototype.__index__ = function() {
+Bool.prototype.__index__ = function () {
     return this.__int__()
 }
 
-Bool.prototype.__abs__ = function() {
+Bool.prototype.__abs__ = function () {
     return this.__int__()
 }
 
@@ -299,7 +298,7 @@ Bool.prototype.__abs__ = function() {
  * Binary operators
  **************************************************/
 
-Bool.prototype.__pow__ = function(other) {
+Bool.prototype.__pow__ = function (other) {
     var types = require('../types')
 
     if (types.isinstance(other, Bool)) {
@@ -337,11 +336,11 @@ Bool.prototype.__pow__ = function(other) {
     }
 }
 
-Bool.prototype.__div__ = function(other) {
+Bool.prototype.__div__ = function (other) {
     return this.__truediv__(other)
 }
 
-Bool.prototype.__floordiv__ = function(other) {
+Bool.prototype.__floordiv__ = function (other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Float, types.Int, types.Bool])) {
@@ -357,7 +356,7 @@ Bool.prototype.__floordiv__ = function(other) {
     }
 }
 
-Bool.prototype.__truediv__ = function(other) {
+Bool.prototype.__truediv__ = function (other) {
     var types = require('../types')
 
     if (types.isinstance(other, [types.Float, types.Int, types.Bool, types.Complex])) {
@@ -373,7 +372,7 @@ Bool.prototype.__truediv__ = function(other) {
     }
 }
 
-Bool.prototype.__mul__ = function(other) {
+Bool.prototype.__mul__ = function (other) {
     var types = require('../types')
     var this_bool
 
@@ -438,7 +437,7 @@ Bool.prototype.__mul__ = function(other) {
     }
 }
 
-Bool.prototype.__mod__ = function(other) {
+Bool.prototype.__mod__ = function (other) {
     var types = require('../types')
 
     if ((types.isinstance(other, types.Int) && other.val.isZero()) || (types.isinstance(other, types.Bool) && !other.valueOf())) {
@@ -475,7 +474,7 @@ Bool.prototype.__mod__ = function(other) {
     }
 }
 
-Bool.prototype.__add__ = function(other) {
+Bool.prototype.__add__ = function (other) {
     var types = require('../types')
     var this_bool
 
@@ -513,7 +512,7 @@ Bool.prototype.__add__ = function(other) {
     }
 }
 
-Bool.prototype.__sub__ = function(other) {
+Bool.prototype.__sub__ = function (other) {
     var types = require('../types')
     var this_bool
 
@@ -553,15 +552,15 @@ Bool.prototype.__sub__ = function(other) {
     }
 }
 
-Bool.prototype.__getitem__ = function(other) {
+Bool.prototype.__getitem__ = function (other) {
     throw new exceptions.TypeError.$pyclass("'bool' object is not subscriptable")
 }
 
-Bool.prototype.__setattr__ = function(other) {
+Bool.prototype.__setattr__ = function (other) {
     throw new exceptions.AttributeError.$pyclass("'bool' object has no attribute '" + other + "'")
 }
 
-Bool.prototype.__lshift__ = function(other) {
+Bool.prototype.__lshift__ = function (other) {
     var types = require('../types')
     var this_bool
 
@@ -593,7 +592,7 @@ Bool.prototype.__lshift__ = function(other) {
     }
 }
 
-Bool.prototype.__rshift__ = function(other) {
+Bool.prototype.__rshift__ = function (other) {
     var types = require('../types')
     var this_bool
 
@@ -621,7 +620,7 @@ Bool.prototype.__rshift__ = function(other) {
     }
 }
 
-Bool.prototype.__and__ = function(other) {
+Bool.prototype.__and__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -644,7 +643,7 @@ Bool.prototype.__and__ = function(other) {
     }
 }
 
-Bool.prototype.__xor__ = function(other) {
+Bool.prototype.__xor__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -667,7 +666,7 @@ Bool.prototype.__xor__ = function(other) {
     }
 }
 
-Bool.prototype.__or__ = function(other) {
+Bool.prototype.__or__ = function (other) {
     var types = require('../types')
     var this_bool, other_bool
 
@@ -694,51 +693,51 @@ Bool.prototype.__or__ = function(other) {
  * Right-hand operators
  **************************************************/
 
-Bool.prototype.__radd__ = function(other) {
+Bool.prototype.__radd__ = function (other) {
     return this.__add__(other)
 }
 
-Bool.prototype.__rand__ = function(other) {
+Bool.prototype.__rand__ = function (other) {
     return this.__and__(other)
 }
 
-Bool.prototype.__rfloordiv__ = function(other) {
+Bool.prototype.__rfloordiv__ = function (other) {
     return this.__floordiv__(other)
 }
 
-Bool.prototype.__rlshift__ = function(other) {
+Bool.prototype.__rlshift__ = function (other) {
     return this.__lshift__(other)
 }
 
-Bool.prototype.__rmod__ = function(other) {
+Bool.prototype.__rmod__ = function (other) {
     return this.__mod__(other)
 }
 
-Bool.prototype.__rmul__ = function(other) {
+Bool.prototype.__rmul__ = function (other) {
     return this.__mul__(other)
 }
 
-Bool.prototype.__ror__ = function(other) {
+Bool.prototype.__ror__ = function (other) {
     return this.__or__(other)
 }
 
-Bool.prototype.__rpow__ = function(other) {
+Bool.prototype.__rpow__ = function (other) {
     return this.__pow__(other)
 }
 
-Bool.prototype.__rrshift__ = function(other) {
+Bool.prototype.__rrshift__ = function (other) {
     return this.__rshift__(other)
 }
 
-Bool.prototype.__rsub__ = function(other) {
+Bool.prototype.__rsub__ = function (other) {
     return this.__sub__(other)
 }
 
-Bool.prototype.__rtruediv__ = function(other) {
+Bool.prototype.__rtruediv__ = function (other) {
     return this.__truediv__(other)
 }
 
-Bool.prototype.__rxor__ = function(other) {
+Bool.prototype.__rxor__ = function (other) {
     return this.__xor__(other)
 }
 
@@ -746,11 +745,11 @@ Bool.prototype.__rxor__ = function(other) {
  * Methods
  **************************************************/
 
-Bool.prototype.copy = function() {
+Bool.prototype.copy = function () {
     return this.valueOf()
 }
 
-Bool.prototype.__trunc__ = function() {
+Bool.prototype.__trunc__ = function () {
     var types = require('../types')
 
     if (this.valueOf()) {
@@ -759,66 +758,120 @@ Bool.prototype.__trunc__ = function() {
     return new types.Int(0)
 }
 
-Bool.prototype.__format__ = function(value, specifier) {
-    if((specifier && specifier === "") || simpleSpecifier(specifier)){
+Bool.prototype.__format__ = function (value, spec) {
+    const callables = require('../core').callables
+
+    let result = "";
+    let poundFound = hasPound(spec);
+    let specifier = stripPound(spec);
+    if (isEmptyString(specifier) || isStandardIntegerConversion(specifier, poundFound)) {
         return toIntString(value);
     }
-    if(specifier === 'e'){
-        return toIntString(value) + ".000000e+00";
+    if (result = resolveTypeConversions(specifier, value, getFormats())) {
+        return result;
     }
-    if(specifier === 'E'){
-        return toIntString(value) + ".000000E+00";
+    if (specifier === 'c') {
+        if (poundFound) {
+            throw new exceptions.ValueError.$pyclass("Alternate form (#) not allowed with integer format specifier 'c'");
+        }
+        return value ? '╔' : '\0';
     }
-    if(specifier === 'f' || specifier === 'F'){
-        return toIntString(value) + ".000000";
+    if (specContains(specifier, ['f', 'F', 'E', 'e', 'g', 'G'])) {
+        return callables.call_method('{:' + specifier + '}', 'format', [toFloat(value)], {});
     }
-    if(specifier === 'c'){
-        return '\\x0' + toIntString(value);
+    if (specContains(specifier, ['d', 'b', 'o', 'x', 'X'])) {
+        return callables.call_method('{:' + specifier + '}', 'format', [toInt(value)], {});
     }
-    if(specifier === '%'){
-        return value ? '100.000000%' : '0.000000%';
-    }
-    if(specContains(specifier, ['f', 'F', 'E', 'e', 'g','G'])){
-        return types.Float.__format__(toFloat(value), specifier);
-    }
-    if(specContains(specifier, ['d', 'b', 'o', 'x','X'])){
-        return types.Int.__format__(toInt(value), specifier);
-    }
-    if(specContains(specifier, ['%'])){
+    if (specContains(specifier, ['%'])) {
         throw new exceptions.BataviaError.$pyclass(
             '__format__ not implemented for %.'
-        )
+        );
     }
-    if(specifier.length === 1){
+    if (specifier.length === 1) {
         throw new exceptions.ValueError.$pyclass("Unknown format code '" + specifier + "' for object of type 'bool'");
     }
     throw new exceptions.ValueError.$pyclass("Invalid format specifier");
 }
+function stripPound(specifier) {
+    if (hasPound(specifier)) {
+        specifier = specifier.replace('#', '');
+    }
+    return specifier;
+}
+
+function hasPound(specifier) {
+   return specifier.indexOf('#') > -1; 
+}
+
+function isEmptyString(str) {
+    return (str && str === "");
+}
+
+function isStandardIntegerConversion(specifier, poundFound) {
+    return !poundFound && simpleSpecifier(specifier)
+}
+
+function resolveTypeConversions(specifier, value, formats) {
+    if(specifier.length !== 1)
+        return false;
+    for (let i = 0; i < formats.length; i++) {
+        if (val = characterize(specifier, formats[i].target, value, formats[i].formatter)) {
+            return val;
+        }
+    }
+    return false;
+}
+
+function characterize(spec, target, value, formatter) {
+    if (target.indexOf(spec) > -1)
+        return formatter(value, spec);
+    return false;
+}
+
+function getFormats() {
+    return [
+        wrapFormat('nd', v => toIntString(v)),
+        wrapFormat('b', v => "0b" + toIntString(v)),
+        wrapFormat('e', v => toIntString(v) + ".000000e+00"),
+        wrapFormat('fF', v => toIntString(v) + ".000000"),
+        wrapFormat('gG', v => toIntString(v) + ".00000"),
+        wrapFormat('%', v => v ? '100.000000%' : '0.000000%'),
+        wrapFormat('eE', (v, s) => toIntString(v) + ".000000" + s + "+00"),
+        wrapFormat('xXoO', (v, s) => "0" + s + toIntString(v)),
+    ];
+}
+
+function wrapFormat(target, formatter) {
+    return {
+        target: target,
+        formatter: formatter
+    }
+}
 
 function specContains(specifier, check) {
     for (let i = 0; i < check.length; i++) {
-       if(specifier.indexOf(check[i]) > -1){
-           return true;
-       } 
+        if (specifier.indexOf(check[i]) > -1) {
+            return true;
+        }
     }
     return false;
 }
 
 function toIntString(value) {
-    return value ? "1" : "0"; 
-}
-
-function toFloat(value) {
-    return value ? 1.0 : 0.0; 
+    return value ? "1" : "0";
 }
 
 function toInt(value) {
-    return value ? 1 : 0; ;
+    return value ? 1 : 0;
+}
+
+function toFloat(value) {
+    return value ? 1.0 : 0.0;
 }
 
 function simpleSpecifier(spec) {
-    check = 'bdgGnoxX';
-    if(spec.length === 1 && check.indexOf(spec) > -1){
+    let check = 'bdgGnoxX';
+    if (spec.length === 1 && check.indexOf(spec) > -1) {
         return true;
     }
     return false;

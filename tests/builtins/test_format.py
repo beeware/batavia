@@ -22,6 +22,18 @@ class FormatTests(TranspileTestCase):
             except TypeError as error:
                 print(error)
         """, run_in_function=False)
+    
+    @transforms(
+        decimal=False,
+        float_exp=False,
+        high_precision_float=False,
+        js_bool=False,
+        complex_num=False
+    )
+    def test_simple_format(self, js_cleaner, py_cleaner):
+        self.assertCodeExecution("""
+            print(format(1.002, '-9.3f'))
+            """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
     def test_format_with_empty_string_for_second_arg_is_same_as_str(self):
         self.assertCodeExecution("""
