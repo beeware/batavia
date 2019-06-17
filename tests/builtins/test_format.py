@@ -1,4 +1,4 @@
-from .. utils import TranspileTestCase, BuiltinFunctionTestCase
+from .. utils import TranspileTestCase, BuiltinFunctionTestCase, transforms
 
 
 class FormatTests(TranspileTestCase):
@@ -32,7 +32,9 @@ class FormatTests(TranspileTestCase):
     )
     def test_simple_format(self, js_cleaner, py_cleaner):
         self.assertCodeExecution("""
-            print(format(1.002, '-9.3f'))
+            print(format(1, '*>4X'))
+            print(format(150, '#04d'))
+            print(format(15000.0, '#015G'))
             """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
     def test_format_with_empty_string_for_second_arg_is_same_as_str(self):

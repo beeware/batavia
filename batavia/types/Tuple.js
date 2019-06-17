@@ -466,10 +466,7 @@ Tuple.prototype.index = function(value, start, stop) {
 }
 
 Tuple.prototype.__format__ = function(value, formatSpecifier) {
-    if(formatSpecifier === ""){
-        return value.__str__()
-    }
-    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code' +  formatSpecifier + 'for object of type tuple')
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type tuple')
 }
 
 /**************************************************
