@@ -32,8 +32,7 @@ BytesIterator.prototype.__next__ = function() {
 }
 
 BytesIterator.prototype.__str__ = function() {
-    // TODO: change to <bytes_iterator object at 0x00310D30>
-    return '<bytearray_iterator object at 0x99999999>'
+    return '<bytes_iterator object at 0x99999999>'
 }
 
 BytesIterator.prototype.__format__ = function(value, formatSpecifier) {
