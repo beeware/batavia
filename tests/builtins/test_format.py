@@ -1,7 +1,6 @@
 from .. utils import TranspileTestCase, BuiltinFunctionTestCase, transforms
 
 
-
 class FormatTests(TranspileTestCase):
 
     def test_format_throws_error_if_given_zero_args(self):
@@ -23,7 +22,7 @@ class FormatTests(TranspileTestCase):
             except TypeError as error:
                 print(error)
         """, run_in_function=False)
-    
+
     @transforms(
         decimal=False,
         float_exp=False,

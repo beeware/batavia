@@ -5,7 +5,7 @@ from itertools import product
 
 
 class BoolTests(TranspileTestCase):
-    
+
     @transforms(
         decimal=False,
         float_exp=False,
@@ -45,10 +45,10 @@ class BoolTests(TranspileTestCase):
         js_bool=False,
         complex_num=False)
     def test_character_conversion_type(self, js_cleaner, py_cleaner):
-        self.assertCodeExecution( """ 
+        self.assertCodeExecution("""
             print(format(True, 'c'))
             print(format(False, 'c'))
-            """ , js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+            """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
 
     @transforms(
         js_bool=False,
@@ -60,7 +60,7 @@ class BoolTests(TranspileTestCase):
         self.assertCodeExecution("""
             print(format(True, ''))
             """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
-    
+
     @transforms(
         js_bool=False,
         decimal=False,
