@@ -510,13 +510,24 @@ class ListTests(TranspileTestCase):
         self.assertCodeExecution("""
             def key_func(val):
                 return val % 4
+            l = [1, 2, 3]
+            print([1, 2, 3].sort(reverse=True))  # test retval
+            print(l)
+            l = [1, 2, 3, 4, 5, 6, -1, 27, 33, 155]
+            l.sort(key=key_func)
+            print(l)
 
-            print([1, 2, 3].sort(reverse=True))
-            print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func))
-            print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func, reverse=True))
+            l = [1, 2, 3, 4, 5, 6, -1, 27, 33, 155]
+            l.sort(key=key_func, reverse=True)
+            print(l)
 
             try:
                 print([].sort(1))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print([].sort(a=1))
             except TypeError as e:
                 print(e)
             """)
@@ -552,6 +563,11 @@ class ListTests(TranspileTestCase):
 
             print([1, 2].extend([3, 4])
             print([].extend(iter()))
+
+            try:
+                print([].extend(1))
+            except TypeError as e:
+                print(e)
 
             try:
                 print([].extend(a=1))
