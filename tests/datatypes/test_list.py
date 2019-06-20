@@ -604,6 +604,7 @@ class ListTests(TranspileTestCase):
             """)
 
     # Source: https://docs.python.org/3/tutorial/datastructures.html
+    @unittest.expectedFailure
     def test_slice_operations(self):
         self.assertCodeExecution("""
             a = [1, 5, 3]
@@ -639,6 +640,7 @@ class ListTests(TranspileTestCase):
             a[len(a):] = [1]  # should append to the end
             print("a[len(a):] = [1] -> ", a)
         """)
+
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'list'
