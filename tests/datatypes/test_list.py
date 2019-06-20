@@ -499,12 +499,88 @@ class ListTests(TranspileTestCase):
             print(e)
         """)
 
+    def test_sort(self):
+        self.assertCodeExecution("""
+        x = [5, 2, 4, 3, 1]
+        print(x.sort())
+        print([].sort())
+        """)
+
+    def test_sort_with_args(self):
+        self.assertCodeExecution("""
+            def key_func(val):
+                return val % 4
+
+            print([1, 2, 3].sort(reverse=True))
+            print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func))
+            print([1, 2, 3, 4, 5, 6, -1, 27, 33, 155].sort(key=key_func, reverse=True))
+
+            try:
+                print([].sort(1))
+            except TypeError as e:
+                print(e)
+            """)
+
     def test_len(self):
         self.assertCodeExecution("""
-        x = []
-        print(len(x))
-        print(type(len(x)))
-        """)
+            x = []
+            print(len(x))
+            print(type(len(x)))
+            """)
+
+    def test_append(self):
+        self.assertCodeExecution("""
+            print([2, 3].append(1))
+
+            try:
+                print([].append(1, 2))
+            except TypeError as e:
+                print(e)
+
+            try:
+                print([].append(a=1))
+            except TypeError as e:
+                print(e)
+            """)
+
+    def test_extend(self):
+        self.assertCodeExecution("""
+            def iter():
+                yield 0
+                yield ''
+                yield True
+
+            print([1, 2].extend([3, 4])
+            print([].extend(iter()))
+
+            try:
+                print([].extend(a=1))
+            except TypeError as e:
+                print(e)
+            """)
+
+    def test_list_is_mutable(self):
+        self.assertCodeExecution("""
+            a = []
+            b = a
+            b.append(1)
+            print(a)
+            print(a != b or a is not b)
+            """)
+
+    def test_copy(self):
+        "Test the shallow copy and ensure it's mutable."
+        self.assertCodeExecution("""
+            x = [1]
+            y = [x]
+            print(y.copy())
+            print(y.copy()[0] is x))
+
+            try:
+                [].copy(1)
+            except TypeError as e:
+                print(e)
+            """)
 
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
