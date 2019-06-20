@@ -603,6 +603,42 @@ class ListTests(TranspileTestCase):
                 print(e)
             """)
 
+    # Source: https://docs.python.org/3/tutorial/datastructures.html
+    def test_slice_operations(self):
+        self.assertCodeExecution("""
+            a = [1, 5, 3]
+
+            print("a[-1] -> ", a[-1])
+            print("a[-1:] -> ", a[-1:])
+            print("a[:-1] -> ", a[:-1])
+
+            del a[0]
+            print("del a[0] -> ", a)
+
+            del a[:]
+            print("del a[:] -> ", a)
+
+            a = [1, 5, 3]
+            del a[1:]
+            print("del a[1:] -> ", a)
+
+            # empty lists
+            a = []
+            print(a[-1:])
+            print(a[:-1])
+            try:
+                print(a[-1])
+            except IndexError as e:
+                print(e)
+        """)
+
+    @unittest.expectedFailure
+    def test_insert_with_slice(self):
+        self.assertCodeExecution("""
+            a = [1, 2, 3]
+            a[len(a):] = [1]  # should append to the end
+            print("a[len(a):] = [1] -> ", a)
+        """)
 
 class MagicMethodFunctionTests(MagicMethodFunctionTestCase, TranspileTestCase):
     data_type = 'list'
