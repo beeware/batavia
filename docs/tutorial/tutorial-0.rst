@@ -1,11 +1,11 @@
-Tutorial: Preparing your Environment for Batavia Development
-============================================================
+Tutorial: Setting up your Environment
+=====================================
 
 Getting a working local copy of Batavia requires a few steps: getting a copy of
 the Batavia code, and the ouroboros dependency within a virtual environment.
 
-You'll need to have Python 3.5 or 3.6 available for Batavia to work. Instructions on
-how to set this up are `on our Environment setup guide
+You'll need to have Python 3.5 or 3.6 available for Batavia to work.
+Instructions on how to set this up are `on our Environment setup guide
 <http://beeware.org/contributing/how/first-time/setup/>`_.
 
 1. Setup a `beeware` folder to store everything::
@@ -27,8 +27,8 @@ how to set this up are `on our Environment setup guide
 
            $ python3.5 -m venv venv
            $ . venv/bin/activate
-           $ cd batavia
-           $ pip install -e .
+           (venv) $ cd batavia
+           (venv) $ pip install -e .
 
     .. group-tab:: MacOS
 
@@ -36,23 +36,15 @@ how to set this up are `on our Environment setup guide
 
            $ python3.5 -m venv venv
            $ . venv/bin/activate
-           $ cd batavia
-           $ pip install -e .
+           (venv) $ cd batavia
+           (venv) $ pip install -e .
 
      .. group-tab:: Windows
 
            > py -3.5 -m venv venv
            > venv\Scripts\activate
-           > cd batavia
-           > pip install -e .
-
-     .. group-tab:: Windows (with only conda installed)
-
-           > pip install virtualenvwrapper-win
-           > mkvirtualenv venv
-           > workon venv
-           > cd batavia
-           > pip install -e .
+           (venv) > cd batavia
+           (venv) > pip install -e .
 
 4. In addition, you need to install `Node.js <https://nodejs.org>`_. You need
    to have a recent version of Node; we test using v6.9.1. It's possible you

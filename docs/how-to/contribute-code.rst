@@ -1,194 +1,74 @@
-Contributing to Batavia
-=======================
+Contributing to Batavia's code
+==============================
 
-If you experience problems with Batavia, `log them on GitHub`_. If you want to contribute code, please `fork the code`_ and `submit a pull request`_.
+In the following instructions, we're going to assume you’re familiar with
+Github and making pull requests. We're also going to assume some entry level
+Python and JavaScript; if anything we describe here doesn’t make sense, don’t
+worry - we're more than happy to fill in the gaps. At this point, we don’t know
+what you don’t know!
 
-.. _log them on Github: https://github.com/beeware/batavia/issues
-.. _forking Batavia:
-.. _fork the code: https://github.com/beeware/batavia
-.. _submit a pull request: https://github.com/beeware/batavia/pulls
+This tutorial is also going to focus on code contributions. If your interests
+and skills are in documentation, `we have a separate contributors guide
+<contribute-docs>`__ just for you.
 
-
-Setting up your development environment
----------------------------------------
-
-The process of setting up a development environment is very similar to
-the :doc:`/tutorial/tutorial-0` process. The biggest difference is that
-instead of using the official BeeWare repository, you'll be using your own
-Github fork.
-
-As with the getting started guide, these instructions will assume that you
-have Python 3 (currently supported versions are 3.5, 3.6, and 3.7).
-
-Batavia codebase
-^^^^^^^^^^^^^^^^
-
-Start by `forking Batavia`_ into your own Github repository; then
-check out your fork to your own computer into a development directory:
-
-.. code-block:: bash
-
-    $ mkdir batavia-dev
-    $ cd batavia-dev
-    $ git clone https://github.com/<your github username>/batavia.git
-
-Then create a virtual environment and install Batavia into it:
-
- * For Linux, MacOS::
-
-   $ python3 -m venv venv
-   $ . venv/bin/activate
-   $ cd batavia
-   $ pip install -e .
-
- * For Windows (assuming Python 3.6)::
-
-   > py -3.6 -m venv venv
-   > venv\Scripts\activate
-   > cd batavia
-   > pip install -e .
-
-Install Node.JS
-^^^^^^^^^^^^^^^
-
-Lastly, you'll need to install `Node.js`_. You need to have a recent version
-of Node; we test using v10.x. Once you've installed node, you can use it to
-install Batavia's JavaScript dependencies, and compile the Batavia library:
-
-.. code-block:: bash
-
-    $ npm install -g npm
-    $ npm install
-    $ npm run build
-
-.. _Node.js: https://nodejs.org
-
-
-Raspbian/Raspberry Pi
-"""""""""""""""""""""""
-
-This has been successfully tested on Raspbian GNU/Linux 7 (wheezy), based on
-instructions from `Procrastinative Ninja`_ and `aeberhardo`_.
-
-Raspbian for Raspberry Pi 1 does not come with Python 3.6.  (Ubuntu 16.04 for Raspberry
-Pi is now available, and has new enough packages as described above.) To install Python
-3.6, download the source code and then build it:
-
-.. code-block:: bash
-
-	$ cd /tmp
-	$ wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
-	$ tar xvzf Python-3.6.8.tgz
-	$ cd Python-3.6.8/
-	$ ./configure --prefix=/opt/python3.6
-	$ make
-	$ sudo make install
-
-
-.. _Procrastinative Ninja: https://procrastinative.ninja/2014/07/20/install-python34-on-raspberry-pi
-.. _aeberhardo: https://github.com/aeberhardo/phantomjs-linux-armv6l
-
-Running the test suite
+Do the tutorial first!
 ----------------------
 
-You're now ready to run the test suite! This can be done the
-immediately-available-but-tiresome way, or the takes-little-effort-but-then-fun
-way, which is preferred (*assuming* your Python is configured for Tk; MacOS Python
-often is *not*).
+Before you make your first contribution, take Batavia for a spin. The
+instructions in the `getting started guide </tutorial/tutorial-0>`__ *should*
+be enough to get going. If you get stuck, that points to your first
+contribution - work out what instructions would have made you *not* get stuck,
+and contribute an update to the README.
 
-For the fun way, you need to install BeeWare's test-running tool,
-Cricket_. Follow the installation instructions to install it into your
-virtualenv; then, in the ``batavia-dev/batavia`` directory, type:
+Set up your development environment
+-----------------------------------
 
-.. _Cricket: https://cricket.readthedocs.io/en/latest/
+Having run the tutorial, you need to `set up your environment for Batavia
+development <development-env>`__. The Batavia development environment is very
+similar to the tutorial environment, but you'll be using your own fork of
+Batavia's source code, rather than the official repository.
 
-.. code-block:: bash
+Your first contribution
+------------------------
 
-    $ cricket-unittest
+In order to implement a full Python virtual machine, Batavia needs to implement
+all the eccentricities of Python behaviour. For example, Python allows you to
+multiply a string by an integer, resulting in a duplicated string (e.g., ``
+“foo”* 3`` => ``“foofoofoo”``). Javascript behavior can be quite different,
+depending on circumstances - so we need to provide a library that reproduces
+the desired Python behavior in Javascript.
 
-This launches a test-running GUI, where you can easily and intuitively
-run all tests or a subset of tests, see the progress of tests (which is
-quite valuable when running over 10000 tests), and whenever failure is
-encountered, immediately see the details.
+This includes:
 
-If, for whatever reason, you want to run the tests without Cricket, you can
-always use a text test runner by typing:
+ * all the basic operators for Python datatypes (e.g., add, multiply, etc)
 
-.. code-block:: bash
+ * all the basic methods that can be invoked on Python datatypes (e.g.,
+   ``list.sort()``
 
-    $ python setup.py test
+ * all the pieces of the Python standard library that are written in C
 
-This will take at least several minutes, and can take upwards of 1.5hrs on most
-modern PCs/laptops. It will also generate around 10000 lines of console output -
-one line for each test that is executed.  Each line will tell you the pass/fail
-status of each test - e.g.,::
+As you might imagine, this means there's lots of work to be done! If you're
+looking for something to implement for your first contribution, here's a
+few places to look:
 
-    test_abs_not_implemented (tests.builtins.test_abs.AbsTests) ... expected failure
-    test_bool (tests.builtins.test_abs.BuiltinAbsFunctionTests) ... ok
+ * Compare the list of methods implemented in Javascript with the list
+   of methods that are available at the Python prompt. If there's a method
+   missing, try adding that method.
 
-This indicates that tests have passed (``ok``), or have failed in an expected
-way (``expected failure``). These outcomes are what you expect to see.
+ * Look through the Javascript source code looking for ``NotImplementedError``.
+   Any method with an existing prototype where the Javascript implementation
+   raises ``NotImplementedError`` indicates the method is either partially or
+   completely unimplemented. Try to fill in the gap!
 
-If you see any tests reported as ``FAIL``, ``ERROR``, or ``unexpected success``,
-then you've found a problem. If this happens, at the end of the test run, you’ll
-also see a summary of the cause of those problems.
+ * Try writing some Python code and running it in Batavia. If the code doesn't
+   run as you'd expect, work out why, and submit a pull request!
 
-As soon as you see problems, you can stop the tests and start debugging. Cricket
-has a button for this; with the text test runner, hit Ctrl-C or Cmd-C to quit.
+Getting Help
+-------------
 
-However, this *shouldn't* happen - Batavia runs `continuous integration`_ to
-make sure the test suite is always in a passing state. If you *do* get any
-failures, errors, or unexpected successes, please check out the
-`troubleshooting section <#troubleshooting>`_ or get in touch, because you
-may have found a problem.
-
-.. _continuous integration: https://travis-ci.org/beeware/batavia
-
-If you just want to run a single test, or a single group of tests with the text runner, you can provide command-line arguments.
-
-To run a single test, provide the full dotted-path to the test:
-
-.. code-block:: bash
-
-    $ python setup.py test -s tests.datatypes.test_str.BinaryStrOperationTests.test_add_bool
-
-To run a full test case, do the same, but stop at the test case name:
-
-.. code-block:: bash
-
-    $ python setup.py test -s tests.datatypes.test_str.BinaryStrOperationTests
-
-Or, to run all the Str datatype tests:
-
-.. code-block:: bash
-
-    $ python setup.py test -s tests.datatypes.test_str
-
-Or, to run all the datatypes tests:
-
-.. code-block:: bash
-
-    $ python setup.py test -s tests.datatypes
-
-Running the linter
-----------------------
-.. code-block:: bash
-
-    $ npm run lint
-
-Troubleshooting
----------------
-
-- If you copied the main Batavia code a while ago, please make sure your forked branch is up to date with the original branch. To do this:
-
-  - set your upstream remote::
-
-    $ git remote add upstream https://github.com/beeware/batavia.git
-
-  - make sure you have the latest changes from upstream::
-
-    $ git fetch upstream
-
-  - rebase your **master** branch to **upstream** before pushing to GitHub and submitting a pull request::
-
-    $ git rebase upstream/master
+If you have any difficulties with this tutorial, or there's anything you don't
+understand, don't forget - we're here to help you. `Get in touch
+<https://beeware.org/community/getting-help/>`__ and we'll help you out,
+whether it's giving a better explanation of what is required, helping to debug
+a difficult problem, or pointing you towards tutorials for background that you
+may require.
