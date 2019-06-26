@@ -5,10 +5,10 @@ In this tutorial, you'll get the Batavia sandbox running, and use it to run a
 really simple "Hello, world!" program written in Python.
 
 Prerequisites
---------------
+-------------
 
-This tutorial assumes you've read and followed the instructions in
-:doc:`the previous tutorial <tutorial-0>`. If you've done this, you should have:
+This tutorial assumes you've read and followed the instructions in :doc:`the
+previous tutorial <tutorial-0>`. If you've done this, you should have:
 
 * A ``beeware`` directory with a Batavia checkout,
 * An activated Python 3.5 virtual environment, and
@@ -17,11 +17,13 @@ This tutorial assumes you've read and followed the instructions in
 Starting the test server
 ------------------------
 
-1. To start the test server, you'll need to be in the ``testserver`` directory under the batavia directory::
+1. To start the test server, you'll need to be in the ``testserver`` directory
+   under the batavia directory::
 
     $ cd testserver
 
-2. Once you're in the ``testserver`` directory, you can install the requirements for the test server::
+2. Once you're in the ``testserver`` directory, you can install the requirements
+   for the test server::
 
     $ pip install -r requirements.txt
 
