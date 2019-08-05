@@ -187,4 +187,9 @@ to run this code. It's not overly concerning, though, as the main
 use case here is basic DOM manipulation and responding to button clicks, not
 heavy computation.
 
+As an aside, if you'd like to run more than a trivial performance benchmark,
+please check out `pyperf`_ and `pyperformance`_.
+
 .. _removed in 3.7: https://bugs.python.org/issue15369#msg276231
+.. _pyperf: https://pyperf.readthedocs.io/
+.. _pyperformance: https://pyperformance.readthedocs.io/
