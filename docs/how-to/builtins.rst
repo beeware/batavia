@@ -1,11 +1,11 @@
 Implementing Python Built-ins in JavaScript
 ===========================================
 
-Python's builtins give Python its trademark magical feel. If you're new to Python, read up on `them here.
-<https://docs.python.org/3/library/functions.html>`_
+Python's builtins give Python its trademark magical feel. If you're new to Python,
+please read up on the builtins_.
 
 Most builtins have already been added to the project, but many are do not quite match the original
-implementation exactly. Some may not handle certain types of inputs correctly. In addition, new builtins
+implementation exactly. Some may not handle certain types of inputs correctly. In addition, new builtins_
 may arrive with the latest and greatest Python version. This guide should serve as your field manual for
 adding, updating, and navigating our implementations.
 
@@ -25,8 +25,8 @@ Here's an example using ``list()``::
     File "<stdin>", line 1, in <module>
     TypeError: 'int' object is not iterable
 
-Your goal is to find out how the function responds to various inputs and outputs. You may also
-want to consult the `official documentation <https://docs.python.org/>`_.
+Your goal is to find out how the function responds to various inputs and outputs.
+You may also want to consult the official documentation of the builtins_.
 Once you're a little familiar, you can start to add your implementation to Batavia.
 
 General Structure
@@ -97,7 +97,7 @@ args or kwargs, we will check the Python REPL to see what kind of error should b
 Returning a value
 *****************
 
-Builtins implement Python functions and should return a Python object.
+Builtins_ implement Python functions and should return a Python object.
 Batavia implementations of all Python types are located in ``/batavia/types.js``.
 JavaScript imports use the ``require`` keyword and can be imported inline or at
 the top of the file. Inline imports can be preferable in some cases.
@@ -135,3 +135,5 @@ tested:
 * If you are throwing an error (excluding ``BataviaError``) anywhere, write a test that tries to throw it.
 * If you accounted for an edge case (look for an ``if`` statement), test it.
 * Check out the `official documentation <https://docs.python.org/3/>`_ for more edge cases.
+
+.. _builtins: https://docs.python.org/3/library/functions.html
