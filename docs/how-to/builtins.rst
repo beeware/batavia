@@ -12,7 +12,8 @@ adding, updating, and navigating our implementations.
 Process
 -------
 
-The first thing to do when adding anything to Batavia is to play around a bit with it in the Python REPL.
+The first thing to do when adding anything to Batavia is to play around a bit with it in a
+`Python REPL <https://www.python.org/shell/>`_.
 Here's an example using ``list()``::
 
     >> list()
