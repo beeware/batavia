@@ -4,7 +4,7 @@ Setting up your development environment
 The process of setting up a development environment is very similar to
 the :doc:`/tutorial/tutorial-0` process. The biggest difference is that
 instead of using the official BeeWare repository, you'll be using your own
-Github fork.
+GitHub fork.
 
 As with the getting started guide, these instructions will assume that you
 have Python 3 (currently supported versions are 3.5, 3.6, and 3.7).
@@ -12,7 +12,7 @@ have Python 3 (currently supported versions are 3.5, 3.6, and 3.7).
 Batavia codebase
 ----------------
 
-Start by forking Batavia into your own Github repository; then
+Start by forking Batavia into your own GitHub repository; then
 check out your fork to your own computer into a development directory:
 
 .. code-block:: bash

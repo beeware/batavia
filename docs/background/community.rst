@@ -36,7 +36,7 @@ want to contribute code, please `fork the code`_ and `submit a pull request`_.
 .. _announcement: https://groups.google.com/forum/#!topic/beeware-users/iUm-EDgypTg
 .. _BeeWare Users: https://groups.google.com/forum/#!forum/beeware-users
 .. _BeeWare Developers: https://groups.google.com/forum/#!forum/beeware-developers
-.. _log them on Github: https://github.com/beeware/batavia/issues
+.. _log them on GitHub: https://github.com/beeware/batavia/issues
 .. _fork the code: https://github.com/beeware/batavia
 .. _submit a pull request: https://github.com/beeware/batavia/pulls
 

@@ -2,7 +2,7 @@ Contributing to Batavia's code
 ==============================
 
 In the following instructions, we're going to assume you’re familiar with
-Github and making pull requests. We're also going to assume some entry level
+GitHub and making pull requests. We're also going to assume some entry level
 Python and JavaScript; if anything we describe here doesn’t make sense, don’t
 worry - we're more than happy to fill in the gaps. At this point, we don’t know
 what you don’t know!
