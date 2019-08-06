@@ -32,14 +32,16 @@ Once you're a little familiar, you can start to add your implementation to Batav
 General Structure
 *****************
 
-JavaScript versions of Python built-in functions can be found inside the ``batavia/builtins``
+`JavaScript <https://www.ecma-international.org/publications/standards/Ecma-262.htm>`_
+versions of Python built-in functions can be found inside the ``batavia/builtins``
 directory in the Batavia code. Each built-in is placed inside its own file. These builtins are
 designed to be used only inside Batavia, as such they need to ensure they are being used in
 a compatible manner.
 
 Each builtin function will receive arguments and keyword arguments and needs to handle them,
 even if the result is throwing an error. Args should be an array, and kwargs should be a
-JavaScript object. The first thing to do is check that both were passed in.
+JavaScript `object <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object>`_.
+The first thing to do is check that both were passed in.
 
 Let's take a look at an example using the ``list()`` builtin
 
@@ -53,8 +55,10 @@ Let's take a look at an example using the ``list()`` builtin
             throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
         }
 
-This code ensures that the function can handle keyword arguments. Next, we need to validate the arguments are
-correct. We can use JavaScript's ``Object.keys()`` to get the keys of an object. If we can't accept certain
+This code ensures that the function can handle keyword arguments.
+Next, we need to validate the arguments are correct. We can use JavaScript's
+`Object.keys() <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/keys>`_
+to get the keys of an object. If we can't accept certain
 args or kwargs, we will check the Python REPL to see what kind of error should be thrown and throw it.
 
 .. tabs::
