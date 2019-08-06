@@ -74,7 +74,7 @@ types.js
 
 .. code-block:: javascript
 
-    var types = require('./types.js)
+    var types = require('./types.js')
     var my_dict = new types.dict([], {})
 
 This contains all of the native Python types that have been implemented in Batavia. It also has some helper functions:
