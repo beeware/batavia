@@ -14,13 +14,13 @@ Process
 
 The first thing to do when adding anything to Batavia is to play around a bit with it in a
 `Python REPL <https://www.python.org/shell/>`_.
-Here's an example using ``list()``::
+Here's an example using ``max()``::
 
-    >> list()
-    []
-    >> list((1, 2, 3, 4))
-    [1, 2, 3, 4]
-    >> list(4)
+    >> max([1])
+    1
+    >> max((1, 2, 3, 4))
+    4
+    >> max(4)
     Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
     TypeError: 'int' object is not iterable
@@ -43,13 +43,17 @@ even if the result is throwing an error. Args should be an array, and kwargs sho
 JavaScript `object <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object>`_.
 The first thing to do is check that both were passed in.
 
-Let's take a look at an example using the ``list()`` builtin
+Let's take a look at an example using the ``max()`` builtin.
+
+Note: ``max()`` already exists in ``batavia/builtins/max.js``, though
+if you can make any improvements or find any bugs to fix, they are welcome.
 
 .. code-block:: javascript
 
-    // List accepts exactly one argument and no keyword arguments
+    // Max returns the largest item in an iterable or
+    // the largest of two or more arguments.
 
-    var list = function(args, kwargs) {
+    function max(args, kwargs) {
         // Always add this code.
         if (arguments.length !== 2) {
             throw new builtins.BataviaError.$pyclass("Batavia calling convention not used.");
@@ -67,28 +71,35 @@ args or kwargs, we will check the Python REPL to see what kind of error should b
 
         .. code-block::
 
-            >> list(a=1)
-            TypeError: list() doesn't accept keyword arguments.
-            >> list(1, 2, 3)
-            TypeError: list() expected exactly 1 argument (3 given)
+            >> max(a=1)
+            TypeError: max expected 1 arguments, got 0
+            >> max(True)
+            TypeError: 'bool' object is not iterable
+            >> max([])
+            ValueError: max() arg is an empty sequence
 
     .. group-tab:: Batavia Code
 
         .. code-block:: javascript
 
-                if (kwargs && Object.keys(kwargs).length > 0) {
-                    throw new exceptions.TypeError.$pyclass("<fn>() doesn't accept keyword arguments.");
+                if (!args || args.length === 0) {
+                    throw new exceptions.TypeError.$pyclass('max expected 1 arguments, got ' + args.length)
                 }
 
-                if (!args || args.length !== 1) {
-                    throw new exceptions.TypeError.$pyclass("<fn>() expected exactly 1 argument (" + args.length + " given)");
+                if (args.length > 1) {
+                    ...
+                } else {
+                    if (!args[0].__iter__) {
+                        throw new exceptions.TypeError.$pyclass("'" + type_name(args[0]) + "' object is not iterable")
+                    }
                 }
 
-                // If the function only works with a specific object type, add a test
-                var obj = args[0];
-                if (!types.isinstance(obj, types.<type>)) {
-                    throw new exceptions.TypeError.$pyclass(
-                        "<fn>() expects a <type> (" + type_name(obj) + " given)");
+                try {
+                    ...
+                } catch (err) {
+                    if (err instanceof exceptions.StopIteration.$pyclass) {
+                        throw new exceptions.ValueError.$pyclass('max() arg is an empty sequence')
+                    }
                 }
 
         Useful functions are ``types.isinstance``, which checks for a match against a Batavia type or list,
