@@ -65,8 +65,7 @@ Downloading and Installing
 
 Linux/Unix/Mac
 --------------
-Check your python3 version first.  If it's pointing to version 3.6, replace ``$(which python3)`` in the virtualenv command
-below with the path to your Python 3.5 or 3.6 installation. ::
+Type the following commands in your terminal ::
 
 $ python3 --version
 $ python3 -m venv venv
@@ -77,7 +76,7 @@ $ pip install -e .
 Windows
 -------
 
-Type in the following commands in your terminal ::
+Type the following commands in your terminal ::
 
     > py -3 -m venv venv
     > venv\Scripts\activate

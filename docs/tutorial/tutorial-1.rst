@@ -173,7 +173,8 @@ There are also a couple of "Run PyStone" buttons, each of which runs for a
 number of iterations. PyStone is a performance benchmark. On an average modern
 PC, the 5 loop version will be almost instantaneous; 500 loops will take less
 than a second; 50000 loops will take about 15 seconds. You can compare this with
-native performance by running the following in a Python shell::
+native performance by running the following in a Python (3.6 or earlier, as
+``test.pystone`` was `removed in 3.7`_) shell::
 
     >>> from test import pystone
     >>> pystone.main()
@@ -185,3 +186,10 @@ CPython. This is to be expected -- Batavia is going through a very complex proce
 to run this code. It's not overly concerning, though, as the main
 use case here is basic DOM manipulation and responding to button clicks, not
 heavy computation.
+
+As an aside, if you'd like to run more than a trivial performance benchmark,
+please check out `pyperf`_ and `pyperformance`_.
+
+.. _removed in 3.7: https://bugs.python.org/issue15369#msg276231
+.. _pyperf: https://pyperf.readthedocs.io/
+.. _pyperformance: https://pyperformance.readthedocs.io/
