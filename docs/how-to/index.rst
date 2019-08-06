@@ -16,5 +16,8 @@ stand alone.
    development-env
    contribute-code
    contribute-docs
-   Implementing Python Built-ins in JavaScript <builtins>
-   Adding a module and testing it <modules-and-tests>
+   contribute-tests
+   tour
+   builtins
+   types
+   modules-and-tests
