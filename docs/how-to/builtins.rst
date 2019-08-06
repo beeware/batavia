@@ -117,7 +117,8 @@ the top of the file. Inline imports can be preferable in some cases.
 Documentation
 *************
 
-Finally, add the docstring to the function object. In JavaScript, like in Python, functions
+Finally, add the `docstring <https://en.wikipedia.org/wiki/Docstring#Python>`_
+to the function object. In JavaScript, like in Python, functions
 are first-class objects and can have additional properties.
 
 .. code-block:: javascript
