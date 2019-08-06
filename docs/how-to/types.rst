@@ -146,7 +146,7 @@ Tips
 Your goal is to mimic the CPython implementation as much as possible. If you do so, you'll often fix multiple issues at once. Here's some tips:
 
 * The original implementation is documented in detail at https://docs.python.org/3/ -- reading up there will definitely improve your understanding.
-* If you're inherting your class from JavaScript, which is very common, you get JavaScript's internal methods for free. Oftentimes, they can be left as is or lightly wrapped.
+* If you're inheriting your class from JavaScript, which is very common, you get JavaScript's internal methods for free. Oftentimes, they can be left as is or lightly wrapped.
 * Make sure your test properly covers the issue. For instance, if a member function accepts any iterable, make a generic iterable instead of using a list or tuple.
 * Make sure method implementations accept args and kwargs, and throw appropriate errors if the input doesn't match.
 * Keep your Python REPL open to the side and test your assumptions with lots of inputs and outputs.

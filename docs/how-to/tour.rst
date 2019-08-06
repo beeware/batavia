@@ -12,9 +12,9 @@ General Structure
 Core Code
 *********
 
-Batavia implements the core language (types, builtins and the core interpreter) are all javascript, as well those
+Batavia implements the core language (types, builtins and the core interpreter) are all JavaScript, as well those
 portions of the standard library that depend on system services.
-This ensures quick execution and less compiling of the compiler. These are orgainzed into the
+This ensures quick execution and less compiling of the compiler. These are organized into the
 ``builtins``, ``core``, ``modules``, ``stdlib``, and ``types`` files of the main ``/batavia`` directory, with
 corresponding subdirectories. Alongside the virtual machine and test suite, this code makes
 up the bulk of Batavia. New contributors should start with the ``types`` and ``builtins`` sections
