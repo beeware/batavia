@@ -25,7 +25,7 @@ Here's an example using ``list()``::
     TypeError: 'int' object is not iterable
 
 Your goal is to find out how the function responds to various inputs and outputs. You may also
-want to consult the offical documentation. Once you're a little familiar, you can start to add your
+want to consult the official documentation. Once you're a little familiar, you can start to add your
 implementation to Batavia.
 
 General Structure
