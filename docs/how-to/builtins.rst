@@ -129,7 +129,7 @@ are first-class objects and can have additional properties.
 Tests
 *****
 
-No implemenation for a project like this is complete without tests. Check out the other sections for
+No implementation for a project like this is complete without tests. Check out the other sections for
 more details on test structure. Tests are located in ``/tests`` in a similar folder structure to the
 core code, and most test files have already been created. Some things that should almost always be
 tested:
