@@ -6,7 +6,7 @@ you'd like to contribute, providing a patch for one of these features:
 
 * Port a set of basic type operations
 
-* Implement a Python standard library module for
+* Implement a Python standard library module for Javacsript
 
 * Implement StackMapFrames for the generated Java class files.
 
