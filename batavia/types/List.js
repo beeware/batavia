@@ -556,7 +556,18 @@ List.prototype.__delitem__ = function(index) {
                 this.splice(idx, 1)
             }
         }
-    } else {
+    } else if (types.isinstance(index, types.Slice)) {
+        var start = index.start
+        var stop = index.stop
+        if (start === None) {
+            start = 0
+        }
+        if (stop === None) {
+            stop = this.length
+        }
+        this.splice(start, stop - start)
+    }
+    else {
         throw new exceptions.TypeError.$pyclass('list indices must be integers, not ' + type_name(index))
     }
 }
@@ -725,7 +736,7 @@ List.prototype.index = function(value, start, stop) {
             return i
         }
     }
-    throw new exceptions.ValueError.$pyclass('list.index(x): x not in list')
+    throw new exceptions.ValueError.$pyclass(value.toString() + ' is not in list')
 }
 
 List.prototype.reverse = function() {
@@ -733,6 +744,27 @@ List.prototype.reverse = function() {
         throw new exceptions.TypeError.$pyclass('reverse() takes no arguments (' + arguments.length + ' given)')
     }
     Array.prototype.reverse.apply(this)
+}
+
+List.prototype.sort = function(key=None, reverse=false) {
+    if (key === None) {
+        Array.prototype.sort.call(this)
+    } else {
+        callable = require('../builtins.js').callable
+        if (callable(key)) {
+            // Call using batavia conventions
+            var keyfunc = function(arg) {
+                return builtins.call(key, [arg], {})
+            }
+            Array.prototype.sort.call(this, keyfunc)
+        } else {
+            throw new exceptions.TypeError.$pyclass("'" + type_name(key) + "' object is not callable")
+        }
+    }
+    if (reverse) {
+        Array.prototype.reverse.call(this)
+    }
+    return None
 }
 
 function validateIndexType(index) {
