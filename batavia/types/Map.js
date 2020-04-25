@@ -56,6 +56,10 @@ Map.prototype.__str__ = function() {
     return '<map object at 0x99999999>'
 }
 
+Map.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type map')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

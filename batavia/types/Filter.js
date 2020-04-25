@@ -59,6 +59,10 @@ Filter.prototype.__str__ = function() {
     return '<filter object at 0x99999999>'
 }
 
+Filter.prototype.__format__ = function(){
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type ' + className)
+}
+
 /**************************************************
  * Module exports
  **************************************************/

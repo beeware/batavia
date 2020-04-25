@@ -27,6 +27,10 @@ StrIterator.prototype.__str__ = function() {
     return '<str_iterator object at 0x99999999>'
 }
 
+StrIterator.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type str_iterator')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

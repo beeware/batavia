@@ -23,6 +23,10 @@ function Method(instance, func) {
 Method.prototype = Object.create(Function.prototype)
 create_pyclass(Method, 'method', true)
 
+Method.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type method')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

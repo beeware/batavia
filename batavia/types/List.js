@@ -747,6 +747,10 @@ function validateIndexType(index) {
     }
 }
 
+List.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type list')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

@@ -1,8 +1,94 @@
+import unittest
 from ..utils import TranspileTestCase, UnaryOperationTestCase, BinaryOperationTestCase, InplaceOperationTestCase, \
-    MagicMethodFunctionTestCase
+    MagicMethodFunctionTestCase, transforms, adjust
+from itertools import product
 
 
 class BoolTests(TranspileTestCase):
+
+    @transforms(
+        decimal=False,
+        float_exp=False,
+        high_precision_float=False,
+        js_bool=False,
+        complex_num=False)
+    def test_conversion_types(self, js_cleaner, py_cleaner):
+        """
+        test all conversion types and their alternate forms
+        """
+        alternate = ('#', '')
+        types = ('b', 'd', 'e', 'E', 'f', 'F', 'g', 'G', 'n', 'o', 's', 'x', 'X', '%')
+        args = (True, False)
+        combinations = product(alternate, types, args)
+        test_str = ''.join(
+            [
+                adjust(
+                    """
+                    try:
+                        print(">>> format({arg}, '{alter}{typ}')")
+                        print(format({arg}, '{alter}{typ}'))
+                    except ValueError as err:
+                        print(err)
+                    except OverflowError as err:
+                        print(err)
+                    """.format(alter=alter, typ=typ, arg=arg)
+                ) for alter, typ, arg in combinations
+            ]
+        )
+        self.assertCodeExecution(test_str, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+
+    @unittest.expectedFailure
+    @transforms(
+        decimal=False,
+        float_exp=False,
+        high_precision_float=False,
+        js_bool=False,
+        complex_num=False)
+    def test_character_conversion_type(self, js_cleaner, py_cleaner):
+        self.assertCodeExecution("""
+            print(format(True, 'c'))
+            print(format(False, 'c'))
+            """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+
+    @transforms(
+        js_bool=False,
+        decimal=False,
+        float_exp=False,
+        memory_ref=False
+    )
+    def test_simple_format(self, js_cleaner, py_cleaner):
+        self.assertCodeExecution("""
+            print(format(True, ''))
+            """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+
+    @transforms(
+        js_bool=False,
+        decimal=False,
+        float_exp=False,
+        memory_ref=False
+    )
+    def test_format__redirects_to_parent_types(self, js_cleaner, py_cleaner):
+        self.assertCodeExecution("""
+            print('>>> format(True, "-09.3f")')
+            print(format(True, "-09.3f"))
+            print('>>> format(False, "-5,x")')
+            print(format(False, " >-5x"))
+            """, js_cleaner=js_cleaner, py_cleaner=py_cleaner)
+
+    def test_bool_rejects_invalid_format(self):
+        self.assertCodeExecution("""
+            x = True
+            try:
+                format(x, 'm')
+            except ValueError as e:
+                print(e)
+            try:
+                print(format(x, '3&^0m'))
+            except ValueError as e:
+                print(e)
+            print('Done.')
+            """)
+
     def test_setattr(self):
         self.assertCodeExecution("""
             x = True

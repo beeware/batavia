@@ -32,6 +32,10 @@ SetIterator.prototype.__str__ = function() {
     return '<set_iterator object at 0x99999999>'
 }
 
+SetIterator.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type set_iterator')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

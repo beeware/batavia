@@ -31,6 +31,10 @@ ListIterator.prototype.__str__ = function() {
     return '<list_iterator object at 0x99999999>'
 }
 
+ListIterator.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type list_iterator')
+}
+
 /**************************************************
  * Module exports
  **************************************************/

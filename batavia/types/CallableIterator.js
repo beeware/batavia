@@ -5,6 +5,7 @@ var create_pyclass = require('../core').create_pyclass
 /**************************************************
  * Callable Iterator
  **************************************************/
+const className = 'callable_iterator';
 
 function CallableIterator(callable, sentinel) {
     PyObject.call(this)
@@ -13,7 +14,7 @@ function CallableIterator(callable, sentinel) {
     this.exhausted = false
 }
 
-create_pyclass(CallableIterator, 'callable_iterator')
+create_pyclass(CallableIterator, className)
 
 CallableIterator.prototype.__next__ = function() {
     if (this.exhausted) {
@@ -35,6 +36,11 @@ CallableIterator.prototype.__iter__ = function() {
 CallableIterator.prototype.__str__ = function() {
     return '<callable_iterator object at 0x99999999>'
 }
+
+CallableIterator.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type ' + className)
+}
+
 
 /**************************************************
  * Module exports

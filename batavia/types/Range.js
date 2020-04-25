@@ -209,6 +209,10 @@ Range.prototype.__getitem__ = function(index) {
     }
 }
 
+Range.prototype.__format__ = function(value, formatSpecifier) {
+    throw new exceptions.ValueError.$pyclass('ValueError: Unknown format code ' +  formatSpecifier + ' for object of type range')
+}
+
 /**************************************************
  * Module exports
  **************************************************/
