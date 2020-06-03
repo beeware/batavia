@@ -18,7 +18,8 @@ To create a test
 
 If the module doesn't exist yet, it must be created as a ``test_NAME-OF-THE-MODULE.py`` file.
 
-If a test for the module already exists and you want to add functionalities to it, you must create a new function on the file.
+If a test for the module already exists and you want to add functionality to it,
+you must create a new function on the file.
 
 
 To run the tests
